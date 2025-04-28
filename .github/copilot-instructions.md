@@ -263,7 +263,7 @@ cgvs/
     *   Start Vite development server (`bun run dev`).
     *   **Result:** Basic framework running locally with Vite for asset compilation, database connected.
 
-*   **Stage 1: Basic Authentication**
+*   **Stage 1: Basic Authentication (done)**
     *   Install React and dependencies:
         ```
         bun add react react-dom react-router-dom @reduxjs/toolkit axios @mui/material @emotion/react @emotion/styled @mui/icons-material @fontsource/roboto
@@ -278,9 +278,17 @@ cgvs/
 
 *   **Stage 2: Basic Admin Area & React Router Setup**
     *   Create React layout components with MUI:
-        *   `resources/js/components/layouts/AdminLayout.jsx` - Using MUI AppBar, Drawer, List
+        *   `resources/js/components/layouts/AdminLayout.jsx` - Using MUI AppBar, Box, Container
+            *   Top navbar with logo on the left
+            *   Navigation links in the center
+            *   Right section with theme switcher and user avatar:
+                *   Theme switcher toggle (light/dark/system)
+                *   User avatar with dropdown menu (profile, preferences, logout)
         *   `resources/js/components/layouts/GuestLayout.jsx` - Using MUI Container, Paper
-        *   Create shared components like TopBar, SideNav using MUI components
+    *   Set up theme handling:
+        *   Create theme slice in Redux for theme state management
+        *   Implement theme persistence in localStorage
+        *   Support light/dark/system theme modes
     *   Create admin dashboard component (`resources/js/pages/admin/Dashboard.jsx`) with MUI:
         *   Use MUI Grid for responsive layout
         *   Add summary cards with MUI Card components
@@ -289,9 +297,10 @@ cgvs/
         *   Configure admin routes in `resources/js/routes/index.jsx`
         *   Add protected route components
         *   Use MUI CircularProgress for loading states
+        *   Implement SPA navigation (no page reloads)
     *   Create API endpoints for dashboard data
     *   Implement admin API middleware in Laravel
-    *   **Result:** SPA-based admin area with Material-UI components and responsive layouts
+    *   **Result:** Modern SPA-based admin area with responsive top navbar, theme switching, and user menu
 
 *   **Stage 3: Template Data Structure**
     *   Create Models: `Template.php`, `TemplateElement.php`.
