@@ -5,29 +5,19 @@ import {
   Container,
   Box,
   Typography,
-  Stepper,
-  Step,
-  StepLabel,
   Button,
-  Paper,
-  TextField,
   Card,
   CardMedia,
-  IconButton,
   Snackbar,
-  Alert
+  Alert,
 } from '@mui/material';
-import { createTemplate, fetchConfig } from '../../../store/templateSlice.js';
-import { useDropzone } from 'react-dropzone';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { createTemplate, fetchConfig } from '../../../store/templateSlice';
+import CreateTemplateForm from '../../../components/admin/templates/CreateTemplateForm';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-const steps = ['Basic Information', 'Background Image', 'Review'];
 
 const Create = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -35,12 +25,12 @@ const Create = () => {
   });
   const [error, setError] = useState(null);
   const [preview, setPreview] = useState(null);
+
   const { config } = useSelector((state) => ({
-    config: state.templates.config || { maxFileSize: 5120 }  // Use 5MB as default
+    config: state.templates.config || { maxFileSize: 5120 }
   }));
-  
+
   useEffect(() => {
-    // Fetch config and log the response
     dispatch(fetchConfig())
       .unwrap()
       .then(config => {
@@ -51,42 +41,14 @@ const Create = () => {
       });
   }, [dispatch]);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg']
-    },
-    maxFiles: 1,
-    maxSize: config.maxFileSize * 1024, // Convert KB to bytes
-    onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
-        setFormData(prev => ({ ...prev, background: file }));
-        setPreview(URL.createObjectURL(file));
-        setError(null);
-      }
-    },
-    onDropRejected: (rejectedFiles) => {
-      if (rejectedFiles.length > 0) {
-        const rejection = rejectedFiles[0];
-        if (rejection.errors[0].code === 'file-too-large') {
-          setError(`File is too large. Maximum size allowed is ${(config.maxFileSize / 1024).toFixed(1)} MB`);
-        } else {
-          setError(rejection.errors[0].message);
-        }
-      }
-    }
-  });
-
-  const handleNext = () => {
-    if (activeStep === steps.length - 1) {
-      handleSubmit();
-    } else {
-      setActiveStep((prevStep) => prevStep + 1);
-    }
+  const handleFormChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
+  const handleFileChange = (file) => {
+    setFormData(prev => ({ ...prev, background: file }));
+    setPreview(URL.createObjectURL(file));
+    setError(null);
   };
 
   const handleSubmit = async () => {
@@ -98,148 +60,59 @@ const Create = () => {
     }
   };
 
-  const getStepContent = (step) => {
-    switch (step) {
-      case 0:
-        return (
-          <Box sx={{ p: 3 }}>
-            <TextField
-              fullWidth
-              label="Template Name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              margin="normal"
-              required
-            />
-            <TextField
-              fullWidth
-              label="Description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              margin="normal"
-              multiline
-              rows={4}
-            />
-          </Box>
-        );
-
-      case 1:
-        return (
-          <Box sx={{ p: 3 }}>
-            <Paper
-              {...getRootProps()}
-              sx={{
-                p: 3,
-                textAlign: 'center',
-                cursor: 'pointer',
-                backgroundColor: 'background.default',
-                border: error ? '2px dashed error.main' : '2px dashed grey.500',
-              }}
-            >
-              <input {...getInputProps()} />
-              <CloudUploadIcon sx={{ fontSize: 48, color: error ? 'error.main' : 'text.secondary', mb: 2 }} />
-              <Typography>
-                Drag and drop a background image here, or click to select one
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                Maximum file size: {(config.maxFileSize / 1024).toFixed(1)} MB
-              </Typography>
-              {error && (
-                <Typography color="error" sx={{ mt: 1 }}>
-                  {error}
-                </Typography>
-              )}
-            </Paper>
-
-            {preview && (
-              <Card sx={{ mt: 2, position: 'relative' }}>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={preview}
-                  alt="Template background preview"
-                />
-                <IconButton
-                  sx={{
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    },
-                  }}
-                  onClick={() => {
-                    setFormData(prev => ({ ...prev, background: null }));
-                    setPreview(null);
-                  }}
-                >
-                  <DeleteIcon sx={{ color: 'white' }} />
-                </IconButton>
-              </Card>
-            )}
-          </Box>
-        );
-
-      case 2:
-        return (
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Review Your Template
-            </Typography>
-            <Typography>Name: {formData.name}</Typography>
-            <Typography>Description: {formData.description}</Typography>
-            {preview && (
-              <Card sx={{ mt: 2 }}>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={preview}
-                  alt="Template background preview"
-                />
-              </Card>
-            )}
-          </Box>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="md">
       <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Create New Template
         </Typography>
 
-        <Paper elevation={2} sx={{ p: 3 }}>
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+        <CreateTemplateForm
+          formData={formData}
+          onFormChange={handleFormChange}
+          onFileChange={handleFileChange}
+          maxFileSize={config.maxFileSize}
+        />
 
-          {getStepContent(activeStep)}
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-            {activeStep !== 0 && (
-              <Button onClick={handleBack} sx={{ mr: 1 }}>
-                Back
-              </Button>
-            )}
+        {preview && (
+          <Card sx={{ mt: 3, position: 'relative' }}>
+            <CardMedia
+              component="img"
+              height="200"
+              image={preview}
+              alt="Background preview"
+            />
             <Button
               variant="contained"
-              onClick={handleNext}
-              disabled={!formData.name}
+              color="error"
+              startIcon={<DeleteIcon />}
+              sx={{ position: 'absolute', top: 8, right: 8 }}
+              onClick={() => {
+                setFormData(prev => ({ ...prev, background: null }));
+                setPreview(null);
+              }}
             >
-              {activeStep === steps.length - 1 ? 'Create Template' : 'Next'}
+              Remove
             </Button>
-          </Box>
-        </Paper>
+          </Card>
+        )}
+
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/admin/templates')}
+            sx={{ mr: 2 }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={!formData.name}
+          >
+            Create Template
+          </Button>
+        </Box>
       </Box>
 
       <Snackbar
