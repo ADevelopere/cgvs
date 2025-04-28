@@ -7,6 +7,7 @@ import Login from '../pages/auth/Login';
 import Dashboard from '../pages/admin/Dashboard';
 import TemplateIndex from '../pages/admin/templates/Index';
 import TemplateCreate from '../pages/admin/templates/Create';
+import TemplateManagementPage from '../pages/admin/templates/TemplateManagementPage';
 import Verify from '../pages/Verify';
 import RouteError from '../components/common/RouteError';
 
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
           {
             path: 'create',
             element: <TemplateCreate />,
+          },
+          {
+            path: ':id/manage',
+            element: <TemplateManagementPage />,
           },
         ],
       },
