@@ -134,4 +134,20 @@ class TemplateController extends Controller
             ], 422);
         }
     }
+
+    /**
+     * Display the specified template.
+     *
+     * @param Template $template
+     * @return JsonResponse
+     */
+    public function show(Template $template): JsonResponse
+    {
+        // Add background_url if the template has a background
+        if ($template->background_path) {
+            $template->background_url = Storage::url($template->background_path);
+        }
+
+        return response()->json($template);
+    }
 }
