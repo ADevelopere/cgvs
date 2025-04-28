@@ -16,5 +16,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     // Admin routes
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index']);
+        Route::get('/templates/config', [\App\Http\Controllers\Admin\TemplateController::class, 'config']);
+        Route::apiResource('templates', \App\Http\Controllers\Admin\TemplateController::class);
     });
 });

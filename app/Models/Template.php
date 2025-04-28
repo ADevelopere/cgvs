@@ -20,6 +20,9 @@ class Template extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
         'required_variables' => 'array',
         'is_active' => 'boolean',
     ];

@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Filesystem Disk
@@ -29,7 +28,6 @@ return [
     */
 
     'disks' => [
-
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
@@ -59,7 +57,20 @@ return [
             'throw' => false,
             'report' => false,
         ],
+    ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Upload Limits
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure the maximum file size for different types of uploads.
+    | Sizes are in kilobytes.
+    |
+    */
+
+    'upload_limits' => [
+        'template_background' => env('MAX_TEMPLATE_BACKGROUND_SIZE', 2048), // Default 2MB
     ],
 
     /*
@@ -76,5 +87,4 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
-
 ];

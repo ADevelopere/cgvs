@@ -7,7 +7,8 @@
 
     <title>{{ config('app.name', 'CGVS') }}</title>
 
-    @vite(['resources/js/app.jsx'])
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 <body>
     <div id="app"></div>
