@@ -139,6 +139,7 @@ The primary goal is to develop a web-based system enabling authorized administra
 *   **Web Server & Backend Language:** Standard web hosting environment with a backend language capable of handling file uploads, data processing, database interaction, and library integrations.
 *   **File Storage:** Server-side storage needed for template assets (background images), uploaded recipient lists (temporary), and potentially the generated PDF certificates (if configured).
 
+```
 cgvs/
 ├── app/
 │   ├── Console/
@@ -178,26 +179,54 @@ cgvs/
 │   │   └── xxxx_xx_xx_xxxxxx_create_certificates_table.php
 │   └── seeders/                 # Database seeders (e.g., default admin user)
 ├── public/                      # WEB SERVER DOCUMENT ROOT
-│   ├── css/
-│   ├── js/
-│   ├── images/                  # General site images
-│   ├── storage/                 # Symlink to storage/app/public
-│   ├── .htaccess                # Apache rewrite rules
-│   └── index.php                # Application entry point
+│   ├── build/                  # Vite build output directory
+│   ├── hot                     # Vite hot module replacement file
+│   ├── images/                 # General site images
+│   ├── storage/                # Symlink to storage/app/public
+│   ├── .htaccess              # Apache rewrite rules
+│   └── index.php              # Application entry point
 ├── resources/
-│   ├── css/                     # Raw CSS (if using build tools)
-│   ├── js/                      # Raw JS (if using build tools)
-│   ├── lang/                    # Language files (for localization)
-│   └── views/                   # Blade templates (HTML)
-│       ├── layouts/             # Master layouts (app.blade.php)
-│       ├── auth/                # Login, register views
-│       ├── admin/
-│       │   ├── dashboard.blade.php
-│       │   ├── templates/       # index, create, edit, show(preview?)
-│       │   └── generation/      # upload_form, validation_results
-│       ├── public/
-│       │   └── verify.blade.php
-│       └── components/          # Reusable view components
+│   ├── css/                   # Raw CSS for Vite processing
+│   │   └── app.css           # Main CSS file
+│   ├── js/                    # JavaScript & React components
+│   │   ├── app.jsx           # Main React entry point
+│   │   ├── bootstrap.js      # Bootstrap JavaScript
+│   │   ├── routes/           # React Router configuration
+│   │   │   └── index.jsx     # Route definitions
+│   │   ├── store/            # Redux/RTK store modules
+│   │   │   └── index.js      # Store configuration
+│   │   ├── components/       # React components
+│   │   │   ├── layouts/      # Layout components
+│   │   │   │   ├── AdminLayout.jsx
+│   │   │   │   └── GuestLayout.jsx
+│   │   │   ├── auth/         # Authentication components
+│   │   │   │   └── LoginForm.jsx
+│   │   │   ├── admin/        # Admin components
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── templates/
+│   │   │   │   │   ├── TemplateList.jsx
+│   │   │   │   │   ├── TemplateEditor.jsx
+│   │   │   │   │   └── TemplatePreview.jsx
+│   │   │   │   └── generation/
+│   │   │   │       ├── UploadForm.jsx
+│   │   │   │       └── ValidationResults.jsx
+│   │   │   └── public/       # Public components
+│   │   │       └── VerificationForm.jsx
+│   │   └── pages/            # React page components
+│   │       ├── auth/         # Auth pages
+│   │       │   └── Login.jsx
+│   │       ├── admin/        # Admin pages
+│   │       │   ├── Dashboard.jsx
+│   │       │   ├── templates/
+│   │       │   │   ├── Index.jsx
+│   │       │   │   ├── Create.jsx
+│   │       │   │   └── Edit.jsx
+│   │       │   └── generation/
+│   │       │       └── Upload.jsx
+│   │       └── Verify.jsx    # Public verification page
+│   ├── lang/                 # Language files (for localization)
+│   └── views/                # Blade templates (minimal)
+│       └── app.blade.php     # Main app template for Vue
 ├── routes/
 │   ├── web.php                  # Web routes (browser accessible)
 │   └── api.php                  # Optional API routes
@@ -214,35 +243,55 @@ cgvs/
 ├── .env                         # Environment configuration (DB creds, App URL)
 ├── .env.example
 ├── artisan                      # Laravel command-line tool
-├── composer.json
-└── composer.lock
+├── composer.json              # PHP dependencies
+├── composer.lock             # PHP dependencies lock file
+├── package.json              # Node.js dependencies
+├── bun.lock                  # Bun lock file for Node.js dependencies
+└── vite.config.js           # Vite configuration
 ```
 
 **Incremental Implementation Steps (Focus on Seeing Results)**
 
-*   **Stage 0: Project Setup & Environment**
-    *   Install PHP, Composer, Git on your local machine (if developing locally).
+*   **Stage 0: Project Setup & Environment (done)** 
+    *   Install PHP, Composer, Git, Node.js, and Bun on your local machine (if developing locally).
     *   Set up a new project using your chosen framework (e.g., `composer create-project laravel/laravel cgvs`).
     *   Initialize Git repository (`git init`, initial commit).
+    *   Install Node.js dependencies (`bun install`).
     *   Configure your `.env` file (App URL, Database connection details for local dev).
     *   Create the database locally.
     *   Run initial framework migrations (`php artisan migrate`).
-    *   **Result:** Basic framework running locally, database connected.
+    *   Start Vite development server (`bun run dev`).
+    *   **Result:** Basic framework running locally with Vite for asset compilation, database connected.
 
 *   **Stage 1: Basic Authentication**
-    *   Use the framework's built-in auth scaffolding (e.g., Laravel Breeze/UI).
-    *   Run migrations if needed (users table).
-    *   Create routes for login/logout.
-    *   Create basic login view (`resources/views/auth/login.blade.php`).
-    *   Implement login/logout controllers/logic.
-    *   **Result:** You can see a login page, register (optional), log in, and log out.
+    *   Install React and dependencies:
+        ```
+        bun add react react-dom react-router-dom @reduxjs/toolkit axios @mui/material @emotion/react @emotion/styled @mui/icons-material @fontsource/roboto
+        ```
+    *   Create React authentication components with MUI:
+        *   `resources/js/components/auth/LoginForm.jsx` using MUI components (Card, TextField, Button)
+        *   Set up MUI theme provider with custom theme in `resources/js/theme/index.js`
+    *   Set up React Router and authentication store with Redux Toolkit.
+    *   Create API routes and controllers for login/logout.
+    *   Implement login/logout logic with Laravel Sanctum.
+    *   **Result:** SPA-based authentication system with Material-UI components.
 
-*   **Stage 2: Basic Admin Area & Middleware**
-    *   Create a simple Admin DashboardController (`app/Http/Controllers/Admin/DashboardController.php`).
-    *   Create a route for `/admin/dashboard` protected by the `auth` middleware (`routes/web.php`).
-    *   Create a basic admin dashboard view (`resources/views/admin/dashboard.blade.php`).
-    *   Create a master layout for the admin area (`resources/views/layouts/admin.blade.php`).
-    *   **Result:** Logged-in users can access `/admin/dashboard`, others are redirected to login.
+*   **Stage 2: Basic Admin Area & React Router Setup**
+    *   Create React layout components with MUI:
+        *   `resources/js/components/layouts/AdminLayout.jsx` - Using MUI AppBar, Drawer, List
+        *   `resources/js/components/layouts/GuestLayout.jsx` - Using MUI Container, Paper
+        *   Create shared components like TopBar, SideNav using MUI components
+    *   Create admin dashboard component (`resources/js/pages/admin/Dashboard.jsx`) with MUI:
+        *   Use MUI Grid for responsive layout
+        *   Add summary cards with MUI Card components
+        *   Include basic stats with MUI Paper and Typography
+    *   Set up React Router with authentication protection:
+        *   Configure admin routes in `resources/js/routes/index.jsx`
+        *   Add protected route components
+        *   Use MUI CircularProgress for loading states
+    *   Create API endpoints for dashboard data
+    *   Implement admin API middleware in Laravel
+    *   **Result:** SPA-based admin area with Material-UI components and responsive layouts
 
 *   **Stage 3: Template Data Structure**
     *   Create Models: `Template.php`, `TemplateElement.php`.
@@ -250,13 +299,18 @@ cgvs/
     *   Run migrations (`php artisan migrate`).
     *   **Result:** Database tables for templates and their elements exist.
 
-*   **Stage 4: List & Create Templates (Basic Form)**
-    *   Create `TemplateController.php` (`index`, `create`, `store` methods).
-    *   Create routes for `/admin/templates` (GET index), `/admin/templates/create` (GET form), `/admin/templates` (POST store). Protect with `auth` middleware.
-    *   Create `index.blade.php` (list templates - initially empty) and `create.blade.php` (basic form with name, description, background file input).
-    *   Implement the `index` method to fetch templates (empty).
-    *   Implement the `create` method to show the form.
-    *   **Result:** Admin can navigate to a page listing templates and see a form to create a new one.
+*   **Stage 4: Template Management React Components**
+    *   Create React components for template management with MUI:
+        *   `resources/js/pages/admin/templates/Index.jsx` - Using MUI DataGrid for template listing
+        *   `resources/js/pages/admin/templates/Create.jsx` - Using MUI Stepper for creation flow
+        *   `resources/js/components/admin/templates/TemplateList.jsx` - Using MUI Card and ImageList
+        *   Add MUI dialogs for confirmations and forms
+        *   Implement MUI Snackbars for notifications
+    *   Set up template Redux slice for state management
+    *   Create API endpoints in `TemplateController.php` (`index`, `store` methods)
+    *   Implement template API routes with auth middleware
+    *   Add file upload handling with React-Dropzone and MUI styling
+    *   **Result:** SPA-based template management with Material-UI components and modern UX
 
 *   **Stage 5: Save Basic Template & Background Upload**
     *   Implement the `store` method in `TemplateController`.
@@ -267,13 +321,29 @@ cgvs/
     *   Update the `index` view to display the list of created templates (name, description, maybe thumbnail).
     *   **Result:** Admin can create a template record, upload a background, and see it listed.
 
-*   **Stage 6: Template Element UI (Visual Editor Stub)**
-    *   Enhance `create.blade.php` (and add `edit.blade.php`).
-    *   Use JavaScript to allow adding "placeholders" (divs?) visually onto the background image preview.
-    *   Add buttons like "Add Text", "Add Date", "Add QR".
-    *   When an element is added/selected, show a form section to input its properties (X/Y coordinates - maybe get from drag/drop, type, variable name, font size, color, etc.). Store this data temporarily in hidden inputs or JS objects.
-    *   *(Focus on the UI interaction first, not saving)*.
-    *   **Result:** Admin can visually place elements on a template preview and define their basic properties in the browser.
+*   **Stage 6: React Template Editor Component**
+    *   Create React template editor components with MUI:
+        *   `resources/js/components/admin/templates/TemplateEditor.jsx` - Main editor using MUI Paper as canvas
+        *   `resources/js/components/admin/templates/elements/` - Element components with MUI styling:
+            *   `TextElement.jsx` - Using MUI Typography
+            *   `DateElement.jsx` - Using MUI DatePicker
+            *   `QRElement.jsx` - Custom styled with MUI theme
+            *   `ImageElement.jsx` - Using MUI Card for container
+        *   Add MUI SpeedDial for quick actions
+        *   Implement MUI Drawer for element properties panel
+    *   Implement drag-and-drop using react-beautiful-dnd with MUI styling
+    *   Create element property forms using MUI components:
+        *   Color pickers with MUI
+        *   Font selectors with MUI Select
+        *   Position inputs with MUI TextField
+    *   Set up Redux slice for editor state management:
+        *   Track selected element
+        *   Manage element positions
+        *   Handle undo/redo with Redux history
+    *   Add preview mode toggle using MUI Switch and React context
+    *   Configure Vite for React hot module replacement
+    *   *(Focus on the UI interaction first, not saving)*
+    *   **Result:** Interactive Material-UI based template editor with modern UI/UX
 
 *   **Stage 7: Save Template Elements**
     *   Modify the `store` (and add `update`) method in `TemplateController`.
@@ -290,20 +360,34 @@ cgvs/
     *   Create basic `verify.blade.php` view with an input field for the code.
     *   **Result:** Database table for certificates exists, basic public verification page is visible.
 
-*   **Stage 9: Basic Verification Logic**
-    *   Implement the `show` method in `VerificationController`.
-    *   Get the `code` from the request (input field or query parameter).
-    *   Query the `certificates` table for a matching `verification_code`.
-    *   Pass a simple "found" or "not found" status to the `verify.blade.php` view.
-    *   Update the view to display the status.
-    *   **Result:** The verification page can check if a code exists (it won't yet) and display "Not Found".
+*   **Stage 9: React Verification Component**
+    *   Create React verification components with MUI:
+        *   `resources/js/pages/Verify.jsx` - Main verification page with MUI Container
+        *   `resources/js/components/public/VerificationForm.jsx` - Using MUI TextField and Button
+        *   `resources/js/components/public/VerificationResult.jsx` - Using MUI Alert and Card
+    *   Set up Redux slice for verification state
+    *   Implement API endpoint in `VerificationController`
+    *   Add real-time verification with useDebounce hook
+    *   Handle URL parameters with React Router useParams
+    *   Add loading states with MUI Skeleton and CircularProgress
+    *   Implement error states with MUI Alert
+    *   Add responsive design with MUI Grid system
+    *   **Result:** Modern, responsive verification page with Material-UI components
 
-*   **Stage 10: Generation UI (Upload Form)**
-    *   Create `CertificateGenerationController.php` (`showUploadForm`, `processUpload` methods).
-    *   Create routes `/admin/generation/upload` (GET/POST). Protect with `auth`.
-    *   Create `upload_form.blade.php` view: include a dropdown to select an existing Template, and a file input for the recipient list (CSV).
-    *   Implement `showUploadForm` to fetch templates for the dropdown.
-    *   **Result:** Admin can see a page to select a template and upload a CSV file.
+*   **Stage 10: Certificate Generation React Components**
+    *   Create React components for certificate generation with MUI:
+        *   `resources/js/pages/admin/generation/Upload.jsx` - Main page with MUI Container and Grid
+        *   `resources/js/components/admin/generation/UploadForm.jsx` - Using MUI Paper and LinearProgress
+        *   `resources/js/components/admin/generation/TemplateSelect.jsx` - Using MUI Select and ImageList
+        *   Add MUI Stepper for multi-step generation process
+        *   Implement MUI Dialog for preview and confirmation
+    *   Implement file upload with react-dropzone and MUI styled drop zone
+    *   Add template selection with React Query and MUI components
+    *   Create API endpoints in `CertificateGenerationController.php`
+    *   Set up Redux slice for generation state management
+    *   Add upload progress tracking with MUI LinearProgress
+    *   Use MUI Snackbar for status notifications
+    *   **Result:** Polished certificate generation interface with Material-UI components
 
 *   **Stage 11: Data Upload & Validation Service**
     *   Implement `processUpload` in the controller.
