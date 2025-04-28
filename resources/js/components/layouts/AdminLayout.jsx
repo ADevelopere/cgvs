@@ -1,5 +1,7 @@
-import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, Link, Outlet } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import ErrorBoundary from '../common/ErrorBoundary';
 import {
   AppBar,
   Box,
@@ -16,9 +18,32 @@ import {
 } from '@mui/icons-material';
 import ThemeSwitcher from '../common/ThemeSwitcher';
 import UserMenu from '../common/UserMenu';
+import PropTypes from 'prop-types';
+import { checkAuth } from '../../store/authSlice';
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isLoading = useSelector((state) => state.auth.isLoading);
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isLoading, isAuthenticated, navigate]);
+
+  if (isLoading) {
+    return null; // or a loading spinner
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const navItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin/dashboard' },
@@ -73,11 +98,16 @@ const AdminLayout = ({ children }) => {
 
       <Box component="main" sx={{ flex: 1, p: 3 }}>
         <Container maxWidth="xl">
-          {children}
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </Container>
       </Box>
     </Box>
   );
+};
+AdminLayout.propTypes = {
+  children: PropTypes.node,
 };
 
 export default AdminLayout;

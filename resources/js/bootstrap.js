@@ -10,6 +10,22 @@ import axios from 'axios';
 window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.withCredentials = true; // Enable sending cookies with requests
+
+// Add a request interceptor to add the bearer token
+axios.interceptors.request.use(
+    (config) => {
+        // Get token from localStorage if it exists
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

@@ -3,12 +3,18 @@ import axios from '../utils/axios';
 
 export const login = createAsyncThunk(
   'auth/login',
-  async (credentials, { dispatch }) => {
+  async (credentials, { rejectWithValue }) => {
     try {
+      // First, get the CSRF cookie from the root URL
+      await axios.get('/sanctum/csrf-cookie', { baseURL: '' });
+      
       const response = await axios.post('/login', credentials);
+      if (response.data.token) {
+        localStorage.setItem('auth_token', response.data.token);
+      }
       return response.data;
     } catch (error) {
-      throw error;
+      return rejectWithValue(error.response?.data || 'Login failed');
     }
   }
 );
@@ -16,17 +22,26 @@ export const login = createAsyncThunk(
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, { dispatch }) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (!token) {
       dispatch(setLoading(false));
       return null;
     }
     
     try {
-      const response = await axios.get('/user');
-      return response.data;
+      // Ensure the token is in the Authorization header
+      const response = await axios.get('/user', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.data) {
+        return response.data;
+      }
+      localStorage.removeItem('auth_token');
+      return null;
     } catch (error) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       return null;
     }
   }
@@ -34,8 +49,8 @@ export const checkAuth = createAsyncThunk(
 
 const initialState = {
   user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: false,
+  token: localStorage.getItem('auth_token'),
+  isAuthenticated: !!localStorage.getItem('auth_token'),
   isLoading: true,
 };
 
@@ -48,14 +63,14 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isLoading = false;
-      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('auth_token', action.payload.token);
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
       state.isLoading = false;
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
     },
     setLoading: (state, action) => {
       state.isLoading = action.payload;
@@ -71,7 +86,7 @@ export const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isLoading = false;
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('auth_token', action.payload.token);
       })
       .addCase(login.rejected, (state) => {
         state.isLoading = false;
@@ -81,10 +96,12 @@ export const authSlice = createSlice({
         if (action.payload) {
           state.isAuthenticated = true;
           state.user = action.payload;
+          state.token = localStorage.getItem('auth_token'); // Ensure token is synced
         } else {
           state.isAuthenticated = false;
           state.user = null;
           state.token = null;
+          localStorage.removeItem('auth_token'); // Clear token if auth check fails
         }
       });
   },
