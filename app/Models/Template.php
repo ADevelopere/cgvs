@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Template extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'background_path',
+        'required_variables',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'required_variables' => 'array',
+        'is_active' => 'boolean',
+    ];
+
+    /**
+     * Get the elements associated with this template
+     */
+    public function elements(): HasMany
+    {
+        return $this->hasMany(TemplateElement::class);
+    }
+
+    /**
+     * Get the full storage path for the background image
+     */
+    public function getBackgroundFullPathAttribute(): ?string
+    {
+        return $this->background_path ? storage_path('app/public/' . $this->background_path) : null;
+    }
+}

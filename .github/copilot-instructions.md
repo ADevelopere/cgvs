@@ -89,30 +89,64 @@ The primary goal is to develop a web-based system enabling authorized administra
 
 **4. Data Element & Variable Types & Properties**
 
-*   **4.1. Supported Variable Types (Placeholders in Templates):**
-    *   **Image:** Placeholder for recipient-specific images. *(No specific properties mentioned in audio)*.
-    *   **Text:** Placeholder for general text data (e.g., names, program names).
-    *   **Date:** Placeholder specifically for date values.
-    *   **Gender-Specific Text:** Placeholder that displays different text based on the recipient's gender data.
-    *   **QR Code:** Placeholder for the generated verification QR code image.
-*   **4.2. Common Properties (for all positionable elements):**
-    *   **X-Coordinate:** Horizontal position on the template.
-    *   **Y-Coordinate:** Vertical position on the template.
-*   **4.3. Properties for Text Variables (including Text representation of Dates):**
-    *   **Font Size:** Numerical value defining the text size.
-    *   **Color:** Definition of the text color (e.g., Hex code).
-    *   **Alignment:** Text alignment within its bounding box (Options: Left, Center, Right).
-    *   **Font Family:** *(Implied Requirement)* Must support embedding/using fonts appropriate for required languages (especially Arabic).
-    *   **Language Constraint (Optional):** Ability to enforce that the input data for this variable must belong to a specific language (e.g., Arabic only).
-*   **4.4. Properties for Date Variables:**
-    *   **Calendar System:** Specification of whether the date should be rendered using the Hijri or Gregorian calendar.
-    *   **Display Format:** Definition of the specific pattern for displaying the date (e.g., "DD MMMM YYYY", "YYYY/MM/DD", Hijri formats).
-*   **4.5. Properties for Gender-Specific Text Variable:**
-    *   Requires a corresponding field in the input data indicating gender (e.g., 'Male'/'Female', 'M'/'F').
-    *   **Male Text:** The exact text string to display if the recipient's gender is male (e.g., "Al-Talib").
-    *   **Female Text:** The exact text string to display if the recipient's gender is female (e.g., "Al-Talibah").
-*   **4.6. Properties for QR Code Variable:**
-    *   **Size:** Definition of the dimensions (width/height) for the generated QR code image.
+*   **4.1. Base Template Element**
+    *   **Purpose:** Abstract base class for any item placed on the template.
+    *   **Common Properties (for all elements):**
+        *   **Element ID:** Unique identifier for this specific element instance within a template.
+        *   **Element Type:** String identifier ('text', 'image', 'date', 'qr_code', 'conditional_text', etc.).
+        *   **X-Coordinate:** Horizontal position on the template canvas.
+        *   **Y-Coordinate:** Vertical position on the template canvas.
+
+*   **4.2. Text-Based Element (Inherits from Base Template Element)**
+    *   **Purpose:** Abstract base class for elements that render text.
+    *   **Additional Properties:**
+        *   **Font Size:** Numerical value defining the text size.
+        *   **Color:** Definition of the text color (e.g., Hex code).
+        *   **Alignment:** Text alignment within its bounding box (Options: Left, Center, Right).
+        *   **Font Family:** Must support embedding fonts appropriate for required languages (especially Arabic).
+        *   **Language Constraint (Optional):** Enforce input data language (e.g., Arabic only).
+
+*   **4.3. Concrete Element Types**
+    *   **4.3.1. Text Element (Inherits from Text-Based Element)**
+        *   **Purpose:** Displays simple text from a recipient data field.
+        *   **Additional Properties:**
+            *   **Source Data Field:** Name of the key in recipient data holding the text value.
+
+    *   **4.3.2. Date Element (Inherits from Text-Based Element)**
+        *   **Purpose:** Displays a formatted date value.
+        *   **Additional Properties:**
+            *   **Source Data Field:** Key in recipient data holding the date value.
+            *   **Calendar System:** Hijri or Gregorian calendar.
+            *   **Display Format:** Pattern for date display (e.g., "DD MMMM YYYY").
+
+    *   **4.3.3. Gender-Specific Text (Inherits from Text-Based Element)**
+        *   **Purpose:** Displays gender-dependent text.
+        *   **Additional Properties:**
+            *   **Gender Source Field:** Field in recipient data for gender value.
+            *   **Male Text:** Text to display for male recipients.
+            *   **Female Text:** Text to display for female recipients.
+
+    *   **4.3.4. Conditional Text (Inherits from Text-Based Element)**
+        *   **Purpose:** Displays text based on a variable's value.
+        *   **Additional Properties:**
+            *   **Input Variable Field:** Name of the controlling field.
+            *   **Conditions Map:** Maps input values to display text.
+                *   Example boolean: `true` → "Approved", `false` → "Pending"
+                *   Example set: `'active'` → "Active", `'lapsed'` → "Expired"
+                *   Must include `default` value for fallback.
+
+    *   **4.3.5. Image Element (Inherits from Base Template Element)**
+        *   **Purpose:** Displays recipient-specific images.
+        *   **Additional Properties:**
+            *   **Source Data Field:** Path/identifier for the image.
+            *   **Width:** Image display width.
+            *   **Height:** Image display height.
+            *   **Aspect Ratio Handling:** 'stretch', 'fit', or 'fill'.
+
+    *   **4.3.6. QR Code Element (Inherits from Base Template Element)**
+        *   **Purpose:** Displays verification QR code.
+        *   **Additional Properties:**
+            *   **Size:** Width/height of the square QR code image.
 
 **5. Non-Functional Requirements**
 
@@ -276,7 +310,7 @@ cgvs/
     *   Implement login/logout logic with Laravel Sanctum.
     *   **Result:** SPA-based authentication system with Material-UI components.
 
-*   **Stage 2: Basic Admin Area & React Router Setup**
+*   **Stage 2: Basic Admin Area & React Router Setup (done)**
     *   Create React layout components with MUI:
         *   `resources/js/components/layouts/AdminLayout.jsx` - Using MUI AppBar, Box, Container
             *   Top navbar with logo on the left
@@ -303,10 +337,11 @@ cgvs/
     *   **Result:** Modern SPA-based admin area with responsive top navbar, theme switching, and user menu
 
 *   **Stage 3: Template Data Structure**
-    *   Create Models: `Template.php`, `TemplateElement.php`.
-    *   Create Migrations: `create_templates_table.php`, `create_template_elements_table.php` (define columns: name, description, background_path for templates; template_id, element_type, properties (JSON/TEXT) for elements).
-    *   Run migrations (`php artisan migrate`).
-    *   **Result:** Database tables for templates and their elements exist.
+    *   Create database migrations for templates and elements.
+    *   Create Eloquent models with proper relationships and attribute handling.
+    *   Implement model factories for testing.
+    *   Run migrations.
+    *   **Result:** Database schema and models ready for template management.
 
 *   **Stage 4: Template Management React Components**
     *   Create React components for template management with MUI:
