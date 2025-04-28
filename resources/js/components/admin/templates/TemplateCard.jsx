@@ -7,11 +7,9 @@ import {
   Typography, 
   Button 
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import PreviewIcon from '@mui/icons-material/Preview';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../utils/dateUtils';
-
 import PropTypes from 'prop-types';
 
 const TemplateCard = ({ template }) => {
@@ -39,17 +37,10 @@ const TemplateCard = ({ template }) => {
       <CardActions>
         <Button
           size="small"
-          startIcon={<EditIcon />}
-          onClick={() => navigate(`/admin/templates/${template.id}/edit`)}
+          startIcon={<SettingsIcon />}
+          onClick={() => navigate(`/admin/templates/${template.id}/manage`)}
         >
-          Edit
-        </Button>
-        <Button
-          size="small"
-          startIcon={<PreviewIcon />}
-          onClick={() => navigate(`/admin/templates/${template.id}/preview`)}
-        >
-          Preview
+          Manage
         </Button>
       </CardActions>
     </Card>

@@ -10,8 +10,7 @@ import {
   Button,
   Avatar,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import PreviewIcon from '@mui/icons-material/Preview';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/dateUtils';
 import PropTypes from 'prop-types';
@@ -48,18 +47,10 @@ const ListView = ({ templates }) => {
               <TableCell>
                 <Button
                   size="small"
-                  startIcon={<EditIcon />}
-                  onClick={() => navigate(`/admin/templates/${template.id}/edit`)}
-                  sx={{ mr: 1 }}
+                  startIcon={<SettingsIcon />}
+                  onClick={() => navigate(`/admin/templates/${template.id}/manage`)}
                 >
-                  Edit
-                </Button>
-                <Button
-                  size="small"
-                  startIcon={<PreviewIcon />}
-                  onClick={() => navigate(`/admin/templates/${template.id}/preview`)}
-                >
-                  Preview
+                  Manage
                 </Button>
               </TableCell>
             </TableRow>
@@ -71,7 +62,15 @@ const ListView = ({ templates }) => {
 };
 
 ListView.propTypes = {
-  templates: PropTypes.array.isRequired,
+  templates: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      background_url: PropTypes.string,
+      created_at: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    })
+  ).isRequired,
 };
 
 export default ListView;

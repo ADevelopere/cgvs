@@ -1,7 +1,6 @@
 import React from 'react';
 import { ImageList, ImageListItem, ImageListItemBar, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import PreviewIcon from '@mui/icons-material/Preview';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -22,20 +21,13 @@ const GridView = ({ templates }) => {
             title={template.name}
             subtitle={template.description}
             actionIcon={
-              <>
-                <IconButton
-                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                  onClick={() => navigate(`/admin/templates/${template.id}/edit`)}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                  onClick={() => navigate(`/admin/templates/${template.id}/preview`)}
-                >
-                  <PreviewIcon />
-                </IconButton>
-              </>
+              <IconButton
+                sx={{ color: 'rgba(255, 255, 255, 0.85)' }}
+                onClick={() => navigate(`/admin/templates/${template.id}/manage`)}
+                title="Manage template"
+              >
+                <SettingsIcon />
+              </IconButton>
             }
           />
         </ImageListItem>
@@ -45,7 +37,14 @@ const GridView = ({ templates }) => {
 };
 
 GridView.propTypes = {
-  templates: PropTypes.array.isRequired,
+  templates: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      background_url: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 export default GridView;

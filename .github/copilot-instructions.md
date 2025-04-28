@@ -343,7 +343,7 @@ cgvs/
     *   Run migrations.
     *   **Result:** Database schema and models ready for template management.
 
-*   **Stage 4: Template Listing and Creation**
+*   **Stage 4: Template Listing and Creation (done)**
     *   Create React components for template listing with MUI:
         *   `resources/js/pages/admin/templates/Index.jsx` - Template listing page using MUI:
             *   Grid layout with template cards
@@ -366,7 +366,7 @@ cgvs/
     *   Add template thumbnail generation for cards
     *   **Result:** Clean template listing interface with creation capability
 
-*   **Stage 5: Template Management Interface**
+*   **Stage 5.0: Template Management Interface**
     *   Create React components for tabbed template management with MUI:
         *   `resources/js/pages/admin/templates/Management.jsx` - Main management page:
             *   MUI Tabs for navigation
@@ -377,18 +377,22 @@ cgvs/
                 *   Name and description fields
                 *   Background image upload/preview
                 *   Template status management
-            *   `VariablesTab.jsx` - Variable definition
+            *   `VariablesTab.jsx` - Variable definition with preview values
                 *   MUI DataGrid for variables list
-                *   Variable type selection
-                *   Validation rules setup
-            *   `EditorTab.jsx` - Visual editor
-                *   Canvas with background
-                *   Element toolbox
-                *   Properties panel
+                *   Variable type selection with preview field
+                *   Validation rules and preview value setup
             *   `RecipientsTab.jsx` - Recipient management
                 *   Recipients grid
                 *   Excel import/export
                 *   Validation results
+            *   `PreviewTab.jsx` - Template preview
+                *   Interactive preview with preview values
+                *   PDF preview and download
+                *   Zoom and pan controls
+            *   `EditorTab.jsx` - Visual editor
+                *   Canvas with background
+                *   Element toolbox
+                *   Properties panel
     *   Set up template management Redux slice:
         *   Active tab state
         *   Form states for each tab
@@ -431,20 +435,29 @@ cgvs/
     *   Create React components for variables management with MUI:
         *   `resources/js/pages/admin/templates/Variables.jsx` - Main variables page
         *   `resources/js/components/admin/templates/variables/` - Components directory:
-            *   `VariableList.jsx` - Using MUI DataGrid for variable listing
-            *   `VariableForm.jsx` - Using MUI Dialog for add/edit
+            *   `VariableList.jsx` - Using MUI DataGrid for variable listing with preview value column
+            *   `VariableForm.jsx` - Using MUI Dialog for add/edit including preview value field
             *   `VariableTypeSelector.jsx` - Using MUI RadioGroup for type selection
-    *   Set up variables Redux slice for state management
+            *   `PreviewValueInput.jsx` - Type-specific preview value input component
+    *   Set up variables Redux slice for state management:
+        *   Include preview values in state management
+        *   Add actions for updating preview values
+        *   Handle preview value validation based on type
     *   Add database migration for template variables:
         *   Create `template_variables` table with columns:
             *   `id`, `template_id`, `name`, `type` (text, date, number, etc.)
-            *   `validation_rules` (JSON), `description`, timestamps
-    *   Create `TemplateVariable` model with relationships
+            *   `validation_rules` (JSON), `description`, `preview_value`, timestamps
+    *   Create `TemplateVariable` model with relationships and preview handling
     *   Enhance `TemplateController.php` with variable management methods:
-        *   Add CRUD operations for variables
+        *   Add CRUD operations for variables including preview values
         *   Add validation rules management
-    *   Implement variable type-specific validation rules
-    *   **Result:** Complete interface for managing template variables with validation rules
+        *   Add preview value validation based on variable type
+    *   Implement variable type-specific validation rules and preview constraints:
+        *   Text variables: Support multilingual preview values
+        *   Date variables: Format preview dates in Hijri/Gregorian
+        *   Gender variables: Toggle between male/female preview text
+        *   Number variables: Format based on locale/rules
+    *   **Result:** Complete interface for managing template variables with validation rules and preview values
 
 *   **Stage 5.3: Template Recipients Management**
     *   Create React components for recipients management with MUI:
@@ -474,7 +487,7 @@ cgvs/
         *   Provide summary of import results
     *   **Result:** Complete interface for managing template recipients with Excel import/export capabilities
 
-*   **Stage 6: React Template Editor Component**
+*   **Stage 5.5: React Template Editor Component**
     *   Create React template editor components with MUI:
         *   `resources/js/components/admin/templates/TemplateEditor.jsx` - Main editor using MUI Paper as canvas
         *   `resources/js/components/admin/templates/elements/` - Element components with MUI styling:
@@ -626,3 +639,32 @@ cgvs/
     *   Test QR code scanning and verification flow.
     *   Test performance of bulk generation.
     *   Secure file storage directories.
+*   **Stage 5.4: Template Preview Interface**
+    *   Create React components for template preview with MUI:
+        *   `resources/js/pages/admin/templates/Preview.jsx` - Main preview page
+        *   `resources/js/components/admin/templates/preview/` - Components directory:
+            *   `PreviewCanvas.jsx` - Preview canvas using MUI Paper
+            *   `PreviewToolbar.jsx` - Actions toolbar (download, refresh, etc.)
+            *   `PreviewVariableValues.jsx` - Show current preview values
+            *   `PreviewZoomControls.jsx` - Zoom and fit controls
+    *   Set up preview-specific Redux slice:
+        *   Manage preview state (zoom, position)
+        *   Cache preview PDF data
+        *   Track preview generation status
+    *   Create preview services:
+        *   `PreviewGeneratorService.php` - Generate preview PDFs
+        *   Methods to use variable preview values
+        *   Cache management for generated previews
+    *   Implement preview-specific API endpoints:
+        *   Add endpoint for generating preview PDF
+        *   Add endpoint for downloading preview PDF
+        *   Add endpoint for clearing preview cache
+    *   Add preview PDF viewer integration:
+        *   PDF.js integration for in-browser preview
+        *   Handle RTL/Arabic text display
+        *   Support zoom and pan controls
+    *   Implement real-time preview updates:
+        *   Auto-refresh on variable preview value changes
+        *   Background preview generation
+        *   Loading states with MUI Skeleton
+    *   **Result:** Interactive template preview interface using actual preview values
