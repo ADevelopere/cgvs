@@ -10,7 +10,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { login } from '../../store/authSlice';
-import axios from '../../utils/axios';
 
 const LoginForm = () => {
   const navigate = useNavigate();
