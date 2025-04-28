@@ -343,27 +343,136 @@ cgvs/
     *   Run migrations.
     *   **Result:** Database schema and models ready for template management.
 
-*   **Stage 4: Template Management React Components**
-    *   Create React components for template management with MUI:
-        *   `resources/js/pages/admin/templates/Index.jsx` - Using MUI DataGrid for template listing
-        *   `resources/js/pages/admin/templates/Create.jsx` - Using MUI Stepper for creation flow
-        *   `resources/js/components/admin/templates/TemplateList.jsx` - Using MUI Card and ImageList
-        *   Add MUI dialogs for confirmations and forms
-        *   Implement MUI Snackbars for notifications
-    *   Set up template Redux slice for state management
-    *   Create API endpoints in `TemplateController.php` (`index`, `store` methods)
+*   **Stage 4: Template Listing and Creation**
+    *   Create React components for template listing with MUI:
+        *   `resources/js/pages/admin/templates/Index.jsx` - Template listing page using MUI:
+            *   Grid layout with template cards
+            *   "Create New Template" button
+            *   Search and filter capabilities
+        *   `resources/js/pages/admin/templates/Create.jsx` - Create template form
+        *   `resources/js/components/admin/templates/` - Components:
+            *   `TemplateCard.jsx` - MUI Card for template display
+            *   `TemplateGrid.jsx` - MUI Grid container for cards
+            *   `CreateTemplateForm.jsx` - Basic creation form
+    *   Set up template Redux slice for listing and creation:
+        *   Template list state management
+        *   Creation form state
+        *   Loading and error states
+    *   Create basic API endpoints in `TemplateController.php`:
+        *   `index` method for listing templates
+        *   `store` method for creating new template
+        *   Basic validation for template creation
     *   Implement template API routes with auth middleware
-    *   Add file upload handling with React-Dropzone and MUI styling
-    *   **Result:** SPA-based template management with Material-UI components and modern UX
+    *   Add template thumbnail generation for cards
+    *   **Result:** Clean template listing interface with creation capability
 
-*   **Stage 5: Save Basic Template & Background Upload**
-    *   Implement the `store` method in `TemplateController`.
-    *   Add basic validation for name/description.
-    *   Handle background image upload: validate file type/size, move it to `storage/app/public/template_backgrounds/`, save the path in the database.
-    *   Ensure `php artisan storage:link` is run (creates `public/storage` symlink).
-    *   Redirect back to the template index page with a success message.
-    *   Update the `index` view to display the list of created templates (name, description, maybe thumbnail).
-    *   **Result:** Admin can create a template record, upload a background, and see it listed.
+*   **Stage 5: Template Management Interface**
+    *   Create React components for tabbed template management with MUI:
+        *   `resources/js/pages/admin/templates/Management.jsx` - Main management page:
+            *   MUI Tabs for navigation
+            *   Shared header with template title and actions
+            *   Common save/publish functionality
+        *   `resources/js/components/admin/templates/tabs/` - Tab components:
+            *   `BasicInfoTab.jsx` - Template settings
+                *   Name and description fields
+                *   Background image upload/preview
+                *   Template status management
+            *   `VariablesTab.jsx` - Variable definition
+                *   MUI DataGrid for variables list
+                *   Variable type selection
+                *   Validation rules setup
+            *   `EditorTab.jsx` - Visual editor
+                *   Canvas with background
+                *   Element toolbox
+                *   Properties panel
+            *   `RecipientsTab.jsx` - Recipient management
+                *   Recipients grid
+                *   Excel import/export
+                *   Validation results
+    *   Set up template management Redux slice:
+        *   Active tab state
+        *   Form states for each tab
+        *   Cross-tab data dependencies
+        *   Autosave functionality
+    *   Enhance `TemplateController.php`:
+        *   Tab-specific endpoints (settings, variables, etc.)
+        *   Background image handling
+        *   Variable management
+        *   Recipients data handling
+    *   Add comprehensive validation:
+        *   Template settings validation
+        *   Variable rules validation
+        *   Excel data validation
+    *   Create supporting services:
+        *   `TemplateStorageService.php` for file handling
+        *   `VariableValidationService.php` for rules
+        *   `ExcelService.php` for import/export
+    *   **Result:** Complete template management interface with all necessary features
+
+*   **Stage 5.1: Template Tab Navigation and State Management**
+    *   Enhance the template management interface with tab navigation:
+        *   Implement tab state persistence using Redux
+        *   Add URL-based tab navigation (`/templates/{id}/manage?tab=basic|variables|editor|recipients`)
+        *   Handle tab-specific data loading and caching
+    *   Create shared components and utilities:
+        *   `resources/js/components/admin/templates/common/`:
+            *   `TabPanel.jsx` - Reusable tab panel component
+            *   `SaveButton.jsx` - Common save button with loading state
+            *   `HeaderActions.jsx` - Common header actions (preview, download, etc.)
+    *   Set up tab-specific Redux slices:
+        *   Implement data persistence strategies
+        *   Handle cross-tab data dependencies
+        *   Manage loading and error states
+    *   Add tab permission handling in middleware
+    *   Implement tab-specific API error handling
+    *   **Result:** Smooth tab navigation with proper state management and data loading
+
+*   **Stage 5.2: Template Variables Management**
+    *   Create React components for variables management with MUI:
+        *   `resources/js/pages/admin/templates/Variables.jsx` - Main variables page
+        *   `resources/js/components/admin/templates/variables/` - Components directory:
+            *   `VariableList.jsx` - Using MUI DataGrid for variable listing
+            *   `VariableForm.jsx` - Using MUI Dialog for add/edit
+            *   `VariableTypeSelector.jsx` - Using MUI RadioGroup for type selection
+    *   Set up variables Redux slice for state management
+    *   Add database migration for template variables:
+        *   Create `template_variables` table with columns:
+            *   `id`, `template_id`, `name`, `type` (text, date, number, etc.)
+            *   `validation_rules` (JSON), `description`, timestamps
+    *   Create `TemplateVariable` model with relationships
+    *   Enhance `TemplateController.php` with variable management methods:
+        *   Add CRUD operations for variables
+        *   Add validation rules management
+    *   Implement variable type-specific validation rules
+    *   **Result:** Complete interface for managing template variables with validation rules
+
+*   **Stage 5.3: Template Recipients Management**
+    *   Create React components for recipients management with MUI:
+        *   `resources/js/pages/admin/templates/Recipients.jsx` - Main recipients page
+        *   `resources/js/components/admin/templates/recipients/` - Components:
+            *   `RecipientList.jsx` - Using MUI DataGrid for data display
+            *   `ImportExport.jsx` - Handling Excel operations
+            *   `ValidationResults.jsx` - Displaying import validation results
+    *   Add database migration for template recipients:
+        *   Create `template_recipients` table with columns:
+            *   `id`, `template_id`, `data` (JSON), timestamps
+    *   Create Excel management service:
+        *   Add method to generate template Excel file with variable columns
+        *   Add method to validate and import filled Excel files
+        *   Implement row-by-row validation against variable rules
+    *   Create API endpoints in `TemplateController.php`:
+        *   Add endpoint for downloading Excel template
+        *   Add endpoint for importing filled Excel
+        *   Add endpoint for managing individual recipients
+    *   Implement Excel handling with PHP Excel library:
+        *   Generate downloadable template Excel files
+        *   Parse and validate uploaded Excel files
+        *   Handle batch imports with progress tracking
+    *   Add validation feedback mechanism:
+        *   Show detailed error messages for invalid rows
+        *   Allow partial imports of valid rows
+        *   Provide summary of import results
+    *   **Result:** Complete interface for managing template recipients with Excel import/export capabilities
 
 *   **Stage 6: React Template Editor Component**
     *   Create React template editor components with MUI:
