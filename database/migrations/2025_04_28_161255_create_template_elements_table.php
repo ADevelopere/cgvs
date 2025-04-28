@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('template_elements', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('template_id')->constrained()->onDelete('cascade');
+            $table->string('element_type'); // text, date, gender_text, conditional_text, image, qr_code
+            $table->float('x_coordinate');
+            $table->float('y_coordinate');
+            $table->json('properties')->nullable(); // Store element-specific properties
+            // Common text properties
+            $table->integer('font_size')->nullable();
+            $table->string('color')->nullable();
+            $table->string('alignment')->nullable(); // left, center, right
+            $table->string('font_family')->nullable();
+            $table->string('language_constraint')->nullable(); // For enforcing specific language input
+            // Source data mapping
+            $table->string('source_field')->nullable(); // Maps to recipient data field
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('template_elements');
+    }
+};

@@ -33,12 +33,19 @@ const UserMenu = () => {
   };
 
   const handleLogout = async () => {
+    handleClose(); // Close the menu first
     try {
       await axios.post('/api/logout');
+      // First clear the auth state
       dispatch(logout());
-      navigate('/login');
+      // Then redirect to login page
+      navigate('/login', { replace: true });
     } catch (error) {
       console.error('Logout failed:', error);
+      // If we get here, something went wrong with the API call
+      // But we should still log out the user locally
+      dispatch(logout());
+      navigate('/login', { replace: true });
     }
   };
 
@@ -71,9 +78,11 @@ const UserMenu = () => {
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <LogoutIcon fontSize="small" />
+            <LogoutIcon fontSize="small" color="error" />
           </ListItemIcon>
-          <ListItemText>Logout</ListItemText>
+          <ListItemText slotProps={{ primary: { color: 'error' } }}>
+            Logout
+          </ListItemText>
         </MenuItem>
       </Menu>
     </>
