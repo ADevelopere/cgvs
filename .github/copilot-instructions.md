@@ -227,8 +227,7 @@ cgvs/
 │   │   ├── bootstrap.js      # Bootstrap JavaScript
 │   │   ├── routes/           # React Router configuration
 │   │   │   └── index.tsx     # Route definitions
-│   │   ├── store/            # Redux/RTK store modules
-│   │   │   └── index.js      # Store configuration
+│   │   ├── contexts/         # React Context providers
 │   │   ├── components/       # React components
 │   │   │   ├── layouts/      # Layout components
 │   │   │   │   ├── AdminLayout.tsx
@@ -305,7 +304,7 @@ cgvs/
     *   Create React authentication components with MUI:
         *   `resources/js/components/auth/LoginForm.tsx` using MUI components (Card, TextField, Button)
         *   Set up MUI theme provider with custom theme in `resources/js/theme/index.js`
-    *   Set up React Router and authentication store with Redux Toolkit.
+    *   Set up React Router and AuthContext for authentication state management.
     *   Create API routes and controllers for login/logout.
     *   Implement login/logout logic with Laravel Sanctum.
     *   **Result:** SPA-based authentication system with Material-UI components.
@@ -320,7 +319,7 @@ cgvs/
                 *   User avatar with dropdown menu (profile, preferences, logout)
         *   `resources/js/components/layouts/GuestLayout.tsx` - Using MUI Container, Paper
     *   Set up theme handling:
-        *   Create theme slice in Redux for theme state management
+        *   Create ThemeContext for theme state management
         *   Implement theme persistence in localStorage
         *   Support light/dark/system theme modes
     *   Create admin dashboard component (`resources/js/pages/admin/Dashboard.tsx`) with MUI:
@@ -354,7 +353,7 @@ cgvs/
             *   `TemplateCard.tsx` - MUI Card for template display
             *   `TemplateGrid.tsx` - MUI Grid container for cards
             *   `CreateTemplateForm.tsx` - Basic creation form
-    *   Set up template Redux slice for listing and creation:
+    *   Set up TemplateContext for listing and creation:
         *   Template list state management
         *   Creation form state
         *   Loading and error states
@@ -393,7 +392,7 @@ cgvs/
                 *   Canvas with background
                 *   Element toolbox
                 *   Properties panel
-    *   Set up template management Redux slice:
+    *   Set up TemplateManagementContext:
         *   Active tab state
         *   Form states for each tab
         *   Cross-tab data dependencies
@@ -415,7 +414,7 @@ cgvs/
 
 *   **Stage 5.1: Template Tab Navigation and State Management (done)**
     *   Enhance the template management interface with tab navigation:
-        *   Implement tab state persistence using Redux
+        *   Implement tab state persistence using Context
         *   Add URL-based tab navigation (`/templates/{id}/manage?tab=basic|variables|editor|recipients`)
         *   Handle tab-specific data loading and caching
     *   Create shared components and utilities:
@@ -423,7 +422,7 @@ cgvs/
             *   `TabPanel.tsx` - Reusable tab panel component
             *   `SaveButton.tsx` - Common save button with loading state
             *   `HeaderActions.tsx` - Common header actions (preview, download, etc.)
-    *   Set up tab-specific Redux slices:
+    *   Set up tab-specific Context providers:
         *   Implement data persistence strategies
         *   Handle cross-tab data dependencies
         *   Manage loading and error states
@@ -439,7 +438,7 @@ cgvs/
             *   `VariableForm.tsx` - Using MUI Dialog for add/edit including preview value field
             *   `VariableTypeSelector.tsx` - Using MUI RadioGroup for type selection
             *   `PreviewValueInput.tsx` - Type-specific preview value input component
-    *   Set up variables Redux slice for state management:
+    *   Set up TemplateVariablesContext for state management:
         *   Include preview values in state management
         *   Add actions for updating preview values
         *   Handle preview value validation based on type
@@ -502,10 +501,10 @@ cgvs/
         *   Color pickers with MUI
         *   Font selectors with MUI Select
         *   Position inputs with MUI TextField
-    *   Set up Redux slice for editor state management:
+    *   Set up EditorContext for editor state management:
         *   Track selected element
         *   Manage element positions
-        *   Handle undo/redo with Redux history
+        *   Handle undo/redo with history state
     *   Add preview mode toggle using MUI Switch and React context
     *   Configure Vite for React hot module replacement
     *   *(Focus on the UI interaction first, not saving)*
@@ -531,7 +530,7 @@ cgvs/
         *   `resources/js/pages/Verify.tsx` - Main verification page with MUI Container
         *   `resources/js/components/public/VerificationForm.tsx` - Using MUI TextField and Button
         *   `resources/js/components/public/VerificationResult.tsx` - Using MUI Alert and Card
-    *   Set up Redux slice for verification state
+    *   Set up VerificationContext for verification state
     *   Implement API endpoint in `VerificationController`
     *   Add real-time verification with useDebounce hook
     *   Handle URL parameters with React Router useParams
@@ -550,7 +549,7 @@ cgvs/
     *   Implement file upload with react-dropzone and MUI styled drop zone
     *   Add template selection with React Query and MUI components
     *   Create API endpoints in `CertificateGenerationController.php`
-    *   Set up Redux slice for generation state management
+    *   Set up GenerationContext for generation state management
     *   Add upload progress tracking with MUI LinearProgress
     *   Use MUI Snackbar for status notifications
     *   **Result:** Polished certificate generation interface with Material-UI components
@@ -647,7 +646,7 @@ cgvs/
             *   `PreviewToolbar.tsx` - Actions toolbar (download, refresh, etc.)
             *   `PreviewVariableValues.tsx` - Show current preview values
             *   `PreviewZoomControls.tsx` - Zoom and fit controls
-    *   Set up preview-specific Redux slice:
+    *   Set up PreviewContext:
         *   Manage preview state (zoom, position)
         *   Cache preview PDF data
         *   Track preview generation status
