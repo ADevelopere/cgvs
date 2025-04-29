@@ -46,20 +46,19 @@ export default function VariableList({ variables, onEdit, onDelete }: VariableLi
   ];
 
   return (
-    <Box sx={{ width: '100%', height: 400 }}>
-      <div style={{ width: '100%', height: '100%' }}>
-        <DataGrid
-          rows={variables}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10, 25]}
-          disableRowSelectionOnClick
-        />
-      </div>
+    <Box sx={{ width: '100%', height: '100%' }}>
+      <DataGrid
+        rows={variables}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10, 25]}
+        disableRowSelectionOnClick
+        autoHeight
+      />
     </Box>
   );
 }

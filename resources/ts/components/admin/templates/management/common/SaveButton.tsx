@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
-import { useSelector } from 'react-redux';
-import { selectUnsavedChanges } from '@/store/templateManagementSlice';
+import { useTemplateManagement } from '@/contexts/template/TemplateManagementContext';
 
 interface SaveButtonProps {
   onSave: () => void;
@@ -10,16 +9,16 @@ interface SaveButtonProps {
 }
 
 const SaveButton: React.FC<SaveButtonProps> = ({ onSave, disabled }) => {
-  const hasUnsavedChanges = useSelector(selectUnsavedChanges);
+  const { unsavedChanges } = useTemplateManagement();
 
   return (
     <Button
       variant="contained"
       startIcon={<SaveIcon />}
       onClick={onSave}
-      disabled={disabled || !hasUnsavedChanges}
+      disabled={disabled || !unsavedChanges}
     >
-      {hasUnsavedChanges ? 'Save Changes*' : 'Save Changes'}
+      {unsavedChanges ? 'Save Changes*' : 'Save Changes'}
     </Button>
   );
 };

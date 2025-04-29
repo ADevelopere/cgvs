@@ -1,5 +1,4 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Typography,
@@ -16,45 +15,37 @@ import SearchIcon from '@mui/icons-material/Search';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import GridViewIcon from '@mui/icons-material/GridView';
-import { fetchTemplates, Template } from '@/store/templateSlice';
 import CardView from './views/CardView';
 import ListView from './views/ListView';
 import GridView from './views/GridView';
-import { AppDispatch, RootState } from '@/store/store.types';
-
-
+import { useTemplate, useTemplates } from '@/contexts/template/TemplateContext';
 
 type ViewMode = 'card' | 'grid' | 'list';
 
 const TemplateList: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { templates: rawTemplates } = useSelector((state: RootState) => state.templates);
-  const [searchQuery, setSearchQuery] = React.useState<string>('');
-  const [viewMode, setViewMode] = React.useState<ViewMode>('card');
+  const { fetchTemplates } = useTemplate();
+  const rawTemplates = useTemplates();
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
 
-  React.useEffect(() => {
-    dispatch(fetchTemplates());
-  }, [dispatch]);
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
 
   // Filter templates based on search
-  const templates = React.useMemo<Template[]>(() => {
+  const templates = React.useMemo(() => {
     if (!Array.isArray(rawTemplates)) {
       return [];
     }
-    return rawTemplates
-      .map((template: Template) => ({
-        ...template,
-        id: template.id || Date.now() + Math.random(),
-      }))
-      .filter((template: Template) => {
-        if (!searchQuery) return true;
-        const query = searchQuery.toLowerCase();
-        return (
-          template.name?.toLowerCase().includes(query) ||
-          template.description?.toLowerCase().includes(query)
-        );
-      });
+    return rawTemplates.filter((template) => {
+      if (!searchQuery) return true;
+      const query = searchQuery.toLowerCase();
+      return (
+        template.name?.toLowerCase().includes(query) ||
+        template.description?.toLowerCase().includes(query)
+      );
+    });
   }, [rawTemplates, searchQuery]);
 
   const handleViewChange = (
@@ -99,7 +90,6 @@ const TemplateList: React.FC = () => {
         </Typography>
         <Button
           variant="contained"
-          color="primary"
           startIcon={<AddIcon />}
           onClick={() => navigate('/admin/templates/create')}
         >
@@ -107,35 +97,29 @@ const TemplateList: React.FC = () => {
         </Button>
       </Box>
 
-      <Box display="flex" gap={2} mb={3}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <TextField
-          fullWidth
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
-            },
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
+          sx={{ width: 300 }}
         />
-        <ToggleButtonGroup
-          value={viewMode}
-          exclusive
-          onChange={handleViewChange}
-          aria-label="view mode"
-        >
-          <ToggleButton value="card" aria-label="card view">
+
+        <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange}>
+          <ToggleButton value="card">
             <ViewModuleIcon />
           </ToggleButton>
-          <ToggleButton value="grid" aria-label="grid view">
+          <ToggleButton value="grid">
             <GridViewIcon />
           </ToggleButton>
-          <ToggleButton value="list" aria-label="list view">
+          <ToggleButton value="list">
             <ViewListIcon />
           </ToggleButton>
         </ToggleButtonGroup>

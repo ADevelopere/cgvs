@@ -4,9 +4,9 @@
  * @returns Formatted date string or 'N/A' if invalid
  */
 const isDev: boolean = process.env.NODE_ENV === 'development';
-
+const logEnbled = false;
 const log = (...args: unknown[]): void => {
-  if (isDev) {
+  if (isDev && logEnbled) {
     console.log(...args);
   }
 };

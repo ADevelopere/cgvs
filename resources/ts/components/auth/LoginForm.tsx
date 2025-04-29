@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Button,
@@ -9,15 +8,13 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { login } from '@/store/authSlice';
-import { RootState, AppDispatch } from '@/store/store.types';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginFormProps {}
 
 const LoginForm: React.FC<LoginFormProps> = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -35,7 +32,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     setLoading(true);
 
     try {
-      await dispatch(login({ email, password })).unwrap();
+      await login({ email, password });
       navigate('/admin/dashboard');
     } catch (err: any) {
       setError(
@@ -51,7 +48,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
       <Typography variant="h5" component="h1" gutterBottom>
         Sign In
       </Typography>
-      
+
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}

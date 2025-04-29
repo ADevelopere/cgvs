@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Card, Grid, Typography } from '@mui/material';
+import { TemplateVariable } from '@/contexts/template/template.types';
 
 interface PreviewValueInputProps {
   type: string;
@@ -22,15 +23,8 @@ const PreviewValueInput: React.FC<PreviewValueInputProps> = ({ type, value }) =>
   }
 };
 
-interface Variable {
-  id: string | number;
-  name: string;
-  type: string;
-  preview_value: any;
-}
-
 interface PreviewValueDisplayProps {
-  variables: Variable[];
+  variables: TemplateVariable[];
 }
 
 const PreviewValueDisplay: React.FC<PreviewValueDisplayProps> = ({ variables }) => {

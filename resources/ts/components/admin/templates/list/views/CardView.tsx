@@ -1,53 +1,75 @@
-import React from 'react';
-import { Grid, Card, CardMedia, CardContent, CardActions, Typography, Button } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { useNavigate } from 'react-router-dom';
-import { formatDate } from '@/utils/dateUtils';
-import { Template } from '@/store/templateSlice';
+import React from "react";
+import {
+    Grid,
+    Card,
+    CardMedia,
+    CardContent,
+    CardActions,
+    Typography,
+    Button,
+} from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { useNavigate } from "react-router-dom";
+import { formatDate } from "@/utils/dateUtils";
+import { Template } from '@/contexts/template/template.types';
 
 interface CardViewProps {
-  templates: Template[];
+    templates: Template[];
 }
 
 const CardView: React.FC<CardViewProps> = ({ templates }) => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  return (
-    <Grid container spacing={3}>
-      {templates.map((template) => (
-        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
-          <Card>
-            <CardMedia
-              component="img"
-              height="200"
-              image={template.background_url || '/placeholder.png'}
-              alt={template.name}
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h6" component="div">
-                {template.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {template.description}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                Created: {formatDate(template.created_at)}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                startIcon={<SettingsIcon />}
-                onClick={() => navigate(`/admin/templates/${template.id}/manage`)}
-              >
-                Manage
-              </Button>
-            </CardActions>
-          </Card>
+    return (
+        <Grid container spacing={3}>
+            {templates.map((template) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
+                    <Card>
+                        <CardMedia
+                            component="img"
+                            height="200"
+                            image={
+                                template.background_url || "/placeholder.png"
+                            }
+                            alt={template.name}
+                        />
+                        <CardContent>
+                            <Typography
+                                gutterBottom
+                                variant="h6"
+                                component="div"
+                            >
+                                {template.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {template.description}
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ mt: 1, display: "block" }}
+                            >
+                                Created: {formatDate(template.created_at)}
+                            </Typography>
+                        </CardContent>
+                        <CardActions>
+                            <Button
+                                size="small"
+                                startIcon={<SettingsIcon />}
+                                onClick={() =>
+                                    navigate(
+                                        `/admin/templates/${template.id}/manage`
+                                    )
+                                }
+                            >
+                                Manage
+                            </Button>
+                        </CardActions>
+                    </Card>
+                </Grid>
+            ))}
         </Grid>
-      ))}
-    </Grid>
-  );
+    );
 };
 
 export default CardView;
