@@ -35,8 +35,8 @@ const BasicInfoTab: React.FC = () => {
     }, [id, dispatch]);
 
     useEffect(() => {
-        if (currentTemplate?.background_path) {
-            setPreview(currentTemplate.background_path);
+        if (currentTemplate?.background_url) {
+            setPreview(currentTemplate.background_url);
         }
     }, [currentTemplate]);
 

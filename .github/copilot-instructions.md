@@ -223,41 +223,41 @@ cgvs/
 │   ├── css/                   # Raw CSS for Vite processing
 │   │   └── app.css           # Main CSS file
 │   ├── js/                    # JavaScript & React components
-│   │   ├── app.jsx           # Main React entry point
+│   │   ├── app.tsx           # Main React entry point
 │   │   ├── bootstrap.js      # Bootstrap JavaScript
 │   │   ├── routes/           # React Router configuration
-│   │   │   └── index.jsx     # Route definitions
+│   │   │   └── index.tsx     # Route definitions
 │   │   ├── store/            # Redux/RTK store modules
 │   │   │   └── index.js      # Store configuration
 │   │   ├── components/       # React components
 │   │   │   ├── layouts/      # Layout components
-│   │   │   │   ├── AdminLayout.jsx
-│   │   │   │   └── GuestLayout.jsx
+│   │   │   │   ├── AdminLayout.tsx
+│   │   │   │   └── GuestLayout.tsx
 │   │   │   ├── auth/         # Authentication components
-│   │   │   │   └── LoginForm.jsx
+│   │   │   │   └── LoginForm.tsx
 │   │   │   ├── admin/        # Admin components
-│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── Dashboard.tsx
 │   │   │   │   ├── templates/
-│   │   │   │   │   ├── TemplateList.jsx
-│   │   │   │   │   ├── TemplateEditor.jsx
-│   │   │   │   │   └── TemplatePreview.jsx
+│   │   │   │   │   ├── TemplateList.tsx
+│   │   │   │   │   ├── TemplateEditor.tsx
+│   │   │   │   │   └── TemplatePreview.tsx
 │   │   │   │   └── generation/
-│   │   │   │       ├── UploadForm.jsx
-│   │   │   │       └── ValidationResults.jsx
+│   │   │   │       ├── UploadForm.tsx
+│   │   │   │       └── ValidationResults.tsx
 │   │   │   └── public/       # Public components
-│   │   │       └── VerificationForm.jsx
+│   │   │       └── VerificationForm.tsx
 │   │   └── pages/            # React page components
 │   │       ├── auth/         # Auth pages
-│   │       │   └── Login.jsx
+│   │       │   └── Login.tsx
 │   │       ├── admin/        # Admin pages
-│   │       │   ├── Dashboard.jsx
+│   │       │   ├── Dashboard.tsx
 │   │       │   ├── templates/
-│   │       │   │   ├── Index.jsx
-│   │       │   │   ├── Create.jsx
-│   │       │   │   └── Edit.jsx
+│   │       │   │   ├── Index.tsx
+│   │       │   │   ├── Create.tsx
+│   │       │   │   └── Edit.tsx
 │   │       │   └── generation/
-│   │       │       └── Upload.jsx
-│   │       └── Verify.jsx    # Public verification page
+│   │       │       └── Upload.tsx
+│   │       └── Verify.tsx    # Public verification page
 │   ├── lang/                 # Language files (for localization)
 │   └── views/                # Blade templates (minimal)
 │       └── app.blade.php     # Main app template for Vue
@@ -303,7 +303,7 @@ cgvs/
         bun add react react-dom react-router-dom @reduxjs/toolkit axios @mui/material @emotion/react @emotion/styled @mui/icons-material @fontsource/roboto
         ```
     *   Create React authentication components with MUI:
-        *   `resources/js/components/auth/LoginForm.jsx` using MUI components (Card, TextField, Button)
+        *   `resources/js/components/auth/LoginForm.tsx` using MUI components (Card, TextField, Button)
         *   Set up MUI theme provider with custom theme in `resources/js/theme/index.js`
     *   Set up React Router and authentication store with Redux Toolkit.
     *   Create API routes and controllers for login/logout.
@@ -312,23 +312,23 @@ cgvs/
 
 *   **Stage 2: Basic Admin Area & React Router Setup (done)**
     *   Create React layout components with MUI:
-        *   `resources/js/components/layouts/AdminLayout.jsx` - Using MUI AppBar, Box, Container
+        *   `resources/js/components/layouts/AdminLayout.tsx` - Using MUI AppBar, Box, Container
             *   Top navbar with logo on the left
             *   Navigation links in the center
             *   Right section with theme switcher and user avatar:
                 *   Theme switcher toggle (light/dark/system)
                 *   User avatar with dropdown menu (profile, preferences, logout)
-        *   `resources/js/components/layouts/GuestLayout.jsx` - Using MUI Container, Paper
+        *   `resources/js/components/layouts/GuestLayout.tsx` - Using MUI Container, Paper
     *   Set up theme handling:
         *   Create theme slice in Redux for theme state management
         *   Implement theme persistence in localStorage
         *   Support light/dark/system theme modes
-    *   Create admin dashboard component (`resources/js/pages/admin/Dashboard.jsx`) with MUI:
+    *   Create admin dashboard component (`resources/js/pages/admin/Dashboard.tsx`) with MUI:
         *   Use MUI Grid for responsive layout
         *   Add summary cards with MUI Card components
         *   Include basic stats with MUI Paper and Typography
     *   Set up React Router with authentication protection:
-        *   Configure admin routes in `resources/js/routes/index.jsx`
+        *   Configure admin routes in `resources/js/routes/index.tsx`
         *   Add protected route components
         *   Use MUI CircularProgress for loading states
         *   Implement SPA navigation (no page reloads)
@@ -345,15 +345,15 @@ cgvs/
 
 *   **Stage 4: Template Listing and Creation (done)**
     *   Create React components for template listing with MUI:
-        *   `resources/js/pages/admin/templates/Index.jsx` - Template listing page using MUI:
+        *   `resources/js/pages/admin/templates/Index.tsx` - Template listing page using MUI:
             *   Grid layout with template cards
             *   "Create New Template" button
             *   Search and filter capabilities
-        *   `resources/js/pages/admin/templates/Create.jsx` - Create template form
+        *   `resources/js/pages/admin/templates/Create.tsx` - Create template form
         *   `resources/js/components/admin/templates/` - Components:
-            *   `TemplateCard.jsx` - MUI Card for template display
-            *   `TemplateGrid.jsx` - MUI Grid container for cards
-            *   `CreateTemplateForm.jsx` - Basic creation form
+            *   `TemplateCard.tsx` - MUI Card for template display
+            *   `TemplateGrid.tsx` - MUI Grid container for cards
+            *   `CreateTemplateForm.tsx` - Basic creation form
     *   Set up template Redux slice for listing and creation:
         *   Template list state management
         *   Creation form state
@@ -368,28 +368,28 @@ cgvs/
 
 *   **Stage 5.0: Template Management Interface (done)**
     *   Create React components for tabbed template management with MUI:
-        *   `resources/js/pages/admin/templates/Management.jsx` - Main management page:
+        *   `resources/js/pages/admin/templates/Management.tsx` - Main management page:
             *   MUI Tabs for navigation
             *   Shared header with template title and actions
             *   Common save/publish functionality
         *   `resources/js/components/admin/templates/tabs/` - Tab components:
-            *   `BasicInfoTab.jsx` - Template settings
+            *   `BasicInfoTab.tsx` - Template settings
                 *   Name and description fields
                 *   Background image upload/preview
                 *   Template status management
-            *   `VariablesTab.jsx` - Variable definition with preview values
+            *   `VariablesTab.tsx` - Variable definition with preview values
                 *   MUI DataGrid for variables list
                 *   Variable type selection with preview field
                 *   Validation rules and preview value setup
-            *   `RecipientsTab.jsx` - Recipient management
+            *   `RecipientsTab.tsx` - Recipient management
                 *   Recipients grid
                 *   Excel import/export
                 *   Validation results
-            *   `PreviewTab.jsx` - Template preview
+            *   `PreviewTab.tsx` - Template preview
                 *   Interactive preview with preview values
                 *   PDF preview and download
                 *   Zoom and pan controls
-            *   `EditorTab.jsx` - Visual editor
+            *   `EditorTab.tsx` - Visual editor
                 *   Canvas with background
                 *   Element toolbox
                 *   Properties panel
@@ -420,9 +420,9 @@ cgvs/
         *   Handle tab-specific data loading and caching
     *   Create shared components and utilities:
         *   `resources/js/components/admin/templates/common/`:
-            *   `TabPanel.jsx` - Reusable tab panel component
-            *   `SaveButton.jsx` - Common save button with loading state
-            *   `HeaderActions.jsx` - Common header actions (preview, download, etc.)
+            *   `TabPanel.tsx` - Reusable tab panel component
+            *   `SaveButton.tsx` - Common save button with loading state
+            *   `HeaderActions.tsx` - Common header actions (preview, download, etc.)
     *   Set up tab-specific Redux slices:
         *   Implement data persistence strategies
         *   Handle cross-tab data dependencies
@@ -433,12 +433,12 @@ cgvs/
 
 *   **Stage 5.2: Template Variables Management**
     *   Create React components for variables management with MUI:
-        *   `resources/js/pages/admin/templates/Variables.jsx` - Main variables page
+        *   `resources/js/pages/admin/templates/Variables.tsx` - Main variables page
         *   `resources/js/components/admin/templates/variables/` - Components directory:
-            *   `VariableList.jsx` - Using MUI DataGrid for variable listing with preview value column
-            *   `VariableForm.jsx` - Using MUI Dialog for add/edit including preview value field
-            *   `VariableTypeSelector.jsx` - Using MUI RadioGroup for type selection
-            *   `PreviewValueInput.jsx` - Type-specific preview value input component
+            *   `VariableList.tsx` - Using MUI DataGrid for variable listing with preview value column
+            *   `VariableForm.tsx` - Using MUI Dialog for add/edit including preview value field
+            *   `VariableTypeSelector.tsx` - Using MUI RadioGroup for type selection
+            *   `PreviewValueInput.tsx` - Type-specific preview value input component
     *   Set up variables Redux slice for state management:
         *   Include preview values in state management
         *   Add actions for updating preview values
@@ -461,11 +461,11 @@ cgvs/
 
 *   **Stage 5.3: Template Recipients Management**
     *   Create React components for recipients management with MUI:
-        *   `resources/js/pages/admin/templates/Recipients.jsx` - Main recipients page
+        *   `resources/js/pages/admin/templates/Recipients.tsx` - Main recipients page
         *   `resources/js/components/admin/templates/recipients/` - Components:
-            *   `RecipientList.jsx` - Using MUI DataGrid for data display
-            *   `ImportExport.jsx` - Handling Excel operations
-            *   `ValidationResults.jsx` - Displaying import validation results
+            *   `RecipientList.tsx` - Using MUI DataGrid for data display
+            *   `ImportExport.tsx` - Handling Excel operations
+            *   `ValidationResults.tsx` - Displaying import validation results
     *   Add database migration for template recipients:
         *   Create `template_recipients` table with columns:
             *   `id`, `template_id`, `data` (JSON), timestamps
@@ -489,12 +489,12 @@ cgvs/
 
 *   **Stage 5.5: React Template Editor Component**
     *   Create React template editor components with MUI:
-        *   `resources/js/components/admin/templates/TemplateEditor.jsx` - Main editor using MUI Paper as canvas
+        *   `resources/js/components/admin/templates/TemplateEditor.tsx` - Main editor using MUI Paper as canvas
         *   `resources/js/components/admin/templates/elements/` - Element components with MUI styling:
-            *   `TextElement.jsx` - Using MUI Typography
-            *   `DateElement.jsx` - Using MUI DatePicker
-            *   `QRElement.jsx` - Custom styled with MUI theme
-            *   `ImageElement.jsx` - Using MUI Card for container
+            *   `TextElement.tsx` - Using MUI Typography
+            *   `DateElement.tsx` - Using MUI DatePicker
+            *   `QRElement.tsx` - Custom styled with MUI theme
+            *   `ImageElement.tsx` - Using MUI Card for container
         *   Add MUI SpeedDial for quick actions
         *   Implement MUI Drawer for element properties panel
     *   Implement drag-and-drop using react-beautiful-dnd with MUI styling
@@ -528,9 +528,9 @@ cgvs/
 
 *   **Stage 9: React Verification Component**
     *   Create React verification components with MUI:
-        *   `resources/js/pages/Verify.jsx` - Main verification page with MUI Container
-        *   `resources/js/components/public/VerificationForm.jsx` - Using MUI TextField and Button
-        *   `resources/js/components/public/VerificationResult.jsx` - Using MUI Alert and Card
+        *   `resources/js/pages/Verify.tsx` - Main verification page with MUI Container
+        *   `resources/js/components/public/VerificationForm.tsx` - Using MUI TextField and Button
+        *   `resources/js/components/public/VerificationResult.tsx` - Using MUI Alert and Card
     *   Set up Redux slice for verification state
     *   Implement API endpoint in `VerificationController`
     *   Add real-time verification with useDebounce hook
@@ -542,9 +542,9 @@ cgvs/
 
 *   **Stage 10: Certificate Generation React Components**
     *   Create React components for certificate generation with MUI:
-        *   `resources/js/pages/admin/generation/Upload.jsx` - Main page with MUI Container and Grid
-        *   `resources/js/components/admin/generation/UploadForm.jsx` - Using MUI Paper and LinearProgress
-        *   `resources/js/components/admin/generation/TemplateSelect.jsx` - Using MUI Select and ImageList
+        *   `resources/js/pages/admin/generation/Upload.tsx` - Main page with MUI Container and Grid
+        *   `resources/js/components/admin/generation/UploadForm.tsx` - Using MUI Paper and LinearProgress
+        *   `resources/js/components/admin/generation/TemplateSelect.tsx` - Using MUI Select and ImageList
         *   Add MUI Stepper for multi-step generation process
         *   Implement MUI Dialog for preview and confirmation
     *   Implement file upload with react-dropzone and MUI styled drop zone
@@ -641,12 +641,12 @@ cgvs/
     *   Secure file storage directories.
 *   **Stage 5.4: Template Preview Interface**
     *   Create React components for template preview with MUI:
-        *   `resources/js/pages/admin/templates/Preview.jsx` - Main preview page
+        *   `resources/js/pages/admin/templates/Preview.tsx` - Main preview page
         *   `resources/js/components/admin/templates/preview/` - Components directory:
-            *   `PreviewCanvas.jsx` - Preview canvas using MUI Paper
-            *   `PreviewToolbar.jsx` - Actions toolbar (download, refresh, etc.)
-            *   `PreviewVariableValues.jsx` - Show current preview values
-            *   `PreviewZoomControls.jsx` - Zoom and fit controls
+            *   `PreviewCanvas.tsx` - Preview canvas using MUI Paper
+            *   `PreviewToolbar.tsx` - Actions toolbar (download, refresh, etc.)
+            *   `PreviewVariableValues.tsx` - Show current preview values
+            *   `PreviewZoomControls.tsx` - Zoom and fit controls
     *   Set up preview-specific Redux slice:
         *   Manage preview state (zoom, position)
         *   Cache preview PDF data

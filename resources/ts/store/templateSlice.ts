@@ -5,7 +5,7 @@ export type Template = {
     id: number;
     name: string;
     description?: string;
-    background_path?: string;
+    background_url?: string;
     required_variables?: string[];
     is_active: boolean;
     created_at: string;

@@ -2,13 +2,7 @@ import React from 'react';
 import { ImageList, ImageListItem, ImageListItemBar, IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from 'react-router-dom';
-
-interface Template {
-  id: string | number;
-  name: string;
-  description?: string;
-  background_url?: string;
-}
+import { Template } from '@/store/templateSlice';
 
 interface GridViewProps {
   templates: Template[];
