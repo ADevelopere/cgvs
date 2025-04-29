@@ -27,14 +27,21 @@ interface VariablesTabProps {
 const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedVariable, setSelectedVariable] = useState<any>(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false); // Track if data is loaded
+  const [localVariables, setLocalVariables] = useState<any[]>([]); // Initialize with an empty array
   const dispatch = useDispatch<AppDispatch>();
   const { variables, loading, error } = useSelector((state: RootState) => state.variables);
 
   useEffect(() => {
-    if (template?.id) {
+    if (template?.id && !isDataLoaded) {
       dispatch(fetchVariables(template.id));
+      setIsDataLoaded(true);
     }
-  }, [dispatch, template]);
+  }, [dispatch, template, isDataLoaded]);
+
+  useEffect(() => {
+    setLocalVariables(variables || []); // Sync local state with Redux state, fallback to empty array
+  }, [variables]);
 
   const handleAddClick = () => {
     setSelectedVariable(null);
@@ -54,16 +61,20 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
 
   const handleFormSubmit = async (data: any) => {
     if (selectedVariable) {
-      dispatch(updateVariable({
+      await dispatch(updateVariable({
         templateId: template.id,
         variableId: selectedVariable.id,
         data,
       }));
     } else {
-      dispatch(createVariable({
+      const result = await dispatch(createVariable({
         templateId: template.id,
         data,
       }));
+
+      if (result.meta.requestStatus === 'fulfilled') {
+        setLocalVariables((prev) => [...prev, result.payload as any]); // Update local state immutably
+      }
     }
     setIsFormOpen(false);
   };
@@ -93,13 +104,13 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
 
       <Paper sx={{ mb: 3 }}>
         <VariableList
-          variables={variables as any} // Temporary cast to align types
+          variables={localVariables as any} // Temporary cast to align types
           onEdit={handleEditClick}
           onDelete={(id) => handleDeleteClick(id as number)} // Ensure id is cast to number
         />
       </Paper>
 
-      <PreviewValueDisplay variables={variables as any} />
+      <PreviewValueDisplay variables={localVariables as any} />
 
       <VariableForm
         open={isFormOpen}

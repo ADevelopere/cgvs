@@ -20,7 +20,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
             <CardMedia
               component="img"
               height="200"
-              image={template.background_path || '/placeholder.png'}
+              image={template.background_url || '/placeholder.png'}
               alt={template.name}
             />
             <CardContent>

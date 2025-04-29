@@ -40,7 +40,7 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
               <TableCell>
                 <Avatar
                   variant="rounded"
-                  src={template.background_path || '/placeholder.png'}
+                  src={template.background_url || '/placeholder.png'}
                   alt={template.name}
                   sx={{ width: 60, height: 40 }}
                 />
