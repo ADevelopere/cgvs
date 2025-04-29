@@ -46,7 +46,14 @@ export default function VariableList({ variables, onEdit, onDelete }: VariableLi
   ];
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '200px',
+        width: '100%'
+      }}
+    >
       <DataGrid
         rows={variables}
         columns={columns}
@@ -57,7 +64,6 @@ export default function VariableList({ variables, onEdit, onDelete }: VariableLi
         }}
         pageSizeOptions={[5, 10, 25]}
         disableRowSelectionOnClick
-        autoHeight
       />
     </Box>
   );
