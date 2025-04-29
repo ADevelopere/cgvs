@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@mui/material';
-import TemplateList from '../../../components/admin/templates/TemplateList';
+import TemplateList from '../../../components/admin/templates/list/TemplateList';
 
 const TemplatesIndex = () => {
   return (
