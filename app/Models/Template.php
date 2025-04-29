@@ -19,6 +19,11 @@ class Template extends Model
         'is_active',
     ];
 
+    public function variables(): HasMany
+    {
+        return $this->hasMany(TemplateVariable::class);
+    }
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

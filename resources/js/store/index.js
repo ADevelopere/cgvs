@@ -3,6 +3,7 @@ import authReducer from './authSlice.js';
 import templateReducer from './templateSlice.js';
 import themeReducer from './themeSlice.js';
 import templateManagementReducer from './templateManagementSlice.js';
+import variablesReducer from './variablesSlice.js';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     templates: templateReducer,
     theme: themeReducer,
     templateManagement: templateManagementReducer,
+    variables: variablesReducer,
   },
 });
 

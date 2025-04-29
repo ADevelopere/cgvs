@@ -14,6 +14,7 @@ class AdminSeeder extends Seeder
             'name' => env('ADMIN_NAME', 'Super Admin'),
             'email' => env('ADMIN_EMAIL', 'super.admin@cgvs.com'),
             'password' => Hash::make(env('ADMIN_PASSWORD', 'cgvs@123')),
+            'is_admin' => true,
         ]);
     }
 }
