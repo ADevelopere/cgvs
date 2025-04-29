@@ -1,22 +1,56 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from '../../../../utils/axios';
 import {
   Box,
   Tab,
   Paper,
   Typography,
-  Button,
   Stack,
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import SaveIcon from '@mui/icons-material/Save';
-import PreviewIcon from '@mui/icons-material/Preview';
+import { setActiveTab, selectActiveTab, selectUnsavedChanges, setTabError } from '../../../../store/templateManagementSlice';
+
+const handleTabError = (error, tab, dispatch) => {
+  if (error.response?.status === 403) {
+    dispatch(setTabError({ tab, error: 'Access denied to this tab' }));
+    return;
+  }
+  
+  dispatch(setTabError({ 
+    tab, 
+    error: error.response?.data?.message || 'An error occurred loading this tab' 
+  }));
+};
+import HeaderActions from '../common/HeaderActions';
 import BasicInfoTab from './tabs/BasicInfoTab';
+import VariablesTab from './tabs/VariablesTab';
+import EditorTab from './tabs/EditorTab';
+import RecipientsTab from './tabs/RecipientsTab';
+import PreviewTab from './tabs/PreviewTab';
 
 const Management = () => {
-  const [activeTab, setActiveTab] = useState('basic');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = useSelector(selectActiveTab);
+  const hasUnsavedChanges = useSelector(selectUnsavedChanges);
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  useEffect(() => {
+    const tab = searchParams.get('tab') || 'basic';
+    dispatch(setActiveTab(tab));
+  }, [searchParams, dispatch]);
+
+  const handleTabChange = async (event, newValue) => {
+    try {
+      // Call the API with the new tab parameter to check permissions
+      await axios.get(`/api/admin/templates/${id}?tab=${newValue}`);
+      setSearchParams({ tab: newValue });
+    } catch (error) {
+      handleTabError(error, newValue, dispatch);
+    }
   };
 
   return (
@@ -32,18 +66,14 @@ const Management = () => {
             Template Management
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              startIcon={<PreviewIcon />}
-            >
-              Preview
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
-            >
-              Save Changes
-            </Button>
+            <HeaderActions
+            onPreview={() => {
+              // TODO: Implement preview functionality
+            }}
+            onSave={() => {
+              // TODO: Implement save functionality
+            }}
+          />
           </Stack>
         </Stack>
       </Paper>
@@ -64,16 +94,16 @@ const Management = () => {
           <BasicInfoTab />
         </TabPanel>
         <TabPanel keepMounted value="variables">
-          Variables Tab Content (Coming Soon)
+          <VariablesTab />
         </TabPanel>
         <TabPanel keepMounted value="editor">
-          Editor Tab Content (Coming Soon)
+          <EditorTab />
         </TabPanel>
         <TabPanel keepMounted value="recipients">
-          Recipients Tab Content (Coming Soon)
+          <RecipientsTab />
         </TabPanel>
         <TabPanel keepMounted value="preview">
-          Preview Tab Content (Coming Soon)
+          <PreviewTab />
         </TabPanel>
       </TabContext>
     </Box>
