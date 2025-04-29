@@ -2,6 +2,12 @@ import { ReactNode, useState, useCallback } from 'react';
 import axios from '@/utils/axios';
 import { TemplateVariable } from './template.types';
 import { createContext, useContext } from "react";
+import { Alert, Snackbar } from '@mui/material';
+
+interface Notification {
+    message: string;
+    severity: 'success' | 'error';
+}
 
 export interface TemplateVariablesContext {
     variables: TemplateVariable[];
@@ -38,17 +44,27 @@ export function TemplateVariablesProvider({ children }: VariablesProviderProps) 
     const [variables, setVariables] = useState<TemplateVariable[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [notification, setNotification] = useState<Notification | null>(null);
+
+    const showNotification = (message: string, severity: 'success' | 'error') => {
+        setNotification({ message, severity });
+    };
+
+    const handleCloseNotification = () => {
+        setNotification(null);
+    };
 
     const fetchVariables = useCallback(async (templateId: number) => {
         setLoading(true);
-        setError(null);
         try {
             const response = await axios.get<TemplateVariable[]>(
                 `/admin/templates/${templateId}/variables`
             );
             setVariables(response.data);
         } catch (error: any) {
-            setError(error.response?.data?.message || 'Failed to fetch variables');
+            const errorMessage = error.response?.data?.message || 'Failed to fetch variables';
+            setError(errorMessage);
+            showNotification(errorMessage, 'error');
         } finally {
             setLoading(false);
         }
@@ -58,19 +74,17 @@ export function TemplateVariablesProvider({ children }: VariablesProviderProps) 
         templateId: number,
         data: Omit<TemplateVariable, 'id' | 'template_id' | 'created_at' | 'updated_at'>
     ) => {
-        setLoading(true);
-        setError(null);
         try {
             const response = await axios.post<TemplateVariable>(
                 `/admin/templates/${templateId}/variables`,
                 data
             );
             setVariables(prev => [...prev, response.data]);
+            showNotification('Variable created successfully', 'success');
         } catch (error: any) {
-            setError(error.response?.data?.message || 'Failed to create variable');
+            const errorMessage = error.response?.data?.message || 'Failed to create variable';
+            showNotification(errorMessage, 'error');
             throw error;
-        } finally {
-            setLoading(false);
         }
     }, []);
 
@@ -79,11 +93,9 @@ export function TemplateVariablesProvider({ children }: VariablesProviderProps) 
         variableId: number,
         data: Omit<TemplateVariable, 'id' | 'template_id' | 'created_at' | 'updated_at'>
     ) => {
-        setLoading(true);
-        setError(null);
         try {
             const response = await axios.put<TemplateVariable>(
-                `/admin/templates/${templateId}/variables/${variableId}`,
+                `/admin/variables/${variableId}`,
                 data
             );
             setVariables(prev =>
@@ -91,29 +103,25 @@ export function TemplateVariablesProvider({ children }: VariablesProviderProps) 
                     variable.id === variableId ? response.data : variable
                 )
             );
+            showNotification('Variable updated successfully', 'success');
         } catch (error: any) {
-            setError(error.response?.data?.message || 'Failed to update variable');
+            const errorMessage = error.response?.data?.message || 'Failed to update variable';
+            showNotification(errorMessage, 'error');
             throw error;
-        } finally {
-            setLoading(false);
         }
     }, []);
 
     const deleteVariable = useCallback(async (templateId: number, variableId: number) => {
-        setLoading(true);
-        setError(null);
         try {
-            await axios.delete(
-                `/admin/templates/${templateId}/variables/${variableId}`
-            );
+            await axios.delete(`/admin/variables/${variableId}`);
             setVariables(prev =>
                 prev.filter(variable => variable.id !== variableId)
             );
+            showNotification('Variable deleted successfully', 'success');
         } catch (error: any) {
-            setError(error.response?.data?.message || 'Failed to delete variable');
+            const errorMessage = error.response?.data?.message || 'Failed to delete variable';
+            showNotification(errorMessage, 'error');
             throw error;
-        } finally {
-            setLoading(false);
         }
     }, []);
 
@@ -130,6 +138,22 @@ export function TemplateVariablesProvider({ children }: VariablesProviderProps) 
     return (
         <TemplateVariablesContext.Provider value={value}>
             {children}
+            {notification && (
+                <Snackbar
+                    open={true}
+                    autoHideDuration={6000}
+                    onClose={handleCloseNotification}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                >
+                    <Alert
+                        onClose={handleCloseNotification}
+                        severity={notification.severity}
+                        variant="filled"
+                    >
+                        {notification.message}
+                    </Alert>
+                </Snackbar>
+            )}
         </TemplateVariablesContext.Provider>
     );
 }

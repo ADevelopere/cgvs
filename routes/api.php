@@ -21,6 +21,10 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         
         // Template variables routes
         Route::apiResource('templates.variables', \App\Http\Controllers\Admin\TemplateVariableController::class)
-            ->shallow();
+            ->only(['index', 'store']);
+            
+        // Shallow routes for variables
+        Route::apiResource('variables', \App\Http\Controllers\Admin\TemplateVariableController::class)
+            ->only(['show', 'update', 'destroy']);
     });
 });
