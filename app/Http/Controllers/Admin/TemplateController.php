@@ -11,9 +11,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Middleware\TemplateTabPermissionMiddleware;
 
 class TemplateController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(TemplateTabPermissionMiddleware::class)->only(['show']);
+    }
+
     /**
      * Display a listing of the templates.
      *

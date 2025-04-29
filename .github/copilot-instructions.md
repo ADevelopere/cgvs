@@ -366,7 +366,7 @@ cgvs/
     *   Add template thumbnail generation for cards
     *   **Result:** Clean template listing interface with creation capability
 
-*   **Stage 5.0: Template Management Interface**
+*   **Stage 5.0: Template Management Interface (done)**
     *   Create React components for tabbed template management with MUI:
         *   `resources/js/pages/admin/templates/Management.jsx` - Main management page:
             *   MUI Tabs for navigation
@@ -413,7 +413,7 @@ cgvs/
         *   `ExcelService.php` for import/export
     *   **Result:** Complete template management interface with all necessary features
 
-*   **Stage 5.1: Template Tab Navigation and State Management**
+*   **Stage 5.1: Template Tab Navigation and State Management (done)**
     *   Enhance the template management interface with tab navigation:
         *   Implement tab state persistence using Redux
         *   Add URL-based tab navigation (`/templates/{id}/manage?tab=basic|variables|editor|recipients`)
