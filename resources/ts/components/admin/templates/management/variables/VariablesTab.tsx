@@ -6,19 +6,11 @@ import {
   Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  fetchVariables,
-  createVariable,
-  updateVariable,
-  deleteVariable,
-} from '@/store/variablesSlice';
 import VariableList from './VariableList';
 import PreviewValueDisplay from './PreviewValueDisplay';
 import VariableForm from './VariableForm';
-import { RootState } from '@/store/store.types';
-import { Template } from '@/store/templateSlice';
-import { AppDispatch } from '@/store/store.types';
+import { Template } from '@/contexts/template/template.types';
+import { useTemplateVariables } from '@/contexts/template/TemplateVariablesContext';
 
 interface VariablesTabProps {
   template: Template;
@@ -27,21 +19,21 @@ interface VariablesTabProps {
 const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedVariable, setSelectedVariable] = useState<any>(null);
-  const [isDataLoaded, setIsDataLoaded] = useState(false); // Track if data is loaded
-  const [localVariables, setLocalVariables] = useState<any[]>([]); // Initialize with an empty array
-  const dispatch = useDispatch<AppDispatch>();
-  const { variables, loading, error } = useSelector((state: RootState) => state.variables);
+  const { 
+    variables, 
+    loading, 
+    error, 
+    fetchVariables,
+    deleteVariable,
+    createVariable,
+    updateVariable
+  } = useTemplateVariables();
 
   useEffect(() => {
-    if (template?.id && !isDataLoaded) {
-      dispatch(fetchVariables(template.id));
-      setIsDataLoaded(true);
+    if (template?.id) {
+      fetchVariables(template.id);
     }
-  }, [dispatch, template, isDataLoaded]);
-
-  useEffect(() => {
-    setLocalVariables(variables || []); // Sync local state with Redux state, fallback to empty array
-  }, [variables]);
+  }, [template?.id]); // Removed fetchVariables from dependencies since it's now stable
 
   const handleAddClick = () => {
     setSelectedVariable(null);
@@ -55,26 +47,15 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
 
   const handleDeleteClick = async (variableId: number) => {
     if (window.confirm('Are you sure you want to delete this variable?')) {
-      dispatch(deleteVariable({ templateId: template.id, variableId }));
+      await deleteVariable(template.id, variableId);
     }
   };
 
   const handleFormSubmit = async (data: any) => {
     if (selectedVariable) {
-      await dispatch(updateVariable({
-        templateId: template.id,
-        variableId: selectedVariable.id,
-        data,
-      }));
+      await updateVariable(template.id, selectedVariable.id, data);
     } else {
-      const result = await dispatch(createVariable({
-        templateId: template.id,
-        data,
-      }));
-
-      if (result.meta.requestStatus === 'fulfilled') {
-        setLocalVariables((prev) => [...prev, result.payload as any]); // Update local state immutably
-      }
+      await createVariable(template.id, data);
     }
     setIsFormOpen(false);
   };
@@ -102,15 +83,15 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
         </Button>
       </Box>
 
-      <Paper sx={{ mb: 3 }}>
+      <Paper sx={{ mb: 3, height: 450 }}>
         <VariableList
-          variables={localVariables as any} // Temporary cast to align types
+          variables={variables}
           onEdit={handleEditClick}
-          onDelete={(id) => handleDeleteClick(id as number)} // Ensure id is cast to number
+          onDelete={(id) => handleDeleteClick(id as number)}
         />
       </Paper>
 
-      <PreviewValueDisplay variables={localVariables as any} />
+      <PreviewValueDisplay variables={variables} />
 
       <VariableForm
         open={isFormOpen}

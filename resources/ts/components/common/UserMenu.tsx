@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
@@ -15,14 +14,11 @@ import {
   Settings as PreferencesIcon,
   Logout as LogoutIcon,
 } from '@mui/icons-material';
-import axios from '@/utils/axios';
-import { RootState } from '@/store/store';
-import { logout } from '@/store/authSlice';
+import { useAuth } from '@/contexts/AuthContext';
 
 const UserMenu: React.FC = () => {
-  const dispatch = useDispatch();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -35,19 +31,8 @@ const UserMenu: React.FC = () => {
 
   const handleLogout = async () => {
     handleClose(); // Close the menu first
-    try {
-      await axios.post('/api/logout');
-      // First clear the auth state
-      dispatch(logout());
-      // Then redirect to login page
-      navigate('/login', { replace: true });
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // If we get here, something went wrong with the API call
-      // But we should still log out the user locally
-      dispatch(logout());
-      navigate('/login', { replace: true });
-    }
+    logout();
+    navigate('/login', { replace: true });
   };
 
   return (

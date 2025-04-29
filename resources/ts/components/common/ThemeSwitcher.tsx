@@ -1,18 +1,16 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import {
   Brightness4 as DarkIcon,
   Brightness7 as LightIcon,
   SettingsBrightness as SystemIcon,
 } from '@mui/icons-material';
-import { selectTheme, setTheme } from '@/store/themeSlice';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type Theme = 'light' | 'dark' | 'system';
 
 const ThemeSwitcher: React.FC = () => {
-  const dispatch = useDispatch();
-  const currentTheme = useSelector(selectTheme);
+  const { mode: currentTheme, setTheme } = useTheme();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
@@ -24,7 +22,7 @@ const ThemeSwitcher: React.FC = () => {
   };
 
   const handleThemeChange = (theme: Theme): void => {
-    dispatch(setTheme(theme));
+    setTheme(theme);
     handleClose();
   };
 

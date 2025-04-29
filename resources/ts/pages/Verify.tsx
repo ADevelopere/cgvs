@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Typography, Paper, Box } from '@mui/material';
 
-const Verify = () => {
+const Verify: React.FC = () => {
   return (
     <Container maxWidth="sm">
       <Box sx={{ mt: 4 }}>

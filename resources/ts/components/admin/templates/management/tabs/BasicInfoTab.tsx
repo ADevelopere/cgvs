@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
     Box,
@@ -16,23 +15,19 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { fetchTemplate } from "@/store/templateSlice";
-import { AppDispatch, RootState } from "@/store/store.types";
+import { useTemplate } from "@/contexts/template/TemplateContext";
 
 const BasicInfoTab: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentTemplate, loading, error } = useSelector(
-        (state: RootState) => state.templates
-    );
+    const { state: { currentTemplate, loading, error }, fetchTemplate } = useTemplate();
     const [status, setStatus] = useState<string>("draft");
     const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
         if (id) {
-            dispatch(fetchTemplate(parseInt(id, 10)));
+            fetchTemplate(parseInt(id, 10));
         }
-    }, [id, dispatch]);
+    }, [id, fetchTemplate]);
 
     useEffect(() => {
         if (currentTemplate?.background_url) {
