@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Box,
   Button,
@@ -7,83 +10,213 @@ import {
   Typography,
   Alert,
   CircularProgress,
-} from '@mui/material';
-import { useAuth } from '@/contexts/AuthContext';
+  Paper,
+  InputAdornment,
+  Link,
+  Divider,
+} from "@mui/material"
+import { Email, Lock } from "@mui/icons-material"
+import { useAuth } from "@/contexts/AuthContext"
+import isValidEmail from "@/utils/email"
 
-interface LoginFormProps {}
+type LoginFormProps = {}
 
 const LoginForm: React.FC<LoginFormProps> = () => {
-  const navigate = useNavigate();
-  const { login, isAuthenticated, error, clearError, isLoading } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate()
+  const { login, isAuthenticated, error, clearError, isLoading } = useAuth()
+  const [email, setEmail] = useState("")
+  const [emailError, setEmailError] = useState("")
+  const [password, setPassword] = useState("")
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/admin/dashboard');
+      navigate("/admin/dashboard")
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate])
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value
+    setEmail(newEmail)
+
+    if (newEmail && !isValidEmail(newEmail)) {
+      setEmailError("Please enter a valid email address")
+    } else {
+      setEmailError("")
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    clearError();
-    const success = await login({ email, password });
-    if (success) {
-      navigate('/admin/dashboard');
+    e.preventDefault()
+
+    // Prevent submission if there are validation errors
+    if (emailError) {
+      return
     }
-  };
+
+    clearError()
+    const success = await login({ email, password })
+    if (success) {
+      navigate("/admin/dashboard")
+    }
+  }
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ maxWidth: 400, mx: 'auto', mt: 4 }}>
-      <Typography variant="h5" component="h1" gutterBottom align="center">
-        Sign In
-      </Typography>
+    <Paper
+      elevation={3}
+      sx={{
+        width: "100%",
+        p: 4,
+        borderRadius: 2,
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
+        {/* Logo placeholder */}
+        <Box
+          sx={{
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            backgroundColor: "primary.light",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h4" color="white">
+            A
+          </Typography>
+        </Box>
+
+        <Typography variant="h4" component="h1" fontWeight="bold" color="primary.main">
+          Sign In
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+          Enter your credentials to access your account
+        </Typography>
+      </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert
+          severity="error"
+          sx={{
+            mb: 3,
+            borderRadius: 1,
+            "& .MuiAlert-message": { fontWeight: 500 },
+          }}
+        >
           {error}
         </Alert>
       )}
 
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        id="email"
-        label="Email Address"
-        name="email"
-        autoComplete="email"
-        autoFocus
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={isLoading}
-      />
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+          autoFocus
+          value={email}
+          onChange={handleEmailChange}
+          error={Boolean(emailError)}
+          helperText={emailError}
+          disabled={isLoading}
+          variant="outlined"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Email sx={{ fontSize: 20 }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ mb: 2 }}
+        />
 
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        name="password"
-        label="Password"
-        type="password"
-        id="password"
-        autoComplete="current-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        disabled={isLoading}
-      />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+          variant="outlined"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Lock sx={{ fontSize: 20 }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ mb: 1 }}
+        />
 
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-        disabled={isLoading || !email || !password}
-      >
-        {isLoading ? <CircularProgress size={24} /> : 'Sign In'}
-      </Button>
-    </Box>
-  );
-};
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+          <Link href="#" variant="body2" underline="hover">
+            Forgot password?
+          </Link>
+        </Box>
 
-export default LoginForm;
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          size="large"
+          sx={{
+            mt: 2,
+            mb: 3,
+            py: 1.5,
+            fontWeight: "bold",
+            borderRadius: 1.5,
+          }}
+          disabled={isLoading || !email || !password}
+        >
+          {isLoading ? (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+              Signing in...
+            </Box>
+          ) : (
+            "Sign In"
+          )}
+        </Button>
+
+        <Divider sx={{ my: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            OR
+          </Typography>
+        </Divider>
+
+        <Box sx={{ textAlign: "center", mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Don't have an account?{" "}
+            <Link href="#" variant="body2" underline="hover" fontWeight="bold">
+              Sign Up
+            </Link>
+          </Typography>
+        </Box>
+      </Box>
+    </Paper>
+  )
+}
+
+export default LoginForm
