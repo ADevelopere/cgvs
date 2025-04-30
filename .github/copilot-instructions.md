@@ -436,8 +436,6 @@ cgvs/
         *   `resources/js/components/admin/templates/variables/` - Components directory:
             *   `VariableList.tsx` - Using MUI DataGrid for variable listing with preview value column
             *   `VariableForm.tsx` - Using MUI Dialog for add/edit including preview value field
-            *   `VariableTypeSelector.tsx` - Using MUI RadioGroup for type selection
-            *   `PreviewValueInput.tsx` - Type-specific preview value input component
     *   Set up TemplateVariablesContext for state management:
         *   Include preview values in state management
         *   Add actions for updating preview values

@@ -16,14 +16,21 @@ export type LoginCredentials = {
     password: string;
 };
 
+export type LoginResponse = {
+    user: User;
+    token: string;
+};
+
 export type AuthContextType = {
     user: User | null;
     token: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (credentials: LoginCredentials) => Promise<void>;
+    error: string | null;
+    login: (credentials: LoginCredentials) => Promise<boolean>;
     logout: () => void;
     checkAuth: () => Promise<void>;
+    clearError: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,22 +44,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     );
     const [isAuthenticated, setIsAuthenticated] = useState(!!token);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const login = async (credentials: LoginCredentials) => {
+    const clearError = () => setError(null);
+
+    const login = async (credentials: LoginCredentials): Promise<boolean> => {
         setIsLoading(true);
+        clearError();
+        
         try {
+            // Get the CSRF cookie from the root URL
             await axios.get("/sanctum/csrf-cookie", { baseURL: "" });
-            const response = await axios.post<{ user: User; token: string }>(
-                "/login",
-                credentials
-            );
-            const { user, token } = response.data;
-            setUser(user);
-            setToken(token);
-            setIsAuthenticated(true);
-            localStorage.setItem("auth_token", token);
-        } catch (error) {
+            
+            const response = await axios.post<LoginResponse>("/login", credentials);
+            
+            if (response.data.token) {
+                const { user, token } = response.data;
+                setUser(user);
+                setToken(token);
+                setIsAuthenticated(true);
+                localStorage.setItem("auth_token", token);
+                return true;
+            }
+            setError("Invalid response from server");
+            return false;
+        } catch (error: any) {
             console.error("Login failed", error);
+            if (error.response?.status === 422) {
+                // Handle validation errors
+                if (error.response.data?.errors) {
+                    const firstErrorArray = Object.values(error.response.data.errors)[0];
+                    if (Array.isArray(firstErrorArray) && firstErrorArray.length > 0) {
+                        setError(firstErrorArray[0]);
+                    } else {
+                        setError(error.response.data?.message || 'Invalid credentials');
+                    }
+                } else {
+                    setError('Invalid credentials');
+                }
+            } else {
+                setError('An error occurred while trying to sign in. Please try again.');
+            }
+            return false;
         } finally {
             setIsLoading(false);
         }
@@ -63,10 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setToken(null);
         setIsAuthenticated(false);
         localStorage.removeItem("auth_token");
+        // You might want to also call the logout endpoint here if needed
+        // axios.post("/logout");
     };
 
     const checkAuth = async () => {
-        setIsLoading(true);
         const storedToken = localStorage.getItem("auth_token");
         if (!storedToken) {
             logout();
@@ -78,9 +112,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             const response = await axios.get<User>("/user", {
                 headers: { Authorization: `Bearer ${storedToken}` },
             });
-            setUser(response.data);
-            setToken(storedToken);
-            setIsAuthenticated(true);
+            
+            if (response.data) {
+                setUser(response.data);
+                setToken(storedToken);
+                setIsAuthenticated(true);
+            } else {
+                logout();
+            }
         } catch (error) {
             console.error("Auth check failed", error);
             logout();
@@ -89,6 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     };
 
+    // Check authentication status when the component mounts
     useEffect(() => {
         checkAuth();
     }, []);
@@ -100,9 +140,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 token,
                 isAuthenticated,
                 isLoading,
+                error,
                 login,
                 logout,
                 checkAuth,
+                clearError,
             }}
         >
             {children}
