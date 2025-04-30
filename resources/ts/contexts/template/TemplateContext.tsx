@@ -5,13 +5,12 @@ import {
     ReactNode,
     useCallback,
     useEffect,
+    useMemo,
 } from "react";
 import axios from "@/utils/axios";
 import { Template, TemplateConfig } from "./template.types";
 
 // Types
-
-
 type TemplateState = {
     templates: Template[];
     loading: boolean;
@@ -182,13 +181,16 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
         });
     }, [fetchConfig]);
 
-    const value = {
-        state,
-        fetchTemplates,
-        fetchTemplate,
-        createTemplate,
-        fetchConfig,
-    };
+    const value = useMemo(
+        () => ({
+            state,
+            fetchTemplates,
+            fetchTemplate,
+            createTemplate,
+            fetchConfig,
+        }),
+        [state, fetchTemplates, fetchTemplate, createTemplate, fetchConfig]
+    );
 
     return (
         <TemplateContext.Provider value={value}>
@@ -207,8 +209,27 @@ export function useTemplate() {
 }
 
 // Selector hooks
-export const useTemplates = () => useTemplate().state.templates;
-export const useCurrentTemplate = () => useTemplate().state.currentTemplate;
-export const useTemplateLoading = () => useTemplate().state.loading;
-export const useTemplateError = () => useTemplate().state.error;
-export const useTemplateConfig = () => useTemplate().state.config;
+export const useTemplates = () => {
+    const { state } = useTemplate();
+    return useMemo(() => state.templates, [state.templates]);
+};
+
+export const useCurrentTemplate = () => {
+    const { state } = useTemplate();
+    return useMemo(() => state.currentTemplate, [state.currentTemplate]);
+};
+
+export const useTemplateLoading = () => {
+    const { state } = useTemplate();
+    return useMemo(() => state.loading, [state.loading]);
+};
+
+export const useTemplateError = () => {
+    const { state } = useTemplate();
+    return useMemo(() => state.error, [state.error]);
+};
+
+export const useTemplateConfig = () => {
+    const { state } = useTemplate();
+    return useMemo(() => state.config, [state.config]);
+};

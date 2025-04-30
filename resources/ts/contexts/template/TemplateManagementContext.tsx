@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
 
 export type TabType = 'basic' | 'variables' | 'editor' | 'recipients' | 'preview';
 
@@ -106,14 +106,27 @@ export const TemplateManagementProvider: React.FC<{ children: React.ReactNode }>
     dispatch({ type: 'CLEAR_TAB_ERROR', payload: tab });
   }, []);
 
-  const value = {
+  const memoizedTabErrors = useMemo(() => state.tabErrors, [state.tabErrors]);
+
+  const value = useMemo(() => ({
     ...state,
+    tabErrors: memoizedTabErrors,
     setActiveTab,
     setTabLoaded,
     setUnsavedChanges,
     setTabError,
     clearTabError,
-  };
+  }), [
+    state.activeTab,
+    state.unsavedChanges,
+    state.loadedTabs,
+    memoizedTabErrors,
+    setActiveTab,
+    setTabLoaded,
+    setUnsavedChanges,
+    setTabError,
+    clearTabError,
+  ]);
 
   return (
     <TemplateManagementContext.Provider value={value}>
