@@ -11,14 +11,28 @@ import {
     Button,
     Typography,
     SelectChangeEvent,
+    Paper,
+    Alert,
+    Snackbar,
+    AlertColor,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
+import axios from "@/utils/axios";
 
 const BasicInfoTab: React.FC = () => {
-    const {template} = useTemplateManagement();
-    
+    const { template, setUnsavedChanges } = useTemplateManagement();
+    const [snackbar, setSnackbar] = useState<{
+        open: boolean;
+        message: string;
+        severity: AlertColor;
+    }>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
+
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -26,6 +40,9 @@ const BasicInfoTab: React.FC = () => {
     });
 
     const [preview, setPreview] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
 
     useEffect(() => {
         if (template) {
@@ -43,11 +60,39 @@ const BasicInfoTab: React.FC = () => {
         }
     }, [template]);
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // Check for changes whenever form data or preview changes
+    useEffect(() => {
+        const originalData = {
+            name: template?.name || "",
+            description: template?.description || "",
+            status: template?.status || "draft",
+            background: template?.background_url || null
+        };
+
+        const currentData = {
+            name: formData.name,
+            description: formData.description,
+            status: formData.status,
+            background: preview
+        };
+
+        const hasChanges = 
+            originalData.name !== currentData.name ||
+            originalData.description !== currentData.description ||
+            originalData.status !== currentData.status ||
+            originalData.background !== currentData.background;
+
+        setHasChanges(hasChanges);
+        setUnsavedChanges(hasChanges);
+    }, [formData, preview, template]);
+
+    const handleInputChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
 
@@ -63,98 +108,222 @@ const BasicInfoTab: React.FC = () => {
     };
 
     const handleStatusChange = (e: SelectChangeEvent<string>): void => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            status: e.target.value
+            status: e.target.value,
         }));
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
+
+    const handleSave = async () => {
+        try {
+            setSaving(true);
+            setError(null);
+
+            // Create form data
+            const formDataToSend = new FormData();
+            formDataToSend.append('name', formData.name);
+            formDataToSend.append('description', formData.description);
+            formDataToSend.append('status', formData.status);
+
+            // If there's a file input change and preview is set, get the file
+            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                formDataToSend.append('background', fileInput.files[0]);
+            }
+
+            // Determine if this is a create or update operation
+            const url = template ? `/admin/templates/${template.id}` : '/admin/templates';
+            const method = 'post';
+
+            // Add _method field for Laravel to handle PUT requests
+            if (template) {
+                formDataToSend.append('_method', 'PUT');
+            }
+
+            const response = await axios({
+                method: method,
+                url: url,
+                data: formDataToSend,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            setUnsavedChanges(false);
+            setSnackbar({
+                open: true,
+                message: 'Template saved successfully',
+                severity: 'success'
+            });
+            
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.message || 'An error occurred while saving the template';
+            setError(errorMessage);
+            setSnackbar({
+                open: true,
+                message: errorMessage,
+                severity: 'error'
+            });
+            console.error('Save error:', err);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return (
-        <Box component="form" noValidate sx={{ mt: 1 }}>
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="templateName"
-                label="Template Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                autoFocus
-            />
+        <Box>
+            {/* form */}
+            <Box component="form" noValidate sx={{ mt: 1 }}>
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
 
-            <TextField
-                margin="normal"
-                fullWidth
-                multiline
-                rows={4}
-                id="templateDescription"
-                label="Description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-            />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="templateName"
+                    label="Template Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    autoFocus
+                />
 
-            <FormControl fullWidth margin="normal">
-                <InputLabel id="status-label">Status</InputLabel>
-                <Select
-                    labelId="status-label"
-                    id="status"
-                    value={formData.status}
-                    label="Status"
-                    onChange={handleStatusChange}
-                >
-                    <MenuItem value="draft">Draft</MenuItem>
-                    <MenuItem value="active">Active</MenuItem>
-                    <MenuItem value="archived">Archived</MenuItem>
-                </Select>
-            </FormControl>
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    id="templateDescription"
+                    label="Description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                />
 
-            {preview ? (
-                <Card sx={{ mt: 3, position: "relative" }}>
-                    <CardMedia
-                        component="img"
-                        height="200"
-                        image={preview}
-                        alt="Template background"
-                        sx={{ objectFit: "contain" }}
-                    />
-                    <Button
-                        variant="contained"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={handleRemoveBackground}
-                        sx={{ position: "absolute", top: 8, right: 8 }}
+                <FormControl fullWidth margin="normal">
+                    <InputLabel id="status-label">Status</InputLabel>
+                    <Select
+                        labelId="status-label"
+                        id="status"
+                        value={formData.status}
+                        label="Status"
+                        onChange={handleStatusChange}
                     >
-                        Remove
-                    </Button>
-                </Card>
-            ) : (
-                <Card sx={{ mt: 3, mb: 3 }}>
-                    <Box sx={{ p: 3, textAlign: "center" }}>
+                        <MenuItem value="draft">Draft</MenuItem>
+                        <MenuItem value="active">Active</MenuItem>
+                        <MenuItem value="archived">Archived</MenuItem>
+                    </Select>
+                </FormControl>
+
+                {preview ? (
+                    <Card sx={{ mt: 3, position: "relative" }}>
+                        <CardMedia
+                            component="img"
+                            height="200"
+                            image={preview}
+                            alt="Template background"
+                            sx={{ objectFit: "contain" }}
+                        />
                         <Button
-                            variant="outlined"
-                            component="label"
-                            startIcon={<CloudUploadIcon />}
+                            variant="contained"
+                            color="error"
+                            startIcon={<DeleteIcon />}
+                            onClick={handleRemoveBackground}
+                            sx={{ position: "absolute", top: 8, right: 8 }}
                         >
-                            Upload Background
-                            <input
-                                type="file"
-                                hidden
-                                accept="image/*"
-                                onChange={handleFileChange}
-                            />
+                            Remove
                         </Button>
-                        <Typography
-                            variant="caption"
-                            display="block"
-                            sx={{ mt: 1 }}
-                        >
-                            Recommended size: 1920x1080px
-                        </Typography>
-                    </Box>
-                </Card>
-            )}
+                    </Card>
+                ) : (
+                    <Card sx={{ mt: 3, mb: 3 }}>
+                        <Box sx={{ p: 3, textAlign: "center" }}>
+                            <Button
+                                variant="outlined"
+                                component="label"
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Upload Background
+                                <input
+                                    type="file"
+                                    hidden
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                            </Button>
+                            <Typography
+                                variant="caption"
+                                display="block"
+                                sx={{ mt: 1 }}
+                            >
+                                Recommended size: 1920x1080px
+                            </Typography>
+                        </Box>
+                    </Card>
+                )}
+            </Box>
+
+            {/* Save button */}
+            <Paper
+                sx={{
+                    p: 2,
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                    position: "fixed",
+                    bottom: 16,
+                    right: 16,
+                    gap: 2,
+                }}
+            >
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                        setFormData({
+                            name: template?.name || "",
+                            description: template?.description || "",
+                            status: "draft",
+                        });
+                        setPreview(template?.background_url || null);
+                        setError(null);
+                    }}
+                    disabled={saving || !hasChanges}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSave}
+                    disabled={saving || !formData.name.trim() || !hasChanges}
+                >
+                    {saving ? 'Saving...' : 'Save'}
+                </Button>
+            </Paper>
+
+            {/* Snackbar for notifications */}
+            <Snackbar 
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose}
+                    severity={snackbar.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

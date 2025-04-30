@@ -142,6 +142,83 @@ class TemplateController extends Controller
     }
 
     /**
+     * Update the specified template in storage.
+     *
+     * @param Request $request
+     * @param Template $template
+     * @return JsonResponse
+     */
+    public function update(Request $request, Template $template): JsonResponse
+    {
+        $maxSize = config('filesystems.upload_limits.template_background', 5120);
+
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'background' => [
+                'nullable',
+                'file',
+                'mimes:jpeg,png,jpg,gif',
+                'max:'.$maxSize,
+                function (string $_, $value, $fail) {
+                    if ($value && !$value->isValid()) {
+                        $fail('The background file is invalid or corrupted.');
+                    }
+                },
+            ],
+        ], [
+            'background.max' => 'The background image must not be larger than ' . number_format($maxSize / 1024, 1) . ' MB.',
+            'background.mimes' => 'The background image must be a file of type: jpeg, png, jpg, gif.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $template->name = $request->name;
+            $template->description = $request->description;
+
+            if ($request->hasFile('background') && $request->file('background')->isValid()) {
+                // Delete old background if it exists
+                if ($template->background_path) {
+                    Storage::disk('public')->delete($template->background_path);
+                }
+
+                $path = $request->file('background')->store('template_backgrounds', 'public');
+                if (!$path) {
+                    throw new TemplateStorageException('Failed to store the background image.');
+                }
+                $template->background_path = $path;
+            }
+
+            $template->save();
+
+            if ($template->background_path) {
+                $template->background_url = Storage::url($template->background_path);
+            }
+
+            return response()->json($template);
+        } catch (Exception $e) {
+            Log::error('Failed to update template', [
+                'error' => $e->getMessage(),
+                'template_id' => $template->id,
+                'input' => $request->all()
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to update template',
+                'error_details' => $e->getMessage(),
+                'errors' => ['general' => ['An error occurred while updating the template. Please try again.']]
+            ], 422);
+        }
+    }
+
+    /**
      * Display the specified template.
      *
      * @param Template $template
