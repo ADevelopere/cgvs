@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { useParams } from "react-router-dom";
 import {
     Box,
     TextField,
@@ -15,25 +14,42 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useTemplate } from "@/contexts/template/TemplateContext";
+import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 
 const BasicInfoTab: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const { state: { currentTemplate, loading, error }, fetchTemplate } = useTemplate();
-    const [status, setStatus] = useState<string>("draft");
+    const {template} = useTemplateManagement();
+    
+    const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        status: "draft",
+    });
+
     const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
-        if (id) {
-            fetchTemplate(parseInt(id, 10));
+        if (template) {
+            setFormData({
+                name: template.name || "",
+                description: template.description || "",
+                status: "draft", // You might want to map this from template if you have a status field
+            });
         }
-    }, [id, fetchTemplate]);
+    }, [template]);
 
     useEffect(() => {
-        if (currentTemplate?.background_url) {
-            setPreview(currentTemplate.background_url);
+        if (template?.background_url) {
+            setPreview(template.background_url);
         }
-    }, [currentTemplate]);
+    }, [template]);
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -47,16 +63,11 @@ const BasicInfoTab: React.FC = () => {
     };
 
     const handleStatusChange = (e: SelectChangeEvent<string>): void => {
-        setStatus(e.target.value);
+        setFormData(prev => ({
+            ...prev,
+            status: e.target.value
+        }));
     };
-
-    if (loading) {
-        return <Box>Loading...</Box>;
-    }
-
-    if (error) {
-        return <Box color="error.main">{error}</Box>;
-    }
 
     return (
         <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -67,7 +78,8 @@ const BasicInfoTab: React.FC = () => {
                 id="templateName"
                 label="Template Name"
                 name="name"
-                value={currentTemplate?.name || ""}
+                value={formData.name}
+                onChange={handleInputChange}
                 autoFocus
             />
 
@@ -79,7 +91,8 @@ const BasicInfoTab: React.FC = () => {
                 id="templateDescription"
                 label="Description"
                 name="description"
-                value={currentTemplate?.description || ""}
+                value={formData.description}
+                onChange={handleInputChange}
             />
 
             <FormControl fullWidth margin="normal">
@@ -87,7 +100,7 @@ const BasicInfoTab: React.FC = () => {
                 <Select
                     labelId="status-label"
                     id="status"
-                    value={status}
+                    value={formData.status}
                     label="Status"
                     onChange={handleStatusChange}
                 >

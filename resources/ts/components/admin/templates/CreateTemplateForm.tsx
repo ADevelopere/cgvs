@@ -15,7 +15,7 @@ import {
 import { useDropzone } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useTemplate, useTemplateConfig } from '@/contexts/template/TemplateContext';
+import { useTemplate } from '@/contexts/template/TemplatesContext';
 
 interface FormData {
   name: string;
@@ -25,8 +25,7 @@ interface FormData {
 
 const CreateTemplateForm: React.FC = () => {
   const navigate = useNavigate();
-  const { createTemplate } = useTemplate();
-  const config = useTemplateConfig();
+  const { createTemplate, config } = useTemplate();
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
