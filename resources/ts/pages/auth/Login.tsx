@@ -1,13 +1,8 @@
-import React from 'react';
-import GuestLayout from '@/components/layouts/GuestLayout';
-import LoginForm from '@/components/auth/LoginForm';
+import type React from "react";
+import LoginForm from "@/components/auth/LoginForm";
 
 const Login: React.FC = () => {
-  return (
-    <GuestLayout>
-      <LoginForm />
-    </GuestLayout>
-  );
+    return <LoginForm />;
 };
 
 export default Login;
