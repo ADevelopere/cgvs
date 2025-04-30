@@ -11,7 +11,7 @@ import {
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { useTemplateManagement, TabType } from '@/contexts/template/TemplateManagementContext';
 import HeaderActions from './common/HeaderActions';
-import BasicInfoTab from './tabs/BasicInfoTab';
+import BasicInfoTab from './BasicInfoTab';
 import VariablesTab from './variables/VariablesTab';
 import EditorTab from './tabs/EditorTab';
 import RecipientsTab from './tabs/RecipientsTab';
