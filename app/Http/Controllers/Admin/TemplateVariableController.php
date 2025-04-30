@@ -18,12 +18,32 @@ class TemplateVariableController extends Controller
 
     public function store(Request $request, Template $template)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in(['text', 'date', 'number', 'gender'])],
             'description' => ['nullable', 'string'],
-            'preview_value' => ['nullable', 'string'],
-        ]);
+            'preview_value' => ['nullable'],
+        ];
+
+        // Add type-specific validation for preview_value
+        if ($request->has('preview_value') && $request->filled('preview_value')) {
+            switch ($request->type) {
+                case 'date':
+                    $rules['preview_value'][] = 'date';
+                    break;
+                case 'number':
+                    $rules['preview_value'][] = 'numeric';
+                    break;
+                case 'gender':
+                    $rules['preview_value'][] = Rule::in(['male', 'female']);
+                    break;
+                case 'text':
+                    $rules['preview_value'][] = 'string';
+                    break;
+            }
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
