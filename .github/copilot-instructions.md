@@ -176,90 +176,125 @@ The primary goal is to develop a web-based system enabling authorized administra
 ```
 cgvs/
 ├── app/
-│   ├── Console/
 │   ├── Exceptions/
+│   │   ├── TabAccessDeniedException.php
+│   │   └── TemplateStorageException.php
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   ├── Auth/              # Controllers for Login, Logout etc.
+│   │   │   ├── Auth/
+│   │   │   │   ├── AuthController.php
+│   │   │   │   ├── ConfirmPasswordController.php
+│   │   │   │   ├── ForgotPasswordController.php
+│   │   │   │   ├── LoginController.php
+│   │   │   │   ├── RegisterController.php
+│   │   │   │   ├── ResetPasswordController.php
+│   │   │   │   └── VerificationController.php
 │   │   │   ├── Admin/
 │   │   │   │   ├── DashboardController.php
 │   │   │   │   ├── TemplateController.php
-│   │   │   │   ├── CertificateGenerationController.php
-│   │   │   │   └── UserController.php # Optional for multi-admin
-│   │   │   └── VerificationController.php
-│   │   ├── Middleware/
-│   │   │   ├── Authenticate.php   # Ensure user is logged in
-│   │   │   └── RedirectIfAuthenticated.php
-│   │   └── Requests/              # Form validation requests
+│   │   │   │   └── TemplateVariableController.php
+│   │   │   ├── Controller.php
+│   │   │   └── HomeController.php
+│   │   └── Middleware/
+│   │       └── TemplateTabPermissionMiddleware.php
 │   ├── Models/
-│   │   ├── User.php
 │   │   ├── Template.php
 │   │   ├── TemplateElement.php
-│   │   └── Certificate.php
-│   ├── Providers/
-│   └── Services/                  # Business logic services
-│       ├── CertificateGeneratorService.php
-│       ├── QrCodeService.php
-│       └── DataValidationService.php
-├── bootstrap/
-├── config/                      # Config files (database, app, etc.)
-├── database/
-│   ├── factories/
-│   ├── migrations/              # Database schema definitions
-│   │   ├── xxxx_xx_xx_xxxxxx_create_users_table.php
-│   │   ├── xxxx_xx_xx_xxxxxx_create_password_resets_table.php # Optional
-│   │   ├── xxxx_xx_xx_xxxxxx_create_templates_table.php
-│   │   ├── xxxx_xx_xx_xxxxxx_create_template_elements_table.php
-│   │   └── xxxx_xx_xx_xxxxxx_create_certificates_table.php
-│   └── seeders/                 # Database seeders (e.g., default admin user)
-├── public/                      # WEB SERVER DOCUMENT ROOT
-│   ├── build/                  # Vite build output directory
-│   ├── hot                     # Vite hot module replacement file
-│   ├── images/                 # General site images
-│   ├── storage/                # Symlink to storage/app/public
-│   ├── .htaccess              # Apache rewrite rules
-│   └── index.php              # Application entry point
+│   │   ├── TemplateVariable.php
+│   │   └── User.php
+│   ├── Policies/
+│   │   └── TemplatePolicy.php
+│   └── Providers/
+│       ├── AppServiceProvider.php
+│       └── AuthServiceProvider.php
 ├── resources/
-│   ├── css/                   # Raw CSS for Vite processing
-│   │   └── app.css           # Main CSS file
-│   ├── ts/                    # JavaScript & React components
-│   │   ├── app.tsx           # Main React entry point
-│   │   ├── bootstrap.js      # Bootstrap JavaScript
-│   │   ├── routes/           # React Router configuration
-│   │   │   └── index.tsx     # Route definitions
-│   │   ├── contexts/         # React Context providers
-│   │   ├── components/       # React components
-│   │   │   ├── layouts/      # Layout components
-│   │   │   │   ├── AdminLayout.tsx
-│   │   │   │   └── GuestLayout.tsx
-│   │   │   ├── auth/         # Authentication components
-│   │   │   │   └── LoginForm.tsx
-│   │   │   ├── admin/        # Admin components
+│   ├── css/
+│   │   └── app.css
+│   ├── sass/
+│   │   ├── _variables.scss
+│   │   └── app.scss
+│   ├── ts/
+│   │   ├── app.tsx
+│   │   ├── bootstrap.ts
+│   │   ├── components/
+│   │   │   ├── admin/
 │   │   │   │   ├── Dashboard.tsx
-│   │   │   │   ├── templates/
-│   │   │   │   │   ├── TemplateList.tsx
-│   │   │   │   │   ├── TemplateEditor.tsx
-│   │   │   │   │   └── TemplatePreview.tsx
-│   │   │   │   └── generation/
-│   │   │   │       ├── UploadForm.tsx
-│   │   │   │       └── ValidationResults.tsx
-│   │   │   └── public/       # Public components
-│   │   │       └── VerificationForm.tsx
-│   │   └── pages/            # React page components
-│   │       ├── auth/         # Auth pages
-│   │       │   └── Login.tsx
-│   │       ├── admin/        # Admin pages
-│   │       │   ├── Dashboard.tsx
-│   │       │   ├── templates/
-│   │       │   │   ├── Index.tsx
-│   │       │   │   ├── Create.tsx
-│   │       │   │   └── Edit.tsx
-│   │       │   └── generation/
-│   │       │       └── Upload.tsx
-│   │       └── Verify.tsx    # Public verification page
-│   ├── lang/                 # Language files (for localization)
-│   └── views/                # Blade templates (minimal)
-│       └── app.blade.php     # Main app template for Vue
+│   │   │   │   └── templates/
+│   │   │   │       ├── CreateTemplateForm.tsx
+│   │   │   │       ├── list/
+│   │   │   │       │   ├── TemplateCard.tsx
+│   │   │   │       │   ├── TemplateGrid.tsx
+│   │   │   │       │   ├── TemplateList.tsx
+│   │   │   │       │   └── views/
+│   │   │   │       │       ├── CardView.tsx
+│   │   │   │       │       ├── GridView.tsx
+│   │   │   │       │       └── ListView.tsx
+│   │   │   │       └── management/
+│   │   │   │           ├── BasicInfoTab.tsx
+│   │   │   │           ├── Management.tsx
+│   │   │   │           ├── common/
+│   │   │   │           │   ├── HeaderActions.tsx
+│   │   │   │           │   └── SaveButton.tsx
+│   │   │   │           ├── tabs/
+│   │   │   │           │   ├── EditorTab.tsx
+│   │   │   │           │   ├── PreviewTab.tsx
+│   │   │   │           │   └── RecipientsTab.tsx
+│   │   │   │           └── variables/
+│   │   │   │               ├── VariableForm.tsx
+│   │   │   │               ├── VariableList.tsx
+│   │   │   │               └── VariablesTab.tsx
+│   │   │   ├── auth/
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   └── ProtectedRoute.tsx
+│   │   │   ├── common/
+│   │   │   │   ├── ErrorBoundary.tsx
+│   │   │   │   ├── RouteError.tsx
+│   │   │   │   ├── ThemeSwitcher.tsx
+│   │   │   │   └── UserMenu.tsx
+│   │   │   └── layouts/
+│   │   │       ├── AdminLayout.tsx
+│   │   │       ├── GuestLayout.tsx
+│   │   │       └── TemplateLayout.tsx
+│   │   ├── contexts/
+│   │   │   ├── AuthContext.tsx
+│   │   │   ├── ThemeContext.tsx
+│   │   │   └── template/
+│   │   │       ├── TemplateManagementContext.tsx
+│   │   │       ├── TemplateVariablesContext.tsx
+│   │   │       ├── TemplatesContext.tsx
+│   │   │       └── template.types.ts
+│   │   ├── pages/
+│   │   │   ├── Verify.tsx
+│   │   │   ├── admin/
+│   │   │   │   ├── Dashboard.tsx
+│   │   │   │   └── templates/
+│   │   │   │       ├── CreateTemplate.tsx
+│   │   │   │       ├── Index.tsx
+│   │   │   │       └── TemplateManagementPage.tsx
+│   │   │   └── auth/
+│   │   │       └── Login.tsx
+│   │   ├── routes/
+│   │   │   └── index.tsx
+│   │   ├── theme/
+│   │   │   └── index.ts
+│   │   └── utils/
+│   │       ├── axios.ts
+│   │       ├── dateUtils.ts
+│   │       └── email.ts
+│   └── views/
+│       ├── app.blade.php
+│       ├── auth/
+│       │   ├── login.blade.php
+│       │   ├── passwords/
+│       │   │   ├── confirm.blade.php
+│       │   │   ├── email.blade.php
+│       │   │   └── reset.blade.php
+│       │   ├── register.blade.php
+│       │   └── verify.blade.php
+│       ├── home.blade.php
+│       ├── layouts/
+│       │   └── app.blade.php
+│       └── welcome.blade.php
 ├── routes/
 │   ├── web.php                  # Web routes (browser accessible)
 │   └── api.php                  # Optional API routes
