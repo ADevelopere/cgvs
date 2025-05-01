@@ -15,7 +15,7 @@ import {
 import BasicInfoTab from "./BasicInfoTab";
 import VariablesTab from "./variables/VariablesTab";
 import EditorTab from "./tabs/EditorTab";
-import RecipientsTab from "./tabs/RecipientsTab";
+import RecipientsTab from "./recipients/RecipientsTab";
 import PreviewTab from "./tabs/PreviewTab";
 import { Template } from "@/contexts/template/template.types";
 import { TemplateVariablesProvider } from "@/contexts/template/TemplateVariablesContext";

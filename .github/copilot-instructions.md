@@ -606,11 +606,16 @@ cgvs/
 
 *   **Stage 5.3: Template Recipients Management**
     *   Create React components for recipients management with MUI:
-        *   `resources/ts/pages/admin/templates/Recipients.tsx` - Main recipients page
+        *   `resources/ts/components/admin/templates/management/recipients/RecipientsTab.tsx` - Main recipients view, will be a tab under `Management.tsx`
         *   `resources/ts/components/admin/templates/recipients/` - Components:
             *   `RecipientList.tsx` - Using MUI DataGrid for data display
             *   `ImportExport.tsx` - Handling Excel operations
             *   `ValidationResults.tsx` - Displaying import validation results
+        *   Create context for recipients management:
+            *   `TemplateRecipientsContext.tsx` - State management for recipients
+            *   State variables: list of recipients, loading states, error handling
+            *   CRUD operations for recipients
+            *   API integration for fetching and managing recipients
     *   Add database migration for template recipients:
         *   Create `template_recipients` table with columns:
             *   `id`, `template_id`, `data` (JSON), timestamps
@@ -618,7 +623,7 @@ cgvs/
         *   Add method to generate template Excel file with variable columns
         *   Add method to validate and import filled Excel files
         *   Implement row-by-row validation against variable rules
-    *   Create API endpoints in `TemplateController.php`:
+    *   Create API endpoints in `TemplateRecipientsController.php`:
         *   Add endpoint for downloading Excel template
         *   Add endpoint for importing filled Excel
         *   Add endpoint for managing individual recipients
