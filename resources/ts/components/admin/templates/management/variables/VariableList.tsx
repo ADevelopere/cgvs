@@ -25,15 +25,19 @@ export default function VariableList({
 }: VariableListProps) {
     const columns = useMemo<GridColDef[]>(
         () => [
-            { field: "name", headerName: "Name", flex: 1 },
-            { field: "type", headerName: "Type", flex: 1 },
-            { field: "description", headerName: "Description", flex: 2 },
-            { field: "preview_value", headerName: "Preview Value", flex: 1 },
+            { field: "name", headerName: "Name", flex: 0.8, minWidth: 120 },
+            { field: "type", headerName: "Type", flex: 0.6, minWidth: 100 },
+            { field: "description", headerName: "Description", flex: 1.5, minWidth: 200 },
+            { field: "preview_value", headerName: "Preview Value", flex: 1, minWidth: 150 },
             {
                 field: "actions",
                 headerName: "Actions",
                 sortable: false,
-                width: 100,
+                flex: 0.5,
+                minWidth: 100,
+                disableColumnMenu: true,
+                filterable: false,
+                hideSortIcons: true,
                 renderCell: (params: GridRenderCellParams) => (
                     <Box>
                         <IconButton
@@ -77,6 +81,12 @@ export default function VariableList({
                 }}
                 pageSizeOptions={[5, 10, 25]}
                 disableRowSelectionOnClick
+                sx={{
+                    width: "100%",
+                    '& .MuiDataGrid-root': {
+                        width: '100%'
+                    }
+                }}
             />
         </Box>
     );
