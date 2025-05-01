@@ -607,7 +607,7 @@ cgvs/
 *   **Stage 5.3: Template Recipients Management**
     *   Create React components for recipients management with MUI:
         *   `resources/ts/components/admin/templates/management/recipients/RecipientsTab.tsx` - Main recipients view, will be a tab under `Management.tsx`
-        *   `resources/ts/components/admin/templates/recipients/` - Components:
+        *   `resources/ts/components/admin/templates/management/recipients/` - Components:
             *   `RecipientList.tsx` - Using MUI DataGrid for data display
             *   `ImportExport.tsx` - Handling Excel operations with client-side processing:
                 *   Excel template generation in browser using xlsx library
