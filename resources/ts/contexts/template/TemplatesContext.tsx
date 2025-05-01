@@ -9,6 +9,7 @@ import {
 } from "react";
 import axios from "@/utils/axios";
 import { Template, TemplateConfig } from "./template.types";
+import { useNavigate } from "react-router-dom";
 
 type TemplateCreateData = {
     name: string;
@@ -22,9 +23,11 @@ type TemplatesContextType = {
     loading: boolean;
     error: string | null;
     config: TemplateConfig;
+    templateToManage?: Template;
     fetchTemplates: () => Promise<void>;
     createTemplate: (templateData: TemplateCreateData) => Promise<void>;
     fetchConfig: () => Promise<void>;
+    manageTemplate: (templateId: number) => void;
 };
 
 const defaultConfig: TemplateConfig = {
@@ -37,7 +40,11 @@ const TemplateContext = createContext<TemplatesContextType | undefined>(
 
 // Provider
 export function TemplateProvider({ children }: { children: ReactNode }) {
+    const navigate = useNavigate();
     const [templates, setTemplates] = useState<Template[]>([]);
+    const [templateToManage, setTemplateToManage] = useState<Template | null>(
+        null
+    );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
@@ -51,8 +58,7 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
             setTemplates(templates);
         } catch (error: any) {
             setError(
-                error.response?.data?.message ||
-                "Failed to fetch templates"
+                error.response?.data?.message || "Failed to fetch templates"
             );
         } finally {
             setLoading(false);
@@ -82,12 +88,12 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
                         },
                     }
                 );
-                setTemplates(prev => [...prev, response.data]);
+                setTemplates((prev) => [...prev, response.data]);
             } catch (error: any) {
                 setError(
                     error.response?.data?.errors ||
-                    error.response?.data?.message ||
-                    "Failed to create template"
+                        error.response?.data?.message ||
+                        "Failed to create template"
                 );
             } finally {
                 setLoading(false);
@@ -103,9 +109,7 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
             );
             setConfig(response.data);
         } catch (error: any) {
-            setError(
-                error.response?.data?.message || "Failed to fetch config"
-            );
+            setError(error.response?.data?.message || "Failed to fetch config");
         }
     }, []);
 
@@ -115,8 +119,34 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
         });
     }, [fetchConfig]);
 
+    const manageTemplate = useCallback(
+        (templateId: number) => {
+            console.log("Managing template with ID:", templateId);
+            const template = templates.find((t) => t.id === templateId);
+            if (!template) {
+                setError("Template not found");
+                console.error("Template not found");
+                return;
+            }
+            setTemplateToManage(template);
+            navigate(`/admin/templates/${templateId}/manage`);
+        },
+        [navigate, templates]
+    );
+
     const value = useMemo(
         () => ({
+            templates,
+            templateToManage,
+            loading,
+            error,
+            config,
+            fetchTemplates,
+            createTemplate,
+            fetchConfig,
+            manageTemplate,
+        }),
+        [
             templates,
             loading,
             error,
@@ -124,8 +154,7 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
             fetchTemplates,
             createTemplate,
             fetchConfig,
-        }),
-        [templates, loading, error, config, fetchTemplates, createTemplate, fetchConfig]
+        ]
     );
 
     return (

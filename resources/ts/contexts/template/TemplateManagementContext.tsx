@@ -6,12 +6,19 @@ import React, {
     useMemo,
     useEffect,
 } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import axios from "@/utils/axios";
 import { Template, TemplateConfig } from "./template.types";
-import { Box, CircularProgress, Typography, Button, Paper } from "@mui/material";
-import RefreshIcon from '@mui/icons-material/Refresh';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import {
+    Box,
+    CircularProgress,
+    Typography,
+    Button,
+    Paper,
+} from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { useTemplate } from "./TemplatesContext";
 
 export type TabType =
     | "basic"
@@ -35,7 +42,7 @@ interface TemplateManagementContextType {
     error: string | undefined;
     tabErrors: Record<TabType, TabError | undefined>;
     config: TemplateConfig;
-    template: Template | null;
+    template: Template | undefined;
     loading: boolean;
     setActiveTab: (tab: TabType) => void;
     setTabLoaded: (tab: TabType) => void;
@@ -55,6 +62,7 @@ export const TemplateManagementProvider: React.FC<{
 }> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const { id } = useParams<{ id: string }>();
+    const { templateToManage } = useTemplate();
 
     const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
 
@@ -72,7 +80,10 @@ export const TemplateManagementProvider: React.FC<{
         preview: undefined,
     });
 
-    const [template, settemplate] = useState<Template | null>(null);
+    const [template, settemplate] = useState<Template | undefined>(
+        templateToManage
+    );
+
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -119,7 +130,11 @@ export const TemplateManagementProvider: React.FC<{
     }, []);
 
     useEffect(() => {
-        if (id) {
+        console.log("Template to manage:", templateToManage);
+        if (templateToManage) {
+            settemplate(templateToManage);
+        }
+        if (id && !templateToManage) {
             fetchTemplate(parseInt(id, 10));
         }
     }, [id, fetchTemplate]);
@@ -202,24 +217,27 @@ export const TemplateManagementProvider: React.FC<{
         return (
             <Box
                 sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    height: '100%',
-                    p: 3
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                    height: "100%",
+                    p: 3,
                 }}
             >
                 <Paper
                     elevation={3}
                     sx={{
                         p: 4,
-                        textAlign: 'center',
+                        textAlign: "center",
                         maxWidth: 400,
-                        width: '100%'
+                        width: "100%",
                     }}
                 >
-                    <ErrorOutlineIcon color="error" sx={{ fontSize: 64, mb: 2 }} />
+                    <ErrorOutlineIcon
+                        color="error"
+                        sx={{ fontSize: 64, mb: 2 }}
+                    />
                     <Typography variant="h6" color="error" gutterBottom>
                         Error Loading Template
                     </Typography>
