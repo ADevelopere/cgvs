@@ -609,33 +609,67 @@ cgvs/
         *   `resources/ts/components/admin/templates/management/recipients/RecipientsTab.tsx` - Main recipients view, will be a tab under `Management.tsx`
         *   `resources/ts/components/admin/templates/recipients/` - Components:
             *   `RecipientList.tsx` - Using MUI DataGrid for data display
-            *   `ImportExport.tsx` - Handling Excel operations
+            *   `ImportExport.tsx` - Handling Excel operations with client-side processing:
+                *   Excel template generation in browser using xlsx library
+                *   Client-side file preview before upload
+                *   Toggle switch for client/server-side processing
             *   `ValidationResults.tsx` - Displaying import validation results
-        *   Create context for recipients management:
+            *   `ValidationToggle.tsx` - MUI Switch component to toggle client/server validation
+        *   Create comprehensive context for recipients management:
             *   `TemplateRecipientsContext.tsx` - State management for recipients
-            *   State variables: list of recipients, loading states, error handling
+            *   State variables:
+                *   List of recipients
+                *   Loading states
+                *   Error handling
+                *   Client-side validation flag
+                *   Client-side preview generation flag
             *   CRUD operations for recipients
-            *   API integration for fetching and managing recipients
+            *   Client-side Excel operations:
+                *   Generate template Excel file in browser
+                *   Validate Excel files client-side
+                *   Parse and process Excel data
+                *   Preview generation in browser
+            *   Server fallback operations:
+                *   API integration for template download
+                *   Server-side validation when client validation is disabled
+                *   Server-side preview generation when disabled in UI
+    *   Add feature flags in context:
+        *   `useClientValidation` - Default true, toggleable
+        *   `useClientPreview` - Default true, toggleable
     *   Add database migration for template recipients:
         *   Create `template_recipients` table with columns:
             *   `id`, `template_id`, `data` (JSON), timestamps
-    *   Create Excel management service:
-        *   Add method to generate template Excel file with variable columns
-        *   Add method to validate and import filled Excel files
-        *   Implement row-by-row validation against variable rules
+    *   Create Excel management service with hybrid processing:
+        *   Client-side methods (default):
+            *   Generate template Excel file using xlsx-js library
+            *   Validate and import Excel files in browser
+            *   Real-time row-by-row validation
+            *   Generate preview in browser
+        *   Server-side fallback methods:
+            *   Template file generation endpoint
+            *   File validation endpoint
+            *   Import processing endpoint
+            *   Preview generation endpoint
     *   Create API endpoints in `TemplateRecipientsController.php`:
-        *   Add endpoint for downloading Excel template
-        *   Add endpoint for importing filled Excel
+        *   Add endpoint for downloading Excel template (server fallback)
+        *   Add endpoint for importing filled Excel (server fallback)
         *   Add endpoint for managing individual recipients
-    *   Implement Excel handling with PHP Excel library:
-        *   Generate downloadable template Excel files
-        *   Parse and validate uploaded Excel files
-        *   Handle batch imports with progress tracking
-    *   Add validation feedback mechanism:
-        *   Show detailed error messages for invalid rows
-        *   Allow partial imports of valid rows
-        *   Provide summary of import results
-    *   **Result:** Complete interface for managing template recipients with Excel import/export capabilities
+        *   Add endpoint for server-side preview generation
+    *   Implement hybrid validation mechanism:
+        *   Client-side validation (default):
+            *   Real-time validation using xlsx-js
+            *   Immediate feedback for invalid rows
+            *   Browser-based preview generation
+        *   Server-side validation (optional):
+            *   Traditional file upload and validation
+            *   Server-generated validation results
+            *   Server-generated preview
+    *   Add comprehensive UI controls:
+        *   Toggle switches for client/server processing
+        *   Progress indicators for both modes
+        *   Clear error messaging
+        *   Preview toggle and display
+    *   **Result:** Complete interface for managing template recipients with hybrid client/server processing capabilities, featuring toggleable client-side validation and preview generation
 
 *   **Stage 5.5: React Template Editor Component**
     *   Create React template editor components with MUI:
