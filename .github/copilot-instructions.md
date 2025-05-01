@@ -222,7 +222,7 @@ cgvs/
 ├── resources/
 │   ├── css/                   # Raw CSS for Vite processing
 │   │   └── app.css           # Main CSS file
-│   ├── js/                    # JavaScript & React components
+│   ├── ts/                    # JavaScript & React components
 │   │   ├── app.tsx           # Main React entry point
 │   │   ├── bootstrap.js      # Bootstrap JavaScript
 │   │   ├── routes/           # React Router configuration
@@ -285,181 +285,294 @@ cgvs/
 
 **Incremental Implementation Steps (Focus on Seeing Results)**
 
-*   **Stage 0: Project Setup & Environment (done)** 
-    *   Install PHP, Composer, Git, Node.js, and Bun on your local machine (if developing locally).
-    *   Set up a new project using your chosen framework (e.g., `composer create-project laravel/laravel cgvs`).
-    *   Initialize Git repository (`git init`, initial commit).
-    *   Install Node.js dependencies (`bun install`).
-    *   Configure your `.env` file (App URL, Database connection details for local dev).
-    *   Create the database locally.
-    *   Run initial framework migrations (`php artisan migrate`).
-    *   Start Vite development server (`bun run dev`).
-    *   **Result:** Basic framework running locally with Vite for asset compilation, database connected.
+*   **✅ Stage 0: Project Setup & Environment (done)** 
+    *   ✅ Development Environment Setup:
+        *   Installed and configured PHP 8.2+ with required extensions
+        *   Installed Composer for PHP package management
+        *   Installed Git for version control
+        *   Installed Node.js and Bun for frontend tooling
+        *   Configured PHP development settings in `php.ini`
+    *   ✅ Project Initialization:
+        *   Created new Laravel project using Composer
+        *   Initialized Git repository with initial commit
+        *   Set up `.gitignore` for project-specific exclusions
+    *   ✅ Frontend Development Setup:
+        *   Configured Vite as the build tool with `vite.config.ts`
+        *   Set up TypeScript configuration with `tsconfig.json`
+        *   Installed frontend dependencies using Bun
+    *   ✅ Development Tools Configuration:
+        *   Set up development environment variables in `.env`
+        *   Configured IDE helper for better development experience
+        *   Set up Docker configuration with `docker-compose.yml`
+    *   ✅ Project Structure:
+        *   Organized base Laravel directory structure
+        *   Set up public assets directory
+        *   Configured resource compilation paths
+    *   ✅ Development Workflow:
+        *   Created development server script (`dev.sh`)
+        *   Configured Vite development server task
+        *   Set up hot module replacement for development
+    *   **Result:** Complete development environment with Laravel framework, TypeScript support, Vite for asset compilation, and Docker configuration for containerization
 
-*   **Stage 1: Basic Authentication (done)**
-    *   Install React and dependencies:
-        ```
-        bun add react react-dom react-router-dom @reduxjs/toolkit axios @mui/material @emotion/react @emotion/styled @mui/icons-material @fontsource/roboto
-        ```
-    *   Create React authentication components with MUI:
-        *   `resources/js/components/auth/LoginForm.tsx` using MUI components (Card, TextField, Button)
-        *   Set up MUI theme provider with custom theme in `resources/js/theme/index.js`
-    *   Set up React Router and AuthContext for authentication state management.
-    *   Create API routes and controllers for login/logout.
-    *   Implement login/logout logic with Laravel Sanctum.
-    *   **Result:** SPA-based authentication system with Material-UI components.
+*   **✅ Stage 1: Basic Authentication (done)**
+    *   ✅ Implemented Authentication Components:
+        *   Created `resources/ts/components/auth/LoginForm.tsx`:
+            *   Built with Material-UI components (Card, TextField, Button)
+            *   Implemented form validation with proper error handling
+            *   Added responsive design and loading states
+    *   ✅ Authentication Context & State Management:
+        *   Set up `AuthContext` for global auth state:
+            *   User state management
+            *   Token handling
+            *   Loading states
+            *   Error handling
+        *   Implemented protected route wrapper
+    *   ✅ Laravel Authentication Setup:
+        *   Added Laravel Sanctum configuration
+        *   Set up authentication middleware
+        *   Configured CSRF protection
+        *   Set up session handling
+    *   ✅ API Integration:
+        *   Created `AuthController` with login/logout endpoints
+        *   Implemented secure token-based authentication
+        *   Added user information endpoint
+        *   Set up proper API route protection
+    *   ✅ Frontend-Backend Integration:
+        *   Configured Axios for API communication
+        *   Added token management in requests
+        *   Implemented proper error handling
+        *   Set up authentication persistence
+    *   **Result:** Complete SPA authentication system with secure token-based auth, protected routes, and modern UI components.
 
-*   **Stage 2: Basic Admin Area & React Router Setup (done)**
-    *   Create React layout components with MUI:
-        *   `resources/js/components/layouts/AdminLayout.tsx` - Using MUI AppBar, Box, Container
-            *   Top navbar with logo on the left
-            *   Navigation links in the center
-            *   Right section with theme switcher and user avatar:
-                *   Theme switcher toggle (light/dark/system)
-                *   User avatar with dropdown menu (profile, preferences, logout)
-        *   `resources/js/components/layouts/GuestLayout.tsx` - Using MUI Container, Paper
-    *   Set up theme handling:
-        *   Create ThemeContext for theme state management
-        *   Implement theme persistence in localStorage
-        *   Support light/dark/system theme modes
-    *   Create admin dashboard component (`resources/js/pages/admin/Dashboard.tsx`) with MUI:
-        *   Use MUI Grid for responsive layout
-        *   Add summary cards with MUI Card components
-        *   Include basic stats with MUI Paper and Typography
-    *   Set up React Router with authentication protection:
-        *   Configure admin routes in `resources/js/routes/index.tsx`
-        *   Add protected route components
-        *   Use MUI CircularProgress for loading states
-        *   Implement SPA navigation (no page reloads)
-    *   Create API endpoints for dashboard data
-    *   Implement admin API middleware in Laravel
-    *   **Result:** Modern SPA-based admin area with responsive top navbar, theme switching, and user menu
+*   **✅ Stage 2: Basic Admin Area & React Router Setup (done)**
+    *   ✅ Created React layout components with MUI:
+        *   `resources/ts/components/layouts/AdminLayout.tsx`:
+            *   Implemented responsive top navbar with MUI AppBar and Toolbar
+            *   Added CGVS logo on the left with link to dashboard
+            *   Created center navigation with MUI Buttons and icons (Dashboard, Templates, Certificates)
+            *   Added right section with theme switcher and user menu
+            *   Implemented ErrorBoundary wrapper for content
+            *   Added responsive container with maxWidth="xl"
+        *   `resources/ts/components/layouts/GuestLayout.tsx`:
+            *   Created centered layout for authentication pages
+            *   Used MUI Container with proper spacing and alignment
+            *   Added full viewport height support
+    *   ✅ Created user interface components:
+        *   `UserMenu.tsx`:
+            *   Implemented dropdown menu with MUI Menu component
+            *   Added user avatar display
+            *   Added profile, preferences, and logout options
+            *   Integrated with auth context for user data
+        *   `ThemeSwitcher.tsx`:
+            *   Added theme toggle functionality
+            *   Implemented theme persistence in localStorage
+            *   Added support for light/dark/system modes
+    *   ✅ Created admin dashboard components:
+        *   `Dashboard.tsx` with responsive MUI Grid:
+            *   Welcome section with title and description
+            *   Stats cards showing template and certificate counts
+            *   Quick actions section with MUI Paper
+            *   Used MUI Card components with proper styling
+    *   ✅ Set up comprehensive routing:
+        *   Configured React Router with proper route structure:
+            *   Root redirect to admin dashboard
+            *   Public routes for login and verification
+            *   Protected admin routes with nested structure
+            *   Template management routes with layout wrapper
+        *   Added authentication protection:
+            *   Created `WithAuth` component for route protection
+            *   Implemented loading states with MUI CircularProgress
+            *   Added redirect to login for unauthenticated users
+    *   ✅ Implemented API integration:
+        *   Added dashboard API endpoint in `DashboardController.php`
+        *   Set up protected routes with Laravel Sanctum
+        *   Implemented proper API middleware configuration
+        *   Added error handling for API responses
+    *   ✅ Added extra features:
+        *   Implemented proper state management for authentication
+        *   Added loading states and error boundaries
+        *   Created responsive design for mobile and desktop
+        *   Added smooth navigation transitions
+    *   **Result:** Fully functional, modern SPA admin area with responsive design, protected routes, theme support, and proper API integration.
 
-*   **Stage 3: Template Data Structure (done)**
-    *   Create database migrations for templates and elements.
-    *   Create Eloquent models with proper relationships and attribute handling.
-    *   Implement model factories for testing.
-    *   Run migrations.
-    *   **Result:** Database schema and models ready for template management.
+*   **✅ Stage 3: Template Data Structure (done)**
+    *   ✅ Created database migrations:
+        *   `create_templates_table.php` with columns:
+            *   `id`, `name`, `description`, `background_path`
+            *   `required_variables` (JSON), `is_active` (boolean)
+            *   Timestamps and soft deletes support
+        *   `create_template_elements_table.php` with columns:
+            *   `id`, `template_id` (foreign key)
+            *   `element_type` (text, date, gender_text, etc.)
+            *   `x_coordinate`, `y_coordinate`, `properties` (JSON)
+            *   Text properties: font_size, color, alignment, font_family
+            *   `language_constraint`, `source_field`
+        *   `create_template_variables_table.php` with columns:
+            *   `id`, `template_id`, `name`, `type`
+            *   `validation_rules` (JSON), `preview_value`
+    *   ✅ Created Eloquent models with relationships:
+        *   `Template.php`:
+            *   HasMany relationships with elements and variables
+            *   SoftDeletes trait implementation
+            *   Background path accessor method
+        *   `TemplateElement.php`:
+            *   Element type constants and helper methods
+            *   Properties for positioning and styling
+            *   BelongsTo relationship with template
+        *   `TemplateVariable.php`:
+            *   Variable type validation
+            *   Preview value handling
+            *   BelongsTo relationship with template
+    *   ✅ Implemented comprehensive model factories:
+        *   `TemplateFactory.php` with default attributes
+        *   `TemplateElementFactory.php` with specialized states:
+            *   Text elements with realistic properties
+            *   Date elements with format options
+            *   QR code elements with size settings
+    *   ✅ Created feature tests for models:
+        *   `TemplateTest.php`: Creation, relationships, soft deletes
+        *   `TemplateElementTest.php`: Element types, properties
+        *   `FactoryTest.php`: Factory states and relationships
+    *   **Result:** Complete database structure with models, factories, and tests for template management system.
 
-*   **Stage 4: Template Listing and Creation (done)**
-    *   Create React components for template listing with MUI:
-        *   `resources/js/pages/admin/templates/Index.tsx` - Template listing page using MUI:
-            *   Grid layout with template cards
-            *   "Create New Template" button
-            *   Search and filter capabilities
-        *   `resources/js/pages/admin/templates/Create.tsx` - Create template form
-        *   `resources/js/components/admin/templates/` - Components:
-            *   `TemplateCard.tsx` - MUI Card for template display
-            *   `TemplateGrid.tsx` - MUI Grid container for cards
-            *   `CreateTemplateForm.tsx` - Basic creation form
-    *   Set up TemplateContext for listing and creation:
-        *   Template list state management
-        *   Creation form state
-        *   Loading and error states
-    *   Create basic API endpoints in `TemplateController.php`:
-        *   `index` method for listing templates
-        *   `store` method for creating new template
-        *   Basic validation for template creation
-    *   Implement template API routes with auth middleware
-    *   Add template thumbnail generation for cards
-    *   **Result:** Clean template listing interface with creation capability
+*   **✅ Stage 4: Template Listing and Creation (done)**
+    *   ✅ Created React components for template listing with MUI:
+        *   `resources/ts/pages/admin/templates/Index.tsx`:
+            *   Container layout with TemplateList component
+        *   `resources/ts/components/admin/templates/list/` Components:
+            *   `TemplateList.tsx` - Main list component with:
+                *   Search functionality
+                *   View mode switching (Card/Grid/List)
+                *   Create template button
+            *   Views Implementation:
+                *   `CardView.tsx` - Card-based layout
+                *   `GridView.tsx` - Image grid layout
+                *   `ListView.tsx` - Table-based layout
+    *   ✅ Implemented template creation:
+        *   `resources/ts/pages/admin/templates/Create.tsx`
+        *   `resources/ts/components/admin/templates/CreateTemplateForm.tsx`:
+            *   Name and description fields
+            *   Background image upload with drag-and-drop
+            *   File size validation
+            *   Form validation and error handling
+    *   ✅ Set up template contexts:
+        *   `resources/ts/contexts/template/TemplatesContext.tsx`:
+            *   Template list state management
+            *   Template creation handling
+            *   Loading and error states
+            *   API integration for templates
+        *   `resources/ts/contexts/template/template.types.ts`:
+            *   Type definitions for templates
+            *   Configuration interfaces
+    *   ✅ Implemented API endpoints in `TemplateController.php`:
+        *   `index` method with background URL generation
+        *   `store` method with file upload handling
+        *   Configuration endpoint for file size limits
+    *   ✅ Added enhanced features:
+        *   Responsive layouts for all view modes
+        *   Image preview for uploaded backgrounds
+        *   Proper error handling and user feedback
+        *   Search filtering by name and description
+    *   **Result:** A polished template management interface with multiple view options, robust creation form, and proper state management.
 
-*   **Stage 5.0: Template Management Interface (done)**
-    *   Create React components for tabbed template management with MUI:
-        *   `resources/js/pages/admin/templates/Management.tsx` - Main management page:
+*   **✅ Stage 5.0: Template Management Interface (done)**
+    *   ✅ Created React components for tabbed template management with MUI:
+        *   `Management.tsx` - Main management page with:
             *   MUI Tabs for navigation
-            *   Shared header with template title and actions
-            *   Common save/publish functionality
-        *   `resources/js/components/admin/templates/tabs/` - Tab components:
-            *   `BasicInfoTab.tsx` - Template settings
+            *   Tab context and state management
+            *   Shared header with template title
+        *   Tab components implemented:
+            *   `BasicInfoTab.tsx` - Template settings:
                 *   Name and description fields
                 *   Background image upload/preview
-                *   Template status management
-            *   `VariablesTab.tsx` - Variable definition with preview values
+                *   Template status management (draft/active/archived)
+                *   Save functionality with proper validation
+            *   `VariablesTab.tsx` - Variable definition:
                 *   MUI DataGrid for variables list
-                *   Variable type selection with preview field
-                *   Validation rules and preview value setup
-            *   `RecipientsTab.tsx` - Recipient management
-                *   Recipients grid
-                *   Excel import/export
-                *   Validation results
-            *   `PreviewTab.tsx` - Template preview
-                *   Interactive preview with preview values
-                *   PDF preview and download
-                *   Zoom and pan controls
-            *   `EditorTab.tsx` - Visual editor
-                *   Canvas with background
-                *   Element toolbox
-                *   Properties panel
-    *   Set up TemplateManagementContext:
-        *   Active tab state
-        *   Form states for each tab
-        *   Cross-tab data dependencies
-        *   Autosave functionality
-    *   Enhance `TemplateController.php`:
-        *   Tab-specific endpoints (settings, variables, etc.)
-        *   Background image handling
-        *   Variable management
-        *   Recipients data handling
-    *   Add comprehensive validation:
-        *   Template settings validation
-        *   Variable rules validation
-        *   Excel data validation
-    *   Create supporting services:
-        *   `TemplateStorageService.php` for file handling
-        *   `VariableValidationService.php` for rules
-        *   `ExcelService.php` for import/export
-    *   **Result:** Complete template management interface with all necessary features
+                *   Variable type selection (text, date, number, gender)
+                *   Add/Edit/Delete operations with validation
+            *   Placeholder components with "coming soon" messages:
+                *   `EditorTab.tsx`
+                *   `RecipientsTab.tsx`
+                *   `PreviewTab.tsx`
+    *   ✅ Implemented TemplateManagementContext with:
+        *   Active tab state management
+        *   Form states handling
+        *   Loading and error states
+        *   Unsaved changes tracking
+    *   ✅ Enhanced TemplateController.php with:
+        *   Tab-specific endpoints and validation
+        *   Background image handling with storage
+        *   Error handling and logging
+    *   ✅ Added middleware for tab permissions:
+        *   `TemplateTabPermissionMiddleware.php` for controlling tab access
+        *   Integration with Laravel Gates and Policies
+    *   ✅ Implemented comprehensive validation:
+        *   Template settings validation (name, description, file types)
+        *   Variable validation based on type
+    *   **Result:** Functional template management interface with working Basic Info and Variables tabs, and placeholder components for Editor, Recipients, and Preview functionality
 
-*   **Stage 5.1: Template Tab Navigation and State Management (done)**
-    *   Enhance the template management interface with tab navigation:
-        *   Implement tab state persistence using Context
-        *   Add URL-based tab navigation (`/templates/{id}/manage?tab=basic|variables|editor|recipients`)
-        *   Handle tab-specific data loading and caching
-    *   Create shared components and utilities:
-        *   `resources/js/components/admin/templates/common/`:
-            *   `TabPanel.tsx` - Reusable tab panel component
-            *   `SaveButton.tsx` - Common save button with loading state
-            *   `HeaderActions.tsx` - Common header actions (preview, download, etc.)
-    *   Set up tab-specific Context providers:
-        *   Implement data persistence strategies
-        *   Handle cross-tab data dependencies
-        *   Manage loading and error states
-    *   Add tab permission handling in middleware
-    *   Implement tab-specific API error handling
-    *   **Result:** Smooth tab navigation with proper state management and data loading
+*   **✅ Stage 5.1: Template Tab Navigation and State Management (done)**
+    *   ✅ Enhanced template management interface with tab navigation:
+        *   Implemented URL-based tab navigation with query parameters (`?tab=basic|variables|editor|recipients|preview`)
+        *   Created TabContext with MUI Lab's TabContext/TabList/TabPanel components
+        *   Added tab state persistence through URL parameters
+        *   Implemented keepMounted for better tab performance
+    *   ✅ Implemented comprehensive TemplateManagementContext:
+        *   Active tab state management
+        *   Unsaved changes tracking
+        *   Loaded tabs state tracking
+        *   Tab-specific error handling
+        *   Template and configuration data management
+        *   Loading states with MUI CircularProgress
+        *   Error states with custom error UI
+    *   ✅ Tab-specific features:
+        *   Error boundary handling for each tab
+        *   Tab permission middleware integration
+        *   Loading and error state handling per tab
+        *   Automatic tab data fetching
+    *   ✅ User Experience improvements:
+        *   Smooth tab transitions
+        *   Error feedback with retry capabilities
+        *   Visual loading indicators
+        *   Clear error messages with recovery options
+    *   **Result:** A robust tab navigation system with proper state management, error handling, and user feedback mechanisms, fully integrated with the backend permission system
 
-*   **Stage 5.2: Template Variables Management**
-    *   Create React components for variables management with MUI:
-        *   `resources/js/pages/admin/templates/Variables.tsx` - Main variables page
-        *   `resources/js/components/admin/templates/variables/` - Components directory:
-            *   `VariableList.tsx` - Using MUI DataGrid for variable listing with preview value column
-            *   `VariableForm.tsx` - Using MUI Dialog for add/edit including preview value field
-    *   Set up TemplateVariablesContext for state management:
-        *   Include preview values in state management
-        *   Add actions for updating preview values
-        *   Handle preview value validation based on type
-    *   Add database migration for template variables:
-        *   Create `template_variables` table with columns:
-            *   `id`, `template_id`, `name`, `type` (text, date, number, etc.)
-            *   `validation_rules` (JSON), `description`, `preview_value`, timestamps
-    *   Create `TemplateVariable` model with relationships and preview handling
-    *   Enhance `TemplateController.php` with variable management methods:
-        *   Add CRUD operations for variables including preview values
-        *   Add validation rules management
-        *   Add preview value validation based on variable type
-    *   Implement variable type-specific validation rules and preview constraints:
-        *   Text variables: Support multilingual preview values
-        *   Date variables: Format preview dates in Hijri/Gregorian
-        *   Gender variables: Toggle between male/female preview text
-        *   Number variables: Format based on locale/rules
-    *   **Result:** Complete interface for managing template variables with validation rules and preview values
+*   **✅ Stage 5.2: Template Variables Management (done)**
+    *   ✅ Created React components for variables management with Material-UI:
+        *   `resources/ts/components/admin/templates/management/variables/` - Components directory:
+            *   `VariablesTab.tsx` - Main variables tab component with state management
+            *   `VariableList.tsx` - Using MUI DataGrid with advanced features:
+                *   Sortable and filterable columns
+                *   Pagination support (5, 10, 25 items per page)
+                *   Preview value column with type-specific display
+                *   Inline edit and delete actions
+            *   `VariableForm.tsx` - MUI Dialog form with dynamic fields:
+                *   Type-specific input fields (text, date, number, gender)
+                *   Form validation using React Hook Form
+                *   DatePicker for date type with proper formatting
+                *   Gender select with male/female options
+    *   ✅ Implemented comprehensive TemplateVariablesContext (`contexts/template/TemplateVariablesContext.tsx`):
+        *   State management for variables list
+        *   CRUD operations with error handling
+        *   Loading states and notifications
+        *   Type-safe interfaces for variables and operations
+    *   ✅ Added type-specific preview value handling:
+        *   Text: Standard text input
+        *   Date: MUI DatePicker with date formatting
+        *   Number: Numeric input with validation
+        *   Gender: Select input with male/female options
+    *   ✅ User Experience enhancements:
+        *   Delete confirmation dialog
+        *   Success/Error notifications using MUI Snackbar
+        *   Loading states during CRUD operations
+        *   Optimistic updates for better responsiveness
+    *   **Result:** A polished and type-safe interface for managing template variables with Material-UI components and proper state management
 
 *   **Stage 5.3: Template Recipients Management**
     *   Create React components for recipients management with MUI:
-        *   `resources/js/pages/admin/templates/Recipients.tsx` - Main recipients page
-        *   `resources/js/components/admin/templates/recipients/` - Components:
+        *   `resources/ts/pages/admin/templates/Recipients.tsx` - Main recipients page
+        *   `resources/ts/components/admin/templates/recipients/` - Components:
             *   `RecipientList.tsx` - Using MUI DataGrid for data display
             *   `ImportExport.tsx` - Handling Excel operations
             *   `ValidationResults.tsx` - Displaying import validation results
@@ -486,8 +599,8 @@ cgvs/
 
 *   **Stage 5.5: React Template Editor Component**
     *   Create React template editor components with MUI:
-        *   `resources/js/components/admin/templates/TemplateEditor.tsx` - Main editor using MUI Paper as canvas
-        *   `resources/js/components/admin/templates/elements/` - Element components with MUI styling:
+        *   `resources/ts/components/admin/templates/TemplateEditor.tsx` - Main editor using MUI Paper as canvas
+        *   `resources/ts/components/admin/templates/elements/` - Element components with MUI styling:
             *   `TextElement.tsx` - Using MUI Typography
             *   `DateElement.tsx` - Using MUI DatePicker
             *   `QRElement.tsx` - Custom styled with MUI theme
@@ -525,9 +638,9 @@ cgvs/
 
 *   **Stage 9: React Verification Component**
     *   Create React verification components with MUI:
-        *   `resources/js/pages/Verify.tsx` - Main verification page with MUI Container
-        *   `resources/js/components/public/VerificationForm.tsx` - Using MUI TextField and Button
-        *   `resources/js/components/public/VerificationResult.tsx` - Using MUI Alert and Card
+        *   `resources/ts/pages/Verify.tsx` - Main verification page with MUI Container
+        *   `resources/ts/components/public/VerificationForm.tsx` - Using MUI TextField and Button
+        *   `resources/ts/components/public/VerificationResult.tsx` - Using MUI Alert and Card
     *   Set up VerificationContext for verification state
     *   Implement API endpoint in `VerificationController`
     *   Add real-time verification with useDebounce hook
@@ -539,9 +652,9 @@ cgvs/
 
 *   **Stage 10: Certificate Generation React Components**
     *   Create React components for certificate generation with MUI:
-        *   `resources/js/pages/admin/generation/Upload.tsx` - Main page with MUI Container and Grid
-        *   `resources/js/components/admin/generation/UploadForm.tsx` - Using MUI Paper and LinearProgress
-        *   `resources/js/components/admin/generation/TemplateSelect.tsx` - Using MUI Select and ImageList
+        *   `resources/ts/pages/admin/generation/Upload.tsx` - Main page with MUI Container and Grid
+        *   `resources/ts/components/admin/generation/UploadForm.tsx` - Using MUI Paper and LinearProgress
+        *   `resources/ts/components/admin/generation/TemplateSelect.tsx` - Using MUI Select and ImageList
         *   Add MUI Stepper for multi-step generation process
         *   Implement MUI Dialog for preview and confirmation
     *   Implement file upload with react-dropzone and MUI styled drop zone
@@ -636,32 +749,3 @@ cgvs/
     *   Test QR code scanning and verification flow.
     *   Test performance of bulk generation.
     *   Secure file storage directories.
-*   **Stage 5.4: Template Preview Interface**
-    *   Create React components for template preview with MUI:
-        *   `resources/js/pages/admin/templates/Preview.tsx` - Main preview page
-        *   `resources/js/components/admin/templates/preview/` - Components directory:
-            *   `PreviewCanvas.tsx` - Preview canvas using MUI Paper
-            *   `PreviewToolbar.tsx` - Actions toolbar (download, refresh, etc.)
-            *   `PreviewVariableValues.tsx` - Show current preview values
-            *   `PreviewZoomControls.tsx` - Zoom and fit controls
-    *   Set up PreviewContext:
-        *   Manage preview state (zoom, position)
-        *   Cache preview PDF data
-        *   Track preview generation status
-    *   Create preview services:
-        *   `PreviewGeneratorService.php` - Generate preview PDFs
-        *   Methods to use variable preview values
-        *   Cache management for generated previews
-    *   Implement preview-specific API endpoints:
-        *   Add endpoint for generating preview PDF
-        *   Add endpoint for downloading preview PDF
-        *   Add endpoint for clearing preview cache
-    *   Add preview PDF viewer integration:
-        *   PDF.js integration for in-browser preview
-        *   Handle RTL/Arabic text display
-        *   Support zoom and pan controls
-    *   Implement real-time preview updates:
-        *   Auto-refresh on variable preview value changes
-        *   Background preview generation
-        *   Loading states with MUI Skeleton
-    *   **Result:** Interactive template preview interface using actual preview values
