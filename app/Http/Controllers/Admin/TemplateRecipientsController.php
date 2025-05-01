@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Template;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use SimpleXLSX;
-use SimpleXLSXGen;
+use Shuchkin\SimpleXLSX;
+use Shuchkin\SimpleXLSXGen;
 
 class TemplateRecipientsController extends Controller
 {
@@ -26,17 +27,95 @@ class TemplateRecipientsController extends Controller
 
     public function downloadTemplate(Template $template)
     {
-        $variables = $template->variables()->get();
-        $headers = ['Variable Name', 'Type', 'Description'];
-        $rows = [];
+        Log::info('Starting template download process', [
+            'template_id' => $template->id,
+            'request' => request()->all(),
+            'headers' => request()->headers->all(),
+            'url' => request()->url(),
+            'path' => request()->path(),
+            'method' => request()->method()
+        ]);
+        
+        // Log the template data
+        Log::debug('Template data', [
+            'template_name' => $template->name,
+            'template_id' => $template->id,
+            'has_variables_relation' => $template->relationLoaded('variables'),
+        ]);
 
-        foreach ($variables as $variable) {
-            $rows[] = [$variable->name, $variable->type, $variable->description ?? ''];
+        // Eager load variables to ensure we have all of them
+        $variables = $template->load('variables')->variables;
+        
+        // Log variables collection
+        Log::debug('Variables after eager loading', [
+            'count' => $variables->count(),
+            'variables' => $variables->toArray()
+        ]);
+        
+        if ($variables->isEmpty()) {
+            Log::warning('No variables found for template', ['template_id' => $template->id]);
+            return response()->json(['error' => 'No variables defined for this template'], 400);
         }
 
-        $xlsx = SimpleXLSXGen::fromArray([$headers, ...$rows]);
-        $filename = Str::slug($template->name) . '_template.xlsx';
+        // Create headers row with variable descriptions and types
+        $headers = [];
+        $descriptions = [];
+        $sampleRow = [];
+
+        foreach ($variables as $variable) {
+            Log::debug('Processing variable', [
+                'name' => $variable->name,
+                'type' => $variable->type,
+                'description' => $variable->description,
+                'preview_value' => $variable->preview_value
+            ]);
+
+            $headers[] = $variable->name;
+            $descriptions[] = $variable->description ?: "Enter {$variable->type} value";
+            
+            // Add sample data based on preview value or type
+            if ($variable->preview_value !== null) {
+                $sampleRow[] = $variable->preview_value;
+                Log::debug('Using preview value', ['value' => $variable->preview_value]);
+                continue;
+            }
+
+            // Use default values if no preview value is set
+            switch ($variable->type) {
+                case 'number':
+                    $sampleRow[] = '0';
+                    break;
+                case 'date':
+                    $sampleRow[] = now()->format('Y-m-d');
+                    break;
+                case 'gender':
+                    $sampleRow[] = 'male';
+                    break;
+                case 'text':
+                default:
+                    $sampleRow[] = 'Sample ' . $variable->name;
+                    break;
+            }
+        }
         
+        // Log the final arrays before Excel creation
+        Log::debug('Final Excel data', [
+            'headers' => $headers,
+            'descriptions' => $descriptions,
+            'sample_row' => $sampleRow
+        ]);
+
+        // Create the Excel file with headers, descriptions, and sample data
+        $xlsx = SimpleXLSXGen::fromArray([
+            $headers,          // First row: Variable names
+            $descriptions,     // Second row: Descriptions and type info
+            $sampleRow        // Third row: Sample/preview values
+        ]);
+        
+        $filename = Str::slug($template->name) . '_template.xlsx';
+        Log::info('Excel file created', ['filename' => $filename]);
+        
+        // Set headers for force download
         return response()->streamDownload(
             function () use ($xlsx) {
                 $xlsx->downloadAs('php://output');
@@ -44,6 +123,7 @@ class TemplateRecipientsController extends Controller
             $filename,
             [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             ]
         );
     }
@@ -83,22 +163,24 @@ class TemplateRecipientsController extends Controller
                     $rowErrors[] = "Missing required value for {$varName}";
                 }
                 
-                switch ($variable->type) {
-                    case 'date':
-                        if (!empty($value) && !strtotime($value)) {
-                            $rowErrors[] = "Invalid date format for {$varName}";
-                        }
-                        break;
-                    case 'email':
-                        if (!empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                            $rowErrors[] = "Invalid email format for {$varName}";
-                        }
-                        break;
-                    case 'gender':
-                        if (!empty($value) && !in_array(strtolower($value), ['male', 'female'])) {
-                            $rowErrors[] = "Invalid gender value for {$varName}";
-                        }
-                        break;
+                if (!empty($value)) {
+                    switch ($variable->type) {
+                        case 'date':
+                            if (!strtotime($value)) {
+                                $rowErrors[] = "Invalid date format for {$varName}";
+                            }
+                            break;
+                        case 'number':
+                            if (!is_numeric($value)) {
+                                $rowErrors[] = "Invalid number format for {$varName}";
+                            }
+                            break;
+                        case 'gender':
+                            if (!in_array(strtolower($value), ['male', 'female'])) {
+                                $rowErrors[] = "Invalid gender value for {$varName}";
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -169,5 +251,11 @@ class TemplateRecipientsController extends Controller
         return response()->json([
             'message' => 'Recipient deleted successfully',
         ]);
+    }
+
+    public function preview(Template $template, $id)
+    {
+        $recipient = $template->recipients()->findOrFail($id);
+        return response()->json($recipient->data);
     }
 }

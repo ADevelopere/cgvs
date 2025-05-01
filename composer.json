@@ -13,7 +13,8 @@
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.6",
         "mpdf/mpdf": "^6.1",
-        "shuchkin/simplexlsx": "^1.1"
+        "shuchkin/simplexlsx": "^1.1",
+        "shuchkin/simplexlsxgen": "^1.4"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
