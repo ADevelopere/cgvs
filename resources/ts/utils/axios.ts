@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse, AxiosHeaders } from 'axios';
 
 const instance: AxiosInstance = axios.create({
-    baseURL: '/api',
+    baseURL: 'http://localhost:8000/api',
     withCredentials: true,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -32,6 +32,14 @@ instance.interceptors.request.use(
         if (token) {
             config.headers.set('Authorization', `Bearer ${token}`);
         }
+
+        console.log('Making request:', {
+            url: config.url,
+            method: config.method,
+            headers: config.headers,
+            baseURL: config.baseURL
+        });
+
         return config;
     },
     (error: AxiosError) => {
@@ -41,8 +49,21 @@ instance.interceptors.request.use(
 
 // Response interceptor to handle common errors
 instance.interceptors.response.use(
-    (response: AxiosResponse) => response,
+    (response: AxiosResponse) => {
+        console.log('Response received:', {
+            url: response.config.url,
+            status: response.status,
+            headers: response.headers
+        });
+        return response;
+    },
     (error: AxiosError) => {
+        console.error('Response error:', {
+            url: error.config?.url,
+            status: error.response?.status,
+            message: error.message
+        });
+
         const status = error.response?.status;
         
         // Handle authentication errors

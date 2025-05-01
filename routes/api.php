@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use Illuminate\Support\Facades\Log;
 
 // Public routes
 Route::middleware(['api'])->group(function () {
@@ -35,5 +36,10 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
             Route::post('/import', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'import']);
             Route::delete('/{id}', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'destroy']);
         });
+    });
+
+    Route::get('/test-log', function() {
+        Log::info('Test log entry');
+        return response()->json(['message' => 'Test log written']);
     });
 });

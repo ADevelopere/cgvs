@@ -24,6 +24,15 @@ export type TemplateVariable = {
     description?: string;
     validation_rules?: Record<string, any>;
     preview_value?: string;
+    required?: boolean;
     created_at: string;
     updated_at: string;
+};
+
+export type Recipient = {
+    id: number;
+    data: Record<string, any>;
+    is_valid: boolean;
+    validation_errors: string[] | null;
+    created_at: string;
 };
