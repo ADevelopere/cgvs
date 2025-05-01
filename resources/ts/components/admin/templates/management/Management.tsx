@@ -6,6 +6,7 @@ import {
     Typography,
     Stack,
     CircularProgress,
+    Container,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
@@ -19,6 +20,7 @@ import RecipientsTab from "./recipients/RecipientsTab";
 import PreviewTab from "./tabs/PreviewTab";
 import { Template } from "@/contexts/template/template.types";
 import { TemplateVariablesProvider } from "@/contexts/template/TemplateVariablesContext";
+import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
 
 const template: Template = {
     id: 1,
@@ -47,7 +49,7 @@ const handleTabError = (
 
 const Management: React.FC = () => {
     const [_, setSearchParams] = useSearchParams();
-    const { activeTab, setTabError, loading } = useTemplateManagement();
+    const { activeTab, setTabError } = useTemplateManagement();
 
     const handleTabChange = async (
         _: React.SyntheticEvent,
@@ -63,7 +65,7 @@ const Management: React.FC = () => {
     };
 
     return (
-        <TemplateVariablesProvider>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Box sx={{ width: "100%" }}>
                 {/* Header */}
                 <Box sx={{ mb: 2 }}>
@@ -81,31 +83,35 @@ const Management: React.FC = () => {
                             >
                                 <Tab label="Basic Info" value="basic" />
                                 <Tab label="Variables" value="variables" />
-                                <Tab label="Editor" value="editor" />
                                 <Tab label="Recipients" value="recipients" />
+                                <Tab label="Editor" value="editor" />
                                 <Tab label="Preview" value="preview" />
                             </TabList>
                         </Box>
                     </Paper>
 
-                    <TabPanel keepMounted value="basic">
-                        <BasicInfoTab />
-                    </TabPanel>
-                    <TabPanel keepMounted value="variables">
-                        <VariablesTab template={template} />
-                    </TabPanel>
-                    <TabPanel keepMounted value="editor">
-                        <EditorTab />
-                    </TabPanel>
-                    <TabPanel keepMounted value="recipients">
-                        <RecipientsTab />
-                    </TabPanel>
-                    <TabPanel keepMounted value="preview">
-                        <PreviewTab />
-                    </TabPanel>
+                    <TemplateVariablesProvider>
+                        <TemplateRecipientsProvider>
+                            <TabPanel keepMounted value="basic">
+                                <BasicInfoTab />
+                            </TabPanel>
+                            <TabPanel keepMounted value="variables">
+                                <VariablesTab template={template} />
+                            </TabPanel>
+                            <TabPanel keepMounted value="recipients">
+                                <RecipientsTab />
+                            </TabPanel>
+                            <TabPanel keepMounted value="editor">
+                                <EditorTab />
+                            </TabPanel>
+                            <TabPanel keepMounted value="preview">
+                                <PreviewTab />
+                            </TabPanel>
+                        </TemplateRecipientsProvider>
+                    </TemplateVariablesProvider>
                 </TabContext>
             </Box>
-        </TemplateVariablesProvider>
+        </Container>
     );
 };
 

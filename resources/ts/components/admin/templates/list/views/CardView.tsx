@@ -9,16 +9,16 @@ import {
     Button,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useNavigate } from "react-router-dom";
 import { formatDate } from "@/utils/dateUtils";
-import { Template } from '@/contexts/template/template.types';
+import { Template } from "@/contexts/template/template.types";
+import { useTemplate } from "@/contexts/template/TemplatesContext";
 
 interface CardViewProps {
     templates: Template[];
 }
 
 const CardView: React.FC<CardViewProps> = ({ templates }) => {
-    const navigate = useNavigate();
+    const { manageTemplate } = useTemplate();
 
     return (
         <Grid container spacing={3}>
@@ -56,11 +56,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                             <Button
                                 size="small"
                                 startIcon={<SettingsIcon />}
-                                onClick={() =>
-                                    navigate(
-                                        `/admin/templates/${template.id}/manage`
-                                    )
-                                }
+                                onClick={() => manageTemplate(template.id)}
                             >
                                 Manage
                             </Button>

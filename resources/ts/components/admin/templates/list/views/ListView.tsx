@@ -11,15 +11,15 @@ import {
     Avatar,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useNavigate } from "react-router-dom";
 import { formatDate } from "@/utils/dateUtils";
 import { Template } from "@/contexts/template/template.types";
+import { useTemplate } from "@/contexts/template/TemplatesContext";
 interface ListViewProps {
     templates: Template[];
 }
 
 const ListView: React.FC<ListViewProps> = ({ templates }) => {
-    const navigate = useNavigate();
+    const { manageTemplate } = useTemplate();
 
     return (
         <TableContainer component={Paper}>
@@ -56,11 +56,7 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
                                 <Button
                                     size="small"
                                     startIcon={<SettingsIcon />}
-                                    onClick={() =>
-                                        navigate(
-                                            `/admin/templates/${template.id}/manage`
-                                        )
-                                    }
+                                    onClick={() => manageTemplate(template.id)}
                                 >
                                     Manage
                                 </Button>

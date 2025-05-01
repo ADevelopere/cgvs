@@ -24,6 +24,11 @@ class Template extends Model
         return $this->hasMany(TemplateVariable::class);
     }
 
+    public function recipients(): HasMany
+    {
+        return $this->hasMany(TemplateRecipient::class);
+    }
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
