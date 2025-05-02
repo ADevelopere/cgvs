@@ -13,7 +13,7 @@ export type TemplateConfig = {
     maxFileSize: number; // in KB
 };
 
-export type TemplateVariableType = "text" | "date" | "number" | "gender";
+export type TemplateVariableType = "text" | "date" | "number" | "gender" ;
 
 export type TemplateVariable = {
     id: number;

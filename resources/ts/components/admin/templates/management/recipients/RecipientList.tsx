@@ -1,7 +1,6 @@
 import {
     Box,
     Typography,
-    CircularProgress,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -13,20 +12,23 @@ import {
     DataGrid, 
     GridColDef, 
     GridRenderCellParams,
-    GridCellParams,
     GridPreProcessEditCellProps,
-    GridCellEditStopParams,
-    GridCellEditStopReasons,
     useGridApiRef,
 } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyIcon from '@mui/icons-material/Key';
-import { useMemo} from 'react';
+import { useMemo } from 'react';
 import { useTemplateRecipients } from '@/contexts/template/TemplateRecipientsContext';
 import { useTemplateVariables } from '@/contexts/template/TemplateVariablesContext';
 
 interface RecipientListProps {
     templateId: number;
+}
+
+interface RecipientRow {
+    id: number;
+    is_valid: boolean;
+    [key: string]: any;
 }
 
 export default function RecipientList({ templateId }: RecipientListProps) {
@@ -67,7 +69,6 @@ export default function RecipientList({ templateId }: RecipientListProps) {
             }
         }));
 
-        // Add status and actions columns
         return [
             ...dataColumns,
             {
@@ -75,7 +76,7 @@ export default function RecipientList({ templateId }: RecipientListProps) {
                 headerName: 'Status',
                 width: 120,
                 editable: false,
-                renderCell: (params: GridRenderCellParams) => (
+                renderCell: (params: GridRenderCellParams<RecipientRow>) => (
                     params.row.is_valid ? (
                         <Typography color="success.main">Valid</Typography>
                     ) : (
@@ -88,7 +89,7 @@ export default function RecipientList({ templateId }: RecipientListProps) {
                 headerName: 'Actions',
                 width: 100,
                 editable: false,
-                renderCell: (params: GridRenderCellParams) => (
+                renderCell: (params: GridRenderCellParams<RecipientRow>) => (
                     <DeleteIcon
                         onClick={() => setConfirmDeleteRecipientId(params.row.id)}
                         style={{ cursor: 'pointer' }}
@@ -98,24 +99,6 @@ export default function RecipientList({ templateId }: RecipientListProps) {
         ];
     }, [variables, setConfirmDeleteRecipientId]);
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" p={4}>
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    if (recipients.length === 0) {
-        return (
-            <Box textAlign="center" p={4}>
-                <Typography color="textSecondary">
-                    No recipients found. Import some using the button above.
-                </Typography>
-            </Box>
-        );
-    }
-
     // Transform recipients data for DataGrid
     const rows = recipients.map(recipient => ({
         id: recipient.id,
@@ -123,74 +106,40 @@ export default function RecipientList({ templateId }: RecipientListProps) {
         ...recipient.data
     }));
 
-    const handleCellEditStop = (params: GridCellEditStopParams) => {
-        if (params.reason === GridCellEditStopReasons.escapeKeyDown) {
-            return; // Cancel edit on Escape
-        }
+    const processRowUpdate = async (newRow: RecipientRow, oldRow: RecipientRow) => {
+        console.log('Processing row update:', {
+            newRow,
+            oldRow
+        });
 
-        const variable = variables.find(v => v.name === params.field);
-        if (variable?.is_key && (!params.value || params.value.trim() === '')) {
-            return false; // Cancel edit if key field is empty
-        }
+        try {
+            // Extract only the data fields (exclude id, is_valid, status, and actions)
+            const { id, is_valid, status, actions, ...data } = newRow;
+            
+            // Update the recipient with the new data
+            const updatedRecipient = await updateRecipient(id, data);
 
-        // Save changes for Tab, Shift+Tab, and Enter
-        if (params.reason === GridCellEditStopReasons.tabKeyDown || 
-            params.reason === GridCellEditStopReasons.shiftTabKeyDown ||
-            params.reason === GridCellEditStopReasons.enterKeyDown) {
-            const recipient = recipients.find(r => r.id === Number(params.id));
-            if (!recipient) return;
-
-            const updatedData = {
-                ...recipient.data,
-                [params.field]: params.value
+            // Return the server response data formatted as a row
+            const updatedRow = {
+                id: updatedRecipient.id,
+                is_valid: updatedRecipient.is_valid,
+                ...updatedRecipient.data
             };
-
-            updateRecipient(recipient.id, { data: updatedData }).catch(() => {
-                // Error handling is managed by the context
+            
+            console.log('Row update successful:', {
+                original: oldRow,
+                updated: updatedRow
             });
-        }
-        
-        if (params.reason === GridCellEditStopReasons.cellFocusOut) {
-            return false; // Cancel edit when clicking outside
+            
+            return updatedRow;
+        } catch (error) {
+            console.error('Error updating row:', error);
+            return oldRow;
         }
     };
 
-    const handleCellKeyDown = (params: GridCellParams, event: React.KeyboardEvent) => {
-        const { key, shiftKey } = event;
-
-        if (key === 'Tab') {
-            // Prevent default Tab behavior
-            event.preventDefault();
-
-            // Get the current cell indices
-            const columnFields = columns
-                .filter(col => col.editable !== false)
-                .map(col => col.field);
-            const currentColIndex = columnFields.indexOf(params.field);
-            const rowIndex = rows.findIndex(row => row.id === params.id);
-
-            // Calculate next cell position
-            let nextColIndex = shiftKey ? currentColIndex - 1 : currentColIndex + 1;
-            let nextRowIndex = rowIndex;
-
-            // Handle row wrapping
-            if (nextColIndex < 0) {
-                nextColIndex = columnFields.length - 1;
-                nextRowIndex--;
-            } else if (nextColIndex >= columnFields.length) {
-                nextColIndex = 0;
-                nextRowIndex++;
-            }
-
-            // If we have a valid next cell, move to it
-            if (nextRowIndex >= 0 && nextRowIndex < rows.length) {
-                const nextField = columnFields[nextColIndex];
-                const nextId = rows[nextRowIndex].id;
-
-                // Start editing the next cell
-                apiRef.current?.startCellEditMode({ id: nextId, field: nextField });
-            }
-        }
+    const handleProcessRowUpdateError = (error: any) => {
+        console.error('Error updating row:', error);
     };
 
     return (
@@ -211,8 +160,8 @@ export default function RecipientList({ templateId }: RecipientListProps) {
                     onPaginationModelChange={(model) => {
                         setPagination(model.page, model.pageSize);
                     }}
-                    onCellEditStop={handleCellEditStop}
-                    onCellKeyDown={handleCellKeyDown}
+                    processRowUpdate={processRowUpdate}
+                    onProcessRowUpdateError={handleProcessRowUpdateError}
                     disableRowSelectionOnClick
                     editMode="cell"
                 />
