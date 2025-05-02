@@ -31,8 +31,8 @@ class TemplateController extends Controller
 
         // Add background_url to each template
         $templates->transform(function ($template) {
-            if ($template->background_path) {
-                $template->background_url = Storage::url($template->background_path);
+            if ($template->background_url) {
+                $template->background_url = Storage::url($template->background_url);
             }
             return $template;
         });
@@ -108,28 +108,48 @@ class TemplateController extends Controller
         }
 
         try {
+            Log::info('Creating new template after validation success');
+            
             $template = new Template();
             $template->name = $request->name;
             $template->description = $request->description;
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
+                Log::info('Processing background file for template');
                 $path = $request->file('background')->store('template_backgrounds', 'public');
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
-                $template->background_path = $path;
+                $template->background_url = $path;
             }
 
+            Log::info('Saving template', [
+                'template_data' => $template->toArray()
+            ]);
+            
             $template->save();
 
-            if ($template->background_path) {
-                $template->background_url = Storage::url($template->background_path);
+            Log::info('Template saved successfully', [
+                'template_id' => $template->id
+            ]);
+
+            if ($template->background_url) {
+                $template->background_url = Storage::url($template->background_url);
             }
+
+            // Check if name variable was created
+            $nameVariable = $template->variables()->where('is_key', true)->first();
+            Log::info('Checking name variable creation', [
+                'template_id' => $template->id,
+                'name_variable_exists' => !is_null($nameVariable),
+                'name_variable' => $nameVariable ? $nameVariable->toArray() : null
+            ]);
 
             return response()->json($template, 201);
         } catch (Exception $e) {
             Log::error('Failed to create template', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'input' => $request->all()
             ]);
 
@@ -185,21 +205,21 @@ class TemplateController extends Controller
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
                 // Delete old background if it exists
-                if ($template->background_path) {
-                    Storage::disk('public')->delete($template->background_path);
+                if ($template->background_url) {
+                    Storage::disk('public')->delete($template->background_url);
                 }
 
                 $path = $request->file('background')->store('template_backgrounds', 'public');
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
-                $template->background_path = $path;
+                $template->background_url = $path;
             }
 
             $template->save();
 
-            if ($template->background_path) {
-                $template->background_url = Storage::url($template->background_path);
+            if ($template->background_url) {
+                $template->background_url = Storage::url($template->background_url);
             }
 
             return response()->json($template);
@@ -227,8 +247,8 @@ class TemplateController extends Controller
     public function show(Template $template): JsonResponse
     {
         // Add background_url if the template has a background
-        if ($template->background_path) {
-            $template->background_url = Storage::url($template->background_path);
+        if ($template->background_url) {
+            $template->background_url = Storage::url($template->background_url);
         }
 
         return response()->json($template);

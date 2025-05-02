@@ -9,7 +9,7 @@ export const generateExcelTemplate = async (
     const wb = XLSX.utils.book_new();
     
     // Generate headers based on template variables
-    const headers = variables.map(v => v.name);
+    const headers = variables.map(v => (v.required || v.is_key) ? `${v.name}*` : v.name);
     const descriptions = variables.map(v => {
         let desc = v.description || `Enter ${v.type} value`;
         if (v.is_key) {
