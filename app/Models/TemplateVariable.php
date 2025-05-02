@@ -14,12 +14,14 @@ class TemplateVariable extends Model
         'validation_rules',
         'preview_value',
         'is_key',
+        'required',
         'order',
     ];
 
     protected $casts = [
         'validation_rules' => 'array',
         'is_key' => 'boolean',
+        'required' => 'boolean',
         'order' => 'integer',
     ];
 

@@ -265,7 +265,9 @@ class TemplateRecipientsController extends Controller
             }
 
             // Create headers row
-            $headers = $variables->pluck('name')->toArray();
+            $headers = $variables->map(function($v) {
+                return ($v->required || $v->is_key) ? $v->name . '*' : $v->name;
+            })->toArray();
             
             // Create descriptions row
             $descriptions = $variables->map(function($v) {

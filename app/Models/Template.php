@@ -14,8 +14,7 @@ class Template extends Model
     protected $fillable = [
         'name',
         'description',
-        'background_path',
-        'required_variables',
+        'background_url',
         'is_active',
     ];
 
@@ -33,7 +32,6 @@ class Template extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
-        'required_variables' => 'array',
         'is_active' => 'boolean',
     ];
 
@@ -50,19 +48,46 @@ class Template extends Model
      */
     public function getBackgroundFullPathAttribute(): ?string
     {
-        return $this->background_path ? storage_path('app/public/' . $this->background_path) : null;
+        return $this->background_url ? storage_path('app/public/' . $this->background_url) : null;
     }
 
     protected static function booted()
     {
-        static::created(function ($template) {
-            // Create the default name variable
-            $template->variables()->create([
-                'name' => 'name',
-                'type' => 'text',
-                'description' => 'Recipient identifier name',
-                'is_key' => true,
+        static::creating(function ($template) {
+            \Illuminate\Support\Facades\Log::info('Creating new template', [
+                'template_name' => $template->name,
+                'template_data' => $template->toArray(),
             ]);
+        });
+
+        static::created(function ($template) {
+            \Illuminate\Support\Facades\Log::info('Template created, creating name variable', [
+                'template_id' => $template->id,
+                'template_name' => $template->name,
+            ]);
+
+            try {
+                // Create the default name variable
+                $nameVar = $template->variables()->create([
+                    'name' => 'name',
+                    'type' => 'text',
+                    'description' => 'Recipient identifier name',
+                    'is_key' => true,
+                    'required' => true,
+                    'order' => 1, // Set order to 1 since it's the first variable
+                ]);
+
+                \Illuminate\Support\Facades\Log::info('Name variable created successfully', [
+                    'template_id' => $template->id,
+                    'name_variable_id' => $nameVar->id,
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to create name variable', [
+                    'template_id' => $template->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+            }
         });
     }
 }

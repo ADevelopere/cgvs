@@ -133,12 +133,34 @@ class TemplateVariableController extends Controller
             ], 422);
         }
 
-        // Update order for each variable
-        foreach ($request->variables as $index => $variableId) {
-            TemplateVariable::where('id', $variableId)
-                ->update(['order' => $index + 1]);
+        // Check if key variable's position is being changed to something other than first
+        $keyVariable = $variables->firstWhere('is_key', true);
+        if ($keyVariable) {
+            $newKeyPosition = array_search($keyVariable->id, $request->variables);
+            if ($newKeyPosition !== 0) {
+                return response()->json([
+                    'message' => 'Key variable must be first',
+                    'errors' => ['variables' => ['The key variable must remain in the first position']]
+                ], 422);
+            }
         }
 
-        return response()->json(['message' => 'Variables reordered successfully']);
+        try {
+            // Update order for each variable
+            foreach ($request->variables as $index => $variableId) {
+                TemplateVariable::where('id', $variableId)
+                    ->update(['order' => $index + 1]);
+            }
+
+            // Return the reordered variables
+            $reorderedVariables = $template->variables()->orderBy('order')->get();
+            return response()->json($reorderedVariables);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to reorder variables',
+                'errors' => ['general' => [$e->getMessage()]]
+            ], 500);
+        }
     }
 }
