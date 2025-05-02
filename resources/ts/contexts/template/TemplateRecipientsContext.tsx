@@ -11,7 +11,7 @@ import axios from "@/utils/axios";
 import { Alert, Snackbar } from "@mui/material";
 import { useTemplateVariables } from "./TemplateVariablesContext";
 import * as excelUtils from "@/utils/excel/excelUtils";
-import { Recipient } from "./template.types";
+import { Recipient, TemplateVariableType } from "./template.types";
 import { ValidationResult } from "@/utils/excel/types";
 import { useTemplateManagement } from "./TemplateManagementContext";
 
@@ -45,13 +45,14 @@ interface TemplateRecipientsContext {
     setValidationResult: (result: ValidationResult | null) => void;
     fetchRecipients: (page: number, rowsPerPage: number) => Promise<void>;
     deleteRecipient: (recipientId: number) => Promise<void>;
+    createRecipient: (data: Record<string, string | number>) => Promise<void>;
     importRecipients: (file: File) => Promise<any>;
     validateAndSetResult: () => Promise<void>;
     handleImport: () => Promise<void>;
     handleDeleteConfirm: () => Promise<void>;
     // The only two exposed template methods
     getTemplate: () => Promise<{ content: Blob; filename: string } | null>;
-    updateRecipient: (recipientId: number, data: any) => Promise<void>;
+    updateRecipient: (recipientId: number, data: any) => Promise<Recipient>;
 }
 
 const TemplateRecipientsContext = createContext<
@@ -417,37 +418,144 @@ export function TemplateRecipientsProvider({
         paginationState.rowsPerPage,
     ]);
 
-    const updateRecipient = useCallback(
-        async (recipientId: number, data: any): Promise<void> => {
+    const createRecipient = useCallback(
+        async (data: Record<string, any>): Promise<void> => {
             try {
                 // Validate key variable value
                 const keyVariable = variables.find((v) => v.is_key);
-                if (keyVariable && data.data[keyVariable.name] === "") {
+                if (keyVariable && !data[keyVariable.name]) {
                     throw new Error(
                         `${keyVariable.name} cannot be empty as it's a key identifier`
                     );
                 }
 
+                const response = await axios.post(
+                    `/admin/templates/${templateId}/recipients`,
+                    { data }
+                );
+
+                // Update the recipients list if we're on the first page
+                if (paginationState.page === 0) {
+                    setRecipients((prev) => [...prev, response.data]);
+                }
+
+                showNotification("Recipient created successfully", "success");
+            } catch (error: any) {
+                const errorMessage =
+                    error.response?.data?.message ||
+                    error.message ||
+                    "Failed to create recipient";
+                showNotification(errorMessage, "error");
+                throw error;
+            }
+        },
+        [templateId, variables, paginationState.page]
+    );
+
+    const updateRecipient = useCallback(
+        async (recipientId: number, data: any): Promise<Recipient> => {
+            try {
+                console.log(
+                    "Starting recipient update:",
+                    JSON.stringify({
+                        recipientId,
+                        data,
+                        templateId,
+                    })
+                );
+
+                // Validate key variable value
+                const keyVariable = variables.find((v) => v.is_key);
+                // Handle both direct data object and nested data structure
+                const actualData = data.data || data;
+                if (keyVariable && !actualData[keyVariable.name]) {
+                    console.error(
+                        "Key variable validation failed:",
+                        JSON.stringify({
+                            keyVariable,
+                            data: actualData,
+                        })
+                    );
+                    throw new Error(
+                        `${keyVariable.name} cannot be empty as it's a key identifier`
+                    );
+                }
+
+                console.log("Making API request to update recipient:", {
+                    url: `/admin/templates/${templateId}/recipients/${recipientId}`,
+                    data,
+                });
+
+                // Ensure we're sending the data in the correct format
                 const response = await axios.put(
                     `/admin/templates/${templateId}/recipients/${recipientId}`,
-                    data
+                    { data: data.data || data }
                 );
 
-                setRecipients((prev) =>
-                    prev.map((r) => (r.id === recipientId ? response.data : r))
+                console.log(
+                    "Update API response:",
+                    JSON.stringify({
+                        status: response.status,
+                        data: response.data,
+                    })
                 );
+
+                // Update the recipient in the local state
+                setRecipients((prev) => {
+                    const updated = prev.map((r) =>
+                        r.id === recipientId
+                            ? {
+                                  ...r,
+                                  ...response.data,
+                              }
+                            : r
+                    );
+                    console.log("Updated recipients state:", {
+                        previous: prev.find((r) => r.id === recipientId),
+                        updated: updated.find((r) => r.id === recipientId),
+                    });
+                    return updated;
+                });
 
                 showNotification("Recipient updated successfully", "success");
+
+                // Return the response data so it can be used by the DataGrid
+                fetchRecipients(
+                    paginationState.page,
+                    paginationState.rowsPerPage
+                ).catch((err) => {
+                    console.error("Failed to re-fetch recipients:", err);
+                });
+                console.log("Returning updated recipient data:", response.data);
+                // Return the updated recipient data
+                return response.data;
             } catch (error: any) {
+                console.error("Failed to update recipient:", {
+                    error,
+                    response: error.response?.data,
+                    status: error.response?.status,
+                });
+
                 const errorMessage =
                     error.response?.data?.message ||
                     error.message ||
                     "Failed to update recipient";
                 showNotification(errorMessage, "error");
+                // Re-fetch the current page to ensure data consistency
+                await fetchRecipients(
+                    paginationState.page,
+                    paginationState.rowsPerPage
+                );
                 throw error;
             }
         },
-        [templateId, variables]
+        [
+            templateId,
+            variables,
+            paginationState.page,
+            paginationState.rowsPerPage,
+            fetchRecipients,
+        ]
     );
 
     const value = useMemo(
@@ -472,6 +580,7 @@ export function TemplateRecipientsProvider({
             setValidationResult,
             fetchRecipients,
             deleteRecipient,
+            createRecipient,
             importRecipients,
             validateAndSetResult,
             handleImport,

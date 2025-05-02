@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Shuchkin\SimpleXLSX;
 use Shuchkin\SimpleXLSXGen;
 
@@ -37,28 +36,76 @@ class TemplateRecipientsController extends Controller
 
     public function update(Request $request, Template $template, $id)
     {
-        $recipient = $template->recipients()->findOrFail($id);
-        
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array',
+        // Log all request information
+        Log::info('Starting recipient update', [
+            'template_id' => $template->id,
+            'recipient_id' => $id,
+            'request_data' => $request->all(),
+            'content_type' => $request->header('Content-Type'),
+            'request_path' => $request->path(),
+            'request_method' => $request->method(),
+            'request_url' => $request->url(),
+            'route_parameters' => $request->route()->parameters()
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+        try {
+            $recipient = $template->recipients()->findOrFail($id);
+            
+            Log::info('Found recipient', [
+                'recipient' => $recipient->toArray(),
+                'current_data' => $recipient->getData()
+            ]);
+
+            $validator = Validator::make($request->all(), [
+                'data' => 'array',
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Validation failed', [
+                    'errors' => $validator->errors()->toArray()
+                ]);
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // If data is inside a data property, use that, otherwise use the request data directly
+            $data = $request->has('data') ? $request->input('data') : $request->all();
+            
+            Log::info('Processing data for update', [
+                'processed_data' => $data
+            ]);
+
+            try {
+                $recipient->setData($data);
+
+                Log::info('Successfully updated recipient', [
+                    'updated_data' => $recipient->getData()
+                ]);
+
+                return response()->json([
+                    'id' => $recipient->id,
+                    'template_id' => $recipient->template_id,
+                    'is_valid' => $recipient->is_valid,
+                    'validation_errors' => $recipient->validation_errors,
+                    'data' => $recipient->getData(),
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('Failed to update recipient data', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to process recipient update', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
         }
-
-        $recipient->setData($request->input('data'));
-
-        return response()->json([
-            'id' => $recipient->id,
-            'template_id' => $recipient->template_id,
-            'is_valid' => $recipient->is_valid,
-            'validation_errors' => $recipient->validation_errors,
-            'data' => $recipient->getData(),
-        ]);
     }
 
     public function import(Request $request, Template $template)
@@ -322,5 +369,35 @@ class TemplateRecipientsController extends Controller
                 'message' => 'Failed to generate template: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function store(Request $request, Template $template)
+    {
+        $validator = Validator::make($request->all(), [
+            'data' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $recipient = $template->recipients()->create([
+            'is_valid' => true,
+        ]);
+
+        if ($recipient) {
+            $recipient->setData($request->input('data'));
+        }
+
+        return response()->json([
+            'id' => $recipient->id,
+            'template_id' => $recipient->template_id,
+            'is_valid' => $recipient->is_valid,
+            'validation_errors' => $recipient->validation_errors,
+            'data' => $recipient->getData(),
+        ], 201);
     }
 }
