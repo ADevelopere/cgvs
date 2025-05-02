@@ -134,7 +134,7 @@ export function TemplateRecipientsProvider({
                 setLoading(false);
             }
         },
-        [templateId]
+        [templateId, variables]
     );
 
     useEffect(() => {
@@ -144,7 +144,6 @@ export function TemplateRecipientsProvider({
         paginationState.page,
         paginationState.rowsPerPage,
         fetchRecipients,
-        variables
     ]);
 
     const deleteRecipient = useCallback(

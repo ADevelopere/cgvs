@@ -61,7 +61,6 @@ export const validateExcelInBrowser = async (
 
     // Track key values to ensure uniqueness
     const keyValues = new Set<string>();
-    const keyVariable = variables.find(v => v.is_key);
     
     // Validate each row
     rows.forEach((row: any, index: number) => {
@@ -116,3 +115,4 @@ export const validateExcelInBrowser = async (
         errors
     };
 };
+
