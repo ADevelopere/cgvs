@@ -5,6 +5,7 @@ import {
     ReactNode,
     useCallback,
     useMemo,
+    useEffect,
 } from "react";
 import axios from "@/utils/axios";
 import { Alert, Snackbar } from "@mui/material";
@@ -44,8 +45,7 @@ interface TemplateRecipientsContext {
     setValidationResult: (result: ValidationResult | null) => void;
     fetchRecipients: (page: number, rowsPerPage: number) => Promise<void>;
     deleteRecipient: (recipientId: number) => Promise<void>;
-    validateFile: (file: File) => Promise<ValidationResult>;
-    importRecipients: (file: File) => Promise<void>;
+    importRecipients: (file: File) => Promise<any>;
     validateAndSetResult: () => Promise<void>;
     handleImport: () => Promise<void>;
     handleDeleteConfirm: () => Promise<void>;
@@ -65,16 +65,16 @@ interface TemplateRecipientsProviderProps {
 export function TemplateRecipientsProvider({
     children,
 }: TemplateRecipientsProviderProps) {
-    const { variables } = useTemplateVariables();
     const { template } = useTemplateManagement();
     const templateId = useMemo(() => template?.id, [template?.id]);
+    const { variables } = useTemplateVariables();
 
     const [recipients, setRecipients] = useState<Recipient[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notification, setNotification] = useState<Notification | null>(null);
-    const [useClientTemplate, setUseClientTemplate] = useState(false);
-    const [useClientValidation, setUseClientValidation] = useState(false);
+    const [useClientTemplate, setUseClientTemplate] = useState(true);
+    const [useClientValidation, setUseClientValidation] = useState(true);
     const [validationResult, setValidationResult] =
         useState<ValidationResult | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -115,7 +115,7 @@ export function TemplateRecipientsProvider({
                 const response = await axios.get<{
                     recipients: { data: Recipient[]; total: number };
                 }>(
-                    `/templates/${templateId}/recipients?page=${
+                    `/admin/templates/${templateId}/recipients?page=${
                         page + 1
                     }&per_page=${rowsPerPage}`
                 );
@@ -137,11 +137,21 @@ export function TemplateRecipientsProvider({
         [templateId]
     );
 
+    useEffect(() => {
+        fetchRecipients(paginationState.page, paginationState.rowsPerPage);
+    }, [
+        templateId,
+        paginationState.page,
+        paginationState.rowsPerPage,
+        fetchRecipients,
+        variables
+    ]);
+
     const deleteRecipient = useCallback(
         async (recipientId: number) => {
             try {
                 await axios.delete(
-                    `/templates/${templateId}/recipients/${recipientId}`
+                    `/admin/templates/${templateId}/recipients/${recipientId}`
                 );
                 setRecipients((prev) =>
                     prev.filter((r) => r.id !== recipientId)
@@ -158,62 +168,91 @@ export function TemplateRecipientsProvider({
         [templateId]
     );
 
-    const validateFile = useCallback(
-        async (file: File): Promise<ValidationResult> => {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append(
-                "use_client_validation",
-                useClientValidation.toString()
-            );
-
-            try {
-                if (useClientValidation) {
-                    // Client-side validation logic would go here
-                    // For now, we'll use server validation as fallback
-                    const response = await axios.post<ValidationResult>(
-                        `/templates/${templateId}/recipients/validate`,
-                        formData
-                    );
-                    return response.data;
-                } else {
-                    const response = await axios.post<ValidationResult>(
-                        `/templates/${templateId}/recipients/validate`,
-                        formData
-                    );
-                    return response.data;
-                }
-            } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.message || "Failed to validate file";
-                showNotification(errorMessage, "error");
-                throw error;
-            }
-        },
-        [useClientValidation]
-    );
-
     const importRecipients = useCallback(
         async (file: File) => {
-            const formData = new FormData();
-            formData.append("file", file);
-
+            setIsUploading(true);
             try {
-                const response = await axios.post(
-                    `/templates/${templateId}/recipients/import`,
-                    formData
-                );
-                await fetchRecipients(
-                    paginationState.page,
-                    paginationState.rowsPerPage
-                );
-                showNotification("Recipients imported successfully", "success");
+                let validationResult = null;
+
+                if (useClientValidation) {
+                    // Validate in browser first
+                    validationResult = await excelUtils.validateExcelInBrowser(
+                        file,
+                        variables
+                    );
+
+                    // Check for validation errors
+                    if (
+                        validationResult.errors &&
+                        validationResult.errors.length > 0
+                    ) {
+                        setValidationResult(validationResult);
+                        throw new Error("Validation failed");
+                    }
+                }
+
+                // Validation passed or useClientValidation is false, proceed with import
+                const formData = new FormData();
+                formData.append("file", file, file.name); // Include filename explicitly
+                formData.append("validated", useClientValidation ? "1" : "0");
+
+                // Debug logging
+                console.log("File being uploaded:", {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                });
+                console.log("FormData entries:");
+                for (let pair of formData.entries()) {
+                    console.log(pair[0], pair[1]);
+                }
+
+                try {
+                    const response = await axios.post(
+                        `/admin/templates/${templateId}/recipients/import`,
+                        formData,
+                        {
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
+                        }
+                    );
+                    await fetchRecipients(
+                        paginationState.page,
+                        paginationState.rowsPerPage
+                    );
+                    showNotification(response.data.message, "success");
+                    setValidationResult(null);
+                    return response.data;
+                } catch (error: any) {
+                    // Handle server-side validation errors
+                    if (error.response?.status === 422) {
+                        const result = {
+                            valid_rows: error.response.data.valid_rows || 0,
+                            total_rows: error.response.data.total_rows || 0,
+                            errors: error.response.data.errors,
+                        };
+                        setValidationResult(result);
+                        showNotification(
+                            "Validation failed. Please check the errors below.",
+                            "error"
+                        );
+                        throw error;
+                    }
+
+                    // Handle other errors
+                    const errorMessage =
+                        error.response?.data?.message ||
+                        "Failed to import recipients";
+                    showNotification(errorMessage, "error");
+                    throw error;
+                }
             } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.message ||
-                    "Failed to import recipients";
+                const errorMessage = error.message || "Failed to process file";
                 showNotification(errorMessage, "error");
                 throw error;
+            } finally {
+                setIsUploading(false);
             }
         },
         [
@@ -221,6 +260,8 @@ export function TemplateRecipientsProvider({
             paginationState.page,
             paginationState.rowsPerPage,
             templateId,
+            useClientValidation,
+            variables,
         ]
     );
 
@@ -230,6 +271,8 @@ export function TemplateRecipientsProvider({
     } | null> => {
         try {
             let content: Blob;
+            let serverResponse: any = null;
+
             if (useClientTemplate) {
                 if (!variables || variables.length === 0) {
                     showNotification("No template variables defined", "error");
@@ -245,71 +288,101 @@ export function TemplateRecipientsProvider({
                     showNotification("Template ID is required", "error");
                     return null;
                 }
-                console.log('Requesting template download from server...');
-                const response = await axios.get(
+                console.log("Requesting template download from server...");
+                serverResponse = await axios.get(
                     `/admin/templates/${templateId}/recipients/template`,
-                    { 
+                    {
                         responseType: "blob",
                         headers: {
-                            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        }
+                            Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        },
                     }
                 );
-                console.log('Server response:', response.status);
+                console.log("Server response:", serverResponse.status);
 
-                if (!response.data) {
-                    showNotification("No template data received from server", "error");
+                if (!serverResponse.data) {
+                    showNotification(
+                        "No template data received from server",
+                        "error"
+                    );
                     return null;
                 }
 
-                if (response.status !== 200) {
-                    showNotification(`Server returned status ${response.status}`, "error");
+                if (serverResponse.status !== 200) {
+                    showNotification(
+                        `Server returned status ${serverResponse.status}`,
+                        "error"
+                    );
                     return null;
                 }
 
-                content = new Blob([response.data], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                content = new Blob([serverResponse.data], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 });
-                
+
                 if (content.size === 0) {
-                    showNotification("Received empty template from server", "error");
+                    showNotification(
+                        "Received empty template from server",
+                        "error"
+                    );
                     return null;
                 }
             }
 
             if (!content) {
-                showNotification("Failed to generate template content", "error");
+                showNotification(
+                    "Failed to generate template content",
+                    "error"
+                );
                 return null;
             }
 
+            // Set filename based on generation method
+            const filename = useClientTemplate
+                ? `template_${templateId}_recipients_client.xlsx`
+                : serverResponse?.headers?.["content-disposition"]
+                      ?.split("filename=")[1]
+                      ?.replace(/"/g, "") ||
+                  `template_${templateId}_recipients_server.xlsx`;
+
             return {
                 content,
-                filename: `template_${templateId}_recipients.xlsx`,
+                filename,
             };
         } catch (error: any) {
-            console.error('Template download error:', error);
-            const errorMessage = error.response?.data?.message || 
-                               error.message || 
-                               "Failed to generate Excel template";
+            console.error("Template download error:", error);
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to generate Excel template";
             showNotification(errorMessage, "error");
             return null;
         }
     }, [variables, templateId, useClientTemplate]);
 
-
-
     const validateAndSetResult = useCallback(async () => {
         if (!selectedFile) return;
         setIsUploading(true);
         try {
-            const result = await validateFile(selectedFile);
-            setValidationResult(result);
+            if (useClientValidation) {
+                const result = await excelUtils.validateExcelInBrowser(
+                    selectedFile,
+                    variables
+                );
+                setValidationResult(result);
+            } else {
+                // If not using client validation, just import directly
+                await importRecipients(selectedFile);
+                setShowImportDialog(false);
+                setSelectedFile(null);
+                setValidationResult(null);
+            }
         } catch (error) {
-            // Error handling is done in validateFile
+            // Error handling is done in the respective functions
         } finally {
             setIsUploading(false);
         }
-    }, [selectedFile, validateFile]);
+    }, [selectedFile, useClientValidation, variables, importRecipients]);
 
     const handleImport = useCallback(async () => {
         if (!selectedFile) return;
@@ -348,29 +421,34 @@ export function TemplateRecipientsProvider({
     const updateRecipient = useCallback(
         async (recipientId: number, data: any): Promise<void> => {
             try {
+                // Validate key variable value
+                const keyVariable = variables.find((v) => v.is_key);
+                if (keyVariable && data.data[keyVariable.name] === "") {
+                    throw new Error(
+                        `${keyVariable.name} cannot be empty as it's a key identifier`
+                    );
+                }
+
                 const response = await axios.put(
-                    `/templates/${templateId}/recipients/${recipientId}`,
+                    `/admin/templates/${templateId}/recipients/${recipientId}`,
                     data
                 );
 
                 setRecipients((prev) =>
-                    prev.map((recipient) =>
-                        recipient.id === recipientId
-                            ? { ...recipient, ...response.data }
-                            : recipient
-                    )
+                    prev.map((r) => (r.id === recipientId ? response.data : r))
                 );
 
                 showNotification("Recipient updated successfully", "success");
             } catch (error: any) {
                 const errorMessage =
-                    error.response?.data?.message ??
+                    error.response?.data?.message ||
+                    error.message ||
                     "Failed to update recipient";
                 showNotification(errorMessage, "error");
                 throw error;
             }
         },
-        [templateId]
+        [templateId, variables]
     );
 
     const value = useMemo(
@@ -395,7 +473,6 @@ export function TemplateRecipientsProvider({
             setValidationResult,
             fetchRecipients,
             deleteRecipient,
-            validateFile,
             importRecipients,
             validateAndSetResult,
             handleImport,
@@ -424,7 +501,6 @@ export function TemplateRecipientsProvider({
             setValidationResult,
             fetchRecipients,
             deleteRecipient,
-            validateFile,
             importRecipients,
             validateAndSetResult,
             handleImport,

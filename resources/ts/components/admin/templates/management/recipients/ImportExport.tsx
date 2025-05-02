@@ -18,16 +18,22 @@ export default function ImportExport({ templateId }: ImportExportProps) {
         isUploading,
         showImportDialog,
         setShowImportDialog,
-        validateAndSetResult,
-        handleImport
+        importRecipients
     } = useTemplateRecipients();
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
             setSelectedFile(acceptedFiles[0]);
-            setValidationResult(null);
+            try {
+                await importRecipients(acceptedFiles[0]);
+                setShowImportDialog(false);
+                setSelectedFile(null);
+                setValidationResult(null);
+            } catch (error) {
+                // Error handling is done in the context
+            }
         }
-    }, [setSelectedFile, setValidationResult]);
+    }, [importRecipients, setSelectedFile, setShowImportDialog, setValidationResult]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -42,7 +48,7 @@ export default function ImportExport({ templateId }: ImportExportProps) {
         <Dialog open={showImportDialog} onClose={() => setShowImportDialog(false)} maxWidth="md" fullWidth>
             <DialogTitle>Import Recipients</DialogTitle>
             <DialogContent>
-                {!selectedFile && (
+                {!selectedFile && !isUploading && (
                     <Box
                         {...getRootProps()}
                         sx={{
@@ -69,44 +75,21 @@ export default function ImportExport({ templateId }: ImportExportProps) {
                     </Box>
                 )}
 
-                {selectedFile && (
-                    <>
-                        <Typography variant="subtitle1" gutterBottom>
-                            Selected file: {selectedFile.name}
+                {isUploading && (
+                    <Box sx={{ mt: 2 }}>
+                        <Typography variant="body1" gutterBottom>
+                            Importing recipients...
                         </Typography>
-                        <Button
-                            variant="outlined"
-                            onClick={() => {
-                                setSelectedFile(null);
-                                setValidationResult(null);
-                            }}
-                            sx={{ mt: 1 }}
-                        >
-                            Remove File
-                        </Button>
-                    </>
+                        <LinearProgress />
+                    </Box>
                 )}
 
-                {isUploading && <LinearProgress sx={{ mt: 2 }} />}
-
-                <ValidationResults sx={{ mt: 2 }} />
+                {validationResult && validationResult.errors && validationResult.errors.length > 0 && (
+                    <ValidationResults sx={{ mt: 2 }} />
+                )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setShowImportDialog(false)}>Cancel</Button>
-                {selectedFile && !validationResult && (
-                    <Button onClick={() => validateAndSetResult(templateId)} variant="outlined" disabled={isUploading}>
-                        Validate
-                    </Button>
-                )}
-                {validationResult && validationResult.valid_rows > 0 && (
-                    <Button
-                        onClick={() => handleImport(templateId)}
-                        variant="contained"
-                        disabled={isUploading}
-                    >
-                        Import {validationResult.valid_rows} Recipients
-                    </Button>
-                )}
+                <Button onClick={() => setShowImportDialog(false)}>Close</Button>
             </DialogActions>
         </Dialog>
     );

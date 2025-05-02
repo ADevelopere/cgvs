@@ -114,12 +114,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Toolbar>
             </AppBar>
 
-            <Box component="main" sx={{ flex: 1, p: 3 }}>
-                <Container maxWidth="xl">
-                    <ErrorBoundary>
-                        <Outlet />
-                    </ErrorBoundary>
-                </Container>
+            <Box component="main">
+                <ErrorBoundary>
+                    <Outlet />
+                </ErrorBoundary>
             </Box>
         </Box>
     );

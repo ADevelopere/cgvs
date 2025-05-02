@@ -25,6 +25,8 @@ export type TemplateVariable = {
     validation_rules?: Record<string, any>;
     preview_value?: string;
     required?: boolean;
+    is_key?: boolean;
+    order: number;
     created_at: string;
     updated_at: string;
 };

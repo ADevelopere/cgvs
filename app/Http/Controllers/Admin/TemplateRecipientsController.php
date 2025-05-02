@@ -20,227 +20,222 @@ class TemplateRecipientsController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
+        $recipients->getCollection()->transform(function ($recipient) {
+            return [
+                'id' => $recipient->id,
+                'template_id' => $recipient->template_id,
+                'is_valid' => $recipient->is_valid,
+                'validation_errors' => $recipient->validation_errors,
+                'data' => $recipient->getData(),
+            ];
+        });
+
         return response()->json([
             'recipients' => $recipients,
         ]);
     }
 
-    public function downloadTemplate(Template $template)
+    public function update(Request $request, Template $template, $id)
     {
-        Log::info('Starting template download process', [
-            'template_id' => $template->id,
-            'request' => request()->all(),
-            'headers' => request()->headers->all(),
-            'url' => request()->url(),
-            'path' => request()->path(),
-            'method' => request()->method()
-        ]);
+        $recipient = $template->recipients()->findOrFail($id);
         
-        // Log the template data
-        Log::debug('Template data', [
-            'template_name' => $template->name,
-            'template_id' => $template->id,
-            'has_variables_relation' => $template->relationLoaded('variables'),
+        $validator = Validator::make($request->all(), [
+            'data' => 'required|array',
         ]);
 
-        // Eager load variables to ensure we have all of them
-        $variables = $template->load('variables')->variables;
-        
-        // Log variables collection
-        Log::debug('Variables after eager loading', [
-            'count' => $variables->count(),
-            'variables' => $variables->toArray()
-        ]);
-        
-        if ($variables->isEmpty()) {
-            Log::warning('No variables found for template', ['template_id' => $template->id]);
-            return response()->json(['error' => 'No variables defined for this template'], 400);
-        }
-
-        // Create headers row with variable descriptions and types
-        $headers = [];
-        $descriptions = [];
-        $sampleRow = [];
-
-        foreach ($variables as $variable) {
-            Log::debug('Processing variable', [
-                'name' => $variable->name,
-                'type' => $variable->type,
-                'description' => $variable->description,
-                'preview_value' => $variable->preview_value
-            ]);
-
-            $headers[] = $variable->name;
-            $descriptions[] = $variable->description ?: "Enter {$variable->type} value";
-            
-            // Add sample data based on preview value or type
-            if ($variable->preview_value !== null) {
-                $sampleRow[] = $variable->preview_value;
-                Log::debug('Using preview value', ['value' => $variable->preview_value]);
-                continue;
-            }
-
-            // Use default values if no preview value is set
-            switch ($variable->type) {
-                case 'number':
-                    $sampleRow[] = '0';
-                    break;
-                case 'date':
-                    $sampleRow[] = now()->format('Y-m-d');
-                    break;
-                case 'gender':
-                    $sampleRow[] = 'male';
-                    break;
-                case 'text':
-                default:
-                    $sampleRow[] = 'Sample ' . $variable->name;
-                    break;
-            }
-        }
-        
-        // Log the final arrays before Excel creation
-        Log::debug('Final Excel data', [
-            'headers' => $headers,
-            'descriptions' => $descriptions,
-            'sample_row' => $sampleRow
-        ]);
-
-        // Create the Excel file with headers, descriptions, and sample data
-        $xlsx = SimpleXLSXGen::fromArray([
-            $headers,          // First row: Variable names
-            $descriptions,     // Second row: Descriptions and type info
-            $sampleRow        // Third row: Sample/preview values
-        ]);
-        
-        $filename = Str::slug($template->name) . '_template.xlsx';
-        Log::info('Excel file created', ['filename' => $filename]);
-        
-        // Set headers for force download
-        return response()->streamDownload(
-            function () use ($xlsx) {
-                $xlsx->downloadAs('php://output');
-            },
-            $filename,
-            [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            ]
-        );
-    }
-
-    public function validateExcel(Request $request, Template $template)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls|max:10240',
-            'use_client_validation' => 'boolean',
-        ]);
-
-        if ($request->use_client_validation) {
+        if ($validator->fails()) {
             return response()->json([
-                'message' => 'Client-side validation requested',
-                'variables' => $template->variables,
-            ]);
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $file = $request->file('file');
-        $path = $file->storeAs('temp', $file->getClientOriginalName());
-        $xlsx = SimpleXLSX::parse(Storage::path($path));
-        
-        $data = $xlsx->rows();
-        $headers = array_shift($data);
-        $variablesByName = $template->variables->keyBy('name');
-        
-        $validatedRows = [];
-        $errors = [];
-
-        foreach ($data as $index => $row) {
-            $rowData = array_combine($headers, $row);
-            $rowErrors = [];
-            
-            foreach ($variablesByName as $varName => $variable) {
-                $value = $rowData[$varName] ?? null;
-                if ($variable->required && empty($value)) {
-                    $rowErrors[] = "Missing required value for {$varName}";
-                }
-                
-                if (!empty($value)) {
-                    switch ($variable->type) {
-                        case 'date':
-                            if (!strtotime($value)) {
-                                $rowErrors[] = "Invalid date format for {$varName}";
-                            }
-                            break;
-                        case 'number':
-                            if (!is_numeric($value)) {
-                                $rowErrors[] = "Invalid number format for {$varName}";
-                            }
-                            break;
-                        case 'gender':
-                            if (!in_array(strtolower($value), ['male', 'female'])) {
-                                $rowErrors[] = "Invalid gender value for {$varName}";
-                            }
-                            break;
-                    }
-                }
-            }
-
-            if (empty($rowErrors)) {
-                $validatedRows[] = $rowData;
-            } else {
-                $errors[] = [
-                    'row' => $index + 2,
-                    'errors' => $rowErrors,
-                ];
-            }
-        }
-
-        Storage::delete($path);
+        $recipient->setData($request->input('data'));
 
         return response()->json([
-            'valid_rows' => count($validatedRows),
-            'total_rows' => count($data),
-            'errors' => $errors,
+            'id' => $recipient->id,
+            'template_id' => $recipient->template_id,
+            'is_valid' => $recipient->is_valid,
+            'validation_errors' => $recipient->validation_errors,
+            'data' => $recipient->getData(),
         ]);
     }
 
     public function import(Request $request, Template $template)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls|max:10240',
+        Log::info('Starting import process', [
+            'template_id' => $template->id,
+            'file_present' => $request->hasFile('file'),
+            'validated_flag' => $request->boolean('validated'),
+            'content_type' => $request->file('file')?->getMimeType(),
+            'request_content_type' => $request->header('Content-Type'),
+            'all_headers' => $request->headers->all(),
+            'all_files' => $request->allFiles(),
+            'all_inputs' => $request->all()
         ]);
 
-        $file = $request->file('file');
-        $path = $file->storeAs('temp', $file->getClientOriginalName());
-        $xlsx = SimpleXLSX::parse(Storage::path($path));
-        
-        $data = $xlsx->rows();
-        $headers = array_shift($data);
-        
-        $imported = 0;
-        $errors = 0;
+        try {
+            $input = $request->all();
+            if (isset($input['validated'])) {
+                $input['validated'] = filter_var($input['validated'], FILTER_VALIDATE_BOOLEAN);
+            }
 
-        foreach ($data as $row) {
-            $rowData = array_combine($headers, $row);
-            
-            $recipient = $template->recipients()->create([
-                'data' => $rowData,
-                'is_valid' => true, // We'll validate later in a queue job
+            $validator = Validator::make($input, [
+                'file' => 'required|file|mimes:xlsx,xls|max:10240',
+                'validated' => 'boolean',
             ]);
 
-            if ($recipient) {
-                $imported++;
-            } else {
-                $errors++;
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => [
+                        [
+                            'row' => 0,
+                            'errors' => $validator->errors()->all()
+                        ]
+                    ]
+                ], 422);
             }
+
+            $file = $request->file('file');
+            $path = $file->storeAs('temp', $file->getClientOriginalName());
+            $xlsx = SimpleXLSX::parse(Storage::path($path));
+            
+            $data = $xlsx->rows();
+            if (empty($data)) {
+                throw new \Exception('The file is empty');
+            }
+
+            $headers = array_shift($data);
+            $imported = 0;
+            $errors = [];
+            $total_rows = count($data);
+            
+            if (!$request->boolean('validated')) {
+                $variablesByName = $template->variables->keyBy('name');
+                
+                $missingHeaders = [];
+                foreach ($variablesByName as $varName => $variable) {
+                    if (!in_array($varName, $headers)) {
+                        $missingHeaders[] = $varName;
+                    }
+                }
+
+                if (!empty($missingHeaders)) {
+                    Storage::delete($path);
+                    return response()->json([
+                        'errors' => [
+                            [
+                                'row' => 1,
+                                'errors' => ['Missing required headers: ' . implode(', ', $missingHeaders)]
+                            ]
+                        ],
+                        'message' => 'Invalid file format',
+                        'total_rows' => $total_rows,
+                        'valid_rows' => 0
+                    ], 422);
+                }
+
+                foreach ($data as $index => $row) {
+                    if (count($row) !== count($headers)) {
+                        $errors[] = [
+                            'row' => $index + 2,
+                            'errors' => ['Row has incorrect number of columns']
+                        ];
+                        continue;
+                    }
+
+                    $rowData = array_combine($headers, $row);
+                    $rowErrors = [];
+                    
+                    foreach ($variablesByName as $varName => $variable) {
+                        $value = $rowData[$varName] ?? null;
+                        if ($variable->required && empty($value)) {
+                            $rowErrors[] = "Missing required value for {$varName}";
+                            continue;
+                        }
+                        
+                        if (!empty($value)) {
+                            switch ($variable->type) {
+                                case 'date':
+                                    if (!strtotime($value)) {
+                                        $rowErrors[] = "Invalid date format for {$varName}";
+                                    }
+                                    break;
+                                case 'number':
+                                    if (!is_numeric($value)) {
+                                        $rowErrors[] = "Invalid number format for {$varName}";
+                                    }
+                                    break;
+                                case 'gender':
+                                    if (!in_array(strtolower($value), ['male', 'female'])) {
+                                        $rowErrors[] = "Invalid gender value for {$varName}";
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (!empty($rowErrors)) {
+                        $errors[] = [
+                            'row' => $index + 2,
+                            'errors' => $rowErrors,
+                        ];
+                    }
+                }
+
+                if (!empty($errors)) {
+                    Storage::delete($path);
+                    return response()->json([
+                        'errors' => $errors,
+                        'message' => 'Validation failed',
+                        'total_rows' => $total_rows,
+                        'valid_rows' => $total_rows - count($errors)
+                    ], 422);
+                }
+            }
+
+            foreach ($data as $row) {
+                $rowData = array_combine($headers, $row);
+                
+                $recipient = $template->recipients()->create([
+                    'is_valid' => true,
+                ]);
+
+                if ($recipient) {
+                    $recipient->setData($rowData);
+                    $imported++;
+                }
+            }
+
+            Storage::delete($path);
+
+            return response()->json([
+                'imported' => $imported,
+                'total_rows' => $total_rows,
+                'message' => "Successfully imported {$imported} recipients",
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Import process failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            if (isset($path)) {
+                Storage::delete($path);
+            }
+            
+            return response()->json([
+                'message' => 'Failed to process file: ' . $e->getMessage(),
+                'errors' => [
+                    [
+                        'row' => 0,
+                        'errors' => [$e->getMessage()]
+                    ]
+                ]
+            ], 500);
         }
-
-        Storage::delete($path);
-
-        return response()->json([
-            'imported' => $imported,
-            'errors' => $errors,
-            'message' => "Successfully imported {$imported} recipients",
-        ]);
     }
 
     public function destroy(Template $template, $id)
@@ -253,9 +248,77 @@ class TemplateRecipientsController extends Controller
         ]);
     }
 
-    public function preview(Template $template, $id)
+    public function downloadTemplate(Template $template)
     {
-        $recipient = $template->recipients()->findOrFail($id);
-        return response()->json($recipient->data);
+        try {
+            Log::info('Template download requested', [
+                'template_id' => $template->id,
+                'variables' => $template->variables
+            ]);
+
+            $variables = $template->variables;
+            
+            if ($variables->isEmpty()) {
+                return response()->json([
+                    'message' => 'No variables defined for this template'
+                ], 400);
+            }
+
+            // Create headers row
+            $headers = $variables->pluck('name')->toArray();
+            
+            // Create descriptions row
+            $descriptions = $variables->map(function($v) {
+                $desc = $v->description ?? "Enter {$v->type} value";
+                if ($v->is_key) {
+                    $desc .= " (Required - Must be unique)";
+                }
+                return $desc;
+            })->toArray();
+
+            // Create sample data row
+            $sampleData = $variables->map(function($v) {
+                if ($v->is_key) {
+                    return 'Unique Identifier';
+                }
+                switch($v->type) {
+                    case 'number':
+                        return '0';
+                    case 'date':
+                        return date('Y-m-d');
+                    default:
+                        return 'Sample';
+                }
+            })->toArray();
+
+            // Create Excel data array with all rows
+            $data = [$headers, $descriptions, $sampleData];
+            
+            // Generate Excel file
+            $xlsx = SimpleXLSXGen::fromArray($data);
+            
+            // Create a temporary file
+            $tempFile = tempnam(sys_get_temp_dir(), 'template_');
+            $xlsx->saveAs($tempFile);
+            
+            return response()->download(
+                $tempFile,
+                "template_{$template->id}_recipients_server.xlsx",
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'Content-Disposition' => 'attachment; filename="template_' . $template->id . '_recipients.xlsx"'
+                ]
+            )->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            Log::error('Template download failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'message' => 'Failed to generate template: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -50,6 +50,20 @@ touch database/database.sqlite
 php artisan migrate
 ```
 
+6. Run database seeders (optional)
+```bash
+# Run all seeders
+php artisan db:seed
+
+# Run a specific seeder
+php artisan db:seed --class=DatabaseSeeder
+php artisan db:seed --class=AdminSeeder
+```
+
+The project includes the following seeders in `database/seeders`:
+- `DatabaseSeeder.php`: The main seeder that controls the order of all other seeders
+- `AdminSeeder.php`: Seeds the database with admin user(s)
+
 ## Running Tests
 
 The project uses PHPUnit for testing. To run tests:

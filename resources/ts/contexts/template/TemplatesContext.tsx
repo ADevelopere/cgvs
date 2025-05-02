@@ -42,8 +42,8 @@ const TemplateContext = createContext<TemplatesContextType | undefined>(
 export function TemplateProvider({ children }: { children: ReactNode }) {
     const navigate = useNavigate();
     const [templates, setTemplates] = useState<Template[]>([]);
-    const [templateToManage, setTemplateToManage] = useState<Template | null>(
-        null
+    const [templateToManage, setTemplateToManage] = useState<Template | undefined>(
+        undefined
     );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

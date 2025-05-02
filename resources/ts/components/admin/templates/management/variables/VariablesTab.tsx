@@ -30,17 +30,10 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
 
     const {
         variables,
-        fetchVariables,
         deleteVariable,
         createVariable,
         updateVariable,
     } = useTemplateVariables();
-
-    useEffect(() => {
-        if (template?.id) {
-            fetchVariables(template.id);
-        }
-    }, [template?.id]);
 
     const handleAddClick = () => {
         setSelectedVariable(null);
