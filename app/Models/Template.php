@@ -52,4 +52,17 @@ class Template extends Model
     {
         return $this->background_path ? storage_path('app/public/' . $this->background_path) : null;
     }
+
+    protected static function booted()
+    {
+        static::created(function ($template) {
+            // Create the default name variable
+            $template->variables()->create([
+                'name' => 'name',
+                'type' => 'text',
+                'description' => 'Recipient identifier name',
+                'is_key' => true,
+            ]);
+        });
+    }
 }

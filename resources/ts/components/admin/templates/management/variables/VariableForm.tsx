@@ -11,24 +11,20 @@ import {
     Select,
     MenuItem,
     Box,
+    FormControlLabel,
+    Checkbox,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useForm, Controller } from "react-hook-form";
-
-interface Variable {
-    name: string;
-    type: "text" | "date" | "number" | "gender";
-    description?: string;
-    preview_value?: string;
-}
+import { TemplateVariable } from "@/contexts/template/template.types";
 
 interface VariableFormProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: Variable) => void;
-    variable?: Variable | null;
+    onSubmit: (data: TemplateVariable) => void;
+    variable?: TemplateVariable | null;
 }
 
 const variableTypes = [
@@ -44,12 +40,13 @@ export default function VariableForm({
     onSubmit,
     variable = null,
 }: VariableFormProps) {
-    const { control, handleSubmit, reset, watch } = useForm<Variable>({
+    const { control, handleSubmit, reset, watch } = useForm<TemplateVariable>({
         defaultValues: {
             name: "",
             type: "text",
             description: "",
             preview_value: "",
+            required: false,
         },
     });
 
@@ -59,7 +56,7 @@ export default function VariableForm({
         }
     }, [variable, reset]);
 
-    const handleFormSubmit = (data: Variable) => {
+    const handleFormSubmit = (data: TemplateVariable) => {
         onSubmit(data);
         onClose();
     };
@@ -91,6 +88,7 @@ export default function VariableForm({
                                         error ? "This field is required" : ""
                                     }
                                     fullWidth
+                                    disabled={variable?.is_key}
                                 />
                             )}
                         />
@@ -102,7 +100,7 @@ export default function VariableForm({
                             render={({ field }) => (
                                 <FormControl fullWidth>
                                     <InputLabel>Type</InputLabel>
-                                    <Select {...field} label="Type">
+                                    <Select {...field} label="Type" disabled={variable?.is_key}>
                                         {variableTypes.map((type) => (
                                             <MenuItem
                                                 key={type.value}
@@ -126,6 +124,23 @@ export default function VariableForm({
                                     multiline
                                     rows={2}
                                     fullWidth
+                                />
+                            )}
+                        />
+
+                        <Controller
+                            name="required"
+                            control={control}
+                            render={({ field }) => (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            {...field}
+                                            checked={field.value || false}
+                                        />
+                                    }
+                                    label="Required"
+                                    disabled={variable?.is_key}
                                 />
                             )}
                         />

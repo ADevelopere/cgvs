@@ -29,11 +29,12 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
             ->only(['show', 'update', 'destroy']);
             
         // Template recipients routes
-        Route::prefix('templates/{template}/recipients')->group(function() {
+        Route::group(['prefix' => 'templates/{template}/recipients'], function() {
             Route::get('/', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'index']);
             Route::get('/template', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'downloadTemplate']);
             Route::post('/validate', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'validateExcel']);
             Route::post('/import', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'import']);
+            Route::put('/{id}', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'update'])->name('recipients.update');
             Route::delete('/{id}', [\App\Http\Controllers\Admin\TemplateRecipientsController::class, 'destroy']);
         });
     });

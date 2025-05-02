@@ -10,24 +10,41 @@ export const generateExcelTemplate = async (
     
     // Generate headers based on template variables
     const headers = variables.map(v => v.name);
-    const ws = XLSX.utils.aoa_to_sheet([headers]);
+    const descriptions = variables.map(v => {
+        let desc = v.description || `Enter ${v.type} value`;
+        if (v.is_key) {
+            desc = `${desc} (Required - Must be unique)`;
+        }
+        return desc;
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, descriptions]);
     
     // Add sample data row
     const sampleData = variables.map(v => {
+        if (v.is_key) return 'Unique Identifier';
         switch(v.type) {
             case 'number': return '0';
             case 'date': return new Date().toISOString().split('T')[0];
             default: return 'Sample';
         }
     });
-    XLSX.utils.sheet_add_aoa(ws, [sampleData], { origin: 1 });
+    XLSX.utils.sheet_add_aoa(ws, [sampleData], { origin: 2 });
     
     // Add the worksheet to workbook
     XLSX.utils.book_append_sheet(wb, ws, 'Recipients');
     
-    // Generate blob
-    const wbout = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-    return new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    // Generate blob with client suffix in filename
+    const wbout = XLSX.write(wb, { 
+        type: 'array', 
+        bookType: 'xlsx',
+        Props: {
+            Title: 'Template Recipients (Client Generated)'
+        }
+    });
+    return new Blob([wbout], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
 };
 
 export const validateExcelInBrowser = async (
@@ -41,6 +58,10 @@ export const validateExcelInBrowser = async (
     
     let validRows = 0;
     const errors: Array<{ row: number; errors: string[] }> = [];
+
+    // Track key values to ensure uniqueness
+    const keyValues = new Set<string>();
+    const keyVariable = variables.find(v => v.is_key);
     
     // Validate each row
     rows.forEach((row: any, index: number) => {
@@ -50,8 +71,18 @@ export const validateExcelInBrowser = async (
         variables.forEach(variable => {
             const value = row[variable.name];
             
+            // Key variable validation
+            if (variable.is_key) {
+                if (!value || value.toString().trim() === '') {
+                    rowErrors.push(`${variable.name} is required as it's a key identifier`);
+                } else if (keyValues.has(value.toString())) {
+                    rowErrors.push(`${variable.name} must be unique. "${value}" is already used`);
+                } else {
+                    keyValues.add(value.toString());
+                }
+            }
             // Required field validation
-            if (variable.required && !value) {
+            else if (variable.required && !value) {
                 rowErrors.push(`${variable.name} is required`);
             }
             

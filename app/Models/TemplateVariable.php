@@ -13,11 +13,24 @@ class TemplateVariable extends Model
         'description',
         'validation_rules',
         'preview_value',
+        'is_key',
+        'order',
     ];
 
     protected $casts = [
         'validation_rules' => 'array',
+        'is_key' => 'boolean',
+        'order' => 'integer',
     ];
+
+    protected static function booted()
+    {
+        static::deleting(function ($variable) {
+            if ($variable->is_key) {
+                throw new \Exception('Cannot delete key variable');
+            }
+        });
+    }
 
     public function template()
     {
@@ -41,5 +54,11 @@ class TemplateVariable extends Model
             default:
                 return true;
         }
+    }
+
+    public static function getNextOrder(int $templateId): int
+    {
+        $maxOrder = static::where('template_id', $templateId)->max('order') ?? 0;
+        return $maxOrder + 1;
     }
 }
