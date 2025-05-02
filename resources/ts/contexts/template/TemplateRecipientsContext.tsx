@@ -10,7 +10,6 @@ import axios from "@/utils/axios";
 import { Alert, Snackbar } from "@mui/material";
 import { useTemplateVariables } from "./TemplateVariablesContext";
 import * as excelUtils from "@/utils/excel/excelUtils";
-import { generateClientPreview } from "@/utils/preview/previewUtils";
 import { Recipient } from "./template.types";
 import { ValidationResult } from "@/utils/excel/types";
 import { useTemplateManagement } from "./TemplateManagementContext";
@@ -31,7 +30,6 @@ interface TemplateRecipientsContext {
     };
     useClientTemplate: boolean;
     useClientValidation: boolean;
-    previewData: any | null;
     validationResult: ValidationResult | null;
     isUploading: boolean;
     selectedFile: File | null;
@@ -53,7 +51,6 @@ interface TemplateRecipientsContext {
     handleDeleteConfirm: () => Promise<void>;
     // The only two exposed template methods
     getTemplate: () => Promise<{ content: Blob; filename: string } | null>;
-    previewTemplate: (recipientId: number) => Promise<void>;
     updateRecipient: (recipientId: number, data: any) => Promise<void>;
 }
 
@@ -78,7 +75,6 @@ export function TemplateRecipientsProvider({
     const [notification, setNotification] = useState<Notification | null>(null);
     const [useClientTemplate, setUseClientTemplate] = useState(false);
     const [useClientValidation, setUseClientValidation] = useState(false);
-    const [previewData, setPreviewData] = useState<any | null>(null);
     const [validationResult, setValidationResult] =
         useState<ValidationResult | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -300,34 +296,7 @@ export function TemplateRecipientsProvider({
         }
     }, [variables, templateId, useClientTemplate]);
 
-    const previewTemplate = useCallback(
-        async (recipientId: number): Promise<void> => {
-            try {
-                setLoading(true);
-                let previewResult;
-                if (useClientTemplate) {
-                    previewResult = generateClientPreview(
-                        recipients,
-                        recipientId
-                    );
-                } else {
-                    const response = await axios.get(
-                        `/templates/${templateId}/recipients/${recipientId}/preview`
-                    );
-                    previewResult = response.data;
-                }
-                setPreviewData(previewResult);
-            } catch (error: any) {
-                const errorMessage =
-                    error.message ?? "Failed to generate preview";
-                showNotification(errorMessage, "error");
-                throw error;
-            } finally {
-                setLoading(false);
-            }
-        },
-        [recipients, useClientTemplate, templateId]
-    );
+
 
     const validateAndSetResult = useCallback(async () => {
         if (!selectedFile) return;
@@ -412,7 +381,6 @@ export function TemplateRecipientsProvider({
             pagination: paginationState,
             useClientTemplate,
             useClientValidation,
-            previewData,
             validationResult,
             isUploading,
             selectedFile,
@@ -433,7 +401,6 @@ export function TemplateRecipientsProvider({
             handleImport,
             handleDeleteConfirm,
             getTemplate,
-            previewTemplate,
             updateRecipient,
         }),
         [
@@ -443,7 +410,6 @@ export function TemplateRecipientsProvider({
             paginationState,
             useClientTemplate,
             useClientValidation,
-            previewData,
             validationResult,
             isUploading,
             selectedFile,
@@ -464,7 +430,6 @@ export function TemplateRecipientsProvider({
             handleImport,
             handleDeleteConfirm,
             getTemplate,
-            previewTemplate,
             updateRecipient,
         ]
     );
