@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, useRef } from "react";
-import { flushSync } from 'react-dom';
+import { flushSync } from "react-dom";
 import {
     Box,
     TextField,
@@ -22,14 +22,14 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
-import axios from "@/utils/axios";
 import { createRoot } from "react-dom/client";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 
 const BasicInfoTab: React.FC = () => {
     const theme = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
-    const { template, setUnsavedChanges } = useTemplateManagement();
+    const { template, unsavedChanges, setUnsavedChanges, saveTemplate } =
+        useTemplateManagement();
     const [snackbar, setSnackbar] = useState<{
         open: boolean;
         message: string;
@@ -49,7 +49,6 @@ const BasicInfoTab: React.FC = () => {
     const [preview, setPreview] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
     const [maxWidth, setMaxWidth] = useState<number | null>(null);
     const [leftOffset, setLeftOffset] = useState<number | null>(null);
 
@@ -91,7 +90,6 @@ const BasicInfoTab: React.FC = () => {
             originalData.status !== currentData.status ||
             originalData.background !== currentData.background;
 
-        setHasChanges(hasChanges);
         setUnsavedChanges(hasChanges);
     }, [formData, preview, template]);
 
@@ -146,27 +144,8 @@ const BasicInfoTab: React.FC = () => {
                 formDataToSend.append("background", fileInput.files[0]);
             }
 
-            // Determine if this is a create or update operation
-            const url = template
-                ? `/admin/templates/${template.id}`
-                : "/admin/templates";
-            const method = "post";
+            await saveTemplate(formDataToSend);
 
-            // Add _method field for Laravel to handle PUT requests
-            if (template) {
-                formDataToSend.append("_method", "PUT");
-            }
-
-            const response = await axios({
-                method: method,
-                url: url,
-                data: formDataToSend,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            setUnsavedChanges(false);
             setSnackbar({
                 open: true,
                 message: "Template saved successfully",
@@ -174,8 +153,7 @@ const BasicInfoTab: React.FC = () => {
             });
         } catch (err: any) {
             const errorMessage =
-                err.response?.data?.message ||
-                "An error occurred while saving the template";
+                err.message || "An error occurred while saving the template";
             setError(errorMessage);
             setSnackbar({
                 open: true,
@@ -216,9 +194,7 @@ const BasicInfoTab: React.FC = () => {
     }, []);
 
     return (
-        <Box
-            ref={containerRef}
-        >
+        <Box ref={containerRef}>
             {/* form */}
             <Box component="form" noValidate sx={{ mt: 1, paddingBottom: 20 }}>
                 {error && (
@@ -334,6 +310,7 @@ const BasicInfoTab: React.FC = () => {
                 onSave={handleSave}
                 onCancel={handleCancel}
                 saving={saving}
+                unsavedChanges={unsavedChanges}
                 theme={theme}
                 maxWidth={maxWidth || undefined}
                 leftOffset={leftOffset || undefined}
@@ -346,6 +323,7 @@ type BottomActionBarProps = {
     onSave: () => void;
     onCancel: () => void;
     saving: boolean;
+    unsavedChanges: boolean;
     theme: Theme;
     maxWidth?: string | number;
     leftOffset?: number;
@@ -355,6 +333,7 @@ const BottomActionBar: React.FC<BottomActionBarProps> = ({
     onSave,
     onCancel,
     saving,
+    unsavedChanges,
     theme,
     maxWidth,
 }: BottomActionBarProps) => {
@@ -380,7 +359,7 @@ const BottomActionBar: React.FC<BottomActionBarProps> = ({
                         variant="outlined"
                         color="secondary"
                         onClick={onCancel}
-                        disabled={saving}
+                        disabled={saving || !unsavedChanges}
                     >
                         Cancel
                     </Button>
@@ -388,7 +367,7 @@ const BottomActionBar: React.FC<BottomActionBarProps> = ({
                         variant="contained"
                         color="primary"
                         onClick={onSave}
-                        disabled={saving}
+                        disabled={saving || !unsavedChanges}
                     >
                         {saving ? "Saving..." : "Save"}
                     </Button>
@@ -402,6 +381,7 @@ const InjectBottomBar: React.FC<BottomActionBarProps> = ({
     onSave,
     onCancel,
     saving,
+    unsavedChanges,
     theme,
     maxWidth,
     leftOffset,
@@ -426,7 +406,7 @@ const InjectBottomBar: React.FC<BottomActionBarProps> = ({
                     });
                     document.body.removeChild(containerRef.current);
                 } catch (e) {
-                    console.error('Error during cleanup:', e);
+                    console.error("Error during cleanup:", e);
                 }
                 rootRef.current = null;
                 containerRef.current = null;
@@ -452,10 +432,11 @@ const InjectBottomBar: React.FC<BottomActionBarProps> = ({
                     onSave={onSave}
                     onCancel={onCancel}
                     saving={saving}
+                    unsavedChanges={unsavedChanges}
                     theme={theme}
                     maxWidth={maxWidth}
                     leftOffset={leftOffset}
-                />
+                />,
             );
         }
     }, [onSave, onCancel, saving, theme, maxWidth, leftOffset]);

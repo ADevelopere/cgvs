@@ -51,6 +51,7 @@ interface TemplateManagementContextType {
     clearTabError: (tab: TabType) => void;
     fetchTemplate: (id: number) => Promise<void>;
     fetchConfig: () => Promise<void>;
+    saveTemplate: (data: FormData) => Promise<void>;
 }
 
 const TemplateManagementContext = createContext<
@@ -164,6 +165,33 @@ export const TemplateManagementProvider: React.FC<{
         });
     }, [fetchConfig]);
 
+    const saveTemplate = useCallback(async (formData: FormData) => {
+        try {
+            const url = template ? `/admin/templates/${template.id}` : "/admin/templates";
+            const method = "post";
+
+            // Add _method field for Laravel to handle PUT requests if it's an update
+            if (template) {
+                formData.append("_method", "PUT");
+            }
+
+            const response = await axios({
+                method,
+                url,
+                data: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            settemplate(response.data);
+            setUnsavedChanges(false);
+            return response.data;
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || "An error occurred while saving the template");
+        }
+    }, [template]);
+
     const value = useMemo(
         () => ({
             activeTab,
@@ -181,6 +209,7 @@ export const TemplateManagementProvider: React.FC<{
             clearTabError: handleClearTabError,
             fetchTemplate,
             fetchConfig,
+            saveTemplate,
         }),
         [
             activeTab,
@@ -194,6 +223,7 @@ export const TemplateManagementProvider: React.FC<{
             handleSetTabError,
             handleClearTabError,
             fetchTemplate,
+            saveTemplate,
         ]
     );
 
