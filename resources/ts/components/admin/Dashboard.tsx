@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Welcome to CGVS
       </Typography>
-      <Typography color="textSecondary" paragraph>
+      <Typography color="textSecondary" component="p">
         Create and manage your certificate templates and generate certificates for your recipients.
       </Typography>
 
