@@ -15,13 +15,18 @@ import {
     Alert,
     Snackbar,
     AlertColor,
+    useTheme,
+    Theme,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import axios from "@/utils/axios";
+import { createRoot } from "react-dom/client";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 
 const BasicInfoTab: React.FC = () => {
+    const theme = useTheme();
     const { template, setUnsavedChanges } = useTemplateManagement();
     const [snackbar, setSnackbar] = useState<{
         open: boolean;
@@ -29,8 +34,8 @@ const BasicInfoTab: React.FC = () => {
         severity: AlertColor;
     }>({
         open: false,
-        message: '',
-        severity: 'success'
+        message: "",
+        severity: "success",
     });
 
     const [formData, setFormData] = useState({
@@ -66,17 +71,17 @@ const BasicInfoTab: React.FC = () => {
             name: template?.name || "",
             description: template?.description || "",
             status: template?.status || "draft",
-            background: template?.background_url || null
+            background: template?.background_url || null,
         };
 
         const currentData = {
             name: formData.name,
             description: formData.description,
             status: formData.status,
-            background: preview
+            background: preview,
         };
 
-        const hasChanges = 
+        const hasChanges =
             originalData.name !== currentData.name ||
             originalData.description !== currentData.description ||
             originalData.status !== currentData.status ||
@@ -115,7 +120,7 @@ const BasicInfoTab: React.FC = () => {
     };
 
     const handleSnackbarClose = () => {
-        setSnackbar(prev => ({ ...prev, open: false }));
+        setSnackbar((prev) => ({ ...prev, open: false }));
     };
 
     const handleSave = async () => {
@@ -125,23 +130,27 @@ const BasicInfoTab: React.FC = () => {
 
             // Create form data
             const formDataToSend = new FormData();
-            formDataToSend.append('name', formData.name);
-            formDataToSend.append('description', formData.description);
-            formDataToSend.append('status', formData.status);
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("description", formData.description);
+            formDataToSend.append("status", formData.status);
 
             // If there's a file input change and preview is set, get the file
-            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+            const fileInput = document.querySelector(
+                'input[type="file"]'
+            ) as HTMLInputElement;
             if (fileInput && fileInput.files && fileInput.files[0]) {
-                formDataToSend.append('background', fileInput.files[0]);
+                formDataToSend.append("background", fileInput.files[0]);
             }
 
             // Determine if this is a create or update operation
-            const url = template ? `/admin/templates/${template.id}` : '/admin/templates';
-            const method = 'post';
+            const url = template
+                ? `/admin/templates/${template.id}`
+                : "/admin/templates";
+            const method = "post";
 
             // Add _method field for Laravel to handle PUT requests
             if (template) {
-                formDataToSend.append('_method', 'PUT');
+                formDataToSend.append("_method", "PUT");
             }
 
             const response = await axios({
@@ -149,29 +158,40 @@ const BasicInfoTab: React.FC = () => {
                 url: url,
                 data: formDataToSend,
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    "Content-Type": "multipart/form-data",
                 },
             });
 
             setUnsavedChanges(false);
             setSnackbar({
                 open: true,
-                message: 'Template saved successfully',
-                severity: 'success'
+                message: "Template saved successfully",
+                severity: "success",
             });
-            
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || 'An error occurred while saving the template';
+            const errorMessage =
+                err.response?.data?.message ||
+                "An error occurred while saving the template";
             setError(errorMessage);
             setSnackbar({
                 open: true,
                 message: errorMessage,
-                severity: 'error'
+                severity: "error",
             });
-            console.error('Save error:', err);
+            console.error("Save error:", err);
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleCancel = () => {
+        setFormData({
+            name: template?.name || "",
+            description: template?.description || "",
+            status: "draft",
+        });
+        setPreview(template?.background_url || null);
+        setError(null);
     };
 
     return (
@@ -270,62 +290,117 @@ const BasicInfoTab: React.FC = () => {
                 )}
             </Box>
 
-            {/* Save button */}
+            {/* Snackbar for notifications */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbar.severity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+
+            {/* Bottom Action Bar */}
+            <InjectBottomBar
+                onSave={handleSave}
+                onCancel={handleCancel}
+                saving={saving}
+                theme={theme}
+            />
+        </Box>
+    );
+};
+
+type BottomActionBarProps = {
+    onSave: () => void;
+    onCancel: () => void;
+    saving: boolean;
+    theme: Theme
+};
+
+const BottomActionBar: React.FC<BottomActionBarProps> = ({
+    onSave,
+    onCancel,
+    saving,
+    theme,
+}: BottomActionBarProps) => {
+    return (
+        <MuiThemeProvider theme={theme}>
             <Paper
                 sx={{
                     p: 2,
                     display: "flex",
                     justifyContent: "end",
                     alignItems: "center",
-                    position: "fixed",
-                    bottom: 16,
-                    right: 16,
                     gap: 2,
                 }}
             >
                 <Button
                     variant="outlined"
                     color="secondary"
-                    onClick={() => {
-                        setFormData({
-                            name: template?.name || "",
-                            description: template?.description || "",
-                            status: "draft",
-                        });
-                        setPreview(template?.background_url || null);
-                        setError(null);
-                    }}
-                    disabled={saving || !hasChanges}
+                    onClick={onCancel}
+                    disabled={saving}
                 >
                     Cancel
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleSave}
-                    disabled={saving || !formData.name.trim() || !hasChanges}
+                    onClick={onSave}
+                    disabled={saving}
                 >
-                    {saving ? 'Saving...' : 'Save'}
+                    {saving ? "Saving..." : "Save"}
                 </Button>
             </Paper>
-
-            {/* Snackbar for notifications */}
-            <Snackbar 
-                open={snackbar.open}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert 
-                    onClose={handleSnackbarClose}
-                    severity={snackbar.severity}
-                    sx={{ width: '100%' }}
-                >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
-        </Box>
+        </MuiThemeProvider>
     );
+};
+
+const InjectBottomBar: React.FC<BottomActionBarProps> = ({
+    onSave,
+    onCancel,
+    saving,
+    theme,
+}: BottomActionBarProps) => {
+    useEffect(() => {
+        // Create container for the action bar
+        const container = document.createElement("div");
+        container.id = "bottom-action-bar-container";
+        Object.assign(container.style, {
+            position: "fixed",
+            bottom: "0px",
+            left: "0px",
+            width: "100%",
+            zIndex: "999999",
+        });
+
+        document.body.appendChild(container);
+
+        // Mount React component
+        const root = createRoot(container);
+        root.render(
+            <BottomActionBar
+                onSave={onSave}
+                onCancel={onCancel}
+                saving={saving}
+                theme={theme}
+            />
+        );
+
+        // Cleanup
+        return () => {
+            root.unmount();
+            document.body.removeChild(container);
+        };
+    }, []);
+
+    return null;
 };
 
 export default BasicInfoTab;

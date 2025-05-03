@@ -1,8 +1,11 @@
+export type TemplateStatus = "draft" | "active" | "archived";
+
 export type Template = {
     id: number;
     name: string;
     description?: string;
     background_url?: string;
+    status: TemplateStatus;
     is_active: boolean;
     created_at: string;
     updated_at: string;
