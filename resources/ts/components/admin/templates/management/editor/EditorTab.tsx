@@ -12,6 +12,9 @@ import { useTemplateManagement } from "@/contexts/template/TemplateManagementCon
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import "./EditorTab.module.css";
+import { Box } from "@mui/material";
+import DownloadImage from "./DownloadImage";
+import DownloadPdf from "./DownloadPdf";
 
 const nodes: Node[] = [
     {
@@ -19,6 +22,11 @@ const nodes: Node[] = [
         type: "backgroundImage",
         position: { x: 0, y: 0 },
         data: {},
+    },
+    {
+        id: "1", // required
+        position: { x: 0, y: 0 }, // required
+        data: { label: "Hello" }, // required
     },
 ];
 
@@ -109,6 +117,8 @@ function Flow() {
                         borderRadius: theme.shape.borderRadius,
                     }}
                 />
+                <DownloadImage />
+                <DownloadPdf />
             </ReactFlow>
         </div>
     );
@@ -116,9 +126,19 @@ function Flow() {
 
 function FlowWrapper() {
     return (
-        <ReactFlowProvider>
-            <Flow />
-        </ReactFlowProvider>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
+            }}
+        >
+            <ReactFlowProvider>
+                <Flow />
+            </ReactFlowProvider>
+        </Box>
     );
 }
 

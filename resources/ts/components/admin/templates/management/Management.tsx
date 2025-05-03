@@ -87,18 +87,19 @@ const Management: React.FC = () => {
     useEffect(() => {
         const checkTouchSupport = () => {
             // More comprehensive check for dev tools emulation
-            const isEmulated = (
+            const isEmulated =
                 /Mozilla\/5.0.*Mobile/.test(navigator.userAgent) || // Chrome/Edge dev tools
                 /iPhone|iPad|iPod|Android/.test(navigator.userAgent) || // Device check
-                (navigator.maxTouchPoints && navigator.maxTouchPoints > 1) // Touch points in dev tools
-            );
+                (navigator.maxTouchPoints && navigator.maxTouchPoints > 1); // Touch points in dev tools
 
             // Check actual touch support only if not emulated
-            const hasTouchSupport = !isEmulated && Boolean(
-                'ontouchstart' in window ||
-                // @ts-ignore - MediaQueryList exists in modern browsers
-                window.matchMedia('(any-pointer: coarse)').matches
-            );
+            const hasTouchSupport =
+                !isEmulated &&
+                Boolean(
+                    "ontouchstart" in window ||
+                        // @ts-ignore - MediaQueryList exists in modern browsers
+                        window.matchMedia("(any-pointer: coarse)").matches
+                );
 
             setIsTouchDevice(Boolean(hasTouchSupport || isEmulated));
         };
@@ -144,21 +145,10 @@ const Management: React.FC = () => {
     };
 
     return (
-        <Container
-            maxWidth={"xl"}
-            sx={{
-                mt: { xs: 2, sm: 3, md: 4 },
-                mb: { xs: 2, sm: 3, md: 4 },
-                maxWidth: { sm: "sm", md: "1200px" },
-                mx: "auto",
-                position: "relative",
-                px: 0,
-            }}
-            id="template-management"
-        >
+        <Box id="template-management">
             <Box sx={{ width: "100%" }}>
                 {/* Header */}
-                <Box
+                {/* <Box
                     sx={{
                         mb: { xs: 1, sm: 1.5, md: 2 },
                         position: "sticky",
@@ -181,7 +171,7 @@ const Management: React.FC = () => {
                     >
                         Template Management
                     </Typography>
-                </Box>
+                </Box> */}
                 {/* Tabs */}
                 <TabContext value={activeTab}>
                     <Paper
@@ -190,6 +180,14 @@ const Management: React.FC = () => {
                             backgroundColor: "background.paper",
                             overflowX: "auto",
                             borderRadius: { xs: 0, sm: 1 },
+                            borderBottom: 2,
+                            borderColor: "divider",
+                            borderTop: 2,
+                            position: "sticky",
+                            top: 0,
+                            zIndex: theme.zIndex.appBar,
+                            display: "flex",
+                            justifyContent: "center",
                         }}
                     >
                         <TabList
@@ -199,14 +197,24 @@ const Management: React.FC = () => {
                             scrollButtons="auto"
                             allowScrollButtonsMobile
                             sx={{
-                                minHeight: { xs: 48, sm: 56 },
                                 "& .MuiTab-root": {
                                     minHeight: { xs: 48, sm: 56 },
                                     fontSize: { xs: "0.875rem", sm: "1rem" },
                                     px: { xs: 2, sm: 3 },
-                                    minWidth: { xs: "auto", sm: 160 },
                                     "&.Mui-selected": {
-                                        fontWeight: "bold",
+                                        backgroundColor: "background.paper",
+                                        color: "primary.main",
+                                    },
+                                },
+                            }}
+                            id="template-management-tabs"
+                            slotProps={{
+                                indicator: {
+                                    sx: {
+                                        backgroundColor: "primary.main",
+                                        height: 4,
+                                        borderRadius: 0,
+                                        
                                     },
                                 },
                             }}
@@ -282,7 +290,7 @@ const Management: React.FC = () => {
                     <KeyboardArrowUpIcon />
                 </IconButton>
             </Fade>
-        </Container>
+        </Box>
     );
 };
 
