@@ -1,61 +1,145 @@
-import React from 'react';
-import { IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import React, { useCallback, useEffect } from "react";
 import {
-  Brightness4 as DarkIcon,
-  Brightness7 as LightIcon,
-  SettingsBrightness as SystemIcon,
-} from '@mui/icons-material';
-import { useTheme } from '@/contexts/ThemeContext';
+    IconButton,
+    Popover,
+    Tooltip,
+    Box,
+    Stack,
+    Typography,
+    Paper,
+} from "@mui/material";
+import {
+    Settings as SettingsIcon,
+    LightMode as LightModeIcon,
+    DarkMode as DarkModeIcon,
+    SettingsBrightness as SystemModeIcon,
+} from "@mui/icons-material";
+import { useColorScheme } from "@mui/material/styles";
+import { useAppTheme } from "@/contexts/ThemeContext";
 
-type Theme = 'light' | 'dark' | 'system';
+type ThemeMode = "light" | "dark" | "system";
 
 const ThemeSwitcher: React.FC = () => {
-  const { mode: currentTheme, setTheme } = useTheme();
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+    const { mode, setMode } = useColorScheme();
+    const { setThemeMode } = useAppTheme();
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
-    setAnchorEl(event.currentTarget);
-  };
+    useEffect(() => {
+        const savedThemeMode = localStorage.getItem(
+            "themeMode",
+        ) as ThemeMode | null;
+        if (
+            savedThemeMode &&
+            ["light", "dark", "system"].includes(savedThemeMode)
+        ) {
+            setMode(savedThemeMode);
+            setThemeMode(savedThemeMode);
+        }
+    }, []);
 
-  const handleClose = (): void => {
-    setAnchorEl(null);
-  };
+    const handleThemeChange = useCallback(
+        (newMode: ThemeMode) => {
+            setMode(newMode);
+            setThemeMode(newMode);
+            localStorage.setItem("themeMode", newMode);
+        },
+        [setMode],
+    );
 
-  const handleThemeChange = (theme: Theme): void => {
-    setTheme(theme);
-    handleClose();
-  };
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
+        null,
+    );
 
-  const getThemeIcon = (): React.ReactElement => {
-    switch (currentTheme) {
-      case 'light':
-        return <LightIcon />;
-      case 'dark':
-        return <DarkIcon />;
-      default:
-        return <SystemIcon />;
-    }
-  };
+    const toggleMenu = React.useCallback(
+        (event: React.MouseEvent<HTMLElement>) => {
+            setMenuAnchorEl(isMenuOpen ? null : event.currentTarget);
+            setIsMenuOpen((previousIsMenuOpen) => !previousIsMenuOpen);
+        },
+        [isMenuOpen],
+    );
 
-  return (
-    <>
-      <Tooltip title="Change theme">
-        <IconButton color="inherit" onClick={handleClick}>
-          {getThemeIcon()}
-        </IconButton>
-      </Tooltip>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        keepMounted
-      >
-        <MenuItem onClick={() => handleThemeChange('light')}>Light</MenuItem>
-        <MenuItem onClick={() => handleThemeChange('dark')}>Dark</MenuItem>
-        <MenuItem onClick={() => handleThemeChange('system')}>System</MenuItem>
-      </Menu>
-    </>
-  );
+    return (
+        <React.Fragment>
+            <Tooltip title="Theme settings" enterDelay={1000}>
+                <IconButton
+                    type="button"
+                    aria-label="theme-settings"
+                    onClick={toggleMenu}
+                    color="inherit"
+                >
+                    <SettingsIcon />
+                </IconButton>
+            </Tooltip>
+            <Popover
+                open={isMenuOpen}
+                anchorEl={menuAnchorEl}
+                onClose={() => {
+                    setIsMenuOpen(false);
+                    setMenuAnchorEl(null);
+                }}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                }}
+                disableAutoFocus
+            >
+                <Box>
+                    <Stack>
+                        {[
+                            {
+                                value: "light" as ThemeMode,
+                                label: "Light",
+                                icon: <LightModeIcon fontSize="small" />,
+                            },
+                            {
+                                value: "dark" as ThemeMode,
+                                label: "Dark",
+                                icon: <DarkModeIcon fontSize="small" />,
+                            },
+                            {
+                                value: "system" as ThemeMode,
+                                label: "System",
+                                icon: <SystemModeIcon fontSize="small" />,
+                            },
+                        ].map((option, index, array) => (
+                            <Paper
+                                key={option.value}
+                                onClick={() => handleThemeChange(option.value)}
+                                elevation={0}
+                                square
+                                sx={{
+                                    p: 1.5,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s ease-in-out",
+                                    bgcolor:
+                                        mode === option.value
+                                            ? "action.selected"
+                                            : "background.paper",
+                                    borderBottom:
+                                        index !== array.length - 1
+                                            ? "1px solid"
+                                            : "none",
+                                    borderColor: "divider",
+                                    "&:hover": {
+                                        bgcolor: "action.hover",
+                                    },
+                                }}
+                            >
+                                <Stack
+                                    direction="row"
+                                    spacing={1.5}
+                                    alignItems="center"
+                                >
+                                    {option.icon}
+                                    <Typography>{option.label}</Typography>
+                                </Stack>
+                            </Paper>
+                        ))}
+                    </Stack>
+                </Box>
+            </Popover>
+        </React.Fragment>
+    );
 };
 
 export default ThemeSwitcher;

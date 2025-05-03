@@ -1,14 +1,19 @@
-import { Grid, Paper, Stack, Box, IconButton, Tooltip } from '@mui/material';
-import { useTemplateManagement } from '@/contexts/template/TemplateManagementContext';
-import ImportExport from './ImportExport';
-import RecipientList from './RecipientList';
-import RecipientsHeader from './RecipientsHeader';
-import NewRecipientPanel from './NewRecipientPanel';
-import { useRecipientPanelVisibility } from './useRecipientPanelVisibility';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Grid, Paper, Stack, Box, IconButton, Tooltip } from "@mui/material";
+import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
+import ImportExport from "./ImportExport";
+import RecipientList from "./RecipientList";
+import RecipientsHeader from "./RecipientsHeader";
+import NewRecipientPanel from "./NewRecipientPanel";
+import { useRecipientPanelVisibility } from "./useRecipientPanelVisibility";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useAppTheme } from "@/contexts/ThemeContext";
 
 export default function RecipientsTab() {
+    const { theme } = useAppTheme();
+
+    console.log("RecipientsTab theme mode:", theme.palette.mode);
+
     const { template } = useTemplateManagement();
     const { isVisible, togglePanel } = useRecipientPanelVisibility();
 
@@ -25,33 +30,37 @@ export default function RecipientsTab() {
                         <RecipientsHeader />
                         <RecipientList templateId={template.id} />
                     </Paper>
-                    
+
                     <Box sx={{ mt: 3 }}>
                         <ImportExport templateId={template.id} />
                     </Box>
                 </Grid>
 
                 {/* Toggle Button */}
-                <Box 
-                    sx={{ 
-                        display: { xs: 'none', md: 'flex' },
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                <Box
+                    sx={{
+                        display: { xs: "none", md: "flex" },
+                        alignItems: "center",
+                        justifyContent: "center",
                     }}
                 >
-                    <Tooltip title={isVisible ? 'Hide panel' : 'Show panel'}>
+                    <Tooltip title={isVisible ? "Hide panel" : "Show panel"}>
                         <IconButton onClick={togglePanel} size="small">
-                            {isVisible ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                            {isVisible ? (
+                                <ChevronRightIcon />
+                            ) : (
+                                <ChevronLeftIcon />
+                            )}
                         </IconButton>
                     </Tooltip>
                 </Box>
 
                 {/* Creation Panel - Hidden on mobile, toggleable on desktop */}
-                <Grid 
-                    size={{ xs: 12, md: 3 }} 
-                    sx={{ 
-                        display: isVisible ? 'block' : 'none',
-                        transition: 'all 0.3s ease-in-out'
+                <Grid
+                    size={{ xs: 12, md: 3 }}
+                    sx={{
+                        display: isVisible ? "block" : "none",
+                        transition: "all 0.3s ease-in-out",
                     }}
                 >
                     <NewRecipientPanel />

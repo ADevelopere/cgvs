@@ -10,11 +10,11 @@ import "@xyflow/react/dist/style.css";
 import BackgroundImageNode from "./BackgroundImageNode";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 import "./EditorTab.module.css";
 import { Box } from "@mui/material";
 import DownloadImage from "./DownloadImage";
 import DownloadPdf from "./DownloadPdf";
+import { useAppTheme } from "@/contexts/ThemeContext";
 
 const nodes: Node[] = [
     {
@@ -41,7 +41,7 @@ const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
 const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
 function Flow() {
-    const theme = useTheme();
+    const { theme } = useAppTheme();
 
     const { x, y, zoom } = useViewport();
     useEffect(() => {

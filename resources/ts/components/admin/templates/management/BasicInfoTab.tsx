@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent, useRef } from "react";
-import { flushSync } from "react-dom";
 import {
     Box,
     TextField,
@@ -16,18 +15,12 @@ import {
     Alert,
     Snackbar,
     AlertColor,
-    useTheme,
-    Theme,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
-import { createRoot } from "react-dom/client";
-import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 
 const BasicInfoTab: React.FC = () => {
-    const theme = useTheme();
-    const containerRef = useRef<HTMLDivElement>(null);
     const { template, unsavedChanges, setUnsavedChanges, saveTemplate } =
         useTemplateManagement();
     const [snackbar, setSnackbar] = useState<{
@@ -49,8 +42,6 @@ const BasicInfoTab: React.FC = () => {
     const [preview, setPreview] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
-    const [maxWidth, setMaxWidth] = useState<number | null>(null);
-    const [leftOffset, setLeftOffset] = useState<number | null>(null);
 
     useEffect(() => {
         if (template) {
@@ -176,27 +167,30 @@ const BasicInfoTab: React.FC = () => {
         setError(null);
     };
 
-    useEffect(() => {
-        const calculateDimensions = () => {
-            if (containerRef.current) {
-                const rect = containerRef.current.getBoundingClientRect();
-                setMaxWidth(rect.width);
-                setLeftOffset(rect.left);
-            }
-        };
-
-        calculateDimensions();
-        window.addEventListener("resize", calculateDimensions);
-
-        return () => {
-            window.removeEventListener("resize", calculateDimensions);
-        };
-    }, []);
-
     return (
-        <Box ref={containerRef}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* Action Bar */}
+            <Paper sx={{ p: 2, display: 'flex', justifyContent: 'end', gap: 2 }}>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleCancel}
+                    disabled={saving || !unsavedChanges}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSave}
+                    disabled={saving || !unsavedChanges}
+                >
+                    {saving ? "Saving..." : "Save"}
+                </Button>
+            </Paper>
+
             {/* form */}
-            <Box component="form" noValidate sx={{ mt: 1, paddingBottom: 20 }}>
+            <Box component="form" noValidate sx={{ mt: 1 }}>
                 {error && (
                     <Alert severity="error" sx={{ mb: 2 }}>
                         {error}
@@ -304,144 +298,8 @@ const BasicInfoTab: React.FC = () => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
-
-            {/* Bottom Action Bar */}
-            <InjectBottomBar
-                onSave={handleSave}
-                onCancel={handleCancel}
-                saving={saving}
-                unsavedChanges={unsavedChanges}
-                theme={theme}
-                maxWidth={maxWidth || undefined}
-                leftOffset={leftOffset || undefined}
-            />
         </Box>
     );
-};
-
-type BottomActionBarProps = {
-    onSave: () => void;
-    onCancel: () => void;
-    saving: boolean;
-    unsavedChanges: boolean;
-    theme: Theme;
-    maxWidth?: string | number;
-    leftOffset?: number;
-};
-
-const BottomActionBar: React.FC<BottomActionBarProps> = ({
-    onSave,
-    onCancel,
-    saving,
-    unsavedChanges,
-    theme,
-    maxWidth,
-}: BottomActionBarProps) => {
-    return (
-        <MuiThemeProvider theme={theme}>
-            <Box
-                sx={{
-                    maxWidth: "100%",
-                    display: "flex",
-                }}
-            >
-                <Paper
-                    sx={{
-                        p: 2,
-                        display: "flex",
-                        justifyContent: "end",
-                        alignItems: "center",
-                        gap: 2,
-                        width: maxWidth,
-                    }}
-                >
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={onCancel}
-                        disabled={saving || !unsavedChanges}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={onSave}
-                        disabled={saving || !unsavedChanges}
-                    >
-                        {saving ? "Saving..." : "Save"}
-                    </Button>
-                </Paper>
-            </Box>
-        </MuiThemeProvider>
-    );
-};
-
-const InjectBottomBar: React.FC<BottomActionBarProps> = ({
-    onSave,
-    onCancel,
-    saving,
-    unsavedChanges,
-    theme,
-    maxWidth,
-    leftOffset,
-}: BottomActionBarProps) => {
-    // Create stable references for container and root
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const rootRef = useRef<ReturnType<typeof createRoot> | null>(null);
-
-    // Create container and root only once on mount
-    useEffect(() => {
-        const container = document.createElement("div");
-        container.id = "bottom-action-bar-container";
-        document.body.appendChild(container);
-        containerRef.current = container;
-        rootRef.current = createRoot(container);
-
-        return () => {
-            if (rootRef.current && containerRef.current) {
-                try {
-                    flushSync(() => {
-                        rootRef.current?.unmount();
-                    });
-                    document.body.removeChild(containerRef.current);
-                } catch (e) {
-                    console.error("Error during cleanup:", e);
-                }
-                rootRef.current = null;
-                containerRef.current = null;
-            }
-        };
-    }, []);
-
-    // Handle updates to the component
-    useEffect(() => {
-        if (containerRef.current && rootRef.current) {
-            // Update container styles
-            Object.assign(containerRef.current.style, {
-                position: "fixed",
-                bottom: "0",
-                left: leftOffset !== undefined ? `${leftOffset}px` : "0",
-                width: "100%",
-                zIndex: "999999",
-            });
-
-            // Render component using the stable root
-            rootRef.current.render(
-                <BottomActionBar
-                    onSave={onSave}
-                    onCancel={onCancel}
-                    saving={saving}
-                    unsavedChanges={unsavedChanges}
-                    theme={theme}
-                    maxWidth={maxWidth}
-                    leftOffset={leftOffset}
-                />,
-            );
-        }
-    }, [onSave, onCancel, saving, theme, maxWidth, leftOffset]);
-
-    return null;
 };
 
 export default BasicInfoTab;
