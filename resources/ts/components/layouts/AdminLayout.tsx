@@ -64,10 +64,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                minHeight: "100vh",
             }}
         >
-            <AppBar position="sticky" elevation={1}>
+            <AppBar position="sticky" elevation={1} id="admin-header-appbar">
                 <Toolbar>
                     {/* Logo */}
                     <Typography
@@ -114,7 +113,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Toolbar>
             </AppBar>
 
-            <Box component="main">
+            <Box
+                component="main"
+            >
                 <ErrorBoundary>
                     <Outlet />
                 </ErrorBoundary>

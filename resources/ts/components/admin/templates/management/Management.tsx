@@ -145,8 +145,8 @@ const Management: React.FC = () => {
     };
 
     return (
-        <Box id="template-management">
-            <Box sx={{ width: "100%" }}>
+        <Box id="template-management" sx={{ width: "100%" }}>
+            <Box sx={{ width: "100%"}}>
                 {/* Header */}
                 {/* <Box
                     sx={{
@@ -214,7 +214,6 @@ const Management: React.FC = () => {
                                         backgroundColor: "primary.main",
                                         height: 4,
                                         borderRadius: 0,
-                                        
                                     },
                                 },
                             }}
@@ -229,11 +228,12 @@ const Management: React.FC = () => {
 
                     <Box
                         sx={{
-                            mt: { xs: 2, sm: 3 },
+                            // mt: { xs: 2, sm: 3 },
                             "& .MuiTabPanel-root": {
-                                p: { xs: 1, sm: 2, md: 3 },
+                                // p: { xs: 1, sm: 2, md: 3 },
                             },
                         }}
+                        id="template-management-tab-panels"
                     >
                         <TemplateVariablesProvider>
                             <TemplateRecipientsProvider>
@@ -247,9 +247,18 @@ const Management: React.FC = () => {
                                     onChangeIndex={handleChangeIndex}
                                     enableMouseEvents={isTouchDevice}
                                     disabled={!isTouchDevice}
-                                    style={{ overflow: "hidden" }}
+                                    style={{
+                                        overflow: "hidden",
+                                        height: "100%",
+                                    }}
                                 >
-                                    <TabPanel value="basic">
+                                    <TabPanel
+                                        value="basic"
+                                        sx={{
+                                            height: "100%",
+                                        }}
+                                        slot=""
+                                    >
                                         <BasicInfoTab />
                                     </TabPanel>
                                     <TabPanel value="variables">
