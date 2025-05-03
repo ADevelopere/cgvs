@@ -33,6 +33,7 @@
         "@mui/x-date-pickers": "^8.1.0",
         "@types/node": "^22.15.3",
         "@types/react-swipeable-views": "^0.13.6",
+        "@xyflow/react": "^12.6.0",
         "date-fns": "^4.1.0",
         "prop-types": "^15.8.1",
         "react": "^19.1.0",

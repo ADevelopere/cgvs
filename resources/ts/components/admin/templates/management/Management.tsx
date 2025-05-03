@@ -4,8 +4,6 @@ import {
     Tab,
     Paper,
     Typography,
-    Stack,
-    CircularProgress,
     Container,
     useTheme,
     useMediaQuery,
@@ -21,7 +19,7 @@ import {
 } from "@/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
 import VariablesTab from "./variables/VariablesTab";
-import EditorTab from "./tabs/EditorTab";
+import Flow from "./editor/EditorTab";
 import RecipientsTab from "./recipients/RecipientsTab";
 import PreviewTab from "./tabs/PreviewTab";
 import { Template } from "@/contexts/template/template.types";
@@ -253,7 +251,7 @@ const Management: React.FC = () => {
                                         <RecipientsTab />
                                     </TabPanel>
                                     <TabPanel value="editor">
-                                        <EditorTab />
+                                        <Flow />
                                     </TabPanel>
                                     <TabPanel value="preview">
                                         <PreviewTab />
