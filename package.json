@@ -35,6 +35,8 @@
         "@types/react-swipeable-views": "^0.13.6",
         "@xyflow/react": "^12.6.0",
         "date-fns": "^4.1.0",
+        "html-to-image": "^1.11.11",
+        "pdf-lib": "^1.17.1",
         "prop-types": "^15.8.1",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
