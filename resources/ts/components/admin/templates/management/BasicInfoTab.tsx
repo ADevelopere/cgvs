@@ -197,7 +197,7 @@ const BasicInfoTab: React.FC = () => {
     return (
         <Box>
             {/* form */}
-            <Box component="form" noValidate sx={{ mt: 1 }}>
+            <Box component="form" noValidate sx={{ mt: 1, paddingBottom: 20 }}>
                 {error && (
                     <Alert severity="error" sx={{ mb: 2 }}>
                         {error}
