@@ -1,66 +1,78 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 import {
     Box,
     Paper,
     Typography,
     TextField,
     Button,
-    Stack,
     Divider,
     InputAdornment,
-    Alert,
     styled,
     alpha,
-    useTheme
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import KeyIcon from '@mui/icons-material/Key';
-import { useTemplateVariables } from '@/contexts/template/TemplateVariablesContext';
-import { useTemplateRecipients } from '@/contexts/template/TemplateRecipientsContext';
-import { validateVariableValue } from '@/utils/template/validation';
-import { TemplateVariable, TemplateVariableType } from '@/contexts/template/template.types';
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import KeyIcon from "@mui/icons-material/Key";
+import { useTemplateVariables } from "@/contexts/template/TemplateVariablesContext";
+import { useTemplateRecipients } from "@/contexts/template/TemplateRecipientsContext";
+import { validateVariableValue } from "@/utils/template/validation";
+import { TemplateVariable } from "@/contexts/template/template.types";
+import { useAppTheme } from "@/contexts/ThemeContext";
 
 // Styled components for enhanced visuals
-const StyledPaper = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(3),
-    backgroundColor: alpha(theme.palette.background.paper, 0.6),
-    backdropFilter: 'blur(8px)',
-    transition: theme.transitions.create(['box-shadow', 'background-color'], {
-        duration: theme.transitions.duration.standard,
-    }),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.background.paper, 0.8),
-        boxShadow: theme.shadows[2],
-    },
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-}));
+const StyledPaper = styled(Paper)(() => {
+    const { theme } = useAppTheme();
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
-    '& .MuiOutlinedInput-root': {
-        transition: theme.transitions.create(['border-color', 'box-shadow']),
-        '&.Mui-focused': {
-            boxShadow: `${alpha(theme.palette.primary.main, 0.15)} 0 0 0 2px`
-        }
-    }
-}));
+    return {
+        padding: theme.spacing(3),
+        backgroundColor: theme.palette.background.paper,
+        backdropFilter: "blur(8px)",
+        transition: theme.transitions.create(
+            ["box-shadow", "background-color"],
+            {
+                duration: theme.transitions.duration.standard,
+            },
+        ),
+        "&:hover": {
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[2],
+        },
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+    };
+});
+
+const StyledTextField = styled(TextField)(() => {
+    const { theme } = useAppTheme();
+    return {
+        "& .MuiOutlinedInput-root": {
+            transition: theme.transitions.create([
+                "border-color",
+                "box-shadow",
+            ]),
+            "&.Mui-focused": {
+                boxShadow: `${alpha(theme.palette.primary.main, 0.15)} 0 0 0 2px`,
+            },
+        },
+    };
+});
 
 export default function NewRecipientPanel() {
-    const theme = useTheme();
+    const { theme } = useAppTheme();
+
     const { variables } = useTemplateVariables();
     const { recipients, createRecipient } = useTemplateRecipients();
 
     // Create existingValues map for key variables
     const existingValuesMap = useMemo(() => {
         const map = new Map<string, Set<string>>();
-        variables.forEach(variable => {
+        variables.forEach((variable) => {
             if (variable.is_key) {
                 const values = new Set<string>();
-                recipients.forEach(recipient => {
-                    values.add(recipient.data[variable.name]?.toString() || '');
+                recipients.forEach((recipient) => {
+                    values.add(recipient.data[variable.name]?.toString() || "");
                 });
                 map.set(variable.name, values);
             }
@@ -69,18 +81,22 @@ export default function NewRecipientPanel() {
     }, [variables, recipients]);
 
     // Form state
-    const [formData, setFormData] = useState<Record<string, string | number>>({});
+    const [formData, setFormData] = useState<Record<string, string | number>>(
+        {},
+    );
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Validate a single field
     const validateField = (variable: TemplateVariable, value: any) => {
-        const existingValues = variable.is_key ? existingValuesMap.get(variable.name) : undefined;
+        const existingValues = variable.is_key
+            ? existingValuesMap.get(variable.name)
+            : undefined;
         return validateVariableValue(variable, value, existingValues);
     };
 
     // Check if form is valid
     const isFormValid = useMemo(() => {
-        return variables.every(variable => {
+        return variables.every((variable) => {
             const value = formData[variable.name];
             const validationResult = validateField(variable, value);
             return validationResult.isValid;
@@ -90,31 +106,31 @@ export default function NewRecipientPanel() {
     // Handle field change
     const handleChange = (variable: TemplateVariable, value: any) => {
         const validationResult = validateField(variable, value);
-        
+
         // Convert the value to the correct type based on the variable type
         let processedValue: string | number;
         switch (variable.type) {
-            case 'number':
-                processedValue = value === '' ? '' : Number(value);
+            case "number":
+                processedValue = value === "" ? "" : Number(value);
                 break;
-            case 'date':
-                processedValue = value ? new Date(value).toISOString() : '';
+            case "date":
+                processedValue = value ? new Date(value).toISOString() : "";
                 break;
-            case 'gender':
-                processedValue = value || '';
+            case "gender":
+                processedValue = value || "";
                 break;
             default: // text
                 processedValue = String(value);
         }
-        
-        setFormData(prev => ({
+
+        setFormData((prev) => ({
             ...prev,
-            [variable.name]: processedValue
+            [variable.name]: processedValue,
         }));
-        
-        setErrors(prev => ({
+
+        setErrors((prev) => ({
             ...prev,
-            [variable.name]: validationResult.error || ''
+            [variable.name]: validationResult.error || "",
         }));
     };
 
@@ -125,11 +141,12 @@ export default function NewRecipientPanel() {
             const validationErrors: Record<string, string> = {};
             let isValid = true;
 
-            variables.forEach(variable => {
+            variables.forEach((variable) => {
                 const value = formData[variable.name];
                 const validationResult = validateField(variable, value);
                 if (!validationResult.isValid) {
-                    validationErrors[variable.name] = validationResult.error || '';
+                    validationErrors[variable.name] =
+                        validationResult.error || "";
                     isValid = false;
                 }
             });
@@ -140,18 +157,18 @@ export default function NewRecipientPanel() {
             }
 
             await createRecipient(formData);
-            
+
             // Reset form after successful submission
             setFormData({});
             setErrors({});
         } catch (error) {
-            console.error('Error saving recipient:', error);
+            console.error("Error saving recipient:", error);
         }
     };
 
     // Render input field based on variable type
     const renderInput = (variable: TemplateVariable) => {
-        const value = formData[variable.name] || '';
+        const value = formData[variable.name] || "";
         const error = errors[variable.name];
         const hasError = !!error;
 
@@ -161,35 +178,46 @@ export default function NewRecipientPanel() {
             fullWidth: true,
             size: "small" as const,
             required: variable.required || variable.is_key,
-            sx: { mb: 2 }
+            sx: { mb: 2 },
         };
 
         switch (variable.type) {
-            case 'date':
+            case "date":
                 return (
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             label={variable.name}
                             value={value ? new Date(value) : null}
                             onChange={(newValue) => {
-                                handleChange(variable, newValue?.toISOString() || '');
+                                handleChange(
+                                    variable,
+                                    newValue?.toISOString() || "",
+                                );
                             }}
                             slotProps={{
                                 textField: {
                                     ...commonProps,
-                                    InputProps: variable.is_key ? {
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <KeyIcon color={hasError ? "error" : "primary"} />
-                                            </InputAdornment>
-                                        )
-                                    } : undefined
-                                }
+                                    InputProps: variable.is_key
+                                        ? {
+                                              startAdornment: (
+                                                  <InputAdornment position="start">
+                                                      <KeyIcon
+                                                          color={
+                                                              hasError
+                                                                  ? "error"
+                                                                  : "primary"
+                                                          }
+                                                      />
+                                                  </InputAdornment>
+                                              ),
+                                          }
+                                        : undefined,
+                                },
                             }}
                         />
                     </LocalizationProvider>
                 );
-            case 'number':
+            case "number":
                 return (
                     <StyledTextField
                         {...commonProps}
@@ -197,16 +225,26 @@ export default function NewRecipientPanel() {
                         label={variable.name}
                         value={value}
                         onChange={(e) => handleChange(variable, e.target.value)}
-                        InputProps={variable.is_key ? {
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <KeyIcon color={hasError ? "error" : "primary"} />
-                                </InputAdornment>
-                            )
-                        } : undefined}
+                        InputProps={
+                            variable.is_key
+                                ? {
+                                      startAdornment: (
+                                          <InputAdornment position="start">
+                                              <KeyIcon
+                                                  color={
+                                                      hasError
+                                                          ? "error"
+                                                          : "primary"
+                                                  }
+                                              />
+                                          </InputAdornment>
+                                      ),
+                                  }
+                                : undefined
+                        }
                     />
                 );
-            case 'gender':
+            case "gender":
                 return (
                     <StyledTextField
                         {...commonProps}
@@ -214,16 +252,26 @@ export default function NewRecipientPanel() {
                         label={variable.name}
                         value={value}
                         onChange={(e) => handleChange(variable, e.target.value)}
-                        SelectProps={{
-                            native: true
+                        slotProps={{
+                            select: {
+                                native: true,
+                            },
+                            input: variable.is_key
+                                ? {
+                                      startAdornment: (
+                                          <InputAdornment position="start">
+                                              <KeyIcon
+                                                  color={
+                                                      hasError
+                                                          ? "error"
+                                                          : "primary"
+                                                  }
+                                              />
+                                          </InputAdornment>
+                                      ),
+                                  }
+                                : undefined,
                         }}
-                        InputProps={variable.is_key ? {
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <KeyIcon color={hasError ? "error" : "primary"} />
-                                </InputAdornment>
-                            )
-                        } : undefined}
                     >
                         <option value="">Select gender</option>
                         <option value="male">Male</option>
@@ -238,13 +286,23 @@ export default function NewRecipientPanel() {
                         label={variable.name}
                         value={value}
                         onChange={(e) => handleChange(variable, e.target.value)}
-                        InputProps={variable.is_key ? {
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <KeyIcon color={hasError ? "error" : "primary"} />
-                                </InputAdornment>
-                            )
-                        } : undefined}
+                        slotProps={{
+                            input: variable.is_key
+                                ? {
+                                      startAdornment: (
+                                          <InputAdornment position="start">
+                                              <KeyIcon
+                                                  color={
+                                                      hasError
+                                                          ? "error"
+                                                          : "primary"
+                                                  }
+                                              />
+                                          </InputAdornment>
+                                      ),
+                                  }
+                                : undefined,
+                        }}
                     />
                 );
         }
@@ -255,7 +313,7 @@ export default function NewRecipientPanel() {
         const required: TemplateVariable[] = [];
         const optional: TemplateVariable[] = [];
 
-        variables.forEach(variable => {
+        variables.forEach((variable) => {
             if (variable.required || variable.is_key) {
                 required.push(variable);
             } else {
@@ -265,7 +323,7 @@ export default function NewRecipientPanel() {
 
         return {
             requiredVariables: required,
-            optionalVariables: optional
+            optionalVariables: optional,
         };
     }, [variables]);
 
@@ -277,23 +335,21 @@ export default function NewRecipientPanel() {
 
             {/* Required Fields Section */}
             <Box sx={{ mb: 3 }}>
-                <Typography 
-                    variant="subtitle2" 
-                    color="primary" 
-                    gutterBottom 
-                    sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                <Typography
+                    variant="subtitle2"
+                    color="primary"
+                    gutterBottom
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
                         gap: 1,
-                        mb: 2
+                        mb: 2,
                     }}
                 >
                     Required Information
                 </Typography>
                 {requiredVariables.map((variable) => (
-                    <Box key={variable.name}>
-                        {renderInput(variable)}
-                    </Box>
+                    <Box key={variable.name}>{renderInput(variable)}</Box>
                 ))}
             </Box>
 
@@ -302,9 +358,9 @@ export default function NewRecipientPanel() {
                 <>
                     <Divider sx={{ my: 3 }} />
                     <Box>
-                        <Typography 
-                            variant="subtitle2" 
-                            color="text.secondary" 
+                        <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
                             gutterBottom
                             sx={{ mb: 2 }}
                         >
@@ -320,7 +376,7 @@ export default function NewRecipientPanel() {
             )}
 
             {/* Actions */}
-            <Box sx={{ mt: 'auto', pt: 3 }}>
+            <Box sx={{ mt: "auto", pt: 3 }}>
                 <Button
                     variant="contained"
                     onClick={handleSubmit}
@@ -329,13 +385,16 @@ export default function NewRecipientPanel() {
                     sx={{
                         py: 1.5,
                         backgroundColor: theme.palette.primary.main,
-                        '&:hover': {
+                        "&:hover": {
                             backgroundColor: theme.palette.primary.dark,
                         },
-                        '&.Mui-disabled': {
-                            backgroundColor: alpha(theme.palette.primary.main, 0.4),
-                            color: 'white'
-                        }
+                        "&.Mui-disabled": {
+                            backgroundColor: alpha(
+                                theme.palette.primary.main,
+                                0.4,
+                            ),
+                            color: "white",
+                        },
                     }}
                 >
                     Add Recipient

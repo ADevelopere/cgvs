@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import ErrorBoundary from "../common/ErrorBoundary";
 import {
     Dashboard as DashboardIcon,
@@ -10,17 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { PageContainer } from '@toolpad/core/PageContainer';
-
-interface NavItem {
-    text: string;
-    icon: React.ReactNode;
-    path: string;
-}
-
-interface AdminLayoutProps {
-    children?: React.ReactNode;
-}
+import { PageContainer } from "@toolpad/core/PageContainer";
+import ThemeSwitcher from "@/components/common/ThemeSwitcher";
 
 const NAVIGATION: Navigation = [
     {
@@ -48,10 +39,12 @@ const BRANDING = {
     title: "CGVS",
 };
 
+interface AdminLayoutProps {
+    children?: React.ReactNode;
+}
+
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-    const navigate = useNavigate();
     const { isAuthenticated, isLoading } = useAuth();
-    // const router = useDemoRouter("/page");
 
     if (isLoading) {
         return null; // or a loading spinner
@@ -62,12 +55,21 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     }
 
     return (
-        <ReactRouterAppProvider navigation={NAVIGATION} branding={BRANDING}>
+        <ReactRouterAppProvider
+            navigation={NAVIGATION}
+            branding={BRANDING}
+        >
             <ErrorBoundary>
-                <DashboardLayout>
-                    <PageContainer>
+                <DashboardLayout
+                    slots={{
+                        // appTitle: CustomAppTitle,
+                        toolbarActions: ThemeSwitcher,
+                        // sidebarFooter: SidebarFooter,
+                    }}
+                >
+                    {/* <PageContainer> */}
                         <Outlet />
-                    </PageContainer>
+                    {/* </PageContainer> */}
                 </DashboardLayout>
             </ErrorBoundary>
         </ReactRouterAppProvider>
