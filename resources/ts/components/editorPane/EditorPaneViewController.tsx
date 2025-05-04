@@ -94,7 +94,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 sx={{
                     flex: 1,
                     position: "relative",
-                    minHeight: `calc(100vh - 256px)`,
+                    minHeight: `calc(100vh - 203px)`,
                 }}
             >
                 <EditorPane

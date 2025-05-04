@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { NodeProps } from "@xyflow/react";
 
-// A4 landscape dimensions in pixels (297mm × 210mm at 96 DPI)
-const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
-const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
-const BackgroundImageNode: React.FC<NodeProps> = () => {
-    const { template } = useTemplateManagement();
+type ImageNodeData = {
+    imageUrl: string;
+};
+
+type ImageNodeProps = NodeProps & {
+    data: ImageNodeData;
+};
+
+const ImageNode: React.FC<ImageNodeProps> = ({ data: { imageUrl } }) => {
     const [dimensions, setDimensions] = useState({
-        width: A4_WIDTH,
-        height: A4_HEIGHT,
+        width: 20,
+        height: 20,
     });
 
     useEffect(() => {
-        if (template?.background_url) {
+        if (imageUrl) {
             const img = new Image();
-            img.src = template.background_url;
+            img.src = imageUrl;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -24,7 +27,8 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 });
             };
         }
-    }, [template?.background_url]);
+    }, [imageUrl]);
+
     return (
         <div
             style={{
@@ -32,7 +36,7 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 minHeight: `${dimensions.height}px`,
                 width: `${dimensions.width}px`,
                 minWidth: `${dimensions.width}px`,
-                backgroundImage: `url(${template?.background_url})`,
+                backgroundImage: `url(${imageUrl})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}
@@ -40,4 +44,4 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
     );
 };
 
-export default BackgroundImageNode;
+export default ImageNode;

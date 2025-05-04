@@ -5,6 +5,7 @@
 
 import EditorPaneViewController from "@/components/editorPane/EditorPaneViewController";
 import { Box } from "@mui/material";
+import ReactFlowEditor from "./ReactFlowEditor";
 
 function LeftPane() {
     return (
@@ -66,7 +67,7 @@ export default function EditorTab() {
             firstPaneButtonDisabled={false}
             thirdPaneButtonDisabled={false}
             firstPane={<LeftPane />}
-            middlePane={<MiddlePane />}
+            middlePane={<ReactFlowEditor />}
             thirdPane={<RightPane />}
         />
     );
