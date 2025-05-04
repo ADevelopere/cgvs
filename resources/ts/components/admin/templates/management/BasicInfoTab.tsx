@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import {
     Box,
     TextField,
@@ -11,7 +11,6 @@ import {
     Button,
     Typography,
     SelectChangeEvent,
-    Paper,
     Alert,
     Snackbar,
     AlertColor,
@@ -19,8 +18,11 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
+import { useAppTheme } from "@/contexts/ThemeContext";
+import StyledScrollBox from "@/components/common/StyledScrollBox";
 
 const BasicInfoTab: React.FC = () => {
+    const {theme} = useAppTheme();
     const { template, unsavedChanges, setUnsavedChanges, saveTemplate } =
         useTemplateManagement();
     const [snackbar, setSnackbar] = useState<{
@@ -176,15 +178,54 @@ const BasicInfoTab: React.FC = () => {
                 overflowY: "hidden",
             }}
         >
-            {/* form */}
+            {/* Action Bar */}
             <Box
-                component="form"
-                noValidate
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: 2,
+                    borderBottom: `1px solid ${theme.palette.divider}`,
+                    pb:1,
+                }}
+            >
+                <Typography variant="h6" component="h2">
+                    Basic Information
+                </Typography>
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "start",
+                        gap: 2,
+                    }}
+                >
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleCancel}
+                        disabled={saving || !unsavedChanges}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSave}
+                        disabled={saving || !unsavedChanges}
+                    >
+                        {saving ? "Saving..." : "Save"}
+                    </Button>
+                </Box>
+            </Box>
+
+            {/* form */}
+            <StyledScrollBox
                 sx={{
                     mt: 1,
                     overflowY: "auto",
-                    maxHeight: `calc(100vh - 300px)`,
-                    minHeight: `calc(100vh - 300px)`,
+                    maxHeight: `calc(100vh - 230px)`,
+                    minHeight: `calc(100vh - 230px)`,
                 }}
             >
                 {error && (
@@ -277,29 +318,7 @@ const BasicInfoTab: React.FC = () => {
                         </Box>
                     </Card>
                 )}
-            </Box>
-
-            {/* Action Bar */}
-            <Paper
-                sx={{ p: 2, display: "flex", justifyContent: "end", gap: 2 }}
-            >
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={handleCancel}
-                    disabled={saving || !unsavedChanges}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSave}
-                    disabled={saving || !unsavedChanges}
-                >
-                    {saving ? "Saving..." : "Save"}
-                </Button>
-            </Paper>
+            </StyledScrollBox>
 
             {/* Snackbar for notifications */}
             <Snackbar
