@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Welcome to CGVS
       </Typography>

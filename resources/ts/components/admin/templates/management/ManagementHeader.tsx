@@ -105,7 +105,6 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
                 gap: 1,
                 alignItems: "center",
                 justifyContent: { sm: "center", md: "flex-start" },
-                borderLeft: `1px solid ${theme.palette.divider}`,
             }}
         >
             <Box

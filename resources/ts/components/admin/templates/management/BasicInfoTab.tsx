@@ -22,7 +22,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import StyledScrollBox from "@/components/common/StyledScrollBox";
 
 const BasicInfoTab: React.FC = () => {
-    const {theme} = useAppTheme();
+    const { theme } = useAppTheme();
     const { template, unsavedChanges, setUnsavedChanges, saveTemplate } =
         useTemplateManagement();
     const [snackbar, setSnackbar] = useState<{
@@ -186,7 +186,7 @@ const BasicInfoTab: React.FC = () => {
                     alignItems: "center",
                     gap: 2,
                     borderBottom: `1px solid ${theme.palette.divider}`,
-                    pb:1,
+                    pb: 1,
                 }}
             >
                 <Typography variant="h6" component="h2">
@@ -220,12 +220,15 @@ const BasicInfoTab: React.FC = () => {
             </Box>
 
             {/* form */}
-            <StyledScrollBox
+            <Box
+                component="form"
+                noValidate
                 sx={{
                     mt: 1,
                     overflowY: "auto",
                     maxHeight: `calc(100vh - 230px)`,
                     minHeight: `calc(100vh - 230px)`,
+                    px: 2,
                 }}
             >
                 {error && (
@@ -318,7 +321,7 @@ const BasicInfoTab: React.FC = () => {
                         </Box>
                     </Card>
                 )}
-            </StyledScrollBox>
+            </Box>
 
             {/* Snackbar for notifications */}
             <Snackbar
