@@ -2,118 +2,72 @@ import React, {
     createContext,
     useContext,
     useState,
-    ReactNode,
-    useEffect,
     useCallback,
+    useMemo,
 } from "react";
-import { JSXElementConstructor } from "react";
-import ThemeSwitcher from "@/components/common/ThemeSwitcher";
-import { Box } from "@mui/material";
-
-/**
- * DashboardLayout Context provides a way to dynamically manage layout slots in the dashboard.
- *
- * Available slots:
- * - appTitle: Appears in the top-left of the dashboard
- * - toolbarActions: Appears in the top-right toolbar area
- * - sidebarFooter: Appears at the bottom of the sidebar
- *
- * Usage examples:
- *
- * 1. Basic slot management:
- * ```tsx
- * const MyComponent = () => {
- *   // Use the hook to set a slot - automatically cleans up on unmount
- *   useDashboardSlot('appTitle', MyCustomTitle);
- *   return <div>Content</div>;
- * };
- * ```
- *
- * 2. Toolbar with ThemeSwitcher:
- * ```tsx
- * const MyPage = () => {
- *   // Adds your toolbar actions alongside ThemeSwitcher
- *   useToolbarWithThemeSwitcher(MyToolbarActions);
- *   return <div>Page content</div>;
- * };
- * ```
- *
- * 3. Manual slot control:
- * ```tsx
- * const MyComponent = () => {
- *   const { setSlot, clearSlot } = useDashboardLayout();
- *
- *   useEffect(() => {
- *     // Set the slot and get cleanup function
- *     const cleanup = setSlot('sidebarFooter', FooterComponent);
- *     return cleanup;
- *   }, []);
- *
- *   // Or clear manually when needed
- *   const handleClose = () => {
- *     clearSlot('sidebarFooter');
- *   };
- *
- *   return <div>Content</div>;
- * };
- * ```
- *
- * Notes:
- * - Slots are automatically cleared when components unmount
- * - ThemeSwitcher is always available in the toolbar by default
- * - Use useToolbarWithThemeSwitcher to add actions alongside ThemeSwitcher
- * - Components can only set one slot at a time
- */
-
-interface DashboardLayoutSlots {
-    appTitle?: JSXElementConstructor<{}>;
-    toolbarActions?: JSXElementConstructor<{}>;
-    sidebarFooter?: JSXElementConstructor<{}>;
-}
+import {
+    Branding,
+    DashboardLayoutProviderProps,
+    DashboardLayoutSlots,
+    Navigation,
+    SidebarState,
+    SIDEBAR_STATE_STORAGE_KEY,
+} from "@/components/admin/layout/adminLayout.types";
 
 type SlotName = keyof DashboardLayoutSlots;
 
 interface DashboardLayoutContextProps {
+    branding?: Branding;
+    navigation?: Navigation;
     slots: DashboardLayoutSlots;
-    setSlot: (
-        slotName: SlotName,
-        component: JSXElementConstructor<{}>,
-    ) => () => void;
-    clearSlot: (slotName: SlotName) => void;
-    setToolbarWithThemeSwitcher: (
-        component: JSXElementConstructor<{}>,
-    ) => () => void;
+    sidebarState: SidebarState;
+    setSidebarState: (state: SidebarState) => void;
+    toggleSidebar: () => void;
+    setSlot: (slotName: SlotName, component: React.ReactNode) => () => void;
+    resetSlot: (slotName: SlotName) => void;
+    hideTitle: () => void;
+    showTitle: () => void;
 }
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
 >(undefined);
 
-// Component that combines custom toolbar with ThemeSwitcher
-const createCombinedToolbar = (CustomComponent: JSXElementConstructor<{}>) => {
-    return function CombinedToolbar() {
-        return (
-            <Box
-                sx={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                }}
-            >
-                <CustomComponent />
-                <ThemeSwitcher />
-            </Box>
-        );
-    };
-};
+export const DashboardLayoutProvider: React.FC<
+    DashboardLayoutProviderProps
+> = ({ branding, navigation, slots: initialSlots, children }) => {
+    const [brandingState, setBranding] = useState<Branding | undefined>(
+        branding,
+    );
+    const [navigationState, setNavigation] = useState<Navigation | undefined>(
+        navigation,
+    );
+    const [slots, setSlots] = useState<DashboardLayoutSlots>({
+        ...initialSlots,
+    });
+    const [isTitleVisible, setIsTitleVisible] = useState(true);
+    const [sidebarState, setSidebarState] = useState<SidebarState>(() => {
+        const saved = localStorage.getItem(SIDEBAR_STATE_STORAGE_KEY);
+        return (saved as SidebarState) || "expanded";
+    });
 
-export const DashboardLayoutProvider: React.FC<{ children: ReactNode }> = ({
-    children,
-}) => {
-    const [slots, setSlots] = useState<DashboardLayoutSlots>({});
+    const toggleSidebar = useCallback(() => {
+        setSidebarState((current) => {
+            const newState = current === "expanded" ? "collapsed" : "expanded";
+            localStorage.setItem(SIDEBAR_STATE_STORAGE_KEY, newState);
+            return newState;
+        });
+    }, []);
+
+    const hideTitle = useCallback(() => {
+        setIsTitleVisible(false);
+    }, []);
+    const showTitle = useCallback(() => {
+        setIsTitleVisible(true);
+    }, []);
 
     const setSlot = useCallback(
-        (slotName: SlotName, component: JSXElementConstructor<{}>) => {
+        (slotName: SlotName, component: React.ReactNode) => {
             setSlots((prevSlots) => ({
                 ...prevSlots,
                 [slotName]: component,
@@ -136,18 +90,34 @@ export const DashboardLayoutProvider: React.FC<{ children: ReactNode }> = ({
         });
     }, []);
 
-    const setToolbarWithThemeSwitcher = useCallback(
-        (component: JSXElementConstructor<{}>) => {
-            const combinedComponent = createCombinedToolbar(component);
-            return setSlot("toolbarActions", combinedComponent);
-        },
-        [setSlot],
-    );
+    const value = useMemo(() => {
+        return {
+            branding: brandingState,
+            navigation: navigationState,
+            slots,
+            sidebarState,
+            setSidebarState,
+            toggleSidebar,
+            setSlot,
+            resetSlot: clearSlot,
+            hideTitle,
+            showTitle,
+        };
+    }, [
+        brandingState,
+        navigationState,
+        slots,
+        sidebarState,
+        setSidebarState,
+        toggleSidebar,
+        setSlot,
+        clearSlot,
+        hideTitle,
+        showTitle,
+    ]);
 
     return (
-        <DashboardLayoutContext.Provider
-            value={{ slots, setSlot, clearSlot, setToolbarWithThemeSwitcher }}
-        >
+        <DashboardLayoutContext.Provider value={value}>
             {children}
         </DashboardLayoutContext.Provider>
     );
@@ -161,29 +131,4 @@ export const useDashboardLayout = () => {
         );
     }
     return context;
-};
-
-// Hook for components to easily set/clear a slot during their lifecycle
-export const useDashboardSlot = (
-    slotName: SlotName,
-    component: JSXElementConstructor<{}>,
-) => {
-    const { setSlot } = useDashboardLayout();
-
-    useEffect(() => {
-        const clear = setSlot(slotName, component);
-        return clear;
-    }, [setSlot, slotName, component]);
-};
-
-// Hook for setting toolbar actions with ThemeSwitcher
-export const useToolbarWithThemeSwitcher = (
-    component: JSXElementConstructor<{}>,
-) => {
-    const { setToolbarWithThemeSwitcher } = useDashboardLayout();
-
-    useEffect(() => {
-        const clear = setToolbarWithThemeSwitcher(component);
-        return clear;
-    }, [setToolbarWithThemeSwitcher, component]);
 };

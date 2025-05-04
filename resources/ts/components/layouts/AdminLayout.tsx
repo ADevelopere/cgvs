@@ -7,12 +7,15 @@ import {
     FileCopy as CertificatesIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigation } from "@toolpad/core/AppProvider";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import ThemeSwitcher from "@/components/common/ThemeSwitcher";
 import { useAppTheme } from "@/contexts/ThemeContext";
-import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
+import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
+import { NavigationProvider } from "@/contexts/NavigationContext";
+import DashboardLayout from "@/components/admin/layout/DashboardLayout";
+import {
+    Navigation,
+    SIDEBAR_STATE_STORAGE_KEY,
+    SidebarState,
+} from "@/components/admin/layout/adminLayout.types";
 
 const NAVIGATION: Navigation = [
     {
@@ -40,17 +43,9 @@ const BRANDING = {
     title: "CGVS",
 };
 
-const DefaultToolbarActions = () => <ThemeSwitcher />;
-
 const AdminLayout: React.FC = () => {
     const { theme } = useAppTheme();
     const { isAuthenticated, isLoading } = useAuth();
-    const { slots } = useDashboardLayout();
-
-    React.useEffect(() => {
-        // Set default toolbar actions
-        slots.toolbarActions = DefaultToolbarActions;
-    }, []);
 
     if (isLoading) {
         return null; // or a loading spinner
@@ -61,17 +56,19 @@ const AdminLayout: React.FC = () => {
     }
 
     return (
-        <ReactRouterAppProvider
-            navigation={NAVIGATION}
-            branding={BRANDING}
-            theme={theme}
-        >
-            <ErrorBoundary>
-                <DashboardLayout slots={slots}>
-                    <Outlet />
-                </DashboardLayout>
-            </ErrorBoundary>
-        </ReactRouterAppProvider>
+        <ErrorBoundary>
+            <NavigationProvider>
+                <DashboardLayoutProvider
+                    branding={BRANDING}
+                    navigation={NAVIGATION}
+                >
+                    <DashboardLayout>
+                        {/* keep it disabled for now */}
+                        {/* <Outlet /> */}
+                    </DashboardLayout>
+                </DashboardLayoutProvider>
+            </NavigationProvider>
+        </ErrorBoundary>
     );
 };
 
