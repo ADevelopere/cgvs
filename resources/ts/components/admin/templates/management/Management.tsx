@@ -23,6 +23,8 @@ import { TemplateVariablesProvider } from "@/contexts/template/TemplateVariables
 import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
 import { useState, useEffect } from "react";
 import EditorTab from "./editor/EditorTab";
+import ManagementTabList from "./ManagementTabList";
+import { useToolbarWithThemeSwitcher } from "@/contexts/DashboardLayoutContext";
 
 const handleTabError = (
     error: any,
@@ -69,9 +71,10 @@ const Management: React.FC = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [_, setSearchParams] = useSearchParams();
-    const { activeTab, setTabError } = useTemplateManagement();
+    const { activeTab, setActiveTab, setTabError } = useTemplateManagement();
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [isTouchDevice, setIsTouchDevice] = useState(false);
+
 
     useEffect(() => {
         const checkTouchSupport = () => {
@@ -115,6 +118,7 @@ const Management: React.FC = () => {
         newValue: TabType,
     ) => {
         try {
+            setActiveTab(newValue);
             setSearchParams({ tab: newValue });
         } catch (error) {
             handleTabError(error, newValue, setTabError);
@@ -163,57 +167,11 @@ const Management: React.FC = () => {
                 </Box> */}
                 {/* Tabs */}
                 <TabContext value={activeTab}>
-                    <Paper
-                        elevation={2}
-                        sx={{
-                            backgroundColor: "background.paper",
-                            overflowX: "auto",
-                            borderRadius: { xs: 0, sm: 1 },
-                            borderBottom: 2,
-                            borderColor: "divider",
-                            borderTop: 2,
-                            position: "sticky",
-                            top: 0,
-                            zIndex: theme.zIndex.appBar,
-                            display: "flex",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <TabList
-                            onChange={handleTabChange}
-                            aria-label="template management tabs"
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            allowScrollButtonsMobile
-                            sx={{
-                                "& .MuiTab-root": {
-                                    minHeight: { xs: 48, sm: 56 },
-                                    fontSize: { xs: "0.875rem", sm: "1rem" },
-                                    px: { xs: 2, sm: 3 },
-                                    "&.Mui-selected": {
-                                        backgroundColor: "background.paper",
-                                        color: "primary.main",
-                                    },
-                                },
-                            }}
-                            id="template-management-tabs"
-                            slotProps={{
-                                indicator: {
-                                    sx: {
-                                        backgroundColor: "primary.main",
-                                        height: 4,
-                                        borderRadius: 0,
-                                    },
-                                },
-                            }}
-                        >
-                            <Tab label="Basic Info" value="basic" />
-                            <Tab label="Variables" value="variables" />
-                            <Tab label="Recipients" value="recipients" />
-                            <Tab label="Editor" value="editor" />
-                            <Tab label="Preview" value="preview" />
-                        </TabList>
-                    </Paper>
+                    {/* Tab List */}
+                    <ManagementTabList
+                        onChange={handleTabChange}
+                        activeTab={activeTab}
+                    />
 
                     <Box
                         sx={{
