@@ -28,9 +28,20 @@ export type NavigationItem =
 
 export type Navigation = NavigationItem[];
 
-type DashboardLayoutSlots = {
+export type DashboardLayoutSlots = {
     title?: React.ReactNode;
-    middle?: React.ReactNode;
-    actions?: React.ReactNode;
+    middleActions?: React.ReactNode;
+    endActions?: React.ReactNode;
     sidebar?: React.ReactNode;
+};
+
+export const SIDEBAR_STATE_STORAGE_KEY = "dashboard_sidebar_state";
+
+export type SidebarState = "collapsed" | "expanded";
+
+export type DashboardLayoutProviderProps = {
+    branding?: Branding;
+    navigation?: Navigation;
+    slots?: DashboardLayoutSlots;
+    children?: React.ReactNode;
 };
