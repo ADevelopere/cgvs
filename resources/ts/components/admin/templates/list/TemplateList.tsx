@@ -49,7 +49,7 @@ const TemplateList: React.FC = () => {
 
     const handleViewChange = (
         _: React.MouseEvent<HTMLElement>,
-        newView: ViewMode | null
+        newView: ViewMode | null,
     ): void => {
         if (newView !== null) {
             setViewMode(newView);
@@ -82,7 +82,7 @@ const TemplateList: React.FC = () => {
     };
 
     return (
-        <Box>
+        <Box sx={{ p: 3 }}>
             <Box
                 display="flex"
                 justifyContent="space-between"

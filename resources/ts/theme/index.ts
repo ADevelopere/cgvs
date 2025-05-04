@@ -1,4 +1,4 @@
-import {  Theme, ThemeOptions } from "@mui/material/styles";
+import { Theme, ThemeOptions } from "@mui/material/styles";
 import { createTheme, PaletteMode } from "@mui/material";
 
 const getThemeConfig = (mode: PaletteMode): ThemeOptions => ({
@@ -49,6 +49,43 @@ const getThemeConfig = (mode: PaletteMode): ThemeOptions => ({
                     {
                         transitionDelay: "5000s",
                     },
+
+                "*::-webkit-scrollbar": {
+                    width: "8px",
+                    backgroundColor: "transparent",
+                },
+                "*::-webkit-scrollbar-track": {
+                    background:
+                        mode === "dark"
+                            ? "rgba(255, 255, 255, 0.05)"
+                            : "rgba(0, 0, 0, 0.05)",
+                    borderRadius: "8px",
+                    margin: "8px 0",
+                },
+                "*::-webkit-scrollbar-thumb": {
+                    background:
+                        mode === "dark"
+                            ? "rgba(255, 255, 255, 0.2)"
+                            : "rgba(0, 0, 0, 0.2)",
+                    borderRadius: "8px",
+                    border:
+                        mode === "dark"
+                            ? "2px solid rgba(30, 30, 30, 0.9)"
+                            : "2px solid rgba(255, 255, 255, 0.9)",
+                },
+                "*::-webkit-scrollbar-thumb:hover": {
+                    background:
+                        mode === "dark"
+                            ? "rgba(255, 255, 255, 0.3)"
+                            : "rgba(0, 0, 0, 0.3)",
+                },
+                "*": {
+                    scrollbarWidth: "thin",
+                    scrollbarColor:
+                        mode === "dark"
+                            ? "rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05)"
+                            : "rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05)",
+                },
             },
         },
     },
@@ -76,4 +113,3 @@ export const createAppTheme = (mode: "light" | "dark" | "system"): Theme => {
         ...getThemeConfig(effectiveMode),
     });
 };
-
