@@ -1,6 +1,6 @@
 export interface Title {
     titleText?: string;
-    icon?: React.ReactNode;
+    logoIcon?: React.ReactNode;
     homeUrl?: string;
     titleVisible: boolean;
     titleTextVisible: boolean;
@@ -60,11 +60,11 @@ export type DashboardLayoutContextProps = {
     setNavigation: (navigation: Navigation) => void;
     slots: DashboardLayoutSlots;
     // title states
-    title: Title;
+    title?: Title;
     // sidebar states
     sidebarState: SidebarState;
     // slots
-    setSlot: (
+    setDashboardSlot: (
         slotName: SlotName,
         component: React.ReactNode | null,
     ) => () => void;
@@ -75,4 +75,9 @@ export type DashboardLayoutContextProps = {
     // sidebar actions
     setSidebarState: (state: SidebarState) => void;
     toggleSidebar: () => void;
+    //
+    headerHeight: number;
+    setHeaderHeight: (height: number) => void;
+    sideBarToggleWidth: number;
+    setSideBarToggleWidth: (width: number) => void;
 };

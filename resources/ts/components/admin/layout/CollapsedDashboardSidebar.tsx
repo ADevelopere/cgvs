@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { useNavigation } from "@/contexts/NavigationContext";
-import { NavigationItem, NavigationPageItem } from "./adminLayout.types";
+import { NavigationItem, NavigationPageItem } from "../../../contexts/adminLayout.types";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 
 const NavItem: React.FC<{

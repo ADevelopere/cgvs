@@ -10,6 +10,7 @@ import {
 import { ThemeProvider as MuiThemeProvider, Theme } from "@mui/material/styles";
 import { createAppTheme } from "@/theme";
 
+
 type ThemeMode = "light" | "dark" | "system";
 
 type ThemeContextType = {

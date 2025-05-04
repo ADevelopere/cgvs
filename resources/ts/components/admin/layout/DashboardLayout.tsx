@@ -21,8 +21,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     // Get theme and media query for responsive design
     const theme = useTheme();
+    const {
+        sidebarState,
+        setSidebarState,
+        slots,
+        setHeaderHeight,
+        headerHeight,
+        setSideBarToggleWidth,
+    } = useDashboardLayout();
+
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const { sidebarState, setSidebarState } = useDashboardLayout();
 
     // Track previous sidebar state for desktop view
     const [previousDesktopState, setPreviousDesktopState] =
@@ -56,6 +64,34 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         [isMobile, sidebarState],
     );
 
+    useEffect(() => {
+        const updateHeaderHeight = () => {
+            if (headerRef && headerRef.current) {
+                const height = headerRef.current.getBoundingClientRect().height;
+                setHeaderHeight(height);
+            }
+        };
+
+        const updateSideBarToggleWidth = () => {
+            if (sideBarToggleRef && sideBarToggleRef.current) {
+                const width =
+                    sideBarToggleRef.current.getBoundingClientRect().width;
+                setSideBarToggleWidth(width);
+            }
+        };
+
+        // Update header height initially and on window resize
+        updateHeaderHeight();
+        updateSideBarToggleWidth();
+        window.addEventListener("resize", updateHeaderHeight);
+        window.addEventListener("resize", updateSideBarToggleWidth);
+
+        return () => {
+            window.removeEventListener("resize", updateHeaderHeight);
+            window.removeEventListener("resize", updateSideBarToggleWidth);
+        };
+    }, [headerRef, sideBarToggleRef]);
+
     // Handle floating sidebar close
     const handleFloatingSidebarClose = () => {
         setSidebarState("collapsed");
@@ -77,7 +113,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                     display: "flex",
                     alignItems: "center",
                     px: 2,
-                    py: 1,
+                    py: 0,
                     borderBottom: 1,
                     borderColor: "divider",
                     gap: 2,
@@ -90,7 +126,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 <DashboardTitleRenderer ref={titleRef} />
 
                 {/* middle actions */}
-                <Box ref={middleActionsRef} sx={{ ml: 2, flex: 1 }}></Box>
+                <Box ref={middleActionsRef} sx={{ ml: 2, flex: 1 }}>
+                    {slots.middleActions}
+                </Box>
 
                 {/* end actions */}
                 <Box ref={endActionsRef}></Box>
@@ -140,7 +178,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             <FloatingDashboardSidebar
                 open={isFloatingSidebarVisible}
                 onClose={handleFloatingSidebarClose}
-                headerRef={headerRef}
+                headerHeight={headerHeight}
             />
         </Box>
     );

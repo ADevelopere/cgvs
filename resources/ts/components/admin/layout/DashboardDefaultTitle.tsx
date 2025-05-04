@@ -2,96 +2,108 @@ import { forwardRef } from "react";
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
+import { Title } from "@/contexts/adminLayout.types";
 
-export const DefaultTitle = forwardRef<HTMLDivElement>((_, ref) => {
-    const { title } = useDashboardLayout();
+type DefaultTitleProps = {
+    title: Title;
+};
 
-    const {
-        icon: logo,
-        homeUrl,
-        titleText,
-        titleVisible,
-        titleTextVisible,
-        titleLogoVisible,
-        textColor,
-        iconColor,
-    } = title;
+export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
+    (
+        {
+            title: {
+                logoIcon: logoIcon,
+                homeUrl,
+                titleText,
+                titleVisible,
+                titleTextVisible,
+                titleLogoVisible,
+                textColor,
+                iconColor,
+            },
+        },
+        ref,
+    ) => {
+        if (!titleVisible) return null;
 
-    if (!titleVisible) return null;
+        const TitleContent = () => (
+            <>
+                {titleLogoVisible && logoIcon && (
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            color: iconColor,
+                        }}
+                    >
+                        {logoIcon}
+                    </Box>
+                )}
+                {titleTextVisible && titleText && (
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{
+                            fontWeight: "bold",
+                            fontSize: "1.25rem",
+                            lineHeight: 1.6,
+                            color: textColor,
+                        }}
+                    >
+                        {titleText}
+                    </Typography>
+                )}
+            </>
+        );
 
-    const TitleContent = () => (
-        <>
-            {titleLogoVisible && logo && (
-                <Box
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        color: iconColor,
-                    }}
-                >
-                    {logo}
+        if (homeUrl) {
+            return (
+                <Box ref={ref}>
+                    <Link
+                        to={homeUrl}
+                        style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                        }}
+                    >
+                        <TitleContent />
+                    </Link>
                 </Box>
-            )}
-            {titleTextVisible && titleText && (
-                <Typography
-                    variant="h6"
-                    component="div"
-                    sx={{
-                        fontWeight: "bold",
-                        fontSize: "1.25rem",
-                        lineHeight: 1.6,
-                        color: textColor,
-                    }}
-                >
-                    {titleText}
-                </Typography>
-            )}
-        </>
-    );
+            );
+        }
 
-    if (homeUrl) {
         return (
-            <Box ref={ref}>
-                <Link
-                    to={homeUrl}
-                    style={{
-                        textDecoration: "none",
-                        color: "inherit",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                    }}
-                >
-                    <TitleContent />
-                </Link>
+            <Box
+                ref={ref}
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                }}
+            >
+                <TitleContent />
             </Box>
         );
-    }
-
-    return (
-        <Box
-            ref={ref}
-            sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-            }}
-        >
-            <TitleContent />
-        </Box>
-    );
-});
+    },
+);
 
 DefaultTitle.displayName = "DefaultTitle";
 
 export const DashboardTitleRenderer = forwardRef<HTMLDivElement>((_, ref) => {
-    const { slots } = useDashboardLayout();
+    const { title, slots } = useDashboardLayout();
 
     if (slots.titleRenderer) {
         return <Box ref={ref}>{slots.titleRenderer}</Box>;
     }
 
-    return <DefaultTitle ref={ref} />;
+    if (!title) {
+        return null;
+    }
+
+    return <DefaultTitle title={title} ref={ref} />;
 });
 
 DashboardTitleRenderer.displayName = "DashboardTitleRenderer";
