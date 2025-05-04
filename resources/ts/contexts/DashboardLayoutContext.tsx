@@ -4,6 +4,7 @@ import React, {
     useState,
     useCallback,
     useMemo,
+    useEffect,
 } from "react";
 import {
     DashboardLayoutProviderProps,
@@ -14,7 +15,7 @@ import {
     DashboardLayoutContextProps,
     Title,
     Navigation,
-} from "@/components/admin/layout/adminLayout.types";
+} from "@/contexts/adminLayout.types";
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
@@ -26,12 +27,20 @@ export const DashboardLayoutProvider: React.FC<
     const [slots, setSlots] = useState<DashboardLayoutSlots>({
         ...initialSlots,
     });
-    const [title, setTitleState] = useState<Title>(initialTitle || {});
+    const [title, setTitleState] = useState<Title | undefined>(
+        initialTitle || undefined,
+    );
+
     const [sidebarState, setSidebarState] = useState<SidebarState>(() => {
         const saved = localStorage.getItem(SIDEBAR_STATE_STORAGE_KEY);
         return (saved as SidebarState) || "expanded";
     });
-    const [navigation, setNavigation] = useState<Navigation | undefined>(initialNavigation);
+    const [navigation, setNavigation] = useState<Navigation | undefined>(
+        initialNavigation,
+    );
+
+    const [headerHeight, setHeaderHeight] = useState<number>(0);
+    const [sideBarToggleWidth, setSideBarToggleWidth] = useState<number>(0);
 
     const toggleSidebar = useCallback(() => {
         setSidebarState((current) => {
@@ -41,7 +50,7 @@ export const DashboardLayoutProvider: React.FC<
         });
     }, []);
 
-    const setSlot = useCallback(
+    const setDashboardSlot = useCallback(
         (slotName: SlotName, component: React.ReactNode | null) => {
             setSlots((prevSlots) => ({
                 ...prevSlots,
@@ -73,7 +82,7 @@ export const DashboardLayoutProvider: React.FC<
             ...prevSlots,
             titleRenderer: slot,
         }));
-        
+
         return () => {
             setSlots((prevSlots) => {
                 const { titleRenderer: _, ...rest } = prevSlots;
@@ -93,12 +102,17 @@ export const DashboardLayoutProvider: React.FC<
             slots,
             title,
             sidebarState,
-            setSlot,
+            setDashboardSlot,
             resetSlots,
             setTitleSlot,
             setTitle,
             setSidebarState,
             toggleSidebar,
+            //
+            headerHeight,
+            setHeaderHeight,
+            sideBarToggleWidth,
+            setSideBarToggleWidth,
         };
     }, [
         navigation,
@@ -106,12 +120,16 @@ export const DashboardLayoutProvider: React.FC<
         slots,
         title,
         sidebarState,
-        setSlot,
+        setDashboardSlot,
         resetSlots,
         setTitleSlot,
         setTitle,
         setSidebarState,
         toggleSidebar,
+        headerHeight,
+        setHeaderHeight,
+        sideBarToggleWidth,
+        setSideBarToggleWidth,
     ]);
 
     return (

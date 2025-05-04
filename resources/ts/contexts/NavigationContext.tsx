@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { NavigationPageItem } from '../components/admin/layout/adminLayout.types';
+import { NavigationPageItem } from './adminLayout.types';
 
 interface NavigationContextType {
     isPathActive: (item: NavigationPageItem) => boolean;

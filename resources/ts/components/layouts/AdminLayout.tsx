@@ -11,7 +11,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import DashboardLayout from "@/components/admin/layout/DashboardLayout";
-import { Navigation, Title } from "@/components/admin/layout/adminLayout.types";
+import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { HomeIcon } from "lucide-react";
 
 const NAVIGATION: Navigation = [
@@ -38,7 +38,7 @@ const NAVIGATION: Navigation = [
 
 const TITLE: Title = {
     titleText: "CGVS",
-    icon: <HomeIcon />,
+    logoIcon: <HomeIcon />,
     titleVisible: true,
     titleTextVisible: true,
     titleLogoVisible: true,

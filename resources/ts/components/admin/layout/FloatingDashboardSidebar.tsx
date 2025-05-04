@@ -5,33 +5,15 @@ import { ExpandedDashboardSidebar } from "./ExpandedDashboardSidebar";
 interface FloatingDashboardSidebarProps {
     open: boolean;
     onClose: () => void;
-    headerRef: React.RefObject<HTMLDivElement | null>;
+    headerHeight: number;
 }
 
 export const FloatingDashboardSidebar: React.FC<FloatingDashboardSidebarProps> = ({
     open,
     onClose,
-    headerRef
+    headerHeight,
 }) => {
     const theme = useTheme();
-    const [headerHeight, setHeaderHeight] = useState(0);
-
-    useEffect(() => {
-        const updateHeaderHeight = () => {
-            if (headerRef && headerRef.current) {
-                const height = headerRef.current.getBoundingClientRect().height;
-                setHeaderHeight(height);
-            }
-        };
-
-        // Update header height initially and on window resize
-        updateHeaderHeight();
-        window.addEventListener('resize', updateHeaderHeight);
-
-        return () => {
-            window.removeEventListener('resize', updateHeaderHeight);
-        };
-    }, [headerRef]);
 
     return (
         <Drawer
