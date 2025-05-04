@@ -21,53 +21,69 @@ interface TabListProps {
 
 const ManagementTabList: React.FC<TabListProps> = ({ onChange, activeTab }) => {
     return (
-        <TabContext value={activeTab}>
-            <MuiTabList
-                onChange={onChange}
-                aria-label="template management tabs"
-                variant="scrollable"
-                scrollButtons="auto"
-                allowScrollButtonsMobile
-                sx={{
-                    width: "100%",
-                    borderBottom: 1,
-                    borderColor: "divider",
-                    "& .MuiTab-root": {
-                        minHeight: { xs: 48, sm: 56 },
-                        fontSize: { xs: "0.875rem", sm: "1rem" },
-                        px: { xs: 2, sm: 3 },
-                        transition: "all 0.2s ease-in-out",
-                        "&.Mui-selected": {
-                            backgroundColor: "action.hover",
-                            color: "primary.main",
-                            fontWeight: 600,
+        <Box
+            sx={{
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: "background.paper",
+                borderBottom: 1,
+                borderColor: "divider",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                px: { xs: 2, sm: 3 },
+            }}
+        >
+            <TabContext value={activeTab}>
+                <MuiTabList
+                    onChange={onChange}
+                    aria-label="template management tabs"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile
+                    sx={{
+                        "& .MuiTabs-scrollButtons": {
+                            color: "text.secondary",
                         },
-                        "&:hover": {
-                            backgroundColor: "action.hover",
+                        "& .MuiTab-root": {
+                            minHeight: { xs: 48, sm: 56 },
+                            fontSize: { xs: "0.875rem", sm: "1rem" },
+                            px: { xs: 1, sm: 2 },
+                            "&.Mui-selected": {
+                                backgroundColor: "action.hover",
+                                color: "primary.main",
+                                fontWeight: 600,
+                            },
+                            "&:hover": {
+                                backgroundColor: "action.hover",
+                            },
+                            transition: "all 0.2s ease-in-out",
                         },
-                    },
-                    "& .MuiTabs-scrollButtons": {
-                        color: "text.secondary",
-                    },
-                }}
-                id="template-management-tabs"
-                slotProps={{
-                    indicator: {
-                        sx: {
-                            backgroundColor: "primary.main",
-                            height: 3,
-                            borderRadius: "3px 3px 0 0",
+                    }}
+                    id="template-management-tabs"
+                    slotProps={{
+                        indicator: {
+                            sx: {
+                                backgroundColor: "primary.main",
+                                height: 3,
+                                borderRadius: "3px 3px 0 0",
+                            },
                         },
-                    },
-                }}
-            >
-                <Tab label="Basic Info" value="basic" />
-                <Tab label="Variables" value="variables" />
-                <Tab label="Recipients" value="recipients" />
-                <Tab label="Editor" value="editor" />
-                <Tab label="Preview" value="preview" />
-            </MuiTabList>
-        </TabContext>
+                        list: {
+                            sx: {
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: 0,
+                            },
+                        },
+                    }}
+                >
+                    <Tab label="Basic Info" value="basic" />
+                    <Tab label="Variables" value="variables" />
+                    <Tab label="Recipients" value="recipients" />
+                    <Tab label="Editor" value="editor" />
+                    <Tab label="Preview" value="preview" />
+                </MuiTabList>
+            </TabContext>
+        </Box>
     );
 };
 
@@ -81,20 +97,15 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const { sideBarToggleWidth } = useDashboardLayout();
-
     return (
         <Box
             sx={{
-                width: "fit-content",
-                minWidth: "fit-content",
                 display: "flex",
                 flexDirection: { sm: "column", md: "row" },
                 gap: 1,
                 alignItems: "center",
                 justifyContent: { sm: "center", md: "flex-start" },
                 borderLeft: `1px solid ${theme.palette.divider}`,
-                ml: `calc(72px - 21px - ${sideBarToggleWidth}px)`,
             }}
         >
             <Box
@@ -130,7 +141,7 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
                             md: "1rem",
                         },
                         fontWeight: 600,
-                        color: "text.primary",
+                        color: "secondary.main",
                     }}
                 >
                     Managing template:

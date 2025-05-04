@@ -112,11 +112,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 sx={{
                     display: "flex",
                     alignItems: "center",
-                    px: 2,
                     py: 0,
                     borderBottom: 1,
                     borderColor: "divider",
-                    gap: 2,
                 }}
             >
                 {/* sidebar toggle */}
@@ -141,6 +139,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                             width: 72,
                             flexShrink: 0,
                             display: { xs: "none", sm: "block" },
+                            boxSizing: "border-box",
                         }}
                     >
                         <CollapsedDashboardSidebar />

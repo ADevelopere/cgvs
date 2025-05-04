@@ -164,7 +164,7 @@ const Management: React.FC = () => {
                                     height: "100%",
                                 }}
                             >
-                                <TabPanel value="basic" sx={{ height: "100%" }}>
+                                <TabPanel value="basic">
                                     <BasicInfoTab />
                                 </TabPanel>
                                 <TabPanel value="variables">
