@@ -13,14 +13,9 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import VariableList from "./VariableList";
 import VariableForm from "./VariableForm";
-import { Template } from "@/contexts/template/template.types";
 import { useTemplateVariables } from "@/contexts/template/TemplateVariablesContext";
 
-interface VariablesTabProps {
-    template: Template;
-}
-
-const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
+const VariablesTab: React.FC = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedVariable, setSelectedVariable] = useState<any>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -53,7 +48,7 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
     const handleDeleteConfirm = async () => {
         if (variableToDelete) {
             try {
-                await deleteVariable(template.id, variableToDelete);
+                await deleteVariable(variableToDelete);
             } catch (error) {
                 // Error is already handled by the context
             }
@@ -70,9 +65,9 @@ const VariablesTab: React.FC<VariablesTabProps> = ({ template }) => {
     const handleFormSubmit = async (data: any) => {
         try {
             if (selectedVariable) {
-                await updateVariable(template.id, selectedVariable.id, data);
+                await updateVariable(selectedVariable.id, data);
             } else {
-                await createVariable(template.id, data);
+                await createVariable(data);
             }
             setIsFormOpen(false);
         } catch (error) {

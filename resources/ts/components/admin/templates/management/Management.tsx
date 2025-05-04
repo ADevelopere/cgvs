@@ -3,8 +3,6 @@ import {
     Box,
     Tab,
     Paper,
-    Typography,
-    Container,
     useTheme,
     useMediaQuery,
     Fade,
@@ -19,26 +17,17 @@ import {
 } from "@/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
 import VariablesTab from "./variables/VariablesTab";
-import Flow from "./editor/EditorTab";
 import RecipientsTab from "./recipients/RecipientsTab";
 import PreviewTab from "./tabs/PreviewTab";
-import { Template } from "@/contexts/template/template.types";
 import { TemplateVariablesProvider } from "@/contexts/template/TemplateVariablesContext";
 import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
 import { useState, useEffect } from "react";
-
-const template: Template = {
-    id: 1,
-    name: "",
-    is_active: false,
-    created_at: "",
-    updated_at: "",
-};
+import EditorTab from "./editor/EditorTab";
 
 const handleTabError = (
     error: any,
     tab: TabType,
-    setTabError: (tab: TabType, error: { message: string }) => void
+    setTabError: (tab: TabType, error: { message: string }) => void,
 ) => {
     if (error.response?.status === 403) {
         setTabError(tab, { message: "Access denied to this tab" });
@@ -98,7 +87,7 @@ const Management: React.FC = () => {
                 Boolean(
                     "ontouchstart" in window ||
                         // @ts-ignore - MediaQueryList exists in modern browsers
-                        window.matchMedia("(any-pointer: coarse)").matches
+                        window.matchMedia("(any-pointer: coarse)").matches,
                 );
 
             setIsTouchDevice(Boolean(hasTouchSupport || isEmulated));
@@ -123,7 +112,7 @@ const Management: React.FC = () => {
 
     const handleTabChange = async (
         _: React.SyntheticEvent,
-        newValue: TabType
+        newValue: TabType,
     ) => {
         try {
             setSearchParams({ tab: newValue });
@@ -146,7 +135,7 @@ const Management: React.FC = () => {
 
     return (
         <Box id="template-management" sx={{ width: "100%" }}>
-            <Box sx={{ width: "100%"}}>
+            <Box sx={{ width: "100%" }}>
                 {/* Header */}
                 {/* <Box
                     sx={{
@@ -254,21 +243,18 @@ const Management: React.FC = () => {
                                 >
                                     <TabPanel
                                         value="basic"
-                                        sx={{
-                                            height: "100%",
-                                        }}
-                                        slot=""
+                                        sx={{ height: "100%" }}
                                     >
                                         <BasicInfoTab />
                                     </TabPanel>
                                     <TabPanel value="variables">
-                                        <VariablesTab template={template} />
+                                        <VariablesTab />
                                     </TabPanel>
                                     <TabPanel value="recipients">
                                         <RecipientsTab />
                                     </TabPanel>
                                     <TabPanel value="editor">
-                                        <Flow />
+                                        <EditorTab />
                                     </TabPanel>
                                     <TabPanel value="preview">
                                         <PreviewTab />
