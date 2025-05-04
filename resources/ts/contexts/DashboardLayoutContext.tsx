@@ -6,28 +6,15 @@ import React, {
     useMemo,
 } from "react";
 import {
-    Branding,
     DashboardLayoutProviderProps,
     DashboardLayoutSlots,
-    Navigation,
     SidebarState,
     SIDEBAR_STATE_STORAGE_KEY,
+    SlotName,
+    DashboardLayoutContextProps,
+    Title,
+    Navigation,
 } from "@/components/admin/layout/adminLayout.types";
-
-type SlotName = keyof DashboardLayoutSlots;
-
-interface DashboardLayoutContextProps {
-    branding?: Branding;
-    navigation?: Navigation;
-    slots: DashboardLayoutSlots;
-    sidebarState: SidebarState;
-    setSidebarState: (state: SidebarState) => void;
-    toggleSidebar: () => void;
-    setSlot: (slotName: SlotName, component: React.ReactNode) => () => void;
-    resetSlot: (slotName: SlotName) => void;
-    hideTitle: () => void;
-    showTitle: () => void;
-}
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
@@ -35,21 +22,16 @@ const DashboardLayoutContext = createContext<
 
 export const DashboardLayoutProvider: React.FC<
     DashboardLayoutProviderProps
-> = ({ branding, navigation, slots: initialSlots, children }) => {
-    const [brandingState, setBranding] = useState<Branding | undefined>(
-        branding,
-    );
-    const [navigationState, setNavigation] = useState<Navigation | undefined>(
-        navigation,
-    );
+> = ({ initialTitle, initialNavigation, initialSlots, children }) => {
     const [slots, setSlots] = useState<DashboardLayoutSlots>({
         ...initialSlots,
     });
-    const [isTitleVisible, setIsTitleVisible] = useState(true);
+    const [title, setTitleState] = useState<Title>(initialTitle || {});
     const [sidebarState, setSidebarState] = useState<SidebarState>(() => {
         const saved = localStorage.getItem(SIDEBAR_STATE_STORAGE_KEY);
         return (saved as SidebarState) || "expanded";
     });
+    const [navigation, setNavigation] = useState<Navigation | undefined>(initialNavigation);
 
     const toggleSidebar = useCallback(() => {
         setSidebarState((current) => {
@@ -59,18 +41,11 @@ export const DashboardLayoutProvider: React.FC<
         });
     }, []);
 
-    const hideTitle = useCallback(() => {
-        setIsTitleVisible(false);
-    }, []);
-    const showTitle = useCallback(() => {
-        setIsTitleVisible(true);
-    }, []);
-
     const setSlot = useCallback(
-        (slotName: SlotName, component: React.ReactNode) => {
+        (slotName: SlotName, component: React.ReactNode | null) => {
             setSlots((prevSlots) => ({
                 ...prevSlots,
-                [slotName]: component,
+                [slotName]: component ? component : undefined,
             }));
 
             return () => {
@@ -83,37 +58,60 @@ export const DashboardLayoutProvider: React.FC<
         [],
     );
 
-    const clearSlot = useCallback((slotName: SlotName) => {
+    const resetSlots = useCallback(() => {
         setSlots((prevSlots) => {
-            const { [slotName]: _, ...rest } = prevSlots;
-            return rest;
+            const newSlots = { ...prevSlots };
+            Object.keys(newSlots).forEach((key) => {
+                newSlots[key as SlotName] = undefined;
+            });
+            return newSlots;
         });
+    }, []);
+
+    const setTitleSlot = useCallback((slot: React.ReactNode) => {
+        setSlots((prevSlots) => ({
+            ...prevSlots,
+            titleRenderer: slot,
+        }));
+        
+        return () => {
+            setSlots((prevSlots) => {
+                const { titleRenderer: _, ...rest } = prevSlots;
+                return rest;
+            });
+        };
+    }, []);
+
+    const setTitle = useCallback((newTitle: Title) => {
+        return () => setTitleState((prev) => ({ ...prev, ...newTitle }));
     }, []);
 
     const value = useMemo(() => {
         return {
-            branding: brandingState,
-            navigation: navigationState,
+            navigation,
+            setNavigation,
             slots,
+            title,
             sidebarState,
+            setSlot,
+            resetSlots,
+            setTitleSlot,
+            setTitle,
             setSidebarState,
             toggleSidebar,
-            setSlot,
-            resetSlot: clearSlot,
-            hideTitle,
-            showTitle,
         };
     }, [
-        brandingState,
-        navigationState,
+        navigation,
+        setNavigation,
         slots,
+        title,
         sidebarState,
+        setSlot,
+        resetSlots,
+        setTitleSlot,
+        setTitle,
         setSidebarState,
         toggleSidebar,
-        setSlot,
-        clearSlot,
-        hideTitle,
-        showTitle,
     ]);
 
     return (

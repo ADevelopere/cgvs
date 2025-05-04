@@ -8,8 +8,6 @@ import {
     Typography,
     Divider,
     Box,
-    Theme,
-    SxProps,
     Tooltip,
 } from "@mui/material";
 import { useAppTheme } from "@/contexts/ThemeContext";
@@ -113,7 +111,11 @@ const RenderNavItem: React.FC<{
 export const CollapsedDashboardSidebar: React.FC = () => {
     const { theme } = useAppTheme();
     const location = useLocation();
-    const { navigation } = useDashboardLayout();
+    const { navigation, slots } = useDashboardLayout();
+
+    if (slots?.collapsedSidebar) {
+        return <>{slots.collapsedSidebar}</>;
+    }
 
     if (!navigation) {
         return <Box sx={{ width: "100%", height: "100%" }} />;
