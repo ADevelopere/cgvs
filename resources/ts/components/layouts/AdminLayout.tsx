@@ -10,8 +10,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { PageContainer } from "@toolpad/core/PageContainer";
 import ThemeSwitcher from "@/components/common/ThemeSwitcher";
+import { useAppTheme } from "@/contexts/ThemeContext";
+import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 
 const NAVIGATION: Navigation = [
     {
@@ -39,12 +40,17 @@ const BRANDING = {
     title: "CGVS",
 };
 
-interface AdminLayoutProps {
-    children?: React.ReactNode;
-}
+const DefaultToolbarActions = () => <ThemeSwitcher />;
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const AdminLayout: React.FC = () => {
+    const { theme } = useAppTheme();
     const { isAuthenticated, isLoading } = useAuth();
+    const { slots } = useDashboardLayout();
+
+    React.useEffect(() => {
+        // Set default toolbar actions
+        slots.toolbarActions = DefaultToolbarActions;
+    }, []);
 
     if (isLoading) {
         return null; // or a loading spinner
@@ -58,18 +64,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <ReactRouterAppProvider
             navigation={NAVIGATION}
             branding={BRANDING}
+            theme={theme}
         >
             <ErrorBoundary>
-                <DashboardLayout
-                    slots={{
-                        // appTitle: CustomAppTitle,
-                        toolbarActions: ThemeSwitcher,
-                        // sidebarFooter: SidebarFooter,
-                    }}
-                >
-                    {/* <PageContainer> */}
-                        <Outlet />
-                    {/* </PageContainer> */}
+                <DashboardLayout slots={slots}>
+                    <Outlet />
                 </DashboardLayout>
             </ErrorBoundary>
         </ReactRouterAppProvider>

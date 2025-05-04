@@ -13,16 +13,19 @@ import CssBaseline from "@mui/material/CssBaseline";
 import router from "./routes";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 
 const App: React.FC = () => {
     return (
         <React.StrictMode>
             <AuthProvider>
                 <ThemeProvider>
-                    <CssBaseline />
-                    <ErrorBoundary>
-                        <RouterProvider router={router} />
-                    </ErrorBoundary>
+                    <DashboardLayoutProvider>
+                        <CssBaseline />
+                        <ErrorBoundary>
+                            <RouterProvider router={router} />
+                        </ErrorBoundary>
+                    </DashboardLayoutProvider>
                 </ThemeProvider>
             </AuthProvider>
         </React.StrictMode>
