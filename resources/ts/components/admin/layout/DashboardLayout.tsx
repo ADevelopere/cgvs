@@ -129,7 +129,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 </Box>
 
                 {/* end actions */}
-                <Box ref={endActionsRef}></Box>
+                <Box ref={endActionsRef}>{slots.endActions}</Box>
             </Box>
             <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
                 {/* collapsed sidebar */}

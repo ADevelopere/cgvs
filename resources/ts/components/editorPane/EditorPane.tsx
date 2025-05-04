@@ -79,8 +79,6 @@ const EditorPane: FC<EditorPaneProps> = ({
   middlePane = { ...defaultPaneProps, visible: true }, // Middle pane is always visible
   thirdPane = defaultPaneProps,
   resizerProps,
-  step,
-  direction = "ltr",
   containerRef,
   width,
 }) => {

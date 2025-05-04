@@ -47,6 +47,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 flexDirection: "column",
                 height: "100%",
                 width: "100%",
+                gap: 1,
             }}
         >
             {/* Header with controls */}
@@ -56,10 +57,9 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                     flexDirection: "row",
                     borderBottom: "1px solid",
                     borderColor: theme.palette.divider,
-                    mb: 2,
                 }}
             >
-                <Typography variant="h4" sx={{ marginBottom: "16px" }}>
+                <Typography variant="h6">
                     {title}
                 </Typography>
                 <Box sx={{ flex: 1 }} />

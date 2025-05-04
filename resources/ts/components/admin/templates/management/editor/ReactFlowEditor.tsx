@@ -7,13 +7,13 @@ import {
     useViewport,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import BackgroundImageNode from "./BackgroundImageNode";
+import BackgroundImageNode from "./nodeRendere/BackgroundImageNode";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useEffect, useState } from "react";
 import "./EditorTab.module.css";
 import { Box } from "@mui/material";
-import DownloadImage from "./DownloadImage";
-import DownloadPdf from "./DownloadPdf";
+import DownloadImage from "./download/DownloadImage";
+import DownloadPdf from "./download/DownloadPdf";
 import { useAppTheme } from "@/contexts/ThemeContext";
 
 const nodes: Node[] = [
