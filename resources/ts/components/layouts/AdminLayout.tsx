@@ -11,11 +11,8 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import DashboardLayout from "@/components/admin/layout/DashboardLayout";
-import {
-    Navigation,
-    SIDEBAR_STATE_STORAGE_KEY,
-    SidebarState,
-} from "@/components/admin/layout/adminLayout.types";
+import { Navigation, Title } from "@/components/admin/layout/adminLayout.types";
+import { HomeIcon } from "lucide-react";
 
 const NAVIGATION: Navigation = [
     {
@@ -39,12 +36,17 @@ const NAVIGATION: Navigation = [
     },
 ];
 
-const BRANDING = {
-    title: "CGVS",
+const TITLE: Title = {
+    titleText: "CGVS",
+    icon: <HomeIcon />,
+    titleVisible: true,
+    titleTextVisible: true,
+    titleLogoVisible: true,
+    iconColor: "primary.main",
+    textColor: "text.primary",
 };
 
 const AdminLayout: React.FC = () => {
-    const { theme } = useAppTheme();
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
@@ -59,12 +61,11 @@ const AdminLayout: React.FC = () => {
         <ErrorBoundary>
             <NavigationProvider>
                 <DashboardLayoutProvider
-                    branding={BRANDING}
-                    navigation={NAVIGATION}
+                    initialTitle={TITLE}
+                    initialNavigation={NAVIGATION}
                 >
                     <DashboardLayout>
-                        {/* keep it disabled for now */}
-                        {/* <Outlet /> */}
+                        <Outlet />
                     </DashboardLayout>
                 </DashboardLayoutProvider>
             </NavigationProvider>

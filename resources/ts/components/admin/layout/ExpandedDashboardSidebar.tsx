@@ -167,7 +167,11 @@ const RenderNavItem: React.FC<{
 export const ExpandedDashboardSidebar: React.FC = () => {
     const { theme } = useAppTheme();
     const location = useLocation();
-    const { navigation } = useDashboardLayout();
+    const { navigation, slots } = useDashboardLayout();
+
+    if (slots?.expandedSidebar) {
+        return <>{slots.expandedSidebar}</>;
+    }
 
     if (!navigation) {
         return <Box sx={{ width: "100%", height: "100%" }} />;

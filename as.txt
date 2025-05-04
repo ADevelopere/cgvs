@@ -1,0 +1,14 @@
+create  default tile component that will render 
+Title {
+    title?: string;
+    logo?: React.ReactNode;
+    homeUrl?: string;
+}
+
+and will use DashboardLayoutContextProps title states 
+
+there must be a parent componet that checks slots.title, and if its value is set, then it will render it and return, if not it will render the child component, so make sure to make at least two separate components, 
+
+u must material mui,
+
+the component to render is a forward ref, also wrap slots.tilt render with a box has that ref

@@ -5,19 +5,21 @@ import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { CollapsedDashboardSidebar } from "./CollapsedDashboardSidebar";
 import { ExpandedDashboardSidebar } from "./ExpandedDashboardSidebar";
 import { FloatingDashboardSidebar } from "./FloatingDashboardSidebar";
+import { DashboardTitleRenderer } from "./DashboardDefaultTitle";
 
-const DashboardLayout: React.FC = () => {
+type DashboardLayoutProps = {
+    children: React.ReactNode;
+};
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     // header refs
     const headerRef = React.useRef<HTMLDivElement>(null);
-    const [sideBarToggleRef, setSideBarToggleRef] =
-        useState<React.RefObject<HTMLButtonElement> | null>(null);
-    const [brandingRef, setBrandingRef] =
-        useState<React.RefObject<HTMLDivElement> | null>(null);
-    const [middleActionsRef, setMiddleActionsRef] =
-        useState<React.RefObject<HTMLDivElement> | null>(null);
-    const [endActionsRef, setEndActionsRef] =
-        useState<React.RefObject<HTMLDivElement> | null>(null);
+    const sideBarToggleRef = React.useRef<HTMLButtonElement>(null);
+    const titleRef = React.useRef<HTMLDivElement>(null);
+    const middleActionsRef = React.useRef<HTMLDivElement>(null);
+    const endActionsRef = React.useRef<HTMLDivElement>(null);
 
+    // Get theme and media query for responsive design
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const { sidebarState, setSidebarState } = useDashboardLayout();
@@ -84,8 +86,8 @@ const DashboardLayout: React.FC = () => {
                 {/* sidebar toggle */}
                 <ToggleSideBarButton ref={sideBarToggleRef} />
 
-                {/* branding */}
-                <Box ref={brandingRef} sx={{ ml: 2 }}></Box>
+                {/* title */}
+                <DashboardTitleRenderer ref={titleRef} />
 
                 {/* middle actions */}
                 <Box ref={middleActionsRef} sx={{ ml: 2, flex: 1 }}></Box>
@@ -124,11 +126,14 @@ const DashboardLayout: React.FC = () => {
                 <Box
                     sx={{
                         flex: 1,
-                        overflow: "auto",
-                        minHeight: 0,
-                        p: 3,
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                     }}
-                ></Box>
+                >
+                    {children}
+                </Box>
             </Box>
 
             {/* floating sidebar for mobile */}
