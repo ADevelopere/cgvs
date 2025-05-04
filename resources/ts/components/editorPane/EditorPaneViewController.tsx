@@ -1,0 +1,125 @@
+"use client";
+
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { PanelRight, PanelLeft } from "lucide-react";
+import { useAppTheme } from "@/contexts/ThemeContext";
+import EditorPane from "./EditorPane";
+
+type EditorPaneViewControllerProps = {
+    title: string;
+    firstPaneButtonDisabled: boolean;
+    thirdPaneButtonDisabled: boolean;
+    firstPaneButtonTooltip: string;
+    thirdPaneButtonTooltip: string;
+    firstPane: React.ReactNode;
+    middlePane: React.ReactNode;
+    thirdPane: React.ReactNode;
+};
+
+const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
+    title,
+    firstPaneButtonDisabled,
+    thirdPaneButtonDisabled,
+    firstPaneButtonTooltip,
+    thirdPaneButtonTooltip,
+    firstPane,
+    middlePane,
+    thirdPane,
+}) => {
+    const { theme } = useAppTheme();
+    const direction = "ltr";
+    const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
+    const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
+
+    const handleFirstPaneVisibility = () => {
+        setFirstPaneVisible(!firstPaneVisible);
+    };
+
+    const handleThirdPaneVisibility = () => {
+        setThirdPaneVisible(!thirdPaneVisible);
+    };
+
+    return (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                width: "100%",
+            }}
+        >
+            {/* Header with controls */}
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    borderBottom: "1px solid",
+                    borderColor: theme.palette.divider,
+                    mb: 2,
+                }}
+            >
+                <Typography variant="h4" sx={{ marginBottom: "16px" }}>
+                    {title}
+                </Typography>
+                <Box sx={{ flex: 1 }} />
+                <Box>
+                    {/* First pane visibility button */}
+                    <Tooltip title={firstPaneButtonTooltip}>
+                        <span>
+                            <IconButton
+                                onClick={handleFirstPaneVisibility}
+                                disabled={firstPaneButtonDisabled}
+                            >
+                                <PanelLeft />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                    {/* Third pane visibility button */}
+                    <Tooltip title={thirdPaneButtonTooltip}>
+                        <span>
+                            <IconButton
+                                onClick={handleThirdPaneVisibility}
+                                disabled={thirdPaneButtonDisabled}
+                            >
+                                <PanelRight />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                </Box>
+            </Box>
+
+            {/* Editor Pane Layout */}
+            <Box
+                sx={{
+                    flex: 1,
+                    position: "relative",
+                    minHeight: `calc(100vh - 256px)`,
+                }}
+            >
+                <EditorPane
+                    orientation="vertical"
+                    direction={direction}
+                    firstPane={{
+                        visible: firstPaneVisible,
+                        minRatio: 0.2,
+                    }}
+                    middlePane={{
+                        visible: true,
+                        minRatio: 0.4,
+                    }}
+                    thirdPane={{
+                        visible: thirdPaneVisible,
+                        minRatio: 0.2,
+                    }}
+                >
+                    {firstPane}
+                    {middlePane}
+                    {thirdPane}
+                </EditorPane>
+            </Box>
+        </Box>
+    );
+};
+
+export default EditorPaneViewController;

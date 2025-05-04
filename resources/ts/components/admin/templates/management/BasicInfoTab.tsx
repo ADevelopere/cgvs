@@ -168,29 +168,25 @@ const BasicInfoTab: React.FC = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Action Bar */}
-            <Paper sx={{ p: 2, display: 'flex', justifyContent: 'end', gap: 2 }}>
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={handleCancel}
-                    disabled={saving || !unsavedChanges}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSave}
-                    disabled={saving || !unsavedChanges}
-                >
-                    {saving ? "Saving..." : "Save"}
-                </Button>
-            </Paper>
-
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                overflowY: "hidden",
+            }}
+        >
             {/* form */}
-            <Box component="form" noValidate sx={{ mt: 1 }}>
+            <Box
+                component="form"
+                noValidate
+                sx={{
+                    mt: 1,
+                    overflowY: "auto",
+                    maxHeight: `calc(100vh - 300px)`,
+                    minHeight: `calc(100vh - 300px)`,
+                }}
+            >
                 {error && (
                     <Alert severity="error" sx={{ mb: 2 }}>
                         {error}
@@ -282,6 +278,28 @@ const BasicInfoTab: React.FC = () => {
                     </Card>
                 )}
             </Box>
+
+            {/* Action Bar */}
+            <Paper
+                sx={{ p: 2, display: "flex", justifyContent: "end", gap: 2 }}
+            >
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleCancel}
+                    disabled={saving || !unsavedChanges}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSave}
+                    disabled={saving || !unsavedChanges}
+                >
+                    {saving ? "Saving..." : "Save"}
+                </Button>
+            </Paper>
 
             {/* Snackbar for notifications */}
             <Snackbar
