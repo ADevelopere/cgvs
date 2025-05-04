@@ -5,50 +5,41 @@ import {
     Node,
     ReactFlowProvider,
     useViewport,
+    NodeChange,
+    applyNodeChanges,
+    OnNodesChange,
+    useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import BackgroundImageNode from "./nodeRendere/BackgroundImageNode";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./EditorTab.module.css";
 import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
 import DownloadPdf from "./download/DownloadPdf";
 import { useAppTheme } from "@/contexts/ThemeContext";
-
-const nodes: Node[] = [
-    {
-        id: "node-1",
-        type: "backgroundImage",
-        position: { x: 0, y: 0 },
-        data: {},
-    },
-    {
-        id: "1", // required
-        position: { x: 0, y: 0 }, // required
-        data: { label: "Hello" }, // required
-    },
-        {
-        id: "12", // required
-        position: { x: 5, y: 5 }, // required
-        data: { label: "Hello" }, // required
-    },
-];
+import { getHelperLines } from "./other/utils";
+import HelperLines from "./other/HelperLines";
+import { initialNodes, nodeTypes } from "./constants";
 
 const panOnDrag = [1, 2];
-
-const nodeTypes = {
-    backgroundImage: BackgroundImageNode,
-};
 
 // A4 landscape dimensions in pixels (297mm × 210mm at 96 DPI)
 const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
 const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
 function Flow() {
+    const [nodes, setNodes] = useNodesState(initialNodes);
     const { theme } = useAppTheme();
-
     const { x, y, zoom } = useViewport();
+
+    const [helperLineHorizontal, setHelperLineHorizontal] = useState<
+        number | undefined
+    >(undefined);
+    const [helperLineVertical, setHelperLineVertical] = useState<
+        number | undefined
+    >(undefined);
+
     useEffect(() => {
         console.log("Viewport changed:", { x, y, zoom });
     }, [x, y, zoom]);
@@ -72,42 +63,119 @@ function Flow() {
         }
     }, [template?.background_url]);
 
+    const customApplyNodeChanges = useCallback(
+        (changes: NodeChange[], nodes: Node[]): Node[] => {
+            // reset the helper lines (clear existing lines, if any)
+            setHelperLineHorizontal(undefined);
+            setHelperLineVertical(undefined);
+
+            // this will be true if it's a single node being dragged inside,
+            // we calculate the helper lines and snap position for the position where the node is being moved to
+
+            const firstChange = changes[0];
+            if (
+                changes.length === 1 &&
+                firstChange.type === "position" &&
+                firstChange.dragging &&
+                firstChange.position
+            ) {
+                const helperLines = getHelperLines(firstChange, nodes);
+
+                // if we have a helper line, we snap the node to the helper line position
+                // this is being done by manipulating the node position inside the change object
+                firstChange.position.x =
+                    helperLines.snapPosition.x ?? firstChange.position.x;
+                firstChange.position.y =
+                    helperLines.snapPosition.y ?? firstChange.position.y;
+
+                // if helper lines are returned, we set them so that they can be displayed
+                setHelperLineHorizontal(helperLines.horizontal);
+                setHelperLineVertical(helperLines.vertical);
+            }
+
+            changes.forEach((change) => {
+                if (
+                    change.type === "position" &&
+                    change.dragging &&
+                    change.position
+                ) {
+                    const nodeId = change.id;
+                    const node = nodes.find((n) => n.id === nodeId);
+
+                    const maxX =
+                        dimensions.width - (node?.measured?.width ?? 0);
+                    const maxY =
+                        dimensions.height - (node?.measured?.height ?? 0);
+
+                    if (change.position.x < 0) {
+                        change.position.x = 0;
+                    } else if (change.position.x > maxX) {
+                        change.position.x = maxX;
+                    }
+
+                    if (change.position.y < 0) {
+                        change.position.y = 0;
+                    } else if (change.position.y > maxY) {
+                        change.position.y = maxY;
+                    }
+                }
+            });
+
+            return applyNodeChanges(changes, nodes);
+        },
+        [],
+    );
+
+    const onNodesChange: OnNodesChange = useCallback(
+        (changes) => {
+            // @ts-ignore
+            setNodes((nodes) => customApplyNodeChanges(changes, nodes));
+        },
+        [setNodes, customApplyNodeChanges],
+    );
+
     return (
-        <div
-            style={{
-                height: `${dimensions.height}px`,
-                width: `${dimensions.width}px`,
+        <Box
+            sx={{
+                height: "-webkit-fill-available",
+                width: "-webkit-fill-available",
+                // maxWidth: `${dimensions.width}px`,
+                // maxHeight: `${dimensions.height}px`,
                 background: theme.palette.background.default,
-                border: `1px solid ${theme.palette.divider}`,
+                px: 1,
             }}
+            id="react-flow-editor"
         >
             <ReactFlow
                 nodeTypes={nodeTypes}
                 nodes={nodes}
                 panOnScroll
                 panOnDrag={panOnDrag}
-                minZoom={0.5} // Minimum zoom level
-                maxZoom={2} // Maximum zoom level
-                translateExtent={[
-                    [0, 0], // Top-left corner boundary
-                    [dimensions.width, dimensions.height], // Bottom-right corner boundary
-                ]}
+                minZoom={-1000} // Minimum zoom level
+                // maxZoom={2} // Maximum zoom level
+                // translateExtent={[
+                //     [0, 0], // Top-left corner boundary
+                //     [dimensions.width, dimensions.height], // Bottom-right corner boundary
+                // ]}
                 // Enable zooming with scroll and pinch
                 zoomOnScroll={true}
                 zoomOnPinch={true}
                 // Fit the view to the content initially
-                fitView={true}
-                fitViewOptions={{
-                    padding: 0, // Remove padding
-                    minZoom: 1, // Ensure it doesn't zoom out too much when fitting
-                    maxZoom: 1, // Ensure it doesn't zoom in too much when fitting
-                }}
+                // fitView={true}
+                // fitViewOptions={{
+                //     padding: 0, // Remove padding
+                //     minZoom: 0, // Ensure it doesn't zoom out too much when fitting
+                //     maxZoom: 2, // Ensure it doesn't zoom in too much when fitting
+                //     nodes: [{id: 'node-1'}],
+                // }}
                 // Add theme-aware styling
                 style={{
                     backgroundColor: theme.palette.background.paper,
                 }}
                 // Match React Flow's color mode with MUI's theme
                 colorMode={theme.palette.mode}
+                //
+                onNodesChange={onNodesChange}
             >
                 <Background
                     color={theme.palette.text.disabled}
@@ -122,8 +190,24 @@ function Flow() {
                         borderRadius: theme.shape.borderRadius,
                     }}
                 />
+                {/* <MiniMap /> */}
+                <HelperLines
+                    horizontal={helperLineHorizontal}
+                    vertical={helperLineVertical}
+                />
                 <DownloadImage />
                 <DownloadPdf />
+            </ReactFlow>
+        </Box>
+    );
+}
+
+function FlowDebug() {
+    return (
+        <div style={{ height: "100%" }}>
+            <ReactFlow>
+                <Background />
+                <Controls />
             </ReactFlow>
         </div>
     );
@@ -138,6 +222,8 @@ function ReactFlowEditor() {
                 justifyContent: "center",
                 alignItems: "center",
                 gap: 2,
+                height: "-webkit-fill-available",
+                width: "-webkit-fill-available",
             }}
         >
             <ReactFlowProvider>

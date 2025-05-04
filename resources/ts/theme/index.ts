@@ -17,6 +17,7 @@ const getThemeConfig = (mode: PaletteMode): ThemeOptions => ({
                       default: "#f5f5f5",
                       paper: "#ffffff",
                   },
+                  divider: "rgba(0, 0, 0, 0.12)",
               }
             : {
                   // Dark mode palette
@@ -30,6 +31,7 @@ const getThemeConfig = (mode: PaletteMode): ThemeOptions => ({
                       default: "#121212",
                       paper: "#1e1e1e",
                   },
+                  divider: "rgba(255, 255, 255, 0.12)",
               }),
     },
     components: {
