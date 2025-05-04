@@ -67,7 +67,13 @@ const ThemeSwitcher: React.FC = () => {
                     onClick={toggleMenu}
                     color="inherit"
                 >
-                    <SettingsIcon />
+                    {mode === 'light' ? (
+                        <LightModeIcon />
+                    ) : mode === 'dark' ? (
+                        <DarkModeIcon />
+                    ) : (
+                        <SystemModeIcon />
+                    )}
                 </IconButton>
             </Tooltip>
             <Popover

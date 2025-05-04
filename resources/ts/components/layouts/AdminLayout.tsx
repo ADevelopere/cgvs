@@ -7,12 +7,12 @@ import {
     FileCopy as CertificatesIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAppTheme } from "@/contexts/ThemeContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import DashboardLayout from "@/components/admin/layout/DashboardLayout";
 import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { HomeIcon } from "lucide-react";
+import DashboardEndActions from "../common/DashboardEndActions";
 
 const NAVIGATION: Navigation = [
     {
@@ -63,6 +63,9 @@ const AdminLayout: React.FC = () => {
                 <DashboardLayoutProvider
                     initialTitle={TITLE}
                     initialNavigation={NAVIGATION}
+                    initialSlots={{
+                        endActions: <DashboardEndActions />,
+                    }}
                 >
                     <DashboardLayout>
                         <Outlet />
