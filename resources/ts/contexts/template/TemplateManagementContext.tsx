@@ -42,7 +42,7 @@ interface TemplateManagementContextType {
     error: string | undefined;
     tabErrors: Record<TabType, TabError | undefined>;
     config: TemplateConfig;
-    template: Template | undefined;
+    template: Template;
     loading: boolean;
     setActiveTab: (tab: TabType) => void;
     setTabLoaded: (tab: TabType) => void;
@@ -82,7 +82,7 @@ export const TemplateManagementProvider: React.FC<{
     });
 
     const [template, settemplate] = useState<Template | undefined>(
-        templateToManage
+        templateToManage,
     );
 
     const [loading, setLoading] = useState(false);
@@ -94,7 +94,7 @@ export const TemplateManagementProvider: React.FC<{
 
     const handleSetTabLoaded = useCallback((tab: TabType) => {
         setLoadedTabs((prevTabs) =>
-            prevTabs.includes(tab) ? prevTabs : [...prevTabs, tab]
+            prevTabs.includes(tab) ? prevTabs : [...prevTabs, tab],
         );
     }, []);
 
@@ -117,14 +117,14 @@ export const TemplateManagementProvider: React.FC<{
         setLoading(true);
         try {
             const response = await axios.get<Template>(
-                `/admin/templates/${id}`
+                `/admin/templates/${id}`,
             );
             settemplate(response.data);
             setLoading(false);
             console.log("Template fetched successfully:", response.data);
         } catch (error: any) {
             setError(
-                error.response?.data?.message || "Failed to fetch template"
+                error.response?.data?.message || "Failed to fetch template",
             );
             setLoading(false);
         }
@@ -143,7 +143,7 @@ export const TemplateManagementProvider: React.FC<{
     const fetchConfig = useCallback(async () => {
         try {
             const response = await axios.get<TemplateConfig>(
-                "/admin/templates/config"
+                "/admin/templates/config",
             );
             setConfig(response.data);
         } catch (error: any) {
@@ -165,32 +165,40 @@ export const TemplateManagementProvider: React.FC<{
         });
     }, [fetchConfig]);
 
-    const saveTemplate = useCallback(async (formData: FormData) => {
-        try {
-            const url = template ? `/admin/templates/${template.id}` : "/admin/templates";
-            const method = "post";
+    const saveTemplate = useCallback(
+        async (formData: FormData) => {
+            try {
+                const url = template
+                    ? `/admin/templates/${template.id}`
+                    : "/admin/templates";
+                const method = "post";
 
-            // Add _method field for Laravel to handle PUT requests if it's an update
-            if (template) {
-                formData.append("_method", "PUT");
+                // Add _method field for Laravel to handle PUT requests if it's an update
+                if (template) {
+                    formData.append("_method", "PUT");
+                }
+
+                const response = await axios({
+                    method,
+                    url,
+                    data: formData,
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+
+                settemplate(response.data);
+                setUnsavedChanges(false);
+                return response.data;
+            } catch (error: any) {
+                throw new Error(
+                    error.response?.data?.message ||
+                        "An error occurred while saving the template",
+                );
             }
-
-            const response = await axios({
-                method,
-                url,
-                data: formData,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            settemplate(response.data);
-            setUnsavedChanges(false);
-            return response.data;
-        } catch (error: any) {
-            throw new Error(error.response?.data?.message || "An error occurred while saving the template");
-        }
-    }, [template]);
+        },
+        [template],
+    );
 
     const value = useMemo(
         () => ({
@@ -224,7 +232,7 @@ export const TemplateManagementProvider: React.FC<{
             handleClearTabError,
             fetchTemplate,
             saveTemplate,
-        ]
+        ],
     );
 
     if (loading) {
@@ -302,7 +310,7 @@ export const useTemplateManagement = () => {
     const context = useContext(TemplateManagementContext);
     if (context === undefined) {
         throw new Error(
-            "useTemplateManagement must be used within a TemplateManagementProvider"
+            "useTemplateManagement must be used within a TemplateManagementProvider",
         );
     }
     return context;
