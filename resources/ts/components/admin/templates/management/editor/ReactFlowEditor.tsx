@@ -123,7 +123,7 @@ function Flow() {
 
             return applyNodeChanges(changes, nodes);
         },
-        [],
+        [dimensions.width, dimensions.height],
     );
 
     const onNodesChange: OnNodesChange = useCallback(
