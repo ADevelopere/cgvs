@@ -163,7 +163,6 @@ export default function VariableList({
                                         onClick={() =>
                                             template &&
                                             moveVariableUp(
-                                                template.id,
                                                 params.row.id
                                             )
                                         }
@@ -180,7 +179,6 @@ export default function VariableList({
                                         onClick={() =>
                                             template &&
                                             moveVariableDown(
-                                                template.id,
                                                 params.row.id
                                             )
                                         }
@@ -214,8 +212,8 @@ export default function VariableList({
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                minHeight: "200px",
                 width: "100%",
+                height: 750,
             }}
         >
             <DataGrid
@@ -231,12 +229,6 @@ export default function VariableList({
                 }}
                 pageSizeOptions={[5, 10, 25]}
                 disableRowSelectionOnClick
-                sx={{
-                    width: "100%",
-                    "& .MuiDataGrid-root": {
-                        width: "100%",
-                    },
-                }}
             />
         </Box>
     );

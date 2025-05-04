@@ -82,7 +82,7 @@ const TemplateList: React.FC = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ pt: 3, pb: 16, px: 3}} id="template-list">
             <Box
                 display="flex"
                 justifyContent="space-between"
