@@ -107,14 +107,15 @@ type StoredPaneState = {
 // Constants for local storage keys and pane state
 const STORAGE_KEY_PREFIX = "editorPane";
 const STORAGE_DEBOUNCE_MS = 300;
-
 const MIN_PANE_SIZE = 50; // Minimum width to keep panes visible
 
 // Helper functions for local storage operations
 const getStorageKey = (key?: string) =>
     key ? `${STORAGE_KEY_PREFIX}_${key}` : null;
 
-const saveToLocalStorage = (key: string, state: StoredPaneState) => {
+// Function to save pane state to local storage
+const savePaneState = (key: string | undefined, state: StoredPaneState) => {
+    if (!key) return;
     try {
         logger.log(
             "Saving editor pane state to local storage:",
@@ -129,6 +130,22 @@ const saveToLocalStorage = (key: string, state: StoredPaneState) => {
     }
 };
 
+// Helper to create a debounced function
+const debounce = <T extends (...args: any[]) => void>(
+    func: T,
+    wait: number,
+) => {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+};
+
+
+// Create a stable debounced version of savePaneState
+const debouncedSavePaneState = debounce(savePaneState, STORAGE_DEBOUNCE_MS);
+
 const loadFromLocalStorage = (key: string): StoredPaneState | null => {
     try {
         const stored = localStorage.getItem(getStorageKey(key)!);
@@ -142,17 +159,7 @@ const loadFromLocalStorage = (key: string): StoredPaneState | null => {
     }
 };
 
-// Helper to create a debounced function
-const debounce = <T extends (...args: any[]) => void>(
-    func: T,
-    wait: number,
-) => {
-    let timeout: NodeJS.Timeout;
-    return (...args: Parameters<T>) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-    };
-};
+
 
 const EditorPane: FC<EditorPaneProps> = ({
     allowResize = true,
@@ -181,9 +188,6 @@ const EditorPane: FC<EditorPaneProps> = ({
     const pane2Ref = useRef<HTMLDivElement | null>(null);
     const pane3Ref = useRef<HTMLDivElement | null>(null);
 
-    // Flag to prevent saving on first mount
-    const isFirstMount = useRef(true);
-
     // States for resizing
     const [active, setActive] = useState(false);
     const [activeResizer, setActiveResizer] = useState<1 | 2 | null>(null);
@@ -202,10 +206,10 @@ const EditorPane: FC<EditorPaneProps> = ({
     // Initialize based on stored state or defaults, respecting current visibility
     const initialSizes = useMemo(() => {
         if (storedState?.sizes) {
-            // Use stored sizes but respect current visibility
+            // Only use stored sizes if visibility matches current state
             return storedState.sizes.map((size, index) => {
-                if (index === 0 && !firstPane.visible) return 0;
-                if (index === 2 && !thirdPane.visible) return 0;
+                if (index === 0 && (firstPane.visible !== storedState.visibility.first)) return 0;
+                if (index === 2 && (thirdPane.visible !== storedState.visibility.third)) return 0;
                 return size;
             });
         }
@@ -216,11 +220,14 @@ const EditorPane: FC<EditorPaneProps> = ({
     const [paneSizes, setPaneSizes] = useState<number[]>(initialSizes);
 
     // Refs to store previous state for comparison
-    // Store inBoxidual sizes of hidden panes
+    // Store individual sizes of hidden panes
     const previousPaneSizesRef = useRef<{
         first: number | null;
         third: number | null;
-    }>(storedState?.previousSizes ?? { first: null, third: null });
+    }>({
+        first: storedState?.previousSizes?.first ?? null,
+        third: storedState?.previousSizes?.third ?? null
+    });
     const previousVisibilityRef = useRef({
         first: storedState?.visibility?.first ?? firstPane.visible,
         third: storedState?.visibility?.third ?? thirdPane.visible,
@@ -248,25 +255,8 @@ const EditorPane: FC<EditorPaneProps> = ({
         }
     }, [containerWidth, storedState, paneSizes]);
 
-    // Debounced function to save state to local storage
-    const debouncedSaveState = useMemo(
-        () =>
-            debounce((state: StoredPaneState) => {
-                if (storageKey) {
-                    saveToLocalStorage(storageKey, state);
-                }
-            }, STORAGE_DEBOUNCE_MS),
-        [storageKey],
-    );
-
-    // Effect to save state changes to local storage
-    useEffect(() => {
-        // Skip saving on first mount
-        if (isFirstMount.current) {
-            isFirstMount.current = false;
-            return;
-        }
-
+    // Helper function to save current state
+    const saveCurrentState = useCallback(() => {
         if (!storageKey || !containerWidth) return;
 
         // Only save if sizes add up to containerWidth (valid state)
@@ -282,18 +272,8 @@ const EditorPane: FC<EditorPaneProps> = ({
             previousSizes: previousPaneSizesRef.current,
         };
 
-        logger.log("Saving state (not first mount):", JSON.stringify(state));
-        debouncedSaveState(state);
-    }, [
-        storageKey,
-        containerWidth,
-        paneSizes[0], // Track inBoxidual size changes
-        paneSizes[1],
-        paneSizes[2],
-        firstPane.visible,
-        thirdPane.visible,
-        debouncedSaveState,
-    ]);
+        debouncedSavePaneState(storageKey, state);
+    }, [storageKey, containerWidth, paneSizes, firstPane.visible, thirdPane.visible]);
 
     const updateContainerDimensions = useCallback(() => {
         const element = containerRef?.current || editorPaneRef.current;
@@ -528,20 +508,8 @@ const EditorPane: FC<EditorPaneProps> = ({
         if (sizesChanged) {
             setPaneSizes(nextSizes);
 
-            // Save state immediately when sizes change
-            if (storageKey) {
-                const state: StoredPaneState = {
-                    sizes: nextSizes,
-                    visibility: {
-                        first: firstPane.visible,
-                        third: thirdPane.visible,
-                    },
-                    previousSizes: previousPaneSizesRef.current,
-                };
-                saveToLocalStorage(storageKey, state);
-            }
-
             if (onChange) onChange(nextSizes); // Notify parent about size changes
+            saveCurrentState(); // Save state after size changes
         }
         // Update width ref *after* using it for comparison
         previousContainerWidthRef.current = totalWidth;
@@ -642,6 +610,7 @@ const EditorPane: FC<EditorPaneProps> = ({
             if (JSON.stringify(newSizes) !== JSON.stringify(paneSizes)) {
                 setPaneSizes(newSizes);
                 if (onChange) onChange(newSizes);
+                saveCurrentState(); // Save state after resize
             }
         },
         [active, activeResizer, paneSizes, position, onChange, direction, orientation],
@@ -748,11 +717,11 @@ const EditorPane: FC<EditorPaneProps> = ({
                     onClick={resizerProps?.onClick}
                     onDoubleClick={resizerProps?.onDoubleClick}
                     onMouseDown={(e) => {
-                        onResizeStart(1, e.clientX); // Pass clientX
+                        onResizeStart(1, e.clientX);
                     }}
                     onTouchStart={(e: TouchEvent<HTMLSpanElement>) => {
                         if (e.touches[0])
-                            onResizeStart(1, e.touches[0].clientX); // Pass clientX
+                            onResizeStart(1, e.touches[0].clientX);
                     }}
                     onTouchEnd={onResizeEnd}
                     style={resizerProps?.style}
@@ -779,11 +748,11 @@ const EditorPane: FC<EditorPaneProps> = ({
                     onClick={resizerProps?.onClick}
                     onDoubleClick={resizerProps?.onDoubleClick}
                     onMouseDown={(e) => {
-                        onResizeStart(2, e.clientX); // Pass clientX
+                        onResizeStart(2, e.clientX);
                     }}
                     onTouchStart={(e: TouchEvent<HTMLSpanElement>) => {
                         if (e.touches[0])
-                            onResizeStart(2, e.touches[0].clientX); // Pass clientX
+                            onResizeStart(2, e.touches[0].clientX);
                     }}
                     onTouchEnd={onResizeEnd}
                     style={resizerProps?.style}
