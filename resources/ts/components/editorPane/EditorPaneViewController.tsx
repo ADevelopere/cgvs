@@ -27,10 +27,9 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
     firstPane,
     middlePane,
     thirdPane,
-    storageKey
+    storageKey,
 }) => {
     const { theme } = useAppTheme();
-    const direction = "ltr";
     const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
     const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
 
@@ -50,20 +49,19 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 height: "100%",
                 width: "100%",
                 gap: 1,
+                direction: theme.direction,
             }}
         >
             {/* Header with controls */}
             <Box
                 sx={{
                     display: "flex",
-                    flexDirection: "row",
+                    justifyContent: "start",
                     borderBottom: "1px solid",
                     borderColor: theme.palette.divider,
                 }}
             >
-                <Typography variant="h6">
-                    {title}
-                </Typography>
+                <Typography variant="h6">{title}</Typography>
                 <Box sx={{ flex: 1 }} />
                 <Box>
                     {/* First pane visibility button */}
@@ -101,7 +99,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
             >
                 <EditorPane
                     orientation="vertical"
-                    direction={direction}
+                    direction={theme.direction}
                     firstPane={{
                         visible: firstPaneVisible,
                         minRatio: 0.2,

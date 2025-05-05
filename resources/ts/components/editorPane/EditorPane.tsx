@@ -24,6 +24,8 @@ import React, {
     useState,
 } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
+import { useAppTheme } from "@/contexts/ThemeContext";
+import { Box } from "@mui/material";
 
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {
@@ -98,7 +100,10 @@ const getStorageKey = (key?: string) =>
 
 const saveToLocalStorage = (key: string, state: StoredPaneState) => {
     try {
-        console.log("Saving editor pane state to local storage:", JSON.stringify(state));
+        console.log(
+            "Saving editor pane state to local storage:",
+            JSON.stringify(state),
+        );
         localStorage.setItem(getStorageKey(key)!, JSON.stringify(state));
     } catch (error) {
         console.warn(
@@ -148,6 +153,8 @@ const EditorPane: FC<EditorPaneProps> = ({
     middlePane = { ...defaultPaneProps, visible: true }, // Middle pane is always visible
     thirdPane = defaultPaneProps,
     resizerProps,
+    step = 1,
+    direction = "rtl",
     containerRef,
     width,
     storageKey,
@@ -157,7 +164,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     const pane1Ref = useRef<HTMLDivElement | null>(null);
     const pane2Ref = useRef<HTMLDivElement | null>(null);
     const pane3Ref = useRef<HTMLDivElement | null>(null);
-    
+
     // Flag to prevent saving on first mount
     const isFirstMount = useRef(true);
 
@@ -193,7 +200,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     const [paneSizes, setPaneSizes] = useState<number[]>(initialSizes);
 
     // Refs to store previous state for comparison
-    // Store individual sizes of hidden panes
+    // Store inBoxidual sizes of hidden panes
     const previousPaneSizesRef = useRef<{
         first: number | null;
         third: number | null;
@@ -264,7 +271,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     }, [
         storageKey,
         containerWidth,
-        paneSizes[0], // Track individual size changes
+        paneSizes[0], // Track inBoxidual size changes
         paneSizes[1],
         paneSizes[2],
         firstPane.visible,
@@ -572,7 +579,6 @@ const EditorPane: FC<EditorPaneProps> = ({
                 editorPaneRef.current?.getBoundingClientRect();
             if (!containerRect) return;
 
-            const newSizes = [...paneSizes];
             const containerLeft = containerRect.left;
             const containerRight = containerRect.right;
 
@@ -581,10 +587,15 @@ const EditorPane: FC<EditorPaneProps> = ({
                 Math.max(clientX, containerLeft),
                 containerRight,
             );
-            const deltaX = boundedClientX - position; // Calculate delta based on bounded position change
+
+            // Calculate delta based on direction
+            const rawDelta = boundedClientX - position;
+            const deltaX = direction === 'rtl' && orientation === 'vertical' ? -rawDelta : rawDelta;
 
             // Prevent resizing if delta is zero
             if (deltaX === 0) return;
+
+            const newSizes = [...paneSizes];
 
             if (activeResizer === 1) {
                 // First resizer logic: affects pane 0 and 1
@@ -617,7 +628,7 @@ const EditorPane: FC<EditorPaneProps> = ({
                 if (onChange) onChange(newSizes);
             }
         },
-        [active, activeResizer, paneSizes, position, onChange], // Include position in dependencies
+        [active, activeResizer, paneSizes, position, onChange, direction, orientation],
     );
 
     const handleMouseMove = useCallback(
@@ -699,17 +710,20 @@ const EditorPane: FC<EditorPaneProps> = ({
         [orientation, paneSizes, basePaneStyle],
     );
 
+    const { theme } = useAppTheme();
+    console.log("EditorPane theme direction", theme.direction);
+
     return (
-        <div ref={editorPaneRef} className={className} style={wrapperStyle}>
+        <Box ref={editorPaneRef} className={className} style={wrapperStyle} id="editor-pane">
             {/* Pane 1 */}
             {firstPane.visible && paneSizes[0] > 0 && (
-                <div
+                <Box
                     ref={pane1Ref}
                     className={`${paneClassName} first-pane`}
                     style={getPaneStyle(0, firstPane)}
                 >
                     {notNullChildren[0]}
-                </div>
+                </Box>
             )}
 
             {/* Resizer 1 */}
@@ -734,13 +748,13 @@ const EditorPane: FC<EditorPaneProps> = ({
 
             {/* Pane 2 (Always present in layout, style controls visibility/size) */}
             {paneSizes[1] > 0 && (
-                <div
+                <Box
                     ref={pane2Ref}
                     className={`${paneClassName} middle-pane`}
                     style={getPaneStyle(1, middlePane)}
                 >
                     {notNullChildren[1]}
-                </div>
+                </Box>
             )}
 
             {/* Resizer 2 */}
@@ -765,15 +779,15 @@ const EditorPane: FC<EditorPaneProps> = ({
 
             {/* Pane 3 */}
             {thirdPane.visible && paneSizes[2] > 0 && (
-                <div
+                <Box
                     ref={pane3Ref}
                     className={`${paneClassName} third-pane`}
                     style={getPaneStyle(2, thirdPane)}
                 >
                     {notNullChildren[2]}
-                </div>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 
