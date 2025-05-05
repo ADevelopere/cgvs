@@ -15,9 +15,11 @@ import {
 } from "@mui/icons-material";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import ThemeMode from "@/theme/ThemeMode";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const ThemeSwitcher: React.FC = () => {
     const { setThemeMode, themeMode, isDark } = useAppTheme();
+    const strings = useAppTranslation("headerTranslations");
 
     const handleThemeChange = useCallback(
         (newMode: ThemeMode) => {
@@ -42,24 +44,24 @@ const ThemeSwitcher: React.FC = () => {
     const themeOptions = [
         {
             value: ThemeMode.Light,
-            label: "Light",
+            label: strings.themeLight,
             icon: <LightModeIcon fontSize="small" />,
         },
         {
             value: ThemeMode.Dark,
-            label: "Dark",
+            label: strings.themeDark,
             icon: <DarkModeIcon fontSize="small" />,
         },
         {
             value: ThemeMode.System,
-            label: "System",
+            label: strings.themeSystem,
             icon: <SystemModeIcon fontSize="small" />,
         },
     ];
 
     return (
         <React.Fragment>
-            <Tooltip title="Theme settings" enterDelay={1000}>
+            <Tooltip title={strings.themeSettings} enterDelay={1000}>
                 <IconButton
                     type="button"
                     aria-label="theme-settings"
@@ -114,14 +116,16 @@ const ThemeSwitcher: React.FC = () => {
                                     },
                                 }}
                             >
-                                <Stack
-                                    direction="row"
-                                    spacing={1.5}
-                                    alignItems="center"
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                    }}
                                 >
                                     {option.icon}
                                     <Typography>{option.label}</Typography>
-                                </Stack>
+                                </Box>
                             </Paper>
                         ))}
                     </Stack>

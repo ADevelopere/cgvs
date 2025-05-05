@@ -39,11 +39,6 @@ const LanguageSwitcher: React.FC = () => {
 
     const languageOptions = [
         {
-            value: AppLanguage.en,
-            label: "English",
-            shortLabel: "EN",
-        },
-        {
             value: AppLanguage.default,
             label: "العربية",
             shortLabel: "عربي",
