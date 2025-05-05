@@ -69,6 +69,7 @@ export default function EditorTab() {
             firstPane={<LeftPane />}
             middlePane={<ReactFlowEditor />}
             thirdPane={<RightPane />}
+            storageKey="templateManagementEditor"
         />
     );
 }
