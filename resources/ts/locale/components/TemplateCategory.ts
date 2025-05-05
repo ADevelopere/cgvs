@@ -2,7 +2,7 @@ type TemplateCategoryTranslation = {
     templateCategoriesManagement: string;
     toggleCategoriesPane: string;
     toggleTemplatesPane: string;
-  
+
     categories: string;
     templates: string;
     name: string;
@@ -37,13 +37,13 @@ type TemplateCategoryTranslation = {
     categoryUpdateFailed: string;
     categoryDeletedSuccessfully: string;
     categoryDeleteFailed: string;
-  
+
     selectCategoryFirst: string;
     createCategoryFirst: string;
     confirmSwitchCategory: string;
     switchCategoryWhileAddingTemplate: string;
     confirm: string;
-  
+
     templateAddedSuccessfully: string;
     templateAddFailed: string;
     templateHiddenSuccessfully: string;
@@ -51,11 +51,27 @@ type TemplateCategoryTranslation = {
     templateUpdatedSuccessfully: string;
     templateUpdateFailed: string;
     templateDeletedSuccessfully: string;
-  
+    templateDeleteFailed: string;
+
     nameTooShort: string;
     nameTooLong: string;
-  
-  };
-  
+
+    // Error messages from TemplateCategoryManagementContext
+    invalidDataFormat: string;
+    categoryNotFound: string;
+    invalidCategoryId: string;
+    failedToDeleteCategory: string;
+
+    // Logging messages
+    fetchingCategories: string;
+    rawApiResponse: string;
+    responseDataType: string;
+    responseData: string;
+    expectedArrayButReceived: string;
+    failedToCreateCategory: string;
+    failedToUpdateCategory: string;
+    invalidCategoryIdProvided: string;
+    attemptingToDeleteCategory: string;
+};
+
 export default TemplateCategoryTranslation;
-  

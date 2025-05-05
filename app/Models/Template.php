@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Log;
 
 class Template extends Model
 {
@@ -61,14 +62,14 @@ class Template extends Model
     protected static function booted()
     {
         static::creating(function ($template) {
-            \Illuminate\Support\Facades\Log::info('Creating new template', [
+            Log::info('Creating new template', [
                 'template_name' => $template->name,
                 'template_data' => $template->toArray(),
             ]);
         });
 
         static::created(function ($template) {
-            \Illuminate\Support\Facades\Log::info('Template created, creating name variable', [
+            Log::info('Template created, creating name variable', [
                 'template_id' => $template->id,
                 'template_name' => $template->name,
             ]);
@@ -84,35 +85,36 @@ class Template extends Model
                     'order' => 1, // Set order to 1 since it's the first variable
                 ]);
 
-                \Illuminate\Support\Facades\Log::info('Name variable created successfully', [
+                Log::info('Name variable created successfully', [
                     'template_id' => $template->id,
                     'name_variable_id' => $nameVar->id,
                 ]);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to create name variable', [
+                Log::error('Failed to create name variable', [
                     'template_id' => $template->id,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
             }
         });
+    }
 
-        static::deleting(function ($template) {
-            // Move to deleted category when soft deleting
-            if (!$template->isForceDeleting()) {
-                $deletedCategory = TemplateCategory::getDeletedCategory();
-                $template->category_id = $deletedCategory->id;
-                $template->order = null;
-                $template->save();
-            }
-        });
+    public function moveToDeletedCategory()
+    {
+        $deletedCategory = TemplateCategory::getDeletedCategory();
+        $this->category_id = $deletedCategory->id;
+        $this->order = null;
+        $this->deleted_at = now();
+        $this->save();
+    }
 
-        static::restoring(function ($template) {
-            // Move to main category when restoring
-            $mainCategory = TemplateCategory::getMainCategory();
-            $template->category_id = $mainCategory->id;
-            // Set order as last in the main category
-            $template->order = Template::where('category_id', $mainCategory->id)->max('order') + 1;
-        });
+    public function moveToMainCategory()
+    {
+        $mainCategory = TemplateCategory::getMainCategory();
+        $this->category_id = $mainCategory->id;
+        // Set order as last in the main category
+        $this->order = Template::where('category_id', $mainCategory->id)->max('order') + 1;
+        $this->deleted_at = null;
+        $this->save();
     }
 }

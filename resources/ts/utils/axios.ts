@@ -11,7 +11,7 @@ const instance: AxiosInstance = axios.create({
 });
 
 const isDev: boolean = process.env.NODE_ENV === 'development';
-const logEnbled = false;
+const logEnbled = true;
 const log = (...args: unknown[]): void => {
   if (isDev && logEnbled) {
     console.log(...args);

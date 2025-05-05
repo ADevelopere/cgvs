@@ -28,13 +28,17 @@ const logger = {
             console.log(...args);
         }
     },
+    info: (...args: any[]) => {
+        if (logger.enabled) {
+            console.info(...args);
+        }
+    },
     error: (...args: any[]) => {
         if (logger.enabled) {
             console.error(...args);
         }
     },
 };
-
 
 type TemplateCategoryManagementContextType = {
     /**
@@ -141,7 +145,16 @@ type TemplateCategoryManagementContextType = {
      * Updates the name of an existing template identified by its ID.
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
      */
-    updateTemplate: (id: string, name: string) => void;
+    updateTemplate: (
+        id: string,
+        updates: {
+            name?: string;
+            description?: string;
+            background?: File;
+            category_id?: number;
+            order?: number;
+        },
+    ) => Promise<Template>;
     /**
      * Deletes a template identified by its ID.
      * This removes the template from the backend and updates the local `templates` and `categories` states. If the deleted template was the `currentTemplate`, the selection is cleared.
@@ -192,8 +205,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const notifications = useNotifications();
 
     const [categories, setCategories] = useState<TemplateCategory[]>([]);
-    const [regularCategories, setRegularCategories] = useState<TemplateCategory[]>([]);
-    const [deletedCategory, setDeletedCategory] = useState<TemplateCategory | null>(null);
+    const [regularCategories, setRegularCategories] = useState<
+        TemplateCategory[]
+    >([]);
+    const [deletedCategory, setDeletedCategory] =
+        useState<TemplateCategory | null>(null);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [currentCategory, setCurrentCategory] =
         useState<TemplateCategory | null>(null);
@@ -214,20 +230,22 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const fetchCategories = useCallback(async () => {
         try {
             setIsLoading(true);
-            logger.log('Fetching template categories...');
+            logger.log(messages.fetchingCategories);
             const response = await axios.get("/admin/template-categories");
-            logger.log('Raw API response:', response);
-            logger.log('Response data type:', typeof response.data);
-            logger.log('Response data:', response.data);
+            logger.log(messages.rawApiResponse, response);
+            logger.log(messages.responseDataType, typeof response.data);
+            logger.log(messages.responseData, response.data);
             if (!Array.isArray(response.data)) {
-                logger.error('Expected array of categories but received:', response.data);
-                throw new Error('Invalid data format received from API');
+                logger.error(messages.expectedArrayButReceived, response.data);
+                throw new Error(messages.invalidDataFormat);
             }
             const { data } = response;
 
             // Separate deleted category from regular categories
-            const deleted = data.find(cat => cat.special_type === 'deleted');
-            const regular = data.filter(cat => cat.special_type !== 'deleted');
+            const deleted = data.find((cat) => cat.special_type === "deleted");
+            const regular = data.filter(
+                (cat) => cat.special_type !== "deleted",
+            );
 
             setCategories(data); // Keep original state for backward compatibility
             setDeletedCategory(deleted || null);
@@ -244,17 +262,34 @@ export const TemplateCategoryManagementProvider: React.FC<{
         }
     }, [messages.errorLoadingCategories, notifications]);
 
+    // Add type for API error response
+    type ApiErrorResponse = {
+        message?: string;
+        errors?: {
+            general?: string[];
+            name?: string[];
+            description?: string[];
+            parent_category_id?: string[];
+            category_id?: string[];
+            background?: string[];
+            special_type?: string[];
+            order?: string[];
+            [key: string]: string[] | undefined;
+        };
+    };
+
     const addCategory = useCallback(
         async (name: string, parentId?: string) => {
             try {
-                const { data: newCategory } = await axios.post(
-                    "/admin/template-categories",
-                    {
-                        name,
-                        parent_category_id: parentId,
-                        visible: true, // Set default visibility to true
-                    },
-                );
+                const { data: newCategory } =
+                    await axios.post<TemplateCategory>(
+                        "/admin/template-categories",
+                        {
+                            name,
+                            parent_category_id: parentId,
+                            visible: true,
+                        },
+                    );
 
                 setCategories((prev) => [...prev, newCategory]);
                 setCurrentCategory(newCategory);
@@ -262,10 +297,26 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "success",
                     autoHideDuration: 3000,
                 });
-            } catch (error) {
-                notifications.show(messages.categoryAddFailed, {
+            } catch (error: unknown) {
+                const apiError = error as {
+                    response?: { data: ApiErrorResponse };
+                };
+                const errorMessage =
+                    apiError.response?.data?.message ||
+                    apiError.response?.data?.errors?.general?.[0] ||
+                    apiError.response?.data?.errors?.name?.[0] ||
+                    apiError.response?.data?.errors?.parent_category_id?.[0] ||
+                    apiError.response?.data?.errors?.special_type?.[0] ||
+                    messages.categoryAddFailed;
+
+                notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
+                });
+                logger.error(messages.failedToCreateCategory, {
+                    error: apiError.response?.data,
+                    name,
+                    parentId,
                 });
             }
         },
@@ -278,15 +329,18 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 const category = categories.find(
                     (cat) => cat.id === categoryId,
                 );
-                if (!category) return;
+                if (!category) {
+                    throw new Error(messages.categoryNotFound);
+                }
 
-                const { data: updatedCategory } = await axios.put(
-                    `/admin/template-categories/${categoryId}`,
-                    {
-                        ...category,
-                        name,
-                    },
-                );
+                const { data: updatedCategory } =
+                    await axios.put<TemplateCategory>(
+                        `/admin/template-categories/${categoryId}`,
+                        {
+                            ...category,
+                            name,
+                        },
+                    );
 
                 setCategories((prev) =>
                     prev.map((cat) =>
@@ -297,10 +351,25 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "success",
                     autoHideDuration: 3000,
                 });
-            } catch (error) {
-                notifications.show(messages.categoryUpdateFailed, {
+            } catch (error: unknown) {
+                const apiError = error as {
+                    response?: { data: ApiErrorResponse };
+                };
+                const errorMessage =
+                    apiError.response?.data?.message ||
+                    apiError.response?.data?.errors?.general?.[0] ||
+                    apiError.response?.data?.errors?.name?.[0] ||
+                    apiError.response?.data?.errors?.parent_category_id?.[0] ||
+                    messages.categoryUpdateFailed;
+
+                notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
+                });
+                logger.error(messages.failedToUpdateCategory, {
+                    error: apiError.response?.data,
+                    categoryId,
+                    name,
                 });
             }
         },
@@ -309,23 +378,56 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     const deleteCategory = useCallback(
         async (categoryId: number) => {
-            try {
-                await axios.delete(`/admin/template-categories/${categoryId}`);
-
-                setCategories((prev) =>
-                    prev.filter((cat) => cat.id !== categoryId),
-                );
-                if (currentCategory?.id === categoryId) {
-                    setCurrentCategory(null);
-                }
-                notifications.show(messages.categoryDeletedSuccessfully, {
-                    severity: "success",
-                    autoHideDuration: 3000,
-                });
-            } catch (error) {
+            if (!categoryId) {
+                logger.error(messages.invalidCategoryIdProvided, categoryId);
                 notifications.show(messages.categoryDeleteFailed, {
                     severity: "error",
                     autoHideDuration: 5000,
+                });
+                return;
+            }
+
+            try {
+                logger.info(messages.attemptingToDeleteCategory, categoryId);
+                const response = await axios.delete(
+                    `/admin/template-categories/${categoryId}`,
+                );
+
+                if (response.status >= 200 && response.status < 300) {
+                    setCategories((prev) =>
+                        prev.filter((cat) => cat.id !== categoryId),
+                    );
+                    if (currentCategory?.id === categoryId) {
+                        setCurrentCategory(null);
+                    }
+                    notifications.show(messages.categoryDeletedSuccessfully, {
+                        severity: "success",
+                        autoHideDuration: 3000,
+                    });
+                    logger.info(
+                        messages.categoryDeletedSuccessfully,
+                        categoryId,
+                    );
+                } else {
+                    throw new Error(messages.failedToDeleteCategory);
+                }
+            } catch (error: unknown) {
+                const apiError = error as {
+                    response?: { data: ApiErrorResponse };
+                };
+                const errorMessage =
+                    apiError.response?.data?.message ||
+                    apiError.response?.data?.errors?.general?.[0] ||
+                    messages.categoryDeleteFailed;
+
+                notifications.show(errorMessage, {
+                    severity: "error",
+                    autoHideDuration: 5000,
+                });
+
+                logger.error("Failed to delete category:", {
+                    categoryId,
+                    error: apiError.response?.data,
                 });
             }
         },
@@ -334,37 +436,105 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     // Memoized callbacks for template operations
     const addTemplate = useCallback(
-        async (name: string, categoryId: number) => {
+        async (
+            name: string,
+            categoryId: number,
+            description?: string,
+            background?: File,
+        ) => {
             try {
-                const { data: newTemplate } = await axios.post(
+                const formData = new FormData();
+                formData.append("name", name);
+                formData.append("category_id", categoryId.toString());
+                if (description) {
+                    formData.append("description", description);
+                }
+                if (background) {
+                    formData.append("background", background);
+                }
+
+                const { data: newTemplate } = await axios.post<Template>(
                     "/admin/templates",
+                    formData,
                     {
-                        name,
-                        category_id: categoryId,
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
                     },
                 );
 
                 setTemplates((prev) => [...prev, newTemplate]);
+                setCurrentTemplate(newTemplate);
                 notifications.show(messages.templateAddedSuccessfully, {
                     severity: "success",
                     autoHideDuration: 3000,
                 });
-            } catch (error) {
-                notifications.show(messages.templateAddFailed, {
+
+                return newTemplate;
+            } catch (error: unknown) {
+                const apiError = error as {
+                    response?: { data: ApiErrorResponse };
+                };
+                const errorMessage =
+                    apiError.response?.data?.message ||
+                    apiError.response?.data?.errors?.general?.[0] ||
+                    apiError.response?.data?.errors?.name?.[0] ||
+                    apiError.response?.data?.errors?.description?.[0] ||
+                    apiError.response?.data?.errors?.category_id?.[0] ||
+                    apiError.response?.data?.errors?.background?.[0] ||
+                    messages.templateAddFailed;
+
+                notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
                 });
+                logger.error(messages.failedToCreateCategory, {
+                    error: apiError.response?.data,
+                    name,
+                    categoryId,
+                    hasDescription: !!description,
+                    hasBackground: !!background,
+                });
+
+                throw error; // Re-throw to allow caller to handle the error
             }
         },
         [messages, notifications],
     );
 
     const updateTemplate = useCallback(
-        async (id: string, name: string) => {
+        async (
+            id: string,
+            updates: {
+                name?: string;
+                description?: string;
+                background?: File;
+                category_id?: number;
+                order?: number;
+            },
+        ) => {
             try {
-                const { data: updatedTemplate } = await axios.put(
+                const formData = new FormData();
+
+                // Append each update field to formData
+                Object.entries(updates).forEach(([key, value]) => {
+                    if (value !== undefined) {
+                        if (value instanceof File) {
+                            formData.append(key, value);
+                        } else {
+                            formData.append(key, value.toString());
+                        }
+                    }
+                });
+
+                const { data: updatedTemplate } = await axios.put<Template>(
                     `/admin/templates/${id}`,
-                    { name },
+                    formData,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    },
                 );
 
                 setTemplates((prev) =>
@@ -372,43 +542,146 @@ export const TemplateCategoryManagementProvider: React.FC<{
                         temp.id === updatedTemplate.id ? updatedTemplate : temp,
                     ),
                 );
+
+                if (currentTemplate?.id === updatedTemplate.id) {
+                    setCurrentTemplate(updatedTemplate);
+                }
+
                 notifications.show(messages.templateUpdatedSuccessfully, {
                     severity: "success",
                     autoHideDuration: 3000,
                 });
-            } catch (error) {
-                notifications.show(messages.templateUpdateFailed, {
+
+                return updatedTemplate;
+            } catch (error: unknown) {
+                const apiError = error as {
+                    response?: { data: ApiErrorResponse };
+                };
+                const errorMessage =
+                    apiError.response?.data?.message ||
+                    apiError.response?.data?.errors?.general?.[0] ||
+                    apiError.response?.data?.errors?.name?.[0] ||
+                    apiError.response?.data?.errors?.description?.[0] ||
+                    apiError.response?.data?.errors?.category_id?.[0] ||
+                    apiError.response?.data?.errors?.background?.[0] ||
+                    apiError.response?.data?.errors?.order?.[0] ||
+                    messages.templateUpdateFailed;
+
+                notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
                 });
+                logger.error("Failed to update template:", {
+                    error: apiError.response?.data,
+                    id,
+                    updates,
+                });
+
+                throw error; // Re-throw to allow caller to handle the error
             }
         },
-        [messages, notifications],
+        [messages, notifications, currentTemplate],
     );
 
     const deleteTemplate = useCallback(
         async (templateId: string) => {
             try {
-                await axios.delete(`/admin/templates/${templateId}`);
-
-                setTemplates((prev) =>
-                    prev.filter((temp) => temp.id.toString() !== templateId),
+                logger.info("Attempting to delete template:", templateId);
+                const response = await axios.delete(
+                    `/admin/templates/${templateId}`,
                 );
-                if (currentTemplate?.id.toString() === templateId) {
-                    setCurrentTemplate(null);
+
+                if (response.status >= 200 && response.status < 300) {
+                    setTemplates((prev) =>
+                        prev.filter(
+                            (temp) => temp.id.toString() !== templateId,
+                        ),
+                    );
+
+                    if (currentTemplate?.id.toString() === templateId) {
+                        setCurrentTemplate(null);
+                    }
+
+                    // Add template to deleted category if it exists
+                    if (response.data?.template && deletedCategory) {
+                        const deletedTemplate = response.data.template;
+                        const parentCategoryId = deletedTemplate.category_id;
+                        
+                        // Update only the parent category by removing the template
+                        setRegularCategories((prev) =>
+                            prev.map((cat) => {
+                                if (cat.id === parentCategoryId) {
+                                    return {
+                                        ...cat,
+                                        templates: (cat.templates || []).filter(
+                                            (temp) => temp.id.toString() !== templateId
+                                        ),
+                                    };
+                                }
+                                return cat;
+                            })
+                        );
+
+                        // Update the deleted category state
+                        setDeletedCategory((prev) => prev ? {
+                            ...prev,
+                            templates: [...(prev.templates || []), deletedTemplate],
+                        } : prev);
+
+                        // Update all categories (maintain backward compatibility)
+                        setCategories((prev) =>
+                            prev.map((cat) =>
+                                cat.special_type === "deleted"
+                                    ? {
+                                          ...cat,
+                                          templates: [
+                                              ...(cat.templates || []),
+                                              deletedTemplate,
+                                          ],
+                                      }
+                                    : cat.id === parentCategoryId
+                                        ? {
+                                            ...cat,
+                                            templates: (cat.templates || []).filter(
+                                                (temp) => temp.id.toString() !== templateId
+                                            ),
+                                        }
+                                        : cat
+                            ),
+                        );
+                    }
+
+                    notifications.show(messages.templateDeletedSuccessfully, {
+                        severity: "success",
+                        autoHideDuration: 3000,
+                    });
+
+                    logger.info("Template deleted successfully:", templateId);
+                } else {
+                    throw new Error("Failed to delete template");
                 }
-                notifications.show(messages.templateDeletedSuccessfully, {
-                    severity: "success",
-                    autoHideDuration: 3000,
-                });
-            } catch (error) {
-                notifications.show(messages.templateUpdateFailed, {
+            } catch (error: unknown) {
+                const apiError = error as {
+                    response?: { data: ApiErrorResponse };
+                };
+                const errorMessage =
+                    apiError.response?.data?.message ||
+                    apiError.response?.data?.errors?.general?.[0] ||
+                    messages.templateDeleteFailed;
+
+                notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
                 });
+                logger.error("Failed to delete template:", {
+                    error: apiError.response?.data,
+                    templateId,
+                });
+
+                throw error; // Re-throw to allow caller to handle the error
             }
         },
-        [currentTemplate, messages, notifications],
+        [currentTemplate, messages, notifications, deletedCategory],
     );
 
     // Sorting functions
