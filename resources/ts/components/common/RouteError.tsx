@@ -24,10 +24,10 @@ export default function RouteError(): React.ReactElement {
       <Box sx={{ mt: 8, mb: 4 }}>
         <Paper sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom color="error">
-            Oops! Something went wrong
+            عفواً! حدث خطأ ما
           </Typography>
           <Typography variant="body1" color="text.secondary" component="p">
-            {error?.message || error?.statusText || 'An unexpected error occurred'}
+            {error?.message || error?.statusText || 'حدث خطأ غير متوقع'}
           </Typography>
           <Box sx={{ mt: 4 }}>
             <Button
@@ -36,13 +36,13 @@ export default function RouteError(): React.ReactElement {
               onClick={() => navigate('/')}
               sx={{ mr: 2 }}
             >
-              Back to Home
+              العودة للرئيسية
             </Button>
             <Button
               variant="outlined"
               onClick={() => window.location.reload()}
             >
-              Try Again
+              حاول مرة أخرى
             </Button>
           </Box>
         </Paper>

@@ -27,10 +27,10 @@ const Dashboard: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Welcome to CGVS
+        مرحباً بكم في نظام إدارة الشهادات
       </Typography>
       <Typography color="textSecondary" component="p">
-        Create and manage your certificate templates and generate certificates for your recipients.
+        قم بإنشاء وإدارة قوالب الشهادات الخاصة بك وإنشاء شهادات للمستلمين.
       </Typography>
 
       <Grid container spacing={3} sx={{ mt: 3 }}>
@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
                   {stats.totalTemplates}
                 </Typography>
                 <Typography color="textSecondary">
-                  Certificate Templates
+                  قوالب الشهادات
                 </Typography>
               </Box>
             </CardContent>
@@ -59,7 +59,7 @@ const Dashboard: React.FC = () => {
                   {stats.totalCertificates}
                 </Typography>
                 <Typography color="textSecondary">
-                  Total Certificates
+                  إجمالي الشهادات
                 </Typography>
               </Box>
             </CardContent>
@@ -69,11 +69,11 @@ const Dashboard: React.FC = () => {
 
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" gutterBottom>
-          Quick Actions
+          إجراءات سريعة
         </Typography>
         <Paper sx={{ p: 3 }}>
           <Typography variant="body1">
-            Get started by creating a new certificate template or generating certificates for your recipients.
+            ابدأ بإنشاء قالب شهادة جديد أو إنشاء شهادات للمستلمين.
           </Typography>
         </Paper>
       </Box>

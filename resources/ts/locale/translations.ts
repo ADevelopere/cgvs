@@ -17,26 +17,26 @@ import arCourseCategory from "@/locale/ar/templateCategory";
 import AppLanguage from "./AppLanguage";
 
 export type Translations = {
-  headerTranslations: HeaderTranslations;
-  authTranslations: AuthTranslations;
-  calendarTranslations: CalendarTranslations;
-  countryTranslations: CountryTranslations;
-  genderTranslations: GenderTranslations;
-  languageTranslations: LanguageTranslations;
-  templateCategoryTranslations: TemplateCategoryTranslation;
+    headerTranslations: HeaderTranslations;
+    authTranslations: AuthTranslations;
+    calendarTranslations: CalendarTranslations;
+    countryTranslations: CountryTranslations;
+    genderTranslations: GenderTranslations;
+    languageTranslations: LanguageTranslations;
+    templateCategoryTranslations: TemplateCategoryTranslation;
 };
 
 const translations: Record<AppLanguage, Translations> = {
-  ar: {
-    headerTranslations: arHeader,
-    authTranslations: arAuth,
-    calendarTranslations: arCalendar,
-    countryTranslations: arCountry,
-    genderTranslations: arGender,
-    languageTranslations: arLanguage,
-    templateCategoryTranslations: arCourseCategory,
-  },
-  // Add other languages here as needed
+    ar: {
+        headerTranslations: arHeader,
+        authTranslations: arAuth,
+        calendarTranslations: arCalendar,
+        countryTranslations: arCountry,
+        genderTranslations: arGender,
+        languageTranslations: arLanguage,
+        templateCategoryTranslations: arCourseCategory,
+    },
+    // Add other languages here as needed
 };
 
 export default translations;

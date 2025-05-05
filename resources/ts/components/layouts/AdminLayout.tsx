@@ -17,27 +17,22 @@ import DashboardEndActions from "../common/DashboardEndActions";
 const NAVIGATION: Navigation = [
     {
         kind: "header",
-        title: "Dashboard",
+        title: "الإدارة",
     },
     {
         segment: "admin/dashboard",
-        title: "Dashboard",
+        title: "لوحة التحكم",
         icon: <DashboardIcon />,
     },
     {
         segment: "admin/templates",
-        title: "Templates",
+        title: "الشهادات",
         icon: <TemplatesIcon />,
-    },
-    {
-        segment: "admin/certificates",
-        title: "Certificates",
-        icon: <CertificatesIcon />,
     },
 ];
 
 const TITLE: Title = {
-    titleText: "CGVS",
+    titleText: "نظام إدارة الشهادات",
     logoIcon: <HomeIcon />,
     titleVisible: true,
     titleTextVisible: true,

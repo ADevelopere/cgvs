@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Drawer, useTheme } from "@mui/material";
 import { ExpandedDashboardSidebar } from "./ExpandedDashboardSidebar";
 
@@ -8,21 +8,25 @@ interface FloatingDashboardSidebarProps {
     headerHeight: number;
 }
 
-export const FloatingDashboardSidebar: React.FC<FloatingDashboardSidebarProps> = ({
-    open,
-    onClose,
-    headerHeight,
-}) => {
+export const FloatingDashboardSidebar: React.FC<
+    FloatingDashboardSidebarProps
+> = ({ open, onClose, headerHeight }) => {
     const theme = useTheme();
+    const isRtl = theme.direction === "rtl";
 
     return (
         <Drawer
             variant="temporary"
-            anchor="left"
+            anchor={isRtl ? "right" : "left"}
             open={open}
             onClose={onClose}
             ModalProps={{
                 keepMounted: true, // Better mobile performance
+            }}
+            slotProps={{
+                transition: {
+                    direction: isRtl ? "left" : "right"
+                }
             }}
             sx={{
                 display: { xs: "block", sm: "none" },
