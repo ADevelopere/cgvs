@@ -1,6 +1,6 @@
 enum AppLanguage {
   default = "ar",
-  en = "en",
+  // en = "en",
 }
 
 export default AppLanguage;
