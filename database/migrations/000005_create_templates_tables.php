@@ -28,20 +28,20 @@ return new class extends Migration
         // Create the special categories BEFORE adding the special check constraint
         DB::table('template_categories')->insert([
             [
-                'name' => 'النماذج المحذوفة',
-                'description' => 'Special category for deleted templates',
-                'parent_category_id' => null,
-                'order' => null, // Must be null for deleted
-                'special_type' => 'deleted',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
                 'name' => 'النماذج الرئيسية',
                 'description' => 'Main templates category',
                 'parent_category_id' => null, // Must be null for main
                 'order' => 0, // Can have order
                 'special_type' => 'main',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'النماذج المحذوفة',
+                'description' => 'Special category for deleted templates',
+                'parent_category_id' => null,
+                'order' => null, // Must be null for deleted
+                'special_type' => 'deleted',
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -82,7 +82,7 @@ return new class extends Migration
         //     ))
         // )');
 
-         // Restore the column definitions here:
+        // Restore the column definitions here:
         Schema::create('template_elements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('template_id')->constrained()->onDelete('cascade');
