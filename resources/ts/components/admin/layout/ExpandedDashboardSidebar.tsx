@@ -63,7 +63,7 @@ const NavItem: React.FC<{
                         gap: 0.5,
                         width: "100%",
                         color: theme.palette.text.secondary,
-                        pl: theme.spacing(2 + level * 2), // Indentation based on level
+                        paddingInlineStart: theme.spacing(2 + level * 2), // Indentation based on level
                         marginBottom: theme.spacing(0.5), // Space between items
                         "&.Mui-selected": {
                             color: theme.palette.primary.main,
@@ -98,6 +98,7 @@ const NavItem: React.FC<{
                                     fontWeight: itemIsActive
                                         ? "fontWeightMedium"
                                         : "fontWeightRegular",
+                                    textAlign: "start",
                                 },
                             },
                         }}
@@ -141,7 +142,7 @@ const RenderNavItem: React.FC<{
                     color: theme.palette.text.secondary,
                     fontSize: "0.64rem",
                     lineHeight: "normal",
-                    pl: theme.spacing(2 + level * 2),
+                    paddingInlineStart: theme.spacing(2 + level * 2),
                     py: 1.5,
                     textTransform: "uppercase",
                 }}

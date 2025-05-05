@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { Title } from "@/contexts/adminLayout.types";
@@ -24,6 +24,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
         },
         ref,
     ) => {
+        const theme = useTheme();
         if (!titleVisible) return null;
 
         const TitleContent = () => (
@@ -34,6 +35,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
                             display: "flex",
                             alignItems: "center",
                             color: iconColor,
+                            flexShrink: 0,
                         }}
                     >
                         {logoIcon}
@@ -45,9 +47,22 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
                         component="div"
                         sx={{
                             fontWeight: "bold",
-                            fontSize: "1.25rem",
+                            fontSize: {
+                                xs: "1rem",
+                                sm: "1.125rem",
+                                md: "1.25rem",
+                            },
                             lineHeight: 1.6,
                             color: textColor,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxWidth: {
+                                xs: "140px",
+                                sm: "180px",
+                                md: "240px",
+                                lg: "320px",
+                            },
                         }}
                     >
                         {titleText}
@@ -83,6 +98,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
                     alignItems: "center",
                     gap: 1,
                     paddingLeft: 1,
+                    maxWidth: "100%",
                 }}
             >
                 <TitleContent />

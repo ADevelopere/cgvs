@@ -13,8 +13,10 @@ import {
 } from "@mui/icons-material";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import AppLanguage from "@/locale/AppLanguage";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const LanguageSwitcher: React.FC = () => {
+    const strings = useAppTranslation("languageTranslations");
     const { language, setLanguage } = useAppTheme();
 
     const handleLanguageChange = useCallback(
@@ -40,8 +42,8 @@ const LanguageSwitcher: React.FC = () => {
     const languageOptions = [
         {
             value: AppLanguage.default,
-            label: "العربية",
-            shortLabel: "عربي",
+            label: strings.ar,
+            shortLabel: strings.arShort,
         },
     ];
 

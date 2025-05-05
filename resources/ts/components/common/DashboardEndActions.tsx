@@ -10,6 +10,7 @@ export default function DashboardEndActions() {
                 alignItems: "center",
                 justifyContent: "end",
                 gap: 1,
+                paddingInlineEnd: 2,
             }}
         >
             {/* <LanguageSwitcher /> */}
