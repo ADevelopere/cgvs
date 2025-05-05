@@ -47,15 +47,26 @@ class TemplateCategoryController extends Controller
                     'nullable',
                     'exists:template_categories,id',
                     function ($attribute, $value, $fail) {
-                        if ($value == 101007) { // Special category for deleted templates
-                            $fail('Cannot create a subcategory under the deleted templates category.');
+                        // Prevent creating subcategories under special categories
+                        if ($value) {
+                            $parentCategory = TemplateCategory::find($value);
+                            if ($parentCategory && $parentCategory->isSpecial()) {
+                                $fail('Cannot create subcategories under special categories.');
+                            }
                         }
                     },
                 ],
+                'special_type' => [
+                    'prohibited', // New categories can't have special types
+                    function ($attribute, $value, $fail) {
+                        $fail('Cannot create new special categories.');
+                    }
+                ]
             ], [
                 'name.required' => 'The category name is required.',
                 'name.min' => 'The category name must be at least 3 characters.',
                 'parent_category_id.exists' => 'The selected parent category does not exist.',
+                'special_type.prohibited' => 'Cannot create new special categories.',
             ]);
 
             if ($validator->fails()) {
@@ -125,12 +136,22 @@ class TemplateCategoryController extends Controller
         ]);
 
         try {
-            // Prevent modifications to the special deleted templates category
-            if ($category->id === 101007) {
+            // Prevent modifications to deleted category
+            if ($category->isImmutableCategory()) {
                 throw new ValidationException(Validator::make([], []), 
                     response()->json([
                         'message' => 'The deleted templates category cannot be modified.',
                         'errors' => ['general' => ['This is a system category and cannot be modified.']]
+                    ], 422)
+                );
+            }
+            
+            // For main category, only prevent having a parent
+            if ($category->isMainCategory() && $request->has('parent_category_id')) {
+                throw new ValidationException(Validator::make([], []), 
+                    response()->json([
+                        'message' => 'Main category cannot have a parent category.',
+                        'errors' => ['general' => ['The main category cannot be a subcategory.']]
                     ], 422)
                 );
             }
@@ -142,15 +163,19 @@ class TemplateCategoryController extends Controller
                     'nullable',
                     'exists:template_categories,id',
                     function ($attribute, $value, $fail) use ($category) {
-                        if ($value == 101007) {
-                            $fail('Cannot move category under the deleted templates category.');
-                        }
-                        if ($value == $category->id) {
-                            $fail('A category cannot be its own parent.');
-                        }
-                        // Prevent circular references
                         if ($value) {
-                            $parent = TemplateCategory::find($value);
+                            // Prevent moving under special categories
+                            $parentCategory = TemplateCategory::find($value);
+                            if ($parentCategory && $parentCategory->isSpecial()) {
+                                $fail('Cannot move categories under special categories.');
+                            }
+                            
+                            if ($value == $category->id) {
+                                $fail('A category cannot be its own parent.');
+                            }
+                            
+                            // Prevent circular references
+                            $parent = $parentCategory;
                             while ($parent) {
                                 if ($parent->id === $category->id) {
                                     $fail('Cannot create circular reference in category hierarchy.');
@@ -230,10 +255,10 @@ class TemplateCategoryController extends Controller
         ]);
 
         try {
-            // Prevent deletion of the special deleted templates category
-            if ($category->id === 101007) {
+            // Prevent deletion of special categories
+            if ($category->isSpecial()) {
                 return response()->json([
-                    'message' => 'The deleted templates category cannot be deleted.',
+                    'message' => 'Special categories cannot be deleted.',
                     'errors' => ['general' => ['This is a system category and cannot be deleted.']]
                 ], 422);
             }
@@ -291,7 +316,16 @@ class TemplateCategoryController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'categories' => 'required|array',
-                'categories.*.id' => 'required|exists:template_categories,id',
+                'categories.*.id' => [
+                    'required',
+                    'exists:template_categories,id',
+                    function ($attribute, $value, $fail) {
+                        $category = TemplateCategory::find($value);
+                        if ($category && $category->isSpecial()) {
+                            $fail('Special categories cannot be reordered.');
+                        }
+                    }
+                ],
                 'categories.*.order' => 'required|integer|min:0',
             ]);
 

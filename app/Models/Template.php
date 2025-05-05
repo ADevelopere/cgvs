@@ -96,5 +96,23 @@ class Template extends Model
                 ]);
             }
         });
+
+        static::deleting(function ($template) {
+            // Move to deleted category when soft deleting
+            if (!$template->isForceDeleting()) {
+                $deletedCategory = TemplateCategory::getDeletedCategory();
+                $template->category_id = $deletedCategory->id;
+                $template->order = null;
+                $template->save();
+            }
+        });
+
+        static::restoring(function ($template) {
+            // Move to main category when restoring
+            $mainCategory = TemplateCategory::getMainCategory();
+            $template->category_id = $mainCategory->id;
+            // Set order as last in the main category
+            $template->order = Template::where('category_id', $mainCategory->id)->max('order') + 1;
+        });
     }
 }

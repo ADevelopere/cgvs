@@ -23,7 +23,50 @@ class TemplateCategory extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'special_type' => 'string',
     ];
+
+    // Special category types
+    public const SPECIAL_TYPE_DELETED = 'deleted';
+    public const SPECIAL_TYPE_MAIN = 'main';
+
+    public function isSpecial(): bool
+    {
+        return !is_null($this->special_type);
+    }
+
+    public function isDeletedCategory(): bool
+    {
+        return $this->special_type === self::SPECIAL_TYPE_DELETED;
+    }
+
+    public function isMainCategory(): bool
+    {
+        return $this->special_type === self::SPECIAL_TYPE_MAIN;
+    }
+
+    public function isImmutableCategory(): bool
+    {
+        // Only deleted category is completely immutable
+        return $this->isDeletedCategory();
+    }
+
+    // Boot the model
+    protected static function booted()
+    {
+        static::saving(function ($category) {
+            if ($category->isImmutableCategory()) {
+                // Prevent changing deleted category properties
+                $original = $category->getOriginal();
+                $category->name = $original['name'] ?? $category->name;
+                $category->parent_category_id = null;
+                $category->order = null;
+            } else if ($category->isMainCategory()) {
+                // For main category, only prevent having a parent
+                $category->parent_category_id = null;
+            }
+        });
+    }
 
     /**
      * Get the parent category if this is a subcategory
@@ -49,5 +92,21 @@ class TemplateCategory extends Model
     {
         return $this->hasMany(Template::class, 'category_id')
             ->orderBy('order');
+    }
+
+    /**
+     * Get the deleted templates category
+     */
+    public static function getDeletedCategory()
+    {
+        return static::where('special_type', self::SPECIAL_TYPE_DELETED)->firstOrFail();
+    }
+
+    /**
+     * Get the main templates category
+     */
+    public static function getMainCategory()
+    {
+        return static::where('special_type', self::SPECIAL_TYPE_MAIN)->firstOrFail();
     }
 }
