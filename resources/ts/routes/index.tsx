@@ -17,7 +17,7 @@ import RouteError from "@/components/common/RouteError";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
 import TemplateCategoryManagementVIew from "@/views/admin/templates/TemplateCategoryManagementVIew";
-import TemplateCategoryManagement from "@/components/admin/templates/category/management/TemplateCategoryManagement";
+import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
 
 interface WithAuthProps {
     children: React.ReactNode;

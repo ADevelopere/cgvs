@@ -1,4 +1,4 @@
-import TemplateCategoryManagement from '@/components/admin/templates/category/management/TemplateCategoryManagement';
+import TemplateCategoryManagement from '@/components/admin/templates/category/management/CategoryManagement';
 import { TemplateCategoryManagementProvider } from '@/contexts/template/TemplateCategoryManagementContext';
 import React from 'react';
 

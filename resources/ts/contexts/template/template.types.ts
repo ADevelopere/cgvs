@@ -1,12 +1,11 @@
-export type TemplateCategorySpecialType = 'deleted' | 'main';
+export type TemplateCategorySpecialType = 'deleted' | 'uncategorized';
 
 export type TemplateCategory = {
-    id: string;
+    id: number;
     name: string;
     description?: string;
     parent_category_id?: number | null;
     order: number | null;
-    visible: boolean;
     special_type?: TemplateCategorySpecialType;
     created_at: string;
     updated_at: string;
@@ -17,7 +16,7 @@ export type TemplateCategory = {
 };
 
 export type Template = {
-    id: string;
+    id: number;
     name: string;
     description?: string;
     background_url?: string;

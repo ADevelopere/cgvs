@@ -21,21 +21,22 @@ import SortIcon from "@mui/icons-material/Sort";
 import { ListItemButton, Typography } from "@mui/material";
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
-import { Boxes } from "lucide-react";
+import { Boxes, EditIcon } from "lucide-react";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { TemplateCategory } from "@/contexts/template/template.types";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
+    const strings = useAppTranslation("templateCategoryTranslations");
+
     const {
-        categories,
+        regularCategories,
         currentCategory: selectedCategory,
         trySelectCategory,
         addCategory,
         updateCategory,
         deleteCategory,
-        toggleCategoryVisibility,
         sortCategories,
     } = useTemplateCategoryManagement();
     const { theme } = useAppTheme();
@@ -136,22 +137,21 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     };
 
     const handleCategoryNameEdit = async (
-        categoryId: string,
+        categoryId: number,
         newName: string,
     ) => {
         updateCategory(categoryId, newName);
     };
 
-    const renderCategory = (category: (typeof categories)[0]) => (
+    const renderCategory = (category: (typeof regularCategories)[0]) => (
         <ListItem
             disablePadding
             key={category.id}
             sx={{
-                backgroundColor: !category.visible
-                    ? theme.palette.action.disabledBackground
-                    : category.id === selectedCategory?.id
-                      ? theme.palette.action.focus
-                      : "inherit",
+                backgroundColor:
+                    category.id === selectedCategory?.id
+                        ? theme.palette.action.focus
+                        : "inherit",
             }}
         >
             <ListItemButton
@@ -191,21 +191,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                 </Box>
 
                 <Box sx={{ flexGrow: 1 }} />
-                {/* visibility */}
-                <Tooltip title={category.visible ? "Hide" : "Show"}>
-                    <IconButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCategoryVisibility(category.id);
-                        }}
-                    >
-                        {category.visible ? (
-                            <VisibilityIcon />
-                        ) : (
-                            <VisibilityOffIcon />
-                        )}
-                    </IconButton>
-                </Tooltip>
                 {/* delete */}
                 <Tooltip title="Delete">
                     <span>
@@ -222,7 +207,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                     </span>
                 </Tooltip>
 
-                {/* more menu */}
+                {/* edit menu */}
                 <Tooltip title="More">
                     <IconButton
                         onClick={(e) => {
@@ -230,14 +215,12 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                             handleMoreClick(e);
                         }}
                     >
-                        <MoreVertIcon />
+                        <EditIcon />
                     </IconButton>
                 </Tooltip>
             </ListItemButton>
         </ListItem>
     );
-
-    const strings = useAppTranslation("templateCategoryTranslations");
 
     return (
         <Box
@@ -258,9 +241,9 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             >
                 {strings.categories}
             </Typography>
-            {!Array.isArray(categories) ? (
+            {!Array.isArray(regularCategories) ? (
                 <EmptyStateIllustration message={strings.noCategories} />
-            ) : categories.length === 0 && !tempCategory ? (
+            ) : regularCategories.length === 0 && !tempCategory ? (
                 <EmptyStateIllustration message={strings.noCategories} />
             ) : (
                 <List
@@ -271,7 +254,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                         height: "80%",
                     }}
                 >
-                    {categories.map(renderCategory)}
+                    {regularCategories.map(renderCategory)}
                     {tempCategory && (
                         <ListItem
                             ref={newCategoryRef}
@@ -340,7 +323,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                     variant="outlined"
                     startIcon={<SortIcon />}
                     onClick={handleSortClick}
-                    disabled={!categories?.length}
+                    disabled={!regularCategories?.length}
                 >
                     {strings.sort}
                 </Button>
@@ -352,7 +335,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                         justifyContent: "flex-end",
                     }}
                 >
-                    <Typography>{categories.length}</Typography>
+                    <Typography>{regularCategories.length}</Typography>
                 </Box>
             </Box>
             {/* more menu*/}
@@ -364,7 +347,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                 <MenuItem
                     onClick={() => {
                         setEditCategoryName(
-                            categories.find(
+                            regularCategories.find(
                                 (cat) => cat.id === selectedCategory?.id,
                             )?.name ?? "",
                         );

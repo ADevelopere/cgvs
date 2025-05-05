@@ -10,13 +10,13 @@ import {
     Divider,
 } from "@mui/material";
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
-import { TabType } from "@/contexts/template/TemplateManagementContext";
+import { TemplateManagementTabType } from "@/contexts/template/TemplateManagementContext";
 import { Link } from "react-router-dom";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 interface TabListProps {
-    onChange: (event: React.SyntheticEvent, newValue: TabType) => void;
-    activeTab: TabType;
+    onChange: (event: React.SyntheticEvent, newValue: TemplateManagementTabType) => void;
+    activeTab: TemplateManagementTabType;
 }
 
 const ManagementTabList: React.FC<TabListProps> = ({ onChange, activeTab }) => {
