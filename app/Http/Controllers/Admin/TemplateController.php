@@ -94,7 +94,7 @@ class TemplateController extends Controller
                 'nullable',
                 'file',
                 'mimes:jpeg,png,jpg,gif',
-                'max:'.$maxSize,
+                'max:' . $maxSize,
                 function (string $_, $value, $fail) {
                     if ($value && !$value->isValid()) {
                         $fail('The background file is invalid or corrupted.');
@@ -126,7 +126,7 @@ class TemplateController extends Controller
             $template->name = $request->name;
             $template->description = $request->description;
             $template->category_id = $request->category_id;
-            
+
             // Set order only if not in a special category
             $category = TemplateCategory::find($request->category_id);
             if (!$category->isSpecial()) {
@@ -145,7 +145,7 @@ class TemplateController extends Controller
             Log::info('Saving template', [
                 'template_data' => $template->toArray()
             ]);
-            
+
             $template->save();
 
             Log::info('Template saved successfully', [
@@ -209,7 +209,7 @@ class TemplateController extends Controller
                 'nullable',
                 'file',
                 'mimes:jpeg,png,jpg,gif',
-                'max:'.$maxSize,
+                'max:' . $maxSize,
                 function (string $_, $value, $fail) {
                     if ($value && !$value->isValid()) {
                         $fail('The background file is invalid or corrupted.');
@@ -235,11 +235,11 @@ class TemplateController extends Controller
         try {
             $template->name = $request->name;
             $template->description = $request->description;
-            
+
             // Handle category change
             if ($request->has('category_id') && $request->category_id !== $template->category_id) {
                 $newCategory = TemplateCategory::findOrFail($request->category_id);
-                
+
                 // Only allow manual category changes to non-special categories
                 if (!$newCategory->isSpecial()) {
                     $template->category_id = $request->category_id;
@@ -346,7 +346,6 @@ class TemplateController extends Controller
             Log::info('Templates reordered successfully');
 
             return response()->json(['message' => 'Templates reordered successfully']);
-
         } catch (Exception $e) {
             Log::error('Failed to reorder templates', [
                 'error' => $e->getMessage(),
@@ -361,27 +360,59 @@ class TemplateController extends Controller
     }
 
     /**
-     * Restore a soft-deleted template.
+     * This moves the template to the deleted category rather than removing it from the database.
+     *
+     * @param Template $template
+     * @return JsonResponse
+     */
+    public function destroy(Template $template): JsonResponse
+    {
+        Log::info('Attempting to soft delete template', [
+            'template_id' => $template->id,
+            'template_name' => $template->name,
+            'current_category' => $template->category_id
+        ]);
+
+        try {
+            // The move to deleted category is handled by the model's deleting event
+            $template->moveToDeletedCategory();
+
+            Log::info('Template soft deleted successfully', [
+                'template_id' => $template->id,
+                'template_name' => $template->name
+            ]);
+
+            return response()->json([
+                'message' => 'Template deleted successfully',
+                'template' => $template
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to delete template', [
+                'template_id' => $template->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to delete template',
+                'errors' => ['general' => ['An error occurred while deleting the template. Please try again.']]
+            ], 500);
+        }
+    }
+
+    /**
+     * Moves the template back to the main category.
      *
      * @param int $id
      * @return JsonResponse
      */
-    public function restore($id): JsonResponse
+    public function restore(Template $template): JsonResponse
     {
         try {
-            $template = Template::withTrashed()->findOrFail($id);
-            
-            if (!$template->trashed()) {
-                return response()->json([
-                    'message' => 'Template is not deleted',
-                    'errors' => ['general' => ['This template is not deleted and cannot be restored.']]
-                ], 422);
-            }
-
-            $template->restore();
+            $template->moveToMainCategory();
 
             // The move to uncategorized category is handled by the model's restoring event
-            
+
             return response()->json([
                 'message' => 'Template restored successfully',
                 'template' => $template
@@ -389,7 +420,7 @@ class TemplateController extends Controller
         } catch (Exception $e) {
             Log::error('Failed to restore template', [
                 'error' => $e->getMessage(),
-                'template_id' => $id
+                'template_id' => $template->id,
             ]);
 
             return response()->json([
