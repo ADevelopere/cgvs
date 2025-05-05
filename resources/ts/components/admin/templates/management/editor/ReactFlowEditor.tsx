@@ -63,6 +63,10 @@ function Flow() {
         }
     }, [template?.background_url]);
 
+    useEffect(() => {
+        console.log("Dimensions changed:", dimensions);
+    }, [dimensions]);
+
     const customApplyNodeChanges = useCallback(
         (changes: NodeChange[], nodes: Node[]): Node[] => {
             // reset the helper lines (clear existing lines, if any)
@@ -161,13 +165,13 @@ function Flow() {
                 zoomOnScroll={true}
                 zoomOnPinch={true}
                 // Fit the view to the content initially
-                // fitView={true}
-                // fitViewOptions={{
-                //     padding: 0, // Remove padding
-                //     minZoom: 0, // Ensure it doesn't zoom out too much when fitting
-                //     maxZoom: 2, // Ensure it doesn't zoom in too much when fitting
-                //     nodes: [{id: 'node-1'}],
-                // }}
+                fitView={true}
+                fitViewOptions={{
+                    padding: 0, // Remove padding
+                    minZoom: -1000, // Ensure it doesn't zoom out too much when fitting
+                    maxZoom: 1000, // Ensure it doesn't zoom in too much when fitting
+                    nodes: [{id: 'node-1'}],
+                }}
                 // Add theme-aware styling
                 style={{
                     backgroundColor: theme.palette.background.paper,

@@ -15,6 +15,7 @@ type EditorPaneViewControllerProps = {
     firstPane: React.ReactNode;
     middlePane: React.ReactNode;
     thirdPane: React.ReactNode;
+    storageKey?: string;
 };
 
 const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
@@ -26,6 +27,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
     firstPane,
     middlePane,
     thirdPane,
+    storageKey
 }) => {
     const { theme } = useAppTheme();
     const direction = "ltr";
@@ -112,6 +114,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                         visible: thirdPaneVisible,
                         minRatio: 0.2,
                     }}
+                    storageKey={storageKey}
                 >
                     {firstPane}
                     {middlePane}

@@ -16,6 +16,7 @@ export const initialNodes: Node[] = [
         resizing: false,
         draggable: false,
         dragging: false,
+        selectable: false,
     },
     {
         id: "1",
@@ -27,7 +28,7 @@ export const initialNodes: Node[] = [
         type: "image",
         position: { x: 0, y: 0 },
         data: {
-            imageUrl: "template_backgrounds/265-500x500.jpg",
+            imageUrl: "/storage/template_backgrounds/265-500x500.jpg",
         },
     },
 ];
