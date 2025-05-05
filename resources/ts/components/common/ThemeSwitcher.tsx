@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import {
     IconButton,
     Popover,
@@ -9,40 +9,21 @@ import {
     Paper,
 } from "@mui/material";
 import {
-    Settings as SettingsIcon,
     LightMode as LightModeIcon,
     DarkMode as DarkModeIcon,
     SettingsBrightness as SystemModeIcon,
 } from "@mui/icons-material";
-import { useColorScheme } from "@mui/material/styles";
 import { useAppTheme } from "@/contexts/ThemeContext";
-
-type ThemeMode = "light" | "dark" | "system";
+import ThemeMode from "@/theme/ThemeMode";
 
 const ThemeSwitcher: React.FC = () => {
-    const { mode, setMode } = useColorScheme();
-    const { setThemeMode } = useAppTheme();
-
-    useEffect(() => {
-        const savedThemeMode = localStorage.getItem(
-            "themeMode",
-        ) as ThemeMode | null;
-        if (
-            savedThemeMode &&
-            ["light", "dark", "system"].includes(savedThemeMode)
-        ) {
-            setMode(savedThemeMode);
-            setThemeMode(savedThemeMode);
-        }
-    }, []);
+    const { setThemeMode, themeMode, isDark } = useAppTheme();
 
     const handleThemeChange = useCallback(
         (newMode: ThemeMode) => {
-            setMode(newMode);
             setThemeMode(newMode);
-            localStorage.setItem("themeMode", newMode);
         },
-        [setMode],
+        [setThemeMode],
     );
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -58,6 +39,24 @@ const ThemeSwitcher: React.FC = () => {
         [isMenuOpen],
     );
 
+    const themeOptions = [
+        {
+            value: ThemeMode.Light,
+            label: "Light",
+            icon: <LightModeIcon fontSize="small" />,
+        },
+        {
+            value: ThemeMode.Dark,
+            label: "Dark",
+            icon: <DarkModeIcon fontSize="small" />,
+        },
+        {
+            value: ThemeMode.System,
+            label: "System",
+            icon: <SystemModeIcon fontSize="small" />,
+        },
+    ];
+
     return (
         <React.Fragment>
             <Tooltip title="Theme settings" enterDelay={1000}>
@@ -67,12 +66,12 @@ const ThemeSwitcher: React.FC = () => {
                     onClick={toggleMenu}
                     color="inherit"
                 >
-                    {mode === 'light' ? (
-                        <LightModeIcon />
-                    ) : mode === 'dark' ? (
-                        <DarkModeIcon />
-                    ) : (
+                    {themeMode === ThemeMode.System ? (
                         <SystemModeIcon />
+                    ) : !isDark ? (
+                        <LightModeIcon />
+                    ) : (
+                        <DarkModeIcon />
                     )}
                 </IconButton>
             </Tooltip>
@@ -91,23 +90,7 @@ const ThemeSwitcher: React.FC = () => {
             >
                 <Box>
                     <Stack>
-                        {[
-                            {
-                                value: "light" as ThemeMode,
-                                label: "Light",
-                                icon: <LightModeIcon fontSize="small" />,
-                            },
-                            {
-                                value: "dark" as ThemeMode,
-                                label: "Dark",
-                                icon: <DarkModeIcon fontSize="small" />,
-                            },
-                            {
-                                value: "system" as ThemeMode,
-                                label: "System",
-                                icon: <SystemModeIcon fontSize="small" />,
-                            },
-                        ].map((option, index, array) => (
+                        {themeOptions.map((option, index, array) => (
                             <Paper
                                 key={option.value}
                                 onClick={() => handleThemeChange(option.value)}
@@ -118,7 +101,7 @@ const ThemeSwitcher: React.FC = () => {
                                     cursor: "pointer",
                                     transition: "all 0.2s ease-in-out",
                                     bgcolor:
-                                        mode === option.value
+                                        themeMode === option.value
                                             ? "action.selected"
                                             : "background.paper",
                                     borderBottom:
