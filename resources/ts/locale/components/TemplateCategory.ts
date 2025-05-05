@@ -50,6 +50,7 @@ type TemplateCategoryTranslation = {
     templateVisibleSuccessfully: string;
     templateUpdatedSuccessfully: string;
     templateUpdateFailed: string;
+    templateDeletedSuccessfully: string;
   
     nameTooShort: string;
     nameTooLong: string;

@@ -77,8 +77,9 @@ class TemplateController extends Controller
 
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string',
+            'category_id' => 'required|exists:template_categories,id',
             'background' => [
                 'nullable',
                 'file',
@@ -93,6 +94,9 @@ class TemplateController extends Controller
         ], [
             'background.max' => 'The background image must not be larger than ' . number_format($maxSize / 1024, 1) . ' MB.',
             'background.mimes' => 'The background image must be a file of type: jpeg, png, jpg, gif.',
+            'category_id.required' => 'A category must be selected for the template.',
+            'category_id.exists' => 'The selected category does not exist.',
+            'name.min' => 'The template name must be at least 3 characters.',
         ]);
 
         if ($validator->fails()) {
@@ -113,6 +117,8 @@ class TemplateController extends Controller
             $template = new Template();
             $template->name = $request->name;
             $template->description = $request->description;
+            $template->category_id = $request->category_id;
+            $template->order = Template::where('category_id', $request->category_id)->max('order') + 1;
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
                 Log::info('Processing background file for template');
@@ -174,8 +180,9 @@ class TemplateController extends Controller
 
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string',
+            'category_id' => 'required|exists:template_categories,id',
             'background' => [
                 'nullable',
                 'file',
@@ -187,9 +194,13 @@ class TemplateController extends Controller
                     }
                 },
             ],
+            'order' => 'nullable|integer|min:0'
         ], [
             'background.max' => 'The background image must not be larger than ' . number_format($maxSize / 1024, 1) . ' MB.',
             'background.mimes' => 'The background image must be a file of type: jpeg, png, jpg, gif.',
+            'category_id.required' => 'A category must be selected for the template.',
+            'category_id.exists' => 'The selected category does not exist.',
+            'name.min' => 'The template name must be at least 3 characters.',
         ]);
 
         if ($validator->fails()) {
@@ -202,6 +213,21 @@ class TemplateController extends Controller
         try {
             $template->name = $request->name;
             $template->description = $request->description;
+            
+            // Handle category change
+            if ($request->has('category_id') && $request->category_id !== $template->category_id) {
+                $template->category_id = $request->category_id;
+                // Set order as last in the new category if not specified
+                if (!$request->has('order')) {
+                    $template->order = Template::where('category_id', $request->category_id)
+                        ->max('order') + 1;
+                }
+            }
+
+            // Handle explicit order change
+            if ($request->has('order')) {
+                $template->order = $request->order;
+            }
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
                 // Delete old background if it exists
@@ -252,5 +278,55 @@ class TemplateController extends Controller
         }
 
         return response()->json($template);
+    }
+
+    /**
+     * Reorder templates within a category.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function reorder(Request $request): JsonResponse
+    {
+        Log::info('Template reorder request:', [
+            'input' => $request->all()
+        ]);
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'templates' => 'required|array',
+                'templates.*.id' => 'required|exists:templates,id',
+                'templates.*.order' => 'required|integer|min:0',
+                'category_id' => 'required|exists:template_categories,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            foreach ($request->templates as $templateData) {
+                Template::where('id', $templateData['id'])
+                    ->where('category_id', $request->category_id)
+                    ->update(['order' => $templateData['order']]);
+            }
+
+            Log::info('Templates reordered successfully');
+
+            return response()->json(['message' => 'Templates reordered successfully']);
+
+        } catch (Exception $e) {
+            Log::error('Failed to reorder templates', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to reorder templates',
+                'errors' => ['general' => ['An error occurred while reordering templates. Please try again.']]
+            ], 500);
+        }
     }
 }

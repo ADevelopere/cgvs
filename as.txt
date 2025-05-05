@@ -1,14 +1,7 @@
-create  default tile component that will render 
-Title {
-    title?: string;
-    logo?: React.ReactNode;
-    homeUrl?: string;
-}
+implement logic of TemplateCategoryManagementProvider, 
 
-and will use DashboardLayoutContextProps title states 
+you must use use callback, use memo whenever possibele, 
 
-there must be a parent componet that checks slots.title, and if its value is set, then it will render it and return, if not it will render the child component, so make sure to make at least two separate components, 
+for errors  use material mui  notifications to report them, 
+also use them to report success too, 
 
-u must material mui,
-
-the component to render is a forward ref, also wrap slots.tilt render with a box has that ref

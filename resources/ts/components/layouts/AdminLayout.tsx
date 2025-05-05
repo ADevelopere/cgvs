@@ -4,7 +4,7 @@ import ErrorBoundary from "../common/ErrorBoundary";
 import {
     Dashboard as DashboardIcon,
     Description as TemplatesIcon,
-    FileCopy as CertificatesIcon,
+    Category as CategoryIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
@@ -23,6 +23,11 @@ const NAVIGATION: Navigation = [
         segment: "admin/dashboard",
         title: "لوحة التحكم",
         icon: <DashboardIcon />,
+    },
+    {
+        segment: "admin/categories",
+        title: "فئات الشهادات",
+        icon: <CategoryIcon />,
     },
     {
         segment: "admin/templates",

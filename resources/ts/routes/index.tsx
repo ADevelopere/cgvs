@@ -8,14 +8,16 @@ import {
 import AdminLayout from "@/components/layouts/AdminLayout";
 import GuestLayout from "@/components/layouts/GuestLayout";
 import TemplateLayout from "@/components/layouts/TemplateLayout";
-import Login from "@/pages/auth/Login";
-import TemplateIndex from "@/pages/admin/templates/Index";
-import TemplateCreate from "@/pages/admin/templates/CreateTemplate";
-import TemplateManagementPage from "@/pages/admin/templates/TemplateManagementPage";
-import Verify from "@/pages/Verify";
+import Login from "@/views/auth/Login";
+import TemplateIndex from "@/views/admin/templates/Index";
+import TemplateCreate from "@/views/admin/templates/CreateTemplateView";
+import TemplateManagementPage from "@/views/admin/templates/TemplateManagementView";
+import Verify from "@/views/Verify";
 import RouteError from "@/components/common/RouteError";
 import { useAuth } from "@/contexts/AuthContext";
-import DashboardPage from "@/pages/admin/Dashboard";
+import DashboardPage from "@/views/admin/Dashboard";
+import TemplateCategoryManagementVIew from "@/views/admin/templates/TemplateCategoryManagementVIew";
+import TemplateCategoryManagement from "@/components/admin/templates/category/management/TemplateCategoryManagement";
 
 interface WithAuthProps {
     children: React.ReactNode;
@@ -70,6 +72,10 @@ const routes: RouteObject[] = [
             {
                 path: "dashboard",
                 element: <DashboardPage />,
+            },
+            {
+                path: "categories",
+                element: <TemplateCategoryManagement />,
             },
             {
                 path: "templates",
