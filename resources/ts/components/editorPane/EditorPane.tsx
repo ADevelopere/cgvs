@@ -27,6 +27,22 @@ import EditorPaneResizer from "./EditorPaneResizer";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { Box } from "@mui/material";
 
+
+// Logger utility
+const logger = {
+    enabled: process.env.NODE_ENV === "development" && true,
+    log: (...args: any[]) => {
+        if (logger.enabled) {
+            console.log(...args);
+        }
+    },
+    error: (...args: any[]) => {
+        if (logger.enabled) {
+            console.error(...args);
+        }
+    },
+};
+
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {
     return React.Children.toArray(children).filter(Boolean);
@@ -100,7 +116,7 @@ const getStorageKey = (key?: string) =>
 
 const saveToLocalStorage = (key: string, state: StoredPaneState) => {
     try {
-        console.log(
+        logger.log(
             "Saving editor pane state to local storage:",
             JSON.stringify(state),
         );
@@ -179,7 +195,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     const storedState = useMemo(() => {
         if (!storageKey) return null;
         const state = loadFromLocalStorage(storageKey);
-        console.log("Loading stored state:", JSON.stringify(state));
+        logger.log("Loading stored state:", JSON.stringify(state));
         return state;
     }, [storageKey]);
 
@@ -220,7 +236,7 @@ const EditorPane: FC<EditorPaneProps> = ({
             storedState &&
             containerWidth !== previousContainerWidthRef.current
         ) {
-            console.log(
+            logger.log(
                 "Container width changed, adjusting stored sizes:",
                 JSON.stringify({
                     containerWidth,
@@ -266,7 +282,7 @@ const EditorPane: FC<EditorPaneProps> = ({
             previousSizes: previousPaneSizesRef.current,
         };
 
-        console.log("Saving state (not first mount):", JSON.stringify(state));
+        logger.log("Saving state (not first mount):", JSON.stringify(state));
         debouncedSaveState(state);
     }, [
         storageKey,
@@ -709,9 +725,6 @@ const EditorPane: FC<EditorPaneProps> = ({
         }),
         [orientation, paneSizes, basePaneStyle],
     );
-
-    const { theme } = useAppTheme();
-    console.log("EditorPane theme direction", theme.direction);
 
     return (
         <Box ref={editorPaneRef} className={className} style={wrapperStyle} id="editor-pane">

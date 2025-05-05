@@ -13,8 +13,6 @@ import DashboardLayout from "@/components/admin/layout/DashboardLayout";
 import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { HomeIcon } from "lucide-react";
 import DashboardEndActions from "../common/DashboardEndActions";
-import { useColorScheme, useTheme } from "@mui/material";
-import { useAppTheme } from "@/contexts/ThemeContext";
 
 const NAVIGATION: Navigation = [
     {
@@ -49,13 +47,6 @@ const TITLE: Title = {
 };
 
 const AdminLayout: React.FC = () => {
-    const muiTheme = useTheme();
-    const { theme } = useAppTheme();
-    const { mode } = useColorScheme();
-    console.log("theme mode", theme.palette.mode);
-    console.log("muiTheme mode", muiTheme.palette.mode);
-    console.log("mode", mode);
-
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {

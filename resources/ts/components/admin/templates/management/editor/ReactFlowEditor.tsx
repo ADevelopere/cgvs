@@ -13,14 +13,29 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useCallback, useEffect, useState } from "react";
-import "./EditorTab.module.css";
+import "./other/EditorTab.module.css";
 import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
 import DownloadPdf from "./download/DownloadPdf";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { getHelperLines } from "./other/utils";
 import HelperLines from "./other/HelperLines";
-import { initialNodes, nodeTypes } from "./constants";
+import { initialNodes, nodeTypes } from "./other/constants";
+
+// Logger utility
+const logger = {
+    enabled: process.env.NODE_ENV === "development" && false,
+    log: (...args: any[]) => {
+        if (logger.enabled) {
+            console.log(...args);
+        }
+    },
+    error: (...args: any[]) => {
+        if (logger.enabled) {
+            console.error(...args);
+        }
+    },
+};
 
 const panOnDrag = [1, 2];
 
@@ -41,7 +56,7 @@ function Flow() {
     >(undefined);
 
     useEffect(() => {
-        console.log("Viewport changed:", { x, y, zoom });
+        logger.log("Viewport changed:", { x, y, zoom });
     }, [x, y, zoom]);
 
     const { template } = useTemplateManagement();
@@ -64,7 +79,7 @@ function Flow() {
     }, [template?.background_url]);
 
     useEffect(() => {
-        console.log("Dimensions changed:", dimensions);
+        logger.log("Dimensions changed:", dimensions);
     }, [dimensions]);
 
     const customApplyNodeChanges = useCallback(

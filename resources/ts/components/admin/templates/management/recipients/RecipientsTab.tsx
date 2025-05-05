@@ -7,13 +7,8 @@ import NewRecipientPanel from "./NewRecipientPanel";
 import { useRecipientPanelVisibility } from "./useRecipientPanelVisibility";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useAppTheme } from "@/contexts/ThemeContext";
 
 export default function RecipientsTab() {
-    const { theme } = useAppTheme();
-
-    console.log("RecipientsTab theme mode:", theme.palette.mode);
-
     const { template } = useTemplateManagement();
     const { isVisible, togglePanel } = useRecipientPanelVisibility();
 

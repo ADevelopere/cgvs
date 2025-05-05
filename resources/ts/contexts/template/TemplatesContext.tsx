@@ -121,7 +121,6 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
 
     const manageTemplate = useCallback(
         (templateId: number) => {
-            console.log("Managing template with ID:", templateId);
             const template = templates.find((t) => t.id === templateId);
             if (!template) {
                 setError("Template not found");

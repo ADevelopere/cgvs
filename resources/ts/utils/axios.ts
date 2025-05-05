@@ -10,6 +10,15 @@ const instance: AxiosInstance = axios.create({
     }
 });
 
+const isDev: boolean = process.env.NODE_ENV === 'development';
+const logEnbled = false;
+const log = (...args: unknown[]): void => {
+  if (isDev && logEnbled) {
+    console.log(...args);
+  }
+};
+
+
 // Request interceptor to add the auth token
 instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
@@ -33,7 +42,7 @@ instance.interceptors.request.use(
             config.headers.set('Authorization', `Bearer ${token}`);
         }
 
-        console.log('Making request:', {
+        log('Making request:', {
             url: config.url,
             method: config.method,
             headers: config.headers,
@@ -50,7 +59,7 @@ instance.interceptors.request.use(
 // Response interceptor to handle common errors
 instance.interceptors.response.use(
     (response: AxiosResponse) => {
-        console.log('Response received:', {
+        log('Response received:', {
             url: response.config.url,
             status: response.status,
             headers: response.headers
