@@ -1,15 +1,29 @@
-export type TemplateStatus = "draft" | "active" | "archived";
-
-export type Template = {
-    id: number;
+export type TemplateCategory = {
+    id: string;
     name: string;
     description?: string;
-    background_url?: string;
-    status: TemplateStatus;
-    is_active: boolean;
+    parent_category_id?: number;
+    order: number;
+    visible: boolean;
     created_at: string;
     updated_at: string;
     deleted_at?: string;
+    parentCategory?: TemplateCategory;
+    childCategories?: TemplateCategory[];
+    templates?: Template[];
+};
+
+export type Template = {
+    id: string;
+    name: string;
+    description?: string;
+    background_url?: string;
+    category_id: number;
+    order: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string;
+    category?: TemplateCategory;
 };
 
 export type TemplateConfig = {

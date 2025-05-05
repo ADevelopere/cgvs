@@ -13,17 +13,20 @@ import router from "./routes";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
+import { NotificationsProvider } from "@toolpad/core/useNotifications";
 
 const App: React.FC = () => {
     return (
         <React.StrictMode>
             <AuthProvider>
                 <AppThemeProvider>
-                    <DashboardLayoutProvider>
-                        <ErrorBoundary>
-                            <RouterProvider router={router} />
-                        </ErrorBoundary>
-                    </DashboardLayoutProvider>
+                    <NotificationsProvider>
+                        <DashboardLayoutProvider>
+                            <ErrorBoundary>
+                                <RouterProvider router={router} />
+                            </ErrorBoundary>
+                        </DashboardLayoutProvider>
+                    </NotificationsProvider>
                 </AppThemeProvider>
             </AuthProvider>
         </React.StrictMode>

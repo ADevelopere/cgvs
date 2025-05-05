@@ -17,7 +17,14 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     // Admin routes
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index']);
+        
+        // Template categories routes
+        Route::apiResource('template-categories', \App\Http\Controllers\Admin\TemplateCategoryController::class);
+        Route::post('template-categories/reorder', [\App\Http\Controllers\Admin\TemplateCategoryController::class, 'reorder']);
+        
+        // Templates routes
         Route::get('/templates/config', [\App\Http\Controllers\Admin\TemplateController::class, 'config']);
+        Route::post('/templates/reorder', [\App\Http\Controllers\Admin\TemplateController::class, 'reorder']);
         Route::apiResource('templates', \App\Http\Controllers\Admin\TemplateController::class);
         
         // Template variables routes

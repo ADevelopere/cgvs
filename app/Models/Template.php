@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Template extends Model
@@ -15,8 +16,14 @@ class Template extends Model
         'name',
         'description',
         'background_url',
-        'is_active',
+        'category_id',
+        'order',
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(TemplateCategory::class);
+    }
 
     public function variables(): HasMany
     {
