@@ -15,6 +15,21 @@ import { Recipient, TemplateVariableType } from "./template.types";
 import { ValidationResult } from "@/utils/excel/types";
 import { useTemplateManagement } from "./TemplateManagementContext";
 
+// Logger utility
+const logger = {
+    enabled: process.env.NODE_ENV === "development" && false,
+    log: (...args: any[]) => {
+        if (logger.enabled) {
+            console.log(...args);
+        }
+    },
+    error: (...args: any[]) => {
+        if (logger.enabled) {
+            console.error(...args);
+        }
+    },
+};
+
 interface Notification {
     message: string;
     severity: "success" | "error";
@@ -197,14 +212,14 @@ export function TemplateRecipientsProvider({
                 formData.append("validated", useClientValidation ? "1" : "0");
 
                 // Debug logging
-                console.log("File being uploaded:", {
+                logger.log("File being uploaded:", {
                     name: file.name,
                     type: file.type,
                     size: file.size,
                 });
-                console.log("FormData entries:");
+                logger.log("FormData entries:");
                 for (let pair of formData.entries()) {
-                    console.log(pair[0], pair[1]);
+                    logger.log(pair[0], pair[1]);
                 }
 
                 try {
@@ -288,7 +303,7 @@ export function TemplateRecipientsProvider({
                     showNotification("Template ID is required", "error");
                     return null;
                 }
-                console.log("Requesting template download from server...");
+                logger.log("Requesting template download from server...");
                 serverResponse = await axios.get(
                     `/admin/templates/${templateId}/recipients/template`,
                     {
@@ -298,7 +313,7 @@ export function TemplateRecipientsProvider({
                         },
                     }
                 );
-                console.log("Server response:", serverResponse.status);
+                logger.log("Server response:", serverResponse.status);
 
                 if (!serverResponse.data) {
                     showNotification(
@@ -350,7 +365,7 @@ export function TemplateRecipientsProvider({
                 filename,
             };
         } catch (error: any) {
-            console.error("Template download error:", error);
+            logger.error("Template download error:", error);
             const errorMessage =
                 error.response?.data?.message ||
                 error.message ||
@@ -455,7 +470,7 @@ export function TemplateRecipientsProvider({
     const updateRecipient = useCallback(
         async (recipientId: number, data: any): Promise<Recipient> => {
             try {
-                console.log(
+                logger.log(
                     "Starting recipient update:",
                     JSON.stringify({
                         recipientId,
@@ -469,7 +484,7 @@ export function TemplateRecipientsProvider({
                 // Handle both direct data object and nested data structure
                 const actualData = data.data || data;
                 if (keyVariable && !actualData[keyVariable.name]) {
-                    console.error(
+                    logger.error(
                         "Key variable validation failed:",
                         JSON.stringify({
                             keyVariable,
@@ -481,7 +496,7 @@ export function TemplateRecipientsProvider({
                     );
                 }
 
-                console.log("Making API request to update recipient:", {
+                logger.log("Making API request to update recipient:", {
                     url: `/admin/templates/${templateId}/recipients/${recipientId}`,
                     data,
                 });
@@ -492,7 +507,7 @@ export function TemplateRecipientsProvider({
                     { data: data.data || data }
                 );
 
-                console.log(
+                logger.log(
                     "Update API response:",
                     JSON.stringify({
                         status: response.status,
@@ -510,7 +525,7 @@ export function TemplateRecipientsProvider({
                               }
                             : r
                     );
-                    console.log("Updated recipients state:", {
+                    logger.log("Updated recipients state:", {
                         previous: prev.find((r) => r.id === recipientId),
                         updated: updated.find((r) => r.id === recipientId),
                     });
@@ -524,13 +539,13 @@ export function TemplateRecipientsProvider({
                     paginationState.page,
                     paginationState.rowsPerPage
                 ).catch((err) => {
-                    console.error("Failed to re-fetch recipients:", err);
+                    logger.error("Failed to re-fetch recipients:", err);
                 });
-                console.log("Returning updated recipient data:", response.data);
+                logger.log("Returning updated recipient data:", response.data);
                 // Return the updated recipient data
                 return response.data;
             } catch (error: any) {
-                console.error("Failed to update recipient:", {
+                logger.error("Failed to update recipient:", {
                     error,
                     response: error.response?.data,
                     status: error.response?.status,

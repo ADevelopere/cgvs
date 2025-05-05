@@ -113,7 +113,6 @@ export const TemplateManagementProvider: React.FC<{
     }, []);
 
     const fetchTemplate = useCallback(async (id: number) => {
-        console.log("Fetching template with ID:", id);
         setLoading(true);
         try {
             const response = await axios.get<Template>(
@@ -121,7 +120,6 @@ export const TemplateManagementProvider: React.FC<{
             );
             settemplate(response.data);
             setLoading(false);
-            console.log("Template fetched successfully:", response.data);
         } catch (error: any) {
             setError(
                 error.response?.data?.message || "Failed to fetch template",
@@ -131,7 +129,6 @@ export const TemplateManagementProvider: React.FC<{
     }, []);
 
     useEffect(() => {
-        console.log("Template to manage:", templateToManage);
         if (templateToManage) {
             settemplate(templateToManage);
         }
