@@ -1,38 +1,61 @@
-import { Theme, ThemeOptions } from "@mui/material/styles";
+import { BreakpointsOptions, PaletteOptions, Theme, ThemeOptions } from "@mui/material/styles";
 import { createTheme, PaletteMode } from "@mui/material";
+import ThemeMode from "./ThemeMode";
 
-const getThemeConfig = (mode: PaletteMode): ThemeOptions => ({
+const lightPalette: PaletteOptions = {
+    mode: "light",
+    primary: {
+        main: "#1976d2",
+    },
+    secondary: {
+        main: "#dc004e",
+    },
+    background: {
+        default: "#f5f5f5",
+        paper: "#ffffff",
+    },
+    divider: "rgba(0, 0, 0, 0.12)",
+    onPrimary: "rgba(255, 255, 255, 1)",
+    onSecondary: "rgba(0, 0, 0, 1)",
+    onBackground: "rgba(0, 0, 0, 1)",
+};
+
+const darkPalette: PaletteOptions = {
+    mode: "dark",
+    primary: {
+        main: "#90caf9",
+    },
+    secondary: {
+        main: "#f48fb1",
+    },
+    background: {
+        default: "#121212",
+        paper: "#1e1e1e",
+    },
+    divider: "rgba(255, 255, 255, 0.12)",
+    onPrimary: "rgba(255, 255, 255, 1)",
+    onSecondary: "rgba(0, 0, 0, 1)",
+    onBackground: "rgba(255, 255, 255, 1)",
+};
+
+const breakpoints: BreakpointsOptions = {
+    values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+    },
+};
+
+const getThemeConfig = (
+    mode: PaletteMode,
+    direction: "rtl" | "ltr",
+): ThemeOptions => ({
+    direction,
     palette: {
         mode,
-        ...(mode === "light"
-            ? {
-                  // Light mode palette
-                  primary: {
-                      main: "#1976d2",
-                  },
-                  secondary: {
-                      main: "#dc004e",
-                  },
-                  background: {
-                      default: "#f5f5f5",
-                      paper: "#ffffff",
-                  },
-                  divider: "rgba(0, 0, 0, 0.12)",
-              }
-            : {
-                  // Dark mode palette
-                  primary: {
-                      main: "#90caf9",
-                  },
-                  secondary: {
-                      main: "#f48fb1",
-                  },
-                  background: {
-                      default: "#121212",
-                      paper: "#1e1e1e",
-                  },
-                  divider: "rgba(255, 255, 255, 0.12)",
-              }),
+        ...(mode === "light" ? lightPalette : darkPalette),
     },
     components: {
         MuiAppBar: {
@@ -93,7 +116,10 @@ const getThemeConfig = (mode: PaletteMode): ThemeOptions => ({
     },
 });
 
-export const createAppTheme = (mode: "light" | "dark" | "system"): Theme => {
+export const createAppTheme = (
+    mode: ThemeMode,
+    direction: "rtl" | "ltr",
+): Theme => {
     let effectiveMode: PaletteMode = mode as PaletteMode;
     if (mode === "system") {
         effectiveMode = window.matchMedia("(prefers-color-scheme: dark)")
@@ -102,16 +128,32 @@ export const createAppTheme = (mode: "light" | "dark" | "system"): Theme => {
             : "light";
     }
     return createTheme({
-        colorSchemes: { light: true, dark: true },
-        breakpoints: {
-            values: {
-                xs: 0,
-                sm: 600,
-                md: 600,
-                lg: 1200,
-                xl: 1536,
-            },
-        },
-        ...getThemeConfig(effectiveMode),
+        // colorSchemes: { light: true, dark: true },
+        breakpoints:  breakpoints,
+        ...getThemeConfig(effectiveMode, direction),
     });
 };
+
+
+export const rtlLightTheme = createAppTheme(ThemeMode.Light, "rtl");
+
+export const rtlDarkTheme = createAppTheme(ThemeMode.Dark, "rtl");
+
+export const ltrLightTheme = createAppTheme(ThemeMode.Light, "ltr");
+
+export const ltrDarkTheme = createAppTheme(ThemeMode.Dark, "ltr");
+
+
+declare module "@mui/material/styles/createPalette" {
+    interface Palette {
+        onPrimary: string;
+        onSecondary: string;
+        onBackground: string;
+    }
+
+    interface PaletteOptions {
+        onPrimary?: string;
+        onSecondary?: string;
+        onBackground?: string;
+    }
+}
