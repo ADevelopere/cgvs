@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Template;
+use App\Models\TemplateCategory;
 use App\Exceptions\TemplateStorageException;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -79,7 +80,16 @@ class TemplateController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string',
-            'category_id' => 'required|exists:template_categories,id',
+            'category_id' => [
+                'required',
+                'exists:template_categories,id',
+                function ($attribute, $value, $fail) {
+                    $category = TemplateCategory::find($value);
+                    if ($category && $category->isImmutableCategory()) {
+                        $fail('Cannot create templates in deleted category.');
+                    }
+                },
+            ],
             'background' => [
                 'nullable',
                 'file',
@@ -112,13 +122,16 @@ class TemplateController extends Controller
         }
 
         try {
-            Log::info('Creating new template after validation success');
-            
             $template = new Template();
             $template->name = $request->name;
             $template->description = $request->description;
             $template->category_id = $request->category_id;
-            $template->order = Template::where('category_id', $request->category_id)->max('order') + 1;
+            
+            // Set order only if not in a special category
+            $category = TemplateCategory::find($request->category_id);
+            if (!$category->isSpecial()) {
+                $template->order = Template::where('category_id', $request->category_id)->max('order') + 1;
+            }
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
                 Log::info('Processing background file for template');
@@ -182,7 +195,16 @@ class TemplateController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string',
-            'category_id' => 'required|exists:template_categories,id',
+            'category_id' => [
+                'required',
+                'exists:template_categories,id',
+                function ($attribute, $value, $fail) {
+                    $category = TemplateCategory::find($value);
+                    if ($category && $category->isSpecial()) {
+                        $fail('Cannot move templates to special categories manually.');
+                    }
+                },
+            ],
             'background' => [
                 'nullable',
                 'file',
@@ -216,17 +238,25 @@ class TemplateController extends Controller
             
             // Handle category change
             if ($request->has('category_id') && $request->category_id !== $template->category_id) {
-                $template->category_id = $request->category_id;
-                // Set order as last in the new category if not specified
-                if (!$request->has('order')) {
-                    $template->order = Template::where('category_id', $request->category_id)
-                        ->max('order') + 1;
+                $newCategory = TemplateCategory::findOrFail($request->category_id);
+                
+                // Only allow manual category changes to non-special categories
+                if (!$newCategory->isSpecial()) {
+                    $template->category_id = $request->category_id;
+                    // Set order as last in the new category if not specified
+                    if (!$request->has('order')) {
+                        $template->order = Template::where('category_id', $request->category_id)
+                            ->max('order') + 1;
+                    }
                 }
             }
 
-            // Handle explicit order change
+            // Handle explicit order change only if not in a special category
             if ($request->has('order')) {
-                $template->order = $request->order;
+                $currentCategory = TemplateCategory::findOrFail($template->category_id);
+                if (!$currentCategory->isSpecial()) {
+                    $template->order = $request->order;
+                }
             }
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
@@ -326,6 +356,46 @@ class TemplateController extends Controller
             return response()->json([
                 'message' => 'Failed to reorder templates',
                 'errors' => ['general' => ['An error occurred while reordering templates. Please try again.']]
+            ], 500);
+        }
+    }
+
+    /**
+     * Restore a soft-deleted template.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function restore($id): JsonResponse
+    {
+        try {
+            $template = Template::withTrashed()->findOrFail($id);
+            
+            if (!$template->trashed()) {
+                return response()->json([
+                    'message' => 'Template is not deleted',
+                    'errors' => ['general' => ['This template is not deleted and cannot be restored.']]
+                ], 422);
+            }
+
+            $template->restore();
+
+            // The move to uncategorized category is handled by the model's restoring event
+            
+            return response()->json([
+                'message' => 'Template restored successfully',
+                'template' => $template
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to restore template', [
+                'error' => $e->getMessage(),
+                'template_id' => $id
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to restore template',
+                'error_details' => $e->getMessage(),
+                'errors' => ['general' => ['An error occurred while restoring the template. Please try again.']]
             ], 500);
         }
     }
