@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import ThemeSwitcher from "./ThemeSwitcher";
+import LanguageSwitcher from "./LanguageSwitcher";
 import UserMenu from "./UserMenu";
 
 export default function DashboardEndActions() {
@@ -12,6 +13,7 @@ export default function DashboardEndActions() {
                 gap: 1,
             }}
         >
+            <LanguageSwitcher />
             <ThemeSwitcher />
             <UserMenu />
         </Box>

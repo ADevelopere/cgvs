@@ -1,8 +1,3 @@
-/// Layout of three panels:
-// Left panel: AddNodePanel (collapsible)
-// Middle panel: EditorPanel (always visible)
-// Right panel: MiscellaneousPanel (collapsible)
-
 import EditorPaneViewController from "@/components/editorPane/EditorPaneViewController";
 import { Box } from "@mui/material";
 import ReactFlowEditor from "./ReactFlowEditor";
@@ -20,23 +15,6 @@ function LeftPane() {
         >
             {/* Add Node Panel */}
             <h2>Add Node Panel</h2>
-        </Box>
-    );
-}
-
-function MiddlePane() {
-    return (
-        <Box
-            sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                px: 1,
-            }}
-            id="editor-panel"
-        >
-            {/* Editor Panel */}
-            <h2>Editor Panel Editor Panel Editor Panel Editor Panel Editor Panel</h2>
         </Box>
     );
 }
