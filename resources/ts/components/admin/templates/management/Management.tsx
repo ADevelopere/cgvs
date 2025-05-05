@@ -5,7 +5,7 @@ import SwipeableViews from "react-swipeable-views";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
     useTemplateManagement,
-    TabType,
+    TemplateManagementTabType,
 } from "@/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
 import VariablesTab from "./variables/VariablesTab";
@@ -19,8 +19,8 @@ import ManagementHeader from "./ManagementHeader";
 
 const handleTabError = (
     error: any,
-    tab: TabType,
-    setTabError: (tab: TabType, error: { message: string }) => void,
+    tab: TemplateManagementTabType,
+    setTabError: (tab: TemplateManagementTabType, error: { message: string }) => void,
 ) => {
     if (error.response?.status === 403) {
         setTabError(tab, { message: "Access denied to this tab" });
@@ -35,8 +35,8 @@ const handleTabError = (
 };
 
 // Helper function to convert tab value to index
-const tabToIndex = (tab: TabType): number => {
-    const tabs: TabType[] = [
+const tabToIndex = (tab: TemplateManagementTabType): number => {
+    const tabs: TemplateManagementTabType[] = [
         "basic",
         "variables",
         "recipients",
@@ -47,15 +47,15 @@ const tabToIndex = (tab: TabType): number => {
 };
 
 // Helper function to convert index to tab value
-const indexToTab = (index: number): TabType => {
-    const tabs: TabType[] = [
+const indexToTab = (index: number): TemplateManagementTabType => {
+    const tabs: TemplateManagementTabType[] = [
         "basic",
         "variables",
         "recipients",
         "editor",
         "preview",
     ];
-    return tabs[index] as TabType;
+    return tabs[index] as TemplateManagementTabType;
 };
 
 const Management: React.FC = () => {
@@ -106,7 +106,7 @@ const Management: React.FC = () => {
 
     const handleTabChange = async (
         _: React.SyntheticEvent,
-        newValue: TabType,
+        newValue: TemplateManagementTabType,
     ) => {
         try {
             setActiveTab(newValue);

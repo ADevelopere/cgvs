@@ -20,7 +20,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplate } from "./TemplatesContext";
 
-export type TabType =
+export type TemplateManagementTabType =
     | "basic"
     | "variables"
     | "editor"
@@ -36,19 +36,19 @@ const defaultConfig: TemplateConfig = {
 };
 
 interface TemplateManagementContextType {
-    activeTab: TabType;
+    activeTab: TemplateManagementTabType;
     unsavedChanges: boolean;
-    loadedTabs: TabType[];
+    loadedTabs: TemplateManagementTabType[];
     error: string | undefined;
-    tabErrors: Record<TabType, TabError | undefined>;
+    tabErrors: Record<TemplateManagementTabType, TabError | undefined>;
     config: TemplateConfig;
     template: Template;
     loading: boolean;
-    setActiveTab: (tab: TabType) => void;
-    setTabLoaded: (tab: TabType) => void;
+    setActiveTab: (tab: TemplateManagementTabType) => void;
+    setTabLoaded: (tab: TemplateManagementTabType) => void;
     setUnsavedChanges: (hasChanges: boolean) => void;
-    setTabError: (tab: TabType, error: TabError) => void;
-    clearTabError: (tab: TabType) => void;
+    setTabError: (tab: TemplateManagementTabType, error: TabError) => void;
+    clearTabError: (tab: TemplateManagementTabType) => void;
     fetchTemplate: (id: number) => Promise<void>;
     fetchConfig: () => Promise<void>;
     saveTemplate: (data: FormData) => Promise<void>;
@@ -67,12 +67,12 @@ export const TemplateManagementProvider: React.FC<{
 
     const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
 
-    const [activeTab, setActiveTab] = useState<TabType>("basic");
+    const [activeTab, setActiveTab] = useState<TemplateManagementTabType>("basic");
     const [unsavedChanges, setUnsavedChanges] = useState(false);
-    const [loadedTabs, setLoadedTabs] = useState<TabType[]>([]);
+    const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>([]);
     const [error, setError] = useState<string | undefined>(undefined);
     const [tabErrors, setTabErrors] = useState<
-        Record<TabType, TabError | undefined>
+        Record<TemplateManagementTabType, TabError | undefined>
     >({
         basic: undefined,
         variables: undefined,
@@ -88,24 +88,24 @@ export const TemplateManagementProvider: React.FC<{
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const tab = (searchParams.get("tab") || "basic") as TabType;
+        const tab = (searchParams.get("tab") || "basic") as TemplateManagementTabType;
         setActiveTab(tab);
     }, [searchParams]);
 
-    const handleSetTabLoaded = useCallback((tab: TabType) => {
+    const handleSetTabLoaded = useCallback((tab: TemplateManagementTabType) => {
         setLoadedTabs((prevTabs) =>
             prevTabs.includes(tab) ? prevTabs : [...prevTabs, tab],
         );
     }, []);
 
-    const handleSetTabError = useCallback((tab: TabType, error: TabError) => {
+    const handleSetTabError = useCallback((tab: TemplateManagementTabType, error: TabError) => {
         setTabErrors((prev) => ({
             ...prev,
             [tab]: error,
         }));
     }, []);
 
-    const handleClearTabError = useCallback((tab: TabType) => {
+    const handleClearTabError = useCallback((tab: TemplateManagementTabType) => {
         setTabErrors((prev) => ({
             ...prev,
             [tab]: undefined,

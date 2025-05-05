@@ -47,7 +47,17 @@ type TemplateCategoryManagementContextType = {
      * It will be `null` if the last fetch was successful, otherwise it contains the error object.
      */
     fetchError: Error | null;
-    // category
+    // category states
+    /**
+     * An array containing all the regular template categories (excluding the deleted category).
+     * This list is populated by `fetchCategories` and updated dynamically when categories are added, updated, or deleted.
+     */
+    regularCategories: TemplateCategory[];
+    /**
+     * Represents the special deleted category (special_type='deleted') that holds trashed templates.
+     * This is a single category object that serves as a parent for all deleted templates.
+     */
+    deletedCategory: TemplateCategory | null;
     /**
      * An array containing all the available template categories.
      * This list is populated by `fetchCategories` and updated dynamically when categories are added, updated, or deleted.
@@ -91,20 +101,15 @@ type TemplateCategoryManagementContextType = {
      */
     addCategory: (name: string, parentId?: string) => void;
     /**
-     * Toggles the visibility status of a specific template category identified by its ID.
-     * This updates the category's `visible` property in the backend and reflects the change in the local `categories` state.
-     */
-    toggleCategoryVisibility: (categoryId: string) => void;
-    /**
      * Updates the name of an existing template category identified by its ID.
      * This modifies the category's name in the backend and updates the corresponding category in the local `categories` state.
      */
-    updateCategory: (categoryId: string, name: string) => void;
+    updateCategory: (categoryId: number, name: string) => void;
     /**
      * Deletes a template category identified by its ID.
      * This removes the category from the backend and the local `categories` state. If the deleted category was the `currentCategory`, the selection is cleared.
      */
-    deleteCategory: (categoryId: string) => void;
+    deleteCategory: (categoryId: number) => void;
     /**
      * Sorts the `categories` array based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the categories list displayed to the user.
@@ -131,7 +136,7 @@ type TemplateCategoryManagementContextType = {
      * Creates a new template with the specified name within the given category ID.
      * After successful creation, the new template is added to the `templates` list for the current category and potentially set as the `currentTemplate`.
      */
-    addTemplate: (name: string, categoryId: string) => void;
+    addTemplate: (name: string, categoryId: number) => void;
     /**
      * Updates the name of an existing template identified by its ID.
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
@@ -187,6 +192,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const notifications = useNotifications();
 
     const [categories, setCategories] = useState<TemplateCategory[]>([]);
+    const [regularCategories, setRegularCategories] = useState<TemplateCategory[]>([]);
+    const [deletedCategory, setDeletedCategory] = useState<TemplateCategory | null>(null);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [currentCategory, setCurrentCategory] =
         useState<TemplateCategory | null>(null);
@@ -217,7 +224,14 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 throw new Error('Invalid data format received from API');
             }
             const { data } = response;
-            setCategories(data);
+
+            // Separate deleted category from regular categories
+            const deleted = data.find(cat => cat.special_type === 'deleted');
+            const regular = data.filter(cat => cat.special_type !== 'deleted');
+
+            setCategories(data); // Keep original state for backward compatibility
+            setDeletedCategory(deleted || null);
+            setRegularCategories(regular);
             setFetchError(null);
         } catch (error) {
             setFetchError(error as Error);
@@ -229,47 +243,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
             setIsLoading(false);
         }
     }, [messages.errorLoadingCategories, notifications]);
-
-    const toggleCategoryVisibility = useCallback(
-        async (categoryId: string) => {
-            try {
-                const category = categories.find(
-                    (cat) => cat.id.toString() === categoryId,
-                );
-                if (!category) return;
-
-                const { data: updatedCategory } = await axios.put(
-                    `/admin/template-categories/${categoryId}`,
-                    {
-                        ...category,
-                        visible: !category.visible,
-                    },
-                );
-
-                setCategories((prev) =>
-                    prev.map((cat) =>
-                        cat.id === updatedCategory.id ? updatedCategory : cat,
-                    ),
-                );
-
-                notifications.show(
-                    updatedCategory.visible
-                        ? messages.categoryVisibleSuccessfully
-                        : messages.categoryHiddenSuccessfully,
-                    {
-                        severity: "success",
-                        autoHideDuration: 3000,
-                    },
-                );
-            } catch (error) {
-                notifications.show(messages.categoryUpdateFailed, {
-                    severity: "error",
-                    autoHideDuration: 5000,
-                });
-            }
-        },
-        [categories, messages, notifications],
-    );
 
     const addCategory = useCallback(
         async (name: string, parentId?: string) => {
@@ -300,10 +273,10 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateCategory = useCallback(
-        async (categoryId: string, name: string) => {
+        async (categoryId: number, name: string) => {
             try {
                 const category = categories.find(
-                    (cat) => cat.id.toString() === categoryId,
+                    (cat) => cat.id === categoryId,
                 );
                 if (!category) return;
 
@@ -335,14 +308,14 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const deleteCategory = useCallback(
-        async (categoryId: string) => {
+        async (categoryId: number) => {
             try {
                 await axios.delete(`/admin/template-categories/${categoryId}`);
 
                 setCategories((prev) =>
-                    prev.filter((cat) => cat.id.toString() !== categoryId),
+                    prev.filter((cat) => cat.id !== categoryId),
                 );
-                if (currentCategory?.id.toString() === categoryId) {
+                if (currentCategory?.id === categoryId) {
                     setCurrentCategory(null);
                 }
                 notifications.show(messages.categoryDeletedSuccessfully, {
@@ -361,7 +334,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     // Memoized callbacks for template operations
     const addTemplate = useCallback(
-        async (name: string, categoryId: string) => {
+        async (name: string, categoryId: number) => {
             try {
                 const { data: newTemplate } = await axios.post(
                     "/admin/templates",
@@ -447,7 +420,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     if (sortBy === "name") {
                         return modifier * a.name.localeCompare(b.name);
                     }
-                    return modifier * (Number(a.id) - Number(b.id));
+                    return modifier * (a.id - b.id);
                 }),
             );
         },
@@ -462,7 +435,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     if (sortBy === "name") {
                         return modifier * a.name.localeCompare(b.name);
                     }
-                    return modifier * (Number(a.id) - Number(b.id));
+                    return modifier * (a.id - b.id);
                 }),
             );
         },
@@ -518,6 +491,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
             fetchCategories,
             fetchError,
             categories,
+            regularCategories,
+            deletedCategory,
             currentCategory,
             setCurrentCategory,
             trySelectCategory,
@@ -525,7 +500,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
             closeSwitchWarning,
             confirmSwitch,
             addCategory,
-            toggleCategoryVisibility,
             updateCategory,
             deleteCategory,
             sortCategories,
@@ -544,6 +518,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
         [
             fetchCategories,
             fetchError,
+            regularCategories,
+            deletedCategory,
             categories,
             currentCategory,
             trySelectCategory,
@@ -551,7 +527,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
             closeSwitchWarning,
             confirmSwitch,
             addCategory,
-            toggleCategoryVisibility,
             updateCategory,
             deleteCategory,
             sortCategories,

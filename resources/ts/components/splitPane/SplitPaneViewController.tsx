@@ -7,13 +7,14 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import SplitPane from "./SplitPane";
 
 type SplitPaneViewControllerProps = {
-    title: string;
+    title: React.ReactNode;
     firstPaneButtonDisabled: boolean;
     secondPaneButtonDisabled: boolean;
     firstPaneButtonTooltip: string;
     secondPaneButtonTooltip: string;
     firstPane: React.ReactNode;
     secondPane: React.ReactNode;
+    style?: React.CSSProperties;
 };
 
 const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
@@ -24,9 +25,9 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
     secondPaneButtonTooltip,
     firstPane,
     secondPane,
+    style,
 }) => {
     const { theme } = useAppTheme();
-    const direction = "ltr";
     const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
     const [secondPaneVisible, setSecondPaneVisible] = useState<boolean>(true);
 
@@ -41,10 +42,10 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
     return (
         <Box
             sx={{
+                ...style,
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
-                width: "100%",
             }}
         >
             {/* controllers */}
@@ -57,9 +58,7 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
                     mb: 2,
                 }}
             >
-                <Typography variant="h4" sx={{ marginBottom: "16px" }}>
-                    {title}
-                </Typography>
+                {title}
                 <Box sx={{ flex: 1 }} />
                 <Box>
                     {/* first pane visibility button*/}
@@ -102,7 +101,6 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
             >
                 <SplitPane
                     orientation="vertical"
-                    direction={direction}
                     firstPane={{
                         visible: firstPaneVisible,
                         minRatio: 0.3,
