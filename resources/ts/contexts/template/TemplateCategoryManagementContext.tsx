@@ -50,6 +50,8 @@ import {
     TemplateCategoriesQuery,
     useTemplateCategoriesQuery,
     useCreateTemplateCategoryMutation,
+    useUpdateTemplateCategoryMutation,
+    useDeleteTemplateCategoryMutation,
 } from "@/graphql/generated/types";
 
 import { CircularProgress } from "@mui/material";
@@ -61,6 +63,13 @@ import Button from "@mui/material/Button";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import axios from "@/utils/axios";
+import {
+    mapTemplateCategories,
+    mapTemplateCategory,
+} from "@/utils/template/template-category-mapper";
+import { updateCategoryInTree } from "@/utils/template/templateCategoryTree";
+import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
+import { error } from "console";
 
 // Logger utility
 const logger = {
@@ -235,71 +244,6 @@ export const useTemplateCategoryManagement = () => {
     return context;
 };
 
-export const mapTemplateCategoriesFromQuery = (
-    queryResult: TemplateCategoriesQuery | undefined,
-): TemplateCategory[] => {
-    if (!queryResult?.templateCategories?.data) {
-        return [];
-    }
-
-    const mapCategory = (category: any): TemplateCategory => ({
-        ...category,
-        templates: category.templates || [],
-        childCategories: Array.isArray(category.childCategories)
-            ? category.childCategories.map(mapCategory)
-            : [],
-    });
-
-    return queryResult.templateCategories.data.map(mapCategory);
-};
-
-export const mapCreateTemplateCategoryMutation = (
-    data: CreateTemplateCategoryMutation | undefined | null,
-): TemplateCategory | null => {
-    if (!data?.createTemplateCategory) {
-        return null;
-    }
-
-    const mapTemplateToType = (template: any): Template => ({
-        ...template,
-        category: template.category || null,
-    });
-
-    const mapCategoryToType = (category: any): TemplateCategory => ({
-        ...category,
-        childCategories: Array.isArray(category.childCategories)
-            ? category.childCategories.map(mapCategoryToType)
-            : [],
-        parentCategory: category.parentCategory
-            ? mapCategoryToType(category.parentCategory)
-            : null,
-        templates: Array.isArray(category.templates)
-            ? category.templates.map(mapTemplateToType)
-            : [],
-    });
-
-    return mapCategoryToType(data.createTemplateCategory);
-};
-
-
-export const mapTemplateCategoryFromUpdateMutation = (
-    mutationResult: UpdateTemplateCategoryMutation | undefined
-): TemplateCategory | null => {
-    if (!mutationResult?.updateTemplateCategory) {
-        return null;
-    }
-
-    const mapCategory = (category: any): TemplateCategory => ({
-        ...category,
-        templates: category.templates || [],
-        childCategories: Array.isArray(category.childCategories)
-            ? category.childCategories.map(mapCategory)
-            : [],
-    });
-
-    return mapCategory(mutationResult.updateTemplateCategory);
-};
-
 export const TemplateCategoryManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
@@ -327,51 +271,33 @@ export const TemplateCategoryManagementProvider: React.FC<{
         (() => void) | undefined
     >(undefined);
 
-    const { refetch } = useTemplateCategoriesQuery({
-        variables: {
-            first: 2147483647,
-        },
-    });
-
-    const [createTemplateCategoryMutation] = useCreateTemplateCategoryMutation({
-        update(cache, { data }) {
-            if (!data?.createTemplateCategory) return;
-
-            // Read the existing categories query from cache
-            const existingData = cache.readQuery<TemplateCategoriesQuery>({
-                query: TemplateCategoriesDocument,
-                variables: { first: 2147483647 }
-            });
-
-            if (!existingData?.templateCategories?.data) return;
-
-            // Add the new category to the cached data
-            const newCategory = mapCreateTemplateCategoryMutation(data);
-            if (!newCategory) return;
-
-            cache.writeQuery({
-                query: TemplateCategoriesDocument,
-                variables: { first: 2147483647 },
-                data: {
-                    templateCategories: {
-                        ...existingData.templateCategories,
-                        data: [...existingData.templateCategories.data, data.createTemplateCategory]
-                    }
-                }
-            });
-        }
-    });
+    const {
+        templateCategoriesQuery,
+        createTemplateCategoryMutation,
+        updateTemplateCategoryMutation,
+        deleteTemplateCategoryMutation,
+    } = useTemplateCategoryGraphQL();
 
     const fetchCategories = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await refetch();
+            const response = await templateCategoriesQuery();
+
+            if (!response.data) {
+                throw new Error(messages.noDataReturned);
+            }
+
+            if (response.errors) {
+                throw new Error(
+                    response.errors.map((err) => err.message).join(", "),
+                );
+            }
 
             const data: TemplateCategoriesQuery = response.data;
             logger.log(messages.fetchingCategories);
             logger.log(messages.responseData, data);
 
-            const categories = mapTemplateCategoriesFromQuery(data);
+            const categories = mapTemplateCategories(data);
             console.log(
                 "Fetched categories:",
                 JSON.stringify(categories, null, 2),
@@ -389,7 +315,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             setFetchError(null);
             setIsLoading(false);
         } catch (error) {
-            logger.error("Failed to fetch categories:", error);
+            logger.error(messages.errorLoadingCategories, error);
         }
     }, []);
 
@@ -413,17 +339,13 @@ export const TemplateCategoryManagementProvider: React.FC<{
         async (name: string, parentId?: string) => {
             try {
                 const response = await createTemplateCategoryMutation({
-                    variables: {
-                        input: {
-                            name,
-                            parentCategoryId: parentId,
-                        },
+                    input: {
+                        name,
+                        parentCategoryId: parentId,
                     },
                 });
 
-                const newCategory = mapCreateTemplateCategoryMutation(
-                    response.data,
-                );
+                const newCategory = mapTemplateCategory(response.data);
                 if (!newCategory) {
                     throw new Error(messages.categoryAddFailed);
                 }
@@ -478,7 +400,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateCategory = useCallback(
-        async (categoryId: string, name: string) => {
+        async (categoryId: string, name: string, parentCategoryId?: string) => {
             try {
                 const category = regularCategories.find(
                     (cat) => cat.id === categoryId,
@@ -487,31 +409,63 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     throw new Error(messages.categoryNotFound);
                 }
 
-                const { data: updatedCategory } =
-                    await axios.put<TemplateCategory>(
-                        `/admin/template-categories/${categoryId}`,
-                        {
-                            ...category,
-                            name,
-                        },
+                const response = await updateTemplateCategoryMutation({
+                    id: categoryId,
+                    input: {
+                        name,
+                        parentCategoryId,
+                    },
+                });
+
+                const updatedCategory = mapTemplateCategory(response.data);
+                if (!updatedCategory) {
+                    throw new Error(messages.categoryUpdateFailed);
+                }
+
+                setRegularCategories((prevCategories) => {
+                    const updatedCategories = updateCategoryInTree(
+                        prevCategories,
+                        updatedCategory,
+                        parentCategoryId,
                     );
 
-                    // find the category in the regular categories hirarchy and update it
+                    // If the updated category was at the root level and is now a child
+                    if (
+                        parentCategoryId &&
+                        !prevCategories.some((cat) =>
+                            cat.childCategories?.some(
+                                (child) => child.id === categoryId,
+                            ),
+                        )
+                    ) {
+                        return updatedCategories.filter(
+                            (cat) => cat.id !== categoryId,
+                        );
+                    }
 
+                    // If the updated category was a child and is now at root level
+                    if (
+                        !parentCategoryId &&
+                        !updatedCategories.some((cat) => cat.id === categoryId)
+                    ) {
+                        return [...updatedCategories, updatedCategory];
+                    }
+
+                    return updatedCategories;
+                });
 
                 notifications.show(messages.categoryUpdatedSuccessfully, {
                     severity: "success",
                     autoHideDuration: 3000,
                 });
             } catch (error: unknown) {
-                const apiError = error as {
-                    response?: { data: ApiErrorResponse };
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
                 };
                 const errorMessage =
-                    apiError.response?.data?.message ||
-                    apiError.response?.data?.errors?.general?.[0] ||
-                    apiError.response?.data?.errors?.name?.[0] ||
-                    apiError.response?.data?.errors?.parent_category_id?.[0] ||
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
                     messages.categoryUpdateFailed;
 
                 notifications.show(errorMessage, {
@@ -519,7 +473,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     autoHideDuration: 5000,
                 });
                 logger.error(messages.failedToUpdateCategory, {
-                    error: apiError.response?.data,
+                    error: gqlError,
                     categoryId,
                     name,
                 });
@@ -541,17 +495,56 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
             try {
                 logger.info(messages.attemptingToDeleteCategory, categoryId);
-                const response = await axios.delete(
-                    `/admin/template-categories/${categoryId}`,
-                );
+                const response = await deleteTemplateCategoryMutation({
+                    id: categoryId,
+                });
 
-                if (response.status >= 200 && response.status < 300) {
-                    // setCategories((prev) =>
-                    //     prev.filter((cat) => cat.id !== categoryId),
-                    // );
+                if (response.data?.deleteTemplateCategory) {
+                    // Update regular categories
+                    setRegularCategories((prevCategories) => {
+                        // First find if the category is a child of another category
+                        let parentCategory: TemplateCategory | undefined;
+                        let isChildCategory = false;
+
+                        for (const cat of prevCategories) {
+                            if (
+                                cat.childCategories?.some(
+                                    (child) => child.id === categoryId,
+                                )
+                            ) {
+                                parentCategory = cat;
+                                isChildCategory = true;
+                                break;
+                            }
+                        }
+
+                        if (isChildCategory && parentCategory) {
+                            // If it's a child category, update the parent's children
+                            return prevCategories.map((cat) => {
+                                if (cat.id === parentCategory?.id) {
+                                    return {
+                                        ...cat,
+                                        childCategories:
+                                            cat.childCategories?.filter(
+                                                (child) =>
+                                                    child.id !== categoryId,
+                                            ) || [],
+                                    };
+                                }
+                                return cat;
+                            });
+                        } else {
+                            // If it's a root category, just filter it out
+                            return prevCategories.filter(
+                                (cat) => cat.id !== categoryId,
+                            );
+                        }
+                    });
+
                     if (currentCategory?.id === categoryId) {
                         setCurrentCategory(null);
                     }
+
                     notifications.show(messages.categoryDeletedSuccessfully, {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -564,12 +557,13 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     throw new Error(messages.failedToDeleteCategory);
                 }
             } catch (error: unknown) {
-                const apiError = error as {
-                    response?: { data: ApiErrorResponse };
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
                 };
                 const errorMessage =
-                    apiError.response?.data?.message ||
-                    apiError.response?.data?.errors?.general?.[0] ||
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
                     messages.categoryDeleteFailed;
 
                 notifications.show(errorMessage, {
@@ -579,11 +573,16 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
                 logger.error("Failed to delete category:", {
                     categoryId,
-                    error: apiError.response?.data,
+                    error: gqlError,
                 });
             }
         },
-        [currentCategory, messages, notifications],
+        [
+            currentCategory,
+            messages,
+            notifications,
+            deleteTemplateCategoryMutation,
+        ],
     );
 
     // Memoized callbacks for template operations

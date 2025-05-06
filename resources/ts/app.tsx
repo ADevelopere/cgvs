@@ -16,21 +16,24 @@ import ErrorBoundary from "./components/common/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { NotificationsProvider } from "@toolpad/core/useNotifications";
+import GraphqlProviders from "./contexts/GraphqlProviders";
 
 const App: React.FC = () => {
     return (
         <React.StrictMode>
             <ErrorBoundary>
                 <ApolloProvider client={apolloClient}>
-                    <AuthProvider>
-                        <AppThemeProvider>
-                            <NotificationsProvider>
-                                <DashboardLayoutProvider>
-                                    <RouterProvider router={router} />
-                                </DashboardLayoutProvider>
-                            </NotificationsProvider>
-                        </AppThemeProvider>
-                    </AuthProvider>
+                    <GraphqlProviders>
+                        <AuthProvider>
+                            <AppThemeProvider>
+                                <NotificationsProvider>
+                                    <DashboardLayoutProvider>
+                                        <RouterProvider router={router} />
+                                    </DashboardLayoutProvider>
+                                </NotificationsProvider>
+                            </AppThemeProvider>
+                        </AuthProvider>
+                    </GraphqlProviders>
                 </ApolloProvider>
             </ErrorBoundary>
         </React.StrictMode>
