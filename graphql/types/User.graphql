@@ -1,0 +1,10 @@
+"A user of the application"
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    email_verified_at: DateTime
+    isAdmin: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+}

@@ -1,0 +1,19 @@
+"A template in the system"
+type Template {
+    id: ID!
+    name: String!
+    description: String
+    background_url: String
+    category: TemplateCategory! @belongsTo
+    elements: [TemplateElement!]! @hasMany
+    variables: [TemplateVariable!]! @hasMany
+    recipients: [TemplateRecipient!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"Configuration for templates"
+type TemplateConfig {
+    maxBackgroundSize: Int!
+    allowedFileTypes: [String!]!
+}

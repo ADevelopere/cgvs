@@ -1,0 +1,10 @@
+extend type Query {
+    "Get all templates"
+    templates: [Template!]! @paginate @guard @can(ability: "viewTemplates")
+    
+    "Get a specific template by ID"
+    template(id: ID! @eq): Template! @find @guard @can(ability: "viewTemplate", find: "id")
+    
+    "Get template configuration"
+    templateConfig: TemplateConfig! @guard @field(resolver: "TemplateQuery@config")
+}
