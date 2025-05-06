@@ -43,6 +43,11 @@ return [
 
             // Logs every incoming GraphQL query.
             Nuwave\Lighthouse\Http\Middleware\LogGraphQLQueries::class,
+
+            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            // \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            // \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            // \Illuminate\Session\Middleware\StartSession::class,
         ],
 
         /*
