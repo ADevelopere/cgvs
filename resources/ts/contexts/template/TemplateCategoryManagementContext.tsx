@@ -9,6 +9,48 @@ import React, {
     useCallback,
 } from "react";
 
+import {
+    useQuery,
+    useMutation,
+    QueryResult,
+    OperationVariables,
+} from "@apollo/client";
+import {
+    Template,
+    TemplateCategory,
+    TemplateCategoryType,
+    CreateTemplateCategoryInput,
+    UpdateTemplateCategoryInput,
+    CreateTemplateInput,
+    UpdateTemplateInput,
+    TemplateCategoryDocument,
+    TemplateCategoriesDocument,
+    CreateTemplateCategoryMutation,
+    CreateTemplateCategoryDocument,
+    UpdateTemplateCategoryMutation,
+    UpdateTemplateCategoryDocument,
+    DeleteTemplateCategoryMutation,
+    DeleteTemplateCategoryDocument,
+    CreateTemplateMutation,
+    CreateTemplateDocument,
+    UpdateTemplateMutation,
+    UpdateTemplateDocument,
+    DeleteTemplateMutation,
+    DeleteTemplateDocument,
+    MoveToDeletionCategoryMutation,
+    MoveToDeletionCategoryDocument,
+    CreateTemplateMutationVariables,
+    CreateTemplateCategoryMutationVariables,
+    DeleteTemplateMutationVariables,
+    UpdateTemplateMutationVariables,
+    MoveToDeletionCategoryMutationVariables,
+    TemplateCategoryPaginator,
+    PaginatorInfo,
+    Query,
+    TemplateCategoriesQuery,
+    useTemplateCategoriesQuery,
+} from "@/graphql/generated/types";
+
 import { CircularProgress } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -18,8 +60,6 @@ import Button from "@mui/material/Button";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import axios from "@/utils/axios";
-import { TemplateCategory } from "@/graphql/generated/types";
-import { Template } from "./template.types";
 
 // Logger utility
 const logger = {
@@ -199,6 +239,25 @@ export const useTemplateCategoryManagement = () => {
     return context;
 };
 
+
+export const mapTemplateCategoriesFromQuery = (
+  queryResult: TemplateCategoriesQuery | undefined
+): TemplateCategory[] => {
+  if (!queryResult?.templateCategories?.data) {
+    return [];
+  }
+
+  const mapCategory = (category: any): TemplateCategory => ({
+    ...category,
+    templates: category.templates || [],
+    childCategories: Array.isArray(category.childCategories) 
+      ? category.childCategories.map(mapCategory)
+      : []
+  });
+
+  return queryResult.templateCategories.data.map(mapCategory);
+};
+
 export const TemplateCategoryManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
@@ -227,41 +286,41 @@ export const TemplateCategoryManagementProvider: React.FC<{
         (() => void) | undefined
     >(undefined);
 
-    // Memoized callbacks for category operations
+    const { loading, error, data, refetch } = useTemplateCategoriesQuery({
+        variables: {
+            first: 2147483647,
+        },
+    });
+    
+
     const fetchCategories = useCallback(async () => {
         try {
             setIsLoading(true);
+            const response = await refetch();
+
+            const data: TemplateCategoriesQuery = response.data;
             logger.log(messages.fetchingCategories);
-            const response = await axios.get("/admin/template-categories");
-            logger.log(messages.rawApiResponse, response);
-            logger.log(messages.responseDataType, typeof response.data);
-            logger.log(messages.responseData, response.data);
-            if (!Array.isArray(response.data)) {
-                logger.error(messages.expectedArrayButReceived, response.data);
-                throw new Error(messages.invalidDataFormat);
-            }
-            const { data } = response;
+            logger.log(messages.responseData, data);
+            
+            const categories = mapTemplateCategoriesFromQuery(data);
+            console.log("Fetched categories:", JSON.stringify(categories, null, 2));
 
             // Separate deleted category from regular categories
-            const deleted = data.find((cat) => cat.special_type === "deleted");
-            const regular = data.filter(
-                (cat) => cat.special_type !== "deleted",
+            const deleted = categories.find(
+                (cat) => cat.special_type === "deletion",
             );
-
-            setCategories(data); // Keep original state for backward compatibility
+            const regular = categories.filter(
+                (cat) => cat.special_type !== "deletion",
+            );
+            setCategories(categories);
             setDeletedCategory(deleted || null);
             setRegularCategories(regular);
             setFetchError(null);
-        } catch (error) {
-            setFetchError(error as Error);
-            notifications.show(messages.errorLoadingCategories, {
-                severity: "error",
-                autoHideDuration: 5000,
-            });
-        } finally {
             setIsLoading(false);
+        } catch (error) {
+            logger.error("Failed to fetch categories:", error);
         }
-    }, [messages.errorLoadingCategories, notifications]);
+    }, []);
 
     // Add type for API error response
     type ApiErrorResponse = {
@@ -607,7 +666,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     if (response.data?.template && deletedCategory) {
                         const deletedTemplate = response.data.template;
                         const parentCategoryId = deletedTemplate.category_id;
-                        
+
                         // Update only the parent category by removing the template
                         setRegularCategories((prev) =>
                             prev.map((cat) => {
@@ -615,24 +674,33 @@ export const TemplateCategoryManagementProvider: React.FC<{
                                     return {
                                         ...cat,
                                         templates: (cat.templates || []).filter(
-                                            (temp) => temp.id.toString() !== templateId
+                                            (temp) =>
+                                                temp.id.toString() !==
+                                                templateId,
                                         ),
                                     };
                                 }
                                 return cat;
-                            })
+                            }),
                         );
 
                         // Update the deleted category state
-                        setDeletedCategory((prev) => prev ? {
-                            ...prev,
-                            templates: [...(prev.templates || []), deletedTemplate],
-                        } : prev);
+                        setDeletedCategory((prev) =>
+                            prev
+                                ? {
+                                      ...prev,
+                                      templates: [
+                                          ...(prev.templates || []),
+                                          deletedTemplate,
+                                      ],
+                                  }
+                                : prev,
+                        );
 
                         // Update all categories (maintain backward compatibility)
                         setCategories((prev) =>
                             prev.map((cat) =>
-                                cat.specialType === "DELETION"
+                                cat.special_type === "deletion"
                                     ? {
                                           ...cat,
                                           templates: [
@@ -641,13 +709,17 @@ export const TemplateCategoryManagementProvider: React.FC<{
                                           ],
                                       }
                                     : cat.id === parentCategoryId
-                                        ? {
+                                      ? {
                                             ...cat,
-                                            templates: (cat.templates || []).filter(
-                                                (temp) => temp.id.toString() !== templateId
+                                            templates: (
+                                                cat.templates || []
+                                            ).filter(
+                                                (temp) =>
+                                                    temp.id.toString() !==
+                                                    templateId,
                                             ),
                                         }
-                                        : cat
+                                      : cat,
                             ),
                         );
                     }

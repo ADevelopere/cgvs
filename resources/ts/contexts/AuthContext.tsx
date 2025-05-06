@@ -40,11 +40,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(
-        localStorage.getItem("auth_token")
+        localStorage.getItem("auth_token"),
     );
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -54,13 +53,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const logout = useCallback(async () => {
         try {
             await logoutMutation();
+        } catch (error) {
+            console.error("Logout failed", error);
+        } finally {
             setUser(null);
             setToken(null);
             setIsAuthenticated(false);
             clearAuthToken();
             await apolloClient.resetStore();
-        } catch (error) {
-            console.error("Logout failed", error);
         }
     }, [logoutMutation, apolloClient]);
 
@@ -102,11 +102,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     const firstError = error.graphQLErrors[0];
                     setError(
                         firstError?.message ||
-                            "An error occurred while trying to sign in."
+                            "An error occurred while trying to sign in.",
                     );
                 } else {
                     setError(
-                        "An error occurred while trying to sign in. Please try again."
+                        "An error occurred while trying to sign in. Please try again.",
                     );
                 }
                 return false;
@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 setIsLoading(false);
             }
         },
-        [loginMutation, clearError]
+        [loginMutation, clearError],
     );
 
     const checkAuth = useCallback(async () => {
@@ -179,7 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             logout,
             checkAuth,
             clearError,
-        ]
+        ],
     );
 
     return (

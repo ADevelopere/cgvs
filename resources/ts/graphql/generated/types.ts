@@ -255,10 +255,10 @@ export type TemplateCategory = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  order: Scalars['Int']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
   parentCategory?: Maybe<TemplateCategory>;
-  specialType?: Maybe<TemplateCategoryType>;
-  templates: Array<Template>;
+  special_type?: Maybe<TemplateCategoryType>;
+  templates?: Maybe<Array<Template>>;
   updated_at: Scalars['DateTime']['output'];
 };
 
@@ -272,8 +272,8 @@ export type TemplateCategoryPaginator = {
 };
 
 export type TemplateCategoryType =
-  | 'DELETION'
-  | 'MAIN';
+  | 'deletion'
+  | 'main';
 
 /** Configuration for templates */
 export type TemplateConfig = {
@@ -332,28 +332,28 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> } } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
 }>;
 
 
-export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } };
+export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> } } };
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
 
 export type DeleteTemplateCategoryMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } };
+export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -373,21 +373,21 @@ export type MoveToDeletionCategoryMutationVariables = Exact<{
 }>;
 
 
-export type MoveToDeletionCategoryMutation = { __typename?: 'Mutation', moveToDeletionCategory: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> } } };
+export type MoveToDeletionCategoryMutation = { __typename?: 'Mutation', moveToDeletionCategory: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
 
 export type ReorderTemplateCategoriesMutationVariables = Exact<{
   input: Array<ReorderCategoriesInput> | ReorderCategoriesInput;
 }>;
 
 
-export type ReorderTemplateCategoriesMutation = { __typename?: 'Mutation', reorderTemplateCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> };
+export type ReorderTemplateCategoriesMutation = { __typename?: 'Mutation', reorderTemplateCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> };
 
 export type RestoreTemplateMutationVariables = Exact<{
   templateId: Scalars['ID']['input'];
 }>;
 
 
-export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> } } };
+export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
 
 export type UpdateTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -395,7 +395,7 @@ export type UpdateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> } } };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
 
 export type UpdateTemplateCategoryMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -403,17 +403,17 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } };
+export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
 
 export type DeletedCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DeletedCategoryQuery = { __typename?: 'Query', deletedCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } };
+export type DeletedCategoryQuery = { __typename?: 'Query', deletedCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
 
 export type MainCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MainCategoryQuery = { __typename?: 'Query', mainCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } };
+export type MainCategoryQuery = { __typename?: 'Query', mainCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -426,14 +426,14 @@ export type TemplateCategoriesQueryVariables = Exact<{
 }>;
 
 
-export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: { __typename?: 'TemplateCategoryPaginator', data: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } }> }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: { __typename?: 'TemplateCategoryPaginator', data: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } }> | null }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type TemplateCategoryQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } }> }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order: number, specialType?: TemplateCategoryType | null, updated_at: any } | null, templates: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> } | null };
+export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null };
 
 export type UserQueryVariables = Exact<{
   email?: InputMaybe<Scalars['String']['input']>;
@@ -478,10 +478,10 @@ export const CreateTemplateDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -499,7 +499,7 @@ export const CreateTemplateDocument = gql`
         id
         name
         order
-        specialType
+        special_type
         updated_at
       }
       created_at
@@ -516,7 +516,7 @@ export const CreateTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -532,7 +532,7 @@ export const CreateTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -544,10 +544,10 @@ export const CreateTemplateDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         updated_at
       }
-      specialType
+      special_type
       templates {
         background_url
         category {
@@ -557,7 +557,7 @@ export const CreateTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -623,7 +623,7 @@ export const CreateTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -639,10 +639,10 @@ export const CreateTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -654,7 +654,7 @@ export const CreateTemplateCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -664,7 +664,7 @@ export const CreateTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -682,7 +682,7 @@ export const CreateTemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -698,10 +698,10 @@ export const CreateTemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -761,10 +761,10 @@ export const DeleteTemplateDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -782,7 +782,7 @@ export const DeleteTemplateDocument = gql`
         id
         name
         order
-        specialType
+        special_type
         updated_at
       }
       created_at
@@ -799,7 +799,7 @@ export const DeleteTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -815,7 +815,7 @@ export const DeleteTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -827,10 +827,10 @@ export const DeleteTemplateDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         updated_at
       }
-      specialType
+      special_type
       templates {
         background_url
         category {
@@ -840,7 +840,7 @@ export const DeleteTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -906,7 +906,7 @@ export const DeleteTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -922,10 +922,10 @@ export const DeleteTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -937,7 +937,7 @@ export const DeleteTemplateCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -947,7 +947,7 @@ export const DeleteTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -965,7 +965,7 @@ export const DeleteTemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -981,10 +981,10 @@ export const DeleteTemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -1119,10 +1119,10 @@ export const MoveToDeletionCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1140,7 +1140,7 @@ export const MoveToDeletionCategoryDocument = gql`
         id
         name
         order
-        specialType
+        special_type
         updated_at
       }
       created_at
@@ -1157,7 +1157,7 @@ export const MoveToDeletionCategoryDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -1173,7 +1173,7 @@ export const MoveToDeletionCategoryDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1185,10 +1185,10 @@ export const MoveToDeletionCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         updated_at
       }
-      specialType
+      special_type
       templates {
         background_url
         category {
@@ -1198,7 +1198,7 @@ export const MoveToDeletionCategoryDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -1264,7 +1264,7 @@ export const ReorderTemplateCategoriesDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1280,10 +1280,10 @@ export const ReorderTemplateCategoriesDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1295,7 +1295,7 @@ export const ReorderTemplateCategoriesDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -1305,7 +1305,7 @@ export const ReorderTemplateCategoriesDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1323,7 +1323,7 @@ export const ReorderTemplateCategoriesDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -1339,10 +1339,10 @@ export const ReorderTemplateCategoriesDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -1402,10 +1402,10 @@ export const RestoreTemplateDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1423,7 +1423,7 @@ export const RestoreTemplateDocument = gql`
         id
         name
         order
-        specialType
+        special_type
         updated_at
       }
       created_at
@@ -1440,7 +1440,7 @@ export const RestoreTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -1456,7 +1456,7 @@ export const RestoreTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1468,10 +1468,10 @@ export const RestoreTemplateDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         updated_at
       }
-      specialType
+      special_type
       templates {
         background_url
         category {
@@ -1481,7 +1481,7 @@ export const RestoreTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -1548,10 +1548,10 @@ export const UpdateTemplateDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1569,7 +1569,7 @@ export const UpdateTemplateDocument = gql`
         id
         name
         order
-        specialType
+        special_type
         updated_at
       }
       created_at
@@ -1586,7 +1586,7 @@ export const UpdateTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -1602,7 +1602,7 @@ export const UpdateTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1614,10 +1614,10 @@ export const UpdateTemplateDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         updated_at
       }
-      specialType
+      special_type
       templates {
         background_url
         category {
@@ -1627,7 +1627,7 @@ export const UpdateTemplateDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -1694,7 +1694,7 @@ export const UpdateTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1710,10 +1710,10 @@ export const UpdateTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1725,7 +1725,7 @@ export const UpdateTemplateCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -1735,7 +1735,7 @@ export const UpdateTemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1753,7 +1753,7 @@ export const UpdateTemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -1769,10 +1769,10 @@ export const UpdateTemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -1832,7 +1832,7 @@ export const DeletedCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1848,10 +1848,10 @@ export const DeletedCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -1863,7 +1863,7 @@ export const DeletedCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -1873,7 +1873,7 @@ export const DeletedCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1891,7 +1891,7 @@ export const DeletedCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -1907,10 +1907,10 @@ export const DeletedCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -1956,6 +1956,9 @@ export type DeletedCategoryQueryHookResult = ReturnType<typeof useDeletedCategor
 export type DeletedCategoryLazyQueryHookResult = ReturnType<typeof useDeletedCategoryLazyQuery>;
 export type DeletedCategorySuspenseQueryHookResult = ReturnType<typeof useDeletedCategorySuspenseQuery>;
 export type DeletedCategoryQueryResult = Apollo.QueryResult<DeletedCategoryQuery, DeletedCategoryQueryVariables>;
+export function refetchDeletedCategoryQuery(variables?: DeletedCategoryQueryVariables) {
+      return { query: DeletedCategoryDocument, variables: variables }
+    }
 export const MainCategoryDocument = gql`
     query mainCategory {
   mainCategory {
@@ -1975,7 +1978,7 @@ export const MainCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -1991,10 +1994,10 @@ export const MainCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -2006,7 +2009,7 @@ export const MainCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -2016,7 +2019,7 @@ export const MainCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -2034,7 +2037,7 @@ export const MainCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -2050,10 +2053,10 @@ export const MainCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -2099,6 +2102,9 @@ export type MainCategoryQueryHookResult = ReturnType<typeof useMainCategoryQuery
 export type MainCategoryLazyQueryHookResult = ReturnType<typeof useMainCategoryLazyQuery>;
 export type MainCategorySuspenseQueryHookResult = ReturnType<typeof useMainCategorySuspenseQuery>;
 export type MainCategoryQueryResult = Apollo.QueryResult<MainCategoryQuery, MainCategoryQueryVariables>;
+export function refetchMainCategoryQuery(variables?: MainCategoryQueryVariables) {
+      return { query: MainCategoryDocument, variables: variables }
+    }
 export const MeDocument = gql`
     query me {
   me {
@@ -2144,6 +2150,9 @@ export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export function refetchMeQuery(variables?: MeQueryVariables) {
+      return { query: MeDocument, variables: variables }
+    }
 export const TemplateCategoriesDocument = gql`
     query templateCategories($first: Int!, $page: Int) {
   templateCategories(first: $first, page: $page) {
@@ -2163,10 +2172,10 @@ export const TemplateCategoriesDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -2184,7 +2193,7 @@ export const TemplateCategoriesDocument = gql`
         id
         name
         order
-        specialType
+        special_type
         updated_at
       }
       created_at
@@ -2201,7 +2210,7 @@ export const TemplateCategoriesDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           updated_at
         }
         created_at
@@ -2217,7 +2226,7 @@ export const TemplateCategoriesDocument = gql`
           id
           name
           order
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -2229,10 +2238,10 @@ export const TemplateCategoriesDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         updated_at
       }
-      specialType
+      special_type
       templates {
         background_url
         category {
@@ -2243,7 +2252,7 @@ export const TemplateCategoriesDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -2259,10 +2268,10 @@ export const TemplateCategoriesDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -2330,6 +2339,9 @@ export type TemplateCategoriesQueryHookResult = ReturnType<typeof useTemplateCat
 export type TemplateCategoriesLazyQueryHookResult = ReturnType<typeof useTemplateCategoriesLazyQuery>;
 export type TemplateCategoriesSuspenseQueryHookResult = ReturnType<typeof useTemplateCategoriesSuspenseQuery>;
 export type TemplateCategoriesQueryResult = Apollo.QueryResult<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>;
+export function refetchTemplateCategoriesQuery(variables: TemplateCategoriesQueryVariables) {
+      return { query: TemplateCategoriesDocument, variables: variables }
+    }
 export const TemplateCategoryDocument = gql`
     query templateCategory($id: ID!) {
   templateCategory(id: $id) {
@@ -2349,7 +2361,7 @@ export const TemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -2365,10 +2377,10 @@ export const TemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
-          specialType
+          special_type
           templates {
             background_url
             created_at
@@ -2380,7 +2392,7 @@ export const TemplateCategoryDocument = gql`
           }
           updated_at
         }
-        specialType
+        special_type
         templates {
           background_url
           category {
@@ -2390,7 +2402,7 @@ export const TemplateCategoryDocument = gql`
             id
             name
             order
-            specialType
+            special_type
             updated_at
           }
           created_at
@@ -2408,7 +2420,7 @@ export const TemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
     created_at
@@ -2424,10 +2436,10 @@ export const TemplateCategoryDocument = gql`
       id
       name
       order
-      specialType
+      special_type
       updated_at
     }
-    specialType
+    special_type
     templates {
       background_url
       created_at
@@ -2474,6 +2486,9 @@ export type TemplateCategoryQueryHookResult = ReturnType<typeof useTemplateCateg
 export type TemplateCategoryLazyQueryHookResult = ReturnType<typeof useTemplateCategoryLazyQuery>;
 export type TemplateCategorySuspenseQueryHookResult = ReturnType<typeof useTemplateCategorySuspenseQuery>;
 export type TemplateCategoryQueryResult = Apollo.QueryResult<TemplateCategoryQuery, TemplateCategoryQueryVariables>;
+export function refetchTemplateCategoryQuery(variables: TemplateCategoryQueryVariables) {
+      return { query: TemplateCategoryDocument, variables: variables }
+    }
 export const UserDocument = gql`
     query user($email: String, $id: ID) {
   user(email: $email, id: $id) {
@@ -2521,6 +2536,9 @@ export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserSuspenseQueryHookResult = ReturnType<typeof useUserSuspenseQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
+export function refetchUserQuery(variables?: UserQueryVariables) {
+      return { query: UserDocument, variables: variables }
+    }
 export const UsersDocument = gql`
     query users($first: Int!, $name: String, $page: Int) {
   users(first: $first, name: $name, page: $page) {
@@ -2581,6 +2599,9 @@ export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
 export type UsersSuspenseQueryHookResult = ReturnType<typeof useUsersSuspenseQuery>;
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export function refetchUsersQuery(variables: UsersQueryVariables) {
+      return { query: UsersDocument, variables: variables }
+    }
 export const PlaceholderDocument = gql`
     query Placeholder {
   me {
@@ -2622,3 +2643,6 @@ export type PlaceholderQueryHookResult = ReturnType<typeof usePlaceholderQuery>;
 export type PlaceholderLazyQueryHookResult = ReturnType<typeof usePlaceholderLazyQuery>;
 export type PlaceholderSuspenseQueryHookResult = ReturnType<typeof usePlaceholderSuspenseQuery>;
 export type PlaceholderQueryResult = Apollo.QueryResult<PlaceholderQuery, PlaceholderQueryVariables>;
+export function refetchPlaceholderQuery(variables?: PlaceholderQueryVariables) {
+      return { query: PlaceholderDocument, variables: variables }
+    }
