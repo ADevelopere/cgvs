@@ -1510,6 +1510,30 @@
             "deprecationReason": null
           },
           {
+            "name": "templates",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Template",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updated_at",
             "description": null,
             "args": [],
@@ -1593,19 +1617,13 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "DELETED",
+            "name": "DELETION",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "MAIN",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "NONE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

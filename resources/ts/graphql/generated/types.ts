@@ -261,6 +261,7 @@ export type TemplateCategory = {
   order: Scalars['Int']['output'];
   parentCategory?: Maybe<TemplateCategory>;
   specialType?: Maybe<TemplateCategoryType>;
+  templates: Array<Template>;
   updated_at: Scalars['DateTime']['output'];
 };
 
@@ -274,9 +275,8 @@ export type TemplateCategoryPaginator = {
 };
 
 export enum TemplateCategoryType {
-  Deleted = 'DELETED',
-  Main = 'MAIN',
-  None = 'NONE'
+  Deletion = 'DELETION',
+  Main = 'MAIN'
 }
 
 /** Configuration for templates */
