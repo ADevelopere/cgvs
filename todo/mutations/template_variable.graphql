@@ -2,19 +2,19 @@ extend type Mutation {
     "Create a new template variable"
     createTemplateVariable(input: CreateTemplateVariableInput! @spread): TemplateVariable! 
         @guard 
-        @can(ability: "createVariable")
+        # @can(ability: "createVariable")
         @field(resolver: "TemplateVariableMutation@create")
     
     "Update an existing template variable"
     updateTemplateVariable(id: ID!, input: UpdateTemplateVariableInput! @spread): TemplateVariable! 
         @guard 
-        @can(ability: "updateVariable", find: "id")
+        # @can(ability: "updateVariable", find: "id")
         @field(resolver: "TemplateVariableMutation@update")
     
     "Delete a template variable"
     deleteTemplateVariable(id: ID!): TemplateVariable! 
         @guard 
-        @can(ability: "deleteVariable", find: "id")
+        # @can(ability: "deleteVariable", find: "id")
         @field(resolver: "TemplateVariableMutation@delete")
     
     "Reorder template variables"

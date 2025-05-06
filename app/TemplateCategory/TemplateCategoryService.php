@@ -2,6 +2,7 @@
 
 namespace App\TemplateCategory;
 
+use App\Models\TemplateCategory;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -12,34 +13,30 @@ class TemplateCategoryService
     /**
      * Create a new template category
      *
-     * @param array $data Category data containing name, description, and parent_category_id
-     * @return TemplateCategory
+     * @param CreateTemplateCategoryInput $input Category data containing name, description, and parentCategoryId
+     * @return ?TemplateCategory
      * @throws ValidationException|Exception
      */
-    public static function createTemplateCategory(array $data): TemplateCategory
+    public static function createTemplateCategory(CreateTemplateCategoryInput $input): ?TemplateCategory
     {
-        Log::info('Template category creation request:', ['input' => $data]);
+        Log::info('Template category creation request:', ['input' => [
+            'name' => $input->name,
+            'description' => $input->description,
+            'parentCategoryId' => $input->parentCategoryId,
+            'order' => $input->order,
+        ]]);
 
-        $validator = Validator::make($data, [
+        $validator = Validator::make([
+            'name' => $input->name,
+            'description' => $input->description,
+            'parent_category_id' => $input->parentCategoryId,
+        ], [
             'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string',
             'parent_category_id' => [
                 'nullable',
                 'exists:template_categories,id',
-                function ($attribute, $value, $fail) {
-                    if ($value) {
-                        $parentCategory = TemplateCategory::find($value);
-                        if ($parentCategory && $parentCategory->isDeletionCategory()) {
-                            $fail('Cannot create subcategories under deletion category.');
-                        }
-                    }
-                },
-            ],
-            'special_type' => [
-                'prohibited',
-                function ($attribute, $value, $fail) {
-                    $fail('Cannot create new special categories.');
-                }
+                'not_deletion_category'
             ]
         ]);
 
@@ -52,13 +49,17 @@ class TemplateCategoryService
 
         try {
             $templateCategory = new TemplateCategory();
-            $templateCategory->name = $data['name'];
-            $templateCategory->description = $data['description'] ?? null;
-            $templateCategory->parent_category_id = $data['parent_category_id'] ?? null;
+            $templateCategory->name = $input->name;
+            $templateCategory->description = $input->description;
+            $templateCategory->parent_category_id = $input->parentCategoryId;
 
             // Set order as last in the current level
-            $templateCategory->order = TemplateCategory::where('parent_category_id', $data['parent_category_id'] ?? null)
-                ->max('order') + 1;
+            if ($input->order === null) {
+                $templateCategory->order = TemplateCategory::where('parent_category_id', $input->parentCategoryId)
+                    ->max('order') + 1;
+            } else {
+                $templateCategory->order = $input->order;
+            }
 
             $templateCategory->save();
 
@@ -81,15 +82,20 @@ class TemplateCategoryService
      * Update an existing template category
      *
      * @param TemplateCategory $category
-     * @param array $data
-     * @return TemplateCategory
+     * @param UpdateTemplateCategoryInput $input
+     * @return ?TemplateCategory
      * @throws ValidationException|Exception
      */
-    public static function updateTemplateCategory(TemplateCategory $category, array $data): TemplateCategory
+    public static function updateTemplateCategory(TemplateCategory $category, UpdateTemplateCategoryInput $input): ?TemplateCategory
     {
         Log::info('Template category update request:', [
             'category_id' => $category->id,
-            'input' => $data
+            'input' => [
+                'name' => $input->name,
+                'description' => $input->description,
+                'parentCategoryId' => $input->parentCategoryId,
+                'order' => $input->order,
+            ]
         ]);
 
         if ($category->isImmutableCategory()) {
@@ -98,40 +104,27 @@ class TemplateCategoryService
             ]);
         }
 
-        if ($category->isMainCategory() && isset($data['parent_category_id'])) {
+        if ($category->isMainCategory() && $input->parentCategoryId !== null) {
             throw ValidationException::withMessages([
                 'general' => ['The main category cannot be a subcategory.']
             ]);
         }
 
-        $validator = Validator::make($data, [
+        $validator = Validator::make([
+            'name' => $input->name,
+            'description' => $input->description,
+            'parent_category_id' => $input->parentCategoryId,
+            'order' => $input->order,
+            'id' => $category->id,
+        ], [
             'name' => 'sometimes|required|string|min:3|max:255',
             'description' => 'nullable|string',
             'parent_category_id' => [
                 'nullable',
                 'exists:template_categories,id',
-                function ($attribute, $value, $fail) use ($category) {
-                    if ($value) {
-                        $parentCategory = TemplateCategory::find($value);
-                        if ($parentCategory && $parentCategory->isDeletionCategory()) {
-                            $fail('Cannot move categories under deletion category.');
-                        }
-
-                        if ($value == $category->id) {
-                            $fail('A category cannot be its own parent.');
-                        }
-
-                        // Prevent circular references
-                        $parent = $parentCategory;
-                        while ($parent) {
-                            if ($parent->id === $category->id) {
-                                $fail('Cannot create circular reference in category hierarchy.');
-                                break;
-                            }
-                            $parent = $parent->parentCategory;
-                        }
-                    }
-                },
+                'not_deletion_category',
+                'prevent_self_parent',
+                'prevent_circular_reference'
             ],
             'order' => 'nullable|integer|min:0',
         ]);
@@ -144,26 +137,26 @@ class TemplateCategoryService
         }
 
         try {
-            if (isset($data['name'])) {
-                $category->name = $data['name'];
+            if ($input->name !== null) {
+                $category->name = $input->name;
             }
-            if (array_key_exists('description', $data)) {
-                $category->description = $data['description'];
+            if ($input->description !== null) {
+                $category->description = $input->description;
             }
 
             // Handle parent category change
-            if (isset($data['parent_category_id']) && $data['parent_category_id'] !== $category->parent_category_id) {
-                $category->parent_category_id = $data['parent_category_id'];
+            if ($input->parentCategoryId !== null && $input->parentCategoryId !== $category->parent_category_id) {
+                $category->parent_category_id = $input->parentCategoryId;
                 // Set order as last in the new parent if not specified
-                if (!isset($data['order'])) {
-                    $category->order = TemplateCategory::where('parent_category_id', $data['parent_category_id'])
+                if ($input->order === null) {
+                    $category->order = TemplateCategory::where('parent_category_id', $input->parentCategoryId)
                         ->max('order') + 1;
                 }
             }
 
             // Handle explicit order change
-            if (isset($data['order'])) {
-                $category->order = $data['order'];
+            if ($input->order !== null) {
+                $category->order = $input->order;
             }
 
             $category->save();

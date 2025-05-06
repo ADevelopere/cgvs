@@ -3,40 +3,57 @@
 namespace App\TemplateCategory;
 
 use App\GraphQL\Contracts\LighthouseMutation;
-use Illuminate\Support\Facades\Validator;
+use App\Models\TemplateCategory;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class TemplateCategoryMutator implements LighthouseMutation
 {
-    public function create($root, array $args)
+    /**
+     * @throws ValidationException
+     */
+    public function create($root, array $args) : ?TemplateCategory
     {
         Log::info('TemplateCategoryMutator: Creating template category', $args);
-        $validator = Validator::make($args['input'], [
-            'name' => 'required|string|min:3|max:255',
-            'description' => 'nullable|string',
-            'parentCategoryId' => 'nullable|exists:template_categories,id',
-            'order' => 'nullable|integer|min:0'
-        ]);
+        $input = new CreateTemplateCategoryInput(
+            name: $args['name'],
+            description: $args['description'] ?? null,
+            parentCategoryId: $args['parentCategoryId'] ?? null,
+            order: $args['order'] ?? null
+        );
 
-        if ($validator->fails()) {
-            throw new \Exception($validator->errors()->first());
-        }
-        return TemplateCategoryService::createTemplateCategory($args);
+        return TemplateCategoryService::createTemplateCategory($input);
     }
 
-    public function update($root, array $args)
+    /**
+     * @throws ValidationException
+     */
+    public function update($root, array $args): ?TemplateCategory
     {
-        $category = TemplateCategory::findOrFail($args['id']);
-        return TemplateCategoryService::updateTemplateCategory($category, $args['input']);
+        $category = TemplateCategory::query()->findOrFail($args['id']);
+        $input = new UpdateTemplateCategoryInput(
+            name: $args['name'],
+            description: $args['description'] ?? null,
+            parentCategoryId: $args['parentCategoryId'] ?? null,
+            order: $args['order'] ?? null
+        );
+
+        return TemplateCategoryService::updateTemplateCategory($category, $input);
     }
 
-    public function delete($root, array $args)
+    /**
+     * @throws ValidationException
+     */
+    public function delete($root, array $args): bool
     {
-        $category = TemplateCategory::findOrFail($args['id']);
+        $category = TemplateCategory::query()->findOrFail($args['id']);
         return TemplateCategoryService::deleteTemplateCategory($category);
     }
 
-    public function reorder($root, array $args)
+    /**
+     * @throws ValidationException
+     */
+    public function reorder($root, array $args): bool
     {
         return TemplateCategoryService::reorderCategories($args['input']);
     }

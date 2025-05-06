@@ -17,3 +17,17 @@ type TemplateConfig {
     maxBackgroundSize: Int!
     allowedFileTypes: [String!]!
 }
+
+input CreateTemplateInput {
+    name: String! @rules(apply: ["required", "string", "max:255"])
+    description: String
+    categoryId: ID! @rules(apply: ["required", "exists:template_categories,id"])
+    background: Upload
+}
+
+input UpdateTemplateInput {
+    name: String @rules(apply: ["string", "max:255"])
+    description: String
+    categoryId: ID @rules(apply: ["exists:template_categories,id"])
+    background: Upload
+}

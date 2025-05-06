@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
+use App\GraphQL\Contracts\LighthouseModel;
 
-class TemplateRecipient extends Model
+class TemplateRecipient extends Model implements LighthouseModel
 {
     protected $fillable = [
         'template_id',
@@ -47,7 +48,7 @@ class TemplateRecipient extends Model
 
         $template = $this->template;
         $variables = $template->variables->keyBy('name');
-        
+
         Log::info('Template variables loaded', [
             'variables' => $variables->toArray()
         ]);
@@ -64,7 +65,7 @@ class TemplateRecipient extends Model
                 ]);
                 continue;
             }
-            
+
             try {
                 $this->variableValues()->updateOrCreate(
                     ['template_variable_id' => $variables[$name]->id],

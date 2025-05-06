@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\GraphQL\Contracts\LighthouseModel;
 
-class TemplateVariable extends Model
+class TemplateVariable extends Model implements LighthouseModel
 {
     protected $fillable = [
         'template_id',
