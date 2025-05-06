@@ -53,7 +53,7 @@ class User extends Authenticatable
      * Check if the user is an admin.
      * For now, we'll consider the seeded admin user as the super admin.
      */
-    public function isAdmin(): bool
+    public function getIsAdmin(): bool
     {
         return $this->email === env('ADMIN_EMAIL', 'super.admin@cgvs.com');
     }

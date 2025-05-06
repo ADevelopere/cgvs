@@ -4,7 +4,20 @@ type User {
     name: String!
     email: String!
     email_verified_at: DateTime
-    isAdmin: Boolean!
+    isAdmin: Boolean! @field(resolver: "App\\GraphQL\\Types\\UserType@isAdmin")
     created_at: DateTime!
     updated_at: DateTime!
+}
+
+type AuthPayload {
+    "The JWT token"
+    token: String!
+    "The authenticated user"
+    user: User!
+}
+
+"Response after logout"
+type LogoutResponse {
+    "Status message"
+    message: String!
 }
