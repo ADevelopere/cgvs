@@ -3,9 +3,17 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "codegen": "graphql-codegen --config codegen.ts",
+        "codegen:watch": "graphql-codegen --watch"
     },
     "devDependencies": {
+        "@graphql-codegen/cli": "5.0.5",
+        "@graphql-codegen/client-preset": "4.8.0",
+        "@graphql-codegen/introspection": "^4.0.3",
+        "@graphql-codegen/typescript": "^4.1.6",
+        "@graphql-codegen/typescript-operations": "^4.6.0",
+        "@graphql-codegen/typescript-react-apollo": "^4.3.2",
         "@popperjs/core": "^2.11.6",
         "@tailwindcss/vite": "^4.0.0",
         "@types/react": "^19.1.2",
@@ -23,6 +31,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "@apollo/client": "^3.13.8",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
         "@fontsource/roboto": "^5.2.5",
@@ -41,6 +50,7 @@
         "@xyflow/react": "^12.6.0",
         "date-fns": "^4.1.0",
         "graphiql": "^4.0.2",
+        "graphql": "^16.11.0",
         "html-to-image": "^1.11.11",
         "jss": "^10.10.0",
         "jss-rtl": "^0.3.0",

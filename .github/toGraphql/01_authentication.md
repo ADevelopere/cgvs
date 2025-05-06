@@ -129,6 +129,6 @@ class AuthenticationErrorHandler implements ErrorHandler
 }
 ```
 
-## Testing
+## Testing (dont implement this)
 
 Create feature tests in `tests/Feature/GraphQL/AuthTest.php`.

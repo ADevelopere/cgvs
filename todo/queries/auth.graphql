@@ -1,0 +1,5 @@
+extend type Query {
+  me: User! 
+    @guard 
+    @field(resolver: "AuthQuery@me")
+}
