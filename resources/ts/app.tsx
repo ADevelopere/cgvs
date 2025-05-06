@@ -7,6 +7,8 @@ import "@fontsource/roboto/700.css";
 
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { ApolloProvider } from "@apollo/client";
+import apolloClient from "./utils/apollo";
 import { AppThemeProvider } from "@/contexts/ThemeContext";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
@@ -18,17 +20,19 @@ import { NotificationsProvider } from "@toolpad/core/useNotifications";
 const App: React.FC = () => {
     return (
         <React.StrictMode>
-            <AuthProvider>
-                <AppThemeProvider>
-                    <NotificationsProvider>
-                        <DashboardLayoutProvider>
-                            <ErrorBoundary>
-                                <RouterProvider router={router} />
-                            </ErrorBoundary>
-                        </DashboardLayoutProvider>
-                    </NotificationsProvider>
-                </AppThemeProvider>
-            </AuthProvider>
+            <ErrorBoundary>
+                <ApolloProvider client={apolloClient}>
+                    <AuthProvider>
+                        <AppThemeProvider>
+                            <NotificationsProvider>
+                                <DashboardLayoutProvider>
+                                    <RouterProvider router={router} />
+                                </DashboardLayoutProvider>
+                            </NotificationsProvider>
+                        </AppThemeProvider>
+                    </AuthProvider>
+                </ApolloProvider>
+            </ErrorBoundary>
         </React.StrictMode>
     );
 };
