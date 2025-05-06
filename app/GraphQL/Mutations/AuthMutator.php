@@ -5,6 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 
 class AuthMutator
 {
@@ -28,7 +29,18 @@ class AuthMutator
 
     public function logout($root, array $args, $context)
     {
-        $context->user()->currentAccessToken()->delete();
+        $user = $context->user();
+        if (!$user) {
+            throw new AuthenticationException('Unauthenticated.');
+        }
+
+        // Get the current access token
+        $token = $user->currentAccessToken();
+        if (!$token) {
+            throw new AuthenticationException('No active session found.');
+        }
+
+        $token->delete();
 
         return [
             'message' => 'Logged out successfully'
