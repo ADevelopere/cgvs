@@ -11,7 +11,7 @@ import axios from "@/utils/axios";
 import { Template, TemplateConfig } from "./template.types";
 import { useNavigate } from "react-router-dom";
 
-type TemplateCreateData = {
+type Templatecreated_ata = {
     name: string;
     description?: string;
     background?: File;
@@ -25,7 +25,7 @@ type TemplatesContextType = {
     config: TemplateConfig;
     templateToManage?: Template;
     fetchTemplates: () => Promise<void>;
-    createTemplate: (templateData: TemplateCreateData) => Promise<void>;
+    createTemplate: (templateData: Templatecreated_ata) => Promise<void>;
     fetchConfig: () => Promise<void>;
     manageTemplate: (templateId: number) => void;
 };
@@ -66,7 +66,7 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const createTemplate = useCallback(
-        async (templateData: TemplateCreateData) => {
+        async (templateData: Templatecreated_ata) => {
             setLoading(true);
             setError(null);
             try {

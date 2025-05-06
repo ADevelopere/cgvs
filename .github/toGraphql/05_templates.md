@@ -15,8 +15,8 @@ type Template {
   elements: [TemplateElement!]! @hasMany
   variables: [TemplateVariable!]! @hasMany
   recipients: [TemplateRecipient!]! @hasMany
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  created_at: DateTime!
+  updated_at: DateTime!
 }
 
 type TemplateConfig {

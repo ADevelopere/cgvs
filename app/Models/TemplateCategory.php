@@ -20,6 +20,18 @@ class TemplateCategory extends Model implements LighthouseModel
         'order',
     ];
 
+    protected $visible = [
+        'id',
+        'name',
+        'description',
+        'parent_category_id',
+        'order',
+        'special_type',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

@@ -19,8 +19,8 @@ type TemplateVariable {
   previewValue: String
   template: Template! @belongsTo
   order: Int!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  created_at: DateTime!
+  updated_at: DateTime!
 }
 
 input CreateTemplateVariableInput {
