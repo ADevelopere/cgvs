@@ -40,7 +40,7 @@ class TemplateCategory extends Model implements LighthouseModel
     ];
 
     // Special category types
-    public const SPECIAL_TYPE_DELETION = 'deletion';
+    public const SPECIAL_TYPE_deletion = 'deletion';
     public const SPECIAL_TYPE_MAIN = 'main';
 
     public function isSpecial(): bool
@@ -50,7 +50,7 @@ class TemplateCategory extends Model implements LighthouseModel
 
     public function isDeletionCategory(): bool
     {
-        return $this->special_type === self::SPECIAL_TYPE_DELETION;
+        return $this->special_type === self::SPECIAL_TYPE_deletion;
     }
 
     public function isMainCategory(): bool
@@ -112,7 +112,7 @@ class TemplateCategory extends Model implements LighthouseModel
      */
     public static function getDeletedCategory()
     {
-        return static::where('special_type', self::SPECIAL_TYPE_DELETION)->firstOrFail();
+        return static::where('special_type', self::SPECIAL_TYPE_deletion)->firstOrFail();
     }
 
     /**

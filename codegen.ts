@@ -4,8 +4,10 @@ const config: CodegenConfig = {
     overwrite: true,
     schema: "http://localhost:8000/graphql",
     documents: [
-        "./resources/ts/**/*.ts", "./resources/ts/**/*.tsx", 
-        "./graphql-generated/gqlg-ts/**/*.ts",],
+        "./resources/ts/**/*.ts",
+        "./resources/ts/**/*.tsx",
+        "./graphql-generated/gqlg-ts/**/*.ts",
+    ],
     generates: {
         "./resources/ts/graphql/generated/types.ts": {
             plugins: [
@@ -18,6 +20,11 @@ const config: CodegenConfig = {
                 dedupeFragments: true,
                 onlyOperationTypes: false,
                 enumsAsTypes: true,
+                withRefetchFn: true,
+                inlineFragmentTypes: false,
+                preResolveTypes: true,
+                extractAllFieldsToTypes: false,
+                skipTypeNameForRoot: false,
             },
         },
         "./graphql-generated/graphql.schema.json": {

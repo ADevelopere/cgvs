@@ -6,15 +6,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function convertToConstName(name: string): string {
-    // First character should be uppercase without underscore
-    let result = name.charAt(0).toUpperCase();
+    // Convert the string to array of characters for easier processing
+    const chars = name.split('');
+    let result = chars[0].toUpperCase();
     
     // Process the rest of the string
-    for (let i = 1; i < name.length; i++) {
-        const char = name.charAt(i);
+    for (let i = 1; i < chars.length; i++) {
+        const char = chars[i];
+        const prevChar = chars[i - 1];
+        
+        // Check if current character is uppercase and not a number
         if (char === char.toUpperCase() && char !== char.toLowerCase()) {
-            // If it's an uppercase letter, add underscore before it
-            result += '_' + char;
+            // Only add underscore if:
+            // 1. Previous character is lowercase, or
+            // 2. Previous character is uppercase and next character is lowercase
+            if (prevChar !== prevChar.toUpperCase() || 
+                (i < chars.length - 1 && chars[i + 1] !== chars[i + 1].toUpperCase())) {
+                result += '_';
+            }
+            result += char;
         } else {
             result += char.toUpperCase();
         }

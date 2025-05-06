@@ -4,15 +4,15 @@ type TemplateCategory {
   description: String
   parentCategory: TemplateCategory @belongsTo
   childCategories: [TemplateCategory!]! @hasMany @orderBy(column: "order")
-  order: Int!
-  specialType: TemplateCategoryType
-  templates: [Template!]!
+  order: Int
+  special_type: TemplateCategoryType
+  templates: [Template!]
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
 }
 
 enum TemplateCategoryType {
-  DELETION
-  MAIN
+  deletion
+  main
 }
