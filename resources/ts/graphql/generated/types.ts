@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export type AuthPayload = {
@@ -24,6 +25,21 @@ export type AuthPayload = {
   token: Scalars['String']['output'];
   /** The authenticated user */
   user: User;
+};
+
+export type CreateTemplateCategoryInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
+  parentCategoryId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type CreateTemplateInput = {
+  backgroundImage?: InputMaybe<Scalars['Upload']['input']>;
+  categoryId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Response after logout */
@@ -36,8 +52,46 @@ export type LogoutResponse = {
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Create a new template */
+  createTemplate: Template;
+  createTemplateCategory: TemplateCategory;
+  /** Delete a template */
+  deleteTemplate: Template;
+  deleteTemplateCategory: TemplateCategory;
   login: AuthPayload;
   logout: LogoutResponse;
+  /** Move a template to the deleted category */
+  moveToDeletionCategory: Template;
+  reorderTemplateCategories: Array<TemplateCategory>;
+  /** Restore a template from the deleted category */
+  restoreTemplate: Template;
+  /** Update an existing template */
+  updateTemplate: Template;
+  updateTemplateCategory: TemplateCategory;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationCreateTemplateArgs = {
+  input: CreateTemplateInput;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationCreateTemplateCategoryArgs = {
+  input: CreateTemplateCategoryInput;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationDeleteTemplateArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationDeleteTemplateCategoryArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -45,6 +99,38 @@ export type Mutation = {
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationMoveToDeletionCategoryArgs = {
+  templateId: Scalars['ID']['input'];
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationReorderTemplateCategoriesArgs = {
+  input: Array<ReorderCategoriesInput>;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationRestoreTemplateArgs = {
+  templateId: Scalars['ID']['input'];
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationUpdateTemplateArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateTemplateInput;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationUpdateTemplateCategoryArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateTemplateCategoryInput;
 };
 
 /** Allows ordering a list of records. */
@@ -99,11 +185,28 @@ export type PaginatorInfo = {
 /** Indicates what fields are available at the top level of a query operation. */
 export type Query = {
   __typename?: 'Query';
+  deletedCategory: TemplateCategory;
+  mainCategory: TemplateCategory;
   me: User;
+  templateCategories: TemplateCategoryPaginator;
+  templateCategory?: Maybe<TemplateCategory>;
   /** Find a single user by an identifying attribute. */
   user?: Maybe<User>;
   /** List multiple users. */
   users: UserPaginator;
+};
+
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryTemplateCategoriesArgs = {
+  first: Scalars['Int']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryTemplateCategoryArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -121,6 +224,11 @@ export type QueryUsersArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type ReorderCategoriesInput = {
+  id: Scalars['ID']['input'];
+  order: Scalars['Int']['input'];
+};
+
 /** Directions for ordering a list of records. */
 export enum SortOrder {
   /** Sort records in ascending order. */
@@ -128,6 +236,55 @@ export enum SortOrder {
   /** Sort records in descending order. */
   Desc = 'DESC'
 }
+
+/** A template in the system */
+export type Template = {
+  __typename?: 'Template';
+  background_url?: Maybe<Scalars['String']['output']>;
+  category: TemplateCategory;
+  created_at: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
+  updated_at: Scalars['DateTime']['output'];
+};
+
+export type TemplateCategory = {
+  __typename?: 'TemplateCategory';
+  childCategories: Array<TemplateCategory>;
+  created_at: Scalars['DateTime']['output'];
+  deleted_at?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
+  parentCategory?: Maybe<TemplateCategory>;
+  specialType?: Maybe<TemplateCategoryType>;
+  updated_at: Scalars['DateTime']['output'];
+};
+
+/** A paginated list of TemplateCategory items. */
+export type TemplateCategoryPaginator = {
+  __typename?: 'TemplateCategoryPaginator';
+  /** A list of TemplateCategory items. */
+  data: Array<TemplateCategory>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export enum TemplateCategoryType {
+  Deleted = 'DELETED',
+  Main = 'MAIN',
+  None = 'NONE'
+}
+
+/** Configuration for templates */
+export type TemplateConfig = {
+  __typename?: 'TemplateConfig';
+  allowedFileTypes: Array<Scalars['String']['output']>;
+  maxBackgroundSize: Scalars['Int']['output'];
+};
 
 /** Specify if you want to include or exclude trashed results from a query. */
 export enum Trashed {
@@ -138,6 +295,21 @@ export enum Trashed {
   /** Only return non-trashed results. */
   Without = 'WITHOUT'
 }
+
+export type UpdateTemplateCategoryInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  parentCategoryId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateTemplateInput = {
+  backgroundImage?: InputMaybe<Scalars['Upload']['input']>;
+  categoryId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
+};
 
 /** A user of the application */
 export type User = {
@@ -160,138 +332,50 @@ export type UserPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
-export type LoginMutationVariables = Exact<{
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-}>;
+export type PlaceholderQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, name: string, email: string, email_verified_at?: any | null, isAdmin: boolean } } };
-
-export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+export type PlaceholderQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string, name: string, email: string } };
 
 
-export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogoutResponse', message: string } };
-
-export type MeQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string, name: string, email: string, email_verified_at?: any | null, isAdmin: boolean } };
-
-
-export const LoginDocument = gql`
-    mutation login($email: String!, $password: String!) {
-  login(email: $email, password: $password) {
-    user {
-      id
-      name
-      email
-      email_verified_at
-      isAdmin
-    }
-    token
-  }
-}
-    `;
-export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
-
-/**
- * __useLoginMutation__
- *
- * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLoginMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [loginMutation, { data, loading, error }] = useLoginMutation({
- *   variables: {
- *      email: // value for 'email'
- *      password: // value for 'password'
- *   },
- * });
- */
-export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
-      }
-export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
-export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
-export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
-export const LogoutDocument = gql`
-    mutation logout {
-  logout {
-    message
-  }
-}
-    `;
-export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
-
-/**
- * __useLogoutMutation__
- *
- * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLogoutMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
- *   variables: {
- *   },
- * });
- */
-export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
-      }
-export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
-export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
-export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
-export const MeDocument = gql`
-    query me {
+export const PlaceholderDocument = gql`
+    query Placeholder {
   me {
     id
     name
     email
-    email_verified_at
-    isAdmin
   }
 }
     `;
 
 /**
- * __useMeQuery__
+ * __usePlaceholderQuery__
  *
- * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `usePlaceholderQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlaceholderQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMeQuery({
+ * const { data, loading, error } = usePlaceholderQuery({
  *   variables: {
  *   },
  * });
  */
-export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+export function usePlaceholderQuery(baseOptions?: Apollo.QueryHookOptions<PlaceholderQuery, PlaceholderQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        return Apollo.useQuery<PlaceholderQuery, PlaceholderQueryVariables>(PlaceholderDocument, options);
       }
-export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+export function usePlaceholderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlaceholderQuery, PlaceholderQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+          return Apollo.useLazyQuery<PlaceholderQuery, PlaceholderQueryVariables>(PlaceholderDocument, options);
         }
-export function useMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MeQuery, MeQueryVariables>) {
+export function usePlaceholderSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PlaceholderQuery, PlaceholderQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+          return Apollo.useSuspenseQuery<PlaceholderQuery, PlaceholderQueryVariables>(PlaceholderDocument, options);
         }
-export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
-export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
-export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
-export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export type PlaceholderQueryHookResult = ReturnType<typeof usePlaceholderQuery>;
+export type PlaceholderLazyQueryHookResult = ReturnType<typeof usePlaceholderLazyQuery>;
+export type PlaceholderSuspenseQueryHookResult = ReturnType<typeof usePlaceholderSuspenseQuery>;
+export type PlaceholderQueryResult = Apollo.QueryResult<PlaceholderQuery, PlaceholderQueryVariables>;

@@ -1,0 +1,47 @@
+extend type Mutation {
+    "Create a new template"
+    createTemplate(input: CreateTemplateInput! @spread): Template!
+        @guard
+        # @can(ability: "createTemplate")
+        @field(resolver: "TemplateMutator@create")
+
+    "Update an existing template"
+    updateTemplate(id: ID!, input: UpdateTemplateInput! @spread): Template!
+        @guard
+        # @can(ability: "updateTemplate", find: "id")
+        @field(resolver: "TemplateMutator@update")
+
+    "Delete a template"
+    deleteTemplate(id: ID!): Template!
+        @guard
+        # @can(ability: "deleteTemplate", find: "id")
+        @field(resolver: "TemplateMutator@delete")
+
+    "Move a template to the deleted category"
+    moveToDeletionCategory(templateId: ID!): Template!
+        @guard
+        # @can(ability: "deleteTemplate", find: "templateId")
+        @field(resolver: "TemplateMutator@moveToDeleted")
+
+    "Restore a template from the deleted category"
+    restoreTemplate(templateId: ID!): Template!
+        @guard
+        # @can(ability: "restoreTemplate", find: "templateId")
+        @field(resolver: "TemplateMutator@restore")
+}
+
+input CreateTemplateInput {
+    name: String!
+    description: String
+    categoryId: ID!
+    order: Int
+    backgroundImage: Upload
+}
+
+input UpdateTemplateInput {
+    name: String!
+    description: String
+    categoryId: ID!
+    order: Int
+    backgroundImage: Upload
+}

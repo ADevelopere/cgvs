@@ -7,12 +7,6 @@ extend type Mutation {
 
     updateTemplateCategory(
         id: ID!
-            @rules(
-                apply: [
-                    "exists:template_categories,id"
-                    "not_deletion_category"
-                ]
-            )
         input: UpdateTemplateCategoryInput! @spread
     ): TemplateCategory!
         @guard
@@ -29,32 +23,21 @@ extend type Mutation {
         @field(resolver: "TemplateCategoryMutator@reorder")
 }
 
-
 input CreateTemplateCategoryInput {
-  name: String! @rules(apply: ["required", "string", "min:3", "max:255"])
-  description: String
-  parentCategoryId: ID @rules(apply: [
-    "exists:template_categories,id",
-    "not_deletion_category",
-    "prevent_self_parent",
-    "prevent_circular_reference"
-  ])
-  order: Int @rules(apply: ["integer", "min:0"])
+    name: String!
+    description: String
+    parentCategoryId: ID
+    order: Int
 }
 
 input UpdateTemplateCategoryInput {
-  name: String @rules(apply: ["string", "min:3", "max:255"])
-  description: String
-  parentCategoryId: ID @rules(apply: [
-    "exists:template_categories,id",
-    "not_deletion_category",
-    "prevent_self_parent",
-    "prevent_circular_reference"
-  ])
-  order: Int @rules(apply: ["integer", "min:0"])
+    name: String
+    description: String
+    parentCategoryId: ID
+    order: Int
 }
 
 input ReorderCategoriesInput {
-  id: ID!
-  order: Int!
+    id: ID!
+    order: Int!
 }

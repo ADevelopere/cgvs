@@ -26,25 +26,28 @@ class TemplateCategoryService
             'order' => $input->order,
         ]]);
 
-        $validator = Validator::make([
-            'name' => $input->name,
-            'description' => $input->description,
-            'parent_category_id' => $input->parentCategoryId,
-        ], [
-            'name' => 'required|string|min:3|max:255',
-            'description' => 'nullable|string',
-            'parent_category_id' => [
-                'nullable',
-                'exists:template_categories,id',
-                'not_deletion_category'
-            ]
-        ]);
-
-        if ($validator->fails()) {
-            Log::info('Template category validation failed', [
-                'errors' => $validator->errors()->toArray()
+        // Validate name
+        if (!$input->name || strlen($input->name) < 3 || strlen($input->name) > 255) {
+            throw ValidationException::withMessages([
+                'name' => ['The category name must be between 3 and 255 characters.']
             ]);
-            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
+
+        if ($input->parentCategoryId) {
+            // Check if parent category exists
+            if (!TemplateCategory::find($input->parentCategoryId)) {
+                throw ValidationException::withMessages([
+                    'parent_category_id' => ['The selected parent category does not exist.']
+                ]);
+            }
+
+            // Validate not deletion category
+            [$valid, $message] = TemplateCategoryValidator::validateNotDeletionCategory($input->parentCategoryId);
+            if (!$valid) {
+                throw ValidationException::withMessages([
+                    'parent_category_id' => [$message]
+                ]);
+            }
         }
 
         try {
@@ -110,30 +113,53 @@ class TemplateCategoryService
             ]);
         }
 
-        $validator = Validator::make([
-            'name' => $input->name,
-            'description' => $input->description,
-            'parent_category_id' => $input->parentCategoryId,
-            'order' => $input->order,
-            'id' => $category->id,
-        ], [
-            'name' => 'sometimes|required|string|min:3|max:255',
-            'description' => 'nullable|string',
-            'parent_category_id' => [
-                'nullable',
-                'exists:template_categories,id',
-                'not_deletion_category',
-                'prevent_self_parent',
-                'prevent_circular_reference'
-            ],
-            'order' => 'nullable|integer|min:0',
-        ]);
-
-        if ($validator->fails()) {
-            Log::info('Template category validation failed', [
-                'errors' => $validator->errors()->toArray()
+        // Validate name if provided
+        if ($input->name !== null) {
+            if (strlen($input->name) < 3 || strlen($input->name) > 255) {
+                throw ValidationException::withMessages([
+                    'name' => ['The category name must be between 3 and 255 characters.']
+                ]);
+            }
+        }
+        
+        // Validate order if provided
+        if ($input->order !== null && $input->order < 0) {
+            throw ValidationException::withMessages([
+                'order' => ['The order must be at least 0.']
             ]);
-            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
+
+        if ($input->parentCategoryId !== null) {
+            // Check if parent category exists
+            if (!TemplateCategory::find($input->parentCategoryId)) {
+                throw ValidationException::withMessages([
+                    'parent_category_id' => ['The selected parent category does not exist.']
+                ]);
+            }
+
+            // Validate not deletion category
+            [$valid, $message] = TemplateCategoryValidator::validateNotDeletionCategory($input->parentCategoryId);
+            if (!$valid) {
+                throw ValidationException::withMessages([
+                    'parent_category_id' => [$message]
+                ]);
+            }
+
+            // Validate no self parent
+            [$valid, $message] = TemplateCategoryValidator::validateNoSelfParent($input->parentCategoryId, $category->id);
+            if (!$valid) {
+                throw ValidationException::withMessages([
+                    'parent_category_id' => [$message]
+                ]);
+            }
+
+            // Validate no circular reference
+            [$valid, $message] = TemplateCategoryValidator::validateNoCircularReference($input->parentCategoryId, $category->id);
+            if (!$valid) {
+                throw ValidationException::withMessages([
+                    'parent_category_id' => [$message]
+                ]);
+            }
         }
 
         try {
