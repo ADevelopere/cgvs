@@ -15,10 +15,11 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import { Template, TemplateCategory } from "./template.types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import axios from "@/utils/axios";
+import { TemplateCategory } from "@/graphql/generated/types";
+import { Template } from "./template.types";
 
 // Logger utility
 const logger = {
@@ -108,12 +109,12 @@ type TemplateCategoryManagementContextType = {
      * Updates the name of an existing template category identified by its ID.
      * This modifies the category's name in the backend and updates the corresponding category in the local `categories` state.
      */
-    updateCategory: (categoryId: number, name: string) => void;
+    updateCategory: (categoryId: string, name: string) => void;
     /**
      * Deletes a template category identified by its ID.
      * This removes the category from the backend and the local `categories` state. If the deleted category was the `currentCategory`, the selection is cleared.
      */
-    deleteCategory: (categoryId: number) => void;
+    deleteCategory: (categoryId: string) => void;
     /**
      * Sorts the `categories` array based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the categories list displayed to the user.
@@ -140,7 +141,7 @@ type TemplateCategoryManagementContextType = {
      * Creates a new template with the specified name within the given category ID.
      * After successful creation, the new template is added to the `templates` list for the current category and potentially set as the `currentTemplate`.
      */
-    addTemplate: (name: string, categoryId: number) => void;
+    addTemplate: (name: string, categoryId: string) => void;
     /**
      * Updates the name of an existing template identified by its ID.
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
@@ -324,7 +325,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateCategory = useCallback(
-        async (categoryId: number, name: string) => {
+        async (categoryId: string, name: string) => {
             try {
                 const category = categories.find(
                     (cat) => cat.id === categoryId,
@@ -377,7 +378,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const deleteCategory = useCallback(
-        async (categoryId: number) => {
+        async (categoryId: string) => {
             if (!categoryId) {
                 logger.error(messages.invalidCategoryIdProvided, categoryId);
                 notifications.show(messages.categoryDeleteFailed, {
@@ -438,7 +439,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const addTemplate = useCallback(
         async (
             name: string,
-            categoryId: number,
+            categoryId: string,
             description?: string,
             background?: File,
         ) => {
@@ -631,7 +632,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                         // Update all categories (maintain backward compatibility)
                         setCategories((prev) =>
                             prev.map((cat) =>
-                                cat.special_type === "deleted"
+                                cat.specialType === "DELETION"
                                     ? {
                                           ...cat,
                                           templates: [
@@ -693,7 +694,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     if (sortBy === "name") {
                         return modifier * a.name.localeCompare(b.name);
                     }
-                    return modifier * (a.id - b.id);
+                    return modifier * (Number(a.id) - Number(b.id));
                 }),
             );
         },
@@ -708,7 +709,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     if (sortBy === "name") {
                         return modifier * a.name.localeCompare(b.name);
                     }
-                    return modifier * (a.id - b.id);
+                    return modifier * (Number(a.id) - Number(b.id));
                 }),
             );
         },

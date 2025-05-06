@@ -6,13 +6,13 @@ type TemplateCategory {
   childCategories: [TemplateCategory!]! @hasMany @orderBy(column: "order")
   order: Int!
   specialType: TemplateCategoryType
+  templates: [Template!]!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
 }
 
 enum TemplateCategoryType {
-  DELETED
+  DELETION
   MAIN
-  NONE
 }
