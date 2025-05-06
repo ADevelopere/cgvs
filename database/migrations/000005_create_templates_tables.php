@@ -17,7 +17,7 @@ return new class extends Migration
                 ->constrained('template_categories')
                 ->restrictOnDelete(); // Prevent deletion if has child categories
             $table->unsignedInteger('order')->nullable();
-            $table->enum('special_type', ['deleted', 'main'])->nullable()->unique();
+            $table->enum('special_type', ['deletion', 'main'])->nullable()->unique();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -38,10 +38,10 @@ return new class extends Migration
             ],
             [
                 'name' => 'النماذج المحذوفة',
-                'description' => 'Special category for deleted templates',
+                'description' => 'Special category for deletion templates',
                 'parent_category_id' => null,
-                'order' => null, // Must be null for deleted
-                'special_type' => 'deleted',
+                'order' => null, // Must be null for deletion
+                'special_type' => 'deletion',
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -51,7 +51,7 @@ return new class extends Migration
         // Use backticks (`) for column names like `order` in MySQL
         DB::statement('ALTER TABLE template_categories ADD CONSTRAINT template_categories_special_check CHECK (
             special_type IS NULL OR
-            (special_type = \'deleted\' AND parent_category_id IS NULL AND `order` IS NULL) OR
+            (special_type = \'deletion\' AND parent_category_id IS NULL AND `order` IS NULL) OR
             (special_type = \'main\' AND parent_category_id IS NULL)
         )');
 
@@ -74,7 +74,7 @@ return new class extends Migration
         // DB::statement('ALTER TABLE templates ADD CONSTRAINT templates_special_category_check CHECK (
         //     (`order` IS NULL AND EXISTS (
         //         SELECT 1 FROM template_categories tc
-        //         WHERE tc.id = category_id AND tc.special_type = \'deleted\'
+        //         WHERE tc.id = category_id AND tc.special_type = \'deletion\'
         //     )) OR
         //     (`order` IS NOT NULL AND EXISTS (
         //         SELECT 1 FROM template_categories tc

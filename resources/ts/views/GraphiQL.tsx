@@ -1,9 +1,11 @@
 import React from "react";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.css";
+import { getAuthToken } from "../utils/auth";
 
 const GraphiQLApp: React.FC = () => {
     const fetcher = async (graphQLParams: any) => {
+        const token = getAuthToken();
         const data = await fetch("/graphql", {
             method: "POST",
             headers: {
@@ -13,6 +15,7 @@ const GraphiQLApp: React.FC = () => {
                     document
                         .querySelector('meta[name="csrf-token"]')
                         ?.getAttribute("content") || "",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
             body: JSON.stringify(graphQLParams),
             credentials: "include",

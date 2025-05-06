@@ -1,16 +1,17 @@
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { getAuthToken } from './auth';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:8000/graphql',
-  credentials: 'include',
+  credentials: 'include', // This ensures cookies are sent with requests
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
   }
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('auth_token');
+  const token = getAuthToken();
   return {
     headers: {
       ...headers,

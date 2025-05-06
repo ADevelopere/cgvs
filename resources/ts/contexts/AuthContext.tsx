@@ -15,6 +15,7 @@ import {
     User,
     LoginMutationVariables,
 } from "@/graphql/generated/types";
+import { saveAuthToken, clearAuthToken, getAuthToken } from "@/utils/auth";
 
 export type AuthContextType = {
     user: User | null;
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setUser(null);
             setToken(null);
             setIsAuthenticated(false);
-            localStorage.removeItem("auth_token");
+            clearAuthToken();
             await apolloClient.resetStore();
         } catch (error) {
             console.error("Logout failed", error);
@@ -82,14 +83,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     const fullUser: User = {
                         ...graphqlUser,
                         isAdmin: graphqlUser.isAdmin,
-                        created_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
-                        updated_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
                     };
 
                     setUser(fullUser);
                     setToken(token);
                     setIsAuthenticated(true);
-                    localStorage.setItem("auth_token", token);
+                    saveAuthToken(token);
                     return true;
                 }
                 setError("Invalid response from server");
@@ -117,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     );
 
     const checkAuth = useCallback(async () => {
-        const storedToken = localStorage.getItem("auth_token");
+        const storedToken = getAuthToken();
         if (!storedToken) {
             logout();
             setIsLoading(false);
