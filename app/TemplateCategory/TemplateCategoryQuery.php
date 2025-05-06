@@ -2,7 +2,9 @@
 
 namespace App\TemplateCategory;
 
-class TemplateCategoryQuery
+use App\GraphQL\Contracts\LighthouseQuery;
+
+class TemplateCategoryQuery implements LighthouseQuery
 {
     public function mainCategory()
     {

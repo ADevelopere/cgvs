@@ -1,8 +1,10 @@
 <?php
 
-namespace App\GraphQL\Queries;
+namespace App\Auth;
 
-class AuthQuery
+use App\GraphQL\Contracts\LighthouseQuery;
+
+class AuthQuery implements LighthouseQuery
 {
     public function me($root, array $args, $context)
     {

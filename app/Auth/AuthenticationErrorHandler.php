@@ -1,6 +1,6 @@
 <?php
 
-namespace App\GraphQL\Errors;
+namespace App\Auth;
 
 use GraphQL\Error\Error;
 use Illuminate\Auth\AuthenticationException;
@@ -22,7 +22,7 @@ class AuthenticationErrorHandler implements ErrorHandler
             if (config('app.debug')) {
                 $request = request();
                 $token = $request->bearerToken();
-                
+
                 Log::warning('GraphQL Authentication Error', [
                     'message' => $previous->getMessage(),
                     // keep it commented now

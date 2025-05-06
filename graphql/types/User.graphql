@@ -4,7 +4,7 @@ type User {
     name: String!
     email: String!
     email_verified_at: DateTime
-    isAdmin: Boolean! @field(resolver: "App\\GraphQL\\Types\\UserType@isAdmin")
+    isAdmin: Boolean! @field(resolver: "App\\User\\UserType@isAdmin")
     created_at: DateTime!
     updated_at: DateTime!
 }

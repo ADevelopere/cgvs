@@ -2,7 +2,9 @@
 
 namespace App\TemplateCategory;
 
-class TemplateCategoryMutator
+use App\GraphQL\Contracts\LighthouseMutation;
+
+class TemplateCategoryMutator implements LighthouseMutation
 {
     public function create($root, array $args)
     {
