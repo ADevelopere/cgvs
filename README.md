@@ -16,6 +16,8 @@ A Laravel-based system for generating and verifying certificates.
 To install required SQLite extensions:
 ```bash
 # For Ubuntu/Debian
+sudo apt-get install php-mysql
+# or custom
 sudo apt-get install php8.3-sqlite3
 
 # For other PHP versions, replace 8.3 with your PHP version
@@ -106,3 +108,9 @@ php artisan test --parallel
 ```
 
 
+# debuggin
+```bash
+sudo apt-get install php-xdebug
+sudo apt install php8.4-mbstring php8.4-xml
+composer require --dev phpunit/phpunit
+```
