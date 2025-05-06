@@ -1,10 +1,11 @@
 <?php
 
-namespace App\GraphQL\Types;
+namespace App\User;
 
+use App\GraphQL\Contracts\LighthouseType;
 use App\Models\User;
 
-class UserType
+class UserType implements LighthouseType
 {
     /**
      * Resolve the isAdmin field for the User type

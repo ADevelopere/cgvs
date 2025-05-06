@@ -187,12 +187,9 @@ return [
     |
     */
 
+    // managed via App\Providers\ValidationServiceProvider
     'namespaces' => [
-        'models' => [],
-        'queries' => 'App\\GraphQL\\Queries',
-        'mutations' => 'App\\GraphQL\\Mutations',
         'subscriptions' => 'App\\GraphQL\\Subscriptions',
-        'types' => 'App\\GraphQL\\Types',
         'interfaces' => 'App\\GraphQL\\Interfaces',
         'unions' => 'App\\GraphQL\\Unions',
         'scalars' => 'App\\GraphQL\\Scalars',
@@ -284,7 +281,7 @@ return [
     */
 
     'error_handlers' => [
-        App\GraphQL\Errors\AuthenticationErrorHandler::class,
+        App\Auth\AuthenticationErrorHandler::class,
         Nuwave\Lighthouse\Execution\AuthorizationErrorHandler::class,
         Nuwave\Lighthouse\Execution\ValidationErrorHandler::class,
         Nuwave\Lighthouse\Execution\ReportingErrorHandler::class,

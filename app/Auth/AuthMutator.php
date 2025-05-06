@@ -1,6 +1,6 @@
 <?php
 
-namespace App\GraphQL\Mutations;
+namespace App\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\GraphQL\Contracts\LighthouseMutation;
 
-class AuthMutator
+class AuthMutator  implements LighthouseMutation
 {
     public function login($root, array $args)
     {
