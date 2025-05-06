@@ -23,9 +23,9 @@ import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
 import { Boxes, EditIcon } from "lucide-react";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
-import { TemplateCategory } from "@/contexts/template/template.types";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { TemplateCategory } from "@/graphql/generated/types";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
@@ -137,7 +137,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     };
 
     const handleCategoryNameEdit = async (
-        categoryId: number,
+        categoryId: string,
         newName: string,
     ) => {
         updateCategory(categoryId, newName);
