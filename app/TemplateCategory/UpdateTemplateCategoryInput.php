@@ -2,13 +2,13 @@
 
 namespace App\TemplateCategory;
 
-class UpdateTemplateCategoryInput
+readonly class UpdateTemplateCategoryInput
 {
     public function __construct(
-        public readonly ?string $name = null,
-        public readonly ?string $description = null,
-        public readonly ?string $parentCategoryId = null,
-        public readonly ?int $order = null,
+        public ?string $name = null,
+        public ?string $description = null,
+        public ?string $parentCategoryId = null,
+        public ?int    $order = null,
     ) {}
 
     public static function rules(): array

@@ -1,12 +1,12 @@
 extend type Mutation {
     "Create a new template"
-    createTemplate(input: CreateTemplateInput! @spread): Template! 
+    createTemplate(input: CreateTemplateInput!): Template! 
         @guard 
         @can(ability: "createTemplate")
         @field(resolver: "TemplateMutation@create")
     
     "Update an existing template"
-    updateTemplate(id: ID!, input: UpdateTemplateInput! @spread): Template! 
+    updateTemplate(id: ID!, input: UpdateTemplateInput!): Template! 
         @guard 
         @can(ability: "updateTemplate", find: "id")
         @field(resolver: "TemplateMutation@update")

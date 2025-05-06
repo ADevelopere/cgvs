@@ -3,15 +3,16 @@
 namespace App\TemplateCategory;
 
 use App\GraphQL\Contracts\LighthouseQuery;
+use App\Models\TemplateCategory;
 
 class TemplateCategoryQuery implements LighthouseQuery
 {
-    public function mainCategory()
+    public function mainCategory(): TemplateCategory | null
     {
         return TemplateCategory::where('special_type', 'MAIN')->firstOrFail();
     }
 
-    public function deletedCategory()
+    public function deletedCategory() : TemplateCategory | null
     {
         return TemplateCategory::where('special_type', 'DELETED')->firstOrFail();
     }

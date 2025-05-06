@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\GraphQL\Contracts\LighthouseModel;
 
-class TemplateElement extends Model
+class TemplateElement extends Model implements LighthouseModel
 {
     use HasFactory;
 

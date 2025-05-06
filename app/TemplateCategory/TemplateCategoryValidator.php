@@ -2,6 +2,7 @@
 
 namespace App\TemplateCategory;
 
+use App\Models\TemplateCategory;
 use Illuminate\Support\Facades\Validator;
 
 class TemplateCategoryValidator

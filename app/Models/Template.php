@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Log;
+use App\GraphQL\Contracts\LighthouseModel;
 
-class Template extends Model
+class Template extends Model  implements LighthouseModel
 {
     use SoftDeletes, HasFactory;
 

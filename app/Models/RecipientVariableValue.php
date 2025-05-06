@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-class RecipientVariableValue extends Model
+use App\GraphQL\Contracts\LighthouseModel;
+class RecipientVariableValue extends Model  implements LighthouseModel
 {
     protected $fillable = [
         'template_recipient_id',

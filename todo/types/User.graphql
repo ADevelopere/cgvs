@@ -4,17 +4,20 @@ type User {
     name: String!
     email: String!
     email_verified_at: DateTime
-    isAdmin: Boolean!
+    isAdmin: Boolean! @field(resolver: "App\\User\\UserType@isAdmin")
     created_at: DateTime!
     updated_at: DateTime!
 }
 
-
 type AuthPayload {
-  token: String!
-  user: User!
+    "The JWT token"
+    token: String!
+    "The authenticated user"
+    user: User!
 }
 
+"Response after logout"
 type LogoutResponse {
-  message: String!
+    "Status message"
+    message: String!
 }

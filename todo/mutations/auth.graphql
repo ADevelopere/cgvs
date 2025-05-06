@@ -1,10 +1,9 @@
 extend type Mutation {
-  login(
-    email: String! @rules(apply: ["required", "email", "exists:users,email"])
-    password: String! @rules(apply: ["required", "min:6"])
-  ): AuthPayload! @field(resolver: "AuthMutator@login")
+    login(
+        email: String!
+            @rules(apply: ["required", "email", "exists:users,email"])
+        password: String! @rules(apply: ["required", "min:6"])
+    ): AuthPayload! @field(resolver: "AuthMutator@login")
 
-  logout: LogoutResponse! 
-    @guard 
-    @field(resolver: "AuthMutator@logout")
+    logout: LogoutResponse! @guard @field(resolver: "AuthMutator@logout")
 }
