@@ -1,0 +1,21 @@
+"A recipient of a template"
+type TemplateRecipient {
+    id: ID!
+    template: Template! @belongsTo
+    is_valid: Boolean!
+    validation_errors: JSON
+    variable_values: [RecipientVariableValue!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"A variable value for a recipient"
+type RecipientVariableValue {
+    id: ID!
+    template_recipient: TemplateRecipient! @belongsTo
+    template_variable: TemplateVariable! @belongsTo
+    value: String
+    value_indexed: String
+    created_at: DateTime!
+    updated_at: DateTime!
+}

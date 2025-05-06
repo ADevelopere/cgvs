@@ -1,0 +1,57 @@
+extend type Mutation {
+    "Create a new template recipient"
+    createTemplateRecipient(input: CreateTemplateRecipientInput! @spread): TemplateRecipient! 
+        @guard 
+        @can(ability: "manageRecipients")
+        @field(resolver: "TemplateRecipientMutation@create")
+    
+    "Update an existing template recipient"
+    updateTemplateRecipient(id: ID!, input: UpdateTemplateRecipientInput! @spread): TemplateRecipient! 
+        @guard 
+        @can(ability: "manageRecipients")
+        @field(resolver: "TemplateRecipientMutation@update")
+    
+    "Delete a template recipient"
+    deleteTemplateRecipient(id: ID!): TemplateRecipient! 
+        @guard 
+        @can(ability: "manageRecipients")
+        @field(resolver: "TemplateRecipientMutation@delete")
+    
+    "Import recipients from a file"
+    importRecipients(templateId: ID!, file: Upload!): ImportResult! 
+        @guard 
+        @can(ability: "manageRecipients")
+        @field(resolver: "TemplateRecipientMutation@import")
+    
+    "Validate recipients data"
+    validateRecipients(templateId: ID!, file: Upload!): ValidationResult! 
+        @guard 
+        @can(ability: "manageRecipients")
+        @field(resolver: "TemplateRecipientMutation@validate")
+}
+
+input CreateTemplateRecipientInput {
+    templateId: ID! @rules(apply: ["required", "exists:templates,id"])
+    variableValues: [VariableValueInput!]!
+}
+
+input UpdateTemplateRecipientInput {
+    variableValues: [VariableValueInput!]!
+}
+
+input VariableValueInput {
+    variableId: ID!
+    value: String
+}
+
+type ValidationResult {
+    isValid: Boolean!
+    errors: [String!]
+    preview: [JSON!]
+}
+
+type ImportResult {
+    success: Boolean!
+    importedCount: Int!
+    errors: [String!]
+}

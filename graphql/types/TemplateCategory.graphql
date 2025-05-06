@@ -1,0 +1,14 @@
+"A template category in the system"
+type TemplateCategory {
+    id: ID!
+    name: String!
+    description: String
+    parentCategory: TemplateCategory @belongsTo
+    childCategories: [TemplateCategory!]! @hasMany
+    templates: [Template!]! @hasMany
+    order: Int!
+    specialType: String
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime
+}

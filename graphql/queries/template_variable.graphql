@@ -1,0 +1,7 @@
+extend type Query {
+    "Get all variables for a template"
+    templateVariables(templateId: ID! @eq): [TemplateVariable!]! @paginate @guard
+    
+    "Get a specific template variable by ID"
+    templateVariable(id: ID! @eq): TemplateVariable! @find @guard
+}

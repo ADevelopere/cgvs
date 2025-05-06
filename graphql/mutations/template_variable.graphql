@@ -1,0 +1,41 @@
+extend type Mutation {
+    "Create a new template variable"
+    createTemplateVariable(input: CreateTemplateVariableInput! @spread): TemplateVariable! 
+        @guard 
+        @can(ability: "createVariable")
+        @field(resolver: "TemplateVariableMutation@create")
+    
+    "Update an existing template variable"
+    updateTemplateVariable(id: ID!, input: UpdateTemplateVariableInput! @spread): TemplateVariable! 
+        @guard 
+        @can(ability: "updateVariable", find: "id")
+        @field(resolver: "TemplateVariableMutation@update")
+    
+    "Delete a template variable"
+    deleteTemplateVariable(id: ID!): TemplateVariable! 
+        @guard 
+        @can(ability: "deleteVariable", find: "id")
+        @field(resolver: "TemplateVariableMutation@delete")
+    
+    "Reorder template variables"
+    reorderTemplateVariables(templateId: ID!, input: [ReorderInput!]!): [TemplateVariable!]! 
+        @guard 
+        @field(resolver: "TemplateVariableMutation@reorder")
+}
+
+input CreateTemplateVariableInput {
+    templateId: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "string", "max:255"])
+    type: VariableType! @rules(apply: ["required"])
+    description: String
+    preview_value: String
+    order: Int
+}
+
+input UpdateTemplateVariableInput {
+    name: String @rules(apply: ["string", "max:255"])
+    type: VariableType
+    description: String
+    preview_value: String
+    order: Int
+}

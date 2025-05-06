@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
 import TemplateCategoryManagementVIew from "@/views/admin/templates/TemplateCategoryManagementVIew";
 import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
+import GraphiQLApp from "@/views/GraphiQL";
 
 interface WithAuthProps {
     children: React.ReactNode;
@@ -28,6 +29,7 @@ const WithAuth: React.FC<WithAuthProps> = ({ children }) => {
     const location = useLocation();
 
     if (!isAuthenticated) {
+        // Pass the current location to redirect back after login
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
@@ -96,6 +98,15 @@ const routes: RouteObject[] = [
                 ],
             },
         ],
+    },
+    {
+        path: "graphiql",
+        element: (
+            <WithAuth>
+                {" "}
+                <GraphiQLApp />
+            </WithAuth>
+        ),
     },
 ];
 

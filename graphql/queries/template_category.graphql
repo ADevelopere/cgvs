@@ -1,0 +1,13 @@
+extend type Query {
+    "Get all template categories"
+    templateCategories: [TemplateCategory!]! @paginate @guard @can(ability: "viewTemplateCategories")
+    
+    "Get a specific template category by ID"
+    templateCategory(id: ID! @eq): TemplateCategory! @find @guard
+    
+    "Get the main category"
+    mainCategory: TemplateCategory! @guard @field(resolver: "TemplateCategoryQuery@mainCategory")
+    
+    "Get the deleted category"
+    deletedCategory: TemplateCategory! @guard @field(resolver: "TemplateCategoryQuery@deletedCategory")
+}

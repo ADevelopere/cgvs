@@ -36,5 +36,26 @@ class AuthServiceProvider extends ServiceProvider
             // You can add more specific logic here later
             return true;
         });
+
+        // Template-related gates
+        Gate::define('viewTemplates', function ($user) {
+            return true;
+        });
+
+        Gate::define('viewTemplate', function ($user, Template $template) {
+            return true;
+        });
+
+        Gate::define('createTemplate', function ($user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('updateTemplate', function ($user, Template $template) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('deleteTemplate', function ($user, Template $template) {
+            return $user->isAdmin();
+        });
     }
 }

@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import {
   Box,
   Button,
@@ -23,6 +23,7 @@ type LoginFormProps = {}
 
 const LoginForm: React.FC<LoginFormProps> = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login, isAuthenticated, error, clearError, isLoading } = useAuth()
   const [email, setEmail] = useState("")
   const [emailError, setEmailError] = useState("")
@@ -30,9 +31,10 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/admin/dashboard")
+      const from = location.state?.from?.pathname || "/admin/dashboard"
+      navigate(from, { replace: true })
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate, location])
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value
