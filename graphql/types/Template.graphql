@@ -5,9 +5,10 @@ type Template {
     description: String
     background_url: String
     category: TemplateCategory! @belongsTo
-    elements: [TemplateElement!]! @hasMany
-    variables: [TemplateVariable!]! @hasMany
-    recipients: [TemplateRecipient!]! @hasMany
+    order: Int!
+    # elements: [TemplateElement!]! @hasMany
+    # variables: [TemplateVariable!]! @hasMany
+    # recipients: [TemplateRecipient!]! @hasMany
     created_at: DateTime!
     updated_at: DateTime!
 }
@@ -16,18 +17,4 @@ type Template {
 type TemplateConfig {
     maxBackgroundSize: Int!
     allowedFileTypes: [String!]!
-}
-
-input CreateTemplateInput {
-    name: String! @rules(apply: ["required", "string", "max:255"])
-    description: String
-    categoryId: ID! @rules(apply: ["required", "exists:template_categories,id"])
-    background: Upload
-}
-
-input UpdateTemplateInput {
-    name: String @rules(apply: ["string", "max:255"])
-    description: String
-    categoryId: ID @rules(apply: ["exists:template_categories,id"])
-    background: Upload
 }
