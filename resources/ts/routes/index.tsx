@@ -16,7 +16,6 @@ import Verify from "@/views/Verify";
 import RouteError from "@/components/common/RouteError";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
-import TemplateCategoryManagementVIew from "@/views/admin/templates/TemplateCategoryManagementVIew";
 import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
 import GraphiQLApp from "@/views/GraphiQL";
 

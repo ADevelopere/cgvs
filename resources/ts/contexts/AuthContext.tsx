@@ -6,27 +6,15 @@ import React, {
     useCallback,
     useMemo,
 } from "react";
-import axios from "@/utils/axios";
-
-export type User = {
-    id: number;
-    name: string;
-    email: string;
-    is_admin: boolean;
-    email_verified_at?: string;
-    created_at: string;
-    updated_at: string;
-};
-
-export type LoginCredentials = {
-    email: string;
-    password: string;
-};
-
-export type LoginResponse = {
-    user: User;
-    token: string;
-};
+import { ApolloError, useApolloClient } from "@apollo/client";
+import {
+    useLoginMutation,
+    useLogoutMutation,
+    MeDocument,
+    MeQuery,
+    User,
+    LoginMutationVariables,
+} from "@/graphql/generated/types";
 
 export type AuthContextType = {
     user: User | null;
@@ -34,7 +22,7 @@ export type AuthContextType = {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
-    login: (credentials: LoginCredentials) => Promise<boolean>;
+    login: (credentials: LoginMutationVariables) => Promise<boolean>;
     logout: () => void;
     checkAuth: () => Promise<void>;
     clearError: () => void;
@@ -45,6 +33,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
+    const apolloClient = useApolloClient();
+    const [loginMutation] = useLoginMutation();
+    const [logoutMutation] = useLogoutMutation();
+
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(
         localStorage.getItem("auth_token")
@@ -55,30 +47,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const clearError = useCallback(() => setError(null), []);
 
-    const logout = useCallback(() => {
-        setUser(null);
-        setToken(null);
-        setIsAuthenticated(false);
-        localStorage.removeItem("auth_token");
-    }, []);
+    const logout = useCallback(async () => {
+        try {
+            await logoutMutation();
+            setUser(null);
+            setToken(null);
+            setIsAuthenticated(false);
+            localStorage.removeItem("auth_token");
+            await apolloClient.resetStore();
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    }, [logoutMutation, apolloClient]);
 
     const login = useCallback(
-        async (credentials: LoginCredentials): Promise<boolean> => {
+        async (credentials: LoginMutationVariables): Promise<boolean> => {
             setIsLoading(true);
             clearError();
 
             try {
-                // Get the CSRF cookie from the root URL
-                await axios.get("/sanctum/csrf-cookie", { baseURL: "" });
+                const response = await loginMutation({
+                    variables: {
+                        email: credentials.email,
+                        password: credentials.password,
+                    },
+                });
 
-                const response = await axios.post<LoginResponse>(
-                    "/login",
-                    credentials
-                );
+                if (response.data?.login.token) {
+                    const { user: graphqlUser, token } = response.data.login;
+                    // Convert GraphQL user to our User type
+                    const fullUser: User = {
+                        ...graphqlUser,
+                        isAdmin: graphqlUser.isAdmin,
+                        created_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
+                        updated_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
+                    };
 
-                if (response.data.token) {
-                    const { user, token } = response.data;
-                    setUser(user);
+                    setUser(fullUser);
                     setToken(token);
                     setIsAuthenticated(true);
                     localStorage.setItem("auth_token", token);
@@ -86,28 +91,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
                 setError("Invalid response from server");
                 return false;
-            } catch (error: any) {
+            } catch (error) {
                 console.error("Login failed", error);
-                if (error.response?.status === 422) {
-                    // Handle validation errors
-                    if (error.response.data?.errors) {
-                        const firstErrorArray = Object.values(
-                            error.response.data.errors
-                        )[0];
-                        if (
-                            Array.isArray(firstErrorArray) &&
-                            firstErrorArray.length > 0
-                        ) {
-                            setError(firstErrorArray[0]);
-                        } else {
-                            setError(
-                                error.response.data?.message ||
-                                    "Invalid credentials"
-                            );
-                        }
-                    } else {
-                        setError("Invalid credentials");
-                    }
+                if (error instanceof ApolloError) {
+                    // Handle GraphQL errors
+                    const firstError = error.graphQLErrors[0];
+                    setError(
+                        firstError?.message ||
+                            "An error occurred while trying to sign in."
+                    );
                 } else {
                     setError(
                         "An error occurred while trying to sign in. Please try again."
@@ -118,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 setIsLoading(false);
             }
         },
-        [clearError]
+        [loginMutation, clearError]
     );
 
     const checkAuth = useCallback(async () => {
@@ -130,12 +122,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         try {
-            const response = await axios.get<User>("/user", {
-                headers: { Authorization: `Bearer ${storedToken}` },
+            const { data } = await apolloClient.query<MeQuery>({
+                query: MeDocument,
             });
 
-            if (response.data) {
-                setUser(response.data);
+            if (data.me) {
+                // Convert GraphQL user to our User type
+                const fullUser: User = {
+                    ...data.me,
+                    isAdmin: data.me.isAdmin,
+                    created_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
+                    updated_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
+                };
+                setUser(fullUser);
                 setToken(storedToken);
                 setIsAuthenticated(true);
             } else {
@@ -147,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [logout]);
+    }, [logout, apolloClient]);
 
     // Check authentication status when the component mounts
     useEffect(() => {
