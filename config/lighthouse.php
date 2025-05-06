@@ -38,8 +38,11 @@ return [
             // middleware, this delegates auth and permission checks to the field level.
             Nuwave\Lighthouse\Http\Middleware\AttemptAuthentication::class,
 
+            // Custom middleware to log GraphQL requests and responses
+            App\Http\Middleware\LogGraphQLRequests::class,
+
             // Logs every incoming GraphQL query.
-            // Nuwave\Lighthouse\Http\Middleware\LogGraphQLQueries::class,
+            Nuwave\Lighthouse\Http\Middleware\LogGraphQLQueries::class,
         ],
 
         /*
@@ -185,7 +188,7 @@ return [
     */
 
     'namespaces' => [
-        'models' => ['App', 'App\\Models'],
+        'models' => [],
         'queries' => 'App\\GraphQL\\Queries',
         'mutations' => 'App\\GraphQL\\Mutations',
         'subscriptions' => 'App\\GraphQL\\Subscriptions',

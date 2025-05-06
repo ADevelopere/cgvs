@@ -47,11 +47,11 @@ class TemplateCategoryController extends Controller
                     'nullable',
                     'exists:template_categories,id',
                     function ($attribute, $value, $fail) {
-                        // Prevent creating subcategories under special categories
+                        // Prevent creating subcategories under deletion category
                         if ($value) {
                             $parentCategory = TemplateCategory::find($value);
-                            if ($parentCategory && $parentCategory->isSpecial()) {
-                                $fail('Cannot create subcategories under special categories.');
+                            if ($parentCategory && $parentCategory->isDeletionCategory()) {
+                                $fail('Cannot create subcategories under deletion category.');
                             }
                         }
                     },

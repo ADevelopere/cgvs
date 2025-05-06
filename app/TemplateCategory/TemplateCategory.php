@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\TemplateCategory;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,7 +27,7 @@ class TemplateCategory extends Model
     ];
 
     // Special category types
-    public const SPECIAL_TYPE_DELETED = 'deleted';
+    public const SPECIAL_TYPE_DELETION = 'deletion';
     public const SPECIAL_TYPE_MAIN = 'main';
 
     public function isSpecial(): bool
@@ -35,9 +35,9 @@ class TemplateCategory extends Model
         return !is_null($this->special_type);
     }
 
-    public function isDeletedCategory(): bool
+    public function isDeletionCategory(): bool
     {
-        return $this->special_type === self::SPECIAL_TYPE_DELETED;
+        return $this->special_type === self::SPECIAL_TYPE_DELETION;
     }
 
     public function isMainCategory(): bool
@@ -48,7 +48,7 @@ class TemplateCategory extends Model
     public function isImmutableCategory(): bool
     {
         // Only deleted category is completely immutable
-        return $this->isDeletedCategory();
+        return $this->isDeletionCategory();
     }
 
     // Boot the model
@@ -99,7 +99,7 @@ class TemplateCategory extends Model
      */
     public static function getDeletedCategory()
     {
-        return static::where('special_type', self::SPECIAL_TYPE_DELETED)->firstOrFail();
+        return static::where('special_type', self::SPECIAL_TYPE_DELETION)->firstOrFail();
     }
 
     /**

@@ -1,0 +1,30 @@
+extend type Mutation {
+    createTemplateCategory(
+        input: CreateTemplateCategoryInput!
+    ): TemplateCategory!
+        @guard
+        @field(resolver: "TemplateCategoryMutator@create")
+
+    updateTemplateCategory(
+        id: ID!
+            @rules(
+                apply: [
+                    "exists:template_categories,id"
+                    "not_deletion_category"
+                ]
+            )
+        input: UpdateTemplateCategoryInput!
+    ): TemplateCategory!
+        @guard
+        @field(resolver: "TemplateCategoryMutator@update")
+
+    deleteTemplateCategory(id: ID!): TemplateCategory!
+        @guard
+        @field(resolver: "TemplateCategoryMutator@delete")
+
+    reorderTemplateCategories(
+        input: [ReorderCategoriesInput!]!
+    ): [TemplateCategory!]!
+        @guard
+        @field(resolver: "TemplateCategoryMutator@reorder")
+}

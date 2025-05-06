@@ -6,11 +6,11 @@ Create `graphql/types/TemplateCategory.graphql`:
 ```graphql
 type TemplateCategory {
   id: ID!
-  name: String! @rules(apply: ["min:3"])
+  name: String! @rules(apply: ["required", "string", "min:3", "max:255"])
   description: String
   parentCategory: TemplateCategory @belongsTo
-  childCategories: [TemplateCategory!]! @hasMany
-  templates: [Template!]! @hasMany
+  childCategories: [TemplateCategory!]! @hasMany @orderBy(column: "order")
+  templates: [Template!]! @hasMany @orderBy(column: "order")
   order: Int!
   specialType: TemplateCategoryType
   createdAt: DateTime!
@@ -27,15 +27,25 @@ enum TemplateCategoryType {
 input CreateTemplateCategoryInput {
   name: String! @rules(apply: ["required", "string", "min:3", "max:255"])
   description: String
-  parentCategoryId: ID @rules(apply: ["exists:template_categories,id"])
-  order: Int
+  parentCategoryId: ID @rules(apply: [
+    "exists:template_categories,id",
+    "not_special_category",
+    "prevent_self_parent",
+    "prevent_circular_reference"
+  ])
+  order: Int @rules(apply: ["integer", "min:0"])
 }
 
 input UpdateTemplateCategoryInput {
   name: String @rules(apply: ["string", "min:3", "max:255"])
   description: String
-  parentCategoryId: ID @rules(apply: ["exists:template_categories,id"])
-  order: Int
+  parentCategoryId: ID @rules(apply: [
+    "exists:template_categories,id",
+    "not_special_category",
+    "prevent_self_parent",
+    "prevent_circular_reference"
+  ])
+  order: Int @rules(apply: ["integer", "min:0"])
 }
 
 input ReorderCategoriesInput {
@@ -92,14 +102,34 @@ use Illuminate\Validation\Rule;
 
 class ValidateTemplateCategoryNameDirective extends BaseDirective
 {
-    public function rules(): array
+    public static function definition(): array
     {
         return [
-            'name' => ['required', 'min:3'],
-            'special_type' => [
-                'prohibited_if:parent_category_id,!null',
-                Rule::unique('template_categories')->ignore($this->argument('id')),
-            ],
+            'not_special_category' => function($value, $fail) {
+                if ($value) {
+                    $parent = TemplateCategory::find($value);
+                    if ($parent && $parent->isSpecial()) {
+                        $fail('Cannot create or move categories under special categories.');
+                    }
+                }
+            },
+            'prevent_self_parent' => function($value, $fail, $input) {
+                if ($value && isset($input['id']) && $value == $input['id']) {
+                    $fail('A category cannot be its own parent.');
+                }
+            },
+            'prevent_circular_reference' => function($value, $fail, $input) {
+                if ($value && isset($input['id'])) {
+                    $parent = TemplateCategory::find($value);
+                    while ($parent) {
+                        if ($parent->id === $input['id']) {
+                            $fail('Cannot create circular reference in category hierarchy.');
+                            break;
+                        }
+                        $parent = $parent->parentCategory;
+                    }
+                }
+            }
         ];
     }
 }
