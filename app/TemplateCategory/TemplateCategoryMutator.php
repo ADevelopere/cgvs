@@ -44,7 +44,7 @@ class TemplateCategoryMutator implements LighthouseMutation
     /**
      * @throws ValidationException
      */
-    public function delete($root, array $args): bool
+    public function delete($root, array $args): TemplateCategory
     {
         $category = TemplateCategory::query()->findOrFail($args['id']);
         return TemplateCategoryService::deleteTemplateCategory($category);
@@ -53,7 +53,7 @@ class TemplateCategoryMutator implements LighthouseMutation
     /**
      * @throws ValidationException
      */
-    public function reorder($root, array $args): bool
+    public function reorder($root, array $args): array
     {
         return TemplateCategoryService::reorderCategories($args['input']);
     }

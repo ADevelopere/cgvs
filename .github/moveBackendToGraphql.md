@@ -960,8 +960,8 @@ type User {
   email: String!
   emailVerifiedAt: DateTime
   isAdmin: Boolean!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  created_at: DateTime!
+  updated_at: DateTime!
 }
 ```
 
@@ -1029,9 +1029,9 @@ type TemplateCategory {
   childCategories: [TemplateCategory!]! @hasMany
   order: Int
   specialType: TemplateCategoryType
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
 }
 
 enum TemplateCategoryType {

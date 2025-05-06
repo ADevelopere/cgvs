@@ -28,3 +28,33 @@ extend type Mutation {
         @guard
         @field(resolver: "TemplateCategoryMutator@reorder")
 }
+
+
+input CreateTemplateCategoryInput {
+  name: String! @rules(apply: ["required", "string", "min:3", "max:255"])
+  description: String
+  parentCategoryId: ID @rules(apply: [
+    "exists:template_categories,id",
+    "not_deletion_category",
+    "prevent_self_parent",
+    "prevent_circular_reference"
+  ])
+  order: Int @rules(apply: ["integer", "min:0"])
+}
+
+input UpdateTemplateCategoryInput {
+  name: String @rules(apply: ["string", "min:3", "max:255"])
+  description: String
+  parentCategoryId: ID @rules(apply: [
+    "exists:template_categories,id",
+    "not_deletion_category",
+    "prevent_self_parent",
+    "prevent_circular_reference"
+  ])
+  order: Int @rules(apply: ["integer", "min:0"])
+}
+
+input ReorderCategoriesInput {
+  id: ID!
+  order: Int!
+}

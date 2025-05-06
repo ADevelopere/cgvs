@@ -181,10 +181,10 @@ class TemplateCategoryService
      * Delete a template category
      *
      * @param TemplateCategory $category
-     * @return bool
+     * @return TemplateCategory
      * @throws ValidationException|Exception
      */
-    public static function deleteTemplateCategory(TemplateCategory $category): bool
+    public static function deleteTemplateCategory(TemplateCategory $category): TemplateCategory
     {
         Log::info('Template category delete request:', [
             'category_id' => $category->id
@@ -209,14 +209,14 @@ class TemplateCategoryService
         }
 
         try {
-            $categoryId = $category->id;
-            $result = $category->delete();
+            $deletedCategory = $category->load(['parentCategory', 'childCategories', 'templates']);
+            $category->delete();
 
             Log::info('Template category deleted successfully', [
-                'category_id' => $categoryId
+                'category_id' => $category->id
             ]);
 
-            return $result;
+            return $deletedCategory;
 
         } catch (Exception $e) {
             Log::error('Failed to delete template category', [
@@ -232,10 +232,10 @@ class TemplateCategoryService
      * Reorder template categories
      *
      * @param array $categories Array of categories with their new orders [['id' => 1, 'order' => 1], ...]
-     * @return bool
+     * @return TemplateCategory[]
      * @throws ValidationException|Exception
      */
-    public static function reorderCategories(array $categories): bool
+    public static function reorderCategories(array $categories): array
     {
         Log::info('Template category reorder request:', [
             'input' => $categories
@@ -261,13 +261,20 @@ class TemplateCategoryService
         }
 
         try {
+            $categoryIds = array_column($categories, 'id');
+            
             foreach ($categories as $categoryData) {
                 TemplateCategory::where('id', $categoryData['id'])
                     ->update(['order' => $categoryData['order']]);
             }
 
             Log::info('Template categories reordered successfully');
-            return true;
+            
+            return TemplateCategory::whereIn('id', $categoryIds)
+                ->orderBy('order')
+                ->get()
+                ->load(['parentCategory', 'childCategories', 'templates'])
+                ->all();
 
         } catch (Exception $e) {
             Log::error('Failed to reorder template categories', [

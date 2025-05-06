@@ -13,8 +13,8 @@ type TemplateRecipient {
   isValid: Boolean!
   validationErrors: [String!]
   data: JSON!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  created_at: DateTime!
+  updated_at: DateTime!
 }
 
 type ValidationResult {

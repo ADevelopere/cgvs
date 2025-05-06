@@ -13,9 +13,9 @@ type TemplateCategory {
   templates: [Template!]! @hasMany @orderBy(column: "order")
   order: Int!
   specialType: TemplateCategoryType
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
 }
 
 enum TemplateCategoryType {
