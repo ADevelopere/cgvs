@@ -4,8 +4,11 @@ namespace App\GraphQL\Mutations;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthMutator
 {
@@ -29,21 +32,30 @@ class AuthMutator
 
     public function logout($root, array $args, $context)
     {
-        $user = $context->user();
+        $user = Auth::guard('sanctum')->user();
         if (!$user) {
-            throw new AuthenticationException('Unauthenticated.');
+            throw new AuthenticationException('User not authenticated.');
         }
 
-        // Get the current access token
-        $token = $user->currentAccessToken();
-        if (!$token) {
-            throw new AuthenticationException('No active session found.');
+        try {
+            // Get the bearer token from the request
+            $bearerToken = request()->bearerToken();
+            if ($bearerToken) {
+                // Find and delete the current token
+                [$id, $token] = explode('|', $bearerToken, 2);
+                if ($id && $token) {
+                    PersonalAccessToken::where('id', $id)
+                        ->where('tokenable_id', $user->id)
+                        ->delete();
+                }
+            }
+
+            return [
+                'message' => 'Logged out successfully'
+            ];
+        } catch (\Exception $e) {
+            Log::error('Logout failed: ' . $e->getMessage());
+            throw new \Exception('Failed to process logout. Please try again.');
         }
-
-        $token->delete();
-
-        return [
-            'message' => 'Logged out successfully'
-        ];
     }
 }

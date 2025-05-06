@@ -5,6 +5,6 @@ extend type Mutation {
   ): AuthPayload! @field(resolver: "AuthMutator@login")
 
   logout: LogoutResponse! 
-    @guard 
+    @guard
     @field(resolver: "AuthMutator@logout")
 }
