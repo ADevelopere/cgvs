@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -28,7 +28,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
         currentCategory,
         regularCategories,
-        templates,
         addTemplate,
         updateTemplate,
         moveTemplateToDeletionCategory,
@@ -37,6 +36,22 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         setIsAddingTemplate,
         setOnNewTemplateCancel,
     } = useTemplateCategoryManagement();
+
+    const templates = currentCategory?.templates ?? [];
+
+    useEffect(() => {
+        if (currentCategory) {
+            console.log(
+                "TemplateCategoryManagementTemplatePane Current category selected:",
+                currentCategory,
+            );
+        } else {
+            console.log(
+                "TemplateCategoryManagementTemplatePane No category selected",
+            );
+        }
+    }, [currentCategory]);
+
     const { theme } = useAppTheme();
     const [tempTemplate, setTempTemplate] = useState<{
         id: string;
@@ -126,7 +141,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         }
 
         try {
-            updateTemplate(template.id, { name: newName });
+            updateTemplate({ ...template, name: newName });
             return ""; // success
         } catch (error: any) {
             return error.message || strings.templateUpdateFailed;
@@ -269,7 +284,9 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                 <Tooltip title={strings.delete}>
                                     <IconButton
                                         onClick={() =>
-                                            moveTemplateToDeletionCategory(template.id)
+                                            moveTemplateToDeletionCategory(
+                                                template.id,
+                                            )
                                         }
                                         color="error"
                                         disabled={false}

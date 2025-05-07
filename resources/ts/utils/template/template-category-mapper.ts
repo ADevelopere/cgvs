@@ -109,12 +109,35 @@ export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): Temp
     return rootCategories;
 };
 
+export const getSerializableTemplateCategory = (category: TemplateCategory): any => {
+    return {
+        id: category.id,
+        name: category.name,
+        special_type: category.special_type,
+        templates: category.templates?.map(template => ({
+            id: template.id,
+            name: template.name,
+        })),
+        // map childCategories recursively
+        childCategories: category.childCategories ?
+            getSerializableCategories(category.childCategories) : 
+            [],
+        // parentCategory: category.parentCategory ? {
+        //     id: category.parentCategory.id,
+        //     name: category.parentCategory.name,
+        // } : null,
+    };
+};
+
 export const getSerializableCategories = (categories: TemplateCategory[]): any[] => {
     return categories.map(category => ({
         id: category.id,
         name: category.name,
         special_type: category.special_type,
-        templates: category.templates,
+                templates: category.templates?.map(template => ({
+            id: template.id,
+            name: template.name,
+        })),
         childCategories: category.childCategories ? 
             getSerializableCategories(category.childCategories) : 
             [],
