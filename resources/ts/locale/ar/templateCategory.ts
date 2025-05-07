@@ -26,6 +26,7 @@ const templateCategory: TemplateCategoryTranslation = {
     addTemplate: "إضافة قالب",
     selectCategory: "اختر فئة",
     selectParentCategory: "اختر الفئة الرئيسية",
+    createChildCategory: "إنشاء فئة فرعية",
     addNewCategory: "إضافة فئة جديدة",
     addNewTemplate: "إضافة قالب جديد",
     edit: "تعديل",
@@ -51,6 +52,7 @@ const templateCategory: TemplateCategoryTranslation = {
     retry: "إعادة المحاولة",
     refresh: "تحديث",
     confirm: "تأكيد",
+    filter: "تصفية",
 
     // Success messages
     categoryAddedSuccessfully: "تمت إضافة الفئة بنجاح",

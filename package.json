@@ -59,6 +59,7 @@
         "@mui/styles": "^6.4.8",
         "@mui/x-data-grid": "^8.2.0",
         "@mui/x-date-pickers": "^8.1.0",
+        "@mui/x-tree-view": "^8.2.0",
         "@parcel/watcher": "^2.5.1",
         "@toolpad/core": "^0.14.0",
         "@types/moment-hijri": "^2.1.4",

@@ -173,7 +173,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                     flexDirection: "row",
                     width: "100%",
                     borderBottom: "1px solid",
-                    borderColor: theme.palette.divider,
+                    borderColor: 'divider',
                 }}
             >
                 <Typography
