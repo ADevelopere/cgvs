@@ -19,6 +19,7 @@ class Template extends Model implements LighthouseModel
         'description',
         'background_url',
         'category_id',
+        'pre_deletion_category_id',
         'order',
         'trashed_at',
     ];
@@ -112,19 +113,35 @@ class Template extends Model implements LighthouseModel
     public function moveToDeletionCategory()
     {
         $deletedCategory = TemplateCategory::getDeletedCategory();
+        // Store the current category ID before moving to deletion
+        $this->pre_deletion_category_id = $this->category_id;
         $this->category_id = $deletedCategory->id;
         $this->order = null;
         $this->trashed_at = now();
         $this->save();
     }
 
-    public function moveToMainCategory()
+    public function restoreFromDeletionCategory()
     {
+        // Try to restore to the previous category if it exists
+        if ($this->pre_deletion_category_id) {
+            $previousCategory = TemplateCategory::find($this->pre_deletion_category_id);
+            if ($previousCategory) {
+                $this->category_id = $previousCategory->id;
+                $this->order = Template::where('category_id', $previousCategory->id)->max('order') + 1;
+                $this->trashed_at = null;
+                $this->pre_deletion_category_id = null;
+                $this->save();
+                return;
+            }
+        }
+
+        // If previous category doesn't exist or wasn't stored, restore to main category
         $mainCategory = TemplateCategory::getMainCategory();
         $this->category_id = $mainCategory->id;
-        // Set order as last in the main category
         $this->order = Template::where('category_id', $mainCategory->id)->max('order') + 1;
         $this->trashed_at = null;
+        $this->pre_deletion_category_id = null;
         $this->save();
     }
 }

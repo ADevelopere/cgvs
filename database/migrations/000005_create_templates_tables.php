@@ -63,6 +63,10 @@ return new class extends Migration
             $table->foreignId('category_id')
                 ->constrained('template_categories')
                 ->restrictOnDelete(); // Prevent deletion if has templates
+            $table->foreignId('pre_deletion_category_id')
+                ->nullable()
+                ->constrained('template_categories')
+                ->nullOnDelete(); // If previous category is deleted, set to null
             $table->unsignedInteger('order')->nullable(); // Allow null for templates in special categories
             $table->timestamps();
             $table->softDeletes();

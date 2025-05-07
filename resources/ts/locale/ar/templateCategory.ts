@@ -1,18 +1,28 @@
 import TemplateCategoryTranslation from "../components/TemplateCategory";
 
 const templateCategory: TemplateCategoryTranslation = {
+    // Management and navigation
     templateCategoriesManagement: "إدارة فئات القوالب",
     toggleCategoriesPane: "فتح/إغلاق لوحة الفئات",
     toggleTemplatesPane: "فتح/إغلاق لوحة القوالب",
 
+    // General terms
     categories: "الفئات",
     templates: "القوالب",
     name: "الإسم",
-    addCategory: "إضافة فئة",
-    addTemplate: "إضافة قالب",
-    sort: "فرز",
+    image: "الصورة",
+    actions: "الإجراءات",
+    createdAt: "تاريخ الإنشاء",
+    deletedAt: "تاريخ الحذف",
+
+    // Empty states
     noCategories: "لا توجد فئات",
     noTemplates: "لا توجد قوالب",
+    noDeletedTemplates: "لا توجد قوالب محذوفة",
+
+    // Form and button actions
+    addCategory: "إضافة فئة",
+    addTemplate: "إضافة قالب",
     selectCategory: "اختر فئة",
     addNewCategory: "إضافة فئة جديدة",
     addNewTemplate: "إضافة قالب جديد",
@@ -20,51 +30,61 @@ const templateCategory: TemplateCategoryTranslation = {
     move: "نقل",
     delete: "حذف",
     more: "المزيد",
+    restoreTemplate: "استعادة القالب",
+
+    // Sorting options
+    sort: "فرز",
     nameAsc: "الاسم (أ-ي)",
     nameDesc: "الاسم (ي-أ)",
     idAsc: "المعرف (تصاعدي)",
     idDesc: "المعرف (تنازلي)",
+
+    // Action buttons
     cancel: "إلغاء",
     add: "إضافة",
     save: "حفظ",
     retry: "إعادة المحاولة",
     refresh: "تحديث",
+    confirm: "تأكيد",
+
+    // Success messages
     categoryAddedSuccessfully: "تمت إضافة الفئة بنجاح",
-    categoryAddFailed: "فشل إضافة الفئة",
-    errorLoadingCategories: "فشل تحميل الفئات",
-    noDataReturned: "لم يتم إرجاع بيانات",
     categoryHiddenSuccessfully: "تم إخفاء الفئة بنجاح",
     categoryVisibleSuccessfully: "تم إظهار الفئة بنجاح",
     categoryUpdatedSuccessfully: "تم تحديث الفئة بنجاح",
-    categoryUpdateFailed: "فشل تحديث الفئة",
     categoryDeletedSuccessfully: "تم حذف الفئة بنجاح",
-    categoryDeleteFailed: "فشل حذف الفئة",
-
-    selectCategoryFirst: "الرجاء تحديد فئة أولاً",
-    createCategoryFirst: "الرجاء إنشاء فئة أولاً",
-    confirmSwitchCategory: "هل أنت متأكد أنك تريد تبديل الفئات؟",
-    switchCategoryWhileAddingTemplate:
-        "أنت تقوم حاليًا بإضافة قالب. هل أنت متأكد أنك تريد تبديل الفئات؟",
-    confirm: "تأكيد",
-
     templateAddedSuccessfully: "تمت إضافة القالب بنجاح",
-    templateAddFailed: "فشل إضافة القالب",
     templateHiddenSuccessfully: "تم إخفاء القالب بنجاح",
     templateVisibleSuccessfully: "تم إظهار القالب بنجاح",
     templateUpdatedSuccessfully: "تم تحديث القالب بنجاح",
-    templateUpdateFailed: "فشل تحديث القالب",
     templateDeletedSuccessfully: "تم حذف القالب بنجاح",
-    templateDeleteFailed: "فشل حذف القالب",
-
-    // Template restoration messages
     templateRestoredSuccessfully: "تمت استعادة القالب بنجاح",
+    templateMovedToDeletionSuccessfully: "تم نقل القالب إلى سلة المحذوفات بنجاح",
+
+    // Error messages
+    categoryAddFailed: "فشل إضافة الفئة",
+    errorLoadingCategories: "فشل تحميل الفئات",
+    noDataReturned: "لم يتم إرجاع بيانات",
+    categoryUpdateFailed: "فشل تحديث الفئة",
+    categoryDeleteFailed: "فشل حذف الفئة",
+    templateAddFailed: "فشل إضافة القالب",
+    templateUpdateFailed: "فشل تحديث القالب",
+    templateDeleteFailed: "فشل حذف القالب",
     templateRestoreFailed: "فشل استعادة القالب",
+    templateMoveToDeletionFailed: "فشل نقل القالب إلى سلة المحذوفات",
     errorRestoringTemplate: "فشل في استعادة القالب:",
 
+    // Validation messages
     nameTooShort: "يجب أن يكون اسم الفئة 3 أحرف على الأقل",
     nameTooLong: "يجب ألا يتجاوز اسم الفئة 255 حرفًا",
 
-    // Error messages from TemplateCategoryManagementContext
+    // Category selection and switching
+    selectCategoryFirst: "الرجاء تحديد فئة أولاً",
+    createCategoryFirst: "الرجاء إنشاء فئة أولاً",
+    confirmSwitchCategory: "هل أنت متأكد أنك تريد تبديل الفئات؟",
+    switchCategoryWhileAddingTemplate: "أنت تقوم حاليًا بإضافة قالب. هل أنت متأكد أنك تريد تبديل الفئات؟",
+
+    // Error messages from context
     invalidDataFormat: "تم استلام بيانات غير صالحة من واجهة برمجة التطبيقات",
     categoryNotFound: "لم يتم العثور على الفئة",
     invalidCategoryId: "معرف الفئة غير صالح",
@@ -85,10 +105,6 @@ const templateCategory: TemplateCategoryTranslation = {
     errorMovingToDeletion: "فشل في نقل القالب إلى سلة المحذوفات:",
     errorUpdatingTemplate: "فشل في تحديث القالب:",
 
-    // Template movement messages
-    templateMoveToDeletionFailed: "فشل نقل القالب إلى سلة المحذوفات",
-    templateMovedToDeletionSuccessfully: "تم نقل القالب إلى سلة المحذوفات بنجاح",
-
     // Context error messages
     useCategoryContextError: "يجب استخدام useCategory داخل CategoryProvider",
 
@@ -101,7 +117,7 @@ const templateCategory: TemplateCategoryTranslation = {
     receivedEmptyTemplate: "تم استلام قالب فارغ من الخادم",
     failedToGenerateContent: "فشل في إنشاء محتوى القالب",
     templateIdRequired: "معرف القالب مطلوب",
-    templateNotFound: "لم يتم العثور على القالب",
+    templateNotFound: "لم يتم العثور على القالب"
 };
 
 export default templateCategory;

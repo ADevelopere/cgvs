@@ -307,7 +307,7 @@ class TemplateService
     }
 
     /**
-     * Move template back to main category.
+     * Move template back to: pre deletion category || main category.
      *
      * @param Template $template
      * @return Template
@@ -320,7 +320,7 @@ class TemplateService
             'current_trashed_at' => $template->trashed_at
         ]);
 
-        $template->moveToMainCategory();
+        $template->restoreFromDeletionCategory();
 
         Log::info('Template restored successfully', [
             'template_id' => $template->id,

@@ -13,13 +13,15 @@ import {
 } from "@mui/material";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { formatDate } from "@/utils/dateUtils";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 type Order = "asc" | "desc";
 type OrderBy = "name" | "created_at" | "trashed_at";
 
 const DeletionTemplatesCategory: React.FC = () => {
-    const { deletionCategory, restoreTemplate } =
-        useTemplateCategoryManagement();
+    const strings = useAppTranslation("templateCategoryTranslations");
+    
+    const { deletionCategory, restoreTemplate } = useTemplateCategoryManagement();
     const [order, setOrder] = useState<Order>("desc");
     const [orderBy, setOrderBy] = useState<OrderBy>("trashed_at");
 
@@ -50,45 +52,35 @@ const DeletionTemplatesCategory: React.FC = () => {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Background</TableCell>
+                            <TableCell></TableCell>
                             <TableCell>
                                 <TableSortLabel
                                     active={orderBy === "name"}
-                                    direction={
-                                        orderBy === "name" ? order : "asc"
-                                    }
+                                    direction={orderBy === "name" ? order : "asc"}
                                     onClick={() => handleRequestSort("name")}
                                 >
-                                    Template Name
+                                    {strings.name}
                                 </TableSortLabel>
                             </TableCell>
                             <TableCell>
                                 <TableSortLabel
                                     active={orderBy === "created_at"}
-                                    direction={
-                                        orderBy === "created_at" ? order : "asc"
-                                    }
-                                    onClick={() =>
-                                        handleRequestSort("created_at")
-                                    }
+                                    direction={orderBy === "created_at" ? order : "asc"}
+                                    onClick={() => handleRequestSort("created_at")}
                                 >
-                                    Created At
+                                    {strings.createdAt}
                                 </TableSortLabel>
                             </TableCell>
                             <TableCell>
                                 <TableSortLabel
                                     active={orderBy === "trashed_at"}
-                                    direction={
-                                        orderBy === "trashed_at" ? order : "asc"
-                                    }
-                                    onClick={() =>
-                                        handleRequestSort("trashed_at")
-                                    }
+                                    direction={orderBy === "trashed_at" ? order : "asc"}
+                                    onClick={() => handleRequestSort("trashed_at")}
                                 >
-                                    Deleted At
+                                    {strings.deletedAt}
                                 </TableSortLabel>
                             </TableCell>
-                            <TableCell align="right">Actions</TableCell>
+                            <TableCell align="right">{strings.actions}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -97,11 +89,8 @@ const DeletionTemplatesCategory: React.FC = () => {
                                 <TableCell>
                                     <Box
                                         component="img"
-                                        src={
-                                            template.background_url ||
-                                            "/storage/img/default-template-bg.png"
-                                        }
-                                        alt={`${template.name} background`}
+                                        src={template.background_url || "/storage/img/default-template-bg.png"}
+                                        alt={`${template.name} ${strings.image}`}
                                         sx={{
                                             width: 60,
                                             height: 60,
@@ -111,22 +100,16 @@ const DeletionTemplatesCategory: React.FC = () => {
                                     />
                                 </TableCell>
                                 <TableCell>{template.name}</TableCell>
-                                <TableCell>
-                                    {formatDate(template.created_at)}
-                                </TableCell>
-                                <TableCell>
-                                    {formatDate(template.trashed_at)}
-                                </TableCell>
+                                <TableCell>{formatDate(template.created_at)}</TableCell>
+                                <TableCell>{formatDate(template.trashed_at)}</TableCell>
                                 <TableCell align="right">
                                     <Button
                                         variant="outlined"
                                         size="small"
-                                        onClick={() =>
-                                            restoreTemplate(template.id)
-                                        }
+                                        onClick={() => restoreTemplate(template.id)}
                                         color="primary"
                                     >
-                                        Restore
+                                        {strings.restoreTemplate}
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -134,7 +117,7 @@ const DeletionTemplatesCategory: React.FC = () => {
                         {sortedTemplates.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={5} align="center">
-                                    No deleted templates found
+                                    {strings.noDeletedTemplates}
                                 </TableCell>
                             </TableRow>
                         )}

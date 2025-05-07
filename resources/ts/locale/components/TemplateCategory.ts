@@ -3,14 +3,25 @@ type TemplateCategoryTranslation = {
     toggleCategoriesPane: string;
     toggleTemplatesPane: string;
 
+    // General terms
     categories: string;
     templates: string;
     name: string;
     addCategory: string;
     addTemplate: string;
     sort: string;
+    actions: string;
+    image: string;
+    createdAt: string;
+    deletedAt: string;
+    restoreTemplate: string;
+
+    // Empty states
     noCategories: string;
     noTemplates: string;
+    noDeletedTemplates: string;
+    
+    // Form and button actions
     selectCategory: string;
     addNewCategory: string;
     addNewTemplate: string;
@@ -18,50 +29,57 @@ type TemplateCategoryTranslation = {
     move: string;
     delete: string;
     more: string;
+    
+    // Sorting options
     nameAsc: string;
     nameDesc: string;
     idAsc: string;
     idDesc: string;
+    
+    // Action buttons
     cancel: string;
     add: string;
     save: string;
     retry: string;
     refresh: string;
+    
+    // Success messages
     categoryAddedSuccessfully: string;
-    categoryAddFailed: string;
-    errorLoadingCategories: string;
-    noDataReturned: string;
     categoryHiddenSuccessfully: string;
     categoryVisibleSuccessfully: string;
     categoryUpdatedSuccessfully: string;
-    categoryUpdateFailed: string;
     categoryDeletedSuccessfully: string;
+    templateAddedSuccessfully: string;
+    templateHiddenSuccessfully: string;
+    templateVisibleSuccessfully: string;
+    templateUpdatedSuccessfully: string;
+    templateDeletedSuccessfully: string;
+    templateRestoredSuccessfully: string;
+    
+    // Error messages
+    categoryAddFailed: string;
+    errorLoadingCategories: string;
+    noDataReturned: string;
+    categoryUpdateFailed: string;
     categoryDeleteFailed: string;
+    templateAddFailed: string;
+    templateUpdateFailed: string;
+    templateDeleteFailed: string;
+    templateRestoreFailed: string;
+    errorRestoringTemplate: string;
+    
+    // Validation messages
+    nameTooShort: string;
+    nameTooLong: string;
 
+    // Category selection and switching
     selectCategoryFirst: string;
     createCategoryFirst: string;
     confirmSwitchCategory: string;
     switchCategoryWhileAddingTemplate: string;
     confirm: string;
 
-    templateAddedSuccessfully: string;
-    templateAddFailed: string;
-    templateHiddenSuccessfully: string;
-    templateVisibleSuccessfully: string;
-    templateUpdatedSuccessfully: string;
-    templateUpdateFailed: string;
-    templateDeletedSuccessfully: string;
-    templateDeleteFailed: string;
-
-    // Template restoration messages
-    templateRestoredSuccessfully: string;
-    templateRestoreFailed: string;
-    errorRestoringTemplate: string;
-
-    nameTooShort: string;
-    nameTooLong: string;
-
-    // Error messages from TemplateCategoryManagementContext
+    // Error messages from context
     invalidDataFormat: string;
     categoryNotFound: string;
     invalidCategoryId: string;
