@@ -25,6 +25,7 @@ type TemplateCategoryTranslation = {
     // Form and button actions
     selectCategory: string;
     selectParentCategory: string;
+    createChildCategory: string;
     addNewCategory: string;
     addNewTemplate: string;
     edit: string;
@@ -45,6 +46,7 @@ type TemplateCategoryTranslation = {
     save: string;
     retry: string;
     refresh: string;
+    filter: string;
     
     // Success messages
     categoryAddedSuccessfully: string;

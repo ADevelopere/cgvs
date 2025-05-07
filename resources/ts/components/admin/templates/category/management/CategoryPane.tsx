@@ -3,20 +3,19 @@ import { useState, useRef, useEffect } from "react";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
-import { ListItemButton, Typography } from "@mui/material";
+import { ListItemButton, Paper, Typography } from "@mui/material";
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
-import { Boxes, EditIcon } from "lucide-react";
+import { Boxes } from "lucide-react";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { TemplateCategory } from "@/graphql/generated/types";
 import { getSerializableCategories } from "@/utils/template/template-category-mapper";
 import CategoryEditDialog from "./CategoryEditDialog";
+import RenderCategoryItem from "./RenderCategoryItem";
+import { TreeView } from "@/components/common/TreeView";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
     const { theme } = useAppTheme();
@@ -26,7 +25,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         regularCategories,
         currentCategory: selectedCategory,
         trySelectCategory,
-        addCategory,
+        createCategory,
         updateCategory,
         deleteCategory,
     } = useTemplateCategoryManagement();
@@ -37,7 +36,8 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     }, [regularCategories]);
 
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [categoryToEdit, setCategoryToEdit] = useState<TemplateCategory | null>(null);
+    const [categoryToEdit, setCategoryToEdit] =
+        useState<TemplateCategory | null>(null);
     const [tempCategory, setTempCategory] = useState<{
         id: string;
         name: string;
@@ -77,7 +77,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         }
 
         try {
-            addCategory(name);
+            createCategory(name);
             setTempCategory(null);
             return "";
         } catch (error: any) {
@@ -85,15 +85,25 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         }
     };
 
-    const handleEditCategory = ({ name, description, parentId }: { name: string; description?: string; parentId?: string | null }) => {
+    const handleEditCategory = ({
+        name,
+        description,
+        parentId,
+    }: {
+        name: string;
+        description?: string;
+        parentId?: string | null;
+    }) => {
         if (categoryToEdit) {
             // TODO: Update the updateCategory function in the context to handle description and parentId
-            updateCategory({
-                ...categoryToEdit,
-                name,
-                description: description,
-                
-            }, parentId);
+            updateCategory(
+                {
+                    ...categoryToEdit,
+                    name,
+                    description: description,
+                },
+                parentId,
+            );
             setIsEditDialogOpen(false);
             setCategoryToEdit(null);
         }
@@ -113,87 +123,8 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         category: TemplateCategory,
         newName: string,
     ) => {
-        updateCategory({...category, name: newName });
+        updateCategory({ ...category, name: newName });
     };
-
-    const renderCategory = (category: (typeof regularCategories)[0]) => (
-        <ListItem
-            disablePadding
-            key={category.id}
-            sx={{
-                backgroundColor:
-                    category.id === selectedCategory?.id
-                        ? theme.palette.action.focus
-                        : "inherit",
-            }}
-        >
-            <ListItemButton
-                selected={category.id === selectedCategory?.id}
-                onClick={() => handleCategoryClick(category)}
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    width: "100%",
-                }}
-            >
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: 1,
-                        alignItems: "center",
-                    }}
-                >
-                    <Boxes />
-                    <EditableTypography
-                        typography={{
-                            variant: "body1",
-                        }}
-                        textField={{
-                            size: "small",
-                            variant: "standard",
-                            sx: { minWidth: 150 },
-                        }}
-                        value={category.name}
-                        onSave={(newValue) =>
-                            handleCategoryNameEdit(category, newValue)
-                        }
-                        isValid={validateCategoryName}
-                    />
-                </Box>
-
-                <Box sx={{ flexGrow: 1 }} />
-                {/* delete */}
-                <Tooltip title="Delete">
-                    <span>
-                        <IconButton
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                deleteCategory(category.id);
-                            }}
-                            color="error"
-                            disabled={!!category.special_type || (category.templates?.length ?? 0) > 0}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-
-                {/* edit button */}
-                <Tooltip title={strings.edit}>
-                    <IconButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenEditDialog(category);
-                        }}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </Tooltip>
-            </ListItemButton>
-        </ListItem>
-    );
 
     return (
         <Box
@@ -204,16 +135,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                 px: 1,
             }}
         >
-            <Typography
-                variant="h5"
-                sx={{
-                    p: 2,
-                    borderBottom: "1px solid",
-                    borderColor: theme.palette.divider,
-                }}
-            >
-                {strings.categories}
-            </Typography>
             {!Array.isArray(regularCategories) ? (
                 <EmptyStateIllustration message={strings.noCategories} />
             ) : regularCategories.length === 0 && !tempCategory ? (
@@ -225,50 +146,96 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                         flexGrow: 1,
                         overflow: "auto",
                         height: "80%",
+                        p: 0
                     }}
                 >
-                    {regularCategories.map(renderCategory)}
+                    {/* {regularCategories.map(renderCategory)} */}
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: tempCategory ? "calc(100% - 80px)" : "100%",
+                            overflow: "auto",
+                            borderRadius: tempCategory
+                                ? "20px 20px 0px 0px"
+                                : "20px 20px 20px 20px",
+                        }}
+                    >
+                        <TreeView
+                            items={regularCategories}
+                            itemRenderer={(item: TemplateCategory) => (
+                                <RenderCategoryItem
+                                    key={item.id}
+                                    category={item}
+                                    selectedCategory={selectedCategory}
+                                    handleCategoryClick={handleCategoryClick}
+                                    handleOpenEditDialog={handleOpenEditDialog}
+                                    deleteCategory={deleteCategory}
+                                    validateCategoryName={validateCategoryName}
+                                    handleCategoryNameEdit={
+                                        handleCategoryNameEdit
+                                    }
+                                    createCategory={createCategory}
+                                />
+                            )}
+                            childrenKey="childCategories"
+                            labelKey="name"
+                            header={strings.categories}
+                            noItemsMessage={strings.noCategories}
+                            searchText={strings.filter}
+                        />
+                    </Box>
                     {tempCategory && (
-                        <ListItem
-                            ref={newCategoryRef}
-                            disablePadding
-                            key={tempCategory.id}
+                        <Paper
+                            sx={{
+                                height: "80px",
+                                display: "flex",
+                                alignItems: "end",
+                                justifyContent: "end",
+                                borderRadius: "0px 0px 20px 20px",
+                            }}
                         >
-                            <ListItemButton
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    width: "100%",
-                                }}
+                            <ListItem
+                                ref={newCategoryRef}
+                                disablePadding
+                                key={tempCategory.id}
                             >
-                                <Box
+                                <ListItemButton
                                     sx={{
                                         display: "flex",
                                         flexDirection: "row",
-                                        gap: 1,
                                         alignItems: "center",
+                                        width: "100%",
+                                        borderRadius: "0px 0px 20px 20px",
                                     }}
                                 >
-                                    <Boxes />
-                                    <EditableTypography
-                                        typography={{
-                                            variant: "body1",
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            gap: 1,
+                                            alignItems: "center",
                                         }}
-                                        textField={{
-                                            size: "small",
-                                            variant: "standard",
-                                            sx: { minWidth: 150 },
-                                        }}
-                                        value=""
-                                        onSave={handleNewCategorySave}
-                                        onCancel={handleNewCategoryCancel}
-                                        isValid={validateCategoryName}
-                                        startEditing={true}
-                                    />
-                                </Box>
-                            </ListItemButton>
-                        </ListItem>
+                                    >
+                                        <Boxes />
+                                        <EditableTypography
+                                            typography={{
+                                                variant: "body1",
+                                            }}
+                                            textField={{
+                                                size: "small",
+                                                variant: "standard",
+                                                sx: { minWidth: 150 },
+                                            }}
+                                            value=""
+                                            onSave={handleNewCategorySave}
+                                            onCancel={handleNewCategoryCancel}
+                                            isValid={validateCategoryName}
+                                            startEditing={true}
+                                        />
+                                    </Box>
+                                </ListItemButton>
+                            </ListItem>
+                        </Paper>
                     )}
                 </List>
             )}
@@ -291,16 +258,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                 >
                     {strings.addCategory}
                 </Button>
-                {/* sort categories */}
-                {/* <Button
-                    variant="outlined"
-                    startIcon={<SortIcon />}
-                    onClick={handleSortClick}
-                    disabled={!regularCategories?.length}
-                >
-                    {strings.sort}
-                </Button> */}
-                {/* total count */}
                 <Box
                     sx={{
                         flexGrow: 1,

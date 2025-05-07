@@ -134,7 +134,7 @@ type TemplateCategoryManagementContextType = {
      * Creates a new template category with the specified name and optional parent category.
      * After successful creation, the new category is added to the `categories` list and set as the `currentCategory`.
      */
-    addCategory: (name: string, parentId?: string) => void;
+    createCategory: (name: string, parentId?: string) => void;
     /**
      * Updates the name of an existing template category identified by its ID.
      * This modifies the category's name in the backend and updates the corresponding category in the local `categories` state.
@@ -378,7 +378,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         [],
     );
 
-    const addCategory = useCallback(
+    const createCategory = useCallback(
         async (name: string, parentId?: string) => {
             try {
                 const response = await createTemplateCategoryMutation({
@@ -831,7 +831,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             isSwitchWarningOpen,
             closeSwitchWarning,
             confirmSwitch,
-            addCategory,
+            createCategory,
             updateCategory,
             deleteCategory,
             moveTemplateToDeletionCategory,
@@ -858,7 +858,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             isSwitchWarningOpen,
             closeSwitchWarning,
             confirmSwitch,
-            addCategory,
+            createCategory,
             updateCategory,
             deleteCategory,
             moveTemplateToDeletionCategory,
