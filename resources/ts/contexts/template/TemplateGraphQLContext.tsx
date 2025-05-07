@@ -287,6 +287,7 @@ export const TemplateGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.restoreTemplate) return;
 
+            console.log("Restoring template", data.restoreTemplate);
             const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
                 query: Types.FlatTemplateCategoriesDocument,
             });
