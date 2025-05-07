@@ -80,4 +80,6 @@ export type DashboardLayoutContextProps = {
     setHeaderHeight: (height: number) => void;
     sideBarToggleWidth: number;
     setSideBarToggleWidth: (width: number) => void;
+    sideBarWidth: number;
+    setSideBarWidth: (width: number) => void;
 };

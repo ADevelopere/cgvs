@@ -17,7 +17,7 @@ export const FloatingDashboardSidebar: React.FC<
     return (
         <Drawer
             variant="temporary"
-            anchor={isRtl ? "right" : "left"}
+            anchor={"left"}
             open={open}
             onClose={onClose}
             ModalProps={{
@@ -25,7 +25,6 @@ export const FloatingDashboardSidebar: React.FC<
             }}
             slotProps={{
                 transition: {
-                    direction: isRtl ? "left" : "right"
                 }
             }}
             sx={{

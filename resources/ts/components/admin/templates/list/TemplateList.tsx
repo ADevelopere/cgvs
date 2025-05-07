@@ -18,19 +18,21 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import CardView from "./views/CardView";
 import ListView from "./views/ListView";
 import GridView from "./views/GridView";
-import { useTemplate } from "@/contexts/template/TemplatesContext";
+import { Template } from "@/graphql/generated/types";
 
 type ViewMode = "card" | "grid" | "list";
 
-const TemplateList: React.FC = () => {
+type TemplateListProps = {
+    templates: Template[];
+}
+
+const TemplateList: React.FC<TemplateListProps> = ({
+    templates,
+}) => {
+    console.log("TemplateList", templates);
     const navigate = useNavigate();
-    const { templates, fetchTemplates } = useTemplate();
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>("card");
-
-    useEffect(() => {
-        fetchTemplates();
-    }, [fetchTemplates]);
 
     // Filter templates based on search
     const searchTemplates = React.useMemo(() => {
@@ -83,24 +85,6 @@ const TemplateList: React.FC = () => {
 
     return (
         <Box sx={{ pt: 3, pb: 16, px: 3}} id="template-list">
-            <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={3}
-            >
-                <Typography variant="h4" component="h1">
-                    Certificate Templates
-                </Typography>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => navigate("/admin/templates/create")}
-                >
-                    Create Template
-                </Button>
-            </Box>
-
             <Box
                 display="flex"
                 justifyContent="space-between"

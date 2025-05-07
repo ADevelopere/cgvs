@@ -8,7 +8,6 @@ import {
 import AdminLayout from "@/components/layouts/AdminLayout";
 import GuestLayout from "@/components/layouts/GuestLayout";
 import Login from "@/views/auth/Login";
-import TemplateIndex from "@/views/admin/templates/Index";
 import TemplateCreate from "@/views/admin/templates/CreateTemplateView";
 import TemplateManagementPage from "@/views/admin/templates/TemplateManagementView";
 import Verify from "@/views/Verify";
@@ -17,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
 import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
 import GraphiQLApp from "@/views/GraphiQL";
+import NewTemplateList from "@/components/admin/templates/list/NewTemplateList";
 
 interface WithAuthProps {
     children: React.ReactNode;
@@ -82,7 +82,7 @@ const routes: RouteObject[] = [
                 children: [
                     {
                         index: true,
-                        element: <TemplateIndex />,
+                        element: <NewTemplateList />,
                     },
                     {
                         path: "create",

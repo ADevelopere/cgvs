@@ -48,7 +48,7 @@ export function TreeView<T extends BaseTreeItem>({
     className?: string;
     childrenKey?: string;
     labelKey?: string;
-    header: string;
+    header?: string;
     noItemsMessage: string;
     searchText: string;
 }) {
@@ -252,8 +252,8 @@ export function TreeView<T extends BaseTreeItem>({
                             cursor: item.disabled ? "default" : "pointer",
                             opacity: item.disabled ? 0.5 : 1,
                             pointerEvents: item.disabled ? "none" : "auto",
-                            paddingInlineStart: `${level * 20 +
-                                (!hasChildren ? 10 : 0)
+                            paddingInlineStart: `${
+                                level * 20 + (!hasChildren ? 10 : 0)
                             }px`,
                             height: `${itemHeight}px`,
                             borderRadius: 2,
@@ -317,12 +317,20 @@ export function TreeView<T extends BaseTreeItem>({
                     borderBottom: "1px solid",
                     width: "100%",
                     gap: 2,
-                    borderColor: 'divider',
+                    borderColor: "divider",
                 }}
             >
-                <Typography variant="h5" sx={{
-                        p: 2,
-                    }}>{header}</Typography>
+                {header && (
+                    <Typography
+                        variant="h5"
+                        sx={{
+                            p: 2,
+                        }}
+                    >
+                        {header}
+                    </Typography>
+                )}
+
                 <Autocomplete
                     sx={{
                         flexGrow: 1,
