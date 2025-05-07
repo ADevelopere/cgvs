@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import AdminLayout from "@/components/layouts/AdminLayout";
 import GuestLayout from "@/components/layouts/GuestLayout";
-import TemplateLayout from "@/components/layouts/TemplateLayout";
 import Login from "@/views/auth/Login";
 import TemplateIndex from "@/views/admin/templates/Index";
 import TemplateCreate from "@/views/admin/templates/CreateTemplateView";
@@ -80,7 +79,6 @@ const routes: RouteObject[] = [
             },
             {
                 path: "templates",
-                element: <TemplateLayout />,
                 children: [
                     {
                         index: true,

@@ -40,6 +40,11 @@ class TemplateMutator implements LighthouseMutation
             backgroundImage: $args['backgroundImage'] ?? null
         );
 
+        Log::info('TemplateMutator: Updating template', [
+            'templateId' => $args['id'],
+            'input' => $input
+        ]);
+
         return TemplateService::updateTemplate($template, $input);
     }
 

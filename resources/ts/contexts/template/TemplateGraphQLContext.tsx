@@ -164,23 +164,63 @@ export const TemplateGraphQLProvider: React.FC<{
 
             if (!existingData?.flatTemplateCategories) return;
 
+            // Find the template in its original category to preserve all fields
+            let existingTemplate: any = null;
+            let oldCategoryId: string | null = null;
+            existingData.flatTemplateCategories.forEach((category) => {
+                if (!category.templates) return;
+                const found = category.templates.find(
+                    (t) => t.id === data.updateTemplate.id,
+                );
+                if (found) {
+                    existingTemplate = found;
+                    oldCategoryId = category.id;
+                }
+            });
+
             const updatedCategories = existingData.flatTemplateCategories.map(
                 (category) => {
                     const templates = category.templates || [];
-                    const updatedTemplates = templates.map((template) => {
-                        if (template.id === data.updateTemplate.id) {
-                            // Merge existing template data with update data to preserve missing fields
-                            return {
-                                ...template,
-                                ...data.updateTemplate,
-                            };
-                        }
-                        return template;
-                    });
-                    return {
-                        ...category,
-                        templates: updatedTemplates,
-                    };
+
+                    // If this is the new category and it's different from the old one
+                    if (category.id === data.updateTemplate.category.id && oldCategoryId !== category.id) {
+                        return {
+                            ...category,
+                            templates: [
+                                ...templates,
+                                {
+                                    ...existingTemplate,
+                                    ...data.updateTemplate,
+                                }
+                            ]
+                        };
+                    }
+
+                    // If this is the old category and template is moving to a new one
+                    if (oldCategoryId === category.id && data.updateTemplate.category.id !== category.id) {
+                        return {
+                            ...category,
+                            templates: templates.filter(t => t.id !== data.updateTemplate.id)
+                        };
+                    }
+
+                    // If template is staying in the same category, just update it
+                    if (category.id === data.updateTemplate.category.id) {
+                        return {
+                            ...category,
+                            templates: templates.map((template) => {
+                                if (template.id === data.updateTemplate.id) {
+                                    return {
+                                        ...template,
+                                        ...data.updateTemplate,
+                                    };
+                                }
+                                return template;
+                            }),
+                        };
+                    }
+
+                    return category;
                 },
             );
 

@@ -61,7 +61,7 @@ class TemplateService
             ]);
         }
 
-        // Validate category exists and is not special
+        // Validate category exists
         if (!$input->categoryId || !($category = TemplateCategory::find($input->categoryId))) {
             throw ValidationException::withMessages([
                 'category_id' => ['The selected category does not exist.']
@@ -180,7 +180,7 @@ class TemplateService
             if ($input->categoryId !== null && $input->categoryId !== $template->category_id) {
                 $newCategory = TemplateCategory::findOrFail($input->categoryId);
 
-                if (!$newCategory->isSpecial()) {
+                if (!$newCategory->isDeletionCategory()) {
                     $template->category_id = $input->categoryId;
                     if ($input->order === null) {
                         $template->order = Template::where('category_id', $input->categoryId)
@@ -191,7 +191,7 @@ class TemplateService
 
             if ($input->order !== null) {
                 $currentCategory = TemplateCategory::findOrFail($template->category_id);
-                if (!$currentCategory->isSpecial()) {
+                if (!$currentCategory->isDeletionCategory()) {
                     $template->order = $input->order;
                 }
             }
