@@ -109,6 +109,19 @@ export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): Temp
     return rootCategories;
 };
 
+export const getSerializableCategories = (categories: TemplateCategory[]): any[] => {
+    return categories.map(category => ({
+        id: category.id,
+        name: category.name,
+        special_type: category.special_type,
+        templates: category.templates,
+        childCategories: category.childCategories ? 
+            getSerializableCategories(category.childCategories) : 
+            [],
+        // Exclude parentCategory to avoid circular reference
+    }));
+};
+
 // Main mapper function
 export const mapTemplateCategory = (source: TemplateCategorySource | undefined | null): TemplateCategory | null => {
     if (!source) {

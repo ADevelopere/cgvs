@@ -371,34 +371,6 @@ export type UserPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
-export type CreateTemplateMutationVariables = Exact<{
-  input: CreateTemplateInput;
-}>;
-
-
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
-
-export type CreateTemplateCategoryMutationVariables = Exact<{
-  input: CreateTemplateCategoryInput;
-}>;
-
-
-export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
-
-export type DeleteTemplateMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', id: string, name: string, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
-
-export type DeleteTemplateCategoryMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
-
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -412,19 +384,26 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogoutResponse', message: string } };
 
+export type CreateTemplateMutationVariables = Exact<{
+  input: CreateTemplateInput;
+}>;
+
+
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
+
+export type DeleteTemplateMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', id: string, name: string, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
+
 export type MoveTemplateToDeletionCategoryMutationVariables = Exact<{
   templateId: Scalars['ID']['input'];
 }>;
 
 
 export type MoveTemplateToDeletionCategoryMutation = { __typename?: 'Mutation', moveTemplateToDeletionCategory: { __typename?: 'Template', id: string, name: string, order?: number | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
-
-export type ReorderTemplateCategoriesMutationVariables = Exact<{
-  input: Array<ReorderCategoriesInput> | ReorderCategoriesInput;
-}>;
-
-
-export type ReorderTemplateCategoriesMutation = { __typename?: 'Mutation', reorderTemplateCategories: Array<{ __typename?: 'TemplateCategory', id: string, name: string, special_type?: TemplateCategoryType | null, order?: number | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null }> };
 
 export type ReorderTemplatesMutationVariables = Exact<{
   input: Array<ReorderTemplateInput> | ReorderTemplateInput;
@@ -438,7 +417,7 @@ export type RestoreTemplateMutationVariables = Exact<{
 }>;
 
 
-export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', id: string, name: string, order?: number | null, created_at: any, deleted_at?: any | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
+export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, order?: number | null, created_at: any, deleted_at?: any | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type UpdateTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -448,6 +427,27 @@ export type UpdateTemplateMutationVariables = Exact<{
 
 export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
+export type CreateTemplateCategoryMutationVariables = Exact<{
+  input: CreateTemplateCategoryInput;
+}>;
+
+
+export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
+
+export type DeleteTemplateCategoryMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
+
+export type ReorderTemplateCategoriesMutationVariables = Exact<{
+  input: Array<ReorderCategoriesInput> | ReorderCategoriesInput;
+}>;
+
+
+export type ReorderTemplateCategoriesMutation = { __typename?: 'Mutation', reorderTemplateCategories: Array<{ __typename?: 'TemplateCategory', id: string, name: string, special_type?: TemplateCategoryType | null, order?: number | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null }> };
+
 export type UpdateTemplateCategoryMutationVariables = Exact<{
   id: Scalars['ID']['input'];
   input: UpdateTemplateCategoryInput;
@@ -455,6 +455,31 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 
 
 export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', created_at: any, email: string, email_verified_at?: any | null, id: string, isAdmin: boolean, name: string, updated_at: any } };
+
+export type TemplateQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } | null };
+
+export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TemplateConfigQuery = { __typename?: 'Query', templateConfig: { __typename?: 'TemplateConfig', allowedFileTypes: Array<string>, maxBackgroundSize: number } };
+
+export type TemplatesQueryVariables = Exact<{
+  first: Scalars['Int']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'TemplatePaginator', data: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type DeletionTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -471,18 +496,6 @@ export type MainTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }
 
 export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, background_url?: string | null, description?: string | null, order?: number | null, created_at: any, updated_at: any }> | null } };
 
-export type MeQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', created_at: any, email: string, email_verified_at?: any | null, id: string, isAdmin: boolean, name: string, updated_at: any } };
-
-export type TemplateQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } | null };
-
 export type TemplateCategoriesQueryVariables = Exact<{
   first: Scalars['Int']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -497,19 +510,6 @@ export type TemplateCategoryQueryVariables = Exact<{
 
 
 export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } | null };
-
-export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type TemplateConfigQuery = { __typename?: 'Query', templateConfig: { __typename?: 'TemplateConfig', allowedFileTypes: Array<string>, maxBackgroundSize: number } };
-
-export type TemplatesQueryVariables = Exact<{
-  first: Scalars['Int']['input'];
-  page?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-
-export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'TemplatePaginator', data: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type UserQueryVariables = Exact<{
   email?: InputMaybe<Scalars['String']['input']>;
@@ -534,164 +534,6 @@ export type PlaceholderQueryVariables = Exact<{ [key: string]: never; }>;
 export type PlaceholderQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string, name: string, email: string } };
 
 
-export const CreateTemplateDocument = gql`
-    mutation createTemplate($input: CreateTemplateInput!) {
-  createTemplate(input: $input) {
-    id
-    name
-    description
-    background_url
-    category {
-      id
-    }
-    order
-    created_at
-  }
-}
-    `;
-export type CreateTemplateMutationFn = Apollo.MutationFunction<CreateTemplateMutation, CreateTemplateMutationVariables>;
-
-/**
- * __useCreateTemplateMutation__
- *
- * To run a mutation, you first call `useCreateTemplateMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTemplateMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTemplateMutation, { data, loading, error }] = useCreateTemplateMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateTemplateMutation(baseOptions?: Apollo.MutationHookOptions<CreateTemplateMutation, CreateTemplateMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTemplateMutation, CreateTemplateMutationVariables>(CreateTemplateDocument, options);
-      }
-export type CreateTemplateMutationHookResult = ReturnType<typeof useCreateTemplateMutation>;
-export type CreateTemplateMutationResult = Apollo.MutationResult<CreateTemplateMutation>;
-export type CreateTemplateMutationOptions = Apollo.BaseMutationOptions<CreateTemplateMutation, CreateTemplateMutationVariables>;
-export const CreateTemplateCategoryDocument = gql`
-    mutation createTemplateCategory($input: CreateTemplateCategoryInput!) {
-  createTemplateCategory(input: $input) {
-    id
-    name
-    description
-    special_type
-    parentCategory {
-      id
-    }
-    order
-    created_at
-  }
-}
-    `;
-export type CreateTemplateCategoryMutationFn = Apollo.MutationFunction<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
-
-/**
- * __useCreateTemplateCategoryMutation__
- *
- * To run a mutation, you first call `useCreateTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTemplateCategoryMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTemplateCategoryMutation, { data, loading, error }] = useCreateTemplateCategoryMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>(CreateTemplateCategoryDocument, options);
-      }
-export type CreateTemplateCategoryMutationHookResult = ReturnType<typeof useCreateTemplateCategoryMutation>;
-export type CreateTemplateCategoryMutationResult = Apollo.MutationResult<CreateTemplateCategoryMutation>;
-export type CreateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
-export const DeleteTemplateDocument = gql`
-    mutation deleteTemplate($id: ID!) {
-  deleteTemplate(id: $id) {
-    id
-    name
-    category {
-      id
-    }
-    deleted_at
-  }
-}
-    `;
-export type DeleteTemplateMutationFn = Apollo.MutationFunction<DeleteTemplateMutation, DeleteTemplateMutationVariables>;
-
-/**
- * __useDeleteTemplateMutation__
- *
- * To run a mutation, you first call `useDeleteTemplateMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTemplateMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTemplateMutation, { data, loading, error }] = useDeleteTemplateMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteTemplateMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateMutation, DeleteTemplateMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTemplateMutation, DeleteTemplateMutationVariables>(DeleteTemplateDocument, options);
-      }
-export type DeleteTemplateMutationHookResult = ReturnType<typeof useDeleteTemplateMutation>;
-export type DeleteTemplateMutationResult = Apollo.MutationResult<DeleteTemplateMutation>;
-export type DeleteTemplateMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateMutation, DeleteTemplateMutationVariables>;
-export const DeleteTemplateCategoryDocument = gql`
-    mutation deleteTemplateCategory($id: ID!) {
-  deleteTemplateCategory(id: $id) {
-    id
-    name
-    parentCategory {
-      id
-    }
-    deleted_at
-  }
-}
-    `;
-export type DeleteTemplateCategoryMutationFn = Apollo.MutationFunction<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
-
-/**
- * __useDeleteTemplateCategoryMutation__
- *
- * To run a mutation, you first call `useDeleteTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTemplateCategoryMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTemplateCategoryMutation, { data, loading, error }] = useDeleteTemplateCategoryMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>(DeleteTemplateCategoryDocument, options);
-      }
-export type DeleteTemplateCategoryMutationHookResult = ReturnType<typeof useDeleteTemplateCategoryMutation>;
-export type DeleteTemplateCategoryMutationResult = Apollo.MutationResult<DeleteTemplateCategoryMutation>;
-export type DeleteTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
 export const LoginDocument = gql`
     mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -767,6 +609,85 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const CreateTemplateDocument = gql`
+    mutation createTemplate($input: CreateTemplateInput!) {
+  createTemplate(input: $input) {
+    id
+    name
+    description
+    background_url
+    category {
+      id
+    }
+    order
+    created_at
+  }
+}
+    `;
+export type CreateTemplateMutationFn = Apollo.MutationFunction<CreateTemplateMutation, CreateTemplateMutationVariables>;
+
+/**
+ * __useCreateTemplateMutation__
+ *
+ * To run a mutation, you first call `useCreateTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTemplateMutation, { data, loading, error }] = useCreateTemplateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTemplateMutation(baseOptions?: Apollo.MutationHookOptions<CreateTemplateMutation, CreateTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTemplateMutation, CreateTemplateMutationVariables>(CreateTemplateDocument, options);
+      }
+export type CreateTemplateMutationHookResult = ReturnType<typeof useCreateTemplateMutation>;
+export type CreateTemplateMutationResult = Apollo.MutationResult<CreateTemplateMutation>;
+export type CreateTemplateMutationOptions = Apollo.BaseMutationOptions<CreateTemplateMutation, CreateTemplateMutationVariables>;
+export const DeleteTemplateDocument = gql`
+    mutation deleteTemplate($id: ID!) {
+  deleteTemplate(id: $id) {
+    id
+    name
+    category {
+      id
+    }
+    deleted_at
+  }
+}
+    `;
+export type DeleteTemplateMutationFn = Apollo.MutationFunction<DeleteTemplateMutation, DeleteTemplateMutationVariables>;
+
+/**
+ * __useDeleteTemplateMutation__
+ *
+ * To run a mutation, you first call `useDeleteTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTemplateMutation, { data, loading, error }] = useDeleteTemplateMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTemplateMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateMutation, DeleteTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTemplateMutation, DeleteTemplateMutationVariables>(DeleteTemplateDocument, options);
+      }
+export type DeleteTemplateMutationHookResult = ReturnType<typeof useDeleteTemplateMutation>;
+export type DeleteTemplateMutationResult = Apollo.MutationResult<DeleteTemplateMutation>;
+export type DeleteTemplateMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateMutation, DeleteTemplateMutationVariables>;
 export const MoveTemplateToDeletionCategoryDocument = gql`
     mutation moveTemplateToDeletionCategory($templateId: ID!) {
   moveTemplateToDeletionCategory(templateId: $templateId) {
@@ -807,46 +728,6 @@ export function useMoveTemplateToDeletionCategoryMutation(baseOptions?: Apollo.M
 export type MoveTemplateToDeletionCategoryMutationHookResult = ReturnType<typeof useMoveTemplateToDeletionCategoryMutation>;
 export type MoveTemplateToDeletionCategoryMutationResult = Apollo.MutationResult<MoveTemplateToDeletionCategoryMutation>;
 export type MoveTemplateToDeletionCategoryMutationOptions = Apollo.BaseMutationOptions<MoveTemplateToDeletionCategoryMutation, MoveTemplateToDeletionCategoryMutationVariables>;
-export const ReorderTemplateCategoriesDocument = gql`
-    mutation reorderTemplateCategories($input: [ReorderCategoriesInput!]!) {
-  reorderTemplateCategories(input: $input) {
-    id
-    name
-    special_type
-    parentCategory {
-      id
-    }
-    order
-    updated_at
-  }
-}
-    `;
-export type ReorderTemplateCategoriesMutationFn = Apollo.MutationFunction<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>;
-
-/**
- * __useReorderTemplateCategoriesMutation__
- *
- * To run a mutation, you first call `useReorderTemplateCategoriesMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useReorderTemplateCategoriesMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [reorderTemplateCategoriesMutation, { data, loading, error }] = useReorderTemplateCategoriesMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useReorderTemplateCategoriesMutation(baseOptions?: Apollo.MutationHookOptions<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>(ReorderTemplateCategoriesDocument, options);
-      }
-export type ReorderTemplateCategoriesMutationHookResult = ReturnType<typeof useReorderTemplateCategoriesMutation>;
-export type ReorderTemplateCategoriesMutationResult = Apollo.MutationResult<ReorderTemplateCategoriesMutation>;
-export type ReorderTemplateCategoriesMutationOptions = Apollo.BaseMutationOptions<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>;
 export const ReorderTemplatesDocument = gql`
     mutation reorderTemplates($input: [ReorderTemplateInput!]!) {
   reorderTemplates(input: $input) {
@@ -891,6 +772,7 @@ export const RestoreTemplateDocument = gql`
   restoreTemplate(templateId: $templateId) {
     id
     name
+    description
     category {
       id
     }
@@ -973,6 +855,125 @@ export function useUpdateTemplateMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateTemplateMutationHookResult = ReturnType<typeof useUpdateTemplateMutation>;
 export type UpdateTemplateMutationResult = Apollo.MutationResult<UpdateTemplateMutation>;
 export type UpdateTemplateMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateMutation, UpdateTemplateMutationVariables>;
+export const CreateTemplateCategoryDocument = gql`
+    mutation createTemplateCategory($input: CreateTemplateCategoryInput!) {
+  createTemplateCategory(input: $input) {
+    id
+    name
+    description
+    special_type
+    parentCategory {
+      id
+    }
+    order
+    created_at
+  }
+}
+    `;
+export type CreateTemplateCategoryMutationFn = Apollo.MutationFunction<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
+
+/**
+ * __useCreateTemplateCategoryMutation__
+ *
+ * To run a mutation, you first call `useCreateTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTemplateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTemplateCategoryMutation, { data, loading, error }] = useCreateTemplateCategoryMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>(CreateTemplateCategoryDocument, options);
+      }
+export type CreateTemplateCategoryMutationHookResult = ReturnType<typeof useCreateTemplateCategoryMutation>;
+export type CreateTemplateCategoryMutationResult = Apollo.MutationResult<CreateTemplateCategoryMutation>;
+export type CreateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
+export const DeleteTemplateCategoryDocument = gql`
+    mutation deleteTemplateCategory($id: ID!) {
+  deleteTemplateCategory(id: $id) {
+    id
+    name
+    parentCategory {
+      id
+    }
+    deleted_at
+  }
+}
+    `;
+export type DeleteTemplateCategoryMutationFn = Apollo.MutationFunction<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
+
+/**
+ * __useDeleteTemplateCategoryMutation__
+ *
+ * To run a mutation, you first call `useDeleteTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTemplateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTemplateCategoryMutation, { data, loading, error }] = useDeleteTemplateCategoryMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>(DeleteTemplateCategoryDocument, options);
+      }
+export type DeleteTemplateCategoryMutationHookResult = ReturnType<typeof useDeleteTemplateCategoryMutation>;
+export type DeleteTemplateCategoryMutationResult = Apollo.MutationResult<DeleteTemplateCategoryMutation>;
+export type DeleteTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
+export const ReorderTemplateCategoriesDocument = gql`
+    mutation reorderTemplateCategories($input: [ReorderCategoriesInput!]!) {
+  reorderTemplateCategories(input: $input) {
+    id
+    name
+    special_type
+    parentCategory {
+      id
+    }
+    order
+    updated_at
+  }
+}
+    `;
+export type ReorderTemplateCategoriesMutationFn = Apollo.MutationFunction<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>;
+
+/**
+ * __useReorderTemplateCategoriesMutation__
+ *
+ * To run a mutation, you first call `useReorderTemplateCategoriesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReorderTemplateCategoriesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reorderTemplateCategoriesMutation, { data, loading, error }] = useReorderTemplateCategoriesMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useReorderTemplateCategoriesMutation(baseOptions?: Apollo.MutationHookOptions<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>(ReorderTemplateCategoriesDocument, options);
+      }
+export type ReorderTemplateCategoriesMutationHookResult = ReturnType<typeof useReorderTemplateCategoriesMutation>;
+export type ReorderTemplateCategoriesMutationResult = Apollo.MutationResult<ReorderTemplateCategoriesMutation>;
+export type ReorderTemplateCategoriesMutationOptions = Apollo.BaseMutationOptions<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>;
 export const UpdateTemplateCategoryDocument = gql`
     mutation updateTemplateCategory($id: ID!, $input: UpdateTemplateCategoryInput!) {
   updateTemplateCategory(id: $id, input: $input) {
@@ -1017,6 +1018,216 @@ export function useUpdateTemplateCategoryMutation(baseOptions?: Apollo.MutationH
 export type UpdateTemplateCategoryMutationHookResult = ReturnType<typeof useUpdateTemplateCategoryMutation>;
 export type UpdateTemplateCategoryMutationResult = Apollo.MutationResult<UpdateTemplateCategoryMutation>;
 export type UpdateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
+export const MeDocument = gql`
+    query me {
+  me {
+    created_at
+    email
+    email_verified_at
+    id
+    isAdmin
+    name
+    updated_at
+  }
+}
+    `;
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        }
+export function useMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MeQuery, MeQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export function refetchMeQuery(variables?: MeQueryVariables) {
+      return { query: MeDocument, variables: variables }
+    }
+export const TemplateDocument = gql`
+    query template($id: ID!) {
+  template(id: $id) {
+    id
+    name
+    description
+    background_url
+    category {
+      id
+    }
+    order
+    created_at
+    updated_at
+    trashed_at
+  }
+}
+    `;
+
+/**
+ * __useTemplateQuery__
+ *
+ * To run a query within a React component, call `useTemplateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTemplateQuery(baseOptions: Apollo.QueryHookOptions<TemplateQuery, TemplateQueryVariables> & ({ variables: TemplateQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+      }
+export function useTemplateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+        }
+export function useTemplateSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+        }
+export type TemplateQueryHookResult = ReturnType<typeof useTemplateQuery>;
+export type TemplateLazyQueryHookResult = ReturnType<typeof useTemplateLazyQuery>;
+export type TemplateSuspenseQueryHookResult = ReturnType<typeof useTemplateSuspenseQuery>;
+export type TemplateQueryResult = Apollo.QueryResult<TemplateQuery, TemplateQueryVariables>;
+export function refetchTemplateQuery(variables: TemplateQueryVariables) {
+      return { query: TemplateDocument, variables: variables }
+    }
+export const TemplateConfigDocument = gql`
+    query templateConfig {
+  templateConfig {
+    allowedFileTypes
+    maxBackgroundSize
+  }
+}
+    `;
+
+/**
+ * __useTemplateConfigQuery__
+ *
+ * To run a query within a React component, call `useTemplateConfigQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateConfigQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateConfigQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTemplateConfigQuery(baseOptions?: Apollo.QueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+      }
+export function useTemplateConfigLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+        }
+export function useTemplateConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+        }
+export type TemplateConfigQueryHookResult = ReturnType<typeof useTemplateConfigQuery>;
+export type TemplateConfigLazyQueryHookResult = ReturnType<typeof useTemplateConfigLazyQuery>;
+export type TemplateConfigSuspenseQueryHookResult = ReturnType<typeof useTemplateConfigSuspenseQuery>;
+export type TemplateConfigQueryResult = Apollo.QueryResult<TemplateConfigQuery, TemplateConfigQueryVariables>;
+export function refetchTemplateConfigQuery(variables?: TemplateConfigQueryVariables) {
+      return { query: TemplateConfigDocument, variables: variables }
+    }
+export const TemplatesDocument = gql`
+    query templates($first: Int!, $page: Int) {
+  templates(first: $first, page: $page) {
+    data {
+      id
+      name
+      description
+      background_url
+      category {
+        id
+      }
+      order
+      created_at
+      trashed_at
+      updated_at
+    }
+    paginatorInfo {
+      count
+      currentPage
+      firstItem
+      hasMorePages
+      lastItem
+      lastPage
+      perPage
+      total
+    }
+  }
+}
+    `;
+
+/**
+ * __useTemplatesQuery__
+ *
+ * To run a query within a React component, call `useTemplatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplatesQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      page: // value for 'page'
+ *   },
+ * });
+ */
+export function useTemplatesQuery(baseOptions: Apollo.QueryHookOptions<TemplatesQuery, TemplatesQueryVariables> & ({ variables: TemplatesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+      }
+export function useTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+        }
+export function useTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+        }
+export type TemplatesQueryHookResult = ReturnType<typeof useTemplatesQuery>;
+export type TemplatesLazyQueryHookResult = ReturnType<typeof useTemplatesLazyQuery>;
+export type TemplatesSuspenseQueryHookResult = ReturnType<typeof useTemplatesSuspenseQuery>;
+export type TemplatesQueryResult = Apollo.QueryResult<TemplatesQuery, TemplatesQueryVariables>;
+export function refetchTemplatesQuery(variables: TemplatesQueryVariables) {
+      return { query: TemplatesDocument, variables: variables }
+    }
 export const DeletionTemplateCategoryDocument = gql`
     query deletionTemplateCategory {
   deletionTemplateCategory {
@@ -1191,107 +1402,6 @@ export type MainTemplateCategoryQueryResult = Apollo.QueryResult<MainTemplateCat
 export function refetchMainTemplateCategoryQuery(variables?: MainTemplateCategoryQueryVariables) {
       return { query: MainTemplateCategoryDocument, variables: variables }
     }
-export const MeDocument = gql`
-    query me {
-  me {
-    created_at
-    email
-    email_verified_at
-    id
-    isAdmin
-    name
-    updated_at
-  }
-}
-    `;
-
-/**
- * __useMeQuery__
- *
- * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMeQuery({
- *   variables: {
- *   },
- * });
- */
-export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-      }
-export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-        }
-export function useMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MeQuery, MeQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-        }
-export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
-export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
-export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
-export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
-export function refetchMeQuery(variables?: MeQueryVariables) {
-      return { query: MeDocument, variables: variables }
-    }
-export const TemplateDocument = gql`
-    query template($id: ID!) {
-  template(id: $id) {
-    id
-    name
-    description
-    background_url
-    category {
-      id
-    }
-    order
-    created_at
-    updated_at
-    trashed_at
-  }
-}
-    `;
-
-/**
- * __useTemplateQuery__
- *
- * To run a query within a React component, call `useTemplateQuery` and pass it any options that fit your needs.
- * When your component renders, `useTemplateQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTemplateQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useTemplateQuery(baseOptions: Apollo.QueryHookOptions<TemplateQuery, TemplateQueryVariables> & ({ variables: TemplateQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
-      }
-export function useTemplateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
-        }
-export function useTemplateSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
-        }
-export type TemplateQueryHookResult = ReturnType<typeof useTemplateQuery>;
-export type TemplateLazyQueryHookResult = ReturnType<typeof useTemplateLazyQuery>;
-export type TemplateSuspenseQueryHookResult = ReturnType<typeof useTemplateSuspenseQuery>;
-export type TemplateQueryResult = Apollo.QueryResult<TemplateQuery, TemplateQueryVariables>;
-export function refetchTemplateQuery(variables: TemplateQueryVariables) {
-      return { query: TemplateDocument, variables: variables }
-    }
 export const TemplateCategoriesDocument = gql`
     query templateCategories($first: Int!, $page: Int) {
   templateCategories(first: $first, page: $page) {
@@ -1408,115 +1518,6 @@ export type TemplateCategorySuspenseQueryHookResult = ReturnType<typeof useTempl
 export type TemplateCategoryQueryResult = Apollo.QueryResult<TemplateCategoryQuery, TemplateCategoryQueryVariables>;
 export function refetchTemplateCategoryQuery(variables: TemplateCategoryQueryVariables) {
       return { query: TemplateCategoryDocument, variables: variables }
-    }
-export const TemplateConfigDocument = gql`
-    query templateConfig {
-  templateConfig {
-    allowedFileTypes
-    maxBackgroundSize
-  }
-}
-    `;
-
-/**
- * __useTemplateConfigQuery__
- *
- * To run a query within a React component, call `useTemplateConfigQuery` and pass it any options that fit your needs.
- * When your component renders, `useTemplateConfigQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTemplateConfigQuery({
- *   variables: {
- *   },
- * });
- */
-export function useTemplateConfigQuery(baseOptions?: Apollo.QueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
-      }
-export function useTemplateConfigLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
-        }
-export function useTemplateConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
-        }
-export type TemplateConfigQueryHookResult = ReturnType<typeof useTemplateConfigQuery>;
-export type TemplateConfigLazyQueryHookResult = ReturnType<typeof useTemplateConfigLazyQuery>;
-export type TemplateConfigSuspenseQueryHookResult = ReturnType<typeof useTemplateConfigSuspenseQuery>;
-export type TemplateConfigQueryResult = Apollo.QueryResult<TemplateConfigQuery, TemplateConfigQueryVariables>;
-export function refetchTemplateConfigQuery(variables?: TemplateConfigQueryVariables) {
-      return { query: TemplateConfigDocument, variables: variables }
-    }
-export const TemplatesDocument = gql`
-    query templates($first: Int!, $page: Int) {
-  templates(first: $first, page: $page) {
-    data {
-      id
-      name
-      description
-      background_url
-      category {
-        id
-      }
-      order
-      created_at
-      trashed_at
-      updated_at
-    }
-    paginatorInfo {
-      count
-      currentPage
-      firstItem
-      hasMorePages
-      lastItem
-      lastPage
-      perPage
-      total
-    }
-  }
-}
-    `;
-
-/**
- * __useTemplatesQuery__
- *
- * To run a query within a React component, call `useTemplatesQuery` and pass it any options that fit your needs.
- * When your component renders, `useTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTemplatesQuery({
- *   variables: {
- *      first: // value for 'first'
- *      page: // value for 'page'
- *   },
- * });
- */
-export function useTemplatesQuery(baseOptions: Apollo.QueryHookOptions<TemplatesQuery, TemplatesQueryVariables> & ({ variables: TemplatesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
-      }
-export function useTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
-        }
-export function useTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
-        }
-export type TemplatesQueryHookResult = ReturnType<typeof useTemplatesQuery>;
-export type TemplatesLazyQueryHookResult = ReturnType<typeof useTemplatesLazyQuery>;
-export type TemplatesSuspenseQueryHookResult = ReturnType<typeof useTemplatesSuspenseQuery>;
-export type TemplatesQueryResult = Apollo.QueryResult<TemplatesQuery, TemplatesQueryVariables>;
-export function refetchTemplatesQuery(variables: TemplatesQueryVariables) {
-      return { query: TemplatesDocument, variables: variables }
     }
 export const UserDocument = gql`
     query user($email: String, $id: ID) {

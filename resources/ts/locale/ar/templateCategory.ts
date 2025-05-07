@@ -101,6 +101,7 @@ const templateCategory: TemplateCategoryTranslation = {
     receivedEmptyTemplate: "تم استلام قالب فارغ من الخادم",
     failedToGenerateContent: "فشل في إنشاء محتوى القالب",
     templateIdRequired: "معرف القالب مطلوب",
+    templateNotFound: "لم يتم العثور على القالب",
 };
 
 export default templateCategory;

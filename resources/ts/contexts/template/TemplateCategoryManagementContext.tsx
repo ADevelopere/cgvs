@@ -13,6 +13,7 @@ import {
     Template,
     TemplateCategory,
     TemplateCategoriesQuery,
+    FlatTemplateCategoriesQuery,
 } from "@/graphql/generated/types";
 
 import { CircularProgress } from "@mui/material";
@@ -24,6 +25,8 @@ import Button from "@mui/material/Button";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
+    buildCategoryHierarchy,
+    getSerializableCategories,
     mapTemplateCategories,
     mapTemplateCategory,
 } from "@/utils/template/template-category-mapper";
@@ -220,7 +223,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const [regularCategories, setRegularCategories] = useState<
         TemplateCategory[]
     >([]);
-    const [deletedCategory, setDeletedCategory] =
+    const [deletionCategory, setDeletionCategory] =
         useState<TemplateCategory | null>(null);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [currentCategory, setCurrentCategory] =
@@ -239,7 +242,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     >(undefined);
 
     const {
-        templateCategoriesQuery,
+        flatTemplateCategoriesQuery,
         createTemplateCategoryMutation,
         updateTemplateCategoryMutation,
         deleteTemplateCategoryMutation,
@@ -248,7 +251,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const fetchCategories = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await templateCategoriesQuery();
+            const response = await flatTemplateCategoriesQuery();
 
             if (!response.data) {
                 throw new Error(messages.noDataReturned);
@@ -260,14 +263,18 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 );
             }
 
-            const data: TemplateCategoriesQuery = response.data;
+            const data: FlatTemplateCategoriesQuery = response.data;
             logger.log(messages.fetchingCategories);
             logger.log(messages.responseData, data);
 
-            const categories = mapTemplateCategories(data);
+            const categories = buildCategoryHierarchy(
+                mapTemplateCategories(data),
+            );
+            const serializableCategories =
+                getSerializableCategories(categories);
             console.log(
                 "Fetched categories:",
-                JSON.stringify(categories, null, 2),
+                JSON.stringify(serializableCategories, null, 2),
             );
 
             // Separate deleted category from regular categories
@@ -277,7 +284,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             const regular = categories.filter(
                 (cat) => cat.special_type !== "deletion",
             );
-            setDeletedCategory(deleted || null);
+            setDeletionCategory(deleted || null);
             setRegularCategories(regular);
             setFetchError(null);
             setIsLoading(false);
@@ -556,7 +563,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         createTemplateMutation,
         updateTemplateMutation,
         moveTemplateToDeletionCategoryMutation,
-        restoreTemplateMutation
+        restoreTemplateMutation,
     } = useTemplateGraphQL();
 
     // Memoized callbacks for template operations
@@ -649,18 +656,34 @@ export const TemplateCategoryManagementProvider: React.FC<{
             },
         ) => {
             try {
+                const templateToUpdate = templates.find(
+                    (temp) => temp.id === id,
+                );
+
+                if (!templateToUpdate) {
+                    throw new Error(messages.templateNotFound);
+                }
+
                 const { data } = await updateTemplateMutation({
                     id,
                     input: {
                         name: updates.name || "",
                         description: updates.description,
-                        categoryId: updates.category_id?.toString() || currentTemplate?.category.id || "",
+                        categoryId:
+                            updates.category_id?.toString() ||
+                            currentTemplate?.category.id ||
+                            "",
                         backgroundImage: updates.background,
                         order: updates.order,
                     },
                 });
 
-                const updatedTemplate = data?.updateTemplate ? mapSingleTemplate({ updateTemplate: data.updateTemplate }) : null;
+                const updatedTemplate = data?.updateTemplate
+                    ? mapSingleTemplate(
+                          { updateTemplate: data.updateTemplate },
+                          templateToUpdate,
+                      )
+                    : null;
 
                 if (!updatedTemplate) {
                     throw new Error(messages.templateUpdateFailed);
@@ -678,9 +701,10 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 setRegularCategories((prev) =>
                     updateCategoryInTree(prev, {
                         ...currentCategory!,
-                        templates: currentCategory?.templates?.map((template) =>
-                            template.id === id ? updatedTemplate : template,
-                        ) || [],
+                        templates:
+                            currentCategory?.templates?.map((template) =>
+                                template.id === id ? updatedTemplate : template,
+                            ) || [],
                     }),
                 );
 
@@ -713,28 +737,51 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 throw error;
             }
         },
-        [messages, notifications, updateTemplateMutation, currentTemplate, currentCategory, setRegularCategories],
+        [
+            messages,
+            notifications,
+            updateTemplateMutation,
+            currentTemplate,
+            currentCategory,
+            setRegularCategories,
+        ],
     );
 
     const moveTemplateToDeletionCategory = useCallback(
         async (templateId: string) => {
             try {
                 logger.info(messages.movingTemplateToDeletion, templateId);
+
+                const templateToUpdate = templates.find(
+                    (temp) => temp.id === templateId,
+                );
+
+                if (!templateToUpdate) {
+                    throw new Error(messages.templateNotFound);
+                }
+
                 const { data } = await moveTemplateToDeletionCategoryMutation({
                     templateId,
                 });
 
-                const movedTemplate = data?.moveTemplateToDeletionCategory 
-                    ? mapSingleTemplate({ moveToDeletionCategory: data.moveTemplateToDeletionCategory }) 
+                const movedTemplate = data?.moveTemplateToDeletionCategory
+                    ? mapSingleTemplate(
+                          {
+                              moveTemplateToDeletionCategory:
+                                  data.moveTemplateToDeletionCategory,
+                          },
+                          templateToUpdate,
+                      )
                     : null;
 
                 if (!movedTemplate) {
                     throw new Error(messages.templateMoveToDeletionFailed);
                 }
 
-                // Remove from current templates list
                 setTemplates((prev) =>
-                    prev.filter((temp) => temp.id !== templateId),
+                    prev.map((template) =>
+                        template.id === templateId ? movedTemplate : template,
+                    ),
                 );
 
                 // Clear current template if it was moved
@@ -743,25 +790,32 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 }
 
                 // Remove from regular categories and add to deletion category
-                if (deletedCategory) {
+                if (deletionCategory) {
                     setRegularCategories((prev) =>
                         updateCategoryInTree(prev, {
                             ...currentCategory!,
-                            templates: currentCategory?.templates?.filter(
-                                (temp) => temp.id !== templateId,
-                            ) || [],
+                            templates:
+                                currentCategory?.templates?.filter(
+                                    (temp) => temp.id !== templateId,
+                                ) || [],
                         }),
                     );
 
-                    setDeletedCategory({
-                        ...deletedCategory,
-                        templates: [...(deletedCategory.templates || []), movedTemplate],
+                    setDeletionCategory({
+                        ...deletionCategory,
+                        templates: [
+                            ...(deletionCategory.templates || []),
+                            movedTemplate,
+                        ],
                     });
 
-                    notifications.show(messages.templateMovedToDeletionSuccessfully, {
-                        severity: "success",
-                        autoHideDuration: 3000,
-                    });
+                    notifications.show(
+                        messages.templateMovedToDeletionSuccessfully,
+                        {
+                            severity: "success",
+                            autoHideDuration: 3000,
+                        },
+                    );
                 }
             } catch (error: unknown) {
                 const gqlError = error as {
@@ -791,21 +845,36 @@ export const TemplateCategoryManagementProvider: React.FC<{
             moveTemplateToDeletionCategoryMutation,
             currentTemplate,
             currentCategory,
-            deletedCategory,
+            deletionCategory,
             setRegularCategories,
-            setDeletedCategory,
+            setDeletionCategory,
         ],
     );
 
     const restoreTemplate = useCallback(
         async (templateId: string) => {
-            try {            logger.info("Restoring template", templateId);
-            const { data } = await restoreTemplateMutation({
-                templateId,
-            });
+            try {
+                logger.info("Restoring template", templateId);
 
-                const restoredTemplate = data?.restoreTemplate 
-                    ? mapSingleTemplate({ restoreTemplate: data.restoreTemplate }) 
+                const templateToUpdate = templates.find(
+                    (temp) => temp.id === templateId,
+                );
+
+                if (!templateToUpdate) {
+                    throw new Error(messages.templateNotFound);
+                }
+
+                const { data } = await restoreTemplateMutation({
+                    templateId,
+                });
+
+                const restoredTemplate = data?.restoreTemplate
+                    ? mapSingleTemplate(
+                          {
+                              restoreTemplate: data.restoreTemplate,
+                          },
+                          templateToUpdate,
+                      )
                     : null;
 
                 if (!restoredTemplate) {
@@ -813,22 +882,28 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 }
 
                 // Remove from deletion category
-                if (deletedCategory) {
-                    setDeletedCategory({
-                        ...deletedCategory,
-                        templates: deletedCategory.templates?.filter(
-                            (temp) => temp.id !== templateId,
-                        ) || [],
+                if (deletionCategory) {
+                    setDeletionCategory({
+                        ...deletionCategory,
+                        templates:
+                            deletionCategory.templates?.filter(
+                                (temp) => temp.id !== templateId,
+                            ) || [],
                     });
                 }
 
                 // Add to regular categories
                 setRegularCategories((prev) => {
-                    const targetCategory = prev.find(cat => cat.id === restoredTemplate.category.id);
+                    const targetCategory = prev.find(
+                        (cat) => cat.id === restoredTemplate.category.id,
+                    );
                     if (targetCategory) {
                         return updateCategoryInTree(prev, {
                             ...targetCategory,
-                            templates: [...(targetCategory.templates || []), restoredTemplate],
+                            templates: [
+                                ...(targetCategory.templates || []),
+                                restoredTemplate,
+                            ],
                         });
                     }
                     return prev;
@@ -836,7 +911,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
                 // Update current template and templates list if we're in the target category
                 if (currentCategory?.id === restoredTemplate.category.id) {
-                    setTemplates(prev => [...prev, restoredTemplate]);
+                    setTemplates((prev) => [...prev, restoredTemplate]);
                     setCurrentTemplate(restoredTemplate);
                 }
 
@@ -871,9 +946,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
             notifications,
             restoreTemplateMutation,
             currentCategory,
-            deletedCategory,
+            deletionCategory,
             setRegularCategories,
-            setDeletedCategory,
+            setDeletionCategory,
         ],
     );
 
@@ -957,7 +1032,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             fetchCategories,
             fetchError,
             regularCategories,
-            deletedCategory,
+            deletionCategory,
             currentCategory,
             setCurrentCategory,
             trySelectCategory,
@@ -985,7 +1060,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             fetchCategories,
             fetchError,
             regularCategories,
-            deletedCategory,
+            deletionCategory,
             currentCategory,
             trySelectCategory,
             isSwitchWarningOpen,

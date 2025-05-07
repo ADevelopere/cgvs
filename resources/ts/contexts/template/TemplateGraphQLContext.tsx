@@ -247,44 +247,46 @@ export const TemplateGraphQLProvider: React.FC<{
     });
 
     // Restore template mutation
-    const [mutateRestore] = Types.useRestoreTemplateMutation({
-        update(cache, { data }) {
-            if (!data?.restoreTemplate) return;
+    const [mutateRestore] = Types.useRestoreTemplateMutation(
+    //     {
+    //     update(cache, { data }) {
+    //         if (!data?.restoreTemplate) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                query: Types.FlatTemplateCategoriesDocument,
-            });
+    //         const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+    //             query: Types.FlatTemplateCategoriesDocument,
+    //         });
 
-            if (!existingData?.flatTemplateCategories) return;
+    //         if (!existingData?.flatTemplateCategories) return;
 
-            const updatedCategories = existingData.flatTemplateCategories.map((category) => {
-                if (!category.templates) return category;
+    //         const updatedCategories = existingData.flatTemplateCategories.map((category) => {
+    //             if (!category.templates) return category;
 
-                if (category.id === data.restoreTemplate.category.id) {
-                    return {
-                        ...category,
-                        templates: [...category.templates, data.restoreTemplate],
-                    };
-                }
-                if (category.special_type === "deletion") {
-                    return {
-                        ...category,
-                        templates: category.templates.filter(
-                            (template: { id: string }) => template.id !== data.restoreTemplate.id,
-                        ),
-                    };
-                }
-                return category;
-            });
+    //             if (category.id === data.restoreTemplate.category.id) {
+    //                 return {
+    //                     ...category,
+    //                     templates: [...category.templates, data.restoreTemplate],
+    //                 };
+    //             }
+    //             if (category.special_type === "deletion") {
+    //                 return {
+    //                     ...category,
+    //                     templates: category.templates.filter(
+    //                         (template: { id: string }) => template.id !== data.restoreTemplate.id,
+    //                     ),
+    //                 };
+    //             }
+    //             return category;
+    //         });
 
-            cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
-                data: {
-                    flatTemplateCategories: updatedCategories,
-                },
-            });
-        },
-    });
+    //         cache.writeQuery({
+    //             query: Types.FlatTemplateCategoriesDocument,
+    //             data: {
+    //                 flatTemplateCategories: updatedCategories,
+    //             },
+    //         });
+    //     },
+    // }
+);
 
     // Wrapper functions for mutations
     const createTemplateMutation = useCallback(
