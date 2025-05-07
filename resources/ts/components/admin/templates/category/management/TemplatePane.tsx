@@ -15,7 +15,12 @@ import MenuItem from "@mui/material/MenuItem";
 import SortIcon from "@mui/icons-material/Sort";
 import { Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import { GraduationCap, SettingsIcon, SquareArrowOutUpRight } from "lucide-react";
+import {
+    GraduationCap,
+    SettingsIcon,
+    SquareArrowOutUpRight,
+    EditIcon,
+} from "lucide-react";
 
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
@@ -24,6 +29,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { Template } from "@/graphql/generated/types";
 import { useTemplate } from "@/contexts/template/TemplatesContext";
+import TemplateEditDialog from "./TemplateEditDialog";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
@@ -32,7 +38,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         addTemplate,
         updateTemplate,
         moveTemplateToDeletionCategory,
-        // sortTemplates,
         trySelectCategory,
         setIsAddingTemplate,
         setOnNewTemplateCancel,
@@ -61,10 +66,10 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     } | null>(null);
     const listRef = useRef<HTMLUListElement>(null);
     const newTemplateRef = useRef<HTMLLIElement>(null);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    // const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-    // const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
     const strings = useAppTranslation("templateCategoryTranslations");
+
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [templateToEdit, setTemplateToEdit] = useState<Template | null>(null);
 
     const validateTemplateName = (name: string) => {
         if (name.length < 3) return strings.nameTooShort;
@@ -110,29 +115,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         }
     };
 
-    const handleMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMoreClose = () => {
-        setAnchorEl(null);
-    };
-
-    // const handleSortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    //     setSortAnchorEl(event.currentTarget);
-    //     setIsSortMenuOpen(true);
-    // };
-
-    // const handleSortClose = () => {
-    //     setSortAnchorEl(null);
-    //     setIsSortMenuOpen(false);
-    // };
-
-    // const handleSort = (sortBy: "name" | "id", order: "asc" | "desc") => {
-    //     sortTemplates(sortBy, order);
-    //     handleSortClose();
-    // };
-
     const handleTemplateNameEdit = async (
         template: Template,
         newName: string,
@@ -148,6 +130,22 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         } catch (error: any) {
             return error.message || strings.templateUpdateFailed;
         }
+    };
+
+    const handleOpenEditDialog = (template: Template) => {
+        setTemplateToEdit(template);
+        setIsEditDialogOpen(true);
+    };
+
+    const handleCloseEditDialog = () => {
+        setIsEditDialogOpen(false);
+        setTemplateToEdit(null);
+    };
+
+    const handleEditTemplate = (updatedTemplate: Template) => {
+        updateTemplate(updatedTemplate);
+        setIsEditDialogOpen(false);
+        setTemplateToEdit(null);
     };
 
     const getEmptyMessage = () => {
@@ -296,15 +294,24 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                         <DeleteIcon />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip title={strings.more}>
-                                    <IconButton onClick={handleMoreClick}>
-                                        <MoreVertIcon />
+
+                                <Tooltip title={strings.edit}>
+                                    <IconButton
+                                        onClick={() => {
+                                            handleOpenEditDialog(template);
+                                        }}
+                                        color="primary"
+                                        disabled={false}
+                                    >
+                                        <EditIcon />
                                     </IconButton>
                                 </Tooltip>
 
                                 <Tooltip title={strings.manage}>
                                     <IconButton
-                                        onClick={() => manageTemplate(template.id)}
+                                        onClick={() =>
+                                            manageTemplate(template.id)
+                                        }
                                         color="info"
                                         disabled={false}
                                     >
@@ -378,15 +385,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                             {strings.addTemplate}
                         </Button>
 
-                        {/* sort button
-                        <Button
-                            variant="outlined"
-                            startIcon={<SortIcon />}
-                            onClick={handleSortClick}
-                            disabled={!templates?.length}
-                        >
-                            {strings.sort}
-                        </Button> */}
                         <Box
                             sx={{
                                 flexGrow: 1,
@@ -399,33 +397,14 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                     </Box>
                 </>
             )}
-            <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMoreClose}
-            >
-                <MenuItem onClick={handleMoreClose}>{strings.edit}</MenuItem>
-                <MenuItem onClick={handleMoreClose}>{strings.move}</MenuItem>
-            </Menu>
 
-            {/* <Menu
-                anchorEl={sortAnchorEl}
-                open={isSortMenuOpen}
-                onClose={handleSortClose}
-            >
-                <MenuItem onClick={() => handleSort("name", "asc")}>
-                    {strings.nameAsc}
-                </MenuItem>
-                <MenuItem onClick={() => handleSort("name", "desc")}>
-                    {strings.nameDesc}
-                </MenuItem>
-                <MenuItem onClick={() => handleSort("id", "asc")}>
-                    {strings.idAsc}
-                </MenuItem>
-                <MenuItem onClick={() => handleSort("id", "desc")}>
-                    {strings.idDesc}
-                </MenuItem>
-            </Menu> */}
+            <TemplateEditDialog
+                open={isEditDialogOpen}
+                template={templateToEdit}
+                categories={regularCategories}
+                onClose={handleCloseEditDialog}
+                onSave={handleEditTemplate}
+            />
         </Box>
     );
 };
