@@ -23,12 +23,14 @@ type TemplateCategoryTranslation = {
     
     // Form and button actions
     selectCategory: string;
+    selectParentCategory: string;
     addNewCategory: string;
     addNewTemplate: string;
     edit: string;
     move: string;
     delete: string;
     more: string;
+    manage: string;
     
     // Sorting options
     nameAsc: string;
@@ -117,6 +119,10 @@ type TemplateCategoryTranslation = {
     failedToGenerateContent: string;
     templateIdRequired: string;
     templateNotFound: string;
+
+    // Category editing
+    description: string;
+    parentCategory: string;
 };
 
 export default TemplateCategoryTranslation;

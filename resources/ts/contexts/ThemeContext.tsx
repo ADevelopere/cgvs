@@ -7,7 +7,10 @@ import {
     useCallback,
     useMemo,
 } from "react";
-import { Theme, Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles"; // Import CssVarsProvider
+import {
+    Theme,
+    Experimental_CssVarsProvider as CssVarsProvider,
+} from "@mui/material/styles"; // Import CssVarsProvider
 import { CssBaseline } from "@mui/material";
 import {
     ltrLightTheme,
@@ -20,8 +23,21 @@ import { jssPreset, StylesProvider } from "@mui/styles";
 import rtl from "jss-rtl";
 import { create } from "jss";
 import AppLanguage from "@/locale/AppLanguage";
+import { prefixer } from "stylis";
+import rtlPlugin from "stylis-plugin-rtl";
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
 
-const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
+// Create rtl cache
+const cacheRtl = createCache({
+  key: 'rtl-cache',
+  stylisPlugins: [prefixer, rtlPlugin],
+});
+
+
+const jss = create({
+    plugins: [...jssPreset().plugins, rtl()],
+});
 
 // Utility functions
 const updateLanguage = (language: string): void => {
@@ -40,12 +56,19 @@ const getStoredLanguage = (): string => {
     // First check for Laravel's initial language
     const initialLanguage = (window as any).__INITIAL_LANGUAGE__;
     // Then check localStorage, and finally fall back to default
-    return initialLanguage || localStorage.getItem("language") || AppLanguage.default;
+    return (
+        initialLanguage ||
+        localStorage.getItem("language") ||
+        AppLanguage.default
+    );
 };
 
 const getStoredThemeMode = (): ThemeMode => {
     const savedTheme = localStorage.getItem("themeMode") as ThemeMode | null;
-    if (savedTheme && Object.values(ThemeMode).includes(savedTheme as ThemeMode)) {
+    if (
+        savedTheme &&
+        Object.values(ThemeMode).includes(savedTheme as ThemeMode)
+    ) {
         return savedTheme as ThemeMode;
     }
     return ThemeMode.System;
@@ -76,18 +99,21 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         const storedMode = getStoredThemeMode();
         const storedLanguage = getStoredLanguage();
         const isRtl = storedLanguage === "ar";
-        const isDarkMode = storedMode === ThemeMode.Dark || 
-            (storedMode === ThemeMode.System && window.matchMedia("(prefers-color-scheme: dark)").matches);
-        
+        const isDarkMode =
+            storedMode === ThemeMode.Dark ||
+            (storedMode === ThemeMode.System &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches);
+
         if (isRtl) {
             return isDarkMode ? rtlDarkTheme : rtlLightTheme;
         }
         return isDarkMode ? ltrDarkTheme : ltrLightTheme;
     });
 
-    const [currentThemeMode, setCurrentThemeMode] = useState<ThemeMode>(getStoredThemeMode());
+    const [currentThemeMode, setCurrentThemeMode] =
+        useState<ThemeMode>(getStoredThemeMode());
     const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
-        getStoredLanguage() as AppLanguage
+        getStoredLanguage() as AppLanguage,
     );
 
     // Ensure initial language and direction are set
@@ -101,48 +127,79 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     // Add effect to listen for system theme changes when in system mode
     useEffect(() => {
         if (currentThemeMode === ThemeMode.System) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const mediaQuery = window.matchMedia(
+                "(prefers-color-scheme: dark)",
+            );
             const handleChange = (e: MediaQueryListEvent) => {
                 const isRtl = currentLanguage === "ar";
-                setCurrentTheme(isRtl ? 
-                    (e.matches ? rtlDarkTheme : rtlLightTheme) :
-                    (e.matches ? ltrDarkTheme : ltrLightTheme));
+                setCurrentTheme(
+                    isRtl
+                        ? e.matches
+                            ? rtlDarkTheme
+                            : rtlLightTheme
+                        : e.matches
+                          ? ltrDarkTheme
+                          : ltrLightTheme,
+                );
             };
 
-            mediaQuery.addEventListener('change', handleChange);
-            return () => mediaQuery.removeEventListener('change', handleChange);
+            mediaQuery.addEventListener("change", handleChange);
+            return () => mediaQuery.removeEventListener("change", handleChange);
         }
     }, [currentThemeMode, currentLanguage]); // Removed setColorSchemeMode dependency
 
-    const handleSetLanguage = useCallback((newLanguage: string | AppLanguage) => {
-        const language = newLanguage as AppLanguage;
-        updateLanguage(language);
-        setCurrentLanguage(language);
-        
-        const isRtl = language === "ar";
-        const isDarkMode = currentThemeMode === ThemeMode.Dark || 
-            (currentThemeMode === ThemeMode.System && window.matchMedia("(prefers-color-scheme: dark)").matches);
-        
-        setCurrentTheme(isRtl ? 
-            (isDarkMode ? rtlDarkTheme : rtlLightTheme) :
-            (isDarkMode ? ltrDarkTheme : ltrLightTheme));
-    }, [currentThemeMode]);
+    const handleSetLanguage = useCallback(
+        (newLanguage: string | AppLanguage) => {
+            const language = newLanguage as AppLanguage;
+            updateLanguage(language);
+            setCurrentLanguage(language);
 
-    const handleSetThemeMode = useCallback((newMode: ThemeMode) => {
-        updateTheme(newMode);
-        setCurrentThemeMode(newMode);
-        
-        const effectiveMode = newMode === ThemeMode.System 
-            ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? ThemeMode.Dark : ThemeMode.Light)
-            : newMode;
-            
-        const isRtl = currentLanguage === "ar";
-        const isDarkMode = effectiveMode === ThemeMode.Dark;
-        
-        setCurrentTheme(isRtl ? 
-            (isDarkMode ? rtlDarkTheme : rtlLightTheme) :
-            (isDarkMode ? ltrDarkTheme : ltrLightTheme));
-    }, [currentLanguage]); // Removed setColorSchemeMode dependency
+            const isRtl = language === "ar";
+            const isDarkMode =
+                currentThemeMode === ThemeMode.Dark ||
+                (currentThemeMode === ThemeMode.System &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+            setCurrentTheme(
+                isRtl
+                    ? isDarkMode
+                        ? rtlDarkTheme
+                        : rtlLightTheme
+                    : isDarkMode
+                      ? ltrDarkTheme
+                      : ltrLightTheme,
+            );
+        },
+        [currentThemeMode],
+    );
+
+    const handleSetThemeMode = useCallback(
+        (newMode: ThemeMode) => {
+            updateTheme(newMode);
+            setCurrentThemeMode(newMode);
+
+            const effectiveMode =
+                newMode === ThemeMode.System
+                    ? window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? ThemeMode.Dark
+                        : ThemeMode.Light
+                    : newMode;
+
+            const isRtl = currentLanguage === "ar";
+            const isDarkMode = effectiveMode === ThemeMode.Dark;
+
+            setCurrentTheme(
+                isRtl
+                    ? isDarkMode
+                        ? rtlDarkTheme
+                        : rtlLightTheme
+                    : isDarkMode
+                      ? ltrDarkTheme
+                      : ltrLightTheme,
+            );
+        },
+        [currentLanguage],
+    ); // Removed setColorSchemeMode dependency
 
     const isRtl = useMemo(() => currentLanguage === "ar", [currentLanguage]);
     const isDark = useMemo(() => {
@@ -162,17 +219,28 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
             isRtl,
             isDark,
         }),
-        [currentTheme, currentLanguage, handleSetLanguage, handleSetThemeMode, currentThemeMode, isRtl, isDark]
+        [
+            currentTheme,
+            currentLanguage,
+            handleSetLanguage,
+            handleSetThemeMode,
+            currentThemeMode,
+            isRtl,
+            isDark,
+        ],
     );
 
     return (
         <AppThemeContext.Provider value={contextValue}>
             <StylesProvider jss={jss}>
-                {/* Use CssVarsProvider instead of MuiThemeProvider */}
-                <CssVarsProvider theme={currentTheme}>
-                    <CssBaseline enableColorScheme /> {/* Add enableColorScheme prop */}
-                    {children}
-                </CssVarsProvider>
+                <CacheProvider value={cacheRtl}>
+                    {/* Use CssVarsProvider instead of MuiThemeProvider */}
+                    <CssVarsProvider theme={currentTheme}>
+                        <CssBaseline enableColorScheme />{" "}
+                        {/* Add enableColorScheme prop */}
+                        {children}
+                    </CssVarsProvider>
+                </CacheProvider>
             </StylesProvider>
         </AppThemeContext.Provider>
     );

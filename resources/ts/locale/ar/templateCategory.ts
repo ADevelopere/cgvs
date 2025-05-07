@@ -24,13 +24,17 @@ const templateCategory: TemplateCategoryTranslation = {
     addCategory: "إضافة فئة",
     addTemplate: "إضافة قالب",
     selectCategory: "اختر فئة",
+    selectParentCategory: "اختر الفئة الرئيسية",
     addNewCategory: "إضافة فئة جديدة",
     addNewTemplate: "إضافة قالب جديد",
     edit: "تعديل",
     move: "نقل",
     delete: "حذف",
     more: "المزيد",
+    manage: "إدارة",
     restoreTemplate: "استعادة القالب",
+    description: "الوصف",
+    parentCategory: "الفئة الرئيسية",
 
     // Sorting options
     sort: "فرز",
@@ -59,7 +63,8 @@ const templateCategory: TemplateCategoryTranslation = {
     templateUpdatedSuccessfully: "تم تحديث القالب بنجاح",
     templateDeletedSuccessfully: "تم حذف القالب بنجاح",
     templateRestoredSuccessfully: "تمت استعادة القالب بنجاح",
-    templateMovedToDeletionSuccessfully: "تم نقل القالب إلى سلة المحذوفات بنجاح",
+    templateMovedToDeletionSuccessfully:
+        "تم نقل القالب إلى سلة المحذوفات بنجاح",
 
     // Error messages
     categoryAddFailed: "فشل إضافة الفئة",
@@ -82,7 +87,8 @@ const templateCategory: TemplateCategoryTranslation = {
     selectCategoryFirst: "الرجاء تحديد فئة أولاً",
     createCategoryFirst: "الرجاء إنشاء فئة أولاً",
     confirmSwitchCategory: "هل أنت متأكد أنك تريد تبديل الفئات؟",
-    switchCategoryWhileAddingTemplate: "أنت تقوم حاليًا بإضافة قالب. هل أنت متأكد أنك تريد تبديل الفئات؟",
+    switchCategoryWhileAddingTemplate:
+        "أنت تقوم حاليًا بإضافة قالب. هل أنت متأكد أنك تريد تبديل الفئات؟",
 
     // Error messages from context
     invalidDataFormat: "تم استلام بيانات غير صالحة من واجهة برمجة التطبيقات",
@@ -117,7 +123,7 @@ const templateCategory: TemplateCategoryTranslation = {
     receivedEmptyTemplate: "تم استلام قالب فارغ من الخادم",
     failedToGenerateContent: "فشل في إنشاء محتوى القالب",
     templateIdRequired: "معرف القالب مطلوب",
-    templateNotFound: "لم يتم العثور على القالب"
+    templateNotFound: "لم يتم العثور على القالب",
 };
 
 export default templateCategory;

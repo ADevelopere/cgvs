@@ -234,9 +234,7 @@ const TemplateCategoryManagement: React.FC = () => {
                 p: 3,
             }}
         >
-            <TemplateCategoryManagementProvider>
-                <This />
-            </TemplateCategoryManagementProvider>
+            <This />
         </Box>
     );
 };
