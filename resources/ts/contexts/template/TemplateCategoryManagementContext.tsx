@@ -12,7 +12,6 @@ import React, {
 import {
     Template,
     TemplateCategory,
-    FlatTemplateCategoriesQuery,
     useFlatTemplateCategoriesQuery,
 } from "@/graphql/generated/types";
 
@@ -31,7 +30,6 @@ import {
     mapTemplateCategories,
     mapTemplateCategory,
 } from "@/utils/template/template-category-mapper";
-import { updateCategoryInTree } from "@/utils/template/templateCategoryTree";
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { mapSingleTemplate } from "@/utils/template/template-mappers";
@@ -151,7 +149,8 @@ type TemplateCategoryManagementContextType = {
      * Sorts the `categories` array based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the categories list displayed to the user.
      */
-    sortCategories: (sortBy: "name" | "id", order: "asc" | "desc") => void;
+    // sortCategories: (sortBy: "name" | "id", order: "asc" | "desc") => void;
+
     /**
      * Represents the currently selected template within the `currentCategory`.
      * It's `null` if no template is currently selected.
@@ -183,11 +182,15 @@ type TemplateCategoryManagementContextType = {
      * This will move the template from the deletion category to the specified category and update both categories.
      */
     restoreTemplate: (templateId: string) => Promise<void>;
+
+    
     /**
      * Sorts the `templates` array (associated with the `currentCategory`) based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the templates list displayed to the user for the selected category.
      */
-    sortTemplates: (sortBy: "name" | "id", order: "asc" | "desc") => void;
+    // sortTemplates: (sortBy: "name" | "id", order: "asc" | "desc") => void;
+
+
     /**
      * A boolean flag indicating whether the user interface is currently in the state of adding a new template.
      * This is used, for example, to trigger the confirmation dialog when attempting to switch categories (`trySelectCategory`).
@@ -827,12 +830,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
             deleteCategory,
             moveTemplateToDeletionCategory,
             restoreTemplate,
-            sortCategories,
+            // sortCategories,
             currentTemplate,
             setCurrentTemplate,
             addTemplate,
             updateTemplate,
-            sortTemplates,
+            // sortTemplates,
             isAddingTemplate,
             setIsAddingTemplate,
             onNewTemplateCancel,
@@ -854,12 +857,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
             deleteCategory,
             moveTemplateToDeletionCategory,
             restoreTemplate,
-            sortCategories,
+            // sortCategories,
             templatesForCurrentCategory,
             currentTemplate, // setCurrentTemplate is stable
             addTemplate,
             updateTemplate,
-            sortTemplates,
+            // sortTemplates,
             isAddingTemplate, // setIsAddingTemplate is stable
             onNewTemplateCancel, // setOnNewTemplateCancel is stable
         ],
