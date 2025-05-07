@@ -12,6 +12,8 @@ mutation createTemplate($input: CreateTemplateInput!){
         }
         order
         created_at
+        updated_at
+        trashed_at
     }
 }
 `;

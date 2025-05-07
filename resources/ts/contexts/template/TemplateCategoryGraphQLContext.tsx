@@ -78,7 +78,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Query for fetching flat categories
-    const { refetch: refetchFlat } = Types.useFlatTemplateCategoriesQuery();
+    const { refetch: refetchFlat} = Types.useFlatTemplateCategoriesQuery();
 
     // Query for fetching paginated categories
     const { refetch: refetchPaginated } = Types.useTemplateCategoriesQuery({
