@@ -61,7 +61,7 @@ export type Mutation = {
   login: AuthPayload;
   logout: LogoutResponse;
   /** Move a template to the deleted category */
-  moveToDeletionCategory: Template;
+  moveTemplateToDeletionCategory: Template;
   reorderTemplateCategories: Array<TemplateCategory>;
   /** Restore a template from the deleted category */
   restoreTemplate: Template;
@@ -103,7 +103,7 @@ export type MutationLoginArgs = {
 
 
 /** Indicates what fields are available at the top level of a mutation operation. */
-export type MutationMoveToDeletionCategoryArgs = {
+export type MutationMoveTemplateToDeletionCategoryArgs = {
   templateId: Scalars['ID']['input'];
 };
 
@@ -368,12 +368,12 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogoutResponse', message: string } };
 
-export type MoveToDeletionCategoryMutationVariables = Exact<{
+export type MoveTemplateToDeletionCategoryMutationVariables = Exact<{
   templateId: Scalars['ID']['input'];
 }>;
 
 
-export type MoveToDeletionCategoryMutation = { __typename?: 'Mutation', moveToDeletionCategory: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
+export type MoveTemplateToDeletionCategoryMutation = { __typename?: 'Mutation', moveTemplateToDeletionCategory: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
 
 export type ReorderTemplateCategoriesMutationVariables = Exact<{
   input: Array<ReorderCategoriesInput> | ReorderCategoriesInput;
@@ -1099,9 +1099,9 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
-export const MoveToDeletionCategoryDocument = gql`
-    mutation moveToDeletionCategory($templateId: ID!) {
-  moveToDeletionCategory(templateId: $templateId) {
+export const MoveTemplateToDeletionCategoryDocument = gql`
+    mutation moveTemplateToDeletionCategory($templateId: ID!) {
+  moveTemplateToDeletionCategory(templateId: $templateId) {
     background_url
     category {
       childCategories {
@@ -1219,32 +1219,32 @@ export const MoveToDeletionCategoryDocument = gql`
   }
 }
     `;
-export type MoveToDeletionCategoryMutationFn = Apollo.MutationFunction<MoveToDeletionCategoryMutation, MoveToDeletionCategoryMutationVariables>;
+export type MoveTemplateToDeletionCategoryMutationFn = Apollo.MutationFunction<MoveTemplateToDeletionCategoryMutation, MoveTemplateToDeletionCategoryMutationVariables>;
 
 /**
- * __useMoveToDeletionCategoryMutation__
+ * __useMoveTemplateToDeletionCategoryMutation__
  *
- * To run a mutation, you first call `useMoveToDeletionCategoryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useMoveToDeletionCategoryMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useMoveTemplateToDeletionCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMoveTemplateToDeletionCategoryMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [moveToDeletionCategoryMutation, { data, loading, error }] = useMoveToDeletionCategoryMutation({
+ * const [moveTemplateToDeletionCategoryMutation, { data, loading, error }] = useMoveTemplateToDeletionCategoryMutation({
  *   variables: {
  *      templateId: // value for 'templateId'
  *   },
  * });
  */
-export function useMoveToDeletionCategoryMutation(baseOptions?: Apollo.MutationHookOptions<MoveToDeletionCategoryMutation, MoveToDeletionCategoryMutationVariables>) {
+export function useMoveTemplateToDeletionCategoryMutation(baseOptions?: Apollo.MutationHookOptions<MoveTemplateToDeletionCategoryMutation, MoveTemplateToDeletionCategoryMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<MoveToDeletionCategoryMutation, MoveToDeletionCategoryMutationVariables>(MoveToDeletionCategoryDocument, options);
+        return Apollo.useMutation<MoveTemplateToDeletionCategoryMutation, MoveTemplateToDeletionCategoryMutationVariables>(MoveTemplateToDeletionCategoryDocument, options);
       }
-export type MoveToDeletionCategoryMutationHookResult = ReturnType<typeof useMoveToDeletionCategoryMutation>;
-export type MoveToDeletionCategoryMutationResult = Apollo.MutationResult<MoveToDeletionCategoryMutation>;
-export type MoveToDeletionCategoryMutationOptions = Apollo.BaseMutationOptions<MoveToDeletionCategoryMutation, MoveToDeletionCategoryMutationVariables>;
+export type MoveTemplateToDeletionCategoryMutationHookResult = ReturnType<typeof useMoveTemplateToDeletionCategoryMutation>;
+export type MoveTemplateToDeletionCategoryMutationResult = Apollo.MutationResult<MoveTemplateToDeletionCategoryMutation>;
+export type MoveTemplateToDeletionCategoryMutationOptions = Apollo.BaseMutationOptions<MoveTemplateToDeletionCategoryMutation, MoveTemplateToDeletionCategoryMutationVariables>;
 export const ReorderTemplateCategoriesDocument = gql`
     mutation reorderTemplateCategories($input: [ReorderCategoriesInput!]!) {
   reorderTemplateCategories(input: $input) {

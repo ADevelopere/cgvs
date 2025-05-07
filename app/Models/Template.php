@@ -100,7 +100,7 @@ class Template extends Model  implements LighthouseModel
         });
     }
 
-    public function moveToDeletedCategory()
+    public function moveToDeletionCategory()
     {
         $deletedCategory = TemplateCategory::getDeletedCategory();
         $this->category_id = $deletedCategory->id;

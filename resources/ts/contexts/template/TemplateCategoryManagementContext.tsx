@@ -10,48 +10,9 @@ import React, {
 } from "react";
 
 import {
-    useQuery,
-    useMutation,
-    QueryResult,
-    OperationVariables,
-} from "@apollo/client";
-import {
     Template,
     TemplateCategory,
-    TemplateCategoryType,
-    CreateTemplateCategoryInput,
-    UpdateTemplateCategoryInput,
-    CreateTemplateInput,
-    UpdateTemplateInput,
-    TemplateCategoryDocument,
-    TemplateCategoriesDocument,
-    CreateTemplateCategoryMutation,
-    CreateTemplateCategoryDocument,
-    UpdateTemplateCategoryMutation,
-    UpdateTemplateCategoryDocument,
-    DeleteTemplateCategoryMutation,
-    DeleteTemplateCategoryDocument,
-    CreateTemplateMutation,
-    CreateTemplateDocument,
-    UpdateTemplateMutation,
-    UpdateTemplateDocument,
-    DeleteTemplateMutation,
-    DeleteTemplateDocument,
-    MoveToDeletionCategoryMutation,
-    MoveToDeletionCategoryDocument,
-    CreateTemplateMutationVariables,
-    CreateTemplateCategoryMutationVariables,
-    DeleteTemplateMutationVariables,
-    UpdateTemplateMutationVariables,
-    MoveToDeletionCategoryMutationVariables,
-    TemplateCategoryPaginator,
-    PaginatorInfo,
-    Query,
     TemplateCategoriesQuery,
-    useTemplateCategoriesQuery,
-    useCreateTemplateCategoryMutation,
-    useUpdateTemplateCategoryMutation,
-    useDeleteTemplateCategoryMutation,
 } from "@/graphql/generated/types";
 
 import { CircularProgress } from "@mui/material";
@@ -62,7 +23,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import axios from "@/utils/axios";
 import {
     mapTemplateCategories,
     mapTemplateCategory,
@@ -590,7 +550,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const {
         createTemplateMutation,
         updateTemplateMutation,
-        moveToDeletionCategoryMutation,
+        moveTemplateToDeletionCategoryMutation,
     } = useTemplateGraphQL();
 
     // Memoized callbacks for template operations
@@ -754,12 +714,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
         async (templateId: string) => {
             try {
                 logger.info(messages.movingTemplateToDeletion, templateId);
-                const { data } = await moveToDeletionCategoryMutation({
+                const { data } = await moveTemplateToDeletionCategoryMutation({
                     templateId,
                 });
 
-                const movedTemplate = data?.moveToDeletionCategory 
-                    ? mapSingleTemplate({ moveToDeletionCategory: data.moveToDeletionCategory }) 
+                const movedTemplate = data?.moveTemplateToDeletionCategory 
+                    ? mapSingleTemplate({ moveToDeletionCategory: data.moveTemplateToDeletionCategory }) 
                     : null;
 
                 if (!movedTemplate) {
@@ -822,7 +782,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         [
             messages,
             notifications,
-            moveToDeletionCategoryMutation,
+            moveTemplateToDeletionCategoryMutation,
             currentTemplate,
             currentCategory,
             deletedCategory,

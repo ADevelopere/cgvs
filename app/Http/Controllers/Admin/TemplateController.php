@@ -375,7 +375,7 @@ class TemplateController extends Controller
 
         try {
             // The move to deleted category is handled by the model's deleting event
-            $template->moveToDeletedCategory();
+            $template->moveToDeletionCategory();
 
             Log::info('Template soft deleted successfully', [
                 'template_id' => $template->id,

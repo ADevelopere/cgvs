@@ -5,7 +5,7 @@ type Template {
     description: String
     background_url: String
     category: TemplateCategory! @belongsTo
-    order: Int!
+    order: Int
     # elements: [TemplateElement!]! @hasMany
     # variables: [TemplateVariable!]! @hasMany
     # recipients: [TemplateRecipient!]! @hasMany

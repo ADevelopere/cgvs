@@ -31,7 +31,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         templates,
         addTemplate,
         updateTemplate,
-        deleteTemplate,
+        moveTemplateToDeletionCategory,
         sortTemplates,
         trySelectCategory,
         setIsAddingTemplate,
@@ -269,7 +269,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                 <Tooltip title={strings.delete}>
                                     <IconButton
                                         onClick={() =>
-                                            deleteTemplate(template.id)
+                                            moveTemplateToDeletionCategory(template.id)
                                         }
                                         color="error"
                                         disabled={false}
