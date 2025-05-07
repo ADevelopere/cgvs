@@ -16,6 +16,13 @@ type TemplateCategoryGraphQLContextType = {
     ) => Promise<FetchResult<Types.TemplateCategoriesQuery>>;
 
     /**
+     * Query to fetch a single template category by ID
+     */
+    templateCategoryQuery: (
+        variables: Types.QueryTemplateCategoryArgs,
+    ) => Promise<FetchResult<Types.TemplateCategoryQuery>>;
+
+    /**
      * Mutation to create a new template category
      * @param variables - The create template category variables
      */
@@ -38,6 +45,14 @@ type TemplateCategoryGraphQLContextType = {
     deleteTemplateCategoryMutation: (
         variables: Types.DeleteTemplateCategoryMutationVariables,
     ) => Promise<FetchResult<Types.DeleteTemplateCategoryMutation>>;
+
+    /**
+     * Mutation to reorder template categories
+     * @param variables - The reorder template categories variables
+     */
+    reorderTemplateCategoriesMutation: (
+        variables: Types.ReorderTemplateCategoriesMutationVariables,
+    ) => Promise<FetchResult<Types.ReorderTemplateCategoriesMutation>>;
 };
 
 const TemplateCategoryGraphQLContext = createContext<
@@ -62,6 +77,12 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         variables: {
             first: 2147483647,
         },
+    });
+
+    // Query for fetching single category
+    const { refetch: refetchSingle } = Types.useTemplateCategoryQuery({
+        skip: true, // Skip initial execution since we'll only use refetch
+        variables: { id: "" }, // Placeholder value, will be replaced in refetch
     });
 
     // Create category mutation
@@ -162,12 +183,46 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         },
     });
 
+    // Reorder categories mutation
+    const [mutateReorder] = Types.useReorderTemplateCategoriesMutation({
+        update(cache, { data }) {
+            if (!data?.reorderTemplateCategories) return;
+
+            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
+                {
+                    query: Types.TemplateCategoriesDocument,
+                    variables: { first: 2147483647 },
+                },
+            );
+
+            if (!existingData?.templateCategories?.data) return;
+
+            cache.writeQuery({
+                query: Types.TemplateCategoriesDocument,
+                variables: { first: 2147483647 },
+                data: {
+                    templateCategories: {
+                        ...existingData.templateCategories,
+                        data: data.reorderTemplateCategories,
+                    },
+                },
+            });
+        },
+    });
+
     // Wrapper functions for mutations and queries
     const templateCategoriesQuery = useCallback(
         async (variables?: Types.TemplateCategoriesQueryVariables) => {
             return refetch(variables);
         },
         [refetch],
+    );
+
+    const templateCategoryQuery = useCallback(
+        async (variables: Types.QueryTemplateCategoryArgs) => {
+            return refetchSingle(variables);
+        },
+        [refetchSingle],
     );
 
     const createTemplateCategoryMutation = useCallback(
@@ -197,11 +252,22 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         [mutateDelete],
     );
 
+    const reorderTemplateCategoriesMutation = useCallback(
+        async (variables: Types.ReorderTemplateCategoriesMutationVariables) => {
+            return mutateReorder({
+                variables,
+            });
+        },
+        [mutateReorder],
+    );
+
     const contextValue: TemplateCategoryGraphQLContextType = {
         templateCategoriesQuery,
+        templateCategoryQuery,
         createTemplateCategoryMutation,
         updateTemplateCategoryMutation,
         deleteTemplateCategoryMutation,
+        reorderTemplateCategoriesMutation,
     };
 
     return (

@@ -69,7 +69,8 @@ import {
 } from "@/utils/template/template-category-mapper";
 import { updateCategoryInTree } from "@/utils/template/templateCategoryTree";
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
-import { error } from "console";
+import { useTemplateGraphQL } from "./TemplateGraphQLContext";
+import { mapSingleTemplate } from "@/utils/template/template-mappers";
 
 // Logger utility
 const logger = {
@@ -203,9 +204,9 @@ type TemplateCategoryManagementContextType = {
     ) => Promise<Template>;
     /**
      * Deletes a template identified by its ID.
-     * This removes the template from the backend and updates the local `templates` and `categories` states. If the deleted template was the `currentTemplate`, the selection is cleared.
+     * This changes the templates's parent category to the deletion category.
      */
-    deleteTemplate(templateId: string): void;
+    moveTemplateToDeletionCategory(templateId: string): void;
     /**
      * Sorts the `templates` array (associated with the `currentCategory`) based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the templates list displayed to the user for the selected category.
@@ -237,9 +238,10 @@ const TemplateCategoryManagementContext = createContext<
 >(undefined);
 
 export const useTemplateCategoryManagement = () => {
+    const messages = useAppTranslation("templateCategoryTranslations");
     const context = useContext(TemplateCategoryManagementContext);
     if (!context) {
-        throw new Error("useCategory must be used within a CategoryProvider");
+        throw new Error(messages.useCategoryContextError);
     }
     return context;
 };
@@ -571,7 +573,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     autoHideDuration: 5000,
                 });
 
-                logger.error("Failed to delete category:", {
+                logger.error(messages.errorDeletingCategory, {
                     categoryId,
                     error: gqlError,
                 });
@@ -585,6 +587,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
         ],
     );
 
+    const {
+        createTemplateMutation,
+        updateTemplateMutation,
+        moveToDeletionCategoryMutation,
+    } = useTemplateGraphQL();
+
     // Memoized callbacks for template operations
     const addTemplate = useCallback(
         async (
@@ -594,28 +602,35 @@ export const TemplateCategoryManagementProvider: React.FC<{
             background?: File,
         ) => {
             try {
-                const formData = new FormData();
-                formData.append("name", name);
-                formData.append("category_id", categoryId.toString());
-                if (description) {
-                    formData.append("description", description);
-                }
-                if (background) {
-                    formData.append("background", background);
-                }
-
-                const { data: newTemplate } = await axios.post<Template>(
-                    "/admin/templates",
-                    formData,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
+                const { data } = await createTemplateMutation({
+                    input: {
+                        name,
+                        categoryId,
+                        description,
+                        backgroundImage: background,
                     },
-                );
+                });
+
+                const newTemplate = data?.createTemplate
+                    ? mapSingleTemplate({ createTemplate: data.createTemplate })
+                    : null;
+
+                if (!newTemplate) {
+                    throw new Error(messages.templateAddFailed);
+                }
 
                 setTemplates((prev) => [...prev, newTemplate]);
                 setCurrentTemplate(newTemplate);
+                setRegularCategories((prev) =>
+                    updateCategoryInTree(prev, {
+                        ...currentCategory!,
+                        templates: [
+                            ...(currentCategory?.templates || []),
+                            newTemplate,
+                        ],
+                    }),
+                );
+
                 notifications.show(messages.templateAddedSuccessfully, {
                     severity: "success",
                     autoHideDuration: 3000,
@@ -623,16 +638,13 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
                 return newTemplate;
             } catch (error: unknown) {
-                const apiError = error as {
-                    response?: { data: ApiErrorResponse };
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
                 };
                 const errorMessage =
-                    apiError.response?.data?.message ||
-                    apiError.response?.data?.errors?.general?.[0] ||
-                    apiError.response?.data?.errors?.name?.[0] ||
-                    apiError.response?.data?.errors?.description?.[0] ||
-                    apiError.response?.data?.errors?.category_id?.[0] ||
-                    apiError.response?.data?.errors?.background?.[0] ||
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
                     messages.templateAddFailed;
 
                 notifications.show(errorMessage, {
@@ -640,17 +652,23 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     autoHideDuration: 5000,
                 });
                 logger.error(messages.failedToCreateCategory, {
-                    error: apiError.response?.data,
+                    error: gqlError,
                     name,
                     categoryId,
                     hasDescription: !!description,
                     hasBackground: !!background,
                 });
 
-                throw error; // Re-throw to allow caller to handle the error
+                throw error;
             }
         },
-        [messages, notifications],
+        [
+            messages,
+            notifications,
+            createTemplateMutation,
+            currentCategory,
+            setRegularCategories,
+        ],
     );
 
     const updateTemplate = useCallback(
@@ -665,38 +683,40 @@ export const TemplateCategoryManagementProvider: React.FC<{
             },
         ) => {
             try {
-                const formData = new FormData();
-
-                // Append each update field to formData
-                Object.entries(updates).forEach(([key, value]) => {
-                    if (value !== undefined) {
-                        if (value instanceof File) {
-                            formData.append(key, value);
-                        } else {
-                            formData.append(key, value.toString());
-                        }
-                    }
+                const { data } = await updateTemplateMutation({
+                    id,
+                    input: {
+                        name: updates.name || "",
+                        description: updates.description,
+                        categoryId: updates.category_id?.toString() || currentTemplate?.category.id || "",
+                        backgroundImage: updates.background,
+                        order: updates.order,
+                    },
                 });
 
-                const { data: updatedTemplate } = await axios.put<Template>(
-                    `/admin/templates/${id}`,
-                    formData,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    },
-                );
+                const updatedTemplate = data?.updateTemplate ? mapSingleTemplate({ updateTemplate: data.updateTemplate }) : null;
+
+                if (!updatedTemplate) {
+                    throw new Error(messages.templateUpdateFailed);
+                }
 
                 setTemplates((prev) =>
-                    prev.map((temp) =>
-                        temp.id === updatedTemplate.id ? updatedTemplate : temp,
+                    prev.map((template) =>
+                        template.id === id ? updatedTemplate : template,
                     ),
                 );
 
-                if (currentTemplate?.id === updatedTemplate.id) {
-                    setCurrentTemplate(updatedTemplate);
-                }
+                setCurrentTemplate(updatedTemplate);
+
+                // Update template in categories tree
+                setRegularCategories((prev) =>
+                    updateCategoryInTree(prev, {
+                        ...currentCategory!,
+                        templates: currentCategory?.templates?.map((template) =>
+                            template.id === id ? updatedTemplate : template,
+                        ) || [],
+                    }),
+                );
 
                 notifications.show(messages.templateUpdatedSuccessfully, {
                     severity: "success",
@@ -705,121 +725,110 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
                 return updatedTemplate;
             } catch (error: unknown) {
-                const apiError = error as {
-                    response?: { data: ApiErrorResponse };
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
                 };
                 const errorMessage =
-                    apiError.response?.data?.message ||
-                    apiError.response?.data?.errors?.general?.[0] ||
-                    apiError.response?.data?.errors?.name?.[0] ||
-                    apiError.response?.data?.errors?.description?.[0] ||
-                    apiError.response?.data?.errors?.category_id?.[0] ||
-                    apiError.response?.data?.errors?.background?.[0] ||
-                    apiError.response?.data?.errors?.order?.[0] ||
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
                     messages.templateUpdateFailed;
 
                 notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error("Failed to update template:", {
-                    error: apiError.response?.data,
-                    id,
+                logger.error(messages.errorUpdatingTemplate, {
+                    error: gqlError,
+                    templateId: id,
                     updates,
                 });
 
-                throw error; // Re-throw to allow caller to handle the error
+                throw error;
             }
         },
-        [messages, notifications, currentTemplate],
+        [messages, notifications, updateTemplateMutation, currentTemplate, currentCategory, setRegularCategories],
     );
 
-    const deleteTemplate = useCallback(
+    const moveTemplateToDeletionCategory = useCallback(
         async (templateId: string) => {
             try {
-                logger.info("Attempting to delete template:", templateId);
-                const response = await axios.delete(
-                    `/admin/templates/${templateId}`,
+                logger.info(messages.movingTemplateToDeletion, templateId);
+                const { data } = await moveToDeletionCategoryMutation({
+                    templateId,
+                });
+
+                const movedTemplate = data?.moveToDeletionCategory 
+                    ? mapSingleTemplate({ moveToDeletionCategory: data.moveToDeletionCategory }) 
+                    : null;
+
+                if (!movedTemplate) {
+                    throw new Error(messages.templateMoveToDeletionFailed);
+                }
+
+                // Remove from current templates list
+                setTemplates((prev) =>
+                    prev.filter((temp) => temp.id !== templateId),
                 );
 
-                if (response.status >= 200 && response.status < 300) {
-                    setTemplates((prev) =>
-                        prev.filter(
-                            (temp) => temp.id.toString() !== templateId,
-                        ),
+                // Clear current template if it was moved
+                if (currentTemplate?.id === templateId) {
+                    setCurrentTemplate(null);
+                }
+
+                // Remove from regular categories and add to deletion category
+                if (deletedCategory) {
+                    setRegularCategories((prev) =>
+                        updateCategoryInTree(prev, {
+                            ...currentCategory!,
+                            templates: currentCategory?.templates?.filter(
+                                (temp) => temp.id !== templateId,
+                            ) || [],
+                        }),
                     );
 
-                    if (currentTemplate?.id.toString() === templateId) {
-                        setCurrentTemplate(null);
-                    }
+                    setDeletedCategory({
+                        ...deletedCategory,
+                        templates: [...(deletedCategory.templates || []), movedTemplate],
+                    });
 
-                    // Add template to deleted category if it exists
-                    if (response.data?.template && deletedCategory) {
-                        const deletedTemplate = response.data.template;
-                        const parentCategoryId = deletedTemplate.category_id;
-
-                        // Update only the parent category by removing the template
-                        setRegularCategories((prev) =>
-                            prev.map((cat) => {
-                                if (cat.id === parentCategoryId) {
-                                    return {
-                                        ...cat,
-                                        templates: (cat.templates || []).filter(
-                                            (temp) =>
-                                                temp.id.toString() !==
-                                                templateId,
-                                        ),
-                                    };
-                                }
-                                return cat;
-                            }),
-                        );
-
-                        // Update the deleted category state
-                        setDeletedCategory((prev) =>
-                            prev
-                                ? {
-                                      ...prev,
-                                      templates: [
-                                          ...(prev.templates || []),
-                                          deletedTemplate,
-                                      ],
-                                  }
-                                : prev,
-                        );
-                    }
-
-                    notifications.show(messages.templateDeletedSuccessfully, {
+                    notifications.show(messages.templateMovedToDeletionSuccessfully, {
                         severity: "success",
                         autoHideDuration: 3000,
                     });
-
-                    logger.info("Template deleted successfully:", templateId);
-                } else {
-                    throw new Error("Failed to delete template");
                 }
             } catch (error: unknown) {
-                const apiError = error as {
-                    response?: { data: ApiErrorResponse };
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
                 };
                 const errorMessage =
-                    apiError.response?.data?.message ||
-                    apiError.response?.data?.errors?.general?.[0] ||
-                    messages.templateDeleteFailed;
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
+                    messages.templateMoveToDeletionFailed;
 
                 notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error("Failed to delete template:", {
-                    error: apiError.response?.data,
+                logger.error(messages.errorMovingToDeletion, {
+                    error: gqlError,
                     templateId,
                 });
 
-                throw error; // Re-throw to allow caller to handle the error
+                throw error;
             }
         },
-        [currentTemplate, messages, notifications, deletedCategory],
+        [
+            messages,
+            notifications,
+            moveToDeletionCategoryMutation,
+            currentTemplate,
+            currentCategory,
+            deletedCategory,
+            setRegularCategories,
+            setDeletedCategory,
+        ],
     );
 
     // Sorting functions
@@ -918,7 +927,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             setCurrentTemplate,
             addTemplate,
             updateTemplate,
-            deleteTemplate,
+            moveTemplateToDeletionCategory,
             sortTemplates,
             isAddingTemplate,
             setIsAddingTemplate,
@@ -943,7 +952,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             currentTemplate,
             addTemplate,
             updateTemplate,
-            deleteTemplate,
+            moveTemplateToDeletionCategory,
             sortTemplates,
             isAddingTemplate,
             onNewTemplateCancel,

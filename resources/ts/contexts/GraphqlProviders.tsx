@@ -1,4 +1,5 @@
 import { TemplateCategoryGraphQLProvider } from "./template/TemplateCategoryGraphQLContext";
+import { TemplateGraphQLProvider } from "./template/TemplateGraphQLContext";
 
 export default function GraphqlProviders({
     children,
@@ -7,7 +8,7 @@ export default function GraphqlProviders({
 }) {
     return (
         <TemplateCategoryGraphQLProvider>
-            {children}
+            <TemplateGraphQLProvider>{children}</TemplateGraphQLProvider>
         </TemplateCategoryGraphQLProvider>
     );
 }

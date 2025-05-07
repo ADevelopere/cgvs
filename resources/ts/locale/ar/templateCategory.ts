@@ -75,6 +75,27 @@ const templateCategory: TemplateCategoryTranslation = {
     failedToUpdateCategory: "فشل في تحديث الفئة:",
     invalidCategoryIdProvided: "تم تقديم معرف فئة غير صالح:",
     attemptingToDeleteCategory: "محاولة حذف الفئة:",
+    errorDeletingCategory: "فشل في حذف الفئة:",
+    movingTemplateToDeletion: "جاري نقل القالب إلى سلة المحذوفات:",
+    errorMovingToDeletion: "فشل في نقل القالب إلى سلة المحذوفات:",
+    errorUpdatingTemplate: "فشل في تحديث القالب:",
+
+    // Template movement messages
+    templateMoveToDeletionFailed: "فشل نقل القالب إلى سلة المحذوفات",
+    templateMovedToDeletionSuccessfully: "تم نقل القالب إلى سلة المحذوفات بنجاح",
+
+    // Context error messages
+    useCategoryContextError: "يجب استخدام useCategory داخل CategoryProvider",
+
+    // Template generation and processing messages
+    failedToProcessFile: "فشل في معالجة الملف",
+    noTemplateDataReceived: "لم يتم استلام بيانات القالب من الخادم",
+    generatedTemplateEmpty: "القالب المنشأ فارغ",
+    noTemplateVariablesDefined: "لم يتم تعريف متغيرات للقالب",
+    serverReturnedStatus: "أعاد الخادم الحالة",
+    receivedEmptyTemplate: "تم استلام قالب فارغ من الخادم",
+    failedToGenerateContent: "فشل في إنشاء محتوى القالب",
+    templateIdRequired: "معرف القالب مطلوب",
 };
 
 export default templateCategory;

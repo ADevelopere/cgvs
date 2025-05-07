@@ -72,6 +72,27 @@ type TemplateCategoryTranslation = {
     failedToUpdateCategory: string;
     invalidCategoryIdProvided: string;
     attemptingToDeleteCategory: string;
+    errorDeletingCategory: string;
+    movingTemplateToDeletion: string;
+    errorMovingToDeletion: string;
+    errorUpdatingTemplate: string;
+
+    // Template movement messages
+    templateMoveToDeletionFailed: string;
+    templateMovedToDeletionSuccessfully: string;
+
+    // Context error messages
+    useCategoryContextError: string;
+
+    // Template generation and processing messages
+    failedToProcessFile: string;
+    noTemplateDataReceived: string;
+    generatedTemplateEmpty: string;
+    noTemplateVariablesDefined: string;
+    serverReturnedStatus: string;
+    receivedEmptyTemplate: string;
+    failedToGenerateContent: string;
+    templateIdRequired: string;
 };
 
 export default TemplateCategoryTranslation;
