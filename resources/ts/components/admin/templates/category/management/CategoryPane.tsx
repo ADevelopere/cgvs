@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -26,8 +26,10 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { TemplateCategory } from "@/graphql/generated/types";
+import { getSerializableCategories } from "@/utils/template/template-category-mapper";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
+    const { theme } = useAppTheme();
     const strings = useAppTranslation("templateCategoryTranslations");
 
     const {
@@ -37,12 +39,16 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         addCategory,
         updateCategory,
         deleteCategory,
-        sortCategories,
     } = useTemplateCategoryManagement();
-    const { theme } = useAppTheme();
+
+    useEffect(() => {
+        const s = getSerializableCategories(regularCategories);
+        console.log("TemplateCategoryManagementCategoryPane categories", s);
+    }, [regularCategories]);
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-    const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
+    // const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+    // const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
     const [editCategoryName, setEditCategoryName] = useState("");
@@ -102,20 +108,20 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         }
     };
 
-    const handleSortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setSortAnchorEl(event.currentTarget);
-        setIsSortMenuOpen(true);
-    };
+    // const handleSortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //     setSortAnchorEl(event.currentTarget);
+    //     setIsSortMenuOpen(true);
+    // };
 
-    const handleSortClose = () => {
-        setSortAnchorEl(null);
-        setIsSortMenuOpen(false);
-    };
+    // const handleSortClose = () => {
+    //     setSortAnchorEl(null);
+    //     setIsSortMenuOpen(false);
+    // };
 
-    const handleSort = (sortBy: "name" | "id", order: "asc" | "desc") => {
-        sortCategories(sortBy, order);
-        handleSortClose();
-    };
+    // const handleSort = (sortBy: "name" | "id", order: "asc" | "desc") => {
+    //     sortCategories(sortBy, order);
+    //     handleSortClose();
+    // };
 
     const handleEditCategory = () => {
         const error = validateCategoryName(editCategoryName);
@@ -200,7 +206,10 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                                 deleteCategory(category.id);
                             }}
                             color="error"
-                            disabled={(category.templates?.length ?? 0) > 0}
+                            disabled={
+                                !!category.special_type ||
+                                (category.templates?.length ?? 0) > 0
+                            }
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -319,14 +328,14 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                     {strings.addCategory}
                 </Button>
                 {/* sort categories */}
-                <Button
+                {/* <Button
                     variant="outlined"
                     startIcon={<SortIcon />}
                     onClick={handleSortClick}
                     disabled={!regularCategories?.length}
                 >
                     {strings.sort}
-                </Button>
+                </Button> */}
                 {/* total count */}
                 <Box
                     sx={{
@@ -423,7 +432,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             </Dialog>
 
             {/* sort menu */}
-            <Menu
+            {/* <Menu
                 anchorEl={sortAnchorEl}
                 open={isSortMenuOpen}
                 onClose={handleSortClose}
@@ -440,7 +449,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                 <MenuItem onClick={() => handleSort("id", "desc")}>
                     {strings.idDesc}
                 </MenuItem>
-            </Menu>
+            </Menu> */}
         </Box>
     );
 };
