@@ -71,4 +71,21 @@ class TemplateMutator implements LighthouseMutation
         $template = Template::query()->findOrFail($args['templateId']);
         return TemplateService::restoreTemplate($template);
     }
+
+    /**
+     * Reorder templates
+     * @throws ValidationException
+     */
+    public function reorder($root, array $args): array
+    {
+        $inputs = array_map(
+            fn($item) => new ReorderTemplateInput(
+                id: $item['id'],
+                order: $item['order']
+            ),
+            $args['input']
+        );
+
+        return TemplateService::reorderTemplates($inputs);
+    }
 }

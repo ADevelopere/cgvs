@@ -3,96 +3,172 @@ import type {
     DeleteTemplateCategoryMutation,
     ReorderTemplateCategoriesMutation,
     UpdateTemplateCategoryMutation,
-    DeletedCategoryQuery,
-    MainCategoryQuery,
+    DeletionTemplateCategoryQuery,
+    MainTemplateCategoryQuery,
     TemplateCategoryQuery,
     TemplateCategoriesQuery,
+    FlatTemplateCategoriesQuery,
     TemplateCategory,
     Template
-} from '../../graphql/generated/types';
+} from '@/graphql/generated/types';
 
 export type TemplateCategorySource = 
     | CreateTemplateCategoryMutation
     | DeleteTemplateCategoryMutation
     | ReorderTemplateCategoriesMutation
     | UpdateTemplateCategoryMutation
-    | DeletedCategoryQuery
-    | MainCategoryQuery
+    | DeletionTemplateCategoryQuery
+    | MainTemplateCategoryQuery
     | TemplateCategoryQuery
-    | TemplateCategoriesQuery;
+    | TemplateCategoriesQuery
+    | FlatTemplateCategoriesQuery;
 
-const mapTemplateToType = (template: any): Template => ({
+// Base mapper for Template type
+const mapTemplate = (template: any): Template => ({
     ...template,
     category: template.category || null,
 });
 
-const mapCategory = (category: any): TemplateCategory => ({
+// Base mapper for TemplateCategory type
+const mapBaseTemplateCategory = (category: any): TemplateCategory => ({
     ...category,
     templates: Array.isArray(category.templates) 
-        ? category.templates.map(mapTemplateToType)
+        ? category.templates.map(mapTemplate)
         : [],
     childCategories: Array.isArray(category.childCategories)
-        ? category.childCategories.map(mapCategory)
+        ? category.childCategories.map(mapBaseTemplateCategory)
         : [],
     parentCategory: category.parentCategory
-        ? mapCategory(category.parentCategory)
+        ? mapBaseTemplateCategory(category.parentCategory)
         : null,
 });
 
+// Specific mappers for each source type
+const mapCreateTemplateCategoryMutation = (source: CreateTemplateCategoryMutation): TemplateCategory => 
+    mapBaseTemplateCategory(source.createTemplateCategory);
+
+const mapDeleteTemplateCategoryMutation = (source: DeleteTemplateCategoryMutation): TemplateCategory =>
+    mapBaseTemplateCategory(source.deleteTemplateCategory);
+
+const mapReorderTemplateCategoriesMutation = (source: ReorderTemplateCategoriesMutation): TemplateCategory[] =>
+    source.reorderTemplateCategories.map(mapBaseTemplateCategory);
+
+const mapUpdateTemplateCategoryMutation = (source: UpdateTemplateCategoryMutation): TemplateCategory =>
+    mapBaseTemplateCategory(source.updateTemplateCategory);
+
+const mapDeletionTemplateCategoryQuery = (source: DeletionTemplateCategoryQuery): TemplateCategory =>
+    mapBaseTemplateCategory(source.deletionTemplateCategory);
+
+const mapMainTemplateCategoryQuery = (source: MainTemplateCategoryQuery): TemplateCategory =>
+    mapBaseTemplateCategory(source.mainTemplateCategory);
+
+const mapTemplateCategoryQuery = (source: TemplateCategoryQuery): TemplateCategory | null =>
+    source.templateCategory ? mapBaseTemplateCategory(source.templateCategory) : null;
+
+const mapTemplateCategoriesQuery = (source: TemplateCategoriesQuery): TemplateCategory[] =>
+    source.templateCategories.data.map(mapBaseTemplateCategory);
+
+const mapFlatTemplateCategoriesQuery = (source: FlatTemplateCategoriesQuery): TemplateCategory[] =>
+    source.flatTemplateCategories.map(mapBaseTemplateCategory);
+
+// Helper function to build category hierarchy from flat structure
+export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): TemplateCategory[] => {
+    const categoryMap = new Map<string, TemplateCategory>();
+    const rootCategories: TemplateCategory[] = [];
+
+    // First pass: create map of all categories
+    flatCategories.forEach(category => {
+        categoryMap.set(category.id, {
+            ...category,
+            childCategories: [], // Reset childCategories as we'll build them in second pass
+            templates: category.templates || [],
+            parentCategory: null // Reset parentCategory as we'll set it in second pass
+        });
+    });
+
+    // Second pass: build relationships
+    flatCategories.forEach(category => {
+        const currentCategory = categoryMap.get(category.id);
+        if (!currentCategory) return;
+
+        if (category.parentCategory) {
+            const parentCategory = categoryMap.get(category.parentCategory.id);
+            if (parentCategory) {
+                // Set parent reference
+                currentCategory.parentCategory = parentCategory;
+                // Add to parent's children
+                parentCategory.childCategories.push(currentCategory);
+            } else {
+                rootCategories.push(currentCategory);
+            }
+        } else {
+            rootCategories.push(currentCategory);
+        }
+    });
+
+    return rootCategories;
+};
+
+// Main mapper function
 export const mapTemplateCategory = (source: TemplateCategorySource | undefined | null): TemplateCategory | null => {
     if (!source) {
         return null;
     }
 
-    // Handle template categories query
-    if ('templateCategories' in source && source.templateCategories?.data) {
-        return mapCategory(source.templateCategories.data[0]);
-    }
-
-    // Handle single category mutations/queries
-    if ('createTemplateCategory' in source) {
-        return mapCategory(source.createTemplateCategory);
-    }
-    if ('updateTemplateCategory' in source) {
-        return mapCategory(source.updateTemplateCategory);
-    }
-    if ('deleteTemplateCategory' in source) {
-        return mapCategory(source.deleteTemplateCategory);
-    }
-    if ('templateCategory' in source) {
-        return source.templateCategory ? mapCategory(source.templateCategory) : null;
-    }
-    if ('deletedCategory' in source) {
-        return mapCategory(source.deletedCategory);
-    }
-    if ('mainCategory' in source) {
-        return mapCategory(source.mainCategory);
-    }
-
-    // Handle array results (reorderTemplateCategories mutation)
-    if ('reorderTemplateCategories' in source) {
-        return source.reorderTemplateCategories.map(mapCategory)[0] || null;
+    try {
+        if ('createTemplateCategory' in source) {
+            return mapCreateTemplateCategoryMutation(source);
+        }
+        if ('deleteTemplateCategory' in source) {
+            return mapDeleteTemplateCategoryMutation(source);
+        }
+        if ('updateTemplateCategory' in source) {
+            return mapUpdateTemplateCategoryMutation(source);
+        }
+        if ('templateCategory' in source) {
+            return mapTemplateCategoryQuery(source);
+        }
+        if ('deletionTemplateCategory' in source) {
+            return mapDeletionTemplateCategoryQuery(source);
+        }
+        if ('mainTemplateCategory' in source) {
+            return mapMainTemplateCategoryQuery(source);
+        }
+        if ('templateCategories' in source) {
+            return mapTemplateCategoriesQuery(source)[0] || null;
+        }
+        if ('reorderTemplateCategories' in source) {
+            return mapReorderTemplateCategoriesMutation(source)[0] || null;
+        }
+    } catch (error) {
+        console.error('Error mapping template category:', error);
+        return null;
     }
 
     return null;
 };
 
+// Helper function to map multiple categories
 export const mapTemplateCategories = (source: TemplateCategorySource | undefined | null): TemplateCategory[] => {
     if (!source) {
         return [];
     }
 
-    // Handle template categories query
-    if ('templateCategories' in source && source.templateCategories?.data) {
-        return source.templateCategories.data.map(mapCategory);
-    }
+    try {
+        if ('templateCategories' in source) {
+            return mapTemplateCategoriesQuery(source);
+        }
+        if ('reorderTemplateCategories' in source) {
+            return mapReorderTemplateCategoriesMutation(source);
+        }
+        if ('flatTemplateCategories' in source) {
+            return mapFlatTemplateCategoriesQuery(source);
+        }
 
-    // Handle array results
-    if ('reorderTemplateCategories' in source) {
-        return source.reorderTemplateCategories.map(mapCategory);
+        const category = mapTemplateCategory(source);
+        return category ? [category] : [];
+    } catch (error) {
+        console.error('Error mapping template categories:', error);
+        return [];
     }
-
-    // For single category results, wrap in array if not null
-    const category = mapTemplateCategory(source);
-    return category ? [category] : [];
 };

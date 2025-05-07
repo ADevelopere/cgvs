@@ -1,28 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-    Alert,
-    Box,
-    Button,
-    Container,
-    IconButton,
-    Tab,
-    Tooltip,
-    Typography,
-} from "@mui/material";
+import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
 import useAppTranslation from "@/locale/useAppTranslation";
 import {
     TemplateCategoryManagementProvider,
     useTemplateCategoryManagement,
 } from "@/contexts/template/TemplateCategoryManagementContext";
-import SplitPaneViewController from "@/components/splitPane/SplitPaneViewController";
 import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import SplitPane from "@/components/splitPane/SplitPane";
 import { PanelLeft, PanelRight } from "lucide-react";
-import { TabList as MuiTabList, TabContext, TabList, TabPanel } from "@mui/lab";
-import DeletedTemplatesCategory from "./DeletedTemplatesCategory";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import DeletionTemplatesCategory from "./DeletionTemplatesCategory";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
@@ -214,7 +204,7 @@ const This: React.FC = () => {
                             </SplitPane>
                         </TabPanel>
                         <TabPanel value="deleted">
-                            <DeletedTemplatesCategory />
+                            <DeletionTemplatesCategory />
                         </TabPanel>
                     </TabContext>
                 </Box>

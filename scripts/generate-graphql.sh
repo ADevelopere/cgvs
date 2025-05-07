@@ -22,7 +22,7 @@ bun run codegen
 
 # Run gqlg
 echo "📝 Generating GraphQL types..."
-bunx gqlg --schemaFilePath "$SCHEMA_PATH" --destDirPath "$GQLG_DIR" --depthLimit 5
+bunx gqlg --schemaFilePath "$SCHEMA_PATH" --destDirPath "$GQLG_DIR" --depthLimit 10
 
 # Generate TypeScript files
 echo "🔄 Generating TypeScript files..."

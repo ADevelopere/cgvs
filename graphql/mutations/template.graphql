@@ -28,6 +28,12 @@ extend type Mutation {
         @guard
         # @can(ability: "restoreTemplate", find: "templateId")
         @field(resolver: "TemplateMutator@restore")
+
+    "Reorder templates in a category"
+    reorderTemplates(input: [ReorderTemplateInput!]!): [Template!]!
+        @guard
+        # @can(ability: "reorderTemplate")
+        @field(resolver: "TemplateMutator@reorder")
 }
 
 input CreateTemplateInput {
@@ -44,4 +50,9 @@ input UpdateTemplateInput {
     categoryId: ID!
     order: Int
     backgroundImage: Upload
+}
+
+input ReorderTemplateInput {
+    id: ID!
+    order: Int!
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Log;
 use App\GraphQL\Contracts\LighthouseModel;
 
-class Template extends Model  implements LighthouseModel
+class Template extends Model implements LighthouseModel
 {
     use SoftDeletes, HasFactory;
 
@@ -20,6 +20,7 @@ class Template extends Model  implements LighthouseModel
         'background_url',
         'category_id',
         'order',
+        'trashed_at',
     ];
 
     public function category(): BelongsTo
@@ -41,6 +42,7 @@ class Template extends Model  implements LighthouseModel
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'trashed_at' => 'datetime',
         'is_active' => 'boolean',
     ];
 
@@ -98,6 +100,13 @@ class Template extends Model  implements LighthouseModel
                 ]);
             }
         });
+
+        static::retrieved(function ($template) {
+            Log::info('Template query executed', [
+                'template_id' => $template->id,
+                'template_data' => $template->toArray()
+            ]);
+        });
     }
 
     public function moveToDeletionCategory()
@@ -105,7 +114,7 @@ class Template extends Model  implements LighthouseModel
         $deletedCategory = TemplateCategory::getDeletedCategory();
         $this->category_id = $deletedCategory->id;
         $this->order = null;
-        $this->deleted_at = now();
+        $this->trashed_at = now();
         $this->save();
     }
 
@@ -115,7 +124,7 @@ class Template extends Model  implements LighthouseModel
         $this->category_id = $mainCategory->id;
         // Set order as last in the main category
         $this->order = Template::where('category_id', $mainCategory->id)->max('order') + 1;
-        $this->deleted_at = null;
+        $this->trashed_at = null;
         $this->save();
     }
 }

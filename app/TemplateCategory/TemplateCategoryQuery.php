@@ -16,4 +16,9 @@ class TemplateCategoryQuery implements LighthouseQuery
     {
         return TemplateCategory::where('special_type', 'DELETED')->firstOrFail();
     }
+
+    public function flatCategories(): array
+    {
+        return TemplateCategoryService::getFlatCategories();
+    }
 }

@@ -310,4 +310,34 @@ class TemplateCategoryService
             throw new Exception('Failed to reorder template categories');
         }
     }
+
+    /**
+     * Get a flattened list of all template categories ordered by their hierarchy
+     *
+     * @return TemplateCategory[]
+     */
+    public static function getFlatCategories(): array
+    {
+        Log::info('Retrieving flattened list of template categories');
+
+        try {
+            return TemplateCategory::with(['parentCategory'])
+                ->orderBy('parent_category_id', 'asc')
+                ->orderBy('order', 'asc')
+                ->get()
+                ->map(function ($category) {
+                    // Set childCategories to null
+                    $category->setRelation('childCategories', null);
+                    return $category;
+                })
+                ->all();
+
+        } catch (Exception $e) {
+            Log::error('Failed to retrieve flattened template categories', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new Exception('Failed to retrieve flattened template categories');
+        }
+    }
 }

@@ -9,9 +9,14 @@ import { FetchResult } from "@apollo/client";
 
 type TemplateCategoryGraphQLContextType = {
     /**
-     * Query to fetch all template categories
+     * Query to fetch all template categories in a flat structure
      */
-    templateCategoriesQuery: (
+    flatTemplateCategoriesQuery: () => Promise<FetchResult<Types.FlatTemplateCategoriesQuery>>;
+
+    /**
+     * Query to fetch template categories with pagination
+     */
+    paginatedTemplateCategoriesQuery: (
         variables?: Types.TemplateCategoriesQueryVariables,
     ) => Promise<FetchResult<Types.TemplateCategoriesQuery>>;
 
@@ -72,11 +77,13 @@ export const useTemplateCategoryGraphQL = () => {
 export const TemplateCategoryGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    // Query for fetching categories
-    const { refetch } = Types.useTemplateCategoriesQuery({
-        variables: {
-            first: 2147483647,
-        },
+    // Query for fetching flat categories
+    const { refetch: refetchFlat } = Types.useFlatTemplateCategoriesQuery();
+
+    // Query for fetching paginated categories
+    const { refetch: refetchPaginated } = Types.useTemplateCategoriesQuery({
+        skip: true, // Skip initial execution since we'll only use refetch
+        variables: { first: 10 }, // Default page size
     });
 
     // Query for fetching single category
@@ -90,26 +97,21 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.createTemplateCategory) return;
 
-            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
+            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>(
                 {
-                    query: Types.TemplateCategoriesDocument,
-                    variables: { first: 2147483647 },
+                    query: Types.FlatTemplateCategoriesDocument,
                 },
             );
 
-            if (!existingData?.templateCategories?.data) return;
+            if (!existingData?.flatTemplateCategories) return;
 
             cache.writeQuery({
-                query: Types.TemplateCategoriesDocument,
-                variables: { first: 2147483647 },
+                query: Types.FlatTemplateCategoriesDocument,
                 data: {
-                    templateCategories: {
-                        ...existingData.templateCategories,
-                        data: [
-                            ...existingData.templateCategories.data,
-                            data.createTemplateCategory,
-                        ],
-                    },
+                    flatTemplateCategories: [
+                        ...existingData.flatTemplateCategories,
+                        data.createTemplateCategory,
+                    ],
                 },
             });
         },
@@ -120,19 +122,18 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.updateTemplateCategory) return;
 
-            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
+            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>(
                 {
-                    query: Types.TemplateCategoriesDocument,
-                    variables: { first: 2147483647 },
+                    query: Types.FlatTemplateCategoriesDocument,
                 },
             );
 
-            if (!existingData?.templateCategories?.data) return;
+            if (!existingData?.flatTemplateCategories) return;
 
             const updatedCategory = mapTemplateCategory(data);
             if (!updatedCategory) return;
 
-            const updatedData = existingData.templateCategories.data.map(
+            const updatedData = existingData.flatTemplateCategories.map(
                 (category) =>
                     category.id === updatedCategory.id
                         ? data.updateTemplateCategory
@@ -140,13 +141,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
             );
 
             cache.writeQuery({
-                query: Types.TemplateCategoriesDocument,
-                variables: { first: 2147483647 },
+                query: Types.FlatTemplateCategoriesDocument,
                 data: {
-                    templateCategories: {
-                        ...existingData.templateCategories,
-                        data: updatedData,
-                    },
+                    flatTemplateCategories: updatedData,
                 },
             });
         },
@@ -157,27 +154,22 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.deleteTemplateCategory) return;
 
-            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
+            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>(
                 {
-                    query: Types.TemplateCategoriesDocument,
-                    variables: { first: 2147483647 },
+                    query: Types.FlatTemplateCategoriesDocument,
                 },
             );
 
-            if (!existingData?.templateCategories?.data) return;
+            if (!existingData?.flatTemplateCategories) return;
 
-            const updatedData = existingData.templateCategories.data.filter(
+            const updatedData = existingData.flatTemplateCategories.filter(
                 (category) => category.id !== data.deleteTemplateCategory.id,
             );
 
             cache.writeQuery({
-                query: Types.TemplateCategoriesDocument,
-                variables: { first: 2147483647 },
+                query: Types.FlatTemplateCategoriesDocument,
                 data: {
-                    templateCategories: {
-                        ...existingData.templateCategories,
-                        data: updatedData,
-                    },
+                    flatTemplateCategories: updatedData,
                 },
             });
         },
@@ -188,34 +180,28 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.reorderTemplateCategories) return;
 
-            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
-                {
-                    query: Types.TemplateCategoriesDocument,
-                    variables: { first: 2147483647 },
-                },
-            );
-
-            if (!existingData?.templateCategories?.data) return;
-
             cache.writeQuery({
-                query: Types.TemplateCategoriesDocument,
-                variables: { first: 2147483647 },
+                query: Types.FlatTemplateCategoriesDocument,
                 data: {
-                    templateCategories: {
-                        ...existingData.templateCategories,
-                        data: data.reorderTemplateCategories,
-                    },
+                    flatTemplateCategories: data.reorderTemplateCategories,
                 },
             });
         },
     });
 
     // Wrapper functions for mutations and queries
-    const templateCategoriesQuery = useCallback(
-        async (variables?: Types.TemplateCategoriesQueryVariables) => {
-            return refetch(variables);
+    const flatTemplateCategoriesQuery = useCallback(
+        async () => {
+            return refetchFlat();
         },
-        [refetch],
+        [refetchFlat],
+    );
+
+    const paginatedTemplateCategoriesQuery = useCallback(
+        async (variables?: Types.TemplateCategoriesQueryVariables) => {
+            return refetchPaginated(variables || { first: 10 });
+        },
+        [refetchPaginated],
     );
 
     const templateCategoryQuery = useCallback(
@@ -262,7 +248,8 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     );
 
     const contextValue: TemplateCategoryGraphQLContextType = {
-        templateCategoriesQuery,
+        flatTemplateCategoriesQuery,
+        paginatedTemplateCategoriesQuery,
         templateCategoryQuery,
         createTemplateCategoryMutation,
         updateTemplateCategoryMutation,

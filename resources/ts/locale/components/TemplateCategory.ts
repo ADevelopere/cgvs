@@ -53,6 +53,11 @@ type TemplateCategoryTranslation = {
     templateDeletedSuccessfully: string;
     templateDeleteFailed: string;
 
+    // Template restoration messages
+    templateRestoredSuccessfully: string;
+    templateRestoreFailed: string;
+    errorRestoringTemplate: string;
+
     nameTooShort: string;
     nameTooLong: string;
 

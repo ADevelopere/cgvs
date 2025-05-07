@@ -11,6 +11,8 @@ type Template {
     # recipients: [TemplateRecipient!]! @hasMany
     created_at: DateTime!
     updated_at: DateTime!
+    trashed_at: DateTime
+    deleted_at: DateTime
 }
 
 "Configuration for templates"
