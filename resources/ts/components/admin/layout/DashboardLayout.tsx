@@ -28,6 +28,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         setHeaderHeight,
         headerHeight,
         setSideBarToggleWidth,
+        setSideBarWidth,
     } = useDashboardLayout();
 
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -65,30 +66,28 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     );
 
     useEffect(() => {
-        const updateHeaderHeight = () => {
+        const updateDimentions = () => {
             if (headerRef && headerRef.current) {
                 const height = headerRef.current.getBoundingClientRect().height;
                 setHeaderHeight(height);
             }
-        };
-
-        const updateSideBarToggleWidth = () => {
             if (sideBarToggleRef && sideBarToggleRef.current) {
                 const width =
                     sideBarToggleRef.current.getBoundingClientRect().width;
                 setSideBarToggleWidth(width);
             }
+             if (headerRef && headerRef.current) {
+                const width = headerRef.current.getBoundingClientRect().width;
+                setSideBarWidth(width);
+            }
         };
 
-        // Update header height initially and on window resize
-        updateHeaderHeight();
-        updateSideBarToggleWidth();
-        window.addEventListener("resize", updateHeaderHeight);
-        window.addEventListener("resize", updateSideBarToggleWidth);
+        updateDimentions();
+
+        window.addEventListener("resize", updateDimentions);
 
         return () => {
-            window.removeEventListener("resize", updateHeaderHeight);
-            window.removeEventListener("resize", updateSideBarToggleWidth);
+            window.removeEventListener("resize", updateDimentions);
         };
     }, [headerRef, sideBarToggleRef]);
 

@@ -6,8 +6,8 @@ import {
     IconButton,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Template } from "@/contexts/template/template.types";
 import { useTemplate } from "@/contexts/template/TemplatesContext";
+import { Template } from "@/graphql/generated/types";
 
 interface GridViewProps {
     templates: Template[];

@@ -13,6 +13,7 @@ import {
     Template,
     TemplateCategory,
     useFlatTemplateCategoriesQuery,
+    useTemplatesQuery,
 } from "@/graphql/generated/types";
 
 import { CircularProgress } from "@mui/material";
@@ -33,6 +34,7 @@ import {
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { mapSingleTemplate } from "@/utils/template/template-mappers";
+import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
 
 // Logger utility
 const logger = {
@@ -88,6 +90,12 @@ type TemplateCategoryManagementContextType = {
      */
     fetchError: Error | null;
     // category states
+
+    /**
+     * An array containing all the template categories fetched from the backend.
+     * This list is populated by `fetchCategories` and updated dynamically when categories are added, updated, or deleted.
+     */
+    allTemplates: Template[];
     /**
      * An array containing all the regular template categories (excluding the deleted category).
      * This list is populated by `fetchCategories` and updated dynamically when categories are added, updated, or deleted.
@@ -103,6 +111,7 @@ type TemplateCategoryManagementContextType = {
      * When a category is selected, its associated templates are displayed. It's `null` if no category is currently selected.
      */
     currentCategory: TemplateCategory | null;
+
     /**
      * A function to programmatically set the `currentCategory`.
      * This directly changes the selected category without user interaction checks (like unsaved changes warnings).
@@ -273,6 +282,27 @@ export const TemplateCategoryManagementProvider: React.FC<{
         return buildCategoryHierarchy(mapped);
     }, [apolloCategoryData]);
 
+    const allTemplatesFromCache = useMemo(() => {
+        if (!apolloCategoryData?.flatTemplateCategories) {
+            return [];
+        }
+        const mapped = mapTemplateCategories({
+            flatTemplateCategories: apolloCategoryData.flatTemplateCategories,
+        });
+        const allTemplates = mapped.flatMap((category) => {
+            if (category.templates) {
+                return category.templates.map((template) => ({
+                    ...template,
+                    category: category,
+                }));
+            }
+            return [];
+        });
+
+        console.log("All templates from cache:", allTemplates);
+        return allTemplates;
+    }, [apolloCategoryData]);
+
     const regularCategoriesFromCache = useMemo(() => {
         const regularCategories = allCategoriesFromCache.filter(
             (cat) => cat.special_type !== "deletion",
@@ -431,7 +461,10 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateCategory = useCallback(
-        async (category: TemplateCategory, parentCategoryId?: string | null) => {
+        async (
+            category: TemplateCategory,
+            parentCategoryId?: string | null,
+        ) => {
             try {
                 const response = await updateTemplateCategoryMutation({
                     id: category.id,
@@ -837,6 +870,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             moveTemplateToDeletionCategory,
             restoreTemplate,
             // sortCategories,
+            allTemplates: allTemplatesFromCache,
             currentTemplate,
             setCurrentTemplate,
             addTemplate,
@@ -864,6 +898,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             moveTemplateToDeletionCategory,
             restoreTemplate,
             // sortCategories,
+            allTemplatesFromCache,
             templatesForCurrentCategory,
             currentTemplate, // setCurrentTemplate is stable
             addTemplate,

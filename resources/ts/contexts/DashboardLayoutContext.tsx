@@ -41,6 +41,7 @@ export const DashboardLayoutProvider: React.FC<
 
     const [headerHeight, setHeaderHeight] = useState<number>(0);
     const [sideBarToggleWidth, setSideBarToggleWidth] = useState<number>(0);
+    const [sideBarWidth, setSideBarWidth] = useState<number>(0);
 
     const toggleSidebar = useCallback(() => {
         setSidebarState((current) => {
@@ -113,6 +114,8 @@ export const DashboardLayoutProvider: React.FC<
             setHeaderHeight,
             sideBarToggleWidth,
             setSideBarToggleWidth,
+            sideBarWidth,
+            setSideBarWidth,
         };
     }, [
         navigation,
@@ -130,6 +133,8 @@ export const DashboardLayoutProvider: React.FC<
         setHeaderHeight,
         sideBarToggleWidth,
         setSideBarToggleWidth,
+        sideBarWidth,
+        setSideBarWidth,
     ]);
 
     return (
