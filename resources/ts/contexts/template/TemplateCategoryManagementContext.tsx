@@ -139,7 +139,10 @@ type TemplateCategoryManagementContextType = {
      * Updates the name of an existing template category identified by its ID.
      * This modifies the category's name in the backend and updates the corresponding category in the local `categories` state.
      */
-    updateCategory: (categoryId: string, name: string) => void;
+    updateCategory: (
+        category: TemplateCategory,
+        parentCategoryId?: string | null,
+    ) => void;
     /**
      * Deletes a template category identified by its ID.
      * This removes the category from the backend and the local `categories` state. If the deleted category was the `currentCategory`, the selection is cleared.
@@ -183,13 +186,11 @@ type TemplateCategoryManagementContextType = {
      */
     restoreTemplate: (templateId: string) => Promise<void>;
 
-    
     /**
      * Sorts the `templates` array (associated with the `currentCategory`) based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the templates list displayed to the user for the selected category.
      */
     // sortTemplates: (sortBy: "name" | "id", order: "asc" | "desc") => void;
-
 
     /**
      * A boolean flag indicating whether the user interface is currently in the state of adding a new template.
@@ -430,17 +431,22 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateCategory = useCallback(
-        async (categoryId: string, name: string, parentCategoryId?: string) => {
+        async (category: TemplateCategory, parentCategoryId?: string | null) => {
             try {
                 const response = await updateTemplateCategoryMutation({
-                    id: categoryId,
-                    input: { name, parentCategoryId },
+                    id: category.id,
+                    input: {
+                        name: category.name,
+                        description: category.description,
+                        order: category.order,
+                        parentCategoryId: parentCategoryId,
+                    },
                 });
                 // Cache updated by Apollo.
                 // The useEffect for currentCategoryState will refresh its instance if it's the one updated.
                 if (
                     response.data?.updateTemplateCategory &&
-                    currentCategoryState?.id === categoryId
+                    currentCategoryState?.id === category.id
                 ) {
                     // Optionally, explicitly set current category if it was the one updated,
                     // though the useEffect should handle it.
@@ -467,8 +473,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 });
                 logger.error(messages.failedToUpdateCategory, {
                     error: gqlError,
-                    categoryId,
-                    name,
+                    category: category,
+                    parentCategoryId: parentCategoryId,
                 });
             }
         },

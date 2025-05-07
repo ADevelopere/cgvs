@@ -56,7 +56,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                             <Button
                                 size="small"
                                 startIcon={<SettingsIcon />}
-                                onClick={() => manageTemplate(template.id)}
+                                onClick={() => manageTemplate(template.id.toString())}
                             >
                                 Manage
                             </Button>

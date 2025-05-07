@@ -15,7 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import SortIcon from "@mui/icons-material/Sort";
 import { Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, SettingsIcon, SquareArrowOutUpRight } from "lucide-react";
 
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
@@ -23,6 +23,7 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { Template } from "@/graphql/generated/types";
+import { useTemplate } from "@/contexts/template/TemplatesContext";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
@@ -31,11 +32,12 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         addTemplate,
         updateTemplate,
         moveTemplateToDeletionCategory,
-        sortTemplates,
+        // sortTemplates,
         trySelectCategory,
         setIsAddingTemplate,
         setOnNewTemplateCancel,
     } = useTemplateCategoryManagement();
+    const { manageTemplate } = useTemplate();
 
     const templates = currentCategory?.templates ?? [];
 
@@ -60,8 +62,8 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const listRef = useRef<HTMLUListElement>(null);
     const newTemplateRef = useRef<HTMLLIElement>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-    const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
+    // const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+    // const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
     const strings = useAppTranslation("templateCategoryTranslations");
 
     const validateTemplateName = (name: string) => {
@@ -116,20 +118,20 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         setAnchorEl(null);
     };
 
-    const handleSortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setSortAnchorEl(event.currentTarget);
-        setIsSortMenuOpen(true);
-    };
+    // const handleSortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //     setSortAnchorEl(event.currentTarget);
+    //     setIsSortMenuOpen(true);
+    // };
 
-    const handleSortClose = () => {
-        setSortAnchorEl(null);
-        setIsSortMenuOpen(false);
-    };
+    // const handleSortClose = () => {
+    //     setSortAnchorEl(null);
+    //     setIsSortMenuOpen(false);
+    // };
 
-    const handleSort = (sortBy: "name" | "id", order: "asc" | "desc") => {
-        sortTemplates(sortBy, order);
-        handleSortClose();
-    };
+    // const handleSort = (sortBy: "name" | "id", order: "asc" | "desc") => {
+    //     sortTemplates(sortBy, order);
+    //     handleSortClose();
+    // };
 
     const handleTemplateNameEdit = async (
         template: Template,
@@ -299,6 +301,16 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                         <MoreVertIcon />
                                     </IconButton>
                                 </Tooltip>
+
+                                <Tooltip title={strings.manage}>
+                                    <IconButton
+                                        onClick={() => manageTemplate(template.id)}
+                                        color="info"
+                                        disabled={false}
+                                    >
+                                        <SquareArrowOutUpRight />
+                                    </IconButton>
+                                </Tooltip>
                             </ListItem>
                         ))}
                         {tempTemplate && (
@@ -366,7 +378,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                             {strings.addTemplate}
                         </Button>
 
-                        {/* sort button */}
+                        {/* sort button
                         <Button
                             variant="outlined"
                             startIcon={<SortIcon />}
@@ -374,7 +386,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                             disabled={!templates?.length}
                         >
                             {strings.sort}
-                        </Button>
+                        </Button> */}
                         <Box
                             sx={{
                                 flexGrow: 1,
@@ -396,7 +408,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                 <MenuItem onClick={handleMoreClose}>{strings.move}</MenuItem>
             </Menu>
 
-            <Menu
+            {/* <Menu
                 anchorEl={sortAnchorEl}
                 open={isSortMenuOpen}
                 onClose={handleSortClose}
@@ -413,7 +425,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                 <MenuItem onClick={() => handleSort("id", "desc")}>
                     {strings.idDesc}
                 </MenuItem>
-            </Menu>
+            </Menu> */}
         </Box>
     );
 };

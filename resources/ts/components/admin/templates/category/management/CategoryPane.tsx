@@ -5,19 +5,8 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
-import SortIcon from "@mui/icons-material/Sort";
 import { ListItemButton, Typography } from "@mui/material";
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
@@ -27,6 +16,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { TemplateCategory } from "@/graphql/generated/types";
 import { getSerializableCategories } from "@/utils/template/template-category-mapper";
+import CategoryEditDialog from "./CategoryEditDialog";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
     const { theme } = useAppTheme();
@@ -46,13 +36,8 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         console.log("TemplateCategoryManagementCategoryPane categories", s);
     }, [regularCategories]);
 
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    // const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-    // const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
-    const [editCategoryName, setEditCategoryName] = useState("");
-    const [editError, setEditError] = useState("");
+    const [categoryToEdit, setCategoryToEdit] = useState<TemplateCategory | null>(null);
     const [tempCategory, setTempCategory] = useState<{
         id: string;
         name: string;
@@ -68,14 +53,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
 
     const handleCategoryClick = (category: TemplateCategory) => {
         trySelectCategory(category).then((r) => r);
-    };
-
-    const handleMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMoreClose = () => {
-        setAnchorEl(null);
     };
 
     const handleAddNewCategory = () => {
@@ -108,45 +85,35 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         }
     };
 
-    // const handleSortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    //     setSortAnchorEl(event.currentTarget);
-    //     setIsSortMenuOpen(true);
-    // };
-
-    // const handleSortClose = () => {
-    //     setSortAnchorEl(null);
-    //     setIsSortMenuOpen(false);
-    // };
-
-    // const handleSort = (sortBy: "name" | "id", order: "asc" | "desc") => {
-    //     sortCategories(sortBy, order);
-    //     handleSortClose();
-    // };
-
-    const handleEditCategory = () => {
-        const error = validateCategoryName(editCategoryName);
-        if (error) {
-            setEditError(error);
-            return;
-        }
-        if (selectedCategory) {
-            updateCategory(selectedCategory.id, editCategoryName);
-            setEditCategoryName("");
+    const handleEditCategory = ({ name, description, parentId }: { name: string; description?: string; parentId?: string | null }) => {
+        if (categoryToEdit) {
+            // TODO: Update the updateCategory function in the context to handle description and parentId
+            updateCategory({
+                ...categoryToEdit,
+                name,
+                description: description,
+                
+            }, parentId);
             setIsEditDialogOpen(false);
+            setCategoryToEdit(null);
         }
     };
 
-    const handleMoveCategory = () => {
-        // todo:
-        // moveCategory(categoryToMove, newParentId);
-        setIsMoveDialogOpen(false);
+    const handleOpenEditDialog = (category: TemplateCategory) => {
+        setCategoryToEdit(category);
+        setIsEditDialogOpen(true);
+    };
+
+    const handleCloseEditDialog = () => {
+        setIsEditDialogOpen(false);
+        setCategoryToEdit(null);
     };
 
     const handleCategoryNameEdit = async (
-        categoryId: string,
+        category: TemplateCategory,
         newName: string,
     ) => {
-        updateCategory(categoryId, newName);
+        updateCategory({...category, name: newName });
     };
 
     const renderCategory = (category: (typeof regularCategories)[0]) => (
@@ -190,7 +157,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                         }}
                         value={category.name}
                         onSave={(newValue) =>
-                            handleCategoryNameEdit(category.id, newValue)
+                            handleCategoryNameEdit(category, newValue)
                         }
                         isValid={validateCategoryName}
                     />
@@ -206,22 +173,19 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                                 deleteCategory(category.id);
                             }}
                             color="error"
-                            disabled={
-                                !!category.special_type ||
-                                (category.templates?.length ?? 0) > 0
-                            }
+                            disabled={!!category.special_type || (category.templates?.length ?? 0) > 0}
                         >
                             <DeleteIcon />
                         </IconButton>
                     </span>
                 </Tooltip>
 
-                {/* edit menu */}
-                <Tooltip title="More">
+                {/* edit button */}
+                <Tooltip title={strings.edit}>
                     <IconButton
                         onClick={(e) => {
                             e.stopPropagation();
-                            handleMoreClick(e);
+                            handleOpenEditDialog(category);
                         }}
                     >
                         <EditIcon />
@@ -347,109 +311,15 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                     <Typography>{regularCategories.length}</Typography>
                 </Box>
             </Box>
-            {/* more menu*/}
-            <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMoreClose}
-            >
-                <MenuItem
-                    onClick={() => {
-                        setEditCategoryName(
-                            regularCategories.find(
-                                (cat) => cat.id === selectedCategory?.id,
-                            )?.name ?? "",
-                        );
-                        handleMoreClose();
-                        setIsEditDialogOpen(true);
-                    }}
-                >
-                    {strings.edit}
-                </MenuItem>
-                <MenuItem
-                    onClick={() => {
-                        setIsMoveDialogOpen(true);
-                        handleMoreClose();
-                    }}
-                >
-                    {strings.move}
-                </MenuItem>
-            </Menu>
 
             {/* edit category dialog */}
-            <Dialog
+            <CategoryEditDialog
                 open={isEditDialogOpen}
-                onClose={() => setIsEditDialogOpen(false)}
-            >
-                <DialogTitle>{strings.edit}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label={strings.name}
-                        fullWidth
-                        value={editCategoryName}
-                        onChange={(e) => {
-                            setEditCategoryName(e.target.value);
-                            setEditError("");
-                        }}
-                        error={!!editError}
-                        helperText={editError}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsEditDialogOpen(false)}>
-                        {strings.cancel}
-                    </Button>
-                    <Button onClick={handleEditCategory}>{strings.save}</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* move category dialog */}
-            <Dialog
-                open={isMoveDialogOpen}
-                onClose={() => setIsMoveDialogOpen(false)}
-            >
-                <DialogTitle>{strings.move}</DialogTitle>
-                <DialogContent>
-                    {/* Implement a dropdown or list to select the new parent category */}
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="New Parent Category ID"
-                        fullWidth
-                        onChange={() => handleMoveCategory()}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsMoveDialogOpen(false)}>
-                        {strings.cancel}
-                    </Button>
-                    <Button onClick={() => handleMoveCategory()}>
-                        {strings.move}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* sort menu */}
-            {/* <Menu
-                anchorEl={sortAnchorEl}
-                open={isSortMenuOpen}
-                onClose={handleSortClose}
-            >
-                <MenuItem onClick={() => handleSort("name", "asc")}>
-                    {strings.nameAsc}
-                </MenuItem>
-                <MenuItem onClick={() => handleSort("name", "desc")}>
-                    {strings.nameDesc}
-                </MenuItem>
-                <MenuItem onClick={() => handleSort("id", "asc")}>
-                    {strings.idAsc}
-                </MenuItem>
-                <MenuItem onClick={() => handleSort("id", "desc")}>
-                    {strings.idDesc}
-                </MenuItem>
-            </Menu> */}
+                category={categoryToEdit}
+                categories={regularCategories}
+                onClose={handleCloseEditDialog}
+                onSave={handleEditCategory}
+            />
         </Box>
     );
 };

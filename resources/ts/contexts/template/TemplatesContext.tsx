@@ -27,7 +27,7 @@ type TemplatesContextType = {
     fetchTemplates: () => Promise<void>;
     createTemplate: (templateData: Templatecreated_ata) => Promise<void>;
     fetchConfig: () => Promise<void>;
-    manageTemplate: (templateId: number) => void;
+    manageTemplate: (templateId: string) => void;
 };
 
 const defaultConfig: TemplateConfig = {
@@ -120,8 +120,9 @@ export function TemplateProvider({ children }: { children: ReactNode }) {
     }, [fetchConfig]);
 
     const manageTemplate = useCallback(
-        (templateId: number) => {
-            const template = templates.find((t) => t.id === templateId);
+        (templateId: string) => {
+            const numberId = Number(templateId);
+            const template = templates.find((t) => t.id === numberId);
             if (!template) {
                 setError("Template not found");
                 console.error("Template not found");

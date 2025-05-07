@@ -1,130 +1,141 @@
 import { useState } from "react";
-import {
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TableSortLabel,
-    Button,
-    Box,
-} from "@mui/material";
+import { Paper, Box, Button } from "@mui/material";
+import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { formatDate } from "@/utils/dateUtils";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useAppBarHeight } from "@/hooks/useAppBarHeight";
+import { useAppTheme } from "@/contexts/ThemeContext";
 
-type Order = "asc" | "desc";
-type OrderBy = "name" | "created_at" | "trashed_at";
+interface TemplateRow {
+    id: string;
+    name: string;
+    created_at: string;
+    trashed_at: string;
+    background_url: string | null;
+}
 
 const DeletionTemplatesCategory: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
-    
-    const { deletionCategory, restoreTemplate } = useTemplateCategoryManagement();
-    const [order, setOrder] = useState<Order>("desc");
-    const [orderBy, setOrderBy] = useState<OrderBy>("trashed_at");
+    const {theme } = useAppTheme();
+    const { deletionCategory, restoreTemplate } =
+        useTemplateCategoryManagement();
+    const [sortModel, setSortModel] = useState<GridSortModel>([
+        {
+            field: "trashed_at",
+            sort: "desc",
+        },
+    ]);
 
     // Get templates from the deleted category
-    const templates = deletionCategory?.templates || [];
+    const templates = deletionCategory?.templates ?? [];
 
-    const handleRequestSort = (property: OrderBy) => {
-        const isAsc = orderBy === property && order === "asc";
-        setOrder(isAsc ? "desc" : "asc");
-        setOrderBy(property);
-    };
+    const columns: GridColDef[] = [
+        {
+            field: "background",
+            headerName: strings.image,
+            width: 100,
+            sortable: false,
+            renderCell: (params) => (
+                <Box sx={{display: 'flex', alignItems: 'center', height: "100%"}}>
+                    <Box
+                        component="img"
+                        src={
+                            params.row.background_url ??
+                            "/storage/img/default-template-bg.png"
+                        }
+                        alt={`${params.row.name} ${strings.image}`}
+                        sx={{
+                            width: 60,
+                            height: 60,
+                            objectFit: "cover",
+                            borderRadius: 1,
+                        }}
+                    />
+                </Box>
+            ),
+        },
+        {
+            field: "name",
+            headerName: strings.name,
+            flex: 1,
+        },
+        {
+            field: "created_at",
+            headerName: strings.createdAt,
+            flex: 1,
+            renderCell: (params) => formatDate(params.row.created_at),
+        },
+        {
+            field: "trashed_at",
+            headerName: strings.deletedAt,
+            flex: 1,
+            renderCell: (params) => formatDate(params.row.trashed_at),
+        },
+        {
+            field: "actions",
+            headerName: strings.actions,
+            width: 150,
+            sortable: false,
+            renderCell: (params) => (
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => restoreTemplate(params.row.id)}
+                    color="primary"
+                >
+                    {strings.restoreTemplate}
+                </Button>
+            ),
+        },
+    ];
 
-    const sortedTemplates = [...templates].sort((a, b) => {
-        if (orderBy === "name") {
-            return order === "asc"
-                ? a.name.localeCompare(b.name)
-                : b.name.localeCompare(a.name);
-        }
+    const rows: TemplateRow[] = templates.map((template) => ({
+        id: template.id.toString(),
+        name: template.name,
+        created_at: template.created_at,
+        trashed_at: template.trashed_at,
+        background_url: template.background_url ?? null,
+    }));
 
-        const dateA = new Date(a[orderBy] || "").getTime();
-        const dateB = new Date(b[orderBy] || "").getTime();
-        return order === "asc" ? dateA - dateB : dateB - dateA;
-    });
+    const appBarHeight = useAppBarHeight();
 
     return (
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell></TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === "name"}
-                                    direction={orderBy === "name" ? order : "asc"}
-                                    onClick={() => handleRequestSort("name")}
-                                >
-                                    {strings.name}
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === "created_at"}
-                                    direction={orderBy === "created_at" ? order : "asc"}
-                                    onClick={() => handleRequestSort("created_at")}
-                                >
-                                    {strings.createdAt}
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === "trashed_at"}
-                                    direction={orderBy === "trashed_at" ? order : "asc"}
-                                    onClick={() => handleRequestSort("trashed_at")}
-                                >
-                                    {strings.deletedAt}
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell align="right">{strings.actions}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedTemplates.map((template) => (
-                            <TableRow key={template.id}>
-                                <TableCell>
-                                    <Box
-                                        component="img"
-                                        src={template.background_url || "/storage/img/default-template-bg.png"}
-                                        alt={`${template.name} ${strings.image}`}
-                                        sx={{
-                                            width: 60,
-                                            height: 60,
-                                            objectFit: "cover",
-                                            borderRadius: 1,
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>{template.name}</TableCell>
-                                <TableCell>{formatDate(template.created_at)}</TableCell>
-                                <TableCell>{formatDate(template.trashed_at)}</TableCell>
-                                <TableCell align="right">
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        onClick={() => restoreTemplate(template.id)}
-                                        color="primary"
-                                    >
-                                        {strings.restoreTemplate}
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {sortedTemplates.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={5} align="center">
-                                    {strings.noDeletedTemplates}
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>
+        <Box
+            sx={{
+                height: `calc(100vh - 220px - ${appBarHeight}px)`,
+            }}
+            id="deletion-templates-category"
+        >
+            <DataGrid
+                rows={rows}
+                columns={columns}
+                sortModel={sortModel}
+                onSortModelChange={(model) => setSortModel(model)}
+                initialState={{
+                    pagination: {
+                        paginationModel: {
+                            pageSize: 10,
+                        },
+                    },
+                }}
+                pageSizeOptions={[5, 10, 25]}
+                disableRowSelectionOnClick
+                rowHeight = {72}
+                slotProps={{
+                    row: {
+                        style: {
+                            backgroundColor: theme.palette.background.paper,
+                        },
+                    },
+                    cell: {
+                        style : {
+                            textAlign: theme.direction === "rtl" ? "right" : "left",
+                        }
+                    },
+                }}
+            />
+        </Box>
     );
 };
 

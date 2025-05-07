@@ -1,6 +1,7 @@
 import { BreakpointsOptions, PaletteOptions, Theme, ThemeOptions } from "@mui/material/styles";
 import { createTheme, PaletteMode } from "@mui/material";
 import ThemeMode from "./ThemeMode";
+import { arSD } from '@mui/x-data-grid/locales';
 
 const lightPalette: PaletteOptions = {
     mode: "light",
@@ -127,10 +128,9 @@ export const createAppTheme = (
             ? "dark"
             : "light";
     }
-    return createTheme({
+    return createTheme({...getThemeConfig(effectiveMode, direction)},arSD, {
         // colorSchemes: { light: true, dark: true },
         breakpoints:  breakpoints,
-        ...getThemeConfig(effectiveMode, direction),
     });
 };
 
