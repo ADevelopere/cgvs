@@ -1,5 +1,6 @@
 type TemplateCategoryTranslation = {
     templateCategoriesManagement: string;
+    theDeleted: string;
     toggleCategoriesPane: string;
     toggleTemplatesPane: string;
 

@@ -2,7 +2,8 @@ import TemplateCategoryTranslation from "../components/TemplateCategory";
 
 const templateCategory: TemplateCategoryTranslation = {
     // Management and navigation
-    templateCategoriesManagement: "إدارة فئات القوالب",
+    templateCategoriesManagement: "إدارة الفئات",
+    theDeleted: "المحذوفة",
     toggleCategoriesPane: "فتح/إغلاق لوحة الفئات",
     toggleTemplatesPane: "فتح/إغلاق لوحة القوالب",
 

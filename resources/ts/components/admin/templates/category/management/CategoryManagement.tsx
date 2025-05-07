@@ -10,9 +10,10 @@ import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import SplitPane from "@/components/splitPane/SplitPane";
-import { PanelLeft, PanelRight } from "lucide-react";
+import { DeleteIcon, FileStack, PanelLeft, PanelRight } from "lucide-react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import DeletionTemplatesCategory from "./DeletionTemplatesCategory";
+import { DeleteOutline } from "@mui/icons-material";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
@@ -131,8 +132,15 @@ const This: React.FC = () => {
                                 <Tab
                                     label={strings.templateCategoriesManagement}
                                     value="all"
+                                    icon={<FileStack />}
+                                    iconPosition="start"
                                 />
-                                <Tab label={"deleted"} value="deleted" />
+                                <Tab
+                                    icon={<DeleteOutline />}
+                                    iconPosition="start"
+                                    label={strings.theDeleted}
+                                    value="deleted"
+                                />
                             </TabList>
 
                             <Box sx={{ flex: 1 }} />
