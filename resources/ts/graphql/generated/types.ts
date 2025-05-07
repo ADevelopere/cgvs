@@ -389,7 +389,7 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -621,6 +621,8 @@ export const CreateTemplateDocument = gql`
     }
     order
     created_at
+    updated_at
+    trashed_at
   }
 }
     `;

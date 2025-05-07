@@ -62,9 +62,9 @@ type TemplateGraphQLContextType = {
     ) => Promise<FetchResult<Types.RestoreTemplateMutation>>;
 };
 
-const TemplateGraphQLContext = createContext<TemplateGraphQLContextType | undefined>(
-    undefined,
-);
+const TemplateGraphQLContext = createContext<
+    TemplateGraphQLContextType | undefined
+>(undefined);
 
 export const useTemplateGraphQL = () => {
     const context = useContext(TemplateGraphQLContext);
@@ -93,7 +93,7 @@ export const TemplateGraphQLProvider: React.FC<{
         async (variables: Types.QueryTemplateArgs) => {
             const result = await templateQueryRef.refetch({ id: variables.id });
             if (!result.data) {
-                throw new Error('No data returned from template query');
+                throw new Error("No data returned from template query");
             }
             return result.data;
         },
@@ -104,7 +104,7 @@ export const TemplateGraphQLProvider: React.FC<{
         async (variables: Types.QueryTemplatesArgs) => {
             const result = await templatesQueryRef.refetch(variables);
             if (!result.data) {
-                throw new Error('No data returned from templates query');
+                throw new Error("No data returned from templates query");
             }
             return result.data;
         },
@@ -116,9 +116,10 @@ export const TemplateGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.createTemplate) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                query: Types.FlatTemplateCategoriesDocument,
-            });
+            const existingData =
+                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+                    query: Types.FlatTemplateCategoriesDocument,
+                });
 
             if (!existingData?.flatTemplateCategories) return;
 
@@ -128,15 +129,20 @@ export const TemplateGraphQLProvider: React.FC<{
 
             if (!categoryToUpdate) return;
 
-            const updatedCategories = existingData.flatTemplateCategories.map((category) => {
-                if (category.id === categoryToUpdate.id) {
-                    return {
-                        ...category,
-                        templates: [...(category.templates || []), data.createTemplate],
-                    };
-                }
-                return category;
-            });
+            const updatedCategories = existingData.flatTemplateCategories.map(
+                (category) => {
+                    if (category.id === categoryToUpdate.id) {
+                        return {
+                            ...category,
+                            templates: [
+                                ...(category.templates || []),
+                                data.createTemplate,
+                            ],
+                        };
+                    }
+                    return category;
+                },
+            );
 
             cache.writeQuery({
                 query: Types.FlatTemplateCategoriesDocument,
@@ -158,16 +164,25 @@ export const TemplateGraphQLProvider: React.FC<{
 
             if (!existingData?.flatTemplateCategories) return;
 
-            const updatedCategories = existingData.flatTemplateCategories.map((category) => {
-                const templates = category.templates || [];
-                const updatedTemplates = templates.map((template) =>
-                    template.id === data.updateTemplate.id ? data.updateTemplate : template,
-                );
-                return {
-                    ...category,
-                    templates: updatedTemplates,
-                };
-            });
+            const updatedCategories = existingData.flatTemplateCategories.map(
+                (category) => {
+                    const templates = category.templates || [];
+                    const updatedTemplates = templates.map((template) => {
+                        if (template.id === data.updateTemplate.id) {
+                            // Merge existing template data with update data to preserve missing fields
+                            return {
+                                ...template,
+                                ...data.updateTemplate,
+                            };
+                        }
+                        return template;
+                    });
+                    return {
+                        ...category,
+                        templates: updatedTemplates,
+                    };
+                },
+            );
 
             cache.writeQuery({
                 query: Types.FlatTemplateCategoriesDocument,
@@ -189,16 +204,19 @@ export const TemplateGraphQLProvider: React.FC<{
 
             if (!existingData?.flatTemplateCategories) return;
 
-            const updatedCategories = existingData.flatTemplateCategories.map((category) => {
-                if (!category.templates) return category;
-                
-                return {
-                    ...category,
-                    templates: category.templates.filter(
-                        (template: { id: string }) => template.id !== data.deleteTemplate.id,
-                    ),
-                };
-            });
+            const updatedCategories = existingData.flatTemplateCategories.map(
+                (category) => {
+                    if (!category.templates) return category;
+
+                    return {
+                        ...category,
+                        templates: category.templates.filter(
+                            (template: { id: string }) =>
+                                template.id !== data.deleteTemplate.id,
+                        ),
+                    };
+                },
+            );
 
             cache.writeQuery({
                 query: Types.FlatTemplateCategoriesDocument,
@@ -220,19 +238,37 @@ export const TemplateGraphQLProvider: React.FC<{
 
             if (!existingData?.flatTemplateCategories) return;
 
+            // Find the template in its original category to preserve all fields
+            let existingTemplate: any = null;
+            existingData.flatTemplateCategories.forEach((category) => {
+                if (!category.templates) return;
+                const found = category.templates.find(
+                    (t) => t.id === data.moveTemplateToDeletionCategory.id,
+                );
+                if (found) existingTemplate = found;
+            });
+
             const updatedCategories = existingData.flatTemplateCategories.map((category) => {
                 if (!category.templates) return category;
 
                 if (category.special_type === "deletion") {
                     return {
                         ...category,
-                        templates: [...category.templates, data.moveTemplateToDeletionCategory],
+                        templates: [
+                            ...category.templates,
+                            // Merge existing template data with update data
+                            {
+                                ...existingTemplate,
+                                ...data.moveTemplateToDeletionCategory,
+                            },
+                        ],
                     };
                 }
                 return {
                     ...category,
                     templates: category.templates.filter(
-                        (template: { id: string }) => template.id !== data.moveTemplateToDeletionCategory.id,
+                        (template: { id: string }) =>
+                            template.id !== data.moveTemplateToDeletionCategory.id,
                     ),
                 };
             });
@@ -247,46 +283,65 @@ export const TemplateGraphQLProvider: React.FC<{
     });
 
     // Restore template mutation
-    const [mutateRestore] = Types.useRestoreTemplateMutation(
-    //     {
-    //     update(cache, { data }) {
-    //         if (!data?.restoreTemplate) return;
+    const [mutateRestore] = Types.useRestoreTemplateMutation({
+        update(cache, { data }) {
+            if (!data?.restoreTemplate) return;
 
-    //         const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-    //             query: Types.FlatTemplateCategoriesDocument,
-    //         });
+            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+                query: Types.FlatTemplateCategoriesDocument,
+            });
 
-    //         if (!existingData?.flatTemplateCategories) return;
+            if (!existingData?.flatTemplateCategories) return;
 
-    //         const updatedCategories = existingData.flatTemplateCategories.map((category) => {
-    //             if (!category.templates) return category;
+            // Find the template in deletion category to preserve all fields
+            let existingTemplate: any = null;
+            const deletionCategory = existingData.flatTemplateCategories.find(
+                (cat) => cat.special_type === "deletion"
+            );
+            if (deletionCategory?.templates) {
+                existingTemplate = deletionCategory.templates.find(
+                    (t) => t.id === data.restoreTemplate.id
+                );
+            }
 
-    //             if (category.id === data.restoreTemplate.category.id) {
-    //                 return {
-    //                     ...category,
-    //                     templates: [...category.templates, data.restoreTemplate],
-    //                 };
-    //             }
-    //             if (category.special_type === "deletion") {
-    //                 return {
-    //                     ...category,
-    //                     templates: category.templates.filter(
-    //                         (template: { id: string }) => template.id !== data.restoreTemplate.id,
-    //                     ),
-    //                 };
-    //             }
-    //             return category;
-    //         });
+            const updatedCategories = existingData.flatTemplateCategories.map(
+                (category) => {
+                    if (!category.templates) return category;
 
-    //         cache.writeQuery({
-    //             query: Types.FlatTemplateCategoriesDocument,
-    //             data: {
-    //                 flatTemplateCategories: updatedCategories,
-    //             },
-    //         });
-    //     },
-    // }
-);
+                    if (category.id === data.restoreTemplate.category.id) {
+                        return {
+                            ...category,
+                            templates: [
+                                ...category.templates,
+                                // Merge existing template data with update data
+                                {
+                                    ...existingTemplate,
+                                    ...data.restoreTemplate,
+                                }
+                            ]
+                        };
+                    }
+                    if (category.special_type === "deletion") {
+                        return {
+                            ...category,
+                            templates: category.templates.filter(
+                                (template: { id: string }) =>
+                                    template.id !== data.restoreTemplate.id
+                            )
+                        };
+                    }
+                    return category;
+                }
+            );
+
+            cache.writeQuery({
+                query: Types.FlatTemplateCategoriesDocument,
+                data: {
+                    flatTemplateCategories: updatedCategories,
+                },
+            });
+        },
+    });
 
     // Wrapper functions for mutations
     const createTemplateMutation = useCallback(
@@ -317,7 +372,9 @@ export const TemplateGraphQLProvider: React.FC<{
     );
 
     const moveTemplateToDeletionCategoryMutation = useCallback(
-        async (variables: Types.MoveTemplateToDeletionCategoryMutationVariables) => {
+        async (
+            variables: Types.MoveTemplateToDeletionCategoryMutationVariables,
+        ) => {
             return mutateMoveToDelete({
                 variables,
             });
