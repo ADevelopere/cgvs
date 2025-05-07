@@ -5,6 +5,7 @@ mutation restoreTemplate($templateId: ID!){
     restoreTemplate(templateId: $templateId){
         id
         name
+        description
         category{
             id
         }

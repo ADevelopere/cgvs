@@ -1,62 +1,169 @@
 import type {
     CreateTemplateMutation,
     DeleteTemplateMutation,
-    MoveToDeletionCategoryMutation,
+    MoveTemplateToDeletionCategoryMutation,
+    RestoreTemplateMutation,
+    ReorderTemplatesMutation,
     UpdateTemplateMutation,
     Template,
     TemplateCategory
-} from '../../graphql/generated/types';
+} from '@/graphql/generated/types';
 
 export type TemplateSource =
     | CreateTemplateMutation
     | DeleteTemplateMutation
-    | MoveToDeletionCategoryMutation
+    | MoveTemplateToDeletionCategoryMutation
+    | RestoreTemplateMutation
+    | ReorderTemplatesMutation
     | UpdateTemplateMutation;
 
-const mapCategoryForTemplate = (category: any): TemplateCategory => ({
-    ...category,
-    templates: category.templates || [],
-    childCategories: Array.isArray(category.childCategories)
-        ? category.childCategories.map(mapCategoryForTemplate)
-        : [],
-    parentCategory: category.parentCategory
-        ? mapCategoryForTemplate(category.parentCategory)
-        : null,
-});
+type PartialTemplate = Partial<Template> & { id: string; name: string };
+type PartialTemplateCategory = Partial<TemplateCategory> & { id: string };
 
-const mapTemplate = (template: any): Template => ({
-    ...template,
-    category: template.category ? mapCategoryForTemplate(template.category) : null,
-});
+/**
+ * Maps a template category from any source to a consistent TemplateCategory type
+ */
+const mapCategoryForTemplate = (category: PartialTemplateCategory | null | undefined): TemplateCategory => {
+    if (!category) {
+        return {} as TemplateCategory;
+    }
+    
+    return {
+        id: category.id,
+        name: category.name || '',
+        description: category.description || null,
+        special_type: category.special_type || null,
+        order: category.order || null,
+        created_at: category.created_at || new Date(),
+        updated_at: category.updated_at || new Date(),
+        deleted_at: category.deleted_at || null,
+        templates: category.templates || [],
+        childCategories: Array.isArray(category.childCategories)
+            ? category.childCategories.map(child => mapCategoryForTemplate(child as PartialTemplateCategory))
+            : [],
+        parentCategory: category.parentCategory
+            ? mapCategoryForTemplate(category.parentCategory as PartialTemplateCategory)
+            : null,
+    } as TemplateCategory;
+};
 
-export const mapSingleTemplate = (source: TemplateSource | undefined | null): Template | null => {
+/**
+ * Maps a template from any source to a consistent Template type
+ */
+const mapTemplate = (template: PartialTemplate | null | undefined, previousTemplate?: Template | null): Template => {
+    if (!template) {
+        return {} as Template;
+    }
+
+    return {
+        id: template.id,
+        name: template.name,
+        description: template.description ?? previousTemplate?.description ?? null,
+        background_url: template.background_url ?? previousTemplate?.background_url ?? null,
+        order: template.order ?? previousTemplate?.order ?? null,
+        created_at: template.created_at ?? previousTemplate?.created_at ?? new Date(),
+        updated_at: template.updated_at ?? previousTemplate?.updated_at ?? new Date(),
+        deleted_at: template.deleted_at ?? previousTemplate?.deleted_at ?? null,
+        trashed_at: template.trashed_at ?? previousTemplate?.trashed_at ?? null,
+        category: template.category 
+            ? mapCategoryForTemplate(template.category as PartialTemplateCategory) 
+            : previousTemplate?.category ?? ({} as TemplateCategory),
+    } as Template;
+};
+
+/**
+ * Maps a create template mutation result to a Template
+ */
+const mapCreateTemplate = (source: CreateTemplateMutation): Template => {
+    return mapTemplate(source.createTemplate as PartialTemplate);
+};
+
+/**
+ * Maps a delete template mutation result to a Template
+ */
+const mapDeleteTemplate = (source: DeleteTemplateMutation, previousTemplate?: Template): Template => {
+    return mapTemplate(source.deleteTemplate as PartialTemplate, previousTemplate);
+};
+
+/**
+ * Maps a move template to deletion category mutation result to a Template
+ */
+const mapMoveTemplateToDeletion = (source: MoveTemplateToDeletionCategoryMutation, previousTemplate?: Template): Template => {
+    return mapTemplate(source.moveTemplateToDeletionCategory as PartialTemplate, previousTemplate);
+};
+
+/**
+ * Maps a restore template mutation result to a Template
+ */
+const mapRestoreTemplate = (source: RestoreTemplateMutation, previousTemplate?: Template): Template => {
+    return mapTemplate(source.restoreTemplate as PartialTemplate, previousTemplate);
+};
+
+/**
+ * Maps a reorder templates mutation result to Template[]
+ */
+const mapReorderTemplates = (source: ReorderTemplatesMutation, previousTemplates?: Template[]): Template[] => {
+    return source.reorderTemplates.map(template => {
+        const previousTemplate = previousTemplates?.find(prev => prev.id === template.id);
+        return mapTemplate(template as PartialTemplate, previousTemplate);
+    });
+};
+
+/**
+ * Maps an update template mutation result to a Template
+ */
+const mapUpdateTemplate = (source: UpdateTemplateMutation, previousTemplate?: Template): Template => {
+    return mapTemplate(source.updateTemplate as PartialTemplate, previousTemplate);
+};
+
+/**
+ * Maps any template source to a single Template or null
+ */
+export const mapSingleTemplate = (source: TemplateSource | undefined | null, previousTemplate?: Template): Template | null => {
     if (!source) {
         return null;
     }
 
     // Handle template mutations
     if ('createTemplate' in source) {
-        return mapTemplate(source.createTemplate);
+        return mapCreateTemplate(source);
     }
     if ('updateTemplate' in source) {
-        return mapTemplate(source.updateTemplate);
+        return mapUpdateTemplate(source, previousTemplate);
     }
     if ('deleteTemplate' in source) {
-        return mapTemplate(source.deleteTemplate);
+        return mapDeleteTemplate(source, previousTemplate);
     }
-    if ('moveToDeletionCategory' in source) {
-        return mapTemplate(source.moveToDeletionCategory);
+    if ('moveTemplateToDeletionCategory' in source) {
+        return mapMoveTemplateToDeletion(source, previousTemplate);
+    }
+    if ('restoreTemplate' in source) {
+        return mapRestoreTemplate(source, previousTemplate);
+    }
+    if ('reorderTemplates' in source) {
+        // For reorder, return the first template if any exist
+        const templates = mapReorderTemplates(source, previousTemplate ? [previousTemplate] : undefined);
+        return templates.length > 0 ? templates[0] : null;
     }
 
     return null;
 };
 
-export const mapTemplates = (source: TemplateSource | undefined | null): Template[] => {
+/**
+ * Maps any template source to an array of Templates
+ */
+export const mapTemplates = (source: TemplateSource | undefined | null, previousTemplates?: Template[]): Template[] => {
     if (!source) {
         return [];
     }
 
+    // Handle reorderTemplates specially as it returns an array
+    if ('reorderTemplates' in source) {
+        return mapReorderTemplates(source, previousTemplates);
+    }
+
     // For single template results, wrap in array if not null
-    const template = mapSingleTemplate(source);
+    const previousTemplate = previousTemplates?.length === 1 ? previousTemplates[0] : undefined;
+    const template = mapSingleTemplate(source, previousTemplate);
     return template ? [template] : [];
 };

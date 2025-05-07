@@ -98,6 +98,7 @@ type TemplateCategoryTranslation = {
     receivedEmptyTemplate: string;
     failedToGenerateContent: string;
     templateIdRequired: string;
+    templateNotFound: string;
 };
 
 export default TemplateCategoryTranslation;
