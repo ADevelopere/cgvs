@@ -56,6 +56,11 @@ const templateCategory: TemplateCategoryTranslation = {
     templateDeletedSuccessfully: "تم حذف القالب بنجاح",
     templateDeleteFailed: "فشل حذف القالب",
 
+    // Template restoration messages
+    templateRestoredSuccessfully: "تمت استعادة القالب بنجاح",
+    templateRestoreFailed: "فشل استعادة القالب",
+    errorRestoringTemplate: "فشل في استعادة القالب:",
+
     nameTooShort: "يجب أن يكون اسم الفئة 3 أحرف على الأقل",
     nameTooLong: "يجب ألا يتجاوز اسم الفئة 255 حرفًا",
 

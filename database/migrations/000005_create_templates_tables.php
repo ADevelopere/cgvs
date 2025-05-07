@@ -66,6 +66,7 @@ return new class extends Migration
             $table->unsignedInteger('order')->nullable(); // Allow null for templates in special categories
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('trashed_at')->nullable();
         });
 
         DB::statement('ALTER TABLE templates ADD CONSTRAINT templates_name_length CHECK (LENGTH(name) >= 3)');

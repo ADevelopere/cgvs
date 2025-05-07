@@ -6,7 +6,7 @@ const config: CodegenConfig = {
     documents: [
         "./resources/ts/**/*.ts",
         "./resources/ts/**/*.tsx",
-        "./graphql-generated/gqlg-ts/**/*.ts",
+        "./graphql-ts/**/*.ts",
     ],
     generates: {
         "./resources/ts/graphql/generated/types.ts": {

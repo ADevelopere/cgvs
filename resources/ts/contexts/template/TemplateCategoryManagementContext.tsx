@@ -73,7 +73,7 @@ type TemplateCategoryManagementContextType = {
      * Represents the special deleted category (special_type='deleted') that holds trashed templates.
      * This is a single category object that serves as a parent for all deleted templates.
      */
-    deletedCategory: TemplateCategory | null;
+    deletionCategory: TemplateCategory | null;
     /**
      * Represents the currently selected template category.
      * When a category is selected, its associated templates are displayed. It's `null` if no category is currently selected.
@@ -167,6 +167,11 @@ type TemplateCategoryManagementContextType = {
      * This changes the templates's parent category to the deletion category.
      */
     moveTemplateToDeletionCategory(templateId: string): void;
+    /**
+     * Restores a template from the deletion category back to its original category.
+     * This will move the template from the deletion category to the specified category and update both categories.
+     */
+    restoreTemplate: (templateId: string) => Promise<void>;
     /**
      * Sorts the `templates` array (associated with the `currentCategory`) based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the templates list displayed to the user for the selected category.
@@ -551,6 +556,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         createTemplateMutation,
         updateTemplateMutation,
         moveTemplateToDeletionCategoryMutation,
+        restoreTemplateMutation
     } = useTemplateGraphQL();
 
     // Memoized callbacks for template operations
@@ -791,6 +797,86 @@ export const TemplateCategoryManagementProvider: React.FC<{
         ],
     );
 
+    const restoreTemplate = useCallback(
+        async (templateId: string) => {
+            try {            logger.info("Restoring template", templateId);
+            const { data } = await restoreTemplateMutation({
+                templateId,
+            });
+
+                const restoredTemplate = data?.restoreTemplate 
+                    ? mapSingleTemplate({ restoreTemplate: data.restoreTemplate }) 
+                    : null;
+
+                if (!restoredTemplate) {
+                    throw new Error(messages.templateRestoreFailed);
+                }
+
+                // Remove from deletion category
+                if (deletedCategory) {
+                    setDeletedCategory({
+                        ...deletedCategory,
+                        templates: deletedCategory.templates?.filter(
+                            (temp) => temp.id !== templateId,
+                        ) || [],
+                    });
+                }
+
+                // Add to regular categories
+                setRegularCategories((prev) => {
+                    const targetCategory = prev.find(cat => cat.id === restoredTemplate.category.id);
+                    if (targetCategory) {
+                        return updateCategoryInTree(prev, {
+                            ...targetCategory,
+                            templates: [...(targetCategory.templates || []), restoredTemplate],
+                        });
+                    }
+                    return prev;
+                });
+
+                // Update current template and templates list if we're in the target category
+                if (currentCategory?.id === restoredTemplate.category.id) {
+                    setTemplates(prev => [...prev, restoredTemplate]);
+                    setCurrentTemplate(restoredTemplate);
+                }
+
+                notifications.show(messages.templateRestoredSuccessfully, {
+                    severity: "success",
+                    autoHideDuration: 3000,
+                });
+            } catch (error: unknown) {
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
+                };
+                const errorMessage =
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
+                    messages.templateRestoreFailed;
+
+                notifications.show(errorMessage, {
+                    severity: "error",
+                    autoHideDuration: 5000,
+                });
+                logger.error(messages.errorRestoringTemplate, {
+                    error: gqlError,
+                    templateId,
+                });
+
+                throw error;
+            }
+        },
+        [
+            messages,
+            notifications,
+            restoreTemplateMutation,
+            currentCategory,
+            deletedCategory,
+            setRegularCategories,
+            setDeletedCategory,
+        ],
+    );
+
     // Sorting functions
     const sortCategories = useCallback(
         (sortBy: "name" | "id", order: "asc" | "desc") => {
@@ -881,13 +967,14 @@ export const TemplateCategoryManagementProvider: React.FC<{
             addCategory,
             updateCategory,
             deleteCategory,
+            moveTemplateToDeletionCategory,
+            restoreTemplate,
             sortCategories,
             templates,
             currentTemplate,
             setCurrentTemplate,
             addTemplate,
             updateTemplate,
-            moveTemplateToDeletionCategory,
             sortTemplates,
             isAddingTemplate,
             setIsAddingTemplate,
@@ -907,12 +994,13 @@ export const TemplateCategoryManagementProvider: React.FC<{
             addCategory,
             updateCategory,
             deleteCategory,
+            moveTemplateToDeletionCategory,
+            restoreTemplate,
             sortCategories,
             templates,
             currentTemplate,
             addTemplate,
             updateTemplate,
-            moveTemplateToDeletionCategory,
             sortTemplates,
             isAddingTemplate,
             onNewTemplateCancel,

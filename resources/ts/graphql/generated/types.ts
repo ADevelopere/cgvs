@@ -63,6 +63,8 @@ export type Mutation = {
   /** Move a template to the deleted category */
   moveTemplateToDeletionCategory: Template;
   reorderTemplateCategories: Array<TemplateCategory>;
+  /** Reorder templates in a category */
+  reorderTemplates: Array<Template>;
   /** Restore a template from the deleted category */
   restoreTemplate: Template;
   /** Update an existing template */
@@ -111,6 +113,12 @@ export type MutationMoveTemplateToDeletionCategoryArgs = {
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationReorderTemplateCategoriesArgs = {
   input: Array<ReorderCategoriesInput>;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationReorderTemplatesArgs = {
+  input: Array<ReorderTemplateInput>;
 };
 
 
@@ -183,15 +191,28 @@ export type PaginatorInfo = {
 /** Indicates what fields are available at the top level of a query operation. */
 export type Query = {
   __typename?: 'Query';
-  deletedCategory: TemplateCategory;
-  mainCategory: TemplateCategory;
+  deletionTemplateCategory: TemplateCategory;
+  flatTemplateCategories: Array<TemplateCategory>;
+  mainTemplateCategory: TemplateCategory;
   me: User;
+  /** Get a specific template by ID */
+  template?: Maybe<Template>;
   templateCategories: TemplateCategoryPaginator;
   templateCategory?: Maybe<TemplateCategory>;
+  /** Get template configuration */
+  templateConfig: TemplateConfig;
+  /** Get all templates */
+  templates: TemplatePaginator;
   /** Find a single user by an identifying attribute. */
   user?: Maybe<User>;
   /** List multiple users. */
   users: UserPaginator;
+};
+
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryTemplateArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -205,6 +226,13 @@ export type QueryTemplateCategoriesArgs = {
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryTemplateCategoryArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryTemplatesArgs = {
+  first: Scalars['Int']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -227,6 +255,11 @@ export type ReorderCategoriesInput = {
   order: Scalars['Int']['input'];
 };
 
+export type ReorderTemplateInput = {
+  id: Scalars['ID']['input'];
+  order: Scalars['Int']['input'];
+};
+
 /** Directions for ordering a list of records. */
 export type SortOrder =
   /** Sort records in ascending order. */
@@ -240,10 +273,12 @@ export type Template = {
   background_url?: Maybe<Scalars['String']['output']>;
   category: TemplateCategory;
   created_at: Scalars['DateTime']['output'];
+  deleted_at?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  order: Scalars['Int']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+  trashed_at?: Maybe<Scalars['DateTime']['output']>;
   updated_at: Scalars['DateTime']['output'];
 };
 
@@ -280,6 +315,15 @@ export type TemplateConfig = {
   __typename?: 'TemplateConfig';
   allowedFileTypes: Array<Scalars['String']['output']>;
   maxBackgroundSize: Scalars['Int']['output'];
+};
+
+/** A paginated list of Template items. */
+export type TemplatePaginator = {
+  __typename?: 'TemplatePaginator';
+  /** A list of Template items. */
+  data: Array<Template>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
 };
 
 /** Specify if you want to include or exclude trashed results from a query. */
@@ -332,28 +376,28 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
 }>;
 
 
-export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
+export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', id: string, name: string, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type DeleteTemplateCategoryMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
+export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -373,21 +417,28 @@ export type MoveTemplateToDeletionCategoryMutationVariables = Exact<{
 }>;
 
 
-export type MoveTemplateToDeletionCategoryMutation = { __typename?: 'Mutation', moveTemplateToDeletionCategory: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
+export type MoveTemplateToDeletionCategoryMutation = { __typename?: 'Mutation', moveTemplateToDeletionCategory: { __typename?: 'Template', id: string, name: string, order?: number | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type ReorderTemplateCategoriesMutationVariables = Exact<{
   input: Array<ReorderCategoriesInput> | ReorderCategoriesInput;
 }>;
 
 
-export type ReorderTemplateCategoriesMutation = { __typename?: 'Mutation', reorderTemplateCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> };
+export type ReorderTemplateCategoriesMutation = { __typename?: 'Mutation', reorderTemplateCategories: Array<{ __typename?: 'TemplateCategory', id: string, name: string, special_type?: TemplateCategoryType | null, order?: number | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null }> };
+
+export type ReorderTemplatesMutationVariables = Exact<{
+  input: Array<ReorderTemplateInput> | ReorderTemplateInput;
+}>;
+
+
+export type ReorderTemplatesMutation = { __typename?: 'Mutation', reorderTemplates: Array<{ __typename?: 'Template', id: string, name: string, order?: number | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } }> };
 
 export type RestoreTemplateMutationVariables = Exact<{
   templateId: Scalars['ID']['input'];
 }>;
 
 
-export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
+export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', id: string, name: string, order?: number | null, created_at: any, deleted_at?: any | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type UpdateTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -395,7 +446,7 @@ export type UpdateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null } } };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type UpdateTemplateCategoryMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -403,22 +454,34 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
+export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
 
-export type DeletedCategoryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DeletedCategoryQuery = { __typename?: 'Query', deletedCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
-
-export type MainCategoryQueryVariables = Exact<{ [key: string]: never; }>;
+export type DeletionTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MainCategoryQuery = { __typename?: 'Query', mainCategory: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } };
+export type DeletionTemplateCategoryQuery = { __typename?: 'Query', deletionTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any }> | null } };
+
+export type FlatTemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FlatTemplateCategoriesQuery = { __typename?: 'Query', flatTemplateCategories: Array<{ __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null, templates?: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, trashed_at?: any | null, created_at: any, updated_at: any }> | null }> };
+
+export type MainTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, background_url?: string | null, description?: string | null, order?: number | null, created_at: any, updated_at: any }> | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', created_at: any, email: string, email_verified_at?: any | null, id: string, isAdmin: boolean, name: string, updated_at: any } };
+
+export type TemplateQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } | null };
 
 export type TemplateCategoriesQueryVariables = Exact<{
   first: Scalars['Int']['input'];
@@ -426,14 +489,27 @@ export type TemplateCategoriesQueryVariables = Exact<{
 }>;
 
 
-export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: { __typename?: 'TemplateCategoryPaginator', data: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } }> | null }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: { __typename?: 'TemplateCategoryPaginator', data: Array<{ __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type TemplateCategoryQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } }> | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, deleted_at?: any | null, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', background_url?: string | null, created_at: any, description?: string | null, id: string, name: string, order: number, updated_at: any }> | null } | null };
+export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } | null };
+
+export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TemplateConfigQuery = { __typename?: 'Query', templateConfig: { __typename?: 'TemplateConfig', allowedFileTypes: Array<string>, maxBackgroundSize: number } };
+
+export type TemplatesQueryVariables = Exact<{
+  first: Scalars['Int']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'TemplatePaginator', data: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type UserQueryVariables = Exact<{
   email?: InputMaybe<Scalars['String']['input']>;
@@ -461,120 +537,15 @@ export type PlaceholderQuery = { __typename?: 'Query', me: { __typename?: 'User'
 export const CreateTemplateDocument = gql`
     mutation createTemplate($input: CreateTemplateInput!) {
   createTemplate(input: $input) {
-    background_url
-    category {
-      childCategories {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      parentCategory {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        updated_at
-      }
-      special_type
-      templates {
-        background_url
-        category {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        description
-        id
-        name
-        order
-        updated_at
-      }
-      updated_at
-    }
-    created_at
-    description
     id
     name
+    description
+    background_url
+    category {
+      id
+    }
     order
-    updated_at
+    created_at
   }
 }
     `;
@@ -607,111 +578,15 @@ export type CreateTemplateMutationOptions = Apollo.BaseMutationOptions<CreateTem
 export const CreateTemplateCategoryDocument = gql`
     mutation createTemplateCategory($input: CreateTemplateCategoryInput!) {
   createTemplateCategory(input: $input) {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    created_at
-    deleted_at
-    description
     id
     name
-    order
-    parentCategory {
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
+    description
     special_type
-    templates {
-      background_url
-      created_at
-      description
+    parentCategory {
       id
-      name
-      order
-      updated_at
     }
-    updated_at
+    order
+    created_at
   }
 }
     `;
@@ -744,120 +619,12 @@ export type CreateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<C
 export const DeleteTemplateDocument = gql`
     mutation deleteTemplate($id: ID!) {
   deleteTemplate(id: $id) {
-    background_url
-    category {
-      childCategories {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      parentCategory {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        updated_at
-      }
-      special_type
-      templates {
-        background_url
-        category {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        description
-        id
-        name
-        order
-        updated_at
-      }
-      updated_at
-    }
-    created_at
-    description
     id
     name
-    order
-    updated_at
+    category {
+      id
+    }
+    deleted_at
   }
 }
     `;
@@ -890,111 +657,12 @@ export type DeleteTemplateMutationOptions = Apollo.BaseMutationOptions<DeleteTem
 export const DeleteTemplateCategoryDocument = gql`
     mutation deleteTemplateCategory($id: ID!) {
   deleteTemplateCategory(id: $id) {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    created_at
-    deleted_at
-    description
     id
     name
-    order
     parentCategory {
-      created_at
-      deleted_at
-      description
       id
-      name
-      order
-      special_type
-      updated_at
     }
-    special_type
-    templates {
-      background_url
-      created_at
-      description
-      id
-      name
-      order
-      updated_at
-    }
-    updated_at
+    deleted_at
   }
 }
     `;
@@ -1102,119 +770,13 @@ export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, L
 export const MoveTemplateToDeletionCategoryDocument = gql`
     mutation moveTemplateToDeletionCategory($templateId: ID!) {
   moveTemplateToDeletionCategory(templateId: $templateId) {
-    background_url
-    category {
-      childCategories {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      parentCategory {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        updated_at
-      }
-      special_type
-      templates {
-        background_url
-        category {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        description
-        id
-        name
-        order
-        updated_at
-      }
-      updated_at
-    }
-    created_at
-    description
     id
     name
+    category {
+      id
+    }
     order
+    trashed_at
     updated_at
   }
 }
@@ -1248,110 +810,13 @@ export type MoveTemplateToDeletionCategoryMutationOptions = Apollo.BaseMutationO
 export const ReorderTemplateCategoriesDocument = gql`
     mutation reorderTemplateCategories($input: [ReorderCategoriesInput!]!) {
   reorderTemplateCategories(input: $input) {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    created_at
-    deleted_at
-    description
     id
     name
-    order
-    parentCategory {
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
     special_type
-    templates {
-      background_url
-      created_at
-      description
+    parentCategory {
       id
-      name
-      order
-      updated_at
     }
+    order
     updated_at
   }
 }
@@ -1382,122 +847,57 @@ export function useReorderTemplateCategoriesMutation(baseOptions?: Apollo.Mutati
 export type ReorderTemplateCategoriesMutationHookResult = ReturnType<typeof useReorderTemplateCategoriesMutation>;
 export type ReorderTemplateCategoriesMutationResult = Apollo.MutationResult<ReorderTemplateCategoriesMutation>;
 export type ReorderTemplateCategoriesMutationOptions = Apollo.BaseMutationOptions<ReorderTemplateCategoriesMutation, ReorderTemplateCategoriesMutationVariables>;
+export const ReorderTemplatesDocument = gql`
+    mutation reorderTemplates($input: [ReorderTemplateInput!]!) {
+  reorderTemplates(input: $input) {
+    id
+    name
+    category {
+      id
+    }
+    order
+    updated_at
+  }
+}
+    `;
+export type ReorderTemplatesMutationFn = Apollo.MutationFunction<ReorderTemplatesMutation, ReorderTemplatesMutationVariables>;
+
+/**
+ * __useReorderTemplatesMutation__
+ *
+ * To run a mutation, you first call `useReorderTemplatesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReorderTemplatesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reorderTemplatesMutation, { data, loading, error }] = useReorderTemplatesMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useReorderTemplatesMutation(baseOptions?: Apollo.MutationHookOptions<ReorderTemplatesMutation, ReorderTemplatesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReorderTemplatesMutation, ReorderTemplatesMutationVariables>(ReorderTemplatesDocument, options);
+      }
+export type ReorderTemplatesMutationHookResult = ReturnType<typeof useReorderTemplatesMutation>;
+export type ReorderTemplatesMutationResult = Apollo.MutationResult<ReorderTemplatesMutation>;
+export type ReorderTemplatesMutationOptions = Apollo.BaseMutationOptions<ReorderTemplatesMutation, ReorderTemplatesMutationVariables>;
 export const RestoreTemplateDocument = gql`
     mutation restoreTemplate($templateId: ID!) {
   restoreTemplate(templateId: $templateId) {
-    background_url
-    category {
-      childCategories {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      parentCategory {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        updated_at
-      }
-      special_type
-      templates {
-        background_url
-        category {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        description
-        id
-        name
-        order
-        updated_at
-      }
-      updated_at
-    }
-    created_at
-    description
     id
     name
+    category {
+      id
+    }
     order
+    created_at
+    deleted_at
+    trashed_at
     updated_at
   }
 }
@@ -1531,120 +931,18 @@ export type RestoreTemplateMutationOptions = Apollo.BaseMutationOptions<RestoreT
 export const UpdateTemplateDocument = gql`
     mutation updateTemplate($id: ID!, $input: UpdateTemplateInput!) {
   updateTemplate(id: $id, input: $input) {
-    background_url
-    category {
-      childCategories {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      parentCategory {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        updated_at
-      }
-      special_type
-      templates {
-        background_url
-        category {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        description
-        id
-        name
-        order
-        updated_at
-      }
-      updated_at
-    }
-    created_at
-    description
     id
     name
+    description
+    background_url
+    category {
+      id
+    }
     order
+    created_at
     updated_at
+    trashed_at
+    deleted_at
   }
 }
     `;
@@ -1678,111 +976,17 @@ export type UpdateTemplateMutationOptions = Apollo.BaseMutationOptions<UpdateTem
 export const UpdateTemplateCategoryDocument = gql`
     mutation updateTemplateCategory($id: ID!, $input: UpdateTemplateCategoryInput!) {
   updateTemplateCategory(id: $id, input: $input) {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    created_at
-    deleted_at
-    description
     id
     name
+    description
     order
     parentCategory {
-      created_at
-      deleted_at
-      description
       id
-      name
-      order
-      special_type
-      updated_at
     }
     special_type
-    templates {
-      background_url
-      created_at
-      description
-      id
-      name
-      order
-      updated_at
-    }
+    created_at
     updated_at
+    deleted_at
   }
 }
     `;
@@ -1813,297 +1017,179 @@ export function useUpdateTemplateCategoryMutation(baseOptions?: Apollo.MutationH
 export type UpdateTemplateCategoryMutationHookResult = ReturnType<typeof useUpdateTemplateCategoryMutation>;
 export type UpdateTemplateCategoryMutationResult = Apollo.MutationResult<UpdateTemplateCategoryMutation>;
 export type UpdateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
-export const DeletedCategoryDocument = gql`
-    query deletedCategory {
-  deletedCategory {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
+export const DeletionTemplateCategoryDocument = gql`
+    query deletionTemplateCategory {
+  deletionTemplateCategory {
+    id
+    name
+    description
+    special_type
+    templates {
       id
       name
+      description
+      background_url
       order
-      special_type
+      created_at
+      trashed_at
       updated_at
     }
     created_at
-    deleted_at
-    description
-    id
-    name
-    order
-    parentCategory {
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    special_type
-    templates {
-      background_url
-      created_at
-      description
-      id
-      name
-      order
-      updated_at
-    }
     updated_at
   }
 }
     `;
 
 /**
- * __useDeletedCategoryQuery__
+ * __useDeletionTemplateCategoryQuery__
  *
- * To run a query within a React component, call `useDeletedCategoryQuery` and pass it any options that fit your needs.
- * When your component renders, `useDeletedCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useDeletionTemplateCategoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDeletionTemplateCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDeletedCategoryQuery({
+ * const { data, loading, error } = useDeletionTemplateCategoryQuery({
  *   variables: {
  *   },
  * });
  */
-export function useDeletedCategoryQuery(baseOptions?: Apollo.QueryHookOptions<DeletedCategoryQuery, DeletedCategoryQueryVariables>) {
+export function useDeletionTemplateCategoryQuery(baseOptions?: Apollo.QueryHookOptions<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<DeletedCategoryQuery, DeletedCategoryQueryVariables>(DeletedCategoryDocument, options);
+        return Apollo.useQuery<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>(DeletionTemplateCategoryDocument, options);
       }
-export function useDeletedCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DeletedCategoryQuery, DeletedCategoryQueryVariables>) {
+export function useDeletionTemplateCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<DeletedCategoryQuery, DeletedCategoryQueryVariables>(DeletedCategoryDocument, options);
+          return Apollo.useLazyQuery<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>(DeletionTemplateCategoryDocument, options);
         }
-export function useDeletedCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<DeletedCategoryQuery, DeletedCategoryQueryVariables>) {
+export function useDeletionTemplateCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<DeletedCategoryQuery, DeletedCategoryQueryVariables>(DeletedCategoryDocument, options);
+          return Apollo.useSuspenseQuery<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>(DeletionTemplateCategoryDocument, options);
         }
-export type DeletedCategoryQueryHookResult = ReturnType<typeof useDeletedCategoryQuery>;
-export type DeletedCategoryLazyQueryHookResult = ReturnType<typeof useDeletedCategoryLazyQuery>;
-export type DeletedCategorySuspenseQueryHookResult = ReturnType<typeof useDeletedCategorySuspenseQuery>;
-export type DeletedCategoryQueryResult = Apollo.QueryResult<DeletedCategoryQuery, DeletedCategoryQueryVariables>;
-export function refetchDeletedCategoryQuery(variables?: DeletedCategoryQueryVariables) {
-      return { query: DeletedCategoryDocument, variables: variables }
+export type DeletionTemplateCategoryQueryHookResult = ReturnType<typeof useDeletionTemplateCategoryQuery>;
+export type DeletionTemplateCategoryLazyQueryHookResult = ReturnType<typeof useDeletionTemplateCategoryLazyQuery>;
+export type DeletionTemplateCategorySuspenseQueryHookResult = ReturnType<typeof useDeletionTemplateCategorySuspenseQuery>;
+export type DeletionTemplateCategoryQueryResult = Apollo.QueryResult<DeletionTemplateCategoryQuery, DeletionTemplateCategoryQueryVariables>;
+export function refetchDeletionTemplateCategoryQuery(variables?: DeletionTemplateCategoryQueryVariables) {
+      return { query: DeletionTemplateCategoryDocument, variables: variables }
     }
-export const MainCategoryDocument = gql`
-    query mainCategory {
-  mainCategory {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
+export const FlatTemplateCategoriesDocument = gql`
+    query flatTemplateCategories {
+  flatTemplateCategories {
+    id
+    name
+    description
+    special_type
+    parentCategory {
+      id
+    }
+    order
+    templates {
       id
       name
+      description
+      background_url
       order
-      special_type
+      trashed_at
+      created_at
       updated_at
     }
     created_at
-    deleted_at
-    description
-    id
-    name
-    order
-    parentCategory {
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    special_type
-    templates {
-      background_url
-      created_at
-      description
-      id
-      name
-      order
-      updated_at
-    }
     updated_at
   }
 }
     `;
 
 /**
- * __useMainCategoryQuery__
+ * __useFlatTemplateCategoriesQuery__
  *
- * To run a query within a React component, call `useMainCategoryQuery` and pass it any options that fit your needs.
- * When your component renders, `useMainCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useFlatTemplateCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFlatTemplateCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMainCategoryQuery({
+ * const { data, loading, error } = useFlatTemplateCategoriesQuery({
  *   variables: {
  *   },
  * });
  */
-export function useMainCategoryQuery(baseOptions?: Apollo.QueryHookOptions<MainCategoryQuery, MainCategoryQueryVariables>) {
+export function useFlatTemplateCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MainCategoryQuery, MainCategoryQueryVariables>(MainCategoryDocument, options);
+        return Apollo.useQuery<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>(FlatTemplateCategoriesDocument, options);
       }
-export function useMainCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MainCategoryQuery, MainCategoryQueryVariables>) {
+export function useFlatTemplateCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MainCategoryQuery, MainCategoryQueryVariables>(MainCategoryDocument, options);
+          return Apollo.useLazyQuery<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>(FlatTemplateCategoriesDocument, options);
         }
-export function useMainCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MainCategoryQuery, MainCategoryQueryVariables>) {
+export function useFlatTemplateCategoriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<MainCategoryQuery, MainCategoryQueryVariables>(MainCategoryDocument, options);
+          return Apollo.useSuspenseQuery<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>(FlatTemplateCategoriesDocument, options);
         }
-export type MainCategoryQueryHookResult = ReturnType<typeof useMainCategoryQuery>;
-export type MainCategoryLazyQueryHookResult = ReturnType<typeof useMainCategoryLazyQuery>;
-export type MainCategorySuspenseQueryHookResult = ReturnType<typeof useMainCategorySuspenseQuery>;
-export type MainCategoryQueryResult = Apollo.QueryResult<MainCategoryQuery, MainCategoryQueryVariables>;
-export function refetchMainCategoryQuery(variables?: MainCategoryQueryVariables) {
-      return { query: MainCategoryDocument, variables: variables }
+export type FlatTemplateCategoriesQueryHookResult = ReturnType<typeof useFlatTemplateCategoriesQuery>;
+export type FlatTemplateCategoriesLazyQueryHookResult = ReturnType<typeof useFlatTemplateCategoriesLazyQuery>;
+export type FlatTemplateCategoriesSuspenseQueryHookResult = ReturnType<typeof useFlatTemplateCategoriesSuspenseQuery>;
+export type FlatTemplateCategoriesQueryResult = Apollo.QueryResult<FlatTemplateCategoriesQuery, FlatTemplateCategoriesQueryVariables>;
+export function refetchFlatTemplateCategoriesQuery(variables?: FlatTemplateCategoriesQueryVariables) {
+      return { query: FlatTemplateCategoriesDocument, variables: variables }
+    }
+export const MainTemplateCategoryDocument = gql`
+    query mainTemplateCategory {
+  mainTemplateCategory {
+    id
+    name
+    description
+    special_type
+    templates {
+      id
+      name
+      background_url
+      description
+      order
+      created_at
+      updated_at
+    }
+    created_at
+    updated_at
+  }
+}
+    `;
+
+/**
+ * __useMainTemplateCategoryQuery__
+ *
+ * To run a query within a React component, call `useMainTemplateCategoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMainTemplateCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMainTemplateCategoryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMainTemplateCategoryQuery(baseOptions?: Apollo.QueryHookOptions<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>(MainTemplateCategoryDocument, options);
+      }
+export function useMainTemplateCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>(MainTemplateCategoryDocument, options);
+        }
+export function useMainTemplateCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>(MainTemplateCategoryDocument, options);
+        }
+export type MainTemplateCategoryQueryHookResult = ReturnType<typeof useMainTemplateCategoryQuery>;
+export type MainTemplateCategoryLazyQueryHookResult = ReturnType<typeof useMainTemplateCategoryLazyQuery>;
+export type MainTemplateCategorySuspenseQueryHookResult = ReturnType<typeof useMainTemplateCategorySuspenseQuery>;
+export type MainTemplateCategoryQueryResult = Apollo.QueryResult<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>;
+export function refetchMainTemplateCategoryQuery(variables?: MainTemplateCategoryQueryVariables) {
+      return { query: MainTemplateCategoryDocument, variables: variables }
     }
 export const MeDocument = gql`
     query me {
@@ -2153,143 +1239,72 @@ export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export function refetchMeQuery(variables?: MeQueryVariables) {
       return { query: MeDocument, variables: variables }
     }
+export const TemplateDocument = gql`
+    query template($id: ID!) {
+  template(id: $id) {
+    id
+    name
+    description
+    background_url
+    category {
+      id
+    }
+    order
+    created_at
+    updated_at
+    trashed_at
+  }
+}
+    `;
+
+/**
+ * __useTemplateQuery__
+ *
+ * To run a query within a React component, call `useTemplateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTemplateQuery(baseOptions: Apollo.QueryHookOptions<TemplateQuery, TemplateQueryVariables> & ({ variables: TemplateQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+      }
+export function useTemplateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+        }
+export function useTemplateSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+        }
+export type TemplateQueryHookResult = ReturnType<typeof useTemplateQuery>;
+export type TemplateLazyQueryHookResult = ReturnType<typeof useTemplateLazyQuery>;
+export type TemplateSuspenseQueryHookResult = ReturnType<typeof useTemplateSuspenseQuery>;
+export type TemplateQueryResult = Apollo.QueryResult<TemplateQuery, TemplateQueryVariables>;
+export function refetchTemplateQuery(variables: TemplateQueryVariables) {
+      return { query: TemplateDocument, variables: variables }
+    }
 export const TemplateCategoriesDocument = gql`
     query templateCategories($first: Int!, $page: Int) {
   templateCategories(first: $first, page: $page) {
     data {
-      childCategories {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
       id
       name
-      order
-      parentCategory {
-        childCategories {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        updated_at
-      }
+      description
       special_type
-      templates {
-        background_url
-        category {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        created_at
-        description
+      parentCategory {
         id
-        name
-        order
-        updated_at
       }
+      order
+      created_at
       updated_at
     }
     paginatorInfo {
@@ -2345,110 +1360,15 @@ export function refetchTemplateCategoriesQuery(variables: TemplateCategoriesQuer
 export const TemplateCategoryDocument = gql`
     query templateCategory($id: ID!) {
   templateCategory(id: $id) {
-    childCategories {
-      childCategories {
-        created_at
-        deleted_at
-        description
-        id
-        name
-        order
-        parentCategory {
-          childCategories {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          deleted_at
-          description
-          id
-          name
-          order
-          parentCategory {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          special_type
-          templates {
-            background_url
-            created_at
-            description
-            id
-            name
-            order
-            updated_at
-          }
-          updated_at
-        }
-        special_type
-        templates {
-          background_url
-          category {
-            created_at
-            deleted_at
-            description
-            id
-            name
-            order
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          updated_at
-        }
-        updated_at
-      }
-      created_at
-      deleted_at
-      description
-      id
-      name
-      order
-      special_type
-      updated_at
-    }
-    created_at
-    deleted_at
-    description
     id
     name
-    order
+    description
     parentCategory {
-      created_at
-      deleted_at
-      description
       id
-      name
-      order
-      special_type
-      updated_at
     }
+    order
     special_type
-    templates {
-      background_url
-      created_at
-      description
-      id
-      name
-      order
-      updated_at
-    }
+    created_at
     updated_at
   }
 }
@@ -2488,6 +1408,115 @@ export type TemplateCategorySuspenseQueryHookResult = ReturnType<typeof useTempl
 export type TemplateCategoryQueryResult = Apollo.QueryResult<TemplateCategoryQuery, TemplateCategoryQueryVariables>;
 export function refetchTemplateCategoryQuery(variables: TemplateCategoryQueryVariables) {
       return { query: TemplateCategoryDocument, variables: variables }
+    }
+export const TemplateConfigDocument = gql`
+    query templateConfig {
+  templateConfig {
+    allowedFileTypes
+    maxBackgroundSize
+  }
+}
+    `;
+
+/**
+ * __useTemplateConfigQuery__
+ *
+ * To run a query within a React component, call `useTemplateConfigQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateConfigQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateConfigQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTemplateConfigQuery(baseOptions?: Apollo.QueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+      }
+export function useTemplateConfigLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+        }
+export function useTemplateConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+        }
+export type TemplateConfigQueryHookResult = ReturnType<typeof useTemplateConfigQuery>;
+export type TemplateConfigLazyQueryHookResult = ReturnType<typeof useTemplateConfigLazyQuery>;
+export type TemplateConfigSuspenseQueryHookResult = ReturnType<typeof useTemplateConfigSuspenseQuery>;
+export type TemplateConfigQueryResult = Apollo.QueryResult<TemplateConfigQuery, TemplateConfigQueryVariables>;
+export function refetchTemplateConfigQuery(variables?: TemplateConfigQueryVariables) {
+      return { query: TemplateConfigDocument, variables: variables }
+    }
+export const TemplatesDocument = gql`
+    query templates($first: Int!, $page: Int) {
+  templates(first: $first, page: $page) {
+    data {
+      id
+      name
+      description
+      background_url
+      category {
+        id
+      }
+      order
+      created_at
+      trashed_at
+      updated_at
+    }
+    paginatorInfo {
+      count
+      currentPage
+      firstItem
+      hasMorePages
+      lastItem
+      lastPage
+      perPage
+      total
+    }
+  }
+}
+    `;
+
+/**
+ * __useTemplatesQuery__
+ *
+ * To run a query within a React component, call `useTemplatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplatesQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      page: // value for 'page'
+ *   },
+ * });
+ */
+export function useTemplatesQuery(baseOptions: Apollo.QueryHookOptions<TemplatesQuery, TemplatesQueryVariables> & ({ variables: TemplatesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+      }
+export function useTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+        }
+export function useTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+        }
+export type TemplatesQueryHookResult = ReturnType<typeof useTemplatesQuery>;
+export type TemplatesLazyQueryHookResult = ReturnType<typeof useTemplatesLazyQuery>;
+export type TemplatesSuspenseQueryHookResult = ReturnType<typeof useTemplatesSuspenseQuery>;
+export type TemplatesQueryResult = Apollo.QueryResult<TemplatesQuery, TemplatesQueryVariables>;
+export function refetchTemplatesQuery(variables: TemplatesQueryVariables) {
+      return { query: TemplatesDocument, variables: variables }
     }
 export const UserDocument = gql`
     query user($email: String, $id: ID) {

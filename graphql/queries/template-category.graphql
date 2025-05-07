@@ -2,11 +2,16 @@ extend type Query {
     templateCategories: [TemplateCategory!]! @paginate @guard
 
     templateCategory(id: ID! @eq): TemplateCategory @find @guard
-    mainCategory: TemplateCategory!
+
+    mainTemplateCategory: TemplateCategory!
         @guard
         @field(resolver: "TemplateCategoryQuery@mainCategory")
-        
-    deletedCategory: TemplateCategory!
+
+    deletionTemplateCategory: TemplateCategory!
         @guard
         @field(resolver: "TemplateCategoryQuery@deletedCategory")
+
+    flatTemplateCategories: [TemplateCategory!]!
+        @guard
+        @field(resolver: "TemplateCategoryQuery@flatCategories")
 }

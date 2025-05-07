@@ -32,21 +32,6 @@ class TemplateService
         });
     }
 
-    /**
-     * Get template configuration.
-     *
-     * @return array
-     */
-    public function getConfig(): array
-    {
-        $maxSize = config('filesystems.upload_limits.template_background', 2048);
-        Log::debug('Template max file size config:', [
-            'maxSize' => $maxSize,
-            'env_value' => env('MAX_TEMPLATE_BACKGROUND_SIZE'),
-            'full_config' => config('filesystems.upload_limits')
-        ]);
-        return ['maxFileSize' => $maxSize];
-    }
 
     /**
      * Create a new template.
@@ -57,7 +42,7 @@ class TemplateService
      */
     public static function createTemplate(CreateTemplateInput $input): ?Template
     {
-        $maxSize = config('filesystems.upload_limits.template_background', 5120);
+        $config = TemplateConfig::fromConfig();
 
         Log::info('Template creation request:', [
             'input' => [
@@ -149,7 +134,7 @@ class TemplateService
      */
     public static function updateTemplate(Template $template, UpdateTemplateInput $input): ?Template
     {
-        $maxSize = config('filesystems.upload_limits.template_background', 5120);
+        $config = TemplateConfig::fromConfig();
 
         // Validate name if provided
         if ($input->name !== null) {
@@ -256,33 +241,39 @@ class TemplateService
     /**
      * Reorder templates within a category.
      *
-     * @param Request $request
+     * @param ReorderTemplateInput[] $inputs Array of reorder inputs
+     * @return Template[] Array of reordered templates
      * @throws ValidationException
      */
-    public function reorderTemplates(Request $request): void
+    public static function reorderTemplates(array $inputs): array
     {
         Log::info('Template reorder request:', [
-            'input' => $request->all()
+            'input' => $inputs
         ]);
 
-        $validator = Validator::make($request->all(), [
-            'templates' => 'required|array',
-            'templates.*.id' => 'required|exists:templates,id',
-            'templates.*.order' => 'required|integer|min:0',
-            'category_id' => 'required|exists:template_categories,id'
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
+        $templateIds = array_map(fn($input) => $input->id, $inputs);
+        $templates = Template::whereIn('id', $templateIds)->get();
+        
+        if (count($templates) !== count($inputs)) {
+            throw ValidationException::withMessages([
+                'templates' => ['One or more templates do not exist.']
+            ]);
         }
 
-        foreach ($request->templates as $templateData) {
-            Template::where('id', $templateData['id'])
-                ->where('category_id', $request->category_id)
-                ->update(['order' => $templateData['order']]);
+        foreach ($inputs as $input) {
+            $template = $templates->firstWhere('id', $input->id);
+            $template->order = $input->order;
+            $template->save();
         }
 
         Log::info('Templates reordered successfully');
+        
+        return $templates->map(function ($template) {
+            if ($template->background_url) {
+                $template->background_url = Storage::url($template->background_url);
+            }
+            return $template;
+        })->all();
     }
 
     /**
@@ -293,17 +284,19 @@ class TemplateService
      */
     public static function moveToDeletionCategory(Template $template): Template
     {
-        Log::info('Attempting to soft delete template', [
+        Log::info('Attempting move template to deletion category', [
             'template_id' => $template->id,
             'template_name' => $template->name,
-            'current_category' => $template->category_id
+            'current_category' => $template->category_id,
+            'trashed_at' => now()
         ]);
 
         $template->moveToDeletionCategory();
 
-        Log::info('Template soft deleted successfully', [
+        Log::info('Template soft moved to deletion categort successfully', [
             'template_id' => $template->id,
-            'template_name' => $template->name
+            'template_name' => $template->name,
+            'trashed_at' => $template->trashed_at
         ]);
 
         if ($template->background_url) {
@@ -321,7 +314,19 @@ class TemplateService
      */
     public static function restoreTemplate(Template $template): Template
     {
+        Log::info('Attempting to restore template', [
+            'template_id' => $template->id,
+            'template_name' => $template->name,
+            'current_trashed_at' => $template->trashed_at
+        ]);
+
         $template->moveToMainCategory();
+
+        Log::info('Template restored successfully', [
+            'template_id' => $template->id,
+            'template_name' => $template->name,
+            'trashed_at' => $template->trashed_at // Will be null after restore
+        ]);
 
         if ($template->background_url) {
             $template->background_url = Storage::url($template->background_url);
