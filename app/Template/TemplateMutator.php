@@ -56,10 +56,10 @@ class TemplateMutator implements LighthouseMutation
      * Move a template to the deletion category
      * @throws ValidationException
      */
-    public function moveToDeleted($root, array $args): Template
+    public function moveToDeletion($root, array $args): Template
     {
         $template = Template::query()->findOrFail($args['templateId']);
-        return TemplateService::moveToDeletedCategory($template);
+        return TemplateService::moveToDeletionCategory($template);
     }
 
     /**

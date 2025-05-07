@@ -291,7 +291,7 @@ class TemplateService
      * @param Template $template
      * @return Template
      */
-    public static function moveToDeletedCategory(Template $template): Template
+    public static function moveToDeletionCategory(Template $template): Template
     {
         Log::info('Attempting to soft delete template', [
             'template_id' => $template->id,
@@ -299,7 +299,7 @@ class TemplateService
             'current_category' => $template->category_id
         ]);
 
-        $template->moveToDeletedCategory();
+        $template->moveToDeletionCategory();
 
         Log::info('Template soft deleted successfully', [
             'template_id' => $template->id,

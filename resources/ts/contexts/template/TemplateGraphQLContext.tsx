@@ -33,9 +33,9 @@ type TemplateGraphQLContextType = {
      * Mutation to move a template to the deletion category
      * @param variables - The template ID to move
      */
-    moveToDeletionCategoryMutation: (
-        variables: Types.MoveToDeletionCategoryMutationVariables,
-    ) => Promise<FetchResult<Types.MoveToDeletionCategoryMutation>>;
+    moveTemplateToDeletionCategoryMutation: (
+        variables: Types.MoveTemplateToDeletionCategoryMutationVariables,
+    ) => Promise<FetchResult<Types.MoveTemplateToDeletionCategoryMutation>>;
 };
 
 const TemplateGraphQLContext = createContext<TemplateGraphQLContextType | undefined>(
@@ -168,9 +168,9 @@ export const TemplateGraphQLProvider: React.FC<{
     });
 
     // Move to deletion category mutation
-    const [mutateMoveToDelete] = Types.useMoveToDeletionCategoryMutation({
+    const [mutateMoveToDelete] = Types.useMoveTemplateToDeletionCategoryMutation({
         update(cache, { data }) {
-            if (!data?.moveToDeletionCategory) return;
+            if (!data?.moveTemplateToDeletionCategory) return;
 
             const existingData = cache.readQuery<Types.TemplateCategoriesQuery>({
                 query: Types.TemplateCategoriesDocument,
@@ -184,13 +184,13 @@ export const TemplateGraphQLProvider: React.FC<{
                 if (category.special_type === "deletion") {
                     return {
                         ...category,
-                        templates: [...templates, data.moveToDeletionCategory],
+                        templates: [...templates, data.moveTemplateToDeletionCategory],
                     };
                 }
                 return {
                     ...category,
                     templates: templates.filter(
-                        (template) => template.id !== data.moveToDeletionCategory.id,
+                        (template) => template.id !== data.moveTemplateToDeletionCategory.id,
                     ),
                 };
             });
@@ -236,8 +236,8 @@ export const TemplateGraphQLProvider: React.FC<{
         [mutateDelete],
     );
 
-    const moveToDeletionCategoryMutation = useCallback(
-        async (variables: Types.MoveToDeletionCategoryMutationVariables) => {
+    const moveTemplateToDeletionCategoryMutation = useCallback(
+        async (variables: Types.MoveTemplateToDeletionCategoryMutationVariables) => {
             return mutateMoveToDelete({
                 variables,
             });
@@ -249,7 +249,7 @@ export const TemplateGraphQLProvider: React.FC<{
         createTemplateMutation,
         updateTemplateMutation,
         deleteTemplateMutation,
-        moveToDeletionCategoryMutation,
+        moveTemplateToDeletionCategoryMutation,
     };
 
     return (
