@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useCallback, useMemo } from "react";
-import * as Types from "@/graphql/generated/types";
+import * as Graphql from "@/graphql/generated/types";
 import { FetchResult } from "@apollo/client";
 
 type TemplateGraphQLContextType = {
@@ -10,58 +10,62 @@ type TemplateGraphQLContextType = {
      * @param variables - The template query variables
      */
     templateQuery: (
-        variables: Types.QueryTemplateArgs,
-    ) => Promise<Types.TemplateQuery>;
+        variables: Graphql.QueryTemplateArgs,
+    ) => Promise<Graphql.TemplateQuery>;
 
     /**
      * Query to get paginated templates
      * @param variables - The templates query variables
      */
     templatesQuery: (
-        variables: Types.QueryTemplatesArgs,
-    ) => Promise<Types.TemplatesQuery>;
+        variables: Graphql.QueryTemplatesArgs,
+    ) => Promise<Graphql.TemplatesQuery>;
 
-    templateConfigQuery: () => Promise<Types.TemplateConfigQuery>;
+    templateConfigQuery: () => Promise<Graphql.TemplateConfigQuery>;
 
     /**
      * Mutation to create a new template
-     * @param variables - The create template variables
+     * @param variables - The creation template variables
      */
     createTemplateMutation: (
-        variables: Types.CreateTemplateMutationVariables,
-    ) => Promise<FetchResult<Types.CreateTemplateMutation>>;
+        variables: Graphql.CreateTemplateMutationVariables,
+    ) => Promise<FetchResult<Graphql.CreateTemplateMutation>>;
 
     /**
      * Mutation to update an existing template
      * @param variables - The update template variables
      */
     updateTemplateMutation: (
-        variables: Types.UpdateTemplateMutationVariables,
-    ) => Promise<FetchResult<Types.UpdateTemplateMutation>>;
+        variables: Graphql.UpdateTemplateMutationVariables,
+    ) => Promise<FetchResult<Graphql.UpdateTemplateMutation>>;
+
+    updateTemplateWithImageMutation: (
+        variables: Graphql.UpdateTemplateWithImageMutationVariables,
+    ) => Promise<FetchResult<Graphql.UpdateTemplateWithImageMutation>>;
 
     /**
      * Mutation to delete a template
      * @param variables - The delete template variables
      */
     deleteTemplateMutation: (
-        variables: Types.DeleteTemplateMutationVariables,
-    ) => Promise<FetchResult<Types.DeleteTemplateMutation>>;
+        variables: Graphql.DeleteTemplateMutationVariables,
+    ) => Promise<FetchResult<Graphql.DeleteTemplateMutation>>;
 
     /**
      * Mutation to move a template to the deletion category
      * @param variables - The template ID to move
      */
     moveTemplateToDeletionCategoryMutation: (
-        variables: Types.MoveTemplateToDeletionCategoryMutationVariables,
-    ) => Promise<FetchResult<Types.MoveTemplateToDeletionCategoryMutation>>;
+        variables: Graphql.MoveTemplateToDeletionCategoryMutationVariables,
+    ) => Promise<FetchResult<Graphql.MoveTemplateToDeletionCategoryMutation>>;
 
     /**
      * Mutation to restore a template from the deletion category
      * @param variables - The template ID to restore
      */
     restoreTemplateMutation: (
-        variables: Types.RestoreTemplateMutationVariables,
-    ) => Promise<FetchResult<Types.RestoreTemplateMutation>>;
+        variables: Graphql.RestoreTemplateMutationVariables,
+    ) => Promise<FetchResult<Graphql.RestoreTemplateMutation>>;
 };
 
 const TemplateGraphQLContext = createContext<
@@ -82,21 +86,21 @@ export const TemplateGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Template queries
-    const templateQueryRef = Types.useTemplateQuery({
+    const templateQueryRef = Graphql.useTemplateQuery({
         skip: true,
     });
 
-    const templatesQueryRef = Types.useTemplatesQuery({
+    const templatesQueryRef = Graphql.useTemplatesQuery({
         skip: true,
     });
 
-    const templateConfigQueryRef = Types.useTemplateConfigQuery({
+    const templateConfigQueryRef = Graphql.useTemplateConfigQuery({
         skip: true,
     });
 
     // Template query wrapper functions
     const templateQuery = useCallback(
-        async (variables: Types.QueryTemplateArgs) => {
+        async (variables: Graphql.QueryTemplateArgs) => {
             const result = await templateQueryRef.refetch({ id: variables.id });
             if (!result.data) {
                 throw new Error("No data returned from template query");
@@ -107,7 +111,7 @@ export const TemplateGraphQLProvider: React.FC<{
     );
 
     const templatesQuery = useCallback(
-        async (variables: Types.QueryTemplatesArgs) => {
+        async (variables: Graphql.QueryTemplatesArgs) => {
             const result = await templatesQueryRef.refetch(variables);
             if (!result.data) {
                 throw new Error("No data returned from templates query");
@@ -126,13 +130,13 @@ export const TemplateGraphQLProvider: React.FC<{
     }, [templateConfigQueryRef]);
 
     // Create template mutation
-    const [mutateCreate] = Types.useCreateTemplateMutation({
+    const [mutateCreate] = Graphql.useCreateTemplateMutation({
         update(cache, { data }) {
             if (!data?.createTemplate) return;
 
             const existingData =
-                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                    query: Types.FlatTemplateCategoriesDocument,
+                cache.readQuery<Graphql.FlatTemplateCategoriesQuery>({
+                    query: Graphql.FlatTemplateCategoriesDocument,
                 });
 
             if (!existingData?.flatTemplateCategories) return;
@@ -159,7 +163,7 @@ export const TemplateGraphQLProvider: React.FC<{
             );
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Graphql.FlatTemplateCategoriesDocument,
                 data: {
                     flatTemplateCategories: updatedCategories,
                 },
@@ -168,13 +172,13 @@ export const TemplateGraphQLProvider: React.FC<{
     });
 
     // Update template mutation
-    const [mutateUpdate] = Types.useUpdateTemplateMutation({
+    const [mutateUpdate] = Graphql.useUpdateTemplateMutation({
         update(cache, { data }) {
             if (!data?.updateTemplate) return;
 
             const existingData =
-                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                    query: Types.FlatTemplateCategoriesDocument,
+                cache.readQuery<Graphql.FlatTemplateCategoriesQuery>({
+                    query: Graphql.FlatTemplateCategoriesDocument,
                 });
 
             if (!existingData?.flatTemplateCategories) return;
@@ -197,7 +201,7 @@ export const TemplateGraphQLProvider: React.FC<{
                 (category) => {
                     const templates = category.templates || [];
 
-                    // If this is the new category and it's different from the old one
+                    // If this is the new category, and it's different from the old one
                     if (
                         category.id === data.updateTemplate.category.id &&
                         oldCategoryId !== category.id
@@ -227,7 +231,7 @@ export const TemplateGraphQLProvider: React.FC<{
                         };
                     }
 
-                    // If template is staying in the same category, just update it
+                    // If the template is staying in the same category, just update it
                     if (category.id === data.updateTemplate.category.id) {
                         return {
                             ...category,
@@ -248,7 +252,96 @@ export const TemplateGraphQLProvider: React.FC<{
             );
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Graphql.FlatTemplateCategoriesDocument,
+                data: {
+                    flatTemplateCategories: updatedCategories,
+                },
+            });
+        },
+    });
+
+    // Update template with image mutation
+    const [mutateUpdateWithImage] = Graphql.useUpdateTemplateWithImageMutation({
+        update(cache, { data }) {
+            if (!data?.updateTemplateWithImage) return;
+
+            const existingData =
+                cache.readQuery<Graphql.FlatTemplateCategoriesQuery>({
+                    query: Graphql.FlatTemplateCategoriesDocument,
+                });
+
+            if (!existingData?.flatTemplateCategories) return;
+
+            // Find the template in its original category to preserve all fields
+            let existingTemplate: any = null;
+            let oldCategoryId: string | null = null;
+            existingData.flatTemplateCategories.forEach((category) => {
+                if (!category.templates) return;
+                const found = category.templates.find(
+                    (t) => t.id === data.updateTemplateWithImage.id,
+                );
+                if (found) {
+                    existingTemplate = found;
+                    oldCategoryId = category.id;
+                }
+            });
+
+            const updatedCategories = existingData.flatTemplateCategories.map(
+                (category) => {
+                    const templates = category.templates || [];
+
+                    // If this is the new category, and it's different from the old one
+                    if (
+                        category.id === data.updateTemplateWithImage.category.id &&
+                        oldCategoryId !== category.id
+                    ) {
+                        return {
+                            ...category,
+                            templates: [
+                                ...templates,
+                                {
+                                    ...existingTemplate,
+                                    ...data.updateTemplateWithImage,
+                                },
+                            ],
+                        };
+                    }
+
+                    // If this is the old category and template is moving to a new one
+                    if (
+                        oldCategoryId === category.id &&
+                        data.updateTemplateWithImage.category.id !== category.id
+                    ) {
+                        return {
+                            ...category,
+                            templates: templates.filter(
+                                (t) => t.id !== data.updateTemplateWithImage.id,
+                            ),
+                        };
+                    }
+
+                    // If the template is staying in the same category, just update it
+                    if (category.id === data.updateTemplateWithImage.category.id) {
+                        return {
+                            ...category,
+                            templates: templates.map((template) => {
+                                if (template.id === data.updateTemplateWithImage.id) {
+                                    return {
+                                        ...template,
+                                        ...data.updateTemplateWithImage,
+                                    };
+                                }
+                                return template;
+                            }),
+                        };
+                    }
+
+                    return category;
+                },
+            );
+
+            cache.writeQuery({
+                query: Graphql.FlatTemplateCategoriesDocument,
                 data: {
                     flatTemplateCategories: updatedCategories,
                 },
@@ -257,13 +350,13 @@ export const TemplateGraphQLProvider: React.FC<{
     });
 
     // Delete template mutation
-    const [mutateDelete] = Types.useDeleteTemplateMutation({
+    const [mutateDelete] = Graphql.useDeleteTemplateMutation({
         update(cache, { data }) {
             if (!data?.deleteTemplate) return;
 
             const existingData =
-                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                    query: Types.FlatTemplateCategoriesDocument,
+                cache.readQuery<Graphql.FlatTemplateCategoriesQuery>({
+                    query: Graphql.FlatTemplateCategoriesDocument,
                 });
 
             if (!existingData?.flatTemplateCategories) return;
@@ -283,7 +376,7 @@ export const TemplateGraphQLProvider: React.FC<{
             );
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Graphql.FlatTemplateCategoriesDocument,
                 data: {
                     flatTemplateCategories: updatedCategories,
                 },
@@ -293,13 +386,13 @@ export const TemplateGraphQLProvider: React.FC<{
 
     // Move to deletion category mutation
     const [mutateMoveToDelete] =
-        Types.useMoveTemplateToDeletionCategoryMutation({
+        Graphql.useMoveTemplateToDeletionCategoryMutation({
             update(cache, { data }) {
                 if (!data?.moveTemplateToDeletionCategory) return;
 
                 const existingData =
-                    cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                        query: Types.FlatTemplateCategoriesDocument,
+                    cache.readQuery<Graphql.FlatTemplateCategoriesQuery>({
+                        query: Graphql.FlatTemplateCategoriesDocument,
                     });
 
                 if (!existingData?.flatTemplateCategories) return;
@@ -342,7 +435,7 @@ export const TemplateGraphQLProvider: React.FC<{
                     });
 
                 cache.writeQuery({
-                    query: Types.FlatTemplateCategoriesDocument,
+                    query: Graphql.FlatTemplateCategoriesDocument,
                     data: {
                         flatTemplateCategories: updatedCategories,
                     },
@@ -351,14 +444,14 @@ export const TemplateGraphQLProvider: React.FC<{
         });
 
     // Restore template mutation
-    const [mutateRestore] = Types.useRestoreTemplateMutation({
+    const [mutateRestore] = Graphql.useRestoreTemplateMutation({
         update(cache, { data }) {
             if (!data?.restoreTemplate) return;
 
             console.log("Restoring template", data.restoreTemplate);
             const existingData =
-                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                    query: Types.FlatTemplateCategoriesDocument,
+                cache.readQuery<Graphql.FlatTemplateCategoriesQuery>({
+                    query: Graphql.FlatTemplateCategoriesDocument,
                 });
 
             if (!existingData?.flatTemplateCategories) return;
@@ -405,7 +498,7 @@ export const TemplateGraphQLProvider: React.FC<{
             );
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Graphql.FlatTemplateCategoriesDocument,
                 data: {
                     flatTemplateCategories: updatedCategories,
                 },
@@ -415,7 +508,7 @@ export const TemplateGraphQLProvider: React.FC<{
 
     // Wrapper functions for mutations
     const createTemplateMutation = useCallback(
-        async (variables: Types.CreateTemplateMutationVariables) => {
+        async (variables: Graphql.CreateTemplateMutationVariables) => {
             return mutateCreate({
                 variables,
             });
@@ -424,7 +517,7 @@ export const TemplateGraphQLProvider: React.FC<{
     );
 
     const updateTemplateMutation = useCallback(
-        async (variables: Types.UpdateTemplateMutationVariables) => {
+        async (variables: Graphql.UpdateTemplateMutationVariables) => {
             return mutateUpdate({
                 variables,
             });
@@ -433,7 +526,7 @@ export const TemplateGraphQLProvider: React.FC<{
     );
 
     const deleteTemplateMutation = useCallback(
-        async (variables: Types.DeleteTemplateMutationVariables) => {
+        async (variables: Graphql.DeleteTemplateMutationVariables) => {
             return mutateDelete({
                 variables,
             });
@@ -443,7 +536,7 @@ export const TemplateGraphQLProvider: React.FC<{
 
     const moveTemplateToDeletionCategoryMutation = useCallback(
         async (
-            variables: Types.MoveTemplateToDeletionCategoryMutationVariables,
+            variables: Graphql.MoveTemplateToDeletionCategoryMutationVariables,
         ) => {
             return mutateMoveToDelete({
                 variables,
@@ -453,12 +546,21 @@ export const TemplateGraphQLProvider: React.FC<{
     );
 
     const restoreTemplateMutation = useCallback(
-        async (variables: Types.RestoreTemplateMutationVariables) => {
+        async (variables: Graphql.RestoreTemplateMutationVariables) => {
             return mutateRestore({
                 variables,
             });
         },
         [mutateRestore],
+    );
+
+    const updateTemplateWithImageMutation = useCallback(
+        async (variables: Graphql.UpdateTemplateWithImageMutationVariables) => {
+            return mutateUpdateWithImage({
+                variables,
+            });
+        },
+        [mutateUpdateWithImage],
     );
 
     const contextValue: TemplateGraphQLContextType = useMemo(
@@ -468,6 +570,7 @@ export const TemplateGraphQLProvider: React.FC<{
             templateConfigQuery,
             createTemplateMutation,
             updateTemplateMutation,
+            updateTemplateWithImageMutation,
             deleteTemplateMutation,
             moveTemplateToDeletionCategoryMutation,
             restoreTemplateMutation,
@@ -478,6 +581,7 @@ export const TemplateGraphQLProvider: React.FC<{
             templateConfigQuery,
             createTemplateMutation,
             updateTemplateMutation,
+            updateTemplateWithImageMutation,
             deleteTemplateMutation,
             moveTemplateToDeletionCategoryMutation,
             restoreTemplateMutation,

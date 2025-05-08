@@ -35,9 +35,9 @@ export type CreateTemplateCategoryInput = {
 };
 
 export type CreateTemplateInput = {
-  backgroundImage?: InputMaybe<Scalars['Upload']['input']>;
   categoryId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['Upload']['input']>;
   name: Scalars['String']['input'];
   order?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -70,6 +70,7 @@ export type Mutation = {
   /** Update an existing template */
   updateTemplate: Template;
   updateTemplateCategory: TemplateCategory;
+  updateTemplateWithImage: Template;
 };
 
 
@@ -139,6 +140,13 @@ export type MutationUpdateTemplateArgs = {
 export type MutationUpdateTemplateCategoryArgs = {
   id: Scalars['ID']['input'];
   input: UpdateTemplateCategoryInput;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationUpdateTemplateWithImageArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateTemplateWithImageInput;
 };
 
 /** Allows ordering a list of records. */
@@ -270,12 +278,12 @@ export type SortOrder =
 /** A template in the system */
 export type Template = {
   __typename?: 'Template';
-  background_url?: Maybe<Scalars['String']['output']>;
   category: TemplateCategory;
   created_at: Scalars['DateTime']['output'];
   deleted_at?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  image_url?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
   trashed_at?: Maybe<Scalars['DateTime']['output']>;
@@ -313,8 +321,8 @@ export type TemplateCategoryType =
 /** Configuration for templates */
 export type TemplateConfig = {
   __typename?: 'TemplateConfig';
-  allowedFileTypes: Array<Scalars['String']['output']>;
-  maxBackgroundSize: Scalars['Int']['output'];
+  allowedFileTypes?: Maybe<Array<Scalars['String']['output']>>;
+  maxBackgroundSize?: Maybe<Scalars['Int']['output']>;
 };
 
 /** A paginated list of Template items. */
@@ -343,9 +351,16 @@ export type UpdateTemplateCategoryInput = {
 };
 
 export type UpdateTemplateInput = {
-  backgroundImage?: InputMaybe<Scalars['Upload']['input']>;
   categoryId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateTemplateWithImageInput = {
+  categoryId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['Upload']['input']>;
   name: Scalars['String']['input'];
   order?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -389,14 +404,14 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', id: string, name: string, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate: { __typename?: 'Template', id: string, name: string, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type MoveTemplateToDeletionCategoryMutationVariables = Exact<{
   templateId: Scalars['ID']['input'];
@@ -417,7 +432,7 @@ export type RestoreTemplateMutationVariables = Exact<{
 }>;
 
 
-export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, order?: number | null, created_at: any, deleted_at?: any | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
+export type RestoreTemplateMutation = { __typename?: 'Mutation', restoreTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type UpdateTemplateMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -425,7 +440,15 @@ export type UpdateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, deleted_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
+
+export type UpdateTemplateWithImageMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: UpdateTemplateWithImageInput;
+}>;
+
+
+export type UpdateTemplateWithImageMutation = { __typename?: 'Mutation', updateTemplateWithImage: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
@@ -439,7 +462,7 @@ export type DeleteTemplateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
+export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
 
 export type ReorderTemplateCategoriesMutationVariables = Exact<{
   input: Array<ReorderCategoriesInput> | ReorderCategoriesInput;
@@ -454,7 +477,7 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, deleted_at?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
+export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -466,12 +489,12 @@ export type TemplateQueryVariables = Exact<{
 }>;
 
 
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } | null };
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } | null };
 
 export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TemplateConfigQuery = { __typename?: 'Query', templateConfig: { __typename?: 'TemplateConfig', allowedFileTypes: Array<string>, maxBackgroundSize: number } };
+export type TemplateConfigQuery = { __typename?: 'Query', templateConfig: { __typename?: 'TemplateConfig', allowedFileTypes?: Array<string> | null, maxBackgroundSize?: number | null } };
 
 export type TemplatesQueryVariables = Exact<{
   first: Scalars['Int']['input'];
@@ -479,22 +502,22 @@ export type TemplatesQueryVariables = Exact<{
 }>;
 
 
-export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'TemplatePaginator', data: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'TemplatePaginator', data: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', id: string } }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type DeletionTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DeletionTemplateCategoryQuery = { __typename?: 'Query', deletionTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any }> | null } };
+export type DeletionTemplateCategoryQuery = { __typename?: 'Query', deletionTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, trashed_at?: any | null, updated_at: any }> | null } };
 
 export type FlatTemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FlatTemplateCategoriesQuery = { __typename?: 'Query', flatTemplateCategories: Array<{ __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null, templates?: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, background_url?: string | null, order?: number | null, trashed_at?: any | null, created_at: any, updated_at: any }> | null }> };
+export type FlatTemplateCategoriesQuery = { __typename?: 'Query', flatTemplateCategories: Array<{ __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, order?: number | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null, templates?: Array<{ __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, trashed_at?: any | null, created_at: any, updated_at: any }> | null }> };
 
 export type MainTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, background_url?: string | null, description?: string | null, order?: number | null, created_at: any, updated_at: any }> | null } };
+export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, templates?: Array<{ __typename?: 'Template', id: string, name: string, image_url?: string | null, description?: string | null, order?: number | null, created_at: any, updated_at: any }> | null } };
 
 export type TemplateCategoriesQueryVariables = Exact<{
   first: Scalars['Int']['input'];
@@ -615,7 +638,7 @@ export const CreateTemplateDocument = gql`
     id
     name
     description
-    background_url
+    image_url
     category {
       id
     }
@@ -660,7 +683,6 @@ export const DeleteTemplateDocument = gql`
     category {
       id
     }
-    deleted_at
   }
 }
     `;
@@ -780,7 +802,6 @@ export const RestoreTemplateDocument = gql`
     }
     order
     created_at
-    deleted_at
     trashed_at
     updated_at
   }
@@ -818,7 +839,7 @@ export const UpdateTemplateDocument = gql`
     id
     name
     description
-    background_url
+    image_url
     category {
       id
     }
@@ -826,7 +847,6 @@ export const UpdateTemplateDocument = gql`
     created_at
     updated_at
     trashed_at
-    deleted_at
   }
 }
     `;
@@ -857,6 +877,50 @@ export function useUpdateTemplateMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateTemplateMutationHookResult = ReturnType<typeof useUpdateTemplateMutation>;
 export type UpdateTemplateMutationResult = Apollo.MutationResult<UpdateTemplateMutation>;
 export type UpdateTemplateMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateMutation, UpdateTemplateMutationVariables>;
+export const UpdateTemplateWithImageDocument = gql`
+    mutation updateTemplateWithImage($id: ID!, $input: UpdateTemplateWithImageInput!) {
+  updateTemplateWithImage(id: $id, input: $input) {
+    id
+    name
+    description
+    image_url
+    category {
+      id
+    }
+    order
+    created_at
+    updated_at
+    trashed_at
+  }
+}
+    `;
+export type UpdateTemplateWithImageMutationFn = Apollo.MutationFunction<UpdateTemplateWithImageMutation, UpdateTemplateWithImageMutationVariables>;
+
+/**
+ * __useUpdateTemplateWithImageMutation__
+ *
+ * To run a mutation, you first call `useUpdateTemplateWithImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTemplateWithImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTemplateWithImageMutation, { data, loading, error }] = useUpdateTemplateWithImageMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTemplateWithImageMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTemplateWithImageMutation, UpdateTemplateWithImageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTemplateWithImageMutation, UpdateTemplateWithImageMutationVariables>(UpdateTemplateWithImageDocument, options);
+      }
+export type UpdateTemplateWithImageMutationHookResult = ReturnType<typeof useUpdateTemplateWithImageMutation>;
+export type UpdateTemplateWithImageMutationResult = Apollo.MutationResult<UpdateTemplateWithImageMutation>;
+export type UpdateTemplateWithImageMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateWithImageMutation, UpdateTemplateWithImageMutationVariables>;
 export const CreateTemplateCategoryDocument = gql`
     mutation createTemplateCategory($input: CreateTemplateCategoryInput!) {
   createTemplateCategory(input: $input) {
@@ -906,7 +970,6 @@ export const DeleteTemplateCategoryDocument = gql`
     parentCategory {
       id
     }
-    deleted_at
   }
 }
     `;
@@ -989,7 +1052,6 @@ export const UpdateTemplateCategoryDocument = gql`
     special_type
     created_at
     updated_at
-    deleted_at
   }
 }
     `;
@@ -1074,7 +1136,7 @@ export const TemplateDocument = gql`
     id
     name
     description
-    background_url
+    image_url
     category {
       id
     }
@@ -1171,7 +1233,7 @@ export const TemplatesDocument = gql`
       id
       name
       description
-      background_url
+      image_url
       category {
         id
       }
@@ -1241,7 +1303,7 @@ export const DeletionTemplateCategoryDocument = gql`
       id
       name
       description
-      background_url
+      image_url
       order
       created_at
       trashed_at
@@ -1302,7 +1364,7 @@ export const FlatTemplateCategoriesDocument = gql`
       id
       name
       description
-      background_url
+      image_url
       order
       trashed_at
       created_at
@@ -1358,7 +1420,7 @@ export const MainTemplateCategoryDocument = gql`
     templates {
       id
       name
-      background_url
+      image_url
       description
       order
       created_at

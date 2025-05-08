@@ -28,7 +28,7 @@ type TemplateCategoryManagementContextType = {
         name: string, 
         categoryId: string,
         description?: string,
-        backgroundImage?: File
+        image?: File
     ) => Promise<{
         success: boolean;
         template?: Template;

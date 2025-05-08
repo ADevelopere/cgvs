@@ -10,7 +10,7 @@ query mainTemplateCategory{
         templates{
             id
             name
-            background_url
+            image_url
             description
             order
             created_at

@@ -50,6 +50,7 @@ const templateCategory: TemplateCategoryTranslation = {
     cancel: "إلغاء",
     add: "إضافة",
     save: "حفظ",
+    saving: "جاري الحفظ...",
     retry: "إعادة المحاولة",
     refresh: "تحديث",
     confirm: "تأكيد",
@@ -146,6 +147,17 @@ const templateCategory: TemplateCategoryTranslation = {
 
     // Card view strings
     createdLabel: "تم الإنشاء: ",
+
+    // Template management tabs
+    tabBasicInfo: "معلومات أساسية",
+    tabVariables: "المتغيرات",
+    tabRecipients: "المستلمين",
+    tabEditor: "المحرر",
+    tabPreview: "المعاينة",
+
+    // basic info tab
+    recommendedImageSize: "حجم الصورة الموصى به",
+    uploadImage: "رفع الصورة",
 };
 
 export default templateCategory;

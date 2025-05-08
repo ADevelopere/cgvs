@@ -8,7 +8,6 @@ mutation deleteTemplateCategory($id: ID!){
         parentCategory{
             id
         }
-        deleted_at
     }
 }
 `;

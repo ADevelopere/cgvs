@@ -14,12 +14,18 @@ import { TemplateManagementTabType } from "@/contexts/template/TemplateManagemen
 import { Link } from "react-router-dom";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import useAppTranslation from "@/locale/useAppTranslation";
 interface TabListProps {
-    onChange: (event: React.SyntheticEvent, newValue: TemplateManagementTabType) => void;
+    onChange: (
+        event: React.SyntheticEvent,
+        newValue: TemplateManagementTabType,
+    ) => void;
     activeTab: TemplateManagementTabType;
 }
 
 const ManagementTabList: React.FC<TabListProps> = ({ onChange, activeTab }) => {
+    const strings = useAppTranslation("templateCategoryTranslations");
+
     return (
         <Box
             sx={{
@@ -76,11 +82,11 @@ const ManagementTabList: React.FC<TabListProps> = ({ onChange, activeTab }) => {
                         },
                     }}
                 >
-                    <Tab label="Basic Info" value="basic" />
-                    <Tab label="Variables" value="variables" />
-                    <Tab label="Recipients" value="recipients" />
-                    <Tab label="Editor" value="editor" />
-                    <Tab label="Preview" value="preview" />
+                    <Tab label={strings.tabBasicInfo} value="basic" />
+                    <Tab label={strings.tabVariables} value="variables" />
+                    <Tab label={strings.tabRecipients} value="recipients" />
+                    <Tab label={strings.tabEditor} value="editor" />
+                    <Tab label={strings.tabPreview} value="preview" />
                 </MuiTabList>
             </TabContext>
         </Box>

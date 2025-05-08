@@ -14,9 +14,9 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
     });
 
     useEffect(() => {
-        if (template?.background_url) {
+        if (template?.image_url) {
             const img = new Image();
-            img.src = template.background_url;
+            img.src = template.image_url;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -24,7 +24,7 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 });
             };
         }
-    }, [template?.background_url]);
+    }, [template?.image_url]);
     return (
         <div
             style={{
@@ -32,7 +32,7 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 minHeight: `${dimensions.height}px`,
                 width: `${dimensions.width}px`,
                 minWidth: `${dimensions.width}px`,
-                backgroundImage: `url(${template?.background_url})`,
+                image: `url(${template?.image_url})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}

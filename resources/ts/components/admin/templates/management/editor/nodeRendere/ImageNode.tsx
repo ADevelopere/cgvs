@@ -36,7 +36,7 @@ const ImageNode: React.FC<ImageNodeProps> = ({ data: { imageUrl } }) => {
                 minHeight: `${dimensions.height}px`,
                 width: `${dimensions.width}px`,
                 minWidth: `${dimensions.width}px`,
-                backgroundImage: `url(${imageUrl})`,
+                image: `url(${imageUrl})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}

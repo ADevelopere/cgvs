@@ -30,10 +30,10 @@ class TemplateController extends Controller
     {
         $templates = Template::all();
 
-        // Add background_url to each template
+        // Add image_url to each template
         $templates->transform(function ($template) {
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
             }
             return $template;
         });
@@ -139,7 +139,7 @@ class TemplateController extends Controller
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
-                $template->background_url = $path;
+                $template->image_url = $path;
             }
 
             Log::info('Saving template', [
@@ -152,8 +152,8 @@ class TemplateController extends Controller
                 'template_id' => $template->id
             ]);
 
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
             }
 
             // Check if name variable was created
@@ -261,21 +261,21 @@ class TemplateController extends Controller
 
             if ($request->hasFile('background') && $request->file('background')->isValid()) {
                 // Delete old background if it exists
-                if ($template->background_url) {
-                    Storage::disk('public')->delete($template->background_url);
+                if ($template->image_url) {
+                    Storage::disk('public')->delete($template->image_url);
                 }
 
                 $path = $request->file('background')->store('template_backgrounds', 'public');
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
-                $template->background_url = $path;
+                $template->image_url = $path;
             }
 
             $template->save();
 
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
             }
 
             return response()->json($template);
@@ -302,9 +302,9 @@ class TemplateController extends Controller
      */
     public function show(Template $template): JsonResponse
     {
-        // Add background_url if the template has a background
-        if ($template->background_url) {
-            $template->background_url = Storage::url($template->background_url);
+        // Add image_url if the template has a background
+        if ($template->image_url) {
+            $template->image_url = Storage::url($template->image_url);
         }
 
         return response()->json($template);

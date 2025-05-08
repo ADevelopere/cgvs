@@ -11,7 +11,6 @@ mutation restoreTemplate($templateId: ID!){
         }
         order
         created_at
-        deleted_at
         trashed_at
         updated_at
     }

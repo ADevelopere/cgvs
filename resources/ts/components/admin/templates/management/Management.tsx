@@ -20,7 +20,10 @@ import ManagementHeader from "./ManagementHeader";
 const handleTabError = (
     error: any,
     tab: TemplateManagementTabType,
-    setTabError: (tab: TemplateManagementTabType, error: { message: string }) => void,
+    setTabError: (
+        tab: TemplateManagementTabType,
+        error: { message: string },
+    ) => void,
 ) => {
     if (error.response?.status === 403) {
         setTabError(tab, { message: "Access denied to this tab" });
@@ -128,6 +131,11 @@ const Management: React.FC = () => {
         });
     };
 
+    console.log(
+        "Management component rendered, theme direction:",
+        theme.direction,
+    );
+
     return (
         <Box id="template-management" sx={{ width: "100%" }}>
             <TabContext value={activeTab}>
@@ -163,21 +171,29 @@ const Management: React.FC = () => {
                                     overflow: "hidden",
                                     height: "100%",
                                 }}
+                                containerStyle={{
+                                    direction: theme.direction,
+                                }}
+                                id="template-management-swipable-views"
                             >
                                 <TabPanel value="basic">
                                     <BasicInfoTab />
                                 </TabPanel>
                                 <TabPanel value="variables">
-                                    <VariablesTab />
+                                    <Box></Box>
+                                    {/* <VariablesTab /> */}
                                 </TabPanel>
                                 <TabPanel value="recipients">
-                                    <RecipientsTab />
+                                    <Box></Box>
+                                    {/* <RecipientsTab /> */}
                                 </TabPanel>
                                 <TabPanel value="editor">
-                                    <EditorTab />
+                                    <Box></Box>
+                                    {/* <EditorTab /> */}
                                 </TabPanel>
                                 <TabPanel value="preview">
-                                    <PreviewTab />
+                                    <Box></Box>
+                                    {/* <PreviewTab /> */}
                                 </TabPanel>
                             </SwipeableViews>
                         </TemplateRecipientsProvider>

@@ -66,9 +66,9 @@ function Flow() {
     });
 
     useEffect(() => {
-        if (template?.background_url) {
+        if (template?.image_url) {
             const img = new Image();
-            img.src = template.background_url;
+            img.src = template.image_url;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -76,7 +76,7 @@ function Flow() {
                 });
             };
         }
-    }, [template?.background_url]);
+    }, [template?.image_url]);
 
     useEffect(() => {
         logger.log("Dimensions changed:", dimensions);

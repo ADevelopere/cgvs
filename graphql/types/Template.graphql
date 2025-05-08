@@ -3,7 +3,7 @@ type Template {
     id: ID!
     name: String!
     description: String
-    background_url: String
+    image_url: String
     category: TemplateCategory! @belongsTo
     order: Int
     # elements: [TemplateElement!]! @hasMany
@@ -17,6 +17,6 @@ type Template {
 
 "Configuration for templates"
 type TemplateConfig {
-    maxBackgroundSize: Int!
-    allowedFileTypes: [String!]!
+    maxBackgroundSize: Int
+    allowedFileTypes: [String!]
 }

@@ -76,7 +76,7 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
                                     <Avatar
                                         variant="rounded"
                                         src={
-                                            template.background_url ||
+                                            template.image_url ||
                                             TEMPLATE_IMAGE_PLACEHOLDER_URL
                                         }
                                         alt={template.name}

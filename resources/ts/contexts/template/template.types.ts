@@ -19,7 +19,7 @@ export type Template = {
     id: number;
     name: string;
     description?: string;
-    background_url?: string;
+    image_url?: string;
     category_id: number;
     order: number | null;
     created_at: string;

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Log;
 use App\GraphQL\Contracts\LighthouseModel;
+use Illuminate\Support\Facades\Storage;
 
 class Template extends Model implements LighthouseModel
 {
@@ -17,7 +18,7 @@ class Template extends Model implements LighthouseModel
     protected $fillable = [
         'name',
         'description',
-        'background_url',
+        'image_url',
         'category_id',
         'pre_deletion_category_id',
         'order',
@@ -58,9 +59,24 @@ class Template extends Model implements LighthouseModel
     /**
      * Get the full storage path for the background image
      */
-    public function getBackgroundFullPathAttribute(): ?string
+    public function getImageUrlFullPathAttribute(): ?string
     {
-        return $this->background_url ? storage_path('app/public/' . $this->background_url) : null;
+        return $this->image_url ? storage_path('app/public/' . $this->image_url) : null;
+    }
+
+    /**
+     * Get the URL for the image
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    public function getImageUrlAttribute($value)
+    {
+        // If the value already starts with /storage/, return as is
+        if ($value && str_starts_with($value, '/storage/')) {
+            return $value;
+        }
+        return $value ? Storage::url($value) : null;
     }
 
     protected static function booted()

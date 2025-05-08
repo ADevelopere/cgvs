@@ -71,6 +71,7 @@ return [
 
     'upload_limits' => [
         'template_background' => env('MAX_TEMPLATE_BACKGROUND_SIZE', 2048), // Default 2MB
+        'template_allowed_types' => ['jpeg', 'png', 'jpg', 'gif'], // Default allowed file types
     ],
 
     /*

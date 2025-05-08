@@ -3,6 +3,7 @@
 namespace App\Template;
 
 use App\GraphQL\Contracts\LighthouseQuery;
+use Illuminate\Support\Facades\Log;
 
 class TemplateQuery implements LighthouseQuery
 {
@@ -11,8 +12,14 @@ class TemplateQuery implements LighthouseQuery
      *
      * @return TemplateConfig
      */
-    public function config(): TemplateConfig
+    public function config(): array
     {
-        return TemplateConfig::fromConfig();
+        $allowedTypes = config('filesystems.upload_limits.template_allowed_types');
+        Log::info('Template allowed types:', ['types' => $allowedTypes]);
+
+        $config = TemplateConfig::fromConfig();
+        Log::info('Template config:', $config->toArray());
+
+        return $config->toArray();
     }
 }

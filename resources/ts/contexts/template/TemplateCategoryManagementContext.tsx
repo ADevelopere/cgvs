@@ -12,6 +12,8 @@ import React, {
 import {
     Template,
     TemplateCategory,
+    UpdateTemplateMutationVariables,
+    UpdateTemplateWithImageMutationVariables,
     useFlatTemplateCategoriesQuery,
 } from "@/graphql/generated/types";
 
@@ -37,10 +39,10 @@ import { useNavigate } from "react-router-dom";
 
 // Logger utility
 const logger = {
-    enabled: process.env.NODE_ENV === "development" && true,
+    enabled: process.env.NODE_ENV === "development" && false,
     log: (...args: any[]) => {
         if (logger.enabled) {
-            console.log(...args);
+            logger.log(...args);
         }
     },
     info: (...args: any[]) => {
@@ -182,7 +184,13 @@ type TemplateCategoryManagementContextType = {
      * Updates the name of an existing template identified by its ID.
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
      */
-    updateTemplate: (input: Template) => Promise<Template | null>;
+    updateTemplate: (
+        input: UpdateTemplateMutationVariables,
+    ) => Promise<Template | null>;
+
+    updateTemplateWithImage: (
+        input: UpdateTemplateWithImageMutationVariables,
+    ) => Promise<Template | null>;
     /**
      * Deletes a template identified by its ID.
      * This changes the templates's parent category to the deletion category.
@@ -306,7 +314,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             return [];
         });
 
-        console.log("All templates from cache:", allTemplates);
+        logger.log("All templates from cache:", allTemplates);
         return allTemplates;
     }, [apolloCategoryData]);
 
@@ -314,7 +322,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         const regularCategories = allCategoriesFromCache.filter(
             (cat) => cat.special_type !== "deletion",
         );
-        console.log(
+        logger.log(
             "Regular categories from cache:",
             JSON.stringify(
                 getSerializableCategories(regularCategories),
@@ -331,7 +339,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 (cat) => cat.special_type === "deletion",
             ) || null;
         if (deletionCategory) {
-            console.log(
+            logger.log(
                 "Deletion category from cache:",
                 JSON.stringify(
                     getSerializableTemplateCategory(deletionCategory),
@@ -340,7 +348,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 ),
             );
         } else {
-            console.log("No deletion category found in cache.");
+            logger.log("No deletion category found in cache.");
         }
         return deletionCategory;
     }, [allCategoriesFromCache]);
@@ -371,11 +379,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 const currentCategorySerialized =
                     getSerializableTemplateCategory(currentCategoryState);
 
-                console.log(
+                logger.log(
                     "Fresh category:",
                     JSON.stringify(freshCategorySerialized, null, 2),
                 );
-                console.log(
+                logger.log(
                     "Current category:",
                     JSON.stringify(currentCategorySerialized, null, 2),
                 );
@@ -589,6 +597,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const {
         createTemplateMutation,
         updateTemplateMutation,
+        updateTemplateWithImageMutation,
         moveTemplateToDeletionCategoryMutation,
         restoreTemplateMutation,
     } = useTemplateGraphQL();
@@ -597,7 +606,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             name: string,
             categoryId: string,
             description?: string,
-            backgroundImage?: File,
+            image?: File,
         ) => {
             try {
                 const response = await createTemplateMutation({
@@ -605,7 +614,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                         name,
                         categoryId,
                         description,
-                        backgroundImage,
+                        image,
                     },
                 });
                 // Cache updated by Apollo. currentCategoryState.templates should reflect this.
@@ -644,7 +653,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     name,
                     categoryId,
                     hasDescription: !!description,
-                    hasBackground: !!backgroundImage,
+                    hasBackground: !!image,
                 });
 
                 throw error;
@@ -654,20 +663,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateTemplate = useCallback(
-        async (input: Template) => {
+        async (variables: UpdateTemplateMutationVariables) => {
             try {
                 const templateToUpdate = templatesForCurrentCategory.find(
-                    (temp) => temp.id === input.id,
+                    (temp) => temp.id === variables.id,
                 );
-                const response = await updateTemplateMutation({
-                    id: input.id,
-                    input: {
-                        name: input.name,
-                        description: input.description,
-                        categoryId: input.category.id,
-                        order: input.order,
-                    },
-                });
+                const response = await updateTemplateMutation(variables);
                 // Cache updated by Apollo.
                 const updatedTemplateData = response.data?.updateTemplate;
                 if (updatedTemplateData) {
@@ -703,14 +704,75 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 });
                 logger.error(messages.errorUpdatingTemplate, {
                     error: gqlError,
-                    template: input,
+                    variables: variables,
                 });
 
-                throw error;
+                return null;
             }
         },
         [
             updateTemplateMutation,
+            templatesForCurrentCategory,
+            currentTemplate,
+            setCurrentTemplate,
+            notifications,
+            messages,
+        ],
+    );
+
+    const updateTemplateWithImage = useCallback(
+        async (variables: UpdateTemplateWithImageMutationVariables) => {
+            try {
+                const templateToUpdate = templatesForCurrentCategory.find(
+                    (temp) => temp.id === variables.id,
+                );
+                const response =
+                    await updateTemplateWithImageMutation(variables);
+                // Cache updated by Apollo.
+                const updatedTemplateData =
+                    response.data?.updateTemplateWithImage;
+                if (updatedTemplateData) {
+                    const updatedTemplate = mapSingleTemplate(
+                        { updateTemplateWithImage: updatedTemplateData },
+                        templateToUpdate || undefined,
+                    );
+                    if (updatedTemplate) {
+                        setCurrentTemplate(updatedTemplate);
+                    }
+                    notifications.show(messages.templateUpdatedSuccessfully, {
+                        severity: "success",
+                        autoHideDuration: 3000,
+                    });
+
+                    return updatedTemplate;
+                } else {
+                    throw new Error(messages.templateUpdateFailed);
+                }
+            } catch (error: unknown) {
+                const gqlError = error as {
+                    message?: string;
+                    graphQLErrors?: Array<{ message: string }>;
+                };
+                const errorMessage =
+                    gqlError.graphQLErrors?.[0]?.message ||
+                    gqlError.message ||
+                    messages.templateUpdateFailed;
+
+                notifications.show(errorMessage, {
+                    severity: "error",
+                    autoHideDuration: 5000,
+                });
+                logger.error(messages.errorUpdatingTemplate, {
+                    error: gqlError,
+                    variables: variables,
+                });
+
+                throw error;
+                // return null;
+            }
+        },
+        [
+            updateTemplateWithImageMutation,
             templatesForCurrentCategory,
             currentTemplate,
             setCurrentTemplate,
@@ -897,6 +959,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             setCurrentTemplate,
             createTemplate,
             updateTemplate,
+            updateTemplateWithImage,
             // sortTemplates,
             isAddingTemplate,
             setIsAddingTemplate,
@@ -927,6 +990,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             currentTemplate, // setCurrentTemplate is stable
             createTemplate,
             updateTemplate,
+            updateTemplateWithImage,
             // sortTemplates,
             isAddingTemplate, // setIsAddingTemplate is stable
             onNewTemplateCancel, // setOnNewTemplateCancel is stable

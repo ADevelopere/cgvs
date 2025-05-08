@@ -13,7 +13,7 @@ interface TemplateRow {
     name: string;
     created_at: string;
     trashed_at: string;
-    background_url: string | null;
+    image_url: string | null;
 }
 
 const DeletionTemplatesCategory: React.FC = () => {
@@ -48,7 +48,7 @@ const DeletionTemplatesCategory: React.FC = () => {
                     <Box
                         component="img"
                         src={
-                            params.row.background_url ??
+                            params.row.image_url ??
                             TEMPLATE_IMAGE_PLACEHOLDER_URL
                         }
                         alt={`${params.row.name} ${strings.image}`}
@@ -102,7 +102,7 @@ const DeletionTemplatesCategory: React.FC = () => {
         name: template.name,
         created_at: template.created_at,
         trashed_at: template.trashed_at,
-        background_url: template.background_url ?? null,
+        image_url: template.image_url ?? null,
     }));
 
     const appBarHeight = useAppBarHeight();
