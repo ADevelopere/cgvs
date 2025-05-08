@@ -6,7 +6,9 @@ import type {
     ReorderTemplatesMutation,
     UpdateTemplateMutation,
     Template,
-    TemplateCategory
+    TemplateCategory,
+    TemplateConfig,
+    TemplateConfigQuery
 } from '@/graphql/generated/types';
 
 export type TemplateSource =
@@ -167,3 +169,14 @@ export const mapTemplates = (source: TemplateSource | undefined | null, previous
     const template = mapSingleTemplate(source, previousTemplate);
     return template ? [template] : [];
 };
+
+export const mapTemplateConfig = (source: TemplateConfigQuery): TemplateConfig => {
+    if (!source) {
+        return {} as TemplateConfig;
+    }
+
+    return {
+        allowedFileTypes: source.templateConfig.allowedFileTypes,
+        maxBackgroundSize: source.templateConfig.maxBackgroundSize,
+    };
+}

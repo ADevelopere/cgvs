@@ -28,21 +28,20 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { Template } from "@/graphql/generated/types";
-import { useTemplate } from "@/contexts/template/TemplatesContext";
 import TemplateEditDialog from "./TemplateEditDialog";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
         currentCategory,
         regularCategories,
-        addTemplate,
+        createTemplate: addTemplate,
         updateTemplate,
         moveTemplateToDeletionCategory,
         trySelectCategory,
         setIsAddingTemplate,
         setOnNewTemplateCancel,
+        manageTemplate
     } = useTemplateCategoryManagement();
-    const { manageTemplate } = useTemplate();
 
     const templates = currentCategory?.templates ?? [];
 

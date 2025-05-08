@@ -16,17 +16,17 @@ import {
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/utils/dateUtils";
-import { useTemplate } from "@/contexts/template/TemplatesContext";
 import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 
 interface ListViewProps {
     templates: Template[];
 }
 
 const ListView: React.FC<ListViewProps> = ({ templates }) => {
-    const { manageTemplate } = useTemplate();
+    const { manageTemplate } = useTemplateCategoryManagement();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const strings = useAppTranslation("templateCategoryTranslations");

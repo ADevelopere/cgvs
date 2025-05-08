@@ -13,7 +13,6 @@ import {
     Template,
     TemplateCategory,
     useFlatTemplateCategoriesQuery,
-    useTemplatesQuery,
 } from "@/graphql/generated/types";
 
 import { CircularProgress } from "@mui/material";
@@ -34,7 +33,7 @@ import {
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { mapSingleTemplate } from "@/utils/template/template-mappers";
-import { a } from "vitest/dist/chunks/suite.d.FvehnV49.js";
+import { useNavigate } from "react-router-dom";
 
 // Logger utility
 const logger = {
@@ -178,7 +177,7 @@ type TemplateCategoryManagementContextType = {
      * Creates a new template with the specified name within the given category ID.
      * After successful creation, the new template is added to the `templates` list for the current category and potentially set as the `currentTemplate`.
      */
-    addTemplate: (name: string, categoryId: string) => void;
+    createTemplate: (name: string, categoryId: string) => void;
     /**
      * Updates the name of an existing template identified by its ID.
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
@@ -220,6 +219,9 @@ type TemplateCategoryManagementContextType = {
      * A function to set or clear the `onNewTemplateCancel` callback function.
      */
     setOnNewTemplateCancel: (callback: (() => void) | undefined) => void;
+
+    templateToManage?: Template;
+    manageTemplate: (templateId: string) => void;
 };
 
 const TemplateCategoryManagementContext = createContext<
@@ -240,6 +242,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
 }> = ({ children }) => {
     const messages = useAppTranslation("templateCategoryTranslations");
     const notifications = useNotifications();
+
+    const navigate = useNavigate();
+    const [templateToManage, setTemplateToManage] = useState<
+        Template | undefined
+    >(undefined);
 
     const {
         data: apolloCategoryData,
@@ -585,7 +592,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         moveTemplateToDeletionCategoryMutation,
         restoreTemplateMutation,
     } = useTemplateGraphQL();
-    const addTemplate = useCallback(
+    const createTemplate = useCallback(
         async (
             name: string,
             categoryId: string,
@@ -799,6 +806,21 @@ export const TemplateCategoryManagementProvider: React.FC<{
         ],
     );
 
+    const manageTemplate = useCallback(
+        (templateId: string) => {
+            const template = allTemplatesFromCache.find(
+                (t) => t.id === templateId,
+            );
+            if (!template) {
+                console.error("Template not found");
+                return;
+            }
+            setTemplateToManage(template);
+            navigate(`/admin/templates/${templateId}/manage`);
+        },
+        [navigate, allTemplatesFromCache],
+    );
+
     // Sorting functions
     const sortCategories = useCallback(
         (sortBy: "name" | "id", order: "asc" | "desc") => {
@@ -873,13 +895,15 @@ export const TemplateCategoryManagementProvider: React.FC<{
             allTemplates: allTemplatesFromCache,
             currentTemplate,
             setCurrentTemplate,
-            addTemplate,
+            createTemplate,
             updateTemplate,
             // sortTemplates,
             isAddingTemplate,
             setIsAddingTemplate,
             onNewTemplateCancel,
             setOnNewTemplateCancel,
+            manageTemplate,
+            templateToManage,
         }),
         [
             fetchCategories,
@@ -901,11 +925,13 @@ export const TemplateCategoryManagementProvider: React.FC<{
             allTemplatesFromCache,
             templatesForCurrentCategory,
             currentTemplate, // setCurrentTemplate is stable
-            addTemplate,
+            createTemplate,
             updateTemplate,
             // sortTemplates,
             isAddingTemplate, // setIsAddingTemplate is stable
             onNewTemplateCancel, // setOnNewTemplateCancel is stable
+            manageTemplate,
+            templateToManage,
         ],
     );
 

@@ -14,7 +14,6 @@ import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { HomeIcon } from "lucide-react";
 import DashboardEndActions from "../common/DashboardEndActions";
 import { TemplateCategoryManagementProvider } from "@/contexts/template/TemplateCategoryManagementContext";
-import { TemplateProvider } from "@/contexts/template/TemplatesContext";
 
 const NAVIGATION: Navigation = [
     {
@@ -71,9 +70,7 @@ const AdminLayout: React.FC = () => {
                 >
                     <DashboardLayout>
                         <TemplateCategoryManagementProvider>
-                            <TemplateProvider>
                                 <Outlet />
-                            </TemplateProvider>
                         </TemplateCategoryManagementProvider>
                     </DashboardLayout>
                 </DashboardLayoutProvider>

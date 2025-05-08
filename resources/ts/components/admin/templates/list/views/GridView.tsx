@@ -9,17 +9,17 @@ import {
     Box,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useTemplate } from "@/contexts/template/TemplatesContext";
 import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 interface GridViewProps {
     templates: Template[];
 }
 
 const GridView: React.FC<GridViewProps> = ({ templates }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
-    const { manageTemplate } = useTemplate();
+    const { manageTemplate } = useTemplateCategoryManagement();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 

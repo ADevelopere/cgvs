@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useCallback } from "react";
+import React, { createContext, useContext, useCallback, useMemo } from "react";
 import * as Types from "@/graphql/generated/types";
 import { FetchResult } from "@apollo/client";
 
@@ -20,6 +20,8 @@ type TemplateGraphQLContextType = {
     templatesQuery: (
         variables: Types.QueryTemplatesArgs,
     ) => Promise<Types.TemplatesQuery>;
+
+    templateConfigQuery: () => Promise<Types.TemplateConfigQuery>;
 
     /**
      * Mutation to create a new template
@@ -88,6 +90,10 @@ export const TemplateGraphQLProvider: React.FC<{
         skip: true,
     });
 
+    const templateConfigQueryRef = Types.useTemplateConfigQuery({
+        skip: true,
+    });
+
     // Template query wrapper functions
     const templateQuery = useCallback(
         async (variables: Types.QueryTemplateArgs) => {
@@ -110,6 +116,14 @@ export const TemplateGraphQLProvider: React.FC<{
         },
         [templatesQueryRef],
     );
+
+    const templateConfigQuery = useCallback(async () => {
+        const result = await templateConfigQueryRef.refetch();
+        if (!result.data) {
+            throw new Error("No data returned from template config query");
+        }
+        return result.data;
+    }, [templateConfigQueryRef]);
 
     // Create template mutation
     const [mutateCreate] = Types.useCreateTemplateMutation({
@@ -158,9 +172,10 @@ export const TemplateGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.updateTemplate) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                query: Types.FlatTemplateCategoriesDocument,
-            });
+            const existingData =
+                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+                    query: Types.FlatTemplateCategoriesDocument,
+                });
 
             if (!existingData?.flatTemplateCategories) return;
 
@@ -183,7 +198,10 @@ export const TemplateGraphQLProvider: React.FC<{
                     const templates = category.templates || [];
 
                     // If this is the new category and it's different from the old one
-                    if (category.id === data.updateTemplate.category.id && oldCategoryId !== category.id) {
+                    if (
+                        category.id === data.updateTemplate.category.id &&
+                        oldCategoryId !== category.id
+                    ) {
                         return {
                             ...category,
                             templates: [
@@ -191,16 +209,21 @@ export const TemplateGraphQLProvider: React.FC<{
                                 {
                                     ...existingTemplate,
                                     ...data.updateTemplate,
-                                }
-                            ]
+                                },
+                            ],
                         };
                     }
 
                     // If this is the old category and template is moving to a new one
-                    if (oldCategoryId === category.id && data.updateTemplate.category.id !== category.id) {
+                    if (
+                        oldCategoryId === category.id &&
+                        data.updateTemplate.category.id !== category.id
+                    ) {
                         return {
                             ...category,
-                            templates: templates.filter(t => t.id !== data.updateTemplate.id)
+                            templates: templates.filter(
+                                (t) => t.id !== data.updateTemplate.id,
+                            ),
                         };
                     }
 
@@ -238,9 +261,10 @@ export const TemplateGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.deleteTemplate) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                query: Types.FlatTemplateCategoriesDocument,
-            });
+            const existingData =
+                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+                    query: Types.FlatTemplateCategoriesDocument,
+                });
 
             if (!existingData?.flatTemplateCategories) return;
 
@@ -268,59 +292,63 @@ export const TemplateGraphQLProvider: React.FC<{
     });
 
     // Move to deletion category mutation
-    const [mutateMoveToDelete] = Types.useMoveTemplateToDeletionCategoryMutation({
-        update(cache, { data }) {
-            if (!data?.moveTemplateToDeletionCategory) return;
+    const [mutateMoveToDelete] =
+        Types.useMoveTemplateToDeletionCategoryMutation({
+            update(cache, { data }) {
+                if (!data?.moveTemplateToDeletionCategory) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                query: Types.FlatTemplateCategoriesDocument,
-            });
+                const existingData =
+                    cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+                        query: Types.FlatTemplateCategoriesDocument,
+                    });
 
-            if (!existingData?.flatTemplateCategories) return;
+                if (!existingData?.flatTemplateCategories) return;
 
-            // Find the template in its original category to preserve all fields
-            let existingTemplate: any = null;
-            existingData.flatTemplateCategories.forEach((category) => {
-                if (!category.templates) return;
-                const found = category.templates.find(
-                    (t) => t.id === data.moveTemplateToDeletionCategory.id,
-                );
-                if (found) existingTemplate = found;
-            });
+                // Find the template in its original category to preserve all fields
+                let existingTemplate: any = null;
+                existingData.flatTemplateCategories.forEach((category) => {
+                    if (!category.templates) return;
+                    const found = category.templates.find(
+                        (t) => t.id === data.moveTemplateToDeletionCategory.id,
+                    );
+                    if (found) existingTemplate = found;
+                });
 
-            const updatedCategories = existingData.flatTemplateCategories.map((category) => {
-                if (!category.templates) return category;
+                const updatedCategories =
+                    existingData.flatTemplateCategories.map((category) => {
+                        if (!category.templates) return category;
 
-                if (category.special_type === "deletion") {
-                    return {
-                        ...category,
-                        templates: [
-                            ...category.templates,
-                            // Merge existing template data with update data
-                            {
-                                ...existingTemplate,
-                                ...data.moveTemplateToDeletionCategory,
-                            },
-                        ],
-                    };
-                }
-                return {
-                    ...category,
-                    templates: category.templates.filter(
-                        (template: { id: string }) =>
-                            template.id !== data.moveTemplateToDeletionCategory.id,
-                    ),
-                };
-            });
+                        if (category.special_type === "deletion") {
+                            return {
+                                ...category,
+                                templates: [
+                                    ...category.templates,
+                                    // Merge existing template data with update data
+                                    {
+                                        ...existingTemplate,
+                                        ...data.moveTemplateToDeletionCategory,
+                                    },
+                                ],
+                            };
+                        }
+                        return {
+                            ...category,
+                            templates: category.templates.filter(
+                                (template: { id: string }) =>
+                                    template.id !==
+                                    data.moveTemplateToDeletionCategory.id,
+                            ),
+                        };
+                    });
 
-            cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
-                data: {
-                    flatTemplateCategories: updatedCategories,
-                },
-            });
-        },
-    });
+                cache.writeQuery({
+                    query: Types.FlatTemplateCategoriesDocument,
+                    data: {
+                        flatTemplateCategories: updatedCategories,
+                    },
+                });
+            },
+        });
 
     // Restore template mutation
     const [mutateRestore] = Types.useRestoreTemplateMutation({
@@ -328,20 +356,21 @@ export const TemplateGraphQLProvider: React.FC<{
             if (!data?.restoreTemplate) return;
 
             console.log("Restoring template", data.restoreTemplate);
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>({
-                query: Types.FlatTemplateCategoriesDocument,
-            });
+            const existingData =
+                cache.readQuery<Types.FlatTemplateCategoriesQuery>({
+                    query: Types.FlatTemplateCategoriesDocument,
+                });
 
             if (!existingData?.flatTemplateCategories) return;
 
             // Find the template in deletion category to preserve all fields
             let existingTemplate: any = null;
             const deletionCategory = existingData.flatTemplateCategories.find(
-                (cat) => cat.special_type === "deletion"
+                (cat) => cat.special_type === "deletion",
             );
             if (deletionCategory?.templates) {
                 existingTemplate = deletionCategory.templates.find(
-                    (t) => t.id === data.restoreTemplate.id
+                    (t) => t.id === data.restoreTemplate.id,
                 );
             }
 
@@ -358,8 +387,8 @@ export const TemplateGraphQLProvider: React.FC<{
                                 {
                                     ...existingTemplate,
                                     ...data.restoreTemplate,
-                                }
-                            ]
+                                },
+                            ],
                         };
                     }
                     if (category.special_type === "deletion") {
@@ -367,12 +396,12 @@ export const TemplateGraphQLProvider: React.FC<{
                             ...category,
                             templates: category.templates.filter(
                                 (template: { id: string }) =>
-                                    template.id !== data.restoreTemplate.id
-                            )
+                                    template.id !== data.restoreTemplate.id,
+                            ),
                         };
                     }
                     return category;
-                }
+                },
             );
 
             cache.writeQuery({
@@ -432,15 +461,28 @@ export const TemplateGraphQLProvider: React.FC<{
         [mutateRestore],
     );
 
-    const contextValue: TemplateGraphQLContextType = {
-        templateQuery,
-        templatesQuery,
-        createTemplateMutation,
-        updateTemplateMutation,
-        deleteTemplateMutation,
-        moveTemplateToDeletionCategoryMutation,
-        restoreTemplateMutation,
-    };
+    const contextValue: TemplateGraphQLContextType = useMemo(
+        () => ({
+            templateQuery,
+            templatesQuery,
+            templateConfigQuery,
+            createTemplateMutation,
+            updateTemplateMutation,
+            deleteTemplateMutation,
+            moveTemplateToDeletionCategoryMutation,
+            restoreTemplateMutation,
+        }),
+        [
+            templateQuery,
+            templatesQuery,
+            templateConfigQuery,
+            createTemplateMutation,
+            updateTemplateMutation,
+            deleteTemplateMutation,
+            moveTemplateToDeletionCategoryMutation,
+            restoreTemplateMutation,
+        ],
+    );
 
     return (
         <TemplateGraphQLContext.Provider value={contextValue}>
