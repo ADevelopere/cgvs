@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import {
     Typography,
     Box,
-    Button,
     Paper,
     TextField,
     InputAdornment,
     ToggleButtonGroup,
     ToggleButton,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -24,13 +21,10 @@ type ViewMode = "card" | "grid" | "list";
 
 type TemplateListProps = {
     templates: Template[];
-}
+};
 
-const TemplateList: React.FC<TemplateListProps> = ({
-    templates,
-}) => {
+const TemplateList: React.FC<TemplateListProps> = ({ templates }) => {
     console.log("TemplateList", templates);
-    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>("card");
 
@@ -84,12 +78,24 @@ const TemplateList: React.FC<TemplateListProps> = ({
     };
 
     return (
-        <Box sx={{ pt: 3, pb: 16, px: 3}} id="template-list">
+        <Box
+            sx={{
+                pt: 3,
+                pb: 16,
+                px: 3,
+
+                bgcolor: "background.default",
+                width: "100%",
+            }}
+            id="template-list"
+        >
             <Box
                 display="flex"
+                flexDirection={{ xs: "column", sm: "row" }} // Stack on extra-small screens
                 justifyContent="space-between"
-                alignItems="center"
+                alignItems={{ xs: "stretch", sm: "center" }} // Align items differently on small screens
                 mb={3}
+                gap={2} // Add gap for spacing when stacked
             >
                 <TextField
                     placeholder="Search templates..."
@@ -104,13 +110,14 @@ const TemplateList: React.FC<TemplateListProps> = ({
                             ),
                         },
                     }}
-                    sx={{ width: 300 }}
+                    sx={{ width: { xs: "100%", sm: 300 } }} // Full width on extra-small screens
                 />
 
                 <ToggleButtonGroup
                     value={viewMode}
                     exclusive
                     onChange={handleViewChange}
+                    sx={{ alignSelf: { xs: "center", sm: "auto" } }} // Center toggle buttons when stacked
                 >
                     <ToggleButton value="card">
                         <ViewModuleIcon />

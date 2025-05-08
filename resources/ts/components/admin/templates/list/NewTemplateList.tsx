@@ -153,17 +153,12 @@ const NewTemplateList: React.FC = () => {
             />
 
             {!isMobile && (
-                <Box
-                    sx={{
-                        flex: 1,
-                        position: "relative",
-                    }}
-                >
+
                     <SplitPane
                         orientation="vertical"
                         firstPane={{
                             visible: open,
-                            minRatio: 0.2,
+                            minRatio: 0.1,
                         }}
                         secondPane={{
                             visible: true,
@@ -174,6 +169,7 @@ const NewTemplateList: React.FC = () => {
                                 cursor: "col-resize",
                             },
                         }}
+                        
                     >
                         <Paper
                             sx={{
@@ -188,15 +184,12 @@ const NewTemplateList: React.FC = () => {
                         >
                             <CategoryTree />
                         </Paper>
-                        <Main>
-                            <TemplateList
-                                templates={
-                                    currentCategory?.templates || allTemplates
-                                }
-                            />
-                        </Main>
+                        <TemplateList
+                            templates={
+                                currentCategory?.templates || allTemplates
+                            }
+                        />
                     </SplitPane>
-                </Box>
             )}
 
             {isMobile && (
