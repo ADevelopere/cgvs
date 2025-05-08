@@ -16,6 +16,7 @@ import CardView from "./views/CardView";
 import ListView from "./views/ListView";
 import GridView from "./views/GridView";
 import { Template } from "@/graphql/generated/types";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 type ViewMode = "card" | "grid" | "list";
 
@@ -25,7 +26,8 @@ type TemplateListProps = {
 };
 
 const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
-    console.log("TemplateList", templates);
+    const strings = useAppTranslation("templateCategoryTranslations");
+
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
         const savedViewMode = localStorage.getItem("templateListViewMode");
@@ -68,8 +70,8 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
                     <Box p={3} textAlign="center">
                         <Typography color="textSecondary">
                             {searchQuery
-                                ? "No templates found matching your search."
-                                : "No templates found. Create your first template to get started."}
+                                ? strings.noTemplatesFoundSearch
+                                : strings.noTemplatesFoundCreate}
                         </Typography>
                     </Box>
                 </Paper>
@@ -92,6 +94,9 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
                 ...style,
                 bgcolor: "background.default",
                 width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
             }}
         >
             <Box
@@ -103,7 +108,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
                 gap={2} // Add gap for spacing when stacked
             >
                 <TextField
-                    placeholder="Search templates..."
+                    placeholder={strings.searchTemplatesPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     slotProps={{

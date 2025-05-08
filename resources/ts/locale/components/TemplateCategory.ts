@@ -33,6 +33,8 @@ type TemplateCategoryTranslation = {
     delete: string;
     more: string;
     manage: string;
+    manageButton: string;
+    manageTemplateButtonTitle: string;
     
     // Sorting options
     nameAsc: string;
@@ -126,6 +128,22 @@ type TemplateCategoryTranslation = {
     // Category editing
     description: string;
     parentCategory: string;
+
+    // Template list search and empty states
+    searchTemplatesPlaceholder: string;
+    noTemplatesFoundSearch: string;
+    noTemplatesFoundCreate: string;
+
+    // List view column headers
+    columnBackground: string;
+    columnName: string;
+    columnDescription: string;
+    columnCreated: string;
+    columnActions: string;
+    createdLabel: string;
+    
+    // List view actions
+    buttonManage: string;
 };
 
 export default TemplateCategoryTranslation;

@@ -12,22 +12,21 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { useTemplate } from "@/contexts/template/TemplatesContext";
 import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
-
+import useAppTranslation from "@/locale/useAppTranslation";
 interface GridViewProps {
     templates: Template[];
 }
 
 const GridView: React.FC<GridViewProps> = ({ templates }) => {
+    const strings = useAppTranslation("templateCategoryTranslations");
     const { manageTemplate } = useTemplate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
     // Responsive columns
     const getCols = () => {
         if (isMobile) return 1;
-        if (isTablet) return 2;
-        return 4;
+        return 2;
     };
 
     return (
@@ -42,6 +41,7 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                 "& .MuiImageList-root": {
                     padding: 0,
                 },
+                paddingInlineEnd: 1,
             }}
         >
             {templates.map((template) => (
@@ -51,6 +51,7 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                         // Ensure consistent item size
                         width: "100% !important",
                         height: "auto !important",
+                        minHeight: 200,
                         // Add some spacing between items
                         mb: 2,
                         // Ensure proper border radius
@@ -60,10 +61,12 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                 >
                     <Box
                         sx={{
-                            position: "relative",
                             paddingTop: "56.25%" /* 16:9 aspect ratio */,
                             width: "100%",
                             backgroundColor: "grey.100",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                         }}
                     >
                         <img
@@ -107,11 +110,14 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                                     padding: { xs: 1, sm: 1.5 },
                                 }}
                                 onClick={() => manageTemplate(template.id)}
-                                title="Manage template"
+                                title={strings.manageTemplateButtonTitle}
                             >
                                 <SettingsIcon
                                     sx={{
-                                        fontSize: { xs: "1.2rem", sm: "1.5rem" },
+                                        fontSize: {
+                                            xs: "1.2rem",
+                                            sm: "1.5rem",
+                                        },
                                     }}
                                 />
                             </IconButton>

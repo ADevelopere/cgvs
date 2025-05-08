@@ -37,6 +37,7 @@ const templateCategory: TemplateCategoryTranslation = {
     restoreTemplate: "استعادة القالب",
     description: "الوصف",
     parentCategory: "الفئة الرئيسية",
+    manageTemplateButtonTitle: "إدارة القالب",
 
     // Sorting options
     sort: "فرز",
@@ -127,6 +128,24 @@ const templateCategory: TemplateCategoryTranslation = {
     failedToGenerateContent: "فشل في إنشاء محتوى القالب",
     templateIdRequired: "معرف القالب مطلوب",
     templateNotFound: "لم يتم العثور على القالب",
+
+    // Template list search and empty states
+    searchTemplatesPlaceholder: "البحث في القوالب...",
+    noTemplatesFoundSearch: "لا توجد قوالب تطابق بحثك.",
+    noTemplatesFoundCreate: "لا توجد قوالب. أنشئ قالبك الأول للبدء.",
+
+    // List view column headers
+    columnBackground: "الخلفية",
+    columnName: "الاسم",
+    columnDescription: "الوصف",
+    columnCreated: "تاريخ الإنشاء",
+    columnActions: "الإجراءات",
+
+    // List view actions
+    buttonManage: "إدارة",
+
+    // Card view strings
+    createdLabel: "تم الإنشاء: ",
 };
 
 export default templateCategory;
