@@ -23,15 +23,18 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
     return (
         <Grid container spacing={3}>
             {templates.map((template) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
+                <Grid size={{ xs: 16, sm: 6, md: 4 }} key={template.id}>
                     <Card>
                         <CardMedia
                             component="img"
-                            height="200"
                             image={
-                                template.background_url || "/placeholder.png"
+                                template.background_url || "/storage/img/default-template-bg.png"
                             }
                             alt={template.name}
+                            sx={{
+                                height: { xs: 140, sm: 170, md: 200 },
+                                objectFit: "cover",
+                            }}
                         />
                         <CardContent>
                             <Typography
@@ -48,6 +51,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                                 variant="caption"
                                 color="text.secondary"
                                 sx={{ mt: 1, display: "block" }}
+                                 gutterBottom
                             >
                                 Created: {formatDate(template.created_at)}
                             </Typography>

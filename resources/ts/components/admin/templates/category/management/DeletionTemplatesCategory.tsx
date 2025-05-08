@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Paper, Box, Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { formatDate } from "@/utils/dateUtils";
