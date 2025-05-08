@@ -57,6 +57,7 @@ type ResizerProps = {
 // SplitPaneProps defines a type for all props
 type SplitPaneProps = {
   allowResize?: boolean;
+  // dont provide null children, provide two children
   children: ReactNode[];
   className?: string;
   primary?: "first" | "second";
