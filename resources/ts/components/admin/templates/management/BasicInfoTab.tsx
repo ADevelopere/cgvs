@@ -19,7 +19,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
-import StyledScrollBox from "@/components/common/StyledScrollBox";
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
@@ -38,7 +37,6 @@ const BasicInfoTab: React.FC = () => {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
-        status: "draft",
     });
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -50,7 +48,6 @@ const BasicInfoTab: React.FC = () => {
             setFormData({
                 name: template.name || "",
                 description: template.description || "",
-                status: "draft", // You might want to map this from template if you have a status field
             });
         }
     }, [template]);
@@ -66,21 +63,18 @@ const BasicInfoTab: React.FC = () => {
         const originalData = {
             name: template?.name || "",
             description: template?.description || "",
-            status: template?.status || "draft",
             background: template?.background_url || null,
         };
 
         const currentData = {
             name: formData.name,
             description: formData.description,
-            status: formData.status,
             background: preview,
         };
 
         const hasChanges =
             originalData.name !== currentData.name ||
             originalData.description !== currentData.description ||
-            originalData.status !== currentData.status ||
             originalData.background !== currentData.background;
 
         setUnsavedChanges(hasChanges);
@@ -107,13 +101,6 @@ const BasicInfoTab: React.FC = () => {
         setPreview(null);
     };
 
-    const handleStatusChange = (e: SelectChangeEvent<string>): void => {
-        setFormData((prev) => ({
-            ...prev,
-            status: e.target.value,
-        }));
-    };
-
     const handleSnackbarClose = () => {
         setSnackbar((prev) => ({ ...prev, open: false }));
     };
@@ -127,7 +114,6 @@ const BasicInfoTab: React.FC = () => {
             const formDataToSend = new FormData();
             formDataToSend.append("name", formData.name);
             formDataToSend.append("description", formData.description);
-            formDataToSend.append("status", formData.status);
 
             // If there's a file input change and preview is set, get the file
             const fileInput = document.querySelector(
@@ -163,7 +149,6 @@ const BasicInfoTab: React.FC = () => {
         setFormData({
             name: template?.name || "",
             description: template?.description || "",
-            status: "draft",
         });
         setPreview(template?.background_url || null);
         setError(null);
@@ -260,21 +245,6 @@ const BasicInfoTab: React.FC = () => {
                     value={formData.description}
                     onChange={handleInputChange}
                 />
-
-                <FormControl fullWidth margin="normal">
-                    <InputLabel id="status-label">Status</InputLabel>
-                    <Select
-                        labelId="status-label"
-                        id="status"
-                        value={formData.status}
-                        label="Status"
-                        onChange={handleStatusChange}
-                    >
-                        <MenuItem value="draft">Draft</MenuItem>
-                        <MenuItem value="active">Active</MenuItem>
-                        <MenuItem value="archived">Archived</MenuItem>
-                    </Select>
-                </FormControl>
 
                 {preview ? (
                     <Card sx={{ mt: 3, position: "relative" }}>

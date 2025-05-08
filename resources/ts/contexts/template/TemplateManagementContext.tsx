@@ -7,8 +7,6 @@ import React, {
     useEffect,
 } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import axios from "@/utils/axios";
-import { Template, TemplateConfig } from "./template.types";
 import {
     Box,
     CircularProgress,
@@ -18,7 +16,14 @@ import {
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { useTemplate } from "./TemplatesContext";
+import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
+import {
+    Template,
+    TemplateConfig,
+    TemplateConfigQuery,
+} from "@/graphql/generated/types";
+import { useTemplateGraphQL } from "./TemplateGraphQLContext";
+import { mapTemplateConfig } from "@/utils/template/template-mappers";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -32,7 +37,8 @@ export interface TabError {
 }
 
 const defaultConfig: TemplateConfig = {
-    maxFileSize: 2048, // Default 2MB in KB
+    maxBackgroundSize: 5125048, // Default 2MB in KB
+    allowedFileTypes: ["image/jpeg", "image/png"],
 };
 
 interface TemplateManagementContextType {
@@ -49,9 +55,6 @@ interface TemplateManagementContextType {
     setUnsavedChanges: (hasChanges: boolean) => void;
     setTabError: (tab: TemplateManagementTabType, error: TabError) => void;
     clearTabError: (tab: TemplateManagementTabType) => void;
-    fetchTemplate: (id: number) => Promise<void>;
-    fetchConfig: () => Promise<void>;
-    saveTemplate: (data: FormData) => Promise<void>;
 }
 
 const TemplateManagementContext = createContext<
@@ -63,13 +66,17 @@ export const TemplateManagementProvider: React.FC<{
 }> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const { id } = useParams<{ id: string }>();
-    const { templateToManage } = useTemplate();
+    const { allTemplates, templateToManage, fetchCategories } = useTemplateCategoryManagement();
+    const { templateConfigQuery } = useTemplateGraphQL();
 
     const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
 
-    const [activeTab, setActiveTab] = useState<TemplateManagementTabType>("basic");
+    const [activeTab, setActiveTab] =
+        useState<TemplateManagementTabType>("basic");
     const [unsavedChanges, setUnsavedChanges] = useState(false);
-    const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>([]);
+    const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>(
+        [],
+    );
     const [error, setError] = useState<string | undefined>(undefined);
     const [tabErrors, setTabErrors] = useState<
         Record<TemplateManagementTabType, TabError | undefined>
@@ -88,7 +95,8 @@ export const TemplateManagementProvider: React.FC<{
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const tab = (searchParams.get("tab") || "basic") as TemplateManagementTabType;
+        const tab = (searchParams.get("tab") ||
+            "basic") as TemplateManagementTabType;
         setActiveTab(tab);
     }, [searchParams]);
 
@@ -98,104 +106,78 @@ export const TemplateManagementProvider: React.FC<{
         );
     }, []);
 
-    const handleSetTabError = useCallback((tab: TemplateManagementTabType, error: TabError) => {
-        setTabErrors((prev) => ({
-            ...prev,
-            [tab]: error,
-        }));
-    }, []);
+    const handleSetTabError = useCallback(
+        (tab: TemplateManagementTabType, error: TabError) => {
+            setTabErrors((prev) => ({
+                ...prev,
+                [tab]: error,
+            }));
+        },
+        [],
+    );
 
-    const handleClearTabError = useCallback((tab: TemplateManagementTabType) => {
-        setTabErrors((prev) => ({
-            ...prev,
-            [tab]: undefined,
-        }));
-    }, []);
-
-    const fetchTemplate = useCallback(async (id: number) => {
-        setLoading(true);
-        try {
-            const response = await axios.get<Template>(
-                `/admin/templates/${id}`,
-            );
-            settemplate(response.data);
-            setLoading(false);
-        } catch (error: any) {
-            setError(
-                error.response?.data?.message || "Failed to fetch template",
-            );
-            setLoading(false);
-        }
-    }, []);
+    const handleClearTabError = useCallback(
+        (tab: TemplateManagementTabType) => {
+            setTabErrors((prev) => ({
+                ...prev,
+                [tab]: undefined,
+            }));
+        },
+        [],
+    );
 
     useEffect(() => {
+        setLoading(true);
         if (templateToManage) {
             settemplate(templateToManage);
         }
         if (id && !templateToManage) {
-            fetchTemplate(parseInt(id, 10));
+            const template = allTemplates.find((t) => t.id === id, 10);
+            if (!template) {
+                setError("Template not found");
+                console.error("Template not found");
+                setLoading(false);
+                return;
+            }
+            settemplate(template);
         }
-    }, [id, fetchTemplate]);
+        setLoading(false);
+    }, [id]);
 
     const fetchConfig = useCallback(async () => {
         try {
-            const response = await axios.get<TemplateConfig>(
-                "/admin/templates/config",
-            );
-            setConfig(response.data);
+            const data: TemplateConfigQuery = await templateConfigQuery();
+            if (data) {
+                const config = mapTemplateConfig(data);
+                setConfig(config);
+            } else {
+                setError("Failed to fetch template config");
+                setTabErrors((prev) => ({
+                    ...prev,
+                    basic: {
+                        message: "Failed to fetch template config",
+                    },
+                }));
+            }
         } catch (error: any) {
-            // setError(error.response?.data?.message || "Failed to fetch config");
+            setError(
+                error.response?.data?.message ||
+                    "Failed to fetch template config",
+            );
             setTabErrors((prev) => ({
                 ...prev,
                 basic: {
                     message:
                         error.response?.data?.message ||
-                        "Failed to fetch config",
+                        "Failed to fetch template config",
                 },
             }));
         }
-    }, []);
+    }, [templateConfigQuery]);
 
     useEffect(() => {
-        fetchConfig().catch((error: Error) => {
-            console.error("Error fetching config:", error);
-        });
+        fetchConfig();
     }, [fetchConfig]);
-
-    const saveTemplate = useCallback(
-        async (formData: FormData) => {
-            try {
-                const url = template
-                    ? `/admin/templates/${template.id}`
-                    : "/admin/templates";
-                const method = "post";
-
-                // Add _method field for Laravel to handle PUT requests if it's an update
-                if (template) {
-                    formData.append("_method", "PUT");
-                }
-
-                const response = await axios({
-                    method,
-                    url,
-                    data: formData,
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
-
-                settemplate(response.data);
-                setUnsavedChanges(false);
-                return response.data;
-            } catch (error: any) {
-                throw new Error(
-                    error.response?.data?.message ||
-                        "An error occurred while saving the template",
-                );
-            }
-        },
-        [template],
-    );
 
     const value = useMemo(
         () => ({
@@ -212,9 +194,6 @@ export const TemplateManagementProvider: React.FC<{
             setUnsavedChanges,
             setTabError: handleSetTabError,
             clearTabError: handleClearTabError,
-            fetchTemplate,
-            fetchConfig,
-            saveTemplate,
         }),
         [
             activeTab,
@@ -227,8 +206,6 @@ export const TemplateManagementProvider: React.FC<{
             handleSetTabLoaded,
             handleSetTabError,
             handleClearTabError,
-            fetchTemplate,
-            saveTemplate,
         ],
     );
 
@@ -279,18 +256,14 @@ export const TemplateManagementProvider: React.FC<{
                     <Typography color="text.secondary" sx={{ mb: 3 }}>
                         {error}
                     </Typography>
-                    <Button
+                    {/* <Button
                         variant="contained"
                         startIcon={<RefreshIcon />}
                         onClick={() => {
-                            setError(undefined);
-                            if (id) {
-                                fetchTemplate(parseInt(id, 10));
-                            }
                         }}
                     >
                         Try Again
-                    </Button>
+                    </Button> */}
                 </Paper>
             </Box>
         );

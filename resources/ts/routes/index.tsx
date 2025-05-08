@@ -8,7 +8,6 @@ import {
 import AdminLayout from "@/components/layouts/AdminLayout";
 import GuestLayout from "@/components/layouts/GuestLayout";
 import Login from "@/views/auth/Login";
-import TemplateCreate from "@/views/admin/templates/CreateTemplateView";
 import TemplateManagementPage from "@/views/admin/templates/TemplateManagementView";
 import Verify from "@/views/Verify";
 import RouteError from "@/components/common/RouteError";
@@ -83,10 +82,6 @@ const routes: RouteObject[] = [
                     {
                         index: true,
                         element: <NewTemplateList />,
-                    },
-                    {
-                        path: "create",
-                        element: <TemplateCreate />,
                     },
                     {
                         path: ":id/manage",
