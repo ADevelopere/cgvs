@@ -55,6 +55,10 @@ const ToggleSideBarButton: React.FC<{
                 edge="start"
                 color="inherit"
                 aria-label="toggle sidebar"
+                sx={{
+                    transition: "transform 0.3s ease-in-out",
+                    transform: open ? "rotate(180deg)" : "rotate(0deg)",
+                }}
             >
                 {open ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
@@ -198,6 +202,9 @@ const NewTemplateList: React.FC = () => {
                 <Main>
                     <TemplateList
                         templates={currentCategory?.templates || allTemplates}
+                        style={{
+                            paddingInlineStart: 2,
+                        }}
                     />
                 </Main>
             )}
