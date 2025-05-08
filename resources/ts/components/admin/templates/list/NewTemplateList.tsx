@@ -2,13 +2,13 @@ import {
     Box,
     Drawer,
     IconButton,
+    Paper,
     styled,
     Typography,
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import { useState } from "react";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import React, { useState } from "react";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { TemplateCategory } from "@/graphql/generated/types";
 import { Folder, X } from "lucide-react";
@@ -16,42 +16,58 @@ import { TreeView } from "@/components/common/TreeView";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
-import { T } from "vitest/dist/chunks/reporters.d.DG9VKi4m.js";
 import TemplateList from "./TemplateList";
+import SplitPane from "@/components/splitPane/SplitPane";
 
 const drawerWidth = 240;
 
 const Main = styled("main", {
     shouldForwardProp: (prop) => prop !== "open" && prop !== "sideBarWidth",
-})<{
-    open?: boolean;
-    sideBarWidth: number;
-}>(({ theme, open, sideBarWidth }) => ({
+})(({ theme }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
-    transition: theme.transitions.create(
-        theme.direction === "rtl" ? "margin-right" : "margin-left",
-        {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.standard,
-        },
-    ),
-    ...(theme.direction === "rtl"
-        ? {
-              marginRight: open
-                  ? `${sideBarWidth + drawerWidth}px`
-                  : `${sideBarWidth}px`,
-          }
-        : {
-              marginLeft: open
-                  ? `${sideBarWidth + drawerWidth}px`
-                  : `${sideBarWidth}px`,
-          }),
 }));
+
+const ToggleSideBarButton: React.FC<{
+    open?: boolean;
+    toggleSidebar: () => void;
+    dashboardsidebarState: string;
+    zIndex: number;
+    isMobile: boolean;
+}> = ({ open, toggleSidebar, dashboardsidebarState, isMobile, zIndex }) => {
+    if (dashboardsidebarState === "expanded" && isMobile) {
+        return null;
+    }
+    return (
+        <Box
+            sx={{
+                width: { xs: 48, sm: 72 },
+                display: "flex",
+                justifyContent: "center",
+                position: "fixed",
+                zIndex: zIndex,
+                minHeight: 48,
+                alignItems: "center",
+            }}
+        >
+            <IconButton
+                onClick={toggleSidebar}
+                edge="start"
+                color="inherit"
+                aria-label="toggle sidebar"
+            >
+                {open ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+        </Box>
+    );
+};
 
 const RenderCategoryItem: React.FC<{
     category: TemplateCategory;
-}> = ({ category }) => {
+    onClick: (category: TemplateCategory) => void;
+    selected: boolean;
+    selectedColor?: string;
+}> = ({ category, onClick, selected, selectedColor }) => {
     return (
         <Box
             sx={{
@@ -59,23 +75,64 @@ const RenderCategoryItem: React.FC<{
                 flexDirection: "row",
                 gap: 1,
                 alignItems: "center",
+                backgroundColor: selected ? selectedColor : "inherit",
+                px: 0,
+                paddingInline: 1,
+                borderRadius: 2,
+            }}
+            onClick={() => {
+                onClick(category);
             }}
         >
             {category.childCategories.length > 0 && <Folder />}
-            <Typography>{category.name}</Typography>
+            <Typography
+                sx={{
+                    minWidth: "max-content",
+                }}
+            >
+                {category.name}
+            </Typography>
         </Box>
     );
 };
 
-const NewTemplateList: React.FC = () => {
-    const {
-        headerHeight,
-        sideBarWidth,
-        sidebarState: dashboardsidebarState,
-    } = useDashboardLayout();
+const CategoryTree: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
-    const { regularCategories, allTemplates, currentCategory } =
+    const theme = useTheme();
+    const { regularCategories, currentCategory, trySelectCategory } =
         useTemplateCategoryManagement();
+    return (
+        <TreeView
+            style={{
+                display: "flex",
+                padding: theme.spacing(0, 1),
+                // height: `${headerHeight}px`,
+                paddingInlineStart: 6,
+                justifyContent: "start",
+            }}
+            items={regularCategories}
+            itemRenderer={(item: TemplateCategory) => (
+                <RenderCategoryItem
+                    category={item}
+                    onClick={trySelectCategory}
+                    selected={currentCategory?.id === item.id}
+                    selectedColor={theme.palette.action.focus}
+                />
+            )}
+            childrenKey="childCategories"
+            labelKey="name"
+            noItemsMessage={strings.noCategories}
+            searchText={strings.filter}
+            header={strings.categories}
+        />
+    );
+};
+
+const NewTemplateList: React.FC = () => {
+    const { headerHeight, sidebarState: dashboardsidebarState } =
+        useDashboardLayout();
+    const { allTemplates, currentCategory } = useTemplateCategoryManagement();
+
     const [open, setOpen] = useState(true);
     const theme = useTheme();
 
@@ -85,44 +142,72 @@ const NewTemplateList: React.FC = () => {
         setOpen((prev) => !prev);
     };
 
-    const ToggleSideBarButton: React.FC = () => {
-        if (dashboardsidebarState === "expanded" && isMobile) {
-            return null;
-        }
-        return (
-            <Box
-                sx={{
-                    width: { xs: 48, sm: 72 },
-                    display: "flex",
-                    justifyContent: "center",
-                    position: "fixed",
-                    zIndex: theme.zIndex.drawer + 1,
-                    minHeight: 48,
-                    alignItems: "center",
-                }}
-            >
-                <IconButton
-                    onClick={toggleSidebar}
-                    edge="start"
-                    color="inherit"
-                    aria-label="toggle sidebar"
-                >
-                    {open ? <CloseIcon /> : <MenuIcon />}
-                </IconButton>
-            </Box>
-        );
-    };
-
     return (
-        <Box sx={{display: "flex", flexDirection: "row", height: "100%"}}>
-            <ToggleSideBarButton />
-            <Main open={open} sideBarWidth={sideBarWidth}>
-                <TemplateList
-                    templates={currentCategory?.templates || allTemplates}
-                />
-            </Main>
+        <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
+            <ToggleSideBarButton
+                open={open}
+                toggleSidebar={toggleSidebar}
+                dashboardsidebarState={dashboardsidebarState}
+                zIndex={theme.zIndex.drawer + 1}
+                isMobile={isMobile}
+            />
 
-            {open && (
+            {!isMobile && (
+                <Box
+                    sx={{
+                        flex: 1,
+                        position: "relative",
+                    }}
+                >
+                    <SplitPane
+                        orientation="vertical"
+                        firstPane={{
+                            visible: open,
+                            minRatio: 0.2,
+                        }}
+                        secondPane={{
+                            visible: true,
+                            minRatio: 0.5,
+                        }}
+                        resizerProps={{
+                            style: {
+                                cursor: "col-resize",
+                            },
+                        }}
+                    >
+                        <Paper
+                            sx={{
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: 2,
+                                justifyContent: "start",
+                                alignItems: "start",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <CategoryTree />
+                        </Paper>
+                        <Main>
+                            <TemplateList
+                                templates={
+                                    currentCategory?.templates || allTemplates
+                                }
+                            />
+                        </Main>
+                    </SplitPane>
+                </Box>
+            )}
+
+            {isMobile && (
+                <Main>
+                    <TemplateList
+                        templates={currentCategory?.templates || allTemplates}
+                    />
+                </Main>
+            )}
+
+            {open && isMobile && (
                 <Drawer
                     sx={{
                         position: "fixed",
@@ -143,29 +228,7 @@ const NewTemplateList: React.FC = () => {
                     anchor={"left"}
                     open={open}
                 >
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            padding: theme.spacing(0, 1),
-                            height: `${headerHeight}px`,
-                            paddingInlineStart: 6,
-                        }}
-                    >
-                        <Typography variant="h6" noWrap component="div">
-                            {strings.categories}
-                        </Typography>
-                    </Box>
-                    <TreeView
-                        items={regularCategories}
-                        itemRenderer={(item: TemplateCategory) => (
-                            <RenderCategoryItem category={item} />
-                        )}
-                        childrenKey="childCategories"
-                        labelKey="name"
-                        noItemsMessage={strings.noCategories}
-                        searchText={strings.filter}
-                    />
+                    <CategoryTree />
                 </Drawer>
             )}
         </Box>

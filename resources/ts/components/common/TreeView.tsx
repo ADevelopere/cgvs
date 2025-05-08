@@ -39,6 +39,7 @@ export function TreeView<T extends BaseTreeItem>({
     header,
     noItemsMessage,
     searchText,
+    style,
 }: {
     items: T[];
     onSelectItem?: (item: T) => void;
@@ -51,6 +52,7 @@ export function TreeView<T extends BaseTreeItem>({
     header?: string;
     noItemsMessage: string;
     searchText: string;
+    style: React.CSSProperties;
 }) {
     const { isRtl } = useAppTheme();
 
@@ -81,8 +83,9 @@ export function TreeView<T extends BaseTreeItem>({
                     variant="body2"
                     noWrap
                     sx={{
-                        flexGrow: 1,
                         fontWeight: isSelected ? 500 : 400,
+                        minWidth: "max-content", // Set minimum width to content size
+                        textWrap: "balance"
                     }}
                 >
                     {typeof itemLabel === "string"
@@ -318,6 +321,7 @@ export function TreeView<T extends BaseTreeItem>({
                     width: "100%",
                     gap: 2,
                     borderColor: "divider",
+                    ...style,
                 }}
             >
                 {header && (
