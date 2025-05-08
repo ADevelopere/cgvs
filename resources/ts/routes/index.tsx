@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
 import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
 import GraphiQLApp from "@/views/GraphiQL";
-import NewTemplateList from "@/components/admin/templates/list/NewTemplateList";
+import NewTemplateList from "@/components/admin/templates/list/TemplateListContainer";
 
 interface WithAuthProps {
     children: React.ReactNode;

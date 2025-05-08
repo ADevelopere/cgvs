@@ -16,7 +16,7 @@ import { TreeView } from "@/components/common/TreeView";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
-import TemplateList from "./TemplateList";
+import TemplateList from "./TemplateListContent";
 import SplitPane from "@/components/splitPane/SplitPane";
 
 const drawerWidth = 240;

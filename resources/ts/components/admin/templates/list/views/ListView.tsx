@@ -19,6 +19,7 @@ import { formatDate } from "@/utils/dateUtils";
 import { useTemplate } from "@/contexts/template/TemplatesContext";
 import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface ListViewProps {
     templates: Template[];
@@ -27,27 +28,32 @@ interface ListViewProps {
 const ListView: React.FC<ListViewProps> = ({ templates }) => {
     const { manageTemplate } = useTemplate();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const strings = useAppTranslation("templateCategoryTranslations");
 
     return (
         <TableContainer component={Paper}>
             <Table size={isMobile ? "small" : "medium"}>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ width: isMobile ? "30%" : "15%" }}>
-                            Background
-                        </TableCell>
+                        <TableCell
+                            sx={{ width: isMobile ? "30%" : "5%" }}
+                        ></TableCell>
                         <TableCell sx={{ width: isMobile ? "50%" : "20%" }}>
-                            Name
+                            {strings.columnName}
                         </TableCell>
                         {!isMobile && (
                             <>
-                                <TableCell width="35%">Description</TableCell>
-                                <TableCell width="15%">Created</TableCell>
+                                <TableCell width="35%">
+                                    {strings.columnDescription}
+                                </TableCell>
+                                <TableCell width="20%">
+                                    {strings.columnCreated}
+                                </TableCell>
                             </>
                         )}
                         <TableCell sx={{ width: isMobile ? "20%" : "15%" }}>
-                            Actions
+                            {strings.columnActions}
                         </TableCell>
                     </TableRow>
                 </TableHead>
@@ -114,30 +120,19 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
                                 </>
                             )}
                             <TableCell>
-                                {isMobile ? (
-                                    <IconButton
-                                        size="small"
-                                        onClick={() =>
-                                            manageTemplate(template.id)
-                                        }
-                                        sx={{ padding: 1 }}
-                                    >
-                                        <SettingsIcon fontSize="small" />
-                                    </IconButton>
-                                ) : (
-                                    <Button
-                                        size="medium"
-                                        startIcon={<SettingsIcon />}
-                                        onClick={() =>
-                                            manageTemplate(template.id)
-                                        }
-                                        sx={{
-                                            minWidth: { sm: "100px" },
-                                        }}
-                                    >
-                                        Manage
-                                    </Button>
-                                )}
+                                <Button
+                                    size="medium"
+                                    startIcon={<SettingsIcon />}
+                                    onClick={() => manageTemplate(template.id)}
+                                    sx={{
+                                        minWidth: { sm: "100px" },
+                                        justifyContent: "start",
+                                    }}
+                                >
+                                    {!isMobile
+                                        ? strings.buttonManage
+                                        : undefined}
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
