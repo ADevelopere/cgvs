@@ -41,7 +41,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                         <CardMedia
                             component="img"
                             image={
-                                template.background_url ||
+                                template.image_url ||
                                 TEMPLATE_IMAGE_PLACEHOLDER_URL
                             }
                             alt={template.name}

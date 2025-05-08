@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const UPDATE_TEMPLATE = gql`
-mutation updateTemplate($id: ID!, $input: UpdateTemplateInput!){
-    updateTemplate(id: $id, input: $input){
+export const UPDATE_TEMPLATE_WITH_IMAGE = gql`
+mutation updateTemplateWithImage($id: ID!, $input: UpdateTemplateWithImageInput!){
+    updateTemplateWithImage(id: $id, input: $input){
         id
         name
         description

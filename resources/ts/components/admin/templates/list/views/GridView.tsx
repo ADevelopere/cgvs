@@ -71,7 +71,7 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                     >
                         <img
                             src={
-                                template.background_url ||
+                                template.image_url ||
                                 TEMPLATE_IMAGE_PLACEHOLDER_URL
                             }
                             alt={template.name}

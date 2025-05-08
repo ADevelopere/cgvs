@@ -25,8 +25,8 @@ class TemplateService
     {
         $templates = Template::all();
         return $templates->transform(function ($template) {
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
             }
             return $template;
         });
@@ -50,7 +50,7 @@ class TemplateService
                 'description' => $input->description,
                 'categoryId' => $input->categoryId,
                 'order' => $input->order,
-                'backgroundImage' => $input->backgroundImage ? $input->backgroundImage->getClientOriginalName() : null
+                'image' => $input->image ? $input->image->getClientOriginalName() : null
             ]
         ]);
 
@@ -91,13 +91,13 @@ class TemplateService
 
             $template->order = Template::where('category_id', $input->categoryId)->max('order') + 1;
 
-            if ($input->backgroundImage && $input->backgroundImage->isValid()) {
+            if ($input->image && $input->image->isValid()) {
                 Log::info('Processing background file for template');
-                $path = $input->backgroundImage->store('template_backgrounds', 'public');
+                $path = $input->image->store('template_backgrounds', 'public');
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
-                $template->background_url = $path;
+                $template->image_url = $path;
             }
 
             Log::info('Saving template', [
@@ -110,8 +110,8 @@ class TemplateService
                 'template_id' => $template->id
             ]);
 
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
             }
 
             return $template;
@@ -124,7 +124,7 @@ class TemplateService
         }
     }
 
-    /**
+        /**
      * Update an existing template.
      *
      * @param Template $template
@@ -133,6 +133,88 @@ class TemplateService
      * @throws ValidationException|TemplateStorageException
      */
     public static function updateTemplate(Template $template, UpdateTemplateInput $input): ?Template
+    {
+        // Validate name if provided
+        if ($input->name !== null) {
+            if (strlen($input->name) < 3 || strlen($input->name) > 255) {
+                throw ValidationException::withMessages([
+                    'name' => ['The template name must be between 3 and 255 characters.']
+                ]);
+            }
+        }
+
+        // Validate category if changing it
+        if ($input->categoryId !== null && $input->categoryId !== $template->category_id) {
+            if (!($category = TemplateCategory::find($input->categoryId))) {
+                throw ValidationException::withMessages([
+                    'category_id' => ['The selected category does not exist.']
+                ]);
+            }
+
+            // Validate not deletion category
+            [$valid, $message] = TemplateCategoryValidator::validateNotDeletionCategory($input->categoryId);
+            if (!$valid) {
+                throw ValidationException::withMessages([
+                    'category_id' => [$message]
+                ]);
+            }
+        }
+
+        // Validate order if provided
+        if ($input->order !== null && $input->order < 0) {
+            throw ValidationException::withMessages([
+                'order' => ['The order must be at least 0.']
+            ]);
+        }
+
+        try {
+            if ($input->name !== null) {
+                $template->name = $input->name;
+            }
+            if ($input->description !== null) {
+                $template->description = $input->description;
+            }
+
+            if ($input->categoryId !== null && $input->categoryId !== $template->category_id) {
+                $newCategory = TemplateCategory::findOrFail($input->categoryId);
+
+                if (!$newCategory->isDeletionCategory()) {
+                    $template->category_id = $input->categoryId;
+                    if ($input->order === null) {
+                        $template->order = Template::where('category_id', $input->categoryId)
+                            ->max('order') + 1;
+                    }
+                }
+            }
+
+            if ($input->order !== null) {
+                $currentCategory = TemplateCategory::findOrFail($template->category_id);
+                if (!$currentCategory->isDeletionCategory()) {
+                    $template->order = $input->order;
+                }
+            }
+
+            $template->save();
+
+            return $template;
+        } catch (Exception $e) {
+            Log::error('Failed to update template', [
+                'error' => $e->getMessage(),
+                'template_id' => $template->id
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Update an existing template.
+     *
+     * @param Template $template
+     * @param UpdateTemplateWithImageInput $input
+     * @return Template
+     * @throws ValidationException|TemplateStorageException
+     */
+    public static function updateTemplateWithImage(Template $template, UpdateTemplateWithImageInput $input): ?Template
     {
         $config = TemplateConfig::fromConfig();
 
@@ -196,23 +278,19 @@ class TemplateService
                 }
             }
 
-            if ($input->backgroundImage && $input->backgroundImage->isValid()) {
-                if ($template->background_url) {
-                    Storage::disk('public')->delete($template->background_url);
+            if ($input->image && $input->image->isValid()) {
+                if ($template->image_url) {
+                    Storage::disk('public')->delete($template->image_url);
                 }
 
-                $path = $input->backgroundImage->store('template_backgrounds', 'public');
+                $path = $input->image->store('template_backgrounds', 'public');
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
-                $template->background_url = $path;
+                $template->image_url = $path;
             }
 
             $template->save();
-
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
-            }
 
             return $template;
         } catch (Exception $e) {
@@ -232,8 +310,8 @@ class TemplateService
      */
     public function getTemplate(Template $template): Template
     {
-        if ($template->background_url) {
-            $template->background_url = Storage::url($template->background_url);
+        if ($template->image_url) {
+            $template->image_url = Storage::url($template->image_url);
         }
         return $template;
     }
@@ -269,8 +347,8 @@ class TemplateService
         Log::info('Templates reordered successfully');
         
         return $templates->map(function ($template) {
-            if ($template->background_url) {
-                $template->background_url = Storage::url($template->background_url);
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
             }
             return $template;
         })->all();
@@ -299,8 +377,8 @@ class TemplateService
             'trashed_at' => $template->trashed_at
         ]);
 
-        if ($template->background_url) {
-            $template->background_url = Storage::url($template->background_url);
+        if ($template->image_url) {
+            $template->image_url = Storage::url($template->image_url);
         }
 
         return $template;
@@ -328,8 +406,8 @@ class TemplateService
             'trashed_at' => $template->trashed_at // Will be null after restore
         ]);
 
-        if ($template->background_url) {
-            $template->background_url = Storage::url($template->background_url);
+        if ($template->image_url) {
+            $template->image_url = Storage::url($template->image_url);
         }
 
         return $template;
@@ -347,13 +425,13 @@ class TemplateService
         Log::info('Attempting to permanently delete template', [
             'template_id' => $template->id,
             'template_name' => $template->name,
-            'background_url' => $template->background_url
+            'image_url' => $template->image_url
         ]);
 
         try {
             // Delete background file if it exists
-            if ($template->background_url) {
-                Storage::disk('public')->delete($template->background_url);
+            if ($template->image_url) {
+                Storage::disk('public')->delete($template->image_url);
             }
 
             // Store template data for return
@@ -367,8 +445,8 @@ class TemplateService
                 'template_name' => $template->name
             ]);
 
-            if ($deletedTemplate->background_url) {
-                $deletedTemplate->background_url = Storage::url($deletedTemplate->background_url);
+            if ($deletedTemplate->image_url) {
+                $deletedTemplate->image_url = Storage::url($deletedTemplate->image_url);
             }
 
             return $deletedTemplate;

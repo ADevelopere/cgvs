@@ -13,7 +13,6 @@ mutation updateTemplateCategory($id: ID!, $input: UpdateTemplateCategoryInput!){
         special_type
         created_at
         updated_at
-        deleted_at
     }
 }
 `;

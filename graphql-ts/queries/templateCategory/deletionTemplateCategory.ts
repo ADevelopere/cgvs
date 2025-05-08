@@ -11,7 +11,7 @@ query deletionTemplateCategory{
             id
             name
             description
-            background_url
+            image_url
             order
             created_at
             trashed_at

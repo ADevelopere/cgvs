@@ -36,9 +36,9 @@ function DownloadPdf() {
     });
 
     useEffect(() => {
-        if (template?.background_url) {
+        if (template?.image_url) {
             const img = new Image();
-            img.src = template.background_url;
+            img.src = template.image_url;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -46,7 +46,7 @@ function DownloadPdf() {
                 });
             };
         }
-    }, [template?.background_url]);
+    }, [template?.image_url]);
 
     const theme = useTheme();
     const { getNodes, getEdges } = useReactFlow(); // Get flow data access
@@ -70,14 +70,14 @@ function DownloadPdf() {
             const { width, height } = page.getSize();
 
             // Handle background image first
-            if (template?.background_url) {
+            if (template?.image_url) {
                 try {
                     // Convert image to bytes
-                    const imageBytes = await imageUrlToBytes(template.background_url);
+                    const imageBytes = await imageUrlToBytes(template.image_url);
                     
                     // Determine image type and embed accordingly
                     let pdfImage;
-                    if (template.background_url.toLowerCase().endsWith('.png')) {
+                    if (template.image_url.toLowerCase().endsWith('.png')) {
                         pdfImage = await pdfDoc.embedPng(imageBytes);
                     } else {
                         pdfImage = await pdfDoc.embedJpg(imageBytes);
@@ -98,7 +98,7 @@ function DownloadPdf() {
             // Draw nodes
             nodes.forEach(node => {
                 // Skip background image node as we've already handled it
-                if (node.type === 'backgroundImage') return;
+                if (node.type === 'image') return;
                 
                 const { position, data } = node;
                 const label: string = data.label as string || 'Node';

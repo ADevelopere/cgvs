@@ -2,8 +2,6 @@
 
 namespace App\Template;
 
-use Illuminate\Http\UploadedFile;
-
 readonly class UpdateTemplateInput
 {
     public function __construct(
@@ -11,6 +9,5 @@ readonly class UpdateTemplateInput
         public ?string $description = null,
         public ?string $categoryId = null,
         public ?int $order = null,
-        public ?UploadedFile $backgroundImage = null,
     ) {}
 }

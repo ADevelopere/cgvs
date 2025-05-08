@@ -7,7 +7,7 @@ query templates($first: Int!, $page: Int){
             id
             name
             description
-            background_url
+            image_url
             category{
                 id
             }

@@ -46,6 +46,7 @@ type TemplateCategoryTranslation = {
     cancel: string;
     add: string;
     save: string;
+    saving: string;
     retry: string;
     refresh: string;
     filter: string;
@@ -144,6 +145,17 @@ type TemplateCategoryTranslation = {
     
     // List view actions
     buttonManage: string;
+
+    // Template management tabs
+    tabBasicInfo: string;
+    tabVariables: string;
+    tabRecipients: string;
+    tabEditor: string;
+    tabPreview: string;
+
+    // basic info tab
+    recommendedImageSize: string;
+    uploadImage: string;
 };
 
 export default TemplateCategoryTranslation;

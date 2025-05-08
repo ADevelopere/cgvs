@@ -59,7 +59,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('background_url')->nullable();
+            $table->string('image_url')->nullable();
             $table->foreignId('category_id')
                 ->constrained('template_categories')
                 ->restrictOnDelete(); // Prevent deletion if has templates

@@ -29,6 +29,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { Template } from "@/graphql/generated/types";
 import TemplateEditDialog from "./TemplateEditDialog";
+import { mapTemplateToUpdateInput } from "@/utils/template/template-mappers";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
@@ -40,7 +41,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         trySelectCategory,
         setIsAddingTemplate,
         setOnNewTemplateCancel,
-        manageTemplate
+        manageTemplate,
     } = useTemplateCategoryManagement();
 
     const templates = currentCategory?.templates ?? [];
@@ -124,7 +125,10 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         }
 
         try {
-            updateTemplate({ ...template, name: newName });
+            updateTemplate({
+                id: template.id,
+                input: mapTemplateToUpdateInput({ ...template, name: newName }),
+            });
             return ""; // success
         } catch (error: any) {
             return error.message || strings.templateUpdateFailed;
@@ -142,7 +146,10 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     };
 
     const handleEditTemplate = (updatedTemplate: Template) => {
-        updateTemplate(updatedTemplate);
+        updateTemplate({
+            id: updatedTemplate.id,
+            input: mapTemplateToUpdateInput(updatedTemplate),
+        });
         setIsEditDialogOpen(false);
         setTemplateToEdit(null);
     };
@@ -172,7 +179,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                     flexDirection: "row",
                     width: "100%",
                     borderBottom: "1px solid",
-                    borderColor: 'divider',
+                    borderColor: "divider",
                 }}
             >
                 <Typography

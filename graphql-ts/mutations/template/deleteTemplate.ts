@@ -8,7 +8,6 @@ mutation deleteTemplate($id: ID!){
         category{
             id
         }
-        deleted_at
     }
 }
 `;

@@ -27,9 +27,9 @@ function DownloadImage() {
     });
 
     useEffect(() => {
-        if (template?.background_url) {
+        if (template?.image_url) {
             const img = new Image();
-            img.src = template.background_url;
+            img.src = template.image_url;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -37,7 +37,7 @@ function DownloadImage() {
                 });
             };
         }
-    }, [template?.background_url]);
+    }, [template?.image_url]);
 
     const { getNodes } = useReactFlow(); // Use getNodes from the hook
     const theme = useTheme();

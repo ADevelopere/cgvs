@@ -15,7 +15,7 @@ query flatTemplateCategories{
             id
             name
             description
-            background_url
+            image_url
             order
             trashed_at
             created_at

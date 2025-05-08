@@ -33,7 +33,7 @@ describe('template-mappers', () => {
         id: 'template1',
         name: 'Test Template',
         description: 'Test Description',
-        background_url: 'https://example.com/bg.jpg',
+        image_url: 'https://example.com/bg.jpg',
         order: 1,
         created_at: new Date('2025-01-01'),
         updated_at: new Date('2025-01-01'),
@@ -51,7 +51,7 @@ describe('template-mappers', () => {
                     id: 'new1',
                     name: 'New Template',
                     description: 'New Description',
-                    background_url: 'https://example.com/new.jpg',
+                    image_url: 'https://example.com/new.jpg',
                     order: 1,
                     created_at: '2025-01-01',
                     category: {
@@ -66,7 +66,7 @@ describe('template-mappers', () => {
             expect(result?.id).toBe('new1');
             expect(result?.name).toBe('New Template');
             expect(result?.description).toBe('New Description');
-            expect(result?.background_url).toBe('https://example.com/new.jpg');
+            expect(result?.image_url).toBe('https://example.com/new.jpg');
         });
 
         it('should map UpdateTemplateMutation with previous template', () => {
@@ -77,7 +77,7 @@ describe('template-mappers', () => {
                     id: mockTemplate.id,
                     name: 'Updated Name',
                     description: null,
-                    background_url: null,
+                    image_url: null,
                     order: null,
                     created_at: '2025-01-01',
                     updated_at: '2025-01-02',
@@ -95,7 +95,7 @@ describe('template-mappers', () => {
             expect(result?.id).toBe(mockTemplate.id);
             expect(result?.name).toBe('Updated Name');
             expect(result?.description).toBe(mockTemplate.description);
-            expect(result?.background_url).toBe(mockTemplate.background_url);
+            expect(result?.image_url).toBe(mockTemplate.image_url);
         });
 
         it('should map DeleteTemplateMutation with previous template', () => {
@@ -219,7 +219,7 @@ describe('template-mappers', () => {
             expect(result[1].order).toBe(1);
             // Check that other properties are preserved
             expect(result[0].description).toBe(mockTemplate.description);
-            expect(result[0].background_url).toBe(mockTemplate.background_url);
+            expect(result[0].image_url).toBe(mockTemplate.image_url);
         });
 
         it('should handle single template mutations in mapTemplates', () => {
@@ -230,7 +230,7 @@ describe('template-mappers', () => {
                     id: mockTemplate.id,
                     name: 'Updated Name',
                     description: null,
-                    background_url: null,
+                    image_url: null,
                     order: null,
                     created_at: '2025-01-01',
                     updated_at: '2025-01-02',
@@ -270,7 +270,7 @@ describe('template-mappers', () => {
                     id: mockTemplate.id,
                     name: 'Updated Name',
                     description: null,
-                    background_url: null,
+                    image_url: null,
                     order: null,
                     created_at: '2025-01-01',
                     updated_at: '2025-01-02',

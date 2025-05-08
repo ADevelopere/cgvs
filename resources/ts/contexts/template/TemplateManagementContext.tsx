@@ -48,7 +48,7 @@ interface TemplateManagementContextType {
     error: string | undefined;
     tabErrors: Record<TemplateManagementTabType, TabError | undefined>;
     config: TemplateConfig;
-    template: Template;
+    template: Template | undefined;
     loading: boolean;
     setActiveTab: (tab: TemplateManagementTabType) => void;
     setTabLoaded: (tab: TemplateManagementTabType) => void;
@@ -66,7 +66,8 @@ export const TemplateManagementProvider: React.FC<{
 }> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const { id } = useParams<{ id: string }>();
-    const { allTemplates, templateToManage, fetchCategories } = useTemplateCategoryManagement();
+    const { allTemplates, templateToManage, fetchCategories } =
+        useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
 
     const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
@@ -143,6 +144,16 @@ export const TemplateManagementProvider: React.FC<{
         }
         setLoading(false);
     }, [id]);
+
+    // update the template when allTemplates changes
+    useEffect(() => {
+        if (allTemplates && allTemplates.length > 0) {
+            const template = allTemplates.find((t) => t.id === id, 10);
+            if (template) {
+                settemplate(template);
+            }
+        }
+    }, [allTemplates]);
 
     const fetchConfig = useCallback(async () => {
         try {

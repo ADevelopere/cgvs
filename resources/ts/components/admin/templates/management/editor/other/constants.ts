@@ -3,14 +3,14 @@ import BackgroundImageNode from "../nodeRendere/BackgroundImageNode";
 import ImageNode from "../nodeRendere/ImageNode";
 
 export const nodeTypes: NodeTypes = {
-    backgroundImage: BackgroundImageNode,
+    image: BackgroundImageNode,
     image: ImageNode,
 };
 
 export const initialNodes: Node[] = [
     {
         id: "node-1",
-        type: "backgroundImage",
+        type: "image",
         position: { x: 0, y: 0 },
         data: {},
         resizing: false,

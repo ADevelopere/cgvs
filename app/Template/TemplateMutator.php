@@ -20,7 +20,7 @@ class TemplateMutator implements LighthouseMutation
             description: $args['description'] ?? null,
             categoryId: $args['categoryId'] ?? null,
             order: $args['order'] ?? null,
-            backgroundImage: $args['backgroundImage'] ?? null
+            image: $args['image'] ?? null
         );
 
         return TemplateService::createTemplate($input);
@@ -37,7 +37,6 @@ class TemplateMutator implements LighthouseMutation
             description: $args['description'] ?? null,
             categoryId: $args['categoryId'] ?? null,
             order: $args['order'] ?? null,
-            backgroundImage: $args['backgroundImage'] ?? null
         );
 
         Log::info('TemplateMutator: Updating template', [
@@ -46,6 +45,29 @@ class TemplateMutator implements LighthouseMutation
         ]);
 
         return TemplateService::updateTemplate($template, $input);
+    }
+
+    // updateWithImage
+    /**
+     * @throws ValidationException
+     */
+    public function updateWithImage($root, array $args): ?Template
+    {
+        $template = Template::query()->findOrFail($args['id']);
+        $input = new UpdateTemplateWithImageInput(
+            name: $args['name'],
+            description: $args['description'] ?? null,
+            categoryId: $args['categoryId'] ?? null,
+            order: $args['order'] ?? null,
+            image: $args['image'] ?? null
+        );
+
+        Log::info('TemplateMutator: Updating template with image', [
+            'templateId' => $args['id'],
+            'input' => $input
+        ]);
+
+        return TemplateService::updateTemplateWithImage($template, $input);
     }
 
     /**

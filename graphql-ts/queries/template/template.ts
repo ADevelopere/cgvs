@@ -6,7 +6,7 @@ query template($id: ID!){
         id
         name
         description
-        background_url
+        image_url
         category{
             id
         }

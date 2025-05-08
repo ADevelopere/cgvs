@@ -2,15 +2,10 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import {
     Box,
     TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     Card,
     CardMedia,
     Button,
     Typography,
-    SelectChangeEvent,
     Alert,
     Snackbar,
     AlertColor,
@@ -19,20 +14,26 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
+import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
+import {
+    Template,
+    UpdateTemplateInput,
+    UpdateTemplateWithImageInput,
+} from "@/graphql/generated/types";
+import { se } from "date-fns/locale";
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
-    const { template, unsavedChanges, setUnsavedChanges, saveTemplate } =
+    const strings = useAppTranslation("templateCategoryTranslations");
+
+    const { template, unsavedChanges, setUnsavedChanges } =
         useTemplateManagement();
-    const [snackbar, setSnackbar] = useState<{
-        open: boolean;
-        message: string;
-        severity: AlertColor;
-    }>({
-        open: false,
-        message: "",
-        severity: "success",
-    });
+
+    console.log("BasicInfoTab template", template);
+
+    const { updateTemplate, updateTemplateWithImage } =
+        useTemplateCategoryManagement();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -42,6 +43,9 @@ const BasicInfoTab: React.FC = () => {
     const [preview, setPreview] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
+    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(
+        null,
+    );
 
     useEffect(() => {
         if (template) {
@@ -49,36 +53,50 @@ const BasicInfoTab: React.FC = () => {
                 name: template.name || "",
                 description: template.description || "",
             });
+            // Reset file states when the template context changes
+            setSelectedImageFile(null);
         }
     }, [template]);
 
     useEffect(() => {
-        if (template?.background_url) {
-            setPreview(template.background_url);
+        if (template?.image_url) {
+            setPreview(template.image_url);
+        } else {
+            setPreview(null); // Ensure preview is cleared if no image_url
         }
     }, [template]);
 
-    // Check for changes whenever form data or preview changes
+    // Check for changes whenever form data, preview or selected file changes
     useEffect(() => {
+        if (!template) {
+            setUnsavedChanges(false);
+            return;
+        }
         const originalData = {
-            name: template?.name || "",
-            description: template?.description || "",
-            background: template?.background_url || null,
+            name: template.name || "",
+            description: template.description || "",
+            image: template.image_url || null,
         };
 
         const currentData = {
             name: formData.name,
             description: formData.description,
-            background: preview,
+            image: preview, // Preview reflects the current visual state
         };
+
+        // An image change occurs if a new file is staged,
+        // or if an existing image is marked for removal (preview becomes null when it wasn't).
+        const imageChanged =
+            selectedImageFile !== null || // New file selected
+            (originalData.image !== null && currentData.image === null); // Existing image removed
 
         const hasChanges =
             originalData.name !== currentData.name ||
             originalData.description !== currentData.description ||
-            originalData.background !== currentData.background;
+            imageChanged;
 
         setUnsavedChanges(hasChanges);
-    }, [formData, preview, template]);
+    }, [formData, preview, template, selectedImageFile, setUnsavedChanges]);
 
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -93,56 +111,66 @@ const BasicInfoTab: React.FC = () => {
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setSelectedImageFile(file);
             setPreview(URL.createObjectURL(file));
+        } else {
+            // This case might not be typical if a file is selected,
+            // but good for completeness if the input is cleared.
+            setSelectedImageFile(null);
+            setPreview(template?.image_url || null); // Revert to original or clear
         }
     };
 
     const handleRemoveBackground = (): void => {
-        setPreview(null);
-    };
-
-    const handleSnackbarClose = () => {
-        setSnackbar((prev) => ({ ...prev, open: false }));
+        setSelectedImageFile(null); // Clear any selected file
+        setPreview(null); // Set preview to null to indicate removal
     };
 
     const handleSave = async () => {
-        try {
-            setSaving(true);
-            setError(null);
-
-            // Create form data
-            const formDataToSend = new FormData();
-            formDataToSend.append("name", formData.name);
-            formDataToSend.append("description", formData.description);
-
-            // If there's a file input change and preview is set, get the file
-            const fileInput = document.querySelector(
-                'input[type="file"]',
-            ) as HTMLInputElement;
-            if (fileInput && fileInput.files && fileInput.files[0]) {
-                formDataToSend.append("background", fileInput.files[0]);
-            }
-
-            await saveTemplate(formDataToSend);
-
-            setSnackbar({
-                open: true,
-                message: "Template saved successfully",
-                severity: "success",
-            });
-        } catch (err: any) {
-            const errorMessage =
-                err.message || "An error occurred while saving the template";
-            setError(errorMessage);
-            setSnackbar({
-                open: true,
-                message: errorMessage,
-                severity: "error",
-            });
-            console.error("Save error:", err);
-        } finally {
-            setSaving(false);
+        if (!template || !template.id || !template.category?.id) {
+            const msg = "Template data is incomplete for saving.";
+            setError(msg);
+            return;
         }
+        setSaving(true);
+        setError(null);
+
+        const imageChanged =
+            selectedImageFile !== null || // A new file is selected
+            (preview === null && template.image_url !== null); // An existing image is being removed
+
+        let updatedTemplate: Template | null = null;
+        if (imageChanged) {
+            const input: UpdateTemplateWithImageInput = {
+                name: formData.name,
+                description: formData.description || undefined, // Use undefined if backend treats empty string and null differently
+                categoryId: template.category.id,
+                // order: template.order, // Include if order is managed
+                image: selectedImageFile || null, // Send the file or null if removing
+            };
+            updatedTemplate = await updateTemplateWithImage({
+                id: template.id,
+                input: input,
+            });
+        } else {
+            const input: UpdateTemplateInput = {
+                name: formData.name,
+                description: formData.description || undefined,
+                categoryId: template.category.id,
+                // order: template.order, // Include if order is managed
+            };
+            updatedTemplate = await updateTemplate({
+                id: template.id,
+                input: input,
+            });
+        }
+
+        if (updatedTemplate) {
+            setError(null);
+            setUnsavedChanges(false);
+            setSelectedImageFile(null); // Clear the staged file after successful save
+        }
+        setSaving(false);
     };
 
     const handleCancel = () => {
@@ -150,7 +178,7 @@ const BasicInfoTab: React.FC = () => {
             name: template?.name || "",
             description: template?.description || "",
         });
-        setPreview(template?.background_url || null);
+        setPreview(template?.image_url || null);
         setError(null);
     };
 
@@ -175,7 +203,7 @@ const BasicInfoTab: React.FC = () => {
                 }}
             >
                 <Typography variant="h6" component="h2">
-                    Basic Information
+                    {strings.tabBasicInfo}
                 </Typography>
 
                 <Box
@@ -191,7 +219,7 @@ const BasicInfoTab: React.FC = () => {
                         onClick={handleCancel}
                         disabled={saving || !unsavedChanges}
                     >
-                        Cancel
+                        {strings.cancel}
                     </Button>
                     <Button
                         variant="contained"
@@ -199,7 +227,7 @@ const BasicInfoTab: React.FC = () => {
                         onClick={handleSave}
                         disabled={saving || !unsavedChanges}
                     >
-                        {saving ? "Saving..." : "Save"}
+                        {saving ? strings.saving : strings.save}
                     </Button>
                 </Box>
             </Box>
@@ -227,7 +255,7 @@ const BasicInfoTab: React.FC = () => {
                     required
                     fullWidth
                     id="templateName"
-                    label="Template Name"
+                    label={strings.name}
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
@@ -240,7 +268,7 @@ const BasicInfoTab: React.FC = () => {
                     multiline
                     rows={4}
                     id="templateDescription"
-                    label="Description"
+                    label={strings.description}
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
@@ -262,7 +290,7 @@ const BasicInfoTab: React.FC = () => {
                             onClick={handleRemoveBackground}
                             sx={{ position: "absolute", top: 8, right: 8 }}
                         >
-                            Remove
+                            {strings.delete}
                         </Button>
                     </Card>
                 ) : (
@@ -273,7 +301,7 @@ const BasicInfoTab: React.FC = () => {
                                 component="label"
                                 startIcon={<CloudUploadIcon />}
                             >
-                                Upload Background
+                                {strings.uploadImage}
                                 <input
                                     type="file"
                                     hidden
@@ -286,28 +314,12 @@ const BasicInfoTab: React.FC = () => {
                                 display="block"
                                 sx={{ mt: 1 }}
                             >
-                                Recommended size: 1920x1080px
+                                {strings.recommendedImageSize}: 1920x1080px
                             </Typography>
                         </Box>
                     </Card>
                 )}
             </Box>
-
-            {/* Snackbar for notifications */}
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            >
-                <Alert
-                    onClose={handleSnackbarClose}
-                    severity={snackbar.severity}
-                    sx={{ width: "100%" }}
-                >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
         </Box>
     );
 };
