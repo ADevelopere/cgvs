@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Search } from "lucide-react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -52,7 +52,7 @@ export function TreeView<T extends BaseTreeItem>({
     header?: string;
     noItemsMessage: string;
     searchText: string;
-    style: React.CSSProperties;
+    style?: React.CSSProperties;
 }) {
     const { isRtl } = useAppTheme();
 
@@ -85,7 +85,7 @@ export function TreeView<T extends BaseTreeItem>({
                     sx={{
                         fontWeight: isSelected ? 500 : 400,
                         minWidth: "max-content", // Set minimum width to content size
-                        textWrap: "balance"
+                        textWrap: "balance",
                     }}
                 >
                     {typeof itemLabel === "string"
@@ -311,9 +311,19 @@ export function TreeView<T extends BaseTreeItem>({
         });
     };
 
+    const treeHeaderRef = useRef<HTMLDivElement>(null);
+    const [treeHeaderRefHeight, setTreeHeaderRefHeight] = useState(0);
+
+    useEffect(() => {
+        if (treeHeaderRef.current) {
+            setTreeHeaderRefHeight(treeHeaderRef.current.clientHeight);
+        }
+    }, [treeHeaderRef]);
+
     return (
         <>
             <Box
+                ref={treeHeaderRef}
                 sx={{
                     display: "flex",
                     alignItems: "center",
@@ -382,7 +392,14 @@ export function TreeView<T extends BaseTreeItem>({
                 />
             </Box>
 
-            <Box sx={{ overflow: "auto", maxHeight: 500, p: 2 }}>
+            <Box
+                id="tree-view-scrollable"
+                sx={{
+                    overflow: "auto",
+                    height: `calc(100% - ${treeHeaderRefHeight + 8}px)`,
+                    p: 2,
+                }}
+            >
                 {filteredItems.length > 0 ? (
                     renderTreeItems(filteredItems)
                 ) : (

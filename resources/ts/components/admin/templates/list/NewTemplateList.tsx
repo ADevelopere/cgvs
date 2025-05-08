@@ -153,43 +153,45 @@ const NewTemplateList: React.FC = () => {
             />
 
             {!isMobile && (
-
-                    <SplitPane
-                        orientation="vertical"
-                        firstPane={{
-                            visible: open,
-                            minRatio: 0.1,
+                <SplitPane
+                    orientation="vertical"
+                    firstPane={{
+                        visible: open,
+                        minRatio: 0.1,
+                    }}
+                    secondPane={{
+                        visible: true,
+                        minRatio: 0.5,
+                    }}
+                    resizerProps={{
+                        style: {
+                            cursor: "col-resize",
+                        },
+                    }}
+                >
+                    <Paper
+                        sx={{
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            padding: 2,
+                            justifyContent: "start",
+                            alignItems: "start",
+                            overflow: "hidden",
                         }}
-                        secondPane={{
-                            visible: true,
-                            minRatio: 0.5,
-                        }}
-                        resizerProps={{
-                            style: {
-                                cursor: "col-resize",
-                            },
-                        }}
-                        
                     >
-                        <Paper
-                            sx={{
-                                height: "100%",
-                                display: "flex",
-                                flexDirection: "column",
-                                padding: 2,
-                                justifyContent: "start",
-                                alignItems: "start",
-                                overflow: "hidden",
-                            }}
-                        >
-                            <CategoryTree />
-                        </Paper>
-                        <TemplateList
-                            templates={
-                                currentCategory?.templates || allTemplates
-                            }
-                        />
-                    </SplitPane>
+                        <CategoryTree />
+                    </Paper>
+                    <TemplateList
+                        templates={currentCategory?.templates || allTemplates}
+                        style={{
+                            paddingInlineStart: open ? 2 : 8,
+                            paddingInlineEnd: 2,
+                            paddingTop: 2,
+                            paddingBottom: 4,
+                        }}
+                    />
+                </SplitPane>
             )}
 
             {isMobile && (

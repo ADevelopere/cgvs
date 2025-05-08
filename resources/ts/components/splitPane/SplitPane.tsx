@@ -407,7 +407,6 @@ const SplitPane: FC<SplitPaneProps> = ({
         WebkitUserSelect: "text",
         msUserSelect: "text",
         userSelect: "text",
-        ...styleProps,
     };
 
     if (orientation === "vertical") {
@@ -429,23 +428,24 @@ const SplitPane: FC<SplitPaneProps> = ({
     const pane1Styles: CSSProperties = {
         ...paneStyle,
         ...(firstPane?.style ?? {}),
+        flex: firstPane?.visible && !secondPane?.visible ? 1 : "0 0 auto",
     };
+
     const pane2Styles: CSSProperties = {
         ...paneStyle,
         ...(secondPane?.style ?? {}),
+        flex: secondPane?.visible && !firstPane?.visible ? 1 : "0 0 auto",
     };
 
-    // Convert numeric sizes to style
-    if (pane1Size !== undefined) {
+    // Convert numeric sizes to style, but only if both panes are visible
+    if (pane1Size !== undefined && firstPane?.visible && secondPane?.visible) {
         if (orientation === "vertical") pane1Styles.width = pane1Size;
         else pane1Styles.height = pane1Size;
-        pane1Styles.flex = "0 0 auto";
     }
 
-    if (pane2Size !== undefined) {
+    if (pane2Size !== undefined && firstPane?.visible && secondPane?.visible) {
         if (orientation === "vertical") pane2Styles.width = pane2Size;
         else pane2Styles.height = pane2Size;
-        pane2Styles.flex = "0 0 auto";
     }
 
     const pane1Classes = ["Pane1", paneClassName, firstPane?.className].join(
@@ -461,9 +461,11 @@ const SplitPane: FC<SplitPaneProps> = ({
     return (
         <div
             style={{
+                ...styleProps,
                 flex: 1,
                 position: "relative",
             }}
+            id="split-pane-container"
         >
             <div ref={splitPaneRef} className={classes} style={wrapperStyle}>
                 {firstPane?.visible && (

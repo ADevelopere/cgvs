@@ -4,10 +4,14 @@ import {
     ImageListItem,
     ImageListItemBar,
     IconButton,
+    useTheme,
+    useMediaQuery,
+    Box,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useTemplate } from "@/contexts/template/TemplatesContext";
 import { Template } from "@/graphql/generated/types";
+import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 
 interface GridViewProps {
     templates: Template[];
@@ -15,27 +19,101 @@ interface GridViewProps {
 
 const GridView: React.FC<GridViewProps> = ({ templates }) => {
     const { manageTemplate } = useTemplate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
+    // Responsive columns
+    const getCols = () => {
+        if (isMobile) return 1;
+        if (isTablet) return 2;
+        return 4;
+    };
 
     return (
-        <ImageList cols={4} gap={16}>
+        <ImageList
+            cols={getCols()}
+            gap={16}
+            sx={{
+                // Ensure consistent width across screens
+                width: "100%",
+                margin: 0,
+                // Remove default ImageList padding
+                "& .MuiImageList-root": {
+                    padding: 0,
+                },
+            }}
+        >
             {templates.map((template) => (
-                <ImageListItem key={template.id}>
-                    <img
-                        src={template.background_url || "/placeholder.png"}
-                        alt={template.name}
-                        loading="lazy"
-                        style={{ height: "200px", objectFit: "cover" }}
-                    />
+                <ImageListItem
+                    key={template.id}
+                    sx={{
+                        // Ensure consistent item size
+                        width: "100% !important",
+                        height: "auto !important",
+                        // Add some spacing between items
+                        mb: 2,
+                        // Ensure proper border radius
+                        borderRadius: 1,
+                        overflow: "hidden",
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: "relative",
+                            paddingTop: "56.25%" /* 16:9 aspect ratio */,
+                            width: "100%",
+                            backgroundColor: "grey.100",
+                        }}
+                    >
+                        <img
+                            src={
+                                template.background_url ||
+                                TEMPLATE_IMAGE_PLACEHOLDER_URL
+                            }
+                            alt={template.name}
+                            loading="lazy"
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                            }}
+                        />
+                    </Box>
                     <ImageListItemBar
                         title={template.name}
                         subtitle={template.description}
+                        sx={{
+                            "& .MuiImageListItemBar-title": {
+                                fontSize: { xs: "0.9rem", sm: "1rem" },
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                            },
+                            "& .MuiImageListItemBar-subtitle": {
+                                fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                            },
+                        }}
                         actionIcon={
                             <IconButton
-                                sx={{ color: "rgba(255, 255, 255, 0.85)" }}
+                                sx={{
+                                    color: "rgba(255, 255, 255, 0.85)",
+                                    padding: { xs: 1, sm: 1.5 },
+                                }}
                                 onClick={() => manageTemplate(template.id)}
                                 title="Manage template"
                             >
-                                <SettingsIcon />
+                                <SettingsIcon
+                                    sx={{
+                                        fontSize: { xs: "1.2rem", sm: "1.5rem" },
+                                    }}
+                                />
                             </IconButton>
                         }
                     />

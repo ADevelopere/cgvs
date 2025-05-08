@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Typography,
     Box,
@@ -21,12 +21,21 @@ type ViewMode = "card" | "grid" | "list";
 
 type TemplateListProps = {
     templates: Template[];
+    style?: React.CSSProperties;
 };
 
-const TemplateList: React.FC<TemplateListProps> = ({ templates }) => {
+const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
     console.log("TemplateList", templates);
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [viewMode, setViewMode] = useState<ViewMode>("card");
+    const [viewMode, setViewMode] = useState<ViewMode>(() => {
+        const savedViewMode = localStorage.getItem("templateListViewMode");
+        return (savedViewMode as ViewMode) || "card";
+    });
+
+    // Save view mode to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem("templateListViewMode", viewMode);
+    }, [viewMode]);
 
     // Filter templates based on search
     const searchTemplates = React.useMemo(() => {
@@ -80,14 +89,10 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates }) => {
     return (
         <Box
             sx={{
-                pt: 3,
-                pb: 16,
-                px: 3,
-
+                ...style,
                 bgcolor: "background.default",
                 width: "100%",
             }}
-            id="template-list"
         >
             <Box
                 display="flex"
