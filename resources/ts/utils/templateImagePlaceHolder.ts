@@ -1,0 +1,1 @@
+export const TEMPLATE_IMAGE_PLACEHOLDER_URL = "/storage/img/default-template-bg.png"

@@ -12,6 +12,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/utils/dateUtils";
 import { useTemplate } from "@/contexts/template/TemplatesContext";
 import { Template } from "@/graphql/generated/types";
+import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 
 interface CardViewProps {
     templates: Template[];
@@ -28,7 +29,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                         <CardMedia
                             component="img"
                             image={
-                                template.background_url || "/storage/img/default-template-bg.png"
+                                template.background_url || TEMPLATE_IMAGE_PLACEHOLDER_URL
                             }
                             alt={template.name}
                             sx={{

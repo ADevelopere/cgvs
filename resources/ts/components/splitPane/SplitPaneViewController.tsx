@@ -92,33 +92,29 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
                 </Box>
             </Box>
 
-            <Box
-                sx={{
+            <SplitPane
+                orientation="vertical"
+                firstPane={{
+                    visible: firstPaneVisible,
+                    minRatio: 0.3,
+                }}
+                secondPane={{
+                    visible: secondPaneVisible,
+                    minRatio: 0.3,
+                }}
+                resizerProps={{
+                    style: {
+                        cursor: "col-resize",
+                    },
+                }}
+                style={{
                     flex: 1,
-                    position: "relative",
                     minHeight: `calc(100vh -256px)`,
                 }}
             >
-                <SplitPane
-                    orientation="vertical"
-                    firstPane={{
-                        visible: firstPaneVisible,
-                        minRatio: 0.3,
-                    }}
-                    secondPane={{
-                        visible: secondPaneVisible,
-                        minRatio: 0.3,
-                    }}
-                    resizerProps={{
-                        style: {
-                            cursor: "col-resize",
-                        },
-                    }}
-                >
-                    {firstPane}
-                    {secondPane}
-                </SplitPane>
-            </Box>
+                {firstPane}
+                {secondPane}
+            </SplitPane>
         </Box>
     );
 };

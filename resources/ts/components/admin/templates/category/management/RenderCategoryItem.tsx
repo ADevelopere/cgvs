@@ -4,7 +4,16 @@ import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ListItemButton, useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
+import {
+    ListItemButton,
+    useTheme,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+} from "@mui/material";
 import EditableTypography from "@/components/input/EditableTypography";
 import { EditIcon, Ungroup, FolderPlus } from "lucide-react";
 import useAppTranslation from "@/locale/useAppTranslation";
@@ -110,11 +119,13 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
                     <EditableTypography
                         typography={{
                             variant: "body1",
+                            minWidth: "150px",
+                            width: "max-content",
                         }}
                         textField={{
                             size: "small",
                             variant: "standard",
-                            sx: { minWidth: 150 },
+                            sx: { minWidth: "150px", width: "max-content" },
                         }}
                         value={category.name}
                         onSave={(newValue) =>
@@ -145,11 +156,13 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
                 </Tooltip>
 
                 {/* Create child category button */}
-                <Tooltip title={strings.createChildCategory ?? "Create Child Category"}>
+                <Tooltip
+                    title={
+                        strings.createChildCategory ?? "Create Child Category"
+                    }
+                >
                     <span>
-                        <IconButton
-                            onClick={handleCreateSubCategory}
-                        >
+                        <IconButton onClick={handleCreateSubCategory}>
                             <FolderPlus size={20} />
                         </IconButton>
                     </span>
@@ -169,15 +182,22 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
             </ListItemButton>
 
             {/* Simple Create Child Category Dialog */}
-            <Dialog 
-                open={isCreateDialogOpen} 
+            <Dialog
+                open={isCreateDialogOpen}
                 onClose={handleCloseCreateDialog}
                 maxWidth="sm"
                 fullWidth
             >
                 <DialogTitle>{strings.createChildCategory}</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                            pt: 1,
+                        }}
+                    >
                         <TextField
                             autoFocus
                             label={strings.name}
@@ -197,13 +217,19 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
                             multiline
                             rows={3}
                             value={newCategoryDescription}
-                            onChange={(e) => setNewCategoryDescription(e.target.value)}
+                            onChange={(e) =>
+                                setNewCategoryDescription(e.target.value)
+                            }
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseCreateDialog}>{strings.cancel}</Button>
-                    <Button onClick={handleSaveNewCategory} variant="contained">{strings.save}</Button>
+                    <Button onClick={handleCloseCreateDialog}>
+                        {strings.cancel}
+                    </Button>
+                    <Button onClick={handleSaveNewCategory} variant="contained">
+                        {strings.save}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </ListItem>

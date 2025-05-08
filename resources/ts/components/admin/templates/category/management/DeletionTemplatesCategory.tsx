@@ -6,6 +6,7 @@ import { formatDate } from "@/utils/dateUtils";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
 import { useAppTheme } from "@/contexts/ThemeContext";
+import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 
 interface TemplateRow {
     id: string;
@@ -17,7 +18,7 @@ interface TemplateRow {
 
 const DeletionTemplatesCategory: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
-    const {theme } = useAppTheme();
+    const { theme } = useAppTheme();
     const { deletionCategory, restoreTemplate } =
         useTemplateCategoryManagement();
     const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -37,12 +38,18 @@ const DeletionTemplatesCategory: React.FC = () => {
             width: 100,
             sortable: false,
             renderCell: (params) => (
-                <Box sx={{display: 'flex', alignItems: 'center', height: "100%"}}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        height: "100%",
+                    }}
+                >
                     <Box
                         component="img"
                         src={
                             params.row.background_url ??
-                            "/storage/img/default-template-bg.png"
+                            TEMPLATE_IMAGE_PLACEHOLDER_URL
                         }
                         alt={`${params.row.name} ${strings.image}`}
                         sx={{
@@ -121,7 +128,7 @@ const DeletionTemplatesCategory: React.FC = () => {
                 }}
                 pageSizeOptions={[5, 10, 25]}
                 disableRowSelectionOnClick
-                rowHeight = {72}
+                rowHeight={72}
                 slotProps={{
                     row: {
                         style: {
@@ -129,9 +136,10 @@ const DeletionTemplatesCategory: React.FC = () => {
                         },
                     },
                     cell: {
-                        style : {
-                            textAlign: theme.direction === "rtl" ? "right" : "left",
-                        }
+                        style: {
+                            textAlign:
+                                theme.direction === "rtl" ? "right" : "left",
+                        },
                     },
                 }}
             />

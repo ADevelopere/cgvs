@@ -187,8 +187,7 @@ const This: React.FC = () => {
                             value="all"
                             sx={{
                                 flex: 1,
-                                position: "relative",
-                                minHeight: `calc(100vh -256px)`,
+                                p: 0
                             }}
                         >
                             <SplitPane
@@ -205,6 +204,10 @@ const This: React.FC = () => {
                                     style: {
                                         cursor: "col-resize",
                                     },
+                                }}
+                                style={{
+                                    flex: 1,
+                                    minHeight: `calc(100vh - 220px)`,
                                 }}
                             >
                                 <TemplateCategoryManagementCategoryPane />
