@@ -17,6 +17,7 @@ import ListView from "./views/ListView";
 import GridView from "./views/GridView";
 import { Template } from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 
 type ViewMode = "card" | "grid" | "list";
 
@@ -27,6 +28,7 @@ type TemplateListProps = {
 
 const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
+    const { currentCategory } = useTemplateCategoryManagement();
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -100,45 +102,61 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
             }}
         >
             <Box
-                display="flex"
-                flexDirection={{ xs: "column", sm: "row" }} // Stack on extra-small screens
-                justifyContent="space-between"
-                alignItems={{ xs: "stretch", sm: "center" }} // Align items differently on small screens
-                mb={3}
-                gap={2} // Add gap for spacing when stacked
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" }, // Stack on extra-small screens
+                    justifyContent: "space-between",
+                    alignItems: { xs: "stretch", sm: "center" }, // Align items differently on small screens
+                    gap: 2,
+                    mb: 3,
+                }}
             >
-                <TextField
-                    placeholder={strings.searchTemplatesPlaceholder}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    slotProps={{
-                        input: {
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                        },
-                    }}
-                    sx={{ width: { xs: "100%", sm: 300 } }} // Full width on extra-small screens
-                />
+                <Typography variant="h6">
+                    {currentCategory?.name || strings.templates}
+                </Typography>
 
-                <ToggleButtonGroup
-                    value={viewMode}
-                    exclusive
-                    onChange={handleViewChange}
-                    sx={{ alignSelf: { xs: "center", sm: "auto" } }} // Center toggle buttons when stacked
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" }, // Stack on extra-small screens
+                        justifyContent: "space-between",
+                        alignItems: { xs: "stretch", sm: "center" }, // Align items differently on small screens
+                        gap: 2,
+                    }}
                 >
-                    <ToggleButton value="card">
-                        <ViewModuleIcon />
-                    </ToggleButton>
-                    <ToggleButton value="grid">
-                        <GridViewIcon />
-                    </ToggleButton>
-                    <ToggleButton value="list">
-                        <ViewListIcon />
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                    <TextField
+                        placeholder={strings.searchTemplatesPlaceholder}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                        sx={{ width: { xs: "100%", sm: 300 } }} // Full width on extra-small screens
+                    />
+
+                    <ToggleButtonGroup
+                        value={viewMode}
+                        exclusive
+                        onChange={handleViewChange}
+                        sx={{ alignSelf: { xs: "center", sm: "auto" } }} // Center toggle buttons when stacked
+                    >
+                        <ToggleButton value="card">
+                            <ViewModuleIcon />
+                        </ToggleButton>
+                        <ToggleButton value="grid">
+                            <GridViewIcon />
+                        </ToggleButton>
+                        <ToggleButton value="list">
+                            <ViewListIcon />
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
             </Box>
 
             {renderTemplateView()}
