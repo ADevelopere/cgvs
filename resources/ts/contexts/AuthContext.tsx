@@ -5,6 +5,7 @@ import React, {
     useEffect,
     useCallback,
     useMemo,
+    useRef,
 } from "react";
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
@@ -16,7 +17,52 @@ import {
     LoginMutationVariables,
 } from "@/graphql/generated/types";
 import { saveAuthToken, clearAuthToken, getAuthToken } from "@/utils/auth";
+import { Box, CircularProgress, Typography, Button } from "@mui/material";
+import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 
+// Loading Component to avoid conditional hook calls
+const LoadingUI: React.FC<{
+    isLoading: boolean;
+    error: string | null;
+    isTimedOut: boolean;
+    onRetry: () => void;
+}> = ({ isLoading, error, isTimedOut, onRetry }) => {
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                gap: 2
+            }}
+        >
+            {isLoading ? (
+                <>
+                    <CircularProgress size={48} />
+                    <Typography>Checking authentication...</Typography>
+                </>
+            ) : error ? (
+                <>
+                    <ErrorIcon color="error" sx={{ fontSize: 48 }} />
+                    <Typography color="error" gutterBottom>
+                        {isTimedOut ? "Authentication check timed out" : error}
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        onClick={onRetry}
+                        sx={{ mt: 2 }}
+                    >
+                        Try Again
+                    </Button>
+                </>
+            ) : null}
+        </Box>
+    );
+};
+
+// Rest of context type and creation
 export type AuthContextType = {
     user: User | null;
     token: string | null;
@@ -37,16 +83,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const apolloClient = useApolloClient();
     const [loginMutation] = useLoginMutation();
     const [logoutMutation] = useLogoutMutation();
-
+    
+    // Group all state declarations together
     const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(
-        localStorage.getItem("auth_token"),
-    );
-
+    const [token, setToken] = useState<string | null>(localStorage.getItem("auth_token"));
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isTimedOut, setIsTimedOut] = useState(false);
+    
+    // Refs after state
+    const isFirstRender = useRef(true);
 
     const clearError = useCallback(() => setError(null), []);
 
@@ -122,38 +169,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!storedToken) {
             logout();
             setIsLoading(false);
+            isFirstRender.current = false;
             return;
         }
 
-        try {
-            const { data } = await apolloClient.query<MeQuery>({
-                query: MeDocument,
-            });
+        let timeoutId: NodeJS.Timeout | undefined;
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => {
+                setIsTimedOut(true);
+                reject(new Error('Auth check timed out'));
+            }, 10000); // 10 second timeout
+        });
 
-            if (data.me) {
-                // Convert GraphQL user to our User type
+        try {
+            const result = await Promise.race([
+                apolloClient.query<MeQuery>({
+                    query: MeDocument,
+                }),
+                timeoutPromise
+            ]) as { data: MeQuery };
+
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            
+            if (result?.data?.me) {
                 const fullUser: User = {
-                    ...data.me,
-                    isAdmin: data.me.isAdmin,
-                    created_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
-                    updated_at: new Date().toISOString(), // These fields aren't in the GraphQL schema
+                    ...result.data.me,
+                    isAdmin: result.data.me.isAdmin,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                 };
                 setUser(fullUser);
                 setToken(storedToken);
                 setIsAuthenticated(true);
             } else {
-                logout();
+                throw new Error('Invalid response from server');
             }
         } catch (error) {
             console.error("Auth check failed", error);
+            setError(error instanceof Error ? error.message : "Failed to check authentication");
             logout();
         } finally {
             setIsLoading(false);
+            isFirstRender.current = false;
         }
     }, [logout, apolloClient]);
 
     // Check authentication status when the component mounts
     useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
+    const retryCheck = useCallback(() => {
+        setIsLoading(true);
+        setError(null);
+        setIsTimedOut(false);
         checkAuth();
     }, [checkAuth]);
 
@@ -181,6 +252,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             clearError,
         ],
     );
+
+    if (isFirstRender.current) {
+        return (
+            <LoadingUI
+                isLoading={isLoading}
+                error={error}
+                isTimedOut={isTimedOut}
+                onRetry={retryCheck}
+            />
+        );
+    }
 
     return (
         <AuthContext.Provider value={contextValue}>

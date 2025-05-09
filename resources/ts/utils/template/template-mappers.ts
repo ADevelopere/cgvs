@@ -45,7 +45,6 @@ const mapCategoryForTemplate = (
         order: category.order ?? null,
         created_at: category.created_at ?? new Date(),
         updated_at: category.updated_at ?? new Date(),
-        deleted_at: category.deleted_at ?? null,
         templates: category.templates ?? [],
         childCategories: Array.isArray(category.childCategories)
             ? category.childCategories.map((child) =>
@@ -83,7 +82,6 @@ const mapTemplate = (
             template.created_at ?? previousTemplate?.created_at ?? new Date(),
         updated_at:
             template.updated_at ?? previousTemplate?.updated_at ?? new Date(),
-        deleted_at: template.deleted_at ?? previousTemplate?.deleted_at ?? null,
         trashed_at: template.trashed_at ?? previousTemplate?.trashed_at ?? null,
         category: template.category
             ? mapCategoryForTemplate(

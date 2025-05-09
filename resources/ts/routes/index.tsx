@@ -5,17 +5,19 @@ import {
     useLocation,
     RouteObject,
 } from "react-router-dom";
-import AdminLayout from "@/components/layouts/AdminLayout";
+import AdminLayout from "@/components/layouts/admin/AdminLayout";
 import GuestLayout from "@/components/layouts/GuestLayout";
 import Login from "@/views/auth/Login";
 import TemplateManagementPage from "@/views/admin/templates/TemplateManagementView";
 import Verify from "@/views/Verify";
-import RouteError from "@/components/common/RouteError";
+import RouteError from "@/components/error/RouteError";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
 import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
 import GraphiQLApp from "@/views/GraphiQL";
 import NewTemplateList from "@/components/admin/templates/list/TemplateListContainer";
+import StudentsLayout from "@/components/layouts/admin/student/StudentsLayout";
+import StudentTable from "@/components/admin/student/StudentTable";
 
 interface WithAuthProps {
     children: React.ReactNode;
@@ -86,6 +88,16 @@ const routes: RouteObject[] = [
                     {
                         path: ":id/manage",
                         element: <TemplateManagementPage />,
+                    },
+                ],
+            },
+            {
+                path: "students",
+                element: <StudentsLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <StudentTable />,
                     },
                 ],
             },

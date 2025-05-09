@@ -12,7 +12,7 @@ import apolloClient from "./utils/apollo";
 import { AppThemeProvider } from "@/contexts/ThemeContext";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
-import ErrorBoundary from "./components/common/ErrorBoundary";
+import ErrorBoundary from "./components/error/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { NotificationsProvider } from "@toolpad/core/useNotifications";
