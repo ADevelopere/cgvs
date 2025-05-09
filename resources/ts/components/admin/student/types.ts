@@ -115,3 +115,11 @@ export const preferredCountries: CountryCode[] = [
     "SS",
     "EH",
 ];
+
+export type CellProps = {
+    value: any;
+    onEdit: (value: string) => void;
+    onSave: () => void;
+    isEditing: boolean;
+    editable?: boolean;
+};
