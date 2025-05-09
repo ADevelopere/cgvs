@@ -1,5 +1,7 @@
+import { CountryCode } from "@/graphql/generated/types";
+
 interface CountryType {
-    code: string;
+    code: CountryCode;
     phone: string;
     suggested?: boolean;
 }

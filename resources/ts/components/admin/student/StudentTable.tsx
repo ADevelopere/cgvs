@@ -18,6 +18,8 @@ import {
   Typography,
   Pagination,
   Stack,
+  MenuItem,
+  Select,
 } from "@mui/material"
 import {
   Delete as DeleteIcon,
@@ -28,9 +30,20 @@ import {
 } from "@mui/icons-material"
 import { format } from "date-fns"
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext"
+import CountrySelect from "@/components/input/CountrySelect"
+import countries from "@/utils/country"
+import type { CountryType } from "@/utils/country"
+import type { Student, UpdateStudentInput } from "@/graphql/generated/types"
+
+type Column = {
+  id: keyof Student
+  label: string
+  sortable: boolean
+  filterable: boolean
+}
 
 // Define column configuration
-const columns = [
+const columns: Column[] = [
   { id: "name", label: "Name", sortable: true, filterable: true },
   { id: "email", label: "Email", sortable: true, filterable: true },
   { id: "date_of_birth", label: "Date of Birth", sortable: true, filterable: true },
@@ -122,8 +135,17 @@ export default function StudentTable() {
     return false
   }
 
+  // Handle country selection change
+  const handleCountryChange = async (studentId: string, country: CountryType) => {
+    const updateInput: UpdateStudentInput = {
+      id: studentId,
+      nationality: country.code,
+    }
+    await updateStudent({ input: updateInput })
+  }
+
   // Handle cell edit start
-  const handleCellEditStart = (studentId: string, field: string, value: string) => {
+  const handleCellEditStart = (studentId: string, field: keyof Student, value: string) => {
     setEditingCell({ studentId, field })
     setEditValue(value || "")
   }
@@ -139,8 +161,7 @@ export default function StudentTable() {
 
     const { studentId, field } = editingCell
 
-    // Create update input
-    const updateInput = {
+    const updateInput: UpdateStudentInput = {
       id: studentId,
       [field]: editValue,
     }
@@ -196,6 +217,99 @@ export default function StudentTable() {
     }
 
     return String(value)
+  }
+
+  // Render cell content based on column type
+  const renderCellContent = (student: Student, column: Column) => {
+    if (editingCell?.studentId === student.id && editingCell?.field === column.id) {
+      if (column.id === "gender") {
+        return (
+          <Select
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value as string)}
+            onBlur={handleCellEditSave}
+            variant="standard"
+            fullWidth
+            autoFocus
+          >
+            <MenuItem value="male">Male</MenuItem>
+            <MenuItem value="female">Female</MenuItem>
+            <MenuItem value="other">Other</MenuItem>
+          </Select>
+        )
+      }
+
+      if (column.id === "nationality") {
+        return (
+          <CountrySelect
+            country={countries.find((c) => c.code === editValue) || countries[0]}
+            setCountry={(country) => handleCountryChange(student.id, country)}
+            fullWidth
+          />
+        )
+      }
+
+      if (column.id === "date_of_birth") {
+        return (
+          <TextField
+            type="date"
+            variant="standard"
+            value={editValue}
+            onChange={handleCellEditChange}
+            onBlur={handleCellEditSave}
+            autoFocus
+            fullWidth
+          />
+        )
+      }
+
+      return (
+        <TextField
+          variant="standard"
+          value={editValue}
+          onChange={handleCellEditChange}
+          onBlur={handleCellEditSave}
+          autoFocus
+          fullWidth
+        />
+      )
+    }
+
+    // Display mode
+    if (column.id === "nationality") {
+      const countryCode = student[column.id]
+      const country = countryCode ? countries.find((c) => c.code === countryCode) : null
+      return country ? (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <img
+            loading="lazy"
+            width="20"
+            height="15"
+            src={`https://flagcdn.com/w20/${countryCode.toLowerCase()}.png`}
+            alt=""
+          />
+          {/* {country.label} */}
+          "country label"
+        </Box>
+      ) : (
+        formatCellValue(countryCode, column.id)
+      )
+    }
+
+    const value = student[column.id]
+    return (
+      <Box
+        onClick={() => handleCellEditStart(student.id, column.id, formatCellValue(value, column.id))}
+        sx={{
+          cursor: "text",
+          p: 1,
+          minHeight: "2rem",
+          "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.04)" },
+        }}
+      >
+        {formatCellValue(value, column.id)}
+      </Box>
+    )
   }
 
   return (
@@ -259,30 +373,7 @@ export default function StudentTable() {
 
                 {columns.map((column) => (
                   <TableCell key={`${student.id}-${column.id}`}>
-                    {editingCell?.studentId === student.id && editingCell?.field === column.id ? (
-                      <TextField
-                        variant="standard"
-                        value={editValue}
-                        onChange={handleCellEditChange}
-                        onBlur={handleCellEditSave}
-                        autoFocus
-                        fullWidth
-                      />
-                    ) : (
-                      <Box
-                        onClick={() =>
-                          handleCellEditStart(student.id, column.id, formatCellValue(student[column.id], column.id))
-                        }
-                        sx={{
-                          cursor: "text",
-                          p: 1,
-                          minHeight: "2rem",
-                          "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.04)" },
-                        }}
-                      >
-                        {formatCellValue(student[column.id], column.id)}
-                      </Box>
-                    )}
+                    {renderCellContent(student, column)}
                   </TableCell>
                 ))}
 
