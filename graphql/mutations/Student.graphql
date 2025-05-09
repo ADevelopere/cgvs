@@ -1,0 +1,29 @@
+extend type Mutation {
+    "Create a new student"
+    createStudent(input: CreateStudentInput! @spread): Student! @create
+
+    "Update an existing student"
+    updateStudent(input: UpdateStudentInput! @spread): Student! @update
+
+    "Delete a student"
+    deleteStudent(id: ID!): Student! @delete
+}
+
+input CreateStudentInput {
+    name: String!
+    email: String
+    phone_number: String
+    date_of_birth: Date
+    gender: StudentGender
+    nationality: CountryCode
+}
+
+input UpdateStudentInput {
+    id: ID!
+    name: String
+    email: String
+    phone_number: String
+    date_of_birth: Date
+    gender: StudentGender
+    nationality: CountryCode
+}

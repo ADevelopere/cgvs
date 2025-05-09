@@ -1,6 +1,7 @@
 type TemplateCategory {
   id: ID!
-  name: String! @rules(apply: ["required", "string", "min:3", "max:255"])
+  name: String! 
+  # @rules(apply: ["required", "string", "min:3", "max:255"])
   description: String
   parentCategory: TemplateCategory @belongsTo
   childCategories: [TemplateCategory!]! @hasMany @orderBy(column: "order")
@@ -9,7 +10,6 @@ type TemplateCategory {
   templates: [Template!]
   created_at: DateTime!
   updated_at: DateTime!
-  deleted_at: DateTime
 }
 
 enum TemplateCategoryType {

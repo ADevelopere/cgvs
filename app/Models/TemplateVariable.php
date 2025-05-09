@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\GraphQL\Contracts\LighthouseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TemplateVariable extends Model implements LighthouseModel
 {
@@ -12,18 +15,14 @@ class TemplateVariable extends Model implements LighthouseModel
         'name',
         'type',
         'description',
-        'validation_rules',
         'preview_value',
-        'is_key',
         'required',
-        'order',
+        'order'
     ];
 
     protected $casts = [
-        'validation_rules' => 'array',
-        'is_key' => 'boolean',
         'required' => 'boolean',
-        'order' => 'integer',
+        'order' => 'integer'
     ];
 
     protected static function booted()
@@ -35,9 +34,20 @@ class TemplateVariable extends Model implements LighthouseModel
         });
     }
 
-    public function template()
+    /**
+     * Get the template that owns this variable
+     */
+    public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class);
+    }
+
+    /**
+     * Get all values for this variable across all recipient group items
+     */
+    public function values(): HasMany
+    {
+        return $this->hasMany(RecipientGroupItemVariableValue::class);
     }
 
     public function validatePreviewValue(): bool
@@ -63,5 +73,25 @@ class TemplateVariable extends Model implements LighthouseModel
     {
         $maxOrder = static::where('template_id', $templateId)->max('order') ?? 0;
         return $maxOrder + 1;
+    }
+
+    public function textVariable(): HasOne
+    {
+        return $this->hasOne(TemplateTextVariable::class, 'variable_id');
+    }
+
+    public function numberVariable(): HasOne
+    {
+        return $this->hasOne(TemplateNumberVariable::class, 'variable_id');
+    }
+
+    public function dateVariable(): HasOne
+    {
+        return $this->hasOne(TemplateDateVariable::class, 'variable_id');
+    }
+
+    public function selectVariable(): HasOne
+    {
+        return $this->hasOne(TemplateSelectVariable::class, 'variable_id');
     }
 }

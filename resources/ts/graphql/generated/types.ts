@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   Upload: { input: any; output: any; }
 };
@@ -25,6 +26,226 @@ export type AuthPayload = {
   token: Scalars['String']['output'];
   /** The authenticated user */
   user: User;
+};
+
+/** A certificate issued to a student */
+export type Certificate = {
+  __typename?: 'Certificate';
+  created_at: Scalars['DateTime']['output'];
+  deleted_at?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  recipientGroup: TemplateRecipientGroup;
+  release_date: Scalars['Date']['output'];
+  student: Student;
+  template: Template;
+  updated_at: Scalars['DateTime']['output'];
+  verification_code: Scalars['String']['output'];
+};
+
+/** Country codes for nationality */
+export type CountryCode =
+  | 'AD'
+  | 'AE'
+  | 'AF'
+  | 'AG'
+  | 'AL'
+  | 'AM'
+  | 'AO'
+  | 'AR'
+  | 'AT'
+  | 'AU'
+  | 'AZ'
+  | 'BA'
+  | 'BB'
+  | 'BD'
+  | 'BE'
+  | 'BF'
+  | 'BG'
+  | 'BH'
+  | 'BI'
+  | 'BJ'
+  | 'BN'
+  | 'BO'
+  | 'BR'
+  | 'BS'
+  | 'BT'
+  | 'BW'
+  | 'BY'
+  | 'BZ'
+  | 'CA'
+  | 'CD'
+  | 'CF'
+  | 'CG'
+  | 'CH'
+  | 'CI'
+  | 'CL'
+  | 'CM'
+  | 'CN'
+  | 'CO'
+  | 'CR'
+  | 'CU'
+  | 'CV'
+  | 'CY'
+  | 'CZ'
+  | 'DE'
+  | 'DJ'
+  | 'DK'
+  | 'DM'
+  | 'DO'
+  | 'DZ'
+  | 'EC'
+  | 'EE'
+  | 'EG'
+  | 'ER'
+  | 'ES'
+  | 'ET'
+  | 'FI'
+  | 'FJ'
+  | 'FM'
+  | 'FR'
+  | 'GA'
+  | 'GB'
+  | 'GD'
+  | 'GE'
+  | 'GH'
+  | 'GM'
+  | 'GN'
+  | 'GQ'
+  | 'GR'
+  | 'GT'
+  | 'GW'
+  | 'GY'
+  | 'HN'
+  | 'HR'
+  | 'HT'
+  | 'HU'
+  | 'ID'
+  | 'IE'
+  | 'IL'
+  | 'IN'
+  | 'IQ'
+  | 'IR'
+  | 'IS'
+  | 'IT'
+  | 'JM'
+  | 'JO'
+  | 'JP'
+  | 'KE'
+  | 'KG'
+  | 'KH'
+  | 'KI'
+  | 'KM'
+  | 'KN'
+  | 'KP'
+  | 'KR'
+  | 'KW'
+  | 'KZ'
+  | 'LA'
+  | 'LB'
+  | 'LC'
+  | 'LI'
+  | 'LK'
+  | 'LR'
+  | 'LS'
+  | 'LT'
+  | 'LU'
+  | 'LV'
+  | 'LY'
+  | 'MA'
+  | 'MC'
+  | 'MD'
+  | 'ME'
+  | 'MG'
+  | 'MH'
+  | 'MK'
+  | 'ML'
+  | 'MM'
+  | 'MN'
+  | 'MR'
+  | 'MT'
+  | 'MU'
+  | 'MV'
+  | 'MW'
+  | 'MX'
+  | 'MY'
+  | 'MZ'
+  | 'NA'
+  | 'NE'
+  | 'NG'
+  | 'NI'
+  | 'NL'
+  | 'NO'
+  | 'NP'
+  | 'NR'
+  | 'NZ'
+  | 'OM'
+  | 'PA'
+  | 'PE'
+  | 'PG'
+  | 'PH'
+  | 'PK'
+  | 'PL'
+  | 'PT'
+  | 'PW'
+  | 'PY'
+  | 'QA'
+  | 'RO'
+  | 'RS'
+  | 'RU'
+  | 'RW'
+  | 'SA'
+  | 'SB'
+  | 'SC'
+  | 'SD'
+  | 'SE'
+  | 'SG'
+  | 'SI'
+  | 'SK'
+  | 'SL'
+  | 'SM'
+  | 'SN'
+  | 'SO'
+  | 'SR'
+  | 'SS'
+  | 'ST'
+  | 'SV'
+  | 'SY'
+  | 'SZ'
+  | 'TD'
+  | 'TG'
+  | 'TH'
+  | 'TJ'
+  | 'TL'
+  | 'TM'
+  | 'TN'
+  | 'TO'
+  | 'TR'
+  | 'TT'
+  | 'TV'
+  | 'TZ'
+  | 'UA'
+  | 'UG'
+  | 'US'
+  | 'UY'
+  | 'UZ'
+  | 'VA'
+  | 'VC'
+  | 'VE'
+  | 'VN'
+  | 'VU'
+  | 'WS'
+  | 'YE'
+  | 'ZA'
+  | 'ZM'
+  | 'ZW';
+
+export type CreateStudentInput = {
+  date_of_birth?: InputMaybe<Scalars['Date']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<StudentGender>;
+  name: Scalars['String']['input'];
+  nationality?: InputMaybe<CountryCode>;
+  phone_number?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateTemplateCategoryInput = {
@@ -42,6 +263,47 @@ export type CreateTemplateInput = {
   order?: InputMaybe<Scalars['Int']['input']>;
 };
 
+/** Dynamic date element that pulls data from various sources */
+export type DataDateElement = {
+  __typename?: 'DataDateElement';
+  created_at: Scalars['DateTime']['output'];
+  date_format?: Maybe<Scalars['String']['output']>;
+  element: TemplateElement;
+  element_id: Scalars['ID']['output'];
+  source_field: Scalars['String']['output'];
+  source_type: DataSourceType;
+  updated_at: Scalars['DateTime']['output'];
+};
+
+/** Enum for data source types */
+export type DataSourceType =
+  | 'certificate'
+  | 'student'
+  | 'variable';
+
+/** Dynamic text element that pulls data from various sources */
+export type DataTextElement = {
+  __typename?: 'DataTextElement';
+  created_at: Scalars['DateTime']['output'];
+  element: TemplateElement;
+  element_id: Scalars['ID']['output'];
+  source_field: Scalars['String']['output'];
+  source_type: DataSourceType;
+  updated_at: Scalars['DateTime']['output'];
+};
+
+/** Static image element */
+export type ImageElement = {
+  __typename?: 'ImageElement';
+  created_at: Scalars['DateTime']['output'];
+  element: TemplateElement;
+  element_id: Scalars['ID']['output'];
+  height?: Maybe<Scalars['Int']['output']>;
+  image_url: Scalars['String']['output'];
+  updated_at: Scalars['DateTime']['output'];
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
 /** Response after logout */
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
@@ -52,9 +314,13 @@ export type LogoutResponse = {
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Create a new student */
+  createStudent: Student;
   /** Create a new template */
   createTemplate: Template;
   createTemplateCategory: TemplateCategory;
+  /** Delete a student */
+  deleteStudent: Student;
   /** Delete a template */
   deleteTemplate: Template;
   deleteTemplateCategory: TemplateCategory;
@@ -67,10 +333,18 @@ export type Mutation = {
   reorderTemplates: Array<Template>;
   /** Restore a template from the deleted category */
   restoreTemplate: Template;
+  /** Update an existing student */
+  updateStudent: Student;
   /** Update an existing template */
   updateTemplate: Template;
   updateTemplateCategory: TemplateCategory;
   updateTemplateWithImage: Template;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationCreateStudentArgs = {
+  input: CreateStudentInput;
 };
 
 
@@ -83,6 +357,12 @@ export type MutationCreateTemplateArgs = {
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationCreateTemplateCategoryArgs = {
   input: CreateTemplateCategoryInput;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationDeleteStudentArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -130,6 +410,12 @@ export type MutationRestoreTemplateArgs = {
 
 
 /** Indicates what fields are available at the top level of a mutation operation. */
+export type MutationUpdateStudentArgs = {
+  input: UpdateStudentInput;
+};
+
+
+/** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationUpdateTemplateArgs = {
   id: Scalars['ID']['input'];
   input: UpdateTemplateInput;
@@ -156,6 +442,16 @@ export type OrderByClause = {
   /** The direction that is used for ordering. */
   order: SortOrder;
 };
+
+/** Available fields for sorting students */
+export type OrderByColumn =
+  | 'CREATED_AT'
+  | 'DATE_OF_BIRTH'
+  | 'EMAIL'
+  | 'GENDER'
+  | 'ID'
+  | 'NAME'
+  | 'UPDATED_AT';
 
 /** Aggregate functions when ordering by a relation without specifying a column. */
 export type OrderByRelationAggregateFunction =
@@ -196,6 +492,16 @@ export type PaginatorInfo = {
   total: Scalars['Int']['output'];
 };
 
+/** QR code element for certificate verification */
+export type QrCodeElement = {
+  __typename?: 'QrCodeElement';
+  created_at: Scalars['DateTime']['output'];
+  element: TemplateElement;
+  element_id: Scalars['ID']['output'];
+  size?: Maybe<Scalars['Int']['output']>;
+  updated_at: Scalars['DateTime']['output'];
+};
+
 /** Indicates what fields are available at the top level of a query operation. */
 export type Query = {
   __typename?: 'Query';
@@ -203,6 +509,10 @@ export type Query = {
   flatTemplateCategories: Array<TemplateCategory>;
   mainTemplateCategory: TemplateCategory;
   me: User;
+  /** Get a specific student by ID */
+  student?: Maybe<Student>;
+  /** Get a list of all students with sorting, filtering and pagination */
+  students: StudentPaginator;
   /** Get a specific template by ID */
   template?: Maybe<Template>;
   templateCategories: TemplateCategoryPaginator;
@@ -215,6 +525,29 @@ export type Query = {
   user?: Maybe<User>;
   /** List multiple users. */
   users: UserPaginator;
+};
+
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryStudentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryStudentsArgs = {
+  birth_from?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_to?: InputMaybe<Scalars['DateTime']['input']>;
+  created_from?: InputMaybe<Scalars['DateTime']['input']>;
+  created_to?: InputMaybe<Scalars['DateTime']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  first?: Scalars['Int']['input'];
+  gender?: InputMaybe<StudentGender>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  nationality?: InputMaybe<CountryCode>;
+  orderBy?: InputMaybe<Array<OrderByClause>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  phone_number?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -258,6 +591,18 @@ export type QueryUsersArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
 };
 
+/** A variable value for a student in a recipient group */
+export type RecipientGroupItemVariableValue = {
+  __typename?: 'RecipientGroupItemVariableValue';
+  created_at: Scalars['DateTime']['output'];
+  groupItem: TemplateRecipientGroupItem;
+  id: Scalars['ID']['output'];
+  updated_at: Scalars['DateTime']['output'];
+  value?: Maybe<Scalars['String']['output']>;
+  value_indexed?: Maybe<Scalars['String']['output']>;
+  variable: TemplateVariable;
+};
+
 export type ReorderCategoriesInput = {
   id: Scalars['ID']['input'];
   order: Scalars['Int']['input'];
@@ -275,19 +620,65 @@ export type SortOrder =
   /** Sort records in descending order. */
   | 'DESC';
 
+/** Static text element like titles and labels */
+export type StaticTextElement = {
+  __typename?: 'StaticTextElement';
+  content: Scalars['String']['output'];
+  created_at: Scalars['DateTime']['output'];
+  element: TemplateElement;
+  element_id: Scalars['ID']['output'];
+  updated_at: Scalars['DateTime']['output'];
+};
+
+/** A student in the system */
+export type Student = {
+  __typename?: 'Student';
+  certificates: Array<Certificate>;
+  created_at: Scalars['DateTime']['output'];
+  date_of_birth?: Maybe<Scalars['Date']['output']>;
+  deleted_at?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  gender?: Maybe<StudentGender>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nationality?: Maybe<CountryCode>;
+  phone_number?: Maybe<Scalars['String']['output']>;
+  recipientGroups: Array<TemplateRecipientGroup>;
+  updated_at: Scalars['DateTime']['output'];
+};
+
+/** Gender options for students */
+export type StudentGender =
+  | 'female'
+  | 'male'
+  | 'other';
+
+/** A paginated list of Student items. */
+export type StudentPaginator = {
+  __typename?: 'StudentPaginator';
+  /** A list of Student items. */
+  data: Array<Student>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 /** A template in the system */
 export type Template = {
   __typename?: 'Template';
   category: TemplateCategory;
+  certificates: Array<Certificate>;
   created_at: Scalars['DateTime']['output'];
-  deleted_at?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  elements: Array<TemplateElement>;
   id: Scalars['ID']['output'];
   image_url?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
+  pre_deletion_category?: Maybe<TemplateCategory>;
+  recipientGroups: Array<TemplateRecipientGroup>;
   trashed_at?: Maybe<Scalars['DateTime']['output']>;
   updated_at: Scalars['DateTime']['output'];
+  variables: Array<TemplateVariable>;
 };
 
 export type TemplateCategory = {
@@ -325,6 +716,52 @@ export type TemplateConfig = {
   maxBackgroundSize?: Maybe<Scalars['Int']['output']>;
 };
 
+/** Date variable with range and format */
+export type TemplateDateVariable = {
+  __typename?: 'TemplateDateVariable';
+  created_at: Scalars['DateTime']['output'];
+  format?: Maybe<Scalars['String']['output']>;
+  max_date?: Maybe<Scalars['Date']['output']>;
+  min_date?: Maybe<Scalars['Date']['output']>;
+  updated_at: Scalars['DateTime']['output'];
+  variable: TemplateVariable;
+  variable_id: Scalars['ID']['output'];
+};
+
+/** Base template element type */
+export type TemplateElement = {
+  __typename?: 'TemplateElement';
+  alignment?: Maybe<Scalars['String']['output']>;
+  color?: Maybe<Scalars['String']['output']>;
+  created_at: Scalars['DateTime']['output'];
+  dataDate?: Maybe<DataDateElement>;
+  dataText?: Maybe<DataTextElement>;
+  font_family?: Maybe<Scalars['String']['output']>;
+  font_size?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  image?: Maybe<ImageElement>;
+  language_constraint?: Maybe<Scalars['String']['output']>;
+  qrCode?: Maybe<QrCodeElement>;
+  staticText?: Maybe<StaticTextElement>;
+  template: Template;
+  type: Scalars['String']['output'];
+  updated_at: Scalars['DateTime']['output'];
+  x_coordinate: Scalars['Float']['output'];
+  y_coordinate: Scalars['Float']['output'];
+};
+
+/** Number variable with range and precision */
+export type TemplateNumberVariable = {
+  __typename?: 'TemplateNumberVariable';
+  created_at: Scalars['DateTime']['output'];
+  decimal_places?: Maybe<Scalars['Int']['output']>;
+  max_value?: Maybe<Scalars['Float']['output']>;
+  min_value?: Maybe<Scalars['Float']['output']>;
+  updated_at: Scalars['DateTime']['output'];
+  variable: TemplateVariable;
+  variable_id: Scalars['ID']['output'];
+};
+
 /** A paginated list of Template items. */
 export type TemplatePaginator = {
   __typename?: 'TemplatePaginator';
@@ -332,6 +769,81 @@ export type TemplatePaginator = {
   data: Array<Template>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+/** Template preview options */
+export type TemplatePreview = {
+  __typename?: 'TemplatePreview';
+  html?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+/** A group of recipients for a template */
+export type TemplateRecipientGroup = {
+  __typename?: 'TemplateRecipientGroup';
+  certificates: Array<Certificate>;
+  created_at: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  items: Array<TemplateRecipientGroupItem>;
+  name: Scalars['String']['output'];
+  students: Array<Student>;
+  template: Template;
+  updated_at: Scalars['DateTime']['output'];
+};
+
+/** A student entry in a recipient group */
+export type TemplateRecipientGroupItem = {
+  __typename?: 'TemplateRecipientGroupItem';
+  created_at: Scalars['DateTime']['output'];
+  group: TemplateRecipientGroup;
+  id: Scalars['ID']['output'];
+  student: Student;
+  updated_at: Scalars['DateTime']['output'];
+  variableValues: Array<RecipientGroupItemVariableValue>;
+};
+
+/** Select/Choice variable with options */
+export type TemplateSelectVariable = {
+  __typename?: 'TemplateSelectVariable';
+  created_at: Scalars['DateTime']['output'];
+  multiple: Scalars['Boolean']['output'];
+  options: Array<Scalars['String']['output']>;
+  updated_at: Scalars['DateTime']['output'];
+  variable: TemplateVariable;
+  variable_id: Scalars['ID']['output'];
+};
+
+/** Text variable with validation rules */
+export type TemplateTextVariable = {
+  __typename?: 'TemplateTextVariable';
+  created_at: Scalars['DateTime']['output'];
+  max_length?: Maybe<Scalars['Int']['output']>;
+  min_length?: Maybe<Scalars['Int']['output']>;
+  pattern?: Maybe<Scalars['String']['output']>;
+  updated_at: Scalars['DateTime']['output'];
+  variable: TemplateVariable;
+  variable_id: Scalars['ID']['output'];
+};
+
+/** Base template variable type */
+export type TemplateVariable = {
+  __typename?: 'TemplateVariable';
+  created_at: Scalars['DateTime']['output'];
+  dateVariable?: Maybe<TemplateDateVariable>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  numberVariable?: Maybe<TemplateNumberVariable>;
+  order: Scalars['Int']['output'];
+  preview_value?: Maybe<Scalars['String']['output']>;
+  required: Scalars['Boolean']['output'];
+  selectVariable?: Maybe<TemplateSelectVariable>;
+  template: Template;
+  textVariable?: Maybe<TemplateTextVariable>;
+  type: Scalars['String']['output'];
+  updated_at: Scalars['DateTime']['output'];
+  values: Array<RecipientGroupItemVariableValue>;
 };
 
 /** Specify if you want to include or exclude trashed results from a query. */
@@ -342,6 +854,16 @@ export type Trashed =
   | 'WITH'
   /** Only return non-trashed results. */
   | 'WITHOUT';
+
+export type UpdateStudentInput = {
+  date_of_birth?: InputMaybe<Scalars['Date']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<StudentGender>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  nationality?: InputMaybe<CountryCode>;
+  phone_number?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type UpdateTemplateCategoryInput = {
   description?: InputMaybe<Scalars['String']['input']>;
@@ -483,6 +1005,31 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', created_at: any, email: string, email_verified_at?: any | null, id: string, isAdmin: boolean, name: string, updated_at: any } };
+
+export type StudentQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any, certificates: Array<{ __typename?: 'Certificate', id: string, release_date: any, verification_code: string, template: { __typename?: 'Template', id: string, name: string }, recipientGroup: { __typename?: 'TemplateRecipientGroup', id: string, name: string } }> } | null };
+
+export type StudentsQueryVariables = Exact<{
+  birth_from?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_to?: InputMaybe<Scalars['DateTime']['input']>;
+  created_from?: InputMaybe<Scalars['DateTime']['input']>;
+  created_to?: InputMaybe<Scalars['DateTime']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  first: Scalars['Int']['input'];
+  gender?: InputMaybe<StudentGender>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  nationality?: InputMaybe<CountryCode>;
+  orderBy?: InputMaybe<Array<OrderByClause> | OrderByClause>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  phone_number?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'StudentPaginator', data: Array<{ __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any, certificates: Array<{ __typename?: 'Certificate', id: string, created_at: any, release_date: any, verification_code: string, template: { __typename?: 'Template', id: string, name: string }, recipientGroup: { __typename?: 'TemplateRecipientGroup', id: string, name: string } }>, recipientGroups: Array<{ __typename?: 'TemplateRecipientGroup', id: string, name: string, description?: string | null, updated_at: any }> }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1129,6 +1676,177 @@ export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export function refetchMeQuery(variables?: MeQueryVariables) {
       return { query: MeDocument, variables: variables }
+    }
+export const StudentDocument = gql`
+    query student($id: ID!) {
+  student(id: $id) {
+    id
+    name
+    gender
+    nationality
+    date_of_birth
+    email
+    phone_number
+    certificates {
+      id
+      release_date
+      verification_code
+      template {
+        id
+        name
+      }
+      recipientGroup {
+        id
+        name
+      }
+    }
+    created_at
+    updated_at
+  }
+}
+    `;
+
+/**
+ * __useStudentQuery__
+ *
+ * To run a query within a React component, call `useStudentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStudentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStudentQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useStudentQuery(baseOptions: Apollo.QueryHookOptions<StudentQuery, StudentQueryVariables> & ({ variables: StudentQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StudentQuery, StudentQueryVariables>(StudentDocument, options);
+      }
+export function useStudentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StudentQuery, StudentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StudentQuery, StudentQueryVariables>(StudentDocument, options);
+        }
+export function useStudentSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<StudentQuery, StudentQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StudentQuery, StudentQueryVariables>(StudentDocument, options);
+        }
+export type StudentQueryHookResult = ReturnType<typeof useStudentQuery>;
+export type StudentLazyQueryHookResult = ReturnType<typeof useStudentLazyQuery>;
+export type StudentSuspenseQueryHookResult = ReturnType<typeof useStudentSuspenseQuery>;
+export type StudentQueryResult = Apollo.QueryResult<StudentQuery, StudentQueryVariables>;
+export function refetchStudentQuery(variables: StudentQueryVariables) {
+      return { query: StudentDocument, variables: variables }
+    }
+export const StudentsDocument = gql`
+    query students($birth_from: DateTime, $birth_to: DateTime, $created_from: DateTime, $created_to: DateTime, $email: String, $first: Int!, $gender: StudentGender, $name: String, $nationality: CountryCode, $orderBy: [OrderByClause!], $page: Int, $phone_number: String) {
+  students(
+    birth_from: $birth_from
+    birth_to: $birth_to
+    created_from: $created_from
+    created_to: $created_to
+    email: $email
+    first: $first
+    gender: $gender
+    name: $name
+    nationality: $nationality
+    orderBy: $orderBy
+    page: $page
+    phone_number: $phone_number
+  ) {
+    data {
+      id
+      name
+      gender
+      nationality
+      date_of_birth
+      email
+      phone_number
+      certificates {
+        id
+        created_at
+        release_date
+        verification_code
+        template {
+          id
+          name
+        }
+        recipientGroup {
+          id
+          name
+        }
+      }
+      recipientGroups {
+        id
+        name
+        description
+        updated_at
+      }
+      created_at
+      updated_at
+    }
+    paginatorInfo {
+      count
+      currentPage
+      firstItem
+      hasMorePages
+      lastItem
+      lastPage
+      perPage
+      total
+    }
+  }
+}
+    `;
+
+/**
+ * __useStudentsQuery__
+ *
+ * To run a query within a React component, call `useStudentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStudentsQuery({
+ *   variables: {
+ *      birth_from: // value for 'birth_from'
+ *      birth_to: // value for 'birth_to'
+ *      created_from: // value for 'created_from'
+ *      created_to: // value for 'created_to'
+ *      email: // value for 'email'
+ *      first: // value for 'first'
+ *      gender: // value for 'gender'
+ *      name: // value for 'name'
+ *      nationality: // value for 'nationality'
+ *      orderBy: // value for 'orderBy'
+ *      page: // value for 'page'
+ *      phone_number: // value for 'phone_number'
+ *   },
+ * });
+ */
+export function useStudentsQuery(baseOptions: Apollo.QueryHookOptions<StudentsQuery, StudentsQueryVariables> & ({ variables: StudentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StudentsQuery, StudentsQueryVariables>(StudentsDocument, options);
+      }
+export function useStudentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StudentsQuery, StudentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StudentsQuery, StudentsQueryVariables>(StudentsDocument, options);
+        }
+export function useStudentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<StudentsQuery, StudentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StudentsQuery, StudentsQueryVariables>(StudentsDocument, options);
+        }
+export type StudentsQueryHookResult = ReturnType<typeof useStudentsQuery>;
+export type StudentsLazyQueryHookResult = ReturnType<typeof useStudentsLazyQuery>;
+export type StudentsSuspenseQueryHookResult = ReturnType<typeof useStudentsSuspenseQuery>;
+export type StudentsQueryResult = Apollo.QueryResult<StudentsQuery, StudentsQueryVariables>;
+export function refetchStudentsQuery(variables: StudentsQueryVariables) {
+      return { query: StudentsDocument, variables: variables }
     }
 export const TemplateDocument = gql`
     query template($id: ID!) {
