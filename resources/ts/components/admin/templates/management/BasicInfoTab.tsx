@@ -275,23 +275,44 @@ const BasicInfoTab: React.FC = () => {
                 />
 
                 {preview ? (
-                    <Card sx={{ mt: 3, position: "relative" }}>
-                        <CardMedia
-                            component="img"
-                            height="200"
-                            image={preview}
-                            alt="Template background"
-                            sx={{ objectFit: "contain" }}
-                        />
-                        <Button
-                            variant="contained"
-                            color="error"
-                            startIcon={<DeleteIcon />}
-                            onClick={handleRemoveBackground}
-                            sx={{ position: "absolute", top: 8, right: 8 }}
+                    <Card
+                        sx={{
+                            mt: 3,
+                            position: "relative",
+                            maxWidth: "100%",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                position: "relative",
+                                width: "100%",
+                                maxWidth: "1200px", // Maximum width for very large screens
+                                mx: "auto", // Center the box
+                            }}
                         >
-                            {strings.delete}
-                        </Button>
+                            <CardMedia
+                                component="img"
+                                image={preview}
+                                alt="Template background"
+                                sx={{
+                                    maxHeight: "400px", // Maximum height
+                                    width: "auto", // Allow width to adjust based on height
+                                    maxWidth: "100%", // Ensure it doesn't overflow container
+                                    objectFit: "contain", // Preserve aspect ratio
+                                    margin: "0 auto", // Center the image
+                                    display: "block", // Remove any extra spacing
+                                }}
+                            />
+                            <Button
+                                variant="contained"
+                                color="error"
+                                startIcon={<DeleteIcon />}
+                                onClick={handleRemoveBackground}
+                                sx={{ position: "absolute", top: 8, right: 8 }}
+                            >
+                                {strings.delete}
+                            </Button>
+                        </Box>
                     </Card>
                 ) : (
                     <Card sx={{ mt: 3, mb: 3 }}>

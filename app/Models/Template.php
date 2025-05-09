@@ -25,21 +25,6 @@ class Template extends Model implements LighthouseModel
         'trashed_at',
     ];
 
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(TemplateCategory::class);
-    }
-
-    public function variables(): HasMany
-    {
-        return $this->hasMany(TemplateVariable::class);
-    }
-
-    public function recipients(): HasMany
-    {
-        return $this->hasMany(TemplateRecipient::class);
-    }
-
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -48,12 +33,34 @@ class Template extends Model implements LighthouseModel
         'is_active' => 'boolean',
     ];
 
-    /**
-     * Get the elements associated with this template
-     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(TemplateCategory::class);
+    }
+
+    public function preDeletionCategory(): BelongsTo
+    {
+        return $this->belongsTo(TemplateCategory::class, 'pre_deletion_category_id');
+    }
+
+    public function variables(): HasMany
+    {
+        return $this->hasMany(TemplateVariable::class);
+    }
+
     public function elements(): HasMany
     {
         return $this->hasMany(TemplateElement::class);
+    }
+
+    public function recipientGroups(): HasMany
+    {
+        return $this->hasMany(TemplateRecipientGroup::class);
+    }
+
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 
     /**
@@ -66,13 +73,9 @@ class Template extends Model implements LighthouseModel
 
     /**
      * Get the URL for the image
-     *
-     * @param string|null $value
-     * @return string|null
      */
     public function getImageUrlAttribute($value)
     {
-        // If the value already starts with /storage/, return as is
         if ($value && str_starts_with($value, '/storage/')) {
             return $value;
         }
@@ -85,43 +88,6 @@ class Template extends Model implements LighthouseModel
             Log::info('Creating new template', [
                 'template_name' => $template->name,
                 'template_data' => $template->toArray(),
-            ]);
-        });
-
-        static::created(function ($template) {
-            Log::info('Template created, creating name variable', [
-                'template_id' => $template->id,
-                'template_name' => $template->name,
-            ]);
-
-            try {
-                // Create the default name variable
-                $nameVar = $template->variables()->create([
-                    'name' => 'name',
-                    'type' => 'text',
-                    'description' => 'Recipient identifier name',
-                    'is_key' => true,
-                    'required' => true,
-                    'order' => 1, // Set order to 1 since it's the first variable
-                ]);
-
-                Log::info('Name variable created successfully', [
-                    'template_id' => $template->id,
-                    'name_variable_id' => $nameVar->id,
-                ]);
-            } catch (\Exception $e) {
-                Log::error('Failed to create name variable', [
-                    'template_id' => $template->id,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-            }
-        });
-
-        static::retrieved(function ($template) {
-            Log::info('Template query executed', [
-                'template_id' => $template->id,
-                'template_data' => $template->toArray()
             ]);
         });
     }

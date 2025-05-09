@@ -1,0 +1,11 @@
+"A certificate issued to a student"
+type Certificate {
+    id: ID!
+    template: Template! @belongsTo
+    student: Student! @belongsTo
+    recipientGroup: TemplateRecipientGroup! @belongsTo
+    release_date: Date!
+    verification_code: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}

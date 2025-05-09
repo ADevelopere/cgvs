@@ -1,0 +1,36 @@
+"A group of recipients for a template"
+type TemplateRecipientGroup {
+    id: ID!
+    template: Template! @belongsTo
+    name: String!
+    description: String
+    # dont delete this
+    # is_valid: Boolean!
+    # validation_errors: JSON
+    items: [TemplateRecipientGroupItem!]! @hasMany
+    students: [Student!]! @belongsToMany
+    certificates: [Certificate!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"A student entry in a recipient group"
+type TemplateRecipientGroupItem {
+    id: ID!
+    group: TemplateRecipientGroup! @belongsTo
+    student: Student! @belongsTo
+    variableValues: [RecipientGroupItemVariableValue!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"A variable value for a student in a recipient group"
+type RecipientGroupItemVariableValue {
+    id: ID!
+    groupItem: TemplateRecipientGroupItem! @belongsTo
+    variable: TemplateVariable! @belongsTo
+    value: String
+    value_indexed: String
+    created_at: DateTime!
+    updated_at: DateTime!
+}

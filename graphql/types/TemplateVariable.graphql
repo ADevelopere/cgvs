@@ -1,0 +1,61 @@
+"Base template variable type"
+type TemplateVariable {
+    id: ID!
+    template: Template! @belongsTo
+    name: String!
+    type: String! # Discriminator: 'text', 'date', 'number', 'select'
+    description: String
+    preview_value: String
+    required: Boolean!
+    order: Int!
+    textVariable: TemplateTextVariable @hasOne
+    numberVariable: TemplateNumberVariable @hasOne
+    dateVariable: TemplateDateVariable @hasOne
+    selectVariable: TemplateSelectVariable @hasOne
+    values: [RecipientGroupItemVariableValue!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"Text variable with validation rules"
+type TemplateTextVariable {
+    variable_id: ID!
+    min_length: Int
+    max_length: Int
+    pattern: String
+    variable: TemplateVariable! @belongsTo
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"Number variable with range and precision"
+type TemplateNumberVariable {
+    variable_id: ID!
+    min_value: Float
+    max_value: Float
+    decimal_places: Int
+    variable: TemplateVariable! @belongsTo
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"Date variable with range and format"
+type TemplateDateVariable {
+    variable_id: ID!
+    min_date: Date
+    max_date: Date
+    format: String
+    variable: TemplateVariable! @belongsTo
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+"Select/Choice variable with options"
+type TemplateSelectVariable {
+    variable_id: ID!
+    options: [String!]!
+    multiple: Boolean!
+    variable: TemplateVariable! @belongsTo
+    created_at: DateTime!
+    updated_at: DateTime!
+}

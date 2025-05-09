@@ -1,0 +1,65 @@
+extend type Query {
+    "Get a list of all students with sorting, filtering and pagination"
+    students(
+        "Search by name (partial match)"
+        name: String @where(operator: "like")
+
+        "Search by email (partial match)"
+        email: String @where(operator: "like")
+
+        "Filter by phone number"
+        phone_number: String @where(operator: "like")
+
+        "Filter by gender"
+        gender: StudentGender @eq
+
+        "Filter by nationality"
+        nationality: CountryCode @eq
+
+        "Filter by creation date range"
+        created_from: DateTime @where(operator: ">=", key: "created_at")
+        created_to: DateTime @where(operator: "<=", key: "created_at")
+
+        "Filter by date of birth range"
+        birth_from: DateTime @where(operator: ">=", key: "date_of_birth")
+        birth_to: DateTime @where(operator: "<=", key: "date_of_birth")
+
+        "Sort by field and direction"
+        orderBy: [OrderByClause!] @orderBy
+
+        "Number of items to show per page"
+        first: Int = 10
+
+        "Page number for pagination"
+        page: Int = 1
+    ): [Student!]! @paginate(defaultCount: 10)
+
+    "Get a specific student by ID"
+    student(id: ID! @eq): Student @find
+}
+
+"Available fields for sorting students"
+enum OrderByColumn {
+    ID
+    NAME
+    EMAIL
+    DATE_OF_BIRTH
+    GENDER
+    CREATED_AT
+    UPDATED_AT
+}
+
+"Input type for ordering results"
+input OrderByClause {
+    "Column to order by"
+    column: OrderByColumn!
+
+    "Direction of ordering"
+    order: SortOrder!
+}
+
+"Sort order options"
+enum SortOrder {
+    ASC
+    DESC
+}

@@ -1,5 +1,10 @@
-schema: ['graphql-generated/schema.graphql']
-documents: '**/**/*.graphql'
+schema:
+  [
+    "graphql-generated/schema.graphql",
+    "schema-directives.graphql",
+    "programmatic-types.graphql",
+  ]
+documents: "**/**/*.graphql"
 extensions:
   endpoints:
     default:

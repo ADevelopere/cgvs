@@ -8,7 +8,6 @@ extend type Query {
     "Get a specific template by ID"
     template(id: ID! @eq): Template
     @find
-    @model(class: "App\\Models\\Template")
     # @guard
     # @can(ability: "viewTemplate", find: "id")
     

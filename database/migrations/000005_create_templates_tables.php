@@ -87,20 +87,58 @@ return new class extends Migration
         //     ))
         // )');
 
-        // Restore the column definitions here:
+        // Replace template_elements table with base table and specific element type tables
         Schema::create('template_elements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('template_id')->constrained()->onDelete('cascade');
-            $table->string('element_type'); // e.g., 'text', 'image', 'variable'
+            $table->string('type'); // Discriminator: 'static_text', 'data_text', 'data_date', 'image', 'qr_code'
             $table->float('x_coordinate');
             $table->float('y_coordinate');
-            $table->json('properties')->nullable(); // width, height, content for text, etc.
             $table->integer('font_size')->nullable();
             $table->string('color')->nullable();
             $table->string('alignment')->nullable(); // left, center, right
             $table->string('font_family')->nullable();
             $table->string('language_constraint')->nullable(); // e.g., 'ar', 'en'
-            $table->string('source_field')->nullable(); // For variable elements, links to TemplateVariable name
+            $table->timestamps();
+        });
+
+        // Static text elements (like titles, labels)
+        Schema::create('template_static_text_elements', function (Blueprint $table) {
+            $table->foreignId('element_id')->primary()->constrained('template_elements')->onDelete('cascade');
+            $table->text('content'); // The actual text content
+            $table->timestamps();
+        });
+
+        // Dynamic text elements (from student, variable, or certificate)
+        Schema::create('template_data_text_elements', function (Blueprint $table) {
+            $table->foreignId('element_id')->primary()->constrained('template_elements')->onDelete('cascade');
+            $table->enum('source_type', ['student', 'variable', 'certificate']);
+            $table->string('source_field'); // Field name from the source table
+            $table->timestamps();
+        });
+
+        // Dynamic date elements (from student, variable, or certificate)
+        Schema::create('template_data_date_elements', function (Blueprint $table) {
+            $table->foreignId('element_id')->primary()->constrained('template_elements')->onDelete('cascade');
+            $table->enum('source_type', ['student', 'variable', 'certificate']);
+            $table->string('source_field'); // Field name from the source table
+            $table->string('date_format')->nullable(); // e.g., 'Y-m-d', 'd/m/Y'
+            $table->timestamps();
+        });
+
+        // Image elements
+        Schema::create('template_image_elements', function (Blueprint $table) {
+            $table->foreignId('element_id')->primary()->constrained('template_elements')->onDelete('cascade');
+            $table->string('image_url');
+            $table->integer('width')->nullable();
+            $table->integer('height')->nullable();
+            $table->timestamps();
+        });
+
+        // QR Code elements
+        Schema::create('template_qr_code_elements', function (Blueprint $table) {
+            $table->foreignId('element_id')->primary()->constrained('template_elements')->onDelete('cascade');
+            $table->integer('size')->nullable(); // Size in pixels
             $table->timestamps();
         });
 
@@ -108,11 +146,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('template_id')->constrained()->onDelete('cascade');
             $table->string('name'); // Unique identifier within the template
-            $table->string('type'); // e.g., 'text', 'date', 'number', 'gender'
+            $table->string('type'); // Discriminator: 'text', 'date', 'number', 'select'
             $table->text('description')->nullable();
-            $table->json('validation_rules')->nullable(); // Laravel validation rules
             $table->string('preview_value')->nullable(); // Default value for preview
-            $table->boolean('is_key')->default(false); // Part of the unique key for recipients
             $table->boolean('required')->default(false);
             $table->unsignedInteger('order'); // Display order
             $table->timestamps();
@@ -120,36 +156,108 @@ return new class extends Migration
             $table->unique(['template_id', 'name']); // Variable names must be unique per template
         });
 
-        Schema::create('template_recipients', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('template_id')->constrained()->onDelete('cascade');
-            $table->boolean('is_valid')->default(false); // Flag indicating if all required variables are present and valid
-            $table->json('validation_errors')->nullable(); // Stores validation errors if is_valid is false
+        // Text variable specific properties
+        Schema::create('template_text_variables', function (Blueprint $table) {
+            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            $table->unsignedInteger('min_length')->nullable();
+            $table->unsignedInteger('max_length')->nullable();
+            $table->string('pattern')->nullable(); // Regex pattern for validation
             $table->timestamps();
         });
 
-        Schema::create('recipient_variable_values', function (Blueprint $table) {
+        // Number variable specific properties
+        Schema::create('template_number_variables', function (Blueprint $table) {
+            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            $table->decimal('min_value', 65, 10)->nullable();
+            $table->decimal('max_value', 65, 10)->nullable();
+            $table->unsignedInteger('decimal_places')->nullable();
+            $table->timestamps();
+        });
+
+        // Date variable specific properties
+        Schema::create('template_date_variables', function (Blueprint $table) {
+            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            $table->date('min_date')->nullable();
+            $table->date('max_date')->nullable();
+            $table->string('format')->nullable(); // e.g., 'Y-m-d', 'd/m/Y'
+            $table->timestamps();
+        });
+
+        // Select/Choice variable specific properties
+        Schema::create('template_select_variables', function (Blueprint $table) {
+            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            $table->json('options'); // Array of possible values
+            $table->boolean('multiple')->default(false); // Whether multiple selections are allowed
+            $table->timestamps();
+        });
+
+        Schema::create('template_recipient_groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('template_recipient_id')->constrained('template_recipients')->onDelete('cascade');
-            $table->foreignId('template_variable_id')->constrained('template_variables')->onDelete('cascade');
-            $table->text('value')->nullable(); // Actual value provided for the variable
-            $table->string('value_indexed')->nullable(); // Indexed value for faster searching, especially for key variables
+            $table->foreignId('template_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->name('trg_template_fk');
+            $table->string('name'); // Name of the group
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('template_recipient_group_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('template_recipient_group_id')
+                ->constrained('template_recipient_groups')
+                ->onDelete('cascade')
+                ->name('trgi_group_fk');
+            $table->foreignId('student_id')
+                ->constrained('students')
+                ->onDelete('cascade')
+                ->name('trgi_student_fk');
+            $table->timestamps();
+
+            // Ensure a student can't be in multiple groups for the same template
+            $table->unique(['student_id', 'template_recipient_group_id'], 'trgi_student_group_unique');
+        });
+
+        Schema::create('recipient_group_item_variable_values', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('template_recipient_group_item_id')
+                ->constrained('template_recipient_group_items')
+                ->onDelete('cascade')
+                ->name('rgiv_group_item_fk');
+            $table->foreignId('template_variable_id')
+                ->constrained('template_variables')
+                ->onDelete('cascade')
+                ->name('rgiv_variable_fk');
+            $table->text('value')->nullable();
+            $table->string('value_indexed')->nullable();
             $table->timestamps();
 
             // Index for efficient lookup of recipients based on key variable values
-            $table->unique(['template_recipient_id', 'value_indexed', 'template_variable_id'], 'unique_recipient_key_value');
-            // Consider adding an index on value_indexed if searching across recipients by value is common
-            // $table->index('value_indexed');
+            $table->unique(
+                ['template_recipient_group_item_id', 'template_variable_id'],
+                'rgiv_group_item_variable_unique'
+            );
+            $table->index('value_indexed', 'rgiv_value_idx');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('recipient_variable_values');
-        Schema::dropIfExists('template_recipients');
+        Schema::dropIfExists('recipient_group_item_variable_values');
+        Schema::dropIfExists('template_recipient_group_items');
+        Schema::dropIfExists('template_recipient_groups');
+        Schema::dropIfExists('template_select_variables');
+        Schema::dropIfExists('template_date_variables');
+        Schema::dropIfExists('template_number_variables');
+        Schema::dropIfExists('template_text_variables');
         Schema::dropIfExists('template_variables');
+        Schema::dropIfExists('template_qr_code_elements');
+        Schema::dropIfExists('template_image_elements');
+        Schema::dropIfExists('template_data_date_elements');
+        Schema::dropIfExists('template_data_text_elements');
+        Schema::dropIfExists('template_static_text_elements');
         Schema::dropIfExists('template_elements');
         Schema::dropIfExists('templates');
-        Schema::dropIfExists('template_categories'); // Drop in reverse order
+        Schema::dropIfExists('template_categories');
     }
 };
