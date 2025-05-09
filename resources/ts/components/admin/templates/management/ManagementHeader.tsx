@@ -195,7 +195,7 @@ const ManagementHeader: React.FC<ManagementHeaderProps> = ({
             setDashboardSlot("middleActions", null);
             setDashboardSlot("titleRenderer", null);
         };
-    }, [activeTab]);
+    }, []);
 
     return <ManagementTabList onChange={onChange} activeTab={activeTab} />;
 };

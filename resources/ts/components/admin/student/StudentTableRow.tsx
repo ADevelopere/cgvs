@@ -11,6 +11,8 @@ import {
     Box,
     MenuItem,
     Select,
+    Typography,
+    useTheme,
 } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -19,20 +21,29 @@ import CountrySelect from "@/components/input/CountrySelect";
 import countries from "@/utils/country";
 import type { CountryType } from "@/utils/country";
 import type { Student, UpdateStudentInput } from "@/graphql/generated/types";
-import { StudentTableColumns, type StudentTableColumnType } from "./types";
+import { StudentTableColumnType } from "./types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 interface StudentTableRowProps {
     student: Student;
+    columns: StudentTableColumnType[];
+    onStartResize: (columnIndex: number, clientX: number, cellElementId: string) => void;
 }
 
-export default function StudentTableRow({ student }: StudentTableRowProps) {
+export default function StudentTableRow({
+    student,
+    columns,
+    onStartResize,
+}: StudentTableRowProps) {
     const {
         selectedStudents,
         updateStudent,
         deleteStudent,
         toggleStudentSelect,
     } = useStudentManagement();
+
+    const theme = useTheme();
+    const isRtl = theme.direction === 'rtl';
 
     const countryStrings = useAppTranslation("countryTranslations");
 
@@ -115,7 +126,18 @@ export default function StudentTableRow({ student }: StudentTableRowProps) {
     const renderCellContent = (column: StudentTableColumnType) => {
         if (editingCell?.field === column.id) {
             if (!column.editable) {
-                return formatCellValue(student[column.id], column.id);
+                console.log("Column is not editable");
+                return (
+                    <Typography
+                        sx={{
+                            fontSize: "0.875rem",
+                            color: "text.secondary",
+                        }}
+                        className="cell-content"
+                    >
+                        {formatCellValue(student[column.id], column.id)}
+                    </Typography>
+                );
             }
 
             if (column.id === "gender") {
@@ -179,6 +201,7 @@ export default function StudentTableRow({ student }: StudentTableRowProps) {
                     onBlur={handleCellEditSave}
                     autoFocus
                     fullWidth
+                    className="cell-content"
                 />
             );
         }
@@ -233,6 +256,7 @@ export default function StudentTableRow({ student }: StudentTableRowProps) {
                         ? { backgroundColor: "rgba(0, 0, 0, 0.04)" }
                         : {},
                 }}
+                id={`cell-${student.id}-${column.id}`}
             >
                 {formatCellValue(value, column.id)}
             </Box>
@@ -241,20 +265,63 @@ export default function StudentTableRow({ student }: StudentTableRowProps) {
 
     return (
         <TableRow hover>
-            <TableCell padding="checkbox">
+            <TableCell
+                padding="checkbox"
+                sx={{
+                    borderRight: "1px solid rgba(224, 224, 224, 1)",
+                    width: "60px",
+                    position: "relative",
+                }}
+            >
                 <Checkbox
                     checked={selectedStudents.includes(student.id)}
                     onChange={() => toggleStudentSelect(student.id)}
                 />
             </TableCell>
 
-            {StudentTableColumns.map((column) => (
-                <TableCell key={`${student.id}-${column.id}`}>
+            {columns.map((column, index) => (
+                <TableCell
+                    key={`${student.id}-${column.id}`}
+                    sx={{
+                        px: 1,
+                        borderRight: "1px solid rgba(224, 224, 224, 1)",
+                        "&:last-child": {
+                            borderRight: "none",
+                        },
+                        width: column.width,
+                        minWidth: column.minWidth,
+                        maxWidth: column.maxWidth,
+                        position: "relative",
+                        overflow: "hidden",
+                        textWrap: "nowrap",
+                    }}
+                    id={`cellTableCell-${student.id}-${column.id}`}
+                    padding="checkbox"
+                >
                     {renderCellContent(column)}
+                    {/* Resizer */}
+                    {index < columns.length && (
+                        <Box
+                            onMouseDown={(e) => { e.preventDefault(); onStartResize(index, e.clientX, `cellTableCell-${student.id}-${column.id}`); }}
+                            onTouchStart={(e) => { e.preventDefault(); onStartResize(index, e.touches[0].clientX, `cellTableCell-${student.id}-${column.id}`); }}
+                            sx={{
+                                position: 'absolute',
+                                top: 0,
+                                bottom: 0,
+                                [isRtl ? 'left' : 'right']: '-5px',
+                                width: '10px',
+                                cursor: 'col-resize',
+                                zIndex: 10,
+                                '&:hover': {
+                                    backgroundColor: theme.palette.action.hover,
+                                }
+                            }}
+                        />
+                    )}
                 </TableCell>
             ))}
 
-            <TableCell>
+            <TableCell padding="checkbox" sx={{ width: "100px", minWidth: '80px' }}>
                 <IconButton
                     color="error"
                     onClick={handleDeleteStudent}

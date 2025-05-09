@@ -6,15 +6,21 @@ export type StudentTableColumnType = {
     sortable: boolean;
     filterable: boolean;
     editable: boolean;
+    width?: number | string;
+    minWidth?: number | string;
+    maxWidth?: number | string;
+    widthStorageKey?: string;
 };
 
-export const StudentTableColumns: StudentTableColumnType[] = [
+export const initialStudentTableColumns: StudentTableColumnType[] = [
     {
         id: "name",
         label: "Name",
         sortable: true,
         filterable: true,
         editable: true,
+        width: "20%",
+        widthStorageKey: "student_table_student_name_column_width",
     },
     {
         id: "email",
@@ -22,6 +28,8 @@ export const StudentTableColumns: StudentTableColumnType[] = [
         sortable: true,
         filterable: true,
         editable: true,
+        width: "20%",
+        widthStorageKey: "student_table_student_email_column_width",
     },
     {
         id: "date_of_birth",
@@ -29,6 +37,8 @@ export const StudentTableColumns: StudentTableColumnType[] = [
         sortable: true,
         filterable: true,
         editable: true,
+        width: "20%",
+        widthStorageKey: "student_table_student_date_of_birth_column_width",
     },
     {
         id: "gender",
@@ -36,6 +46,8 @@ export const StudentTableColumns: StudentTableColumnType[] = [
         sortable: true,
         filterable: true,
         editable: true,
+        width: "20%",
+        widthStorageKey: "student_table_student_gender_column_width",
     },
     {
         id: "nationality",
@@ -43,13 +55,17 @@ export const StudentTableColumns: StudentTableColumnType[] = [
         sortable: true,
         filterable: true,
         editable: true,
+        width: "20%",
+        widthStorageKey: "student_table_student_nationality_column_width",
     },
     {
         id: "phone_number",
         label: "Phone Number",
-        sortable: true,
+        sortable: false,
         filterable: true,
         editable: true,
+        width: "20%",
+        widthStorageKey: "student_table_student_phone_number_column_width",
     },
     {
         id: "created_at",
@@ -57,6 +73,8 @@ export const StudentTableColumns: StudentTableColumnType[] = [
         sortable: true,
         filterable: true,
         editable: false,
+        width: "20%",
+        widthStorageKey: "student_table_student_created_at_column_width",
     },
     {
         id: "updated_at",
@@ -64,6 +82,8 @@ export const StudentTableColumns: StudentTableColumnType[] = [
         sortable: true,
         filterable: true,
         editable: false,
+        width: "20%",
+        widthStorageKey: "student_table_student_updated_at_column_width",
     },
 ];
 

@@ -1,6 +1,8 @@
 import StudentTranslations from "../components/Student";
 
 const student: StudentTranslations = {
+    studentManagement: "إدارة الطلاب",
+
     // header columns, same as column id values
     name: "الاسم",
     email: "البريد الإلكتروني",

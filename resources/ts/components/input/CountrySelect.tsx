@@ -10,13 +10,14 @@ import useAppTranslation from "@/locale/useAppTranslation";
 
 // Type definition for the component props
 export type CountrySelectProps = {
-    country: CountryType;
+    country?: CountryType;
     setCountry: (countryType: CountryType) => void;
     autoComplete?: string;
     fullWidth?: boolean;
     required?: boolean;
     label?: string;
     onBlur?: () => void;
+    style?: React.CSSProperties;
 };
 
 /**
@@ -42,6 +43,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
     required,
     label,
     onBlur,
+    style,
 }: CountrySelectProps): React.ReactNode => {
     // Translation strings for country names
     const strings = useAppTranslation("countryTranslations");
@@ -52,6 +54,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
             options={countries}
             autoHighlight
             value={country}
+            sx={{ ...style }}
             onChange={(_, newValue) => {
                 if (newValue) {
                     setCountry(newValue);

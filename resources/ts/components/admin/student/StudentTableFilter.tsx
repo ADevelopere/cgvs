@@ -17,32 +17,15 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
-import StudentTranslations from "@/locale/components/Student";
+import { CountryCode, Student } from "@/graphql/generated/types";
+import CountrySelect from "@/components/input/CountrySelect";
+import countries from "@/utils/country";
 
 interface StudentTableFilterProps {
     anchorEl: HTMLButtonElement | null;
-    columnId: string;
+    columnId: keyof Student | "actions" | null;
     onClose: () => void;
 }
-
-// export type StudentsQueryVariables = Exact<{
-//   birth_from?: InputMaybe<Scalars['DateTime']['input']>;
-//   birth_to?: InputMaybe<Scalars['DateTime']['input']>;
-//   created_from?: InputMaybe<Scalars['DateTime']['input']>;
-//   created_to?: InputMaybe<Scalars['DateTime']['input']>;
-//   email?: InputMaybe<Scalars['String']['input']>;
-//   first: Scalars['Int']['input'];
-//   gender?: InputMaybe<StudentGender>;
-//   name?: InputMaybe<Scalars['String']['input']>;
-//   nationality?: InputMaybe<CountryCode>;
-//   orderBy?: InputMaybe<Array<OrderByClause> | OrderByClause>;
-//   page?: InputMaybe<Scalars['Int']['input']>;
-//   phone_number?: InputMaybe<Scalars['String']['input']>;
-// }>;
-
-// setQueryParams: (params: Partial<StudentsQueryVariables>) => void;
-
-// for name and email
 const StringFilter: React.FC<{
     value: string;
     onChange: (value: string) => void;
@@ -67,7 +50,7 @@ const DateFilter: React.FC<{
     label: string;
 }> = ({ value, onFromChange, onToChange, label }) => {
     return (
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="column" spacing={1}>
             <TextField
                 label={label + " " + "from"}
                 value={value}
@@ -76,6 +59,11 @@ const DateFilter: React.FC<{
                 size="small"
                 fullWidth
                 type="date"
+                slotProps={{
+                    inputLabel: {
+                        shrink: true,
+                    },
+                }}
             />
             <TextField
                 label={label + " " + "to"}
@@ -85,6 +73,11 @@ const DateFilter: React.FC<{
                 size="small"
                 fullWidth
                 type="date"
+                slotProps={{
+                    inputLabel: {
+                        shrink: true,
+                    },
+                }}
             />
         </Stack>
     );
@@ -111,6 +104,24 @@ const GenderFilter: React.FC<{
     );
 };
 
+const CountryFilter: React.FC<{
+    value: CountryCode;
+    onChange: (value: CountryCode) => void;
+    label: string;
+}> = ({ value, onChange, label }) => {
+    return (
+        <CountrySelect
+            country={countries.find((c) => c.code === value)}
+            setCountry={(country) => {
+                onChange(country.code);
+            }}
+            onBlur={() => {}}
+            fullWidth
+            label={label}
+        />
+    );
+};
+
 export default function StudentTableFilter({
     anchorEl,
     columnId,
@@ -129,18 +140,10 @@ export default function StudentTableFilter({
     }, [columnId, strings]);
 
     // Apply filter
-    // const applyFilter = () => {
-    //     if (columnId && filterValue) {
-    //         setQueryParams({ filter: { [columnId]: filterValue } });
-    //         onClose();
-    //     }
-    // };
-
-    // Apply filter
     const applyFilter = () => {
         if (!columnId || !filterValue) return;
-        
-        if (columnId === 'birth_date' || columnId === 'created_at') {
+
+        if (columnId === "date_of_birth" || columnId === "created_at") {
             // Date fields are handled directly in the DateFilter component
             onClose();
             return;
@@ -152,15 +155,15 @@ export default function StudentTableFilter({
 
     const clearFilter = () => {
         setFilterValue("");
-        if (columnId === 'birth_date' || columnId === 'created_at') {
+        if (columnId === "date_of_birth" || columnId === "created_at") {
             // For date filters, we need to remove both from and to parameters
             setQueryParams({
                 [`${columnId}_from`]: undefined,
-                [`${columnId}_to`]: undefined
+                [`${columnId}_to`]: undefined,
             });
         } else {
             // For other filters, remove the parameter by setting it to undefined
-            setQueryParams({ [columnId]: undefined });
+            setQueryParams({ [columnId as string]: undefined });
         }
         onClose();
     };
@@ -177,7 +180,7 @@ export default function StudentTableFilter({
                         label={filterByText}
                     />
                 );
-            case "birth_date":
+            case "date_of_birth":
             case "created_at":
                 return (
                     <DateFilter
@@ -195,6 +198,14 @@ export default function StudentTableFilter({
                 return (
                     <GenderFilter
                         value={filterValue}
+                        onChange={setFilterValue}
+                        label={filterByText}
+                    />
+                );
+            case "nationality":
+                return (
+                    <CountryFilter
+                        value={filterValue as CountryCode}
                         onChange={setFilterValue}
                         label={filterByText}
                     />
@@ -233,9 +244,7 @@ export default function StudentTableFilter({
                 </Typography>
 
                 {/* filter input */}
-                <Box sx={{ px: 1 }}>
-                    {renderFilterInput()}
-                </Box>
+                <Box sx={{ px: 1 }}>{renderFilterInput()}</Box>
 
                 <Stack direction="row" spacing={1} justifyContent="flex-end">
                     {/* button that will clear the filter, using mui button, contains text followed by icon */}
