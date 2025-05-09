@@ -11,26 +11,6 @@ query students($birth_from: DateTime, $birth_to: DateTime, $created_from: DateTi
             date_of_birth
             email
             phone_number
-            certificates{
-                id
-                created_at
-                release_date
-                verification_code
-                template {
-                    id
-                    name
-                }
-                recipientGroup{
-                    id
-                    name
-                }
-            }
-            recipientGroups{
-                id
-                name
-                description
-                updated_at
-            }
             created_at
             updated_at
         }

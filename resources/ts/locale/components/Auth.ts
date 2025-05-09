@@ -38,6 +38,8 @@ type AuthTranslations = {
     changing: string;
 
     signinButton: string;
+    orText: string;
+    dontHaveAccountQuestion: string;
     createAccount: string;
     unknownError: string;
 

@@ -1,10 +1,11 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import ErrorBoundary from "../common/ErrorBoundary";
+import ErrorBoundary from "../../error/ErrorBoundary";
 import {
     Dashboard as DashboardIcon,
     Description as TemplatesIcon,
     Category as CategoryIcon,
+    People as StudentsIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
@@ -12,7 +13,7 @@ import { NavigationProvider } from "@/contexts/NavigationContext";
 import DashboardLayout from "@/components/admin/layout/DashboardLayout";
 import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { HomeIcon } from "lucide-react";
-import DashboardEndActions from "../common/DashboardEndActions";
+import DashboardEndActions from "../../common/DashboardEndActions";
 import { TemplateCategoryManagementProvider } from "@/contexts/template/TemplateCategoryManagementContext";
 
 const NAVIGATION: Navigation = [
@@ -34,6 +35,11 @@ const NAVIGATION: Navigation = [
         segment: "admin/templates",
         title: "الشهادات",
         icon: <TemplatesIcon />,
+    },
+    {
+        segment: "admin/students",
+        title: "الطلاب",
+        icon: <StudentsIcon />,
     },
 ];
 
@@ -70,7 +76,7 @@ const AdminLayout: React.FC = () => {
                 >
                     <DashboardLayout>
                         <TemplateCategoryManagementProvider>
-                                <Outlet />
+                            <Outlet />
                         </TemplateCategoryManagementProvider>
                     </DashboardLayout>
                 </DashboardLayoutProvider>

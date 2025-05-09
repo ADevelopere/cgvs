@@ -7,8 +7,8 @@ type Student {
     date_of_birth: Date
     gender: StudentGender
     nationality: CountryCode
-    recipientGroups: [TemplateRecipientGroup!]! @belongsToMany
-    certificates: [Certificate!]! @hasMany
+    recipientGroups: [TemplateRecipientGroup!] @belongsToMany
+    certificates: [Certificate!] @hasMany
     created_at: DateTime!
     updated_at: DateTime!
 }

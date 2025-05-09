@@ -39,6 +39,8 @@ const auth: AuthTranslations = {
   changing: "جارٍ التغيير...",
 
   signinButton: "تسجيل الدخول",
+  orText: "أو",
+  dontHaveAccountQuestion: "ليس لديك حساب؟",
   createAccount: "إنشاء حساب جديد",
   unknownError: "حدث خطأ غير معروف.",
 

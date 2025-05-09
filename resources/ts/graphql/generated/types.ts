@@ -32,7 +32,6 @@ export type AuthPayload = {
 export type Certificate = {
   __typename?: 'Certificate';
   created_at: Scalars['DateTime']['output'];
-  deleted_at?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   recipientGroup: TemplateRecipientGroup;
   release_date: Scalars['Date']['output'];
@@ -633,17 +632,16 @@ export type StaticTextElement = {
 /** A student in the system */
 export type Student = {
   __typename?: 'Student';
-  certificates: Array<Certificate>;
+  certificates?: Maybe<Array<Certificate>>;
   created_at: Scalars['DateTime']['output'];
   date_of_birth?: Maybe<Scalars['Date']['output']>;
-  deleted_at?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<StudentGender>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   nationality?: Maybe<CountryCode>;
   phone_number?: Maybe<Scalars['String']['output']>;
-  recipientGroups: Array<TemplateRecipientGroup>;
+  recipientGroups?: Maybe<Array<TemplateRecipientGroup>>;
   updated_at: Scalars['DateTime']['output'];
 };
 
@@ -685,7 +683,6 @@ export type TemplateCategory = {
   __typename?: 'TemplateCategory';
   childCategories: Array<TemplateCategory>;
   created_at: Scalars['DateTime']['output'];
-  deleted_at?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -921,6 +918,27 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogoutResponse', message: string } };
 
+export type CreateStudentMutationVariables = Exact<{
+  input: CreateStudentInput;
+}>;
+
+
+export type CreateStudentMutation = { __typename?: 'Mutation', createStudent: { __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any } };
+
+export type DeleteStudentMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteStudentMutation = { __typename?: 'Mutation', deleteStudent: { __typename?: 'Student', id: string, name: string, created_at: any, updated_at: any } };
+
+export type UpdateStudentMutationVariables = Exact<{
+  input: UpdateStudentInput;
+}>;
+
+
+export type UpdateStudentMutation = { __typename?: 'Mutation', updateStudent: { __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any } };
+
 export type CreateTemplateMutationVariables = Exact<{
   input: CreateTemplateInput;
 }>;
@@ -1011,7 +1029,7 @@ export type StudentQueryVariables = Exact<{
 }>;
 
 
-export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any, certificates: Array<{ __typename?: 'Certificate', id: string, release_date: any, verification_code: string, template: { __typename?: 'Template', id: string, name: string }, recipientGroup: { __typename?: 'TemplateRecipientGroup', id: string, name: string } }> } | null };
+export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any, certificates?: Array<{ __typename?: 'Certificate', id: string, release_date: any, verification_code: string, template: { __typename?: 'Template', id: string, name: string }, recipientGroup: { __typename?: 'TemplateRecipientGroup', id: string, name: string } }> | null } | null };
 
 export type StudentsQueryVariables = Exact<{
   birth_from?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1029,7 +1047,7 @@ export type StudentsQueryVariables = Exact<{
 }>;
 
 
-export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'StudentPaginator', data: Array<{ __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any, certificates: Array<{ __typename?: 'Certificate', id: string, created_at: any, release_date: any, verification_code: string, template: { __typename?: 'Template', id: string, name: string }, recipientGroup: { __typename?: 'TemplateRecipientGroup', id: string, name: string } }>, recipientGroups: Array<{ __typename?: 'TemplateRecipientGroup', id: string, name: string, description?: string | null, updated_at: any }> }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
+export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'StudentPaginator', data: Array<{ __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1179,6 +1197,124 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const CreateStudentDocument = gql`
+    mutation createStudent($input: CreateStudentInput!) {
+  createStudent(input: $input) {
+    id
+    name
+    gender
+    nationality
+    date_of_birth
+    email
+    phone_number
+    created_at
+    updated_at
+  }
+}
+    `;
+export type CreateStudentMutationFn = Apollo.MutationFunction<CreateStudentMutation, CreateStudentMutationVariables>;
+
+/**
+ * __useCreateStudentMutation__
+ *
+ * To run a mutation, you first call `useCreateStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateStudentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createStudentMutation, { data, loading, error }] = useCreateStudentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateStudentMutation(baseOptions?: Apollo.MutationHookOptions<CreateStudentMutation, CreateStudentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateStudentMutation, CreateStudentMutationVariables>(CreateStudentDocument, options);
+      }
+export type CreateStudentMutationHookResult = ReturnType<typeof useCreateStudentMutation>;
+export type CreateStudentMutationResult = Apollo.MutationResult<CreateStudentMutation>;
+export type CreateStudentMutationOptions = Apollo.BaseMutationOptions<CreateStudentMutation, CreateStudentMutationVariables>;
+export const DeleteStudentDocument = gql`
+    mutation deleteStudent($id: ID!) {
+  deleteStudent(id: $id) {
+    id
+    name
+    created_at
+    updated_at
+  }
+}
+    `;
+export type DeleteStudentMutationFn = Apollo.MutationFunction<DeleteStudentMutation, DeleteStudentMutationVariables>;
+
+/**
+ * __useDeleteStudentMutation__
+ *
+ * To run a mutation, you first call `useDeleteStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteStudentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteStudentMutation, { data, loading, error }] = useDeleteStudentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteStudentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteStudentMutation, DeleteStudentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteStudentMutation, DeleteStudentMutationVariables>(DeleteStudentDocument, options);
+      }
+export type DeleteStudentMutationHookResult = ReturnType<typeof useDeleteStudentMutation>;
+export type DeleteStudentMutationResult = Apollo.MutationResult<DeleteStudentMutation>;
+export type DeleteStudentMutationOptions = Apollo.BaseMutationOptions<DeleteStudentMutation, DeleteStudentMutationVariables>;
+export const UpdateStudentDocument = gql`
+    mutation updateStudent($input: UpdateStudentInput!) {
+  updateStudent(input: $input) {
+    id
+    name
+    gender
+    nationality
+    date_of_birth
+    email
+    phone_number
+    created_at
+    updated_at
+  }
+}
+    `;
+export type UpdateStudentMutationFn = Apollo.MutationFunction<UpdateStudentMutation, UpdateStudentMutationVariables>;
+
+/**
+ * __useUpdateStudentMutation__
+ *
+ * To run a mutation, you first call `useUpdateStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateStudentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateStudentMutation, { data, loading, error }] = useUpdateStudentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateStudentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateStudentMutation, UpdateStudentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateStudentMutation, UpdateStudentMutationVariables>(UpdateStudentDocument, options);
+      }
+export type UpdateStudentMutationHookResult = ReturnType<typeof useUpdateStudentMutation>;
+export type UpdateStudentMutationResult = Apollo.MutationResult<UpdateStudentMutation>;
+export type UpdateStudentMutationOptions = Apollo.BaseMutationOptions<UpdateStudentMutation, UpdateStudentMutationVariables>;
 export const CreateTemplateDocument = gql`
     mutation createTemplate($input: CreateTemplateInput!) {
   createTemplate(input: $input) {
@@ -1765,26 +1901,6 @@ export const StudentsDocument = gql`
       date_of_birth
       email
       phone_number
-      certificates {
-        id
-        created_at
-        release_date
-        verification_code
-        template {
-          id
-          name
-        }
-        recipientGroup {
-          id
-          name
-        }
-      }
-      recipientGroups {
-        id
-        name
-        description
-        updated_at
-      }
       created_at
       updated_at
     }
