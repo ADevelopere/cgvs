@@ -1,27 +1,19 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState, useCallback, useRef } from "react";
-import {
-    Table,
-    TableBody,
-    TableContainer,
-    Paper,
-    Typography,
-    Stack,
-    useTheme,
-} from "@mui/material";
+import { Paper, Stack, Typography, useTheme, Box } from "@mui/material";
+import { People } from "@mui/icons-material";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
+import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import StudentTableHeader from "./StudentTableHeader";
-import StudentTableRow from "./StudentTableRow";
 import StudentTableFooter from "./StudentTableFooter";
 import StudentTableFilter from "./StudentTableFilter";
 import { initialStudentTableColumns, StudentTableColumnType } from "./types";
-import { Student } from "@/graphql/generated/types";
-import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import useAppTranslation from "@/locale/useAppTranslation";
-import { People } from "@mui/icons-material";
+import { useCallback, useEffect, useRef, useState } from "react";
+import StudentTableRow from "./StudentTableRow";
 import { useAppTheme } from "@/contexts/ThemeContext";
+import { Student } from "@/graphql/generated/types";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");
@@ -86,7 +78,7 @@ export default function StudentTable() {
         };
     }, [setDashboardSlot]);
 
-    // Resize logic state   
+    // Resize logic state
     const resizingColumnRef = useRef<{
         columnIndex: number;
         startX: number;
@@ -288,21 +280,36 @@ export default function StudentTable() {
                 flexDirection: "column",
                 height: "100%",
                 overflow: "hidden",
-                maxWidth: 400
+                maxWidth: "calc(100vw - 48px)",
             }}
         >
-            <TableContainer sx={{ flexGrow: 1, overflow: "auto" }}>
-                <Table
-                    stickyHeader
-                    aria-label="student management table"
-                    // sx={{ tableLayout: "fixed" }}
-                >
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    overflow: "auto",
+                    "& table": {
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        tableLayout: "fixed",
+                        backgroundColor: "background.paper",
+                        color: "text.primary",
+                        borderColor: "divider",
+                    },
+                    "& tr:hover td": {
+                        backgroundColor: "action.hover",
+                    },
+                    "& th, & td": {
+                        borderColor: "divider",
+                    },
+                }}
+            >
+                <table>
                     <StudentTableHeader
                         columns={columns}
                         onFilterClick={handleFilterClick}
                         onStartResize={startResize}
                     />
-                    <TableBody>
+                    <tbody>
                         {students.map((student) => (
                             <StudentTableRow
                                 key={student.id}
@@ -311,9 +318,9 @@ export default function StudentTable() {
                                 onStartResize={startResize}
                             />
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    </tbody>
+                </table>
+            </Box>
 
             <StudentTableFooter />
 

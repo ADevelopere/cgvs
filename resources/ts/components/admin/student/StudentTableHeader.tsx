@@ -2,9 +2,6 @@
 
 import type React from "react";
 import {
-    TableCell,
-    TableHead,
-    TableRow,
     Checkbox,
     IconButton,
     Box,
@@ -48,7 +45,9 @@ export default function StudentTableHeader({
     useEffect(() => {
         console.log(
             "StudentTableHeader column's width updated ",
-            JSON.stringify(columns.map((column) => column.width)),
+            JSON.stringify(
+                columns.map((column) => column.label + ": " + column.width),
+            ),
         );
     }, [columns]);
 
@@ -151,17 +150,31 @@ export default function StudentTableHeader({
     }, [getSortDirection, strings]);
 
     return (
-        <TableHead>
-            <TableRow>
-                <TableCell
-                    padding="checkbox"
-                    sx={{
-                        borderRight: "1px solid rgba(224, 224, 224, 1)",
-                        width: "60px",
-                        position: "relative",
+        <thead>
+            <tr
+                style={{
+                    borderBottom: `1px solid ${theme.palette.divider}`,
+                }}
+            >
+                <th
+                    style={{
+                        borderInlineEnd: `1px solid ${theme.palette.divider}`,
+                        width: 40,
+                        backgroundColor: theme.palette.background.paper,
+                        boxShadow: `0 1px 0 ${theme.palette.divider}`,
+                        color: theme.palette.text.primary,
+                        padding: 0,
                     }}
                 >
                     <Checkbox
+                        slotProps={{
+                            root: {
+                                sx: {
+                                    width: 40,
+                                    height: 40,
+                                },
+                            },
+                        }}
                         indeterminate={
                             selectedStudents.length > 0 &&
                             selectedStudents.length < students.length
@@ -172,22 +185,26 @@ export default function StudentTableHeader({
                         }
                         onChange={handleSelectAll}
                     />
-                </TableCell>
+                </th>
 
                 {columns.map((column, index) => (
-                    <TableCell
+                    <th
                         key={column.id}
-                        sx={{
-                            borderRight: "1px solid rgba(224, 224, 224, 1)",
-                            "&:last-child": {
-                                borderRight: "none",
-                            },
+                        style={{
+                            paddingInlineStart: 10,
+                            borderInlineEnd: `1px solid ${theme.palette.divider}`,
                             width: column.width,
                             minWidth: column.minWidth,
                             maxWidth: column.maxWidth,
                             position: "relative",
                             overflow: "hidden",
                             whiteSpace: "nowrap",
+                            padding: "16px 4px",
+                            backgroundColor: theme.palette.background.paper,
+                            top: 0,
+                            zIndex: 2,
+                            boxShadow: `0 1px 0 ${theme.palette.divider}`,
+                            color: theme.palette.text.primary,
                         }}
                         id={`headerTableCell-${column.id}`}
                     >
@@ -233,9 +250,7 @@ export default function StudentTableHeader({
                                             onClick={() =>
                                                 handleSort(column.id)
                                             }
-                                            sx={{
-                                                p: 0,
-                                            }}
+                                            sx={{ p: 0 }}
                                         >
                                             {getSortDirection(column.id) ===
                                                 "asc" && (
@@ -274,9 +289,7 @@ export default function StudentTableHeader({
                                                     ? "primary"
                                                     : "default"
                                             }
-                                            sx={{
-                                                p: 0,
-                                            }}
+                                            sx={{ p: 0 }}
                                         >
                                             <FilterListIcon fontSize="small" />
                                         </IconButton>
@@ -314,24 +327,28 @@ export default function StudentTableHeader({
                                             backgroundColor:
                                                 theme.palette.action.hover,
                                         },
-                                        backgroundColor: "red",
                                     }}
                                 />
                             )}
                         </Box>
-                    </TableCell>
+                    </th>
                 ))}
 
-                <TableCell
-                    sx={{
+                <th
+                    style={{
                         width: "100px",
                         minWidth: "80px",
                         whiteSpace: "nowrap",
+                        padding: "16px 4px",
+                        backgroundColor: theme.palette.background.paper,
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 2,
                     }}
                 >
                     {strings?.actions}
-                </TableCell>
-            </TableRow>
-        </TableHead>
+                </th>
+            </tr>
+        </thead>
     );
 }
