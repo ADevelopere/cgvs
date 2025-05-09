@@ -1,6 +1,8 @@
 type StudentTranslations = {
     [key: string]: string;
 
+    studentManagement: string;
+
     // header columns, same as column id values
     name: string;
     email: string;
