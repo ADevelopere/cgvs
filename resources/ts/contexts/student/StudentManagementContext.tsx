@@ -13,18 +13,12 @@ import { PaginatorInfo, Student } from "@/graphql/generated/types";
 import { mapSingleStudent } from "@/utils/student/student-mappers";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
-type StudentQueryParams = {
-    first?: number;
-    page?: number;
-    orderBy?: Array<Graphql.OrderByClause>;
-};
-
 type StudentManagementContextType = {
     // States
     students: Student[];
     selectedStudents: string[];
     paginatorInfo: PaginatorInfo | null;
-    queryParams: StudentQueryParams;
+    queryParams: Graphql.StudentsQueryVariables;
 
     // Mutations
     createStudent: (
@@ -36,7 +30,7 @@ type StudentManagementContextType = {
     deleteStudent: (id: string) => Promise<boolean>;
 
     // Query params methods
-    setQueryParams: (params: Partial<StudentQueryParams>) => void;
+    setQueryParams: (params: Partial<Graphql.StudentsQueryVariables>) => void;
     toggleStudentSelect: (studentId: string) => void;
 };
 
@@ -54,10 +48,10 @@ export const useStudentManagement = () => {
     return context;
 };
 
-const DEFAULT_QUERY_PARAMS: StudentQueryParams = {
-    first: 10,
+const DEFAULT_QUERY_PARAMS: Graphql.StudentsQueryVariables = {
+    first: 100,
     page: 1,
-    orderBy: [{ column: "created_at", order: "DESC" }],
+    orderBy: [{ column: "name", order: "ASC" }],
 };
 
 export const StudentManagementProvider: React.FC<{
@@ -71,7 +65,7 @@ export const StudentManagementProvider: React.FC<{
         null,
     );
     const [queryParams, setQueryParams] =
-        useState<StudentQueryParams>(DEFAULT_QUERY_PARAMS);
+        useState<Graphql.StudentsQueryVariables>(DEFAULT_QUERY_PARAMS);
 
     const {
         studentsQuery,
@@ -103,7 +97,7 @@ export const StudentManagementProvider: React.FC<{
     }, [queryParams, studentsQuery]);
 
     const handleSetQueryParams = useCallback(
-        (params: Partial<StudentQueryParams>) => {
+        (params: Partial<Graphql.StudentsQueryVariables>) => {
             setQueryParams((prev) => ({
                 ...prev,
                 ...params,
@@ -217,19 +211,16 @@ export const StudentManagementProvider: React.FC<{
         [deleteStudentMutation],
     );
 
-    const handleToggleStudentSelect = useCallback(
-        (studentId: string) => {
-            setSelectedStudents((prev) => {
-                // If student is already selected, remove them
-                if (prev.includes(studentId)) {
-                    return prev.filter((id) => id !== studentId);
-                }
-                // If not selected, clear previous selection and select this student (single select)
-                return [studentId];
-            });
-        },
-        [],
-    );
+    const handleToggleStudentSelect = useCallback((studentId: string) => {
+        setSelectedStudents((prev) => {
+            // If student is already selected, remove them
+            if (prev.includes(studentId)) {
+                return prev.filter((id) => id !== studentId);
+            }
+            // If not selected, clear previous selection and select this student (single select)
+            return [studentId];
+        });
+    }, []);
 
     return (
         <StudentManagementContext.Provider

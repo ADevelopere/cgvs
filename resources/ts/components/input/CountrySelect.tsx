@@ -16,6 +16,7 @@ export type CountrySelectProps = {
     fullWidth?: boolean;
     required?: boolean;
     label?: string;
+    onBlur?: () => void;
 };
 
 /**
@@ -40,6 +41,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
     fullWidth,
     required,
     label,
+    onBlur,
 }: CountrySelectProps): React.ReactNode => {
     // Translation strings for country names
     const strings = useAppTranslation("countryTranslations");
@@ -55,6 +57,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
                     setCountry(newValue);
                 }
             }}
+            onBlur={onBlur}
             getOptionLabel={(option) => countryNameByCode(strings, option.code)}
             renderOption={(
                 props: React.HTMLAttributes<HTMLLIElement> & { key: any },
@@ -86,6 +89,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
                     {...params}
                     label={label ?? strings.selectCountry}
                     required={required}
+                    onBlur={onBlur}
                     slotProps={{
                         htmlInput: {
                             ...params.inputProps,
