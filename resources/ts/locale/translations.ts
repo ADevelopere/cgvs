@@ -6,6 +6,7 @@ import GenderTranslations from "./components/Gender";
 import LanguageTranslations from "./components/Language";
 import TemplateCategoryTranslation from "./components/TemplateCategory";
 import ErrorTranslations from "./components/Error";
+import StudentTranslations from "./components/Student";
 
 import arHeader from "@/locale/ar/header";
 import arAuth from "@/locale/ar/auth";
@@ -15,6 +16,7 @@ import arGender from "@/locale/ar/gender";
 import arLanguage from "@/locale/ar/language";
 import arCourseCategory from "@/locale/ar/templateCategory";
 import arError from "@/locale/ar/error";
+import arStudent from "@/locale/ar/student";
 
 import AppLanguage from "./AppLanguage";
 
@@ -27,6 +29,7 @@ export type Translations = {
     languageTranslations: LanguageTranslations;
     templateCategoryTranslations: TemplateCategoryTranslation;
     errorTranslations: ErrorTranslations;
+    studentTranslations?: StudentTranslations;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -39,6 +42,7 @@ const translations: Record<AppLanguage, Translations> = {
         languageTranslations: arLanguage,
         templateCategoryTranslations: arCourseCategory,
         errorTranslations: arError,
+        studentTranslations: arStudent,
     },
     // Add other languages here as needed
 };

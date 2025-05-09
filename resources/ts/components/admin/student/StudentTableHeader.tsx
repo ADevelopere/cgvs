@@ -9,6 +9,7 @@ import {
     IconButton,
     Box,
     Typography,
+    Tooltip,
 } from "@mui/material";
 import {
     FilterList as FilterListIcon,
@@ -16,8 +17,9 @@ import {
     ArrowDownward as ArrowDownwardIcon,
 } from "@mui/icons-material";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
-import { Column } from "./types";
-import { StudentTableColumns } from "./StudentTable";
+import { StudentTableColumns } from "./types";
+import useAppTranslation from "@/locale/useAppTranslation";
+import { useMemo } from "react";
 
 type Props = {
     onFilterClick: (
@@ -27,6 +29,8 @@ type Props = {
 };
 
 export default function StudentTableHeader({ onFilterClick }: Props) {
+    const strings = useAppTranslation("studentTranslations");
+
     const {
         students,
         selectedStudents,
@@ -97,6 +101,22 @@ export default function StudentTableHeader({ onFilterClick }: Props) {
         return false;
     };
 
+    const sortTooltip = useMemo(() => {
+        return (columnId: string) => {
+            const sortDirection = getSortDirection(columnId);
+            switch (sortDirection) {
+                case null:
+                    return strings?.sortAsc;
+                case "asc":
+                    return strings?.sortDesc;
+                case "desc":
+                    return strings?.clearSort;
+                default:
+                    return strings?.sortAsc;
+            }
+        };
+    }, [getSortDirection, strings]);
+
     return (
         <TableHead>
             <TableRow>
@@ -116,60 +136,89 @@ export default function StudentTableHeader({ onFilterClick }: Props) {
 
                 {StudentTableColumns.map((column) => (
                     <TableCell key={column.id}>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
                             <Typography
                                 variant="subtitle2"
-                                sx={{ fontWeight: "bold" }}
+                                sx={{
+                                    fontWeight: "bold",
+                                    minWidth: "max-content",
+                                }}
                             >
-                                {column.label}
+                                {strings ? strings[column.id] : column.label}
                             </Typography>
 
-                            {column.sortable && (
-                                <IconButton
-                                    size="small"
-                                    onClick={() => handleSort(column.id)}
-                                    sx={{ ml: 0.5 }}
-                                >
-                                    {getSortDirection(column.id) === "asc" && (
-                                        <ArrowUpwardIcon
-                                            fontSize="small"
-                                            color="primary"
-                                        />
-                                    )}
-                                    {getSortDirection(column.id) === "desc" && (
-                                        <ArrowDownwardIcon
-                                            fontSize="small"
-                                            color="primary"
-                                        />
-                                    )}
-                                    {getSortDirection(column.id) === null && (
-                                        <ArrowUpwardIcon
-                                            fontSize="small"
-                                            color="disabled"
-                                        />
-                                    )}
-                                </IconButton>
-                            )}
+                            <Box sx={{ display: "flex" }}>
+                                {column.sortable && (
+                                    <Tooltip
+                                        title={sortTooltip(column.id)}
+                                        arrow
+                                    >
+                                        <IconButton
+                                            size="small"
+                                            onClick={() =>
+                                                handleSort(column.id)
+                                            }
+                                            sx={{
+                                                p:0
+                                            }}
+                                        >
+                                            {getSortDirection(column.id) ===
+                                                "asc" && (
+                                                <ArrowUpwardIcon
+                                                    fontSize="small"
+                                                    color="primary"
+                                                />
+                                            )}
+                                            {getSortDirection(column.id) ===
+                                                "desc" && (
+                                                <ArrowDownwardIcon
+                                                    fontSize="small"
+                                                    color="primary"
+                                                />
+                                            )}
+                                            {getSortDirection(column.id) ===
+                                                null && (
+                                                <ArrowUpwardIcon
+                                                    fontSize="small"
+                                                    color="disabled"
+                                                />
+                                            )}
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
 
-                            {column.filterable && (
-                                <IconButton
-                                    size="small"
-                                    onClick={(e) => onFilterClick(e, column.id)}
-                                    sx={{ ml: 0.5 }}
-                                    color={
-                                        hasActiveFilter(column.id)
-                                            ? "primary"
-                                            : "default"
-                                    }
-                                >
-                                    <FilterListIcon fontSize="small" />
-                                </IconButton>
-                            )}
+                                {column.filterable && (
+                                    <Tooltip title={strings?.filter} arrow>
+                                        <IconButton
+                                            size="small"
+                                            onClick={(e) =>
+                                                onFilterClick(e, column.id)
+                                            }
+                                            color={
+                                                hasActiveFilter(column.id)
+                                                    ? "primary"
+                                                    : "default"
+                                            }
+                                            sx={{
+                                                p:0
+                                            }}
+                                        >
+                                            <FilterListIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                            </Box>
                         </Box>
                     </TableCell>
                 ))}
 
-                <TableCell>Actions</TableCell>
+                <TableCell>{strings?.actions}</TableCell>
             </TableRow>
         </TableHead>
     );

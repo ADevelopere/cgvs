@@ -18,7 +18,7 @@ type StudentGraphQLContextType = {
      * @param variables - The students query variables
      */
     studentsQuery: (
-        variables: Graphql.QueryStudentsArgs,
+        variables: Graphql.StudentsQueryVariables,
     ) => Promise<Graphql.StudentsQuery>;
 
     /**
@@ -92,7 +92,7 @@ export const StudentGraphQLProvider: React.FC<{
     );
 
     const studentsQuery = useCallback(
-        async (variables: Graphql.QueryStudentsArgs) => {
+        async (variables: Graphql.StudentsQueryVariables) => {
             const result = await studentsQueryRef.refetch(variables);
             if (!result.data) {
                 throw new Error("No data returned from students query");
