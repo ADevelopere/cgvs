@@ -1,10 +1,12 @@
 "use client";
 
 import type React from "react";
-import { Box } from "@mui/material";
+import {
+    Box,
+} from "@mui/material";
 import CountrySelect from "@/components/input/CountrySelect";
 import countries from "@/utils/country";
-import { CellProps } from "../types";
+import { CellProps } from "../../types";
 
 const CountryCell: React.FC<
     CellProps & { countryStrings: Record<string, string> }
@@ -42,5 +44,6 @@ const CountryCell: React.FC<
     }
     return String(value || "");
 };
+
 
 export default CountryCell;

@@ -4,30 +4,22 @@ import { Checkbox, IconButton, Box, useTheme } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
 import type { Student } from "@/graphql/generated/types";
+import { StudentTableColumns } from "../types";
+import RowRenderer from "./cell/DataRowRenderer";
 import { useEffect, useRef, useState } from "react";
-import { StudentTableColumns } from "./table/types";
-import RowRenderer from "./table/data/cell/DataRowRenderer";
+import { useStudentTableUiContext } from "../StudentTableUiContext";
 
 interface StudentTableRowProps {
     student: Student;
-    columnsWidthMap: Record<string, number>;
-    onStartResize: (
-        columnId: keyof Student | "actions",
-        clientX: number,
-        cellElementId: string,
-    ) => void;
 }
 
-export default function StudentTableRow({
-    student,
-    columnsWidthMap,
-    onStartResize,
-}: StudentTableRowProps) {
+export default function StudentTableRow({ student }: StudentTableRowProps) {
     const theme = useTheme();
-    const isRtl = theme.direction === "rtl";
 
     const { selectedStudents, deleteStudent, toggleStudentSelect } =
         useStudentManagement();
+
+    const { getColumnWidth } = useStudentTableUiContext();
 
     // Handle delete student
     const handleDeleteStudent = async () => {
@@ -64,15 +56,12 @@ export default function StudentTableRow({
             ref={rowRef}
             style={{
                 backgroundColor: theme.palette.background.paper,
-                // '&:hover': {
-                //     backgroundColor: theme.palette.action.hover,
-                // }
             }}
         >
             <td
                 style={{
-                    position: "relative", // Added for zIndex context
-                    zIndex: 0, // Default zIndex
+                    position: "relative",
+                    zIndex: 0,
                     borderTop: `1px solid ${theme.palette.divider}`,
                     borderBottom: `1px solid ${theme.palette.divider}`,
                     borderInline: `1px solid ${theme.palette.divider}`,
@@ -97,7 +86,6 @@ export default function StudentTableRow({
 
             {StudentTableColumns.map((column, index) => {
                 const isCurrentCellEditing = editingCell?.field === column.id;
-
                 const currentCellEffectiveBorderColor = isCurrentCellEditing
                     ? theme.palette.primary.main
                     : theme.palette.divider;
@@ -108,7 +96,7 @@ export default function StudentTableRow({
                         style={{
                             paddingInlineStart: 10,
                             marginInlineEnd: 10,
-                            width: columnsWidthMap[column.id],
+                            width: getColumnWidth(column.id),
                             color: theme.palette.text.primary,
                             borderWidth: isCurrentCellEditing ? "2px" : "1px",
                             borderStyle: "solid",
@@ -116,7 +104,10 @@ export default function StudentTableRow({
                         }}
                         onDoubleClick={() =>
                             column.editable &&
-                            handleCellEditStart(column.id, true)
+                            handleCellEditStart(
+                                column.id as keyof Student,
+                                true,
+                            )
                         }
                         id={`cellTableCell-${student.id}-${column.id}`}
                     >
@@ -127,9 +118,11 @@ export default function StudentTableRow({
                             editingCell={editingCell}
                             cancelEdit={() => setEditingCell(null)}
                             onEditStart={() =>
-                                handleCellEditStart(column.id, column.editable)
+                                handleCellEditStart(
+                                    column.id as keyof Student,
+                                    column.editable,
+                                )
                             }
-                            onStartResize={onStartResize}
                             rowHeight={rowHeight}
                         />
                     </td>
@@ -138,15 +131,15 @@ export default function StudentTableRow({
 
             <td
                 style={{
-                    position: "relative", // Added for zIndex context
-                    zIndex: 0, // Default zIndex
-                    width: "100px",
+                    position: "relative",
+                    zIndex: 0,
+                    width: getColumnWidth("actions"),
                     minWidth: "80px",
                     whiteSpace: "nowrap",
                     borderTop: `1px solid ${theme.palette.divider}`,
                     borderBottom: `1px solid ${theme.palette.divider}`,
-                    borderInlineStart: `1px solid ${theme.palette.divider}`, // Always draw border
-                    borderInlineEnd: `1px solid ${theme.palette.divider}`, // Always draw border
+                    borderInlineStart: `1px solid ${theme.palette.divider}`,
+                    borderInlineEnd: `1px solid ${theme.palette.divider}`,
                     color: theme.palette.text.primary,
                 }}
             >

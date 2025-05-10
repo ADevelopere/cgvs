@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { Box, MenuItem, Select } from "@mui/material";
-import { CellProps } from "../types";
+import { CellProps } from "../../types";
 
 const GenderCell: React.FC<CellProps> = ({
     value,
