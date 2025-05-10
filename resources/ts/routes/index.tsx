@@ -17,7 +17,7 @@ import TemplateCategoryManagement from "@/components/admin/templates/category/ma
 import GraphiQLApp from "@/views/GraphiQL";
 import NewTemplateList from "@/components/admin/templates/list/TemplateListContainer";
 import StudentsLayout from "@/components/layouts/admin/student/StudentsLayout";
-import StudentTable from "@/components/admin/student/StudentTable";
+import StudentTable from "@/components/admin/student/table/StudentTable";
 
 interface WithAuthProps {
     children: React.ReactNode;
