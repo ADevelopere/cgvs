@@ -40,20 +40,8 @@ export default function StudentTableRow({ student }: StudentTableRowProps) {
         setEditingCell({ field });
     };
 
-    const rowRef = useRef<HTMLTableRowElement>(null);
-    const [rowHeight, setRowHeight] = useState<number>(0);
-
-    useEffect(() => {
-        if (rowRef.current) {
-            const row = rowRef.current;
-            const height = row.offsetHeight;
-            setRowHeight(height);
-        }
-    }, [rowRef.current]);
-
     return (
         <tr
-            ref={rowRef}
             style={{
                 backgroundColor: theme.palette.background.paper,
             }}
@@ -123,7 +111,6 @@ export default function StudentTableRow({ student }: StudentTableRowProps) {
                                     column.editable,
                                 )
                             }
-                            rowHeight={rowHeight}
                         />
                     </td>
                 );

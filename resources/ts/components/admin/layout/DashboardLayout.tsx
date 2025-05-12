@@ -18,6 +18,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const titleRef = React.useRef<HTMLDivElement>(null);
     const middleActionsRef = React.useRef<HTMLDivElement>(null);
     const endActionsRef = React.useRef<HTMLDivElement>(null);
+    const sidebarRef = React.useRef<HTMLDivElement>(null);
 
     // Get theme and media query for responsive design
     const theme = useTheme();
@@ -76,8 +77,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                     sideBarToggleRef.current.getBoundingClientRect().width;
                 setSideBarToggleWidth(width);
             }
-             if (headerRef && headerRef.current) {
-                const width = headerRef.current.getBoundingClientRect().width;
+            if (sidebarRef && sidebarRef.current) {
+                const width = sidebarRef.current.getBoundingClientRect().width;
                 setSideBarWidth(width);
             }
         };
@@ -134,6 +135,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 {/* collapsed sidebar */}
                 {isCollapsedSidebarVisible && (
                     <Box
+                        ref={sidebarRef}
                         sx={{
                             width: 72,
                             flexShrink: 0,
@@ -148,6 +150,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 {/* desktop full sidebar */}
                 {isFullSidebarVisible && (
                     <Box
+                        ref={sidebarRef}
                         sx={{
                             width: 280,
                             flexShrink: 0,

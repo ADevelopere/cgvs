@@ -1,4 +1,4 @@
-import { Student } from "@/graphql/generated/types";
+import { OrderByClause, Student } from "@/graphql/generated/types";
 import {
     createContext,
     useCallback,
@@ -9,6 +9,7 @@ import {
 } from "react";
 import { StudentTableColumns } from "./types";
 import { useAppTheme } from "@/contexts/ThemeContext";
+import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
 
 type StudentTableUiContextProps = {
     columnsWidthMap: Record<string, number>;
@@ -18,6 +19,8 @@ type StudentTableUiContextProps = {
         cellElementId: string,
     ) => void;
     getColumnWidth: (columnId: keyof Student | "actions") => number;
+    handleSort: (columnId: string) => void;
+    getSortDirection: (columnId: string) => "asc" | "desc" | null;
 };
 
 const StudentTableUiContext = createContext<StudentTableUiContextProps>({
@@ -25,6 +28,10 @@ const StudentTableUiContext = createContext<StudentTableUiContextProps>({
     startResize: () => {},
     getColumnWidth: () => {
         return 150;
+    },
+    handleSort: () => {},
+    getSortDirection: () => {
+        return null;
     },
 });
 
@@ -42,6 +49,7 @@ const StudentTableUiProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     const { isRtl } = useAppTheme();
+    const { queryParams, setQueryParams } = useStudentManagement();
 
     const [columnsWidthMap, setColumnsWidthMap] = useState<
         Record<string, number>
@@ -168,13 +176,78 @@ const StudentTableUiProvider: React.FC<{
         [columnsWidthMap],
     );
 
+    const handleSort = useCallback(
+        (columnId: string) => {
+            const currentOrderBy: OrderByClause | OrderByClause[] =
+                queryParams.orderBy || [];
+            // Convert to array if single object
+            const orderByArray = Array.isArray(currentOrderBy)
+                ? currentOrderBy
+                : [currentOrderBy];
+
+            const columnIndex = orderByArray.findIndex(
+                (order) => order.column === columnId.toUpperCase(),
+            );
+
+            let newOrderBy = [...orderByArray];
+
+            if (columnIndex === -1) {
+                // Add new sort
+                newOrderBy.push({
+                    column: columnId.toUpperCase(),
+                    order: "ASC",
+                });
+            } else if (newOrderBy[columnIndex].order === "ASC") {
+                // Change to DESC
+                newOrderBy[columnIndex] = {
+                    ...newOrderBy[columnIndex],
+                    order: "DESC",
+                };
+            } else {
+                // Remove sort
+                newOrderBy = newOrderBy.filter(
+                    (_, index) => index !== columnIndex,
+                );
+            }
+
+            setQueryParams({ orderBy: newOrderBy });
+        },
+        [queryParams, setQueryParams],
+    );
+
+    const getSortDirection = useCallback(
+        (columnId: string): "asc" | "desc" | null => {
+            const currentOrderBy = queryParams.orderBy || [];
+            // Convert to array if single object
+            const orderByArray = Array.isArray(currentOrderBy)
+                ? currentOrderBy
+                : [currentOrderBy];
+
+            const column = orderByArray.find(
+                (order) => order.column === columnId.toUpperCase(),
+            );
+
+            if (!column) return null;
+            return column.order.toLowerCase() as "asc" | "desc";
+        },
+        [queryParams],
+    );
+
     const value = useMemo(
         () => ({
             columnsWidthMap,
             startResize,
             getColumnWidth,
+            handleSort,
+            getSortDirection,
         }),
-        [columnsWidthMap, startResize, getColumnWidth],
+        [
+            columnsWidthMap,
+            startResize,
+            getColumnWidth,
+            handleSort,
+            getSortDirection,
+        ],
     );
     return (
         <StudentTableUiContext.Provider value={value}>

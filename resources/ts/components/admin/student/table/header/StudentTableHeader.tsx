@@ -1,9 +1,9 @@
 import type React from "react";
 import { Checkbox, useTheme } from "@mui/material";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
-import { StudentTableColumns, StudentTableColumnType } from "../types";
+import { StudentTableColumns } from "../types";
 import useAppTranslation from "@/locale/useAppTranslation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Student } from "@/graphql/generated/types";
 import StudentTableFilter from "./StudentTableFilter";
 import HeaderCellData from "./HeaderCell";
@@ -24,53 +24,53 @@ export default function StudentTableHeader() {
         keyof Student | "actions" | null
     >(null);
 
-    // Handle filter icon click
-    const handleFilterClick = (
-        event: React.MouseEvent<HTMLButtonElement>,
-        columnId: keyof Student | "actions",
-    ) => {
-        setFilterAnchorEl(event.currentTarget);
-        setCurrentFilterColumn(columnId);
-    };
+    const handleFilterClick = useCallback(
+        (
+            event: React.MouseEvent<HTMLButtonElement>,
+            columnId: keyof Student | "actions",
+        ) => {
+            setFilterAnchorEl(event.currentTarget);
+            setCurrentFilterColumn(columnId);
+        },
+        [setFilterAnchorEl, setCurrentFilterColumn],
+    );
 
-    // Handle filter close
-    const handleFilterClose = () => {
+    const handleFilterClose = useCallback(() => {
         setFilterAnchorEl(null);
         setCurrentFilterColumn(null);
-    };
+    }, [setFilterAnchorEl, setCurrentFilterColumn]);
 
-    // Handle select all
-    const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            // Select all students
-            students.forEach((student) => {
-                if (!selectedStudents.includes(student.id)) {
-                    toggleStudentSelect(student.id);
-                }
-            });
-        } else {
-            // Deselect all students
-            students.forEach((student) => {
-                if (selectedStudents.includes(student.id)) {
-                    toggleStudentSelect(student.id);
-                }
-            });
-        }
-    };
-
-    const headerRef = useRef<HTMLTableSectionElement | null>(null);
-    const [headerHeight, setHeaderHeight] = useState<number>(0);
-    useEffect(() => {
-        if (headerRef.current) {
-            const header = headerRef.current;
-            const height = header.offsetHeight;
-            setHeaderHeight(height);
-        }
-    }, [headerRef.current]);
+    const handleSelectAll = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            if (event.target.checked) {
+                // Select all students
+                students.forEach((student) => {
+                    if (!selectedStudents.includes(student.id)) {
+                        toggleStudentSelect(student.id);
+                    }
+                });
+            } else {
+                // Deselect all students
+                students.forEach((student) => {
+                    if (selectedStudents.includes(student.id)) {
+                        toggleStudentSelect(student.id);
+                    }
+                });
+            }
+        },
+        [students, selectedStudents, toggleStudentSelect],
+    );
 
     return (
         <>
-            <thead ref={headerRef}>
+            <thead
+                style={{
+                    position: "sticky", // Makes the header stick to the top
+                    top: 0, // Ensures it sticks at the top of the container
+                    backgroundColor: theme.palette.background.paper, // Keeps the background consistent
+                    zIndex: 1, // Ensures it stays above other content
+                }}
+            >
                 <tr
                     style={{
                         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -113,7 +113,6 @@ export default function StudentTableHeader() {
                             column={column}
                             columnWidth={getColumnWidth(column.id)}
                             onFilterClick={handleFilterClick}
-                            headerHeight={headerHeight}
                         />
                     ))}
 
@@ -121,12 +120,8 @@ export default function StudentTableHeader() {
                         style={{
                             width: "100px",
                             minWidth: "80px",
-                            whiteSpace: "nowrap",
                             padding: "16px 4px",
                             backgroundColor: theme.palette.background.paper,
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 2,
                         }}
                     >
                         {strings?.actions}

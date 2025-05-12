@@ -11,7 +11,7 @@ import { ApolloProvider } from "@apollo/client";
 import apolloClient from "./utils/apollo";
 import { AppThemeProvider } from "@/contexts/ThemeContext";
 import { RouterProvider } from "react-router-dom";
-import router from "./routes";
+import router from "./routes/Routes";
 import ErrorBoundary from "./components/error/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";

@@ -1,7 +1,12 @@
-import { BreakpointsOptions, PaletteOptions, Theme, ThemeOptions } from "@mui/material/styles";
+import {
+    BreakpointsOptions,
+    PaletteOptions,
+    Theme,
+    ThemeOptions,
+} from "@mui/material/styles";
 import { createTheme, PaletteMode } from "@mui/material";
 import ThemeMode from "./ThemeMode";
-import { arSD } from '@mui/x-data-grid/locales';
+import { arSD } from "@mui/x-data-grid/locales";
 
 const lightPalette: PaletteOptions = {
     mode: "light",
@@ -19,6 +24,10 @@ const lightPalette: PaletteOptions = {
     onPrimary: "rgba(255, 255, 255, 1)",
     onSecondary: "rgba(0, 0, 0, 1)",
     onBackground: "rgba(0, 0, 0, 1)",
+    customTable: {
+        oddRow: "#f5f5f5", // Light gray for odd rows
+        evenRow: "#ffffff", // White for even rows
+    },
 };
 
 const darkPalette: PaletteOptions = {
@@ -37,6 +46,11 @@ const darkPalette: PaletteOptions = {
     onPrimary: "rgba(255, 255, 255, 1)",
     onSecondary: "rgba(0, 0, 0, 1)",
     onBackground: "rgba(255, 255, 255, 1)",
+    // Custom alternating row colors for dark mode
+    customTable: {
+        oddRow: "#2d2d2d", // Dark gray for odd rows
+        evenRow: "#1e1e1e", // Darker gray for even rows
+    },
 };
 
 const breakpoints: BreakpointsOptions = {
@@ -128,12 +142,11 @@ export const createAppTheme = (
             ? "dark"
             : "light";
     }
-    return createTheme({...getThemeConfig(effectiveMode, direction)},arSD, {
+    return createTheme({ ...getThemeConfig(effectiveMode, direction) }, arSD, {
         // colorSchemes: { light: true, dark: true },
-        breakpoints:  breakpoints,
+        breakpoints: breakpoints,
     });
 };
-
 
 export const rtlLightTheme = createAppTheme(ThemeMode.Light, "rtl");
 
@@ -143,17 +156,24 @@ export const ltrLightTheme = createAppTheme(ThemeMode.Light, "ltr");
 
 export const ltrDarkTheme = createAppTheme(ThemeMode.Dark, "ltr");
 
-
 declare module "@mui/material/styles/createPalette" {
     interface Palette {
         onPrimary: string;
         onSecondary: string;
         onBackground: string;
+        customTable: {
+            oddRow: string;
+            evenRow: string;
+        };
     }
 
     interface PaletteOptions {
         onPrimary?: string;
         onSecondary?: string;
         onBackground?: string;
+        customTable: {
+            oddRow: string;
+            evenRow: string;
+        };
     }
 }

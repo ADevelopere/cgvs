@@ -1,15 +1,16 @@
 import { useAppTheme } from "@/contexts/ThemeContext";
-import React, { MouseEvent, TouchEvent, useState } from "react";
+import React, { MouseEvent, TouchEvent, useEffect, useState } from "react";
 
 type ResizerProps = {
+    id?: string;
     allowResize: boolean;
     orientation: "vertical" | "horizontal";
-    className: string;
+    className?: string;
     onClick?: (event: React.MouseEvent) => void;
     onDoubleClick?: (event: React.MouseEvent) => void;
-    onMouseDown: (event: MouseEvent<HTMLSpanElement>) => void;
-    onTouchStart: (event: TouchEvent<HTMLSpanElement>) => void;
-    onTouchEnd: (event: TouchEvent<HTMLSpanElement>) => void;
+    onMouseDown?: (event: MouseEvent<HTMLSpanElement>) => void;
+    onTouchStart?: (event: TouchEvent<HTMLSpanElement>) => void;
+    onTouchEnd?: (event: TouchEvent<HTMLSpanElement>) => void;
     containerStyle?: React.CSSProperties;
     internalStyle?: React.CSSProperties;
     columnResizing?: boolean;
@@ -21,6 +22,7 @@ const Resizer: React.FC<ResizerProps> = (props) => {
     const [isResizing, setIsResizing] = useState(false);
     const { theme } = useAppTheme();
     const {
+        id,
         allowResize,
         orientation,
         className,
@@ -38,14 +40,14 @@ const Resizer: React.FC<ResizerProps> = (props) => {
 
     const handleMouseDown = (e: MouseEvent<HTMLSpanElement>) => {
         setIsResizing(true);
-        onMouseDown(e);
+        onMouseDown?.(e);
     };
 
     const handleMouseUp = () => {
         setIsResizing(false);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener("mouseup", handleMouseUp);
         return () => {
             document.removeEventListener("mouseup", handleMouseUp);
@@ -54,6 +56,7 @@ const Resizer: React.FC<ResizerProps> = (props) => {
 
     return (
         <span
+            id={id}
             role="separator"
             aria-orientation={orientation}
             aria-valuemin={0}
@@ -70,12 +73,12 @@ const Resizer: React.FC<ResizerProps> = (props) => {
             onTouchStart={(e) => {
                 e.preventDefault();
                 setIsResizing(true);
-                onTouchStart(e as unknown as TouchEvent<HTMLButtonElement>);
+                onTouchStart?.(e as unknown as TouchEvent<HTMLButtonElement>);
             }}
             onTouchEnd={(e) => {
                 e.preventDefault();
                 setIsResizing(false);
-                onTouchEnd(e);
+                onTouchEnd?.(e as unknown as TouchEvent<HTMLButtonElement>);
             }}
             onClick={(e) => {
                 e.preventDefault();

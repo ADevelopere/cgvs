@@ -4,7 +4,7 @@ import type React from "react";
 import { Box, Typography } from "@mui/material";
 import { format } from "date-fns";
 import type { Student, UpdateStudentInput } from "@/graphql/generated/types";
-import { StudentTableColumns, StudentTableColumnType } from "../../types";
+import { StudentTableColumnType } from "../../types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useState } from "react";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
@@ -12,7 +12,6 @@ import DefaultCell from "./DefaultCell";
 import DateCell from "./DateCell";
 import GenderCell from "./GenderCell";
 import CountryCell from "./CountryCell";
-import Resizer from "@/components/splitPane/Resizer";
 import { useStudentTableUiContext } from "../../StudentTableUiContext";
 
 // column: StudentTableColumnType
@@ -42,7 +41,6 @@ type CellRendererProps = {
     onEditStart: () => void;
     cancelEdit: () => void;
     containerStyle?: React.CSSProperties;
-    rowHeight?: number;
 };
 
 const RowRenderer: React.FC<CellRendererProps> = ({
@@ -52,7 +50,6 @@ const RowRenderer: React.FC<CellRendererProps> = ({
     editingCell,
     cancelEdit,
     containerStyle,
-    rowHeight,
 }) => {
     const countryStrings = useAppTranslation("countryTranslations");
     const { startResize } = useStudentTableUiContext();
@@ -177,50 +174,6 @@ const RowRenderer: React.FC<CellRendererProps> = ({
             >
                 {renderer()}
             </Box>
-            {index < StudentTableColumns.length + 1 && (
-                <Resizer
-                    allowResize={true}
-                    orientation="vertical"
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        startResize(
-                            column.id,
-                            e.clientX,
-                            `headerTableCell-${column.id}`,
-                        );
-                    }}
-                    onTouchStart={(e) => {
-                        e.preventDefault();
-                        startResize(
-                            column.id,
-                            e.touches[0].clientX,
-                            `headerTableCell-${column.id}`,
-                        );
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }}
-                    onDoubleClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }}
-                    className="resizer"
-                    containerStyle={{
-                        minHeight: `${rowHeight}px`,
-                        height: `${rowHeight}px`,
-                    }}
-                    internalStyle={{
-                        left: "-10%",
-                    }}
-                    normalWidth={1}
-                    whileResizingWidth={2}
-                />
-            )}
         </Box>
     );
 };

@@ -5,6 +5,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 import * as Graphql from "@/graphql/generated/types";
@@ -32,6 +33,8 @@ type StudentManagementContextType = {
     // Query params methods
     setQueryParams: (params: Partial<Graphql.StudentsQueryVariables>) => void;
     toggleStudentSelect: (studentId: string) => void;
+    selectAllStudents: (selectAll: boolean) => void;
+    clearSelectedStudents: () => void;
 };
 
 const StudentManagementContext = createContext<
@@ -222,20 +225,52 @@ export const StudentManagementProvider: React.FC<{
         });
     }, []);
 
+    const handleSelectAllStudents = useCallback(
+        (selectAll: boolean) => {
+            if (selectAll) {
+                setSelectedStudents(students.map((student) => student.id));
+            } else {
+                setSelectedStudents([]);
+            }
+        },
+        [students],
+    );
+
+    const handleClearSelectedStudents = useCallback(() => {
+        setSelectedStudents([]);
+    }, []);
+
+    const value = useMemo(
+        () => ({
+            students,
+            selectedStudents,
+            paginatorInfo,
+            queryParams,
+            createStudent: handleCreateStudent,
+            updateStudent: handleUpdateStudent,
+            deleteStudent: handleDeleteStudent,
+            setQueryParams: handleSetQueryParams,
+            toggleStudentSelect: handleToggleStudentSelect,
+            selectAllStudents: handleSelectAllStudents,
+            clearSelectedStudents: handleClearSelectedStudents,
+        }),
+        [
+            students,
+            selectedStudents,
+            paginatorInfo,
+            queryParams,
+            handleCreateStudent,
+            handleUpdateStudent,
+            handleDeleteStudent,
+            handleSetQueryParams,
+            handleToggleStudentSelect,
+            handleSelectAllStudents,
+            handleClearSelectedStudents,
+        ],
+    );
+
     return (
-        <StudentManagementContext.Provider
-            value={{
-                students,
-                selectedStudents,
-                paginatorInfo,
-                queryParams,
-                createStudent: handleCreateStudent,
-                updateStudent: handleUpdateStudent,
-                deleteStudent: handleDeleteStudent,
-                setQueryParams: handleSetQueryParams,
-                toggleStudentSelect: handleToggleStudentSelect,
-            }}
-        >
+        <StudentManagementContext.Provider value={value}>
             {children}
         </StudentManagementContext.Provider>
     );
