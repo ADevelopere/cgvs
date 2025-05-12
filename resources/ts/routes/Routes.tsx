@@ -18,6 +18,9 @@ import GraphiQLApp from "@/views/GraphiQL";
 import NewTemplateList from "@/components/admin/templates/list/TemplateListContainer";
 import StudentsLayout from "@/components/layouts/admin/student/StudentsLayout";
 import StudentTable from "@/components/admin/student/table/StudentTable";
+import Home from "@/app/page";
+import AppContent from "@/components/demo/DemoTableContent";
+import StudentTableNew from "@/components/admin/student/StudentTableNew";
 
 interface WithAuthProps {
     children: React.ReactNode;
@@ -71,6 +74,10 @@ const routes: RouteObject[] = [
                 element: <DashboardPage />,
             },
             {
+                path: "table",
+                element: <AppContent />,
+            },
+            {
                 path: "dashboard",
                 element: <DashboardPage />,
             },
@@ -98,6 +105,16 @@ const routes: RouteObject[] = [
                     {
                         index: true,
                         element: <StudentTable />,
+                    },
+                ],
+            },
+            {
+                path: "students2",
+                element: <StudentsLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <StudentTableNew />,
                     },
                 ],
             },
