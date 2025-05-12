@@ -33,7 +33,7 @@ type StudentManagementContextType = {
     // Query params methods
     setQueryParams: (params: Partial<Graphql.StudentsQueryVariables>) => void;
     toggleStudentSelect: (studentId: string) => void;
-    selectAllStudents: (selectAll: boolean) => void;
+    selectAllStudents: () => void;
     clearSelectedStudents: () => void;
 };
 
@@ -225,16 +225,9 @@ export const StudentManagementProvider: React.FC<{
         });
     }, []);
 
-    const handleSelectAllStudents = useCallback(
-        (selectAll: boolean) => {
-            if (selectAll) {
-                setSelectedStudents(students.map((student) => student.id));
-            } else {
-                setSelectedStudents([]);
-            }
-        },
-        [students],
-    );
+    const handleSelectAllStudents = useCallback(() => {
+        setSelectedStudents(students.map((student) => student.id));
+    }, [students]);
 
     const handleClearSelectedStudents = useCallback(() => {
         setSelectedStudents([]);

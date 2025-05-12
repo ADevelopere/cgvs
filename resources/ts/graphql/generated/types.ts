@@ -587,14 +587,44 @@ export type QueryStudentArgs = {
 
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryStudentsArgs = {
-  birth_from?: InputMaybe<Scalars['DateTime']['input']>;
-  birth_to?: InputMaybe<Scalars['DateTime']['input']>;
-  created_from?: InputMaybe<Scalars['DateTime']['input']>;
-  created_to?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_after?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_before?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_from?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  birth_date_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  birth_date_not?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_on_or_after?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_on_or_before?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_to?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_after?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_before?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_from?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  created_at_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  created_at_not?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_on_or_after?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_on_or_before?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_to?: InputMaybe<Scalars['DateTime']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  email_ends_with?: InputMaybe<Scalars['String']['input']>;
+  email_equals?: InputMaybe<Scalars['String']['input']>;
+  email_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  email_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  email_not_contains?: InputMaybe<Scalars['String']['input']>;
+  email_not_equals?: InputMaybe<Scalars['String']['input']>;
+  email_starts_with?: InputMaybe<Scalars['String']['input']>;
   first?: Scalars['Int']['input'];
   gender?: InputMaybe<StudentGender>;
   name?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_equals?: InputMaybe<Scalars['String']['input']>;
+  name_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  name_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_equals?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
   nationality?: InputMaybe<CountryCode>;
   orderBy?: InputMaybe<Array<OrderByClause>>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1084,14 +1114,44 @@ export type StudentQueryVariables = Exact<{
 export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any, certificates?: Array<{ __typename?: 'Certificate', id: string, release_date: any, verification_code: string, template: { __typename?: 'Template', id: string, name: string }, recipientGroup: { __typename?: 'TemplateRecipientGroup', id: string, name: string } }> | null } | null };
 
 export type StudentsQueryVariables = Exact<{
-  birth_from?: InputMaybe<Scalars['DateTime']['input']>;
-  birth_to?: InputMaybe<Scalars['DateTime']['input']>;
-  created_from?: InputMaybe<Scalars['DateTime']['input']>;
-  created_to?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_after?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_before?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_from?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  birth_date_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  birth_date_not?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_on_or_after?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_on_or_before?: InputMaybe<Scalars['DateTime']['input']>;
+  birth_date_to?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_after?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_before?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_from?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  created_at_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  created_at_not?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_on_or_after?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_on_or_before?: InputMaybe<Scalars['DateTime']['input']>;
+  created_at_to?: InputMaybe<Scalars['DateTime']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  email_ends_with?: InputMaybe<Scalars['String']['input']>;
+  email_equals?: InputMaybe<Scalars['String']['input']>;
+  email_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  email_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  email_not_contains?: InputMaybe<Scalars['String']['input']>;
+  email_not_equals?: InputMaybe<Scalars['String']['input']>;
+  email_starts_with?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int']['input'];
   gender?: InputMaybe<StudentGender>;
   name?: InputMaybe<Scalars['String']['input']>;
+  name_ends_with?: InputMaybe<Scalars['String']['input']>;
+  name_equals?: InputMaybe<Scalars['String']['input']>;
+  name_is_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  name_is_not_empty?: InputMaybe<Scalars['Boolean']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_equals?: InputMaybe<Scalars['String']['input']>;
+  name_starts_with?: InputMaybe<Scalars['String']['input']>;
   nationality?: InputMaybe<CountryCode>;
   orderBy?: InputMaybe<Array<OrderByClause> | OrderByClause>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1099,7 +1159,7 @@ export type StudentsQueryVariables = Exact<{
 }>;
 
 
-export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'StudentPaginator', data: Array<{ __typename?: 'Student', id: string, name: string, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, email?: string | null, phone_number?: string | null, created_at: any, updated_at: any }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
+export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'StudentPaginator', data: Array<{ __typename?: 'Student', id: string, name: string, email?: string | null, gender?: StudentGender | null, nationality?: CountryCode | null, date_of_birth?: any | null, phone_number?: string | null, created_at: any, updated_at: any }>, paginatorInfo: { __typename?: 'PaginatorInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1930,16 +1990,46 @@ export function refetchStudentQuery(variables: StudentQueryVariables) {
       return { query: StudentDocument, variables: variables }
     }
 export const StudentsDocument = gql`
-    query students($birth_from: DateTime, $birth_to: DateTime, $created_from: DateTime, $created_to: DateTime, $email: String, $first: Int!, $gender: StudentGender, $name: String, $nationality: CountryCode, $orderBy: [OrderByClause!], $page: Int, $phone_number: String) {
+    query students($birth_date: DateTime, $birth_date_after: DateTime, $birth_date_before: DateTime, $birth_date_from: DateTime, $birth_date_is_empty: Boolean, $birth_date_is_not_empty: Boolean, $birth_date_not: DateTime, $birth_date_on_or_after: DateTime, $birth_date_on_or_before: DateTime, $birth_date_to: DateTime, $created_at: DateTime, $created_at_after: DateTime, $created_at_before: DateTime, $created_at_from: DateTime, $created_at_is_empty: Boolean, $created_at_is_not_empty: Boolean, $created_at_not: DateTime, $created_at_on_or_after: DateTime, $created_at_on_or_before: DateTime, $created_at_to: DateTime, $email: String, $email_ends_with: String, $email_equals: String, $email_is_empty: Boolean, $email_is_not_empty: Boolean, $email_not_contains: String, $email_not_equals: String, $email_starts_with: String, $first: Int!, $gender: StudentGender, $name: String, $name_ends_with: String, $name_equals: String, $name_is_empty: Boolean, $name_is_not_empty: Boolean, $name_not_contains: String, $name_not_equals: String, $name_starts_with: String, $nationality: CountryCode, $orderBy: [OrderByClause!], $page: Int, $phone_number: String) {
   students(
-    birth_from: $birth_from
-    birth_to: $birth_to
-    created_from: $created_from
-    created_to: $created_to
+    birth_date: $birth_date
+    birth_date_after: $birth_date_after
+    birth_date_before: $birth_date_before
+    birth_date_from: $birth_date_from
+    birth_date_is_empty: $birth_date_is_empty
+    birth_date_is_not_empty: $birth_date_is_not_empty
+    birth_date_not: $birth_date_not
+    birth_date_on_or_after: $birth_date_on_or_after
+    birth_date_on_or_before: $birth_date_on_or_before
+    birth_date_to: $birth_date_to
+    created_at: $created_at
+    created_at_after: $created_at_after
+    created_at_before: $created_at_before
+    created_at_from: $created_at_from
+    created_at_is_empty: $created_at_is_empty
+    created_at_is_not_empty: $created_at_is_not_empty
+    created_at_not: $created_at_not
+    created_at_on_or_after: $created_at_on_or_after
+    created_at_on_or_before: $created_at_on_or_before
+    created_at_to: $created_at_to
     email: $email
+    email_ends_with: $email_ends_with
+    email_equals: $email_equals
+    email_is_empty: $email_is_empty
+    email_is_not_empty: $email_is_not_empty
+    email_not_contains: $email_not_contains
+    email_not_equals: $email_not_equals
+    email_starts_with: $email_starts_with
     first: $first
     gender: $gender
     name: $name
+    name_ends_with: $name_ends_with
+    name_equals: $name_equals
+    name_is_empty: $name_is_empty
+    name_is_not_empty: $name_is_not_empty
+    name_not_contains: $name_not_contains
+    name_not_equals: $name_not_equals
+    name_starts_with: $name_starts_with
     nationality: $nationality
     orderBy: $orderBy
     page: $page
@@ -1948,10 +2038,10 @@ export const StudentsDocument = gql`
     data {
       id
       name
+      email
       gender
       nationality
       date_of_birth
-      email
       phone_number
       created_at
       updated_at
@@ -1982,14 +2072,44 @@ export const StudentsDocument = gql`
  * @example
  * const { data, loading, error } = useStudentsQuery({
  *   variables: {
- *      birth_from: // value for 'birth_from'
- *      birth_to: // value for 'birth_to'
- *      created_from: // value for 'created_from'
- *      created_to: // value for 'created_to'
+ *      birth_date: // value for 'birth_date'
+ *      birth_date_after: // value for 'birth_date_after'
+ *      birth_date_before: // value for 'birth_date_before'
+ *      birth_date_from: // value for 'birth_date_from'
+ *      birth_date_is_empty: // value for 'birth_date_is_empty'
+ *      birth_date_is_not_empty: // value for 'birth_date_is_not_empty'
+ *      birth_date_not: // value for 'birth_date_not'
+ *      birth_date_on_or_after: // value for 'birth_date_on_or_after'
+ *      birth_date_on_or_before: // value for 'birth_date_on_or_before'
+ *      birth_date_to: // value for 'birth_date_to'
+ *      created_at: // value for 'created_at'
+ *      created_at_after: // value for 'created_at_after'
+ *      created_at_before: // value for 'created_at_before'
+ *      created_at_from: // value for 'created_at_from'
+ *      created_at_is_empty: // value for 'created_at_is_empty'
+ *      created_at_is_not_empty: // value for 'created_at_is_not_empty'
+ *      created_at_not: // value for 'created_at_not'
+ *      created_at_on_or_after: // value for 'created_at_on_or_after'
+ *      created_at_on_or_before: // value for 'created_at_on_or_before'
+ *      created_at_to: // value for 'created_at_to'
  *      email: // value for 'email'
+ *      email_ends_with: // value for 'email_ends_with'
+ *      email_equals: // value for 'email_equals'
+ *      email_is_empty: // value for 'email_is_empty'
+ *      email_is_not_empty: // value for 'email_is_not_empty'
+ *      email_not_contains: // value for 'email_not_contains'
+ *      email_not_equals: // value for 'email_not_equals'
+ *      email_starts_with: // value for 'email_starts_with'
  *      first: // value for 'first'
  *      gender: // value for 'gender'
  *      name: // value for 'name'
+ *      name_ends_with: // value for 'name_ends_with'
+ *      name_equals: // value for 'name_equals'
+ *      name_is_empty: // value for 'name_is_empty'
+ *      name_is_not_empty: // value for 'name_is_not_empty'
+ *      name_not_contains: // value for 'name_not_contains'
+ *      name_not_equals: // value for 'name_not_equals'
+ *      name_starts_with: // value for 'name_starts_with'
  *      nationality: // value for 'nationality'
  *      orderBy: // value for 'orderBy'
  *      page: // value for 'page'

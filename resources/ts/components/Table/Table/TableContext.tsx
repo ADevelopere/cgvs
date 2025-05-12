@@ -19,8 +19,6 @@ export type TableContextType = {
   onPageChange?: (newPage: number) => void;
   onRowsPerPageChange?: (newRowsPerPage: number) => void;
   rowsPerPageOptions?: number[];
-
-  serverFilterUi?: "popover" | "inlineHeaderRow";
 };
 
 const TableContext = createContext<TableContextType | null>(null);
@@ -39,9 +37,6 @@ type TableProviderProps = {
   columnProps: Omit<TableColumnsProviderProps, "children" | "data">;
   rowsProps: Omit<TableRowsProviderProps, "children" | "data" | "isLoading">;
 
-  // Server operations
-  serverFilterUi?: "popover" | "inlineHeaderRow";
-
   // Pagination
   paginatorInfo?: PaginatorInfo | null;
   onPageChange?: (newPage: number) => void;
@@ -58,7 +53,6 @@ export const TableProvider = ({
   dataProps,
   rowsProps,
   isLoading = false,
-  serverFilterUi = "popover",
   paginatorInfo,
   onPageChange,
   onRowsPerPageChange,
@@ -79,8 +73,6 @@ export const TableProvider = ({
       rowsPerPageOptions,
       onPageChange,
       onRowsPerPageChange,
-
-      serverFilterUi,
     };
   }, [
     data,
@@ -92,7 +84,6 @@ export const TableProvider = ({
 
     onPageChange,
     onRowsPerPageChange,
-    serverFilterUi,
   ]);
   return (
     <TableContext.Provider value={value}>

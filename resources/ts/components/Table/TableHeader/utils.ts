@@ -1,4 +1,3 @@
-import { Column } from "@/types/table.type";
 import {
     FilterClause,
     TextFilterOperation,
@@ -16,26 +15,7 @@ import {
 export const getActiveTextFilter = (
     columnId: string,
     filters: Record<string, any>,
-    serverOperationMode: boolean,
-    columns: Column[],
-    activeServerFilters: FilterClause<any, any>[],
 ): FilterClause<string, TextFilterOperation> | null => {
-    // First check for server filters if in server mode
-    if (serverOperationMode) {
-        const column = columns.find((col) => col.id === columnId);
-        if (column?.serverFilterable) {
-            const serverFilter = activeServerFilters.find(
-                (f) => f.columnId === columnId,
-            );
-            if (serverFilter && isTextFilterOperation(serverFilter.operation)) {
-                return serverFilter as FilterClause<
-                    string,
-                    TextFilterOperation
-                >;
-            }
-        }
-    }
-
     // Then check client filters
     const filter = filters[columnId];
     if (!filter) return null;
@@ -63,29 +43,7 @@ export const getActiveTextFilter = (
 export const getActiveNumberFilter = (
     columnId: string,
     filters: Record<string, any>,
-    serverOperationMode: boolean,
-    columns: Column[],
-    activeServerFilters: FilterClause<any, any>[],
 ): FilterClause<number, NumberFilterOperation> | null => {
-    // First check for server filters if in server mode
-    if (serverOperationMode) {
-        const column = columns.find((col) => col.id === columnId);
-        if (column?.serverFilterable) {
-            const serverFilter = activeServerFilters.find(
-                (f) => f.columnId === columnId,
-            );
-            if (
-                serverFilter &&
-                isNumberFilterOperation(serverFilter.operation)
-            ) {
-                return serverFilter as FilterClause<
-                    number,
-                    NumberFilterOperation
-                >;
-            }
-        }
-    }
-
     // Then check client filters
     const filter = filters[columnId];
     if (!filter) return null;
@@ -104,25 +62,8 @@ export const getActiveNumberFilter = (
 export const getActiveDateFilter = (
     columnId: string,
     filters: Record<string, any>,
-    serverOperationMode: boolean,
-    columns: Column[],
-    activeServerFilters: FilterClause<any, any>[],
 ): FilterClause<DateFilterValue, DateFilterOperation> | null => {
-    // First check for server filters if in server mode
-    if (serverOperationMode) {
-        const column = columns.find((col) => col.id === columnId);
-        if (column?.serverFilterable) {
-            const serverFilter = activeServerFilters.find(
-                (f) => f.columnId === columnId,
-            );
-            if (serverFilter && isDateFilterOperation(serverFilter.operation)) {
-                return serverFilter as FilterClause<
-                    DateFilterValue,
-                    DateFilterOperation
-                >;
-            }
-        }
-    }
+
 
     // Then check client filters
     const filter = filters[columnId];
@@ -134,19 +75,6 @@ export const getActiveDateFilter = (
     }
 
     return null;
-};
-
-/**
- * Get an active server filter for a column
- */
-export const getActiveServerFilter = (
-    columnId: string,
-    activeServerFilters: FilterClause<any, any>[],
-): FilterClause<any, any> | null => {
-    return (
-        activeServerFilters.find((filter) => filter.columnId === columnId) ||
-        null
-    );
 };
 
 /**

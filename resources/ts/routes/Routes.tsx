@@ -98,18 +98,18 @@ const routes: RouteObject[] = [
                     },
                 ],
             },
+            // {
+            //     path: "students",
+            //     element: <StudentsLayout />,
+            //     children: [
+            //         {
+            //             index: true,
+            //             element: <StudentTable />,
+            //         },
+            //     ],
+            // },
             {
                 path: "students",
-                element: <StudentsLayout />,
-                children: [
-                    {
-                        index: true,
-                        element: <StudentTable />,
-                    },
-                ],
-            },
-            {
-                path: "students2",
                 element: <StudentsLayout />,
                 children: [
                     {
