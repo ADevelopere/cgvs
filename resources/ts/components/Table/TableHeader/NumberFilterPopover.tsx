@@ -52,15 +52,12 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
   const { strings } = useTableLocale();
 
   const {
-    // inlineFilterValues,
-    // updateInlineFilterValue,
-    // updateInlineDateFilterValue,
     applyNumberFilter,
     clearFilter,
   } = useTableDataContext();
   // Initialize state with active filter or defaults
   const [operation, setOperation] = useState<NumberFilterOperation>(
-    activeFilter?.operation || NumberFilterOperation.EQUALS
+    activeFilter?.operation ?? NumberFilterOperation.EQUALS
   );
   const [value, setValue] = useState<string>(
     activeFilter?.value !== undefined ? String(activeFilter.value) : ""

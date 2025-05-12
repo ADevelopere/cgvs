@@ -1,11 +1,39 @@
 extend type Query {
     "Get a list of all students with sorting, filtering and pagination"
     students(
-        "Search by name (partial match)"
-        name: String @where(operator: "like")
+        "Filter by name (contains)"
+        name: String @where(operator: "like", key: "name")
+        "Name does not contain"
+        name_not_contains: String @where(operator: "not like", key: "name")
+        "Name equals exactly"
+        name_equals: String @where(operator: "=", key: "name")
+        "Name does not equal"
+        name_not_equals: String @where(operator: "!=", key: "name")
+        "Name starts with"
+        name_starts_with: String @where(operator: "like", key: "name")
+        "Name ends with"
+        name_ends_with: String @where(operator: "like", key: "name")
+        "Name is empty"
+        name_is_empty: Boolean @whereNull(key: "name")
+        "Name is not empty"
+        name_is_not_empty: Boolean @whereNotNull(key: "name")
 
-        "Search by email (partial match)"
-        email: String @where(operator: "like")
+        "Filter by email (contains)"
+        email: String @where(operator: "like", key: "email")
+        "Email does not contain"
+        email_not_contains: String @where(operator: "not like", key: "email")
+        "Email equals exactly"
+        email_equals: String @where(operator: "=", key: "email")
+        "Email does not equal"
+        email_not_equals: String @where(operator: "!=", key: "email")
+        "Email starts with"
+        email_starts_with: String @where(operator: "like", key: "email")
+        "Email ends with"
+        email_ends_with: String @where(operator: "like", key: "email")
+        "Email is empty"
+        email_is_empty: Boolean @whereNull(key: "email")
+        "Email is not empty"
+        email_is_not_empty: Boolean @whereNotNull(key: "email")
 
         "Filter by phone number"
         phone_number: String @where(operator: "like")
@@ -16,13 +44,45 @@ extend type Query {
         "Filter by nationality"
         nationality: CountryCode @eq
 
-        "Filter by creation date range"
-        created_from: DateTime @where(operator: ">=", key: "created_at")
-        created_to: DateTime @where(operator: "<=", key: "created_at")
+        "Created date equals"
+        created_at: DateTime @where(operator: "=", key: "created_at")
+        "Created date not equals"
+        created_at_not: DateTime @where(operator: "!=", key: "created_at")
+        "Created date between"
+        created_at_from: DateTime @where(operator: ">=", key: "created_at")
+        created_at_to: DateTime @where(operator: "<=", key: "created_at")
+        "Created date after"
+        created_at_after: DateTime @where(operator: ">", key: "created_at")
+        "Created date before"
+        created_at_before: DateTime @where(operator: "<", key: "created_at")
+        "Created date on or after"
+        created_at_on_or_after: DateTime @where(operator: ">=", key: "created_at")
+        "Created date on or before"
+        created_at_on_or_before: DateTime @where(operator: "<=", key: "created_at")
+        "Created date is empty"
+        created_at_is_empty: Boolean @whereNull(key: "created_at")
+        "Created date is not empty"
+        created_at_is_not_empty: Boolean @whereNotNull(key: "created_at")
 
-        "Filter by date of birth range"
-        birth_from: DateTime @where(operator: ">=", key: "date_of_birth")
-        birth_to: DateTime @where(operator: "<=", key: "date_of_birth")
+        "Birth date equals"
+        birth_date: DateTime @where(operator: "=", key: "date_of_birth")
+        "Birth date not equals"
+        birth_date_not: DateTime @where(operator: "!=", key: "date_of_birth")
+        "Birth date between"
+        birth_date_from: DateTime @where(operator: ">=", key: "date_of_birth")
+        birth_date_to: DateTime @where(operator: "<=", key: "date_of_birth")
+        "Birth date after"
+        birth_date_after: DateTime @where(operator: ">", key: "date_of_birth")
+        "Birth date before"
+        birth_date_before: DateTime @where(operator: "<", key: "date_of_birth")
+        "Birth date on or after"
+        birth_date_on_or_after: DateTime @where(operator: ">=", key: "date_of_birth")
+        "Birth date on or before"
+        birth_date_on_or_before: DateTime @where(operator: "<=", key: "date_of_birth")
+        "Birth date is empty"
+        birth_date_is_empty: Boolean @whereNull(key: "date_of_birth")
+        "Birth date is not empty"
+        birth_date_is_not_empty: Boolean @whereNotNull(key: "date_of_birth")
 
         "Sort by field and direction"
         orderBy: [OrderByClause!] @orderBy

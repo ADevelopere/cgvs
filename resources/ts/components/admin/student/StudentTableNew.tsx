@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { TableProvider } from "@/components/Table/Table/TableContext";
 import { STUDENT_TABLE_COLUMNS } from "./constants";
 import Table from "@/components/Table/Table/Table";
+import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
+import { FilterClause } from "@/types/filters";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");
@@ -29,6 +31,7 @@ const StudentManagementDashboardTitle: React.FC = () => {
 
 const StudentTableNew: React.FC = () => {
     const { students, paginatorInfo } = useStudentManagement();
+    const { applySingleFilter } = useStudentFilter();
 
     const { setDashboardSlot } = useDashboardLayout();
     useEffect(() => {
@@ -44,17 +47,18 @@ const StudentTableNew: React.FC = () => {
             data={students}
             // isLoading={isLoading}
             columns={STUDENT_TABLE_COLUMNS}
-            dataProps={
-                {
-                    // onFilter: handleFilter,
-                    // sortBy: { sortBy },
-                    // sortDirection: sortDirection,
-                    // filters: { filters },
-                    // serverOperationMode: serverOperationMode,
-                    // onServerSortChange: handleServerSortChange,
-                    // onServerFiltersChange: handleServerFiltersChange,
-                }
-            }
+            dataProps={{
+                onFilter: applySingleFilter as (
+                    filterClause: FilterClause<any, any> | null,
+                    columnId: string,
+                ) => void,
+                // sortBy: { sortBy },
+                // sortDirection: sortDirection,
+                // filters: { filters },
+                // serverOperationMode: serverOperationMode,
+                // onServerSortChange: handleServerSortChange,
+                // onServerFiltersChange: handleServerFiltersChange,
+            }}
             columnProps={{}}
             rowsProps={
                 {

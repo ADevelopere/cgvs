@@ -7,9 +7,6 @@ export interface Column {
     sortable?: boolean;
     filterable?: boolean;
     filterMode?: "inline" | "popover";
-    // Server operations
-    serverSortable?: boolean;
-    serverFilterable?: boolean;
     widthStorageKey?: string;
 }
 

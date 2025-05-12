@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
 import { FetchResult } from "@apollo/client";
 
@@ -46,9 +46,9 @@ type StudentGraphQLContextType = {
     ) => Promise<FetchResult<Graphql.DeleteStudentMutation>>;
 };
 
-const StudentGraphQLContext = createContext<StudentGraphQLContextType | undefined>(
-    undefined,
-);
+const StudentGraphQLContext = createContext<
+    StudentGraphQLContextType | undefined
+>(undefined);
 
 export const useStudentGraphQL = () => {
     const context = useContext(StudentGraphQLContext);
@@ -120,7 +120,10 @@ export const StudentGraphQLProvider: React.FC<{
                 data: {
                     students: {
                         ...existingData.students,
-                        data: [data.createStudent, ...existingData.students.data],
+                        data: [
+                            data.createStudent,
+                            ...existingData.students.data,
+                        ],
                     },
                 },
             });
@@ -206,16 +209,25 @@ export const StudentGraphQLProvider: React.FC<{
         [mutateDelete],
     );
 
+    const contextValue = useMemo(
+        () => ({
+            studentQuery,
+            studentsQuery,
+            createStudentMutation,
+            updateStudentMutation,
+            deleteStudentMutation,
+        }),
+        [
+            studentQuery,
+            studentsQuery,
+            createStudentMutation,
+            updateStudentMutation,
+            deleteStudentMutation,
+        ],
+    );
+
     return (
-        <StudentGraphQLContext.Provider
-            value={{
-                studentQuery,
-                studentsQuery,
-                createStudentMutation,
-                updateStudentMutation,
-                deleteStudentMutation,
-            }}
-        >
+        <StudentGraphQLContext.Provider value={contextValue}>
             {children}
         </StudentGraphQLContext.Provider>
     );

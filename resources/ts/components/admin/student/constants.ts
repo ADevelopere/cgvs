@@ -7,7 +7,7 @@ export const STUDENT_TABLE_COLUMNS: Column[] = [
         type: "number",
         accessor: "id",
         editable: false,
-        sortable: true,
+        sortable: false,
         filterable: true,
         filterMode: "popover",
         // Server operations

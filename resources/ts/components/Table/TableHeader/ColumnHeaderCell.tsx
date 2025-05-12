@@ -10,10 +10,8 @@ import {
   FilterList,
   MoreVert,
   PushPin,
-  CloudQueue, // Icon for server operations
 } from "@mui/icons-material";
 import ResizeHandle from "./ResizeHandle";
-import InlineFilter from "./InlineFilter";
 import { useTableDataContext } from "../Table/TableDataContext";
 import { useTableColumnContext } from "../Table/TableColumnContext";
 import { useTableStyles } from "@/styles";
@@ -23,24 +21,19 @@ import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/constants/tableConstants";
 export interface ColumnHeaderProps {
   column: Column;
   onOptionsClick: (e: React.MouseEvent<HTMLElement>, columnId: string) => void;
-  onInlineFilterIconClick: (e: React.MouseEvent, columnId: string) => void;
   onPopoverFilterIconClick: (e: React.MouseEvent, columnId: string) => void;
   onTextFilterIconClick: (e: React.MouseEvent, columnId: string) => void;
   isPinned: PinPosition;
-  hasActiveServerFilter?: boolean;
 }
 
 const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
   column,
   onOptionsClick,
-  onInlineFilterIconClick,
   onPopoverFilterIconClick,
   onTextFilterIconClick,
   isPinned,
-  // Server operation props
-  hasActiveServerFilter = false,
 }) => {
-  const { filters, sortBy, sortDirection, sort, filter, serverOperationMode } =
+  const { filters, sortBy, sortDirection, sort, filter } =
     useTableDataContext();
   const {
     pinnedLeftStyle,
@@ -55,7 +48,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     console.log("ColumnHeaderCell column: ", column.id, "width:", columnWidth);
   }
   const theme = useTheme();
-  const [openInlineFilter, setOpenInlineFilter] = React.useState(false);
   const [tempFilterValue, setTempFilterValue] = React.useState("");
 
   // Base header cell style
@@ -73,14 +65,10 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
   const isFiltered = !!filters[column.id];
 
   // Determine if the column is sortable in the current mode
-  const isSortable = serverOperationMode
-    ? column.serverSortable
-    : column.sortable;
+  const isSortable = column.sortable;
 
   // Determine if the column is filterable in the current mode
-  const isFilterable = serverOperationMode
-    ? column.serverFilterable
-    : column.filterable;
+  const isFilterable = column.filterable;
 
   // Handle header click for sorting
   const handleHeaderClick = useCallback(
@@ -156,11 +144,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
           : null,
         columnId
       );
-
-      // Close filter UI if filter was cleared
-      if (!tempFilterValue) {
-        setOpenInlineFilter(false);
-      }
     },
     [column.id, filter, tempFilterValue]
   );
@@ -170,7 +153,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     (columnId: string) => {
       filter(null, columnId);
       setTempFilterValue("");
-      setOpenInlineFilter(false);
     },
     [filter]
   );
@@ -181,7 +163,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
       if (e.key === "Enter") {
         handleApplyFilter(column.id);
       } else if (e.key === "Escape") {
-        setOpenInlineFilter(false);
       }
     },
     [column.id, handleApplyFilter]
@@ -212,36 +193,22 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         onTextFilterIconClick(e, column.id); // This will be the date filter handler
       } else if (column.filterMode === "popover") {
         onPopoverFilterIconClick(e, column.id);
-      } else {
-        onInlineFilterIconClick(e, column.id);
-        setOpenInlineFilter(!openInlineFilter);
       }
     },
     [
       column,
       onTextFilterIconClick,
       onPopoverFilterIconClick,
-      onInlineFilterIconClick,
-      openInlineFilter,
     ]
   );
 
-  // Get the appropriate filter icon color isServerFilterable
+  // Get the appropriate filter icon color 
   const getFilterIconColor = useCallback(() => {
-    if (
-      serverOperationMode &&
-      column.serverFilterable &&
-      hasActiveServerFilter
-    ) {
-      return theme.palette.primary.main; // Active server filter
-    } else if (isFiltered) {
+    if (isFiltered) {
       return theme.palette.primary.main; // Active client filter
     }
     return "inherit"; // No active filter
   }, [
-    serverOperationMode,
-    column.serverFilterable,
-    hasActiveServerFilter,
     isFiltered,
     theme.palette.primary.main,
   ]);
@@ -309,13 +276,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
               {isPinned === "right" && (
                 <PushPin fontSize="small" style={{ marginLeft: 4 }} />
               )}
-              {serverOperationMode &&
-                (column.serverSortable || column.serverFilterable) && (
-                  <CloudQueue
-                    fontSize="small"
-                    style={{ marginLeft: 4, color: theme.palette.info.main }}
-                  />
-                )}
             </span>
 
             {/* Sort and filter icons */}
@@ -325,11 +285,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
               {/* Sort icon */}
               {isSortable && (
                 <Tooltip
-                  title={
-                    serverOperationMode && column.serverSortable
-                      ? "Server-side sort"
-                      : "Sort"
-                  }
+                  title={"Sort" }
                 >
                   <IconButton
                     size="small"
@@ -353,16 +309,12 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
               {/* Filter icon */}
               {isFilterable && (
                 <Tooltip
-                  title={
-                    serverOperationMode && column.serverFilterable
-                      ? "Server-side filter"
-                      : "Filter"
-                  }
+                  title={"Filter" }
                 >
                   <Badge
                     color="primary"
                     variant="dot"
-                    invisible={!(isFiltered || hasActiveServerFilter)}
+                    invisible={!(isFiltered)}
                     overlap="circular"
                   >
                     <IconButton
@@ -397,20 +349,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
           <ResizeHandle onResizeStart={handleResizeStart} />
         </div>
       </div>
-
-      {/* Inline Filter UI */}
-      {isFilterable && column.filterMode === "inline" && openInlineFilter && (
-        <InlineFilter
-          columnId={column.id}
-          columnLabel={column.label}
-          value={tempFilterValue}
-          hasActiveFilter={isFiltered || hasActiveServerFilter}
-          onChange={handleFilterInputChange}
-          onApply={handleApplyFilter}
-          onClear={handleClearFilter}
-          onKeyDown={handleKeyDown}
-        />
-      )}
     </th>
   );
 };
