@@ -8,8 +8,10 @@ import React, {
     MouseEvent,
     TouchEvent,
     useCallback,
+    useMemo,
 } from "react";
 import Resizer from "./Resizer";
+import { getStorageKey, debouncedSaveToLocalStorage, loadFromLocalStorage } from "@/utils/storage";
 
 // Helper to remove focus so text isn't selected while dragging
 function unFocus(doc: Document, win: Window) {
@@ -53,6 +55,20 @@ type ResizerProps = {
     onDoubleClick?: (event: React.MouseEvent) => void;
 };
 
+// Constants
+const SPLIT_PANE_STORAGE_PREFIX = 'splitPane';
+
+type StoredPaneState = {
+    ratios: {
+        first: number;
+        second: number;
+    };
+    visibility: {
+        first: boolean;
+        second: boolean;
+    };
+};
+
 // SplitPaneProps defines a type for all props
 type SplitPaneProps = {
     allowResize?: boolean;
@@ -74,6 +90,7 @@ type SplitPaneProps = {
     direction?: "rtl" | "ltr";
     containerRef?: React.RefObject<HTMLElement>;
     width?: number;
+    storageKey?: string;
 };
 
 const SplitPane: FC<SplitPaneProps> = ({
@@ -95,6 +112,7 @@ const SplitPane: FC<SplitPaneProps> = ({
     direction = "rtl",
     containerRef,
     width,
+    storageKey,
 }) => {
     const notNullChildren = removeNullChildren(children) as ReactNode[];
     const splitPaneRef = useRef<HTMLDivElement | null>(null);
@@ -112,35 +130,81 @@ const SplitPane: FC<SplitPaneProps> = ({
     const [pane1Size, setPane1Size] = useState<number | undefined>(undefined);
     const [pane2Size, setPane2Size] = useState<number | undefined>(undefined);
 
+    // Initialize ratios from storage or defaults
+    const initialRatios = useMemo(() => {
+        const defaultRatios = {
+            first: firstPane.preferredRatio ?? 0.5,
+            second: secondPane.preferredRatio ?? 0.5,
+        };
+
+        if (!storageKey) {
+            return defaultRatios;
+        }
+
+        const stored = loadFromLocalStorage<StoredPaneState>(
+            getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey)
+        );
+
+        return stored?.ratios ?? defaultRatios;
+    }, [storageKey, firstPane.preferredRatio, secondPane.preferredRatio]);
+
     // Store the last active ratios before visibility changes
-    const [lastActiveRatios, setLastActiveRatios] = useState({
-        first: firstPane.preferredRatio ?? 0.5,
-        second: secondPane.preferredRatio ?? 0.5,
-    });
+    const [lastActiveRatios, setLastActiveRatios] = useState(initialRatios);
 
     // Create internal ratio states for both panes
-    const [paneRatios, setPaneRatios] = useState({
-        first: firstPane.preferredRatio ?? 0.5,
-        second: secondPane.preferredRatio ?? 0.5,
-    });
+    const [paneRatios, setPaneRatios] = useState(initialRatios);
 
-    // Watch for visibility changes and update ratios accordingly
-    useEffect(() => {
-        if (!firstPane.visible && secondPane.visible) {
+    // Save pane state to local storage
+    const savePaneState = useCallback((newRatios: typeof lastActiveRatios) => {
+        if (!storageKey) return;
+
+        const state: StoredPaneState = {
+            ratios: newRatios,
+            visibility: {
+                first: firstPane.visible,
+                second: secondPane.visible,
+            },
+        };
+
+        debouncedSaveToLocalStorage(
+            getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey),
+            state
+        );
+    }, [storageKey, firstPane.visible, secondPane.visible]);
+
+    // Update ratios when visibility changes
+    const updateRatios = useCallback((
+        firstVisible: boolean,
+        secondVisible: boolean,
+        currentRatios = lastActiveRatios
+    ) => {
+        if (!firstVisible && secondVisible) {
             setPaneRatios({ first: 0, second: 1 });
-        } else if (firstPane.visible && !secondPane.visible) {
+        } else if (firstVisible && !secondVisible) {
             setPaneRatios({ first: 1, second: 0 });
-        } else if (firstPane.visible && secondPane.visible) {
+        } else if (firstVisible && secondVisible) {
             // Restore last active ratios when both panes become visible
-            setPaneRatios(lastActiveRatios);
+            setPaneRatios(currentRatios);
         }
-    }, [
-        firstPane.visible,
-        secondPane.visible,
-        firstPane.preferredRatio,
-        secondPane.preferredRatio,
-        lastActiveRatios,
-    ]);
+    }, [lastActiveRatios]);
+
+    // Handler for visibility changes
+    const handleVisibilityChange = useCallback((
+        firstVisible: boolean,
+        secondVisible: boolean
+    ) => {
+        updateRatios(firstVisible, secondVisible);
+        
+        if (firstVisible && secondVisible) {
+            // Save current state when both panes are visible
+            savePaneState(lastActiveRatios);
+        }
+    }, [updateRatios, savePaneState, lastActiveRatios]);
+
+    // Initialize visibility based on props
+    useMemo(() => {
+        handleVisibilityChange(firstPane.visible, secondPane.visible);
+    }, [firstPane.visible, secondPane.visible, handleVisibilityChange]);
 
     const updateContainerDimensions = useCallback(() => {
         const element = containerRef?.current || splitPaneRef.current;
@@ -156,14 +220,15 @@ const SplitPane: FC<SplitPaneProps> = ({
 
         const totalSize =
             orientation === "vertical" ? containerWidth : containerHeight;
-        // Use current local ratios
-        const firstRatio = paneRatios.first;
-        const secondRatio = paneRatios.second;
+            
+        // Use current local ratios with safe defaults
+        const firstRatio = paneRatios?.first ?? firstPane.preferredRatio ?? 0.5;
+        const secondRatio = paneRatios?.second ?? secondPane.preferredRatio ?? 0.5;
 
         // Normalize ratios
         const totalRatio = firstRatio + secondRatio;
         const normalizedFirstRatio =
-            totalRatio === 0 ? 0 : firstRatio / totalRatio;
+            totalRatio === 0 ? 0.5 : firstRatio / totalRatio;
 
         const newPane1Size = totalSize * normalizedFirstRatio;
         const newPane2Size = totalSize - newPane1Size;
@@ -315,14 +380,16 @@ const SplitPane: FC<SplitPaneProps> = ({
             setActive(false);
             if (onDragFinished) onDragFinished(draggedSize);
 
-            // Store current ratios as last active
+            // Store current ratios as last active and save to localStorage
             const totalSize =
                 orientation === "vertical" ? containerWidth : containerHeight;
             if (totalSize && pane1Size && pane2Size) {
-                setLastActiveRatios({
+                const newRatios = {
                     first: pane1Size / totalSize,
                     second: pane2Size / totalSize,
-                });
+                };
+                setLastActiveRatios(newRatios);
+                savePaneState(newRatios);
             }
         }
     }, [
@@ -335,6 +402,7 @@ const SplitPane: FC<SplitPaneProps> = ({
         containerHeight,
         pane1Size,
         pane2Size,
+        savePaneState,
     ]);
 
     // Attach mouse and touch listeners
@@ -488,7 +556,7 @@ const SplitPane: FC<SplitPaneProps> = ({
                         onMouseDown={onMouseDown}
                         onTouchStart={onTouchStart}
                         onTouchEnd={onMouseUp}
-                        style={resizerProps?.style}
+                        // style={resizerProps?.style}
                     />
                 )}
 

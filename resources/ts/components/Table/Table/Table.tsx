@@ -14,7 +14,7 @@ import { useTableColumnContext } from "./TableColumnContext";
 import { useTableRowsContext } from "./TableRowsContext";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/constants/tableConstants";
 import { useTableLocale } from "@/locale/table/TableLocaleContext";
-import NewTableBody from "../TableBody/NewTableBody";
+import NewTableBody from "../TableBody/TableBody";
 // Define column interface
 
 // Define default row height

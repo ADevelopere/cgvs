@@ -94,7 +94,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
             alignItems: "center",
           }}
         >
-          <span>
+          {/* <span>
             {rowSelectionEnabled && selectedRowIds.length > 0 ? (
               <strong style={{ color: theme.palette.primary.main }}>
                 `${selectedRowIds.length} $
@@ -103,7 +103,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
             ) : (
               `${visibleColumns.length} visibleColumns`
             )}
-          </span>
+          </span> */}
           <span>
             {isLoading && (
               <>
@@ -114,7 +114,6 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
                 {strings.general.loading}
               </>
             )}
-            {`${loadedRows} of ${totalRows} rows loaded`}
           </span>
         </div>
       )}

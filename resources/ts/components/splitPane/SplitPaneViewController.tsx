@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import React, { useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/contexts/ThemeContext";
@@ -15,6 +15,7 @@ type SplitPaneViewControllerProps = {
     firstPane: React.ReactNode;
     secondPane: React.ReactNode;
     style?: React.CSSProperties;
+    storageKey?: string;
 };
 
 const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
@@ -26,6 +27,7 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
     firstPane,
     secondPane,
     style,
+    storageKey,
 }) => {
     const { theme } = useAppTheme();
     const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
@@ -111,6 +113,7 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
                     flex: 1,
                     minHeight: `calc(100vh -256px)`,
                 }}
+                storageKey={storageKey}
             >
                 {firstPane}
                 {secondPane}

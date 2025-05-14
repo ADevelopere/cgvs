@@ -187,7 +187,7 @@ const This: React.FC = () => {
                             value="all"
                             sx={{
                                 flex: 1,
-                                p: 0
+                                p: 0,
                             }}
                         >
                             <SplitPane
@@ -209,6 +209,7 @@ const This: React.FC = () => {
                                     flex: 1,
                                     minHeight: `calc(100vh - 220px)`,
                                 }}
+                                storageKey="templateCategoryManagementSplitPane"
                             >
                                 <TemplateCategoryManagementCategoryPane />
                                 <TemplateCategoryManagementTemplatePane />
