@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
     Typography,
     Box,
@@ -29,6 +29,7 @@ type TemplateListProps = {
 const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
     const { currentCategory } = useTemplateCategoryManagement();
+    console.log("currentCategory", currentCategory);
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -56,29 +57,31 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
         });
     }, [templates, searchQuery]);
 
-    const handleViewChange = (
-        _: React.MouseEvent<HTMLElement>,
-        newView: ViewMode | null,
-    ): void => {
-        if (newView !== null) {
-            setViewMode(newView);
-        }
-    };
+    const handleViewChange = useCallback(
+        (_: React.MouseEvent<HTMLElement>, newView: ViewMode | null): void => {
+            if (newView !== null) {
+                setViewMode(newView);
+            }
+        },
+        [setViewMode],
+    );
 
-    const renderTemplateView = () => {
-        if (searchTemplates?.length === 0) {
-            return (
-                <Paper elevation={2}>
-                    <Box p={3} textAlign="center">
-                        <Typography color="textSecondary">
-                            {searchQuery
-                                ? strings.noTemplatesFoundSearch
-                                : strings.noTemplatesFoundCreate}
-                        </Typography>
-                    </Box>
-                </Paper>
-            );
-        }
+
+    const renderTemplateView = useMemo(
+        () => {
+            if (searchTemplates?.length === 0) {
+                return (
+                    <Paper elevation={2}>
+                        <Box p={3} textAlign="center">
+                            <Typography color="textSecondary">
+                                {searchQuery
+                                    ? strings.noTemplatesFoundSearch
+                                    : strings.noTemplatesFoundCreate}
+                            </Typography>
+                        </Box>
+                    </Paper>
+                );
+            }
 
         switch (viewMode) {
             case "list":
@@ -88,7 +91,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
             default:
                 return <CardView templates={searchTemplates} />;
         }
-    };
+    }, [searchTemplates, viewMode]);
 
     return (
         <Box
@@ -159,7 +162,7 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
                 </Box>
             </Box>
 
-            {renderTemplateView()}
+            {renderTemplateView}
         </Box>
     );
 };

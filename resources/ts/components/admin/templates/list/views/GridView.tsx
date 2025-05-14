@@ -29,6 +29,8 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
         return 2;
     };
 
+    console.log("GridView templates", templates);
+
     return (
         <ImageList
             cols={getCols()}
@@ -71,7 +73,7 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                     >
                         <img
                             src={
-                                template.image_url ||
+                                template.image_url ??
                                 TEMPLATE_IMAGE_PLACEHOLDER_URL
                             }
                             alt={template.name}

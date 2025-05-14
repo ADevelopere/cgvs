@@ -136,6 +136,8 @@ const NewTemplateList: React.FC = () => {
     const { headerHeight, sidebarState: dashboardsidebarState } =
         useDashboardLayout();
     const { allTemplates, currentCategory } = useTemplateCategoryManagement();
+    console.log("currentCategory", currentCategory);
+    console.log("allTemplates", allTemplates);
 
     const [open, setOpen] = useState(true);
     const theme = useTheme();
