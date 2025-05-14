@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_SELECT_TEMPLATE_VARIABLE = gql`
-mutation createSelectTemplateVariable($input: SelectTemplateVariableInput!){
+mutation createSelectTemplateVariable($input: CreateSelectTemplateVariableInput!){
     createSelectTemplateVariable(input: $input){
         id
         name

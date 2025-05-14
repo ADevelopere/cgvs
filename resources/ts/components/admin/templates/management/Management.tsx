@@ -1,21 +1,20 @@
 import { useSearchParams } from "react-router-dom";
-import { Box, useTheme, useMediaQuery, Fade, IconButton } from "@mui/material";
+import { Box, useTheme,  Fade, IconButton } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
-import SwipeableViews from "react-swipeable-views";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
     useTemplateManagement,
     TemplateManagementTabType,
 } from "@/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
-import VariablesTab from "./variables/VariablesTab";
 import RecipientsTab from "./recipients/RecipientsTab";
 import PreviewTab from "./tabs/PreviewTab";
-import { TemplateVariablesProvider } from "@/contexts/template/TemplateVariablesContext";
 import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
 import { useState, useEffect } from "react";
 import EditorTab from "./editor/EditorTab";
 import ManagementHeader from "./ManagementHeader";
+import TemplateVariableManagement from "./variables/TemplateVariableManagement";
+import { TemplateVariableManagementProvider } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 
 const handleTabError = (
     error: any,
@@ -32,21 +31,9 @@ const handleTabError = (
 
     setTabError(tab, {
         message:
-            error.response?.data?.message ||
+            error.response?.data?.message ??
             "An error occurred loading this tab",
     });
-};
-
-// Helper function to convert tab value to index
-const tabToIndex = (tab: TemplateManagementTabType): number => {
-    const tabs: TemplateManagementTabType[] = [
-        "basic",
-        "variables",
-        "recipients",
-        "editor",
-        "preview",
-    ];
-    return tabs.indexOf(tab);
 };
 
 // Helper function to convert index to tab value
@@ -58,45 +45,15 @@ const indexToTab = (index: number): TemplateManagementTabType => {
         "editor",
         "preview",
     ];
-    return tabs[index] as TemplateManagementTabType;
+    return tabs[index];
 };
 
 const Management: React.FC = () => {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [_, setSearchParams] = useSearchParams();
     const { template, activeTab, setActiveTab, setTabError } =
         useTemplateManagement();
     const [showScrollTop, setShowScrollTop] = useState(false);
-    const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-    useEffect(() => {
-        const checkTouchSupport = () => {
-            // More comprehensive check for dev tools emulation
-            const isEmulated =
-                /Mozilla\/5.0.*Mobile/.test(navigator.userAgent) || // Chrome/Edge dev tools
-                /iPhone|iPad|iPod|Android/.test(navigator.userAgent) || // Device check
-                (navigator.maxTouchPoints && navigator.maxTouchPoints > 1); // Touch points in dev tools
-
-            // Check actual touch support only if not emulated
-            const hasTouchSupport =
-                !isEmulated &&
-                Boolean(
-                    "ontouchstart" in window ||
-                        // @ts-ignore - MediaQueryList exists in modern browsers
-                        window.matchMedia("(any-pointer: coarse)").matches,
-                );
-
-            setIsTouchDevice(Boolean(hasTouchSupport || isEmulated));
-        };
-
-        checkTouchSupport();
-
-        // Recheck when device orientation changes (useful for dev tools toggling)
-        window.addEventListener("orientationchange", checkTouchSupport);
-        return () =>
-            window.removeEventListener("orientationchange", checkTouchSupport);
-    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -119,11 +76,6 @@ const Management: React.FC = () => {
         }
     };
 
-    const handleChangeIndex = (index: number) => {
-        const newTab = indexToTab(index);
-        setSearchParams({ tab: newTab });
-    };
-
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -131,10 +83,10 @@ const Management: React.FC = () => {
         });
     };
 
-    console.log(
-        "Management component rendered, theme direction:",
-        theme.direction,
-    );
+    if (!template) {
+        console.error("Template not found");
+        return null;
+    }
 
     return (
         <Box id="template-management" sx={{ width: "100%" }}>
@@ -143,7 +95,7 @@ const Management: React.FC = () => {
                 <ManagementHeader
                     onChange={handleTabChange}
                     activeTab={activeTab}
-                    templateName={template?.name || ""}
+                    templateName={template?.name ?? ""}
                 />
 
                 {/* Tabs */}
@@ -155,49 +107,66 @@ const Management: React.FC = () => {
                         },
                     }}
                 >
-                    <TemplateVariablesProvider>
-                        <TemplateRecipientsProvider>
-                            <SwipeableViews
-                                axis={
-                                    theme.direction === "rtl"
-                                        ? "x-reverse"
-                                        : "x"
-                                }
-                                index={tabToIndex(activeTab)}
-                                onChangeIndex={handleChangeIndex}
-                                enableMouseEvents={isTouchDevice}
-                                disabled={!isTouchDevice}
-                                style={{
-                                    overflow: "hidden",
+                    <TemplateVariableManagementProvider
+                        templateId={template?.id}
+                    >
+                        {/* <TemplateRecipientsProvider> */}
+                        <TabPanel value="basic">
+                            <BasicInfoTab />
+                        </TabPanel>
+                        <TabPanel value="variables">
+                            <TemplateVariableManagement />
+                        </TabPanel>
+                        <TabPanel value="recipients">
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    width: "100%",
                                     height: "100%",
+
+                                    borderColor: "red",
                                 }}
-                                containerStyle={{
-                                    direction: theme.direction,
-                                }}
-                                id="template-management-swipable-views"
+                                id="RecipientsTab-management"
                             >
-                                <TabPanel value="basic">
-                                    <BasicInfoTab />
-                                </TabPanel>
-                                <TabPanel value="variables">
-                                    <Box></Box>
-                                    {/* <VariablesTab /> */}
-                                </TabPanel>
-                                <TabPanel value="recipients">
-                                    <Box></Box>
-                                    {/* <RecipientsTab /> */}
-                                </TabPanel>
-                                <TabPanel value="editor">
-                                    <Box></Box>
-                                    {/* <EditorTab /> */}
-                                </TabPanel>
-                                <TabPanel value="preview">
-                                    <Box></Box>
-                                    {/* <PreviewTab /> */}
-                                </TabPanel>
-                            </SwipeableViews>
-                        </TemplateRecipientsProvider>
-                    </TemplateVariablesProvider>
+                                {/* Variables List will go here */}
+                                <h1>RecipientsTab</h1>
+                            </Box>
+                            {/* <RecipientsTab /> */}
+                        </TabPanel>
+                        <TabPanel value="editor">
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    width: "100%",
+                                    height: "100%",
+
+                                    borderColor: "red",
+                                }}
+                                id="template-variable-management"
+                            >
+                                {/* EditorTab will go here */}
+                                <h1>EditorTab</h1>
+                            </Box>
+                            {/* <EditorTab /> */}
+                        </TabPanel>
+                        <TabPanel value="preview">
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    width: "100%",
+                                    height: "100%",
+
+                                    borderColor: "red",
+                                }}
+                                id="template-variable-management"
+                            >
+                                {/* PreviewTab will go here */}
+                                <h1>PreviewTab</h1>
+                            </Box>
+                            {/* <PreviewTab /> */}
+                        </TabPanel>
+                        {/* </TemplateRecipientsProvider> */}
+                    </TemplateVariableManagementProvider>
                 </Box>
             </TabContext>
 

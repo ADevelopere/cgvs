@@ -3,8 +3,8 @@ import type {
     UpdateTextTemplateVariableMutation,
     DeleteTemplateVariableMutation,
     TemplateTextVariable,
-    TextTemplateVariableInput,
-    Template
+    UpdateTextTemplateVariableInput,
+    Template,
 } from "@/graphql/generated/types";
 
 export type TextTemplateVariableSource =
@@ -12,7 +12,10 @@ export type TextTemplateVariableSource =
     | UpdateTextTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialTextTemplateVariable = Partial<TemplateTextVariable> & { id: string; name: string };
+type PartialTextTemplateVariable = Partial<TemplateTextVariable> & {
+    id: string;
+    name: string;
+};
 
 /**
  * Maps a text template variable from any source to a consistent TemplateTextVariable type
@@ -24,54 +27,65 @@ const mapTextTemplateVariable = (
     if (!variable) {
         // Create a minimal valid TemplateTextVariable
         return {
-            id: '',
-            name: '',
+            id: "",
+            name: "",
             description: null,
             required: false,
             order: 0,
             preview_value: null,
             template: {
-                id: '',
-                name: '',
+                id: "",
+                name: "",
                 created_at: new Date(),
                 updated_at: new Date(),
             } as Template,
-            type: 'text',
+            type: "text",
             created_at: new Date(),
             updated_at: new Date(),
             min_length: null,
             max_length: null,
-            values: []
+            values: [],
         } as TemplateTextVariable;
     }
 
     return {
         id: variable.id,
         name: variable.name,
-        description: variable.description ?? previousVariable?.description ?? null,
+        description:
+            variable.description ?? previousVariable?.description ?? null,
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
-        preview_value: variable.preview_value ?? previousVariable?.preview_value ?? null,
-        template: variable.template ?? previousVariable?.template ?? {
-            id: '',
-            name: '',
-            created_at: new Date(),
-            updated_at: new Date(),
-        } as Template,
-        type: 'text',
-        created_at: variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at: variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
+        preview_value:
+            variable.preview_value ?? previousVariable?.preview_value ?? null,
+        template:
+            variable.template ??
+            previousVariable?.template ??
+            ({
+                id: "",
+                name: "",
+                created_at: new Date(),
+                updated_at: new Date(),
+            } as Template),
+        type: "text",
+        created_at:
+            variable.created_at ?? previousVariable?.created_at ?? new Date(),
+        updated_at:
+            variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
         min_length: variable.min_length ?? previousVariable?.min_length ?? null,
         max_length: variable.max_length ?? previousVariable?.max_length ?? null,
-        values: variable.values ?? previousVariable?.values ?? []
+        values: variable.values ?? previousVariable?.values ?? [],
     } as TemplateTextVariable;
 };
 
 /**
  * Maps a creation text template variable mutation result to a TemplateTextVariable
  */
-const mapCreateTextTemplateVariable = (source: CreateTextTemplateVariableMutation): TemplateTextVariable => {
-    return mapTextTemplateVariable(source.createTextTemplateVariable as PartialTextTemplateVariable);
+const mapCreateTextTemplateVariable = (
+    source: CreateTextTemplateVariableMutation,
+): TemplateTextVariable => {
+    return mapTextTemplateVariable(
+        source.createTextTemplateVariable as PartialTextTemplateVariable,
+    );
 };
 
 /**
@@ -129,7 +143,7 @@ export const mapSingleTextTemplateVariable = (
  */
 export const mapTextTemplateVariableToInput = (
     variable: TemplateTextVariable,
-): TextTemplateVariableInput => {
+): UpdateTextTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,

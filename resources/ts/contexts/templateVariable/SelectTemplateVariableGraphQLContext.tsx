@@ -46,7 +46,7 @@ export const useSelectTemplateVariableGraphQL = () => {
 
 export const SelectTemplateVariableGraphQLProvider: React.FC<{
     children: React.ReactNode;
-    templateId?: string;
+    templateId: string;
 }> = ({ children, templateId }) => {
     // Create select template variable mutation
     const [mutateCreate] = Graphql.useCreateSelectTemplateVariableMutation({

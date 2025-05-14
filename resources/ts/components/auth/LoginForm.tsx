@@ -58,7 +58,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                 if (passwordInput?.value && !password) {
                     setPassword(passwordInput.value);
                 }
-            }, 100);
+            }, 0);
 
             return () => clearTimeout(checkAutofill);
         }

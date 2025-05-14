@@ -25,7 +25,6 @@ const uploadLink = createUploadLink({
     },
 });
 
-
 const authLink = setContext((_, { headers }) => {
     const token = getAuthToken();
     return {
@@ -44,6 +43,9 @@ const apolloClient = new ApolloClient({
         watchQuery: {
             fetchPolicy: "cache-and-network",
         },
+    },
+    devtools: {
+        enabled: true,
     },
 });
 

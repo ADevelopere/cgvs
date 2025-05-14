@@ -3,10 +3,22 @@
 import { createContext, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
 import { FetchResult } from "@apollo/client";
-import { useTextTemplateVariableGraphQL } from "./TextTemplateVariableGraphQLContext";
-import { useNumberTemplateVariableGraphQL } from "./NumberTemplateVariableGraphQLContext";
-import { useDateTemplateVariableGraphQL } from "./DateTemplateVariableGraphQLContext";
-import { useSelectTemplateVariableGraphQL } from "./SelectTemplateVariableGraphQLContext";
+import {
+    TextTemplateVariableGraphQLProvider,
+    useTextTemplateVariableGraphQL,
+} from "./TextTemplateVariableGraphQLContext";
+import {
+    NumberTemplateVariableGraphQLProvider,
+    useNumberTemplateVariableGraphQL,
+} from "./NumberTemplateVariableGraphQLContext";
+import {
+    DateTemplateVariableGraphQLProvider,
+    useDateTemplateVariableGraphQL,
+} from "./DateTemplateVariableGraphQLContext";
+import {
+    SelectTemplateVariableGraphQLProvider,
+    useSelectTemplateVariableGraphQL,
+} from "./SelectTemplateVariableGraphQLContext";
 
 type TemplateVariableGraphQLContextType = {
     /**
@@ -96,7 +108,7 @@ export const useTemplateVariableGraphQL = () => {
     return context;
 };
 
-export const TemplateVariableGraphQLProvider: React.FC<{
+export const Provider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Get functions from individual hooks
@@ -108,30 +120,34 @@ export const TemplateVariableGraphQLProvider: React.FC<{
     const contextValue = useMemo(
         () => ({
             // Text template variable mutations
-            createTextTemplateVariableMutation: textContext.createTextTemplateVariableMutation,
-            updateTextTemplateVariableMutation: textContext.updateTextTemplateVariableMutation,
+            createTextTemplateVariableMutation:
+                textContext.createTextTemplateVariableMutation,
+            updateTextTemplateVariableMutation:
+                textContext.updateTextTemplateVariableMutation,
 
             // Number template variable mutations
-            createNumberTemplateVariableMutation: numberContext.createNumberTemplateVariableMutation,
-            updateNumberTemplateVariableMutation: numberContext.updateNumberTemplateVariableMutation,
+            createNumberTemplateVariableMutation:
+                numberContext.createNumberTemplateVariableMutation,
+            updateNumberTemplateVariableMutation:
+                numberContext.updateNumberTemplateVariableMutation,
 
             // Date template variable mutations
-            createDateTemplateVariableMutation: dateContext.createDateTemplateVariableMutation,
-            updateDateTemplateVariableMutation: dateContext.updateDateTemplateVariableMutation,
+            createDateTemplateVariableMutation:
+                dateContext.createDateTemplateVariableMutation,
+            updateDateTemplateVariableMutation:
+                dateContext.updateDateTemplateVariableMutation,
 
             // Select template variable mutations
-            createSelectTemplateVariableMutation: selectContext.createSelectTemplateVariableMutation,
-            updateSelectTemplateVariableMutation: selectContext.updateSelectTemplateVariableMutation,
+            createSelectTemplateVariableMutation:
+                selectContext.createSelectTemplateVariableMutation,
+            updateSelectTemplateVariableMutation:
+                selectContext.updateSelectTemplateVariableMutation,
 
             // Delete mutation (available in any context, we'll take it from text)
-            deleteTemplateVariableMutation: textContext.deleteTemplateVariableMutation,
+            deleteTemplateVariableMutation:
+                textContext.deleteTemplateVariableMutation,
         }),
-        [
-            textContext,
-            numberContext,
-            dateContext,
-            selectContext,
-        ],
+        [textContext, numberContext, dateContext, selectContext],
     );
 
     return (
@@ -140,3 +156,24 @@ export const TemplateVariableGraphQLProvider: React.FC<{
         </TemplateVariableGraphQLContext.Provider>
     );
 };
+
+const WithGraphQL: React.FC<{
+    children: React.ReactNode;
+    templateId: string;
+}> = ({ children, templateId }) => {
+    return (
+        <TextTemplateVariableGraphQLProvider templateId={templateId}>
+            <NumberTemplateVariableGraphQLProvider templateId={templateId}>
+                <DateTemplateVariableGraphQLProvider templateId={templateId}>
+                    <SelectTemplateVariableGraphQLProvider
+                        templateId={templateId}
+                    >
+                        <Provider>{children}</Provider>
+                    </SelectTemplateVariableGraphQLProvider>
+                </DateTemplateVariableGraphQLProvider>
+            </NumberTemplateVariableGraphQLProvider>
+        </TextTemplateVariableGraphQLProvider>
+    );
+};
+
+export const TemplateVariableGraphQLProvider = WithGraphQL;

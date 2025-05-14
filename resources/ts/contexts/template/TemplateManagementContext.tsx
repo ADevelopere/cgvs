@@ -7,21 +7,20 @@ import React, {
     useEffect,
 } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import {
-    Box,
-    CircularProgress,
-    Typography,
-    Paper,
-} from "@mui/material";
+import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
 import {
     Template,
     TemplateConfig,
     TemplateConfigQuery,
+    useTemplateQuery,
 } from "@/graphql/generated/types";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
-import { mapTemplateConfig } from "@/utils/template/template-mappers";
+import {
+    mapSingleTemplate,
+    mapTemplateConfig,
+} from "@/utils/template/template-mappers";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -64,9 +63,18 @@ export const TemplateManagementProvider: React.FC<{
 }> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const { id } = useParams<{ id: string }>();
-    const { allTemplates, templateToManage } =
-        useTemplateCategoryManagement();
+    const { allTemplates, templateToManage } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
+
+    const {
+        data: apolloTemplateData,
+        loading: apolloLoading,
+        error: apolloError,
+    } = useTemplateQuery({
+        variables: { id: id ?? "" },
+        skip: !id,
+        fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
+    });
 
     const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
 
@@ -126,32 +134,45 @@ export const TemplateManagementProvider: React.FC<{
     );
 
     useEffect(() => {
-        setLoading(true);
-        if (templateToManage) {
-            settemplate(templateToManage);
-        }
-        if (id && !templateToManage) {
-            const template = allTemplates.find((t) => t.id === id, 10);
-            if (!template) {
-                setError("Template not found");
-                console.error("Template not found");
-                setLoading(false);
-                return;
-            }
-            settemplate(template);
-        }
-        setLoading(false);
-    }, [id]);
+        console.log("Fetching template data...");
+        const fetchTemplate = async () => {
+            setLoading(true);
+            try {
+                let template: Template | undefined | null = undefined;
+                // First set from templateToManage if available
+                if (templateToManage) {
+                    template = templateToManage;
+                }
 
-    // update the template when allTemplates changes
-    useEffect(() => {
-        if (allTemplates && allTemplates.length > 0) {
-            const template = allTemplates.find((t) => t.id === id, 10);
-            if (template) {
-                settemplate(template);
+                // Then check allTemplates for immediate UI update
+                if (id && !templateToManage) {
+                    const localTemplate = allTemplates.find((t) => t.id === id);
+                    template = localTemplate;
+                }
+
+                // Finally, if we have Apollo data with additional fields, use that
+                if (apolloTemplateData?.template) {
+                    const t = mapSingleTemplate(apolloTemplateData);
+                    if (t) {
+                        template = t;
+                    }
+                }
+                if (template) {
+                    settemplate(template);
+                } else {
+                    setError("Template not found");
+                    console.error("Template not found");
+                }
+            } catch (error: any) {
+                setError(error.message ?? "Failed to load template");
+                console.error("Error loading template:", error);
+            } finally {
+                setLoading(false);
             }
-        }
-    }, [allTemplates]);
+        };
+
+        fetchTemplate();
+    }, [id, templateToManage, allTemplates, apolloTemplateData]);
 
     const fetchConfig = useCallback(async () => {
         try {
