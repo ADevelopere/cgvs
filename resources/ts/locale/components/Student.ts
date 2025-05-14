@@ -26,6 +26,23 @@ type StudentTranslations = {
     clearFilter: string;
     filterBy: string;
     contains: string;
+
+    // validation messages
+    nameRequired: string;
+    fullNameMinWords: string;
+    nameMinLength: string;
+    nameInvalidChars: string;
+    emailRequired: string;
+    emailInvalid: string;
+    genderRequired: string;
+    genderInvalid: string;
+    nationalityRequired: string;
+    nationalityInvalid: string;
+    dateOfBirthRequired: string;
+    dateOfBirthInvalid: string;
+    dateOfBirthFuture: string;
+    phoneNumberRequired: string;
+    phoneNumberInvalid: string;
 };
 
 export default StudentTranslations;

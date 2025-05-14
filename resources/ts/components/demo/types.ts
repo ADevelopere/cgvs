@@ -1,6 +1,6 @@
 import type React from "react";
 import type { FilterClause } from "@/types/filters";
-import { Column } from "@/types/table.type";
+import { EditableColumn } from "@/types/table.type";
 import { PaginatorInfo } from "@/graphql/generated/types";
 
 export interface TableState {
@@ -63,5 +63,5 @@ export interface DemoTableContextType extends TableState {
 
     // Original data
     originalDataset: any[];
-    columns: Column[];
+    columns: EditableColumn[];
 }

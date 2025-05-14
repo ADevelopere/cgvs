@@ -8,9 +8,10 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import { PaginatorInfo, LoadMoreParams } from "@/types/table.type";
+import {  LoadMoreParams } from "@/types/table.type";
 import { getSelectAllCheckboxState } from "../TableHeader/utils";
 import { useTableContext } from "./TableContext";
+import { PaginatorInfo } from "@/graphql/generated/types";
 
 /**
  * Type definition for the Table Rows Context
@@ -86,6 +87,7 @@ export const TableRowsProvider = ({
   }, [paginatorInfo, totalRows, data.length]);
 
   // Effect to initialize row heights
+  
   useEffect(() => {
     const initialRowHeights: Record<string | number, number> = {};
     data.forEach((item: any) => {

@@ -26,6 +26,23 @@ const student: StudentTranslations = {
     clearFilter: "إزالة التصفية",
     filterBy: "تصفية حسب",
     contains: "يحتوي على",
+
+    // validation messages
+    nameRequired: "الاسم مطلوب",
+    fullNameMinWords: "يجب أن يحتوي الاسم على ثلاث أسماء على الأقل",
+    nameMinLength: "يجب أن يحتوي كل جزء من الاسم على 3 أحرف على الأقل",
+    nameInvalidChars: "يمكن أن يحتوي الاسم على أحرف وشرطات وعلامات اقتباس فقط",
+    emailRequired: "البريد الإلكتروني مطلوب",
+    emailInvalid: "صيغة البريد الإلكتروني غير صحيحة",
+    genderRequired: "الجنس مطلوب",
+    genderInvalid: "قيمة الجنس غير صحيحة",
+    nationalityRequired: "الجنسية مطلوبة",
+    nationalityInvalid: "رمز البلد غير صحيح",
+    dateOfBirthRequired: "تاريخ الميلاد مطلوب",
+    dateOfBirthInvalid: "صيغة التاريخ غير صحيحة",
+    dateOfBirthFuture: "لا يمكن أن يكون التاريخ في المستقبل",
+    phoneNumberRequired: "رقم الهاتف مطلوب",
+    phoneNumberInvalid: "صيغة رقم الهاتف غير صحيحة",
 };
 
 export default student;

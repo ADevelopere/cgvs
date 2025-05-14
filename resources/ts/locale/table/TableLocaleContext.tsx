@@ -17,7 +17,7 @@ interface TableLocaleProviderProps {
 
 export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
   children,
-  locale: activeLocale = 'en',
+  locale: activeLocale = 'ar',
   customStrings,
 }) => {
   const strings = useMemo(() => {
@@ -42,7 +42,7 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
       return output as TableLocale;
     };
 
-    return mergeDeep(baseStrings, customStrings) as TableLocale;
+    return mergeDeep(baseStrings, customStrings);
   }, [activeLocale, customStrings]);
 
   const contextValue = useMemo(() => ({

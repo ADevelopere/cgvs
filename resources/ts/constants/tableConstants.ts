@@ -1,7 +1,7 @@
-import { Column } from "@/types/table.type"
+import { EditableColumn } from "@/types/table.type"
 
 // Column definitions with server operation support
-export const TABLE_COLUMNS: Column[] = [
+export const TABLE_COLUMNS: EditableColumn[] = [
   {
     id: "id",
     label: "ID",

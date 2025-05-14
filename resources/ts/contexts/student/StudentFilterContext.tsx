@@ -13,13 +13,13 @@ import {
     FilterClause,
 } from "@/types/filters";
 import { useStudentManagement } from "./StudentManagementContext";
-import { STUDENT_TABLE_COLUMNS } from "@/components/admin/student/constants";
 import {
     getColumnDef,
     getQueryParamKeysForColumn,
     mapDateFilter,
     mapTextFilter,
 } from "./utils/filter";
+import { STUDENT_TABLE_COLUMNS } from "@/components/admin/student/column";
 
 // Define the types for the filter operations and values
 type TextFilterMap = Partial<Record<TextFilterOperation, string | boolean>>;
@@ -37,25 +37,22 @@ type ApplyFiltersParams =
       };
 
 // Type for the context value
-type StudentFilterContextType = {
+type StudentFilterAndSortContextType = {
     applyFilters: (params: ApplyFiltersParams) => void;
-    applySingleFilter: (
-        filterClause: FilterClause<any, any> | null,
-        columnId: keyof Graphql.Student, // Ensure columnId matches expected keys
-    ) => void;
+    applySingleFilter: (filterClause: FilterClause<any, any> | null) => void;
     clearFilter: (columnId: keyof Graphql.Student) => void;
     clearAllFilters: () => void;
+    updateSort: (orderByClause: Graphql.OrderByClause[]) => void;
 };
 
 // Create the context
-const StudentFilterContext = createContext<StudentFilterContextType | null>(
-    null,
-);
+const StudentFilterAndSortContext =
+    createContext<StudentFilterAndSortContextType | null>(null);
 
 // Create the provider component
-export const StudentFilterProvider: React.FC<{ children: ReactNode }> = ({
-    children,
-}) => {
+export const StudentFilterAndSortProvider: React.FC<{
+    children: ReactNode;
+}> = ({ children }) => {
     const { setQueryParams } = useStudentManagement();
 
     const applyFilters = useCallback(
@@ -106,17 +103,32 @@ export const StudentFilterProvider: React.FC<{ children: ReactNode }> = ({
         [setQueryParams],
     );
 
+    const clearAllFilters = useCallback(() => {
+        const queryUpdate: Partial<Graphql.StudentsQueryVariables> = {};
+        // Iterate over columns configured for server filtering
+        STUDENT_TABLE_COLUMNS.forEach((col) => {
+            const keysToClear = getQueryParamKeysForColumn(
+                col.id as keyof Graphql.Student, // Assuming col.id is a valid keyof Student
+            );
+            keysToClear.forEach((key) => {
+                queryUpdate[key] = undefined;
+            });
+        });
+        // Also clear enum filters if they exist and are handled separately
+        queryUpdate.gender = undefined;
+        queryUpdate.nationality = undefined;
+
+        setQueryParams({ ...queryUpdate, page: 1 }); // Apply update and reset page
+    }, [setQueryParams]);
+
     const applySingleFilter = useCallback(
-        (
-            filterClause: FilterClause<any, any> | null,
-            columnId: keyof Graphql.Student,
-        ) => {
+        (filterClause: FilterClause<any, any> | null) => {
             if (!filterClause) {
-                // If filterClause is null, clear the filter for this column
-                clearFilter(columnId);
+                clearAllFilters();
                 return;
             }
 
+            const columnId = filterClause.columnId as keyof Graphql.Student;
             const columnDef = getColumnDef(columnId);
             if (!columnDef) {
                 console.warn(`Column definition not found for ${columnId}`);
@@ -146,28 +158,18 @@ export const StudentFilterProvider: React.FC<{ children: ReactNode }> = ({
                 console.warn(`Unsupported column type for ${columnId}`);
             }
         },
-        [applyFilters, clearFilter], // Add dependencies
+        [applyFilters, clearAllFilters],
     );
 
-    const clearAllFilters = useCallback(() => {
-        const queryUpdate: Partial<Graphql.StudentsQueryVariables> = {};
-        // Iterate over columns configured for server filtering
-        // STUDENT_TABLE_COLUMNS.forEach((col) => {
-        //     if (col.serverFilterable) {
-        //         const keysToClear = getQueryParamKeysForColumn(
-        //             col.id as keyof Graphql.Student, // Assuming col.id is a valid keyof Student
-        //         );
-        //         keysToClear.forEach((key) => {
-        //             queryUpdate[key] = undefined;
-        //         });W
-        //     }
-        // });
-        // Also clear enum filters if they exist and are handled separately
-        queryUpdate.gender = undefined;
-        queryUpdate.nationality = undefined;
-
-        setQueryParams({ ...queryUpdate, page: 1 }); // Apply update and reset page
-    }, [setQueryParams]);
+    const updateSort = useCallback(
+        (orderByClause: Graphql.OrderByClause[]) => {
+            setQueryParams({
+                orderBy: orderByClause,
+                page: 1,
+            });
+        },
+        [setQueryParams],
+    );
 
     // Memoize the context value
     const value = useMemo(
@@ -176,20 +178,27 @@ export const StudentFilterProvider: React.FC<{ children: ReactNode }> = ({
             applySingleFilter,
             clearFilter,
             clearAllFilters,
+            updateSort,
         }),
-        [applyFilters, applySingleFilter, clearFilter, clearAllFilters],
+        [
+            applyFilters,
+            applySingleFilter,
+            clearFilter,
+            clearAllFilters,
+            updateSort,
+        ],
     );
 
     return (
-        <StudentFilterContext.Provider value={value}>
+        <StudentFilterAndSortContext.Provider value={value}>
             {children}
-        </StudentFilterContext.Provider>
+        </StudentFilterAndSortContext.Provider>
     );
 };
 
 // Create the custom hook to use the context
-export const useStudentFilter = (): StudentFilterContextType => {
-    const context = useContext(StudentFilterContext);
+export const useStudentFilter = (): StudentFilterAndSortContextType => {
+    const context = useContext(StudentFilterAndSortContext);
     if (!context) {
         throw new Error(
             "useStudentFilter must be used within a StudentFilterProvider",

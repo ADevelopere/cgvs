@@ -1,11 +1,11 @@
 import type React from "react";
 import {
-  useRef,
-  useState,
-  useEffect,
-  CSSProperties,
-  useMemo,
-  useCallback,
+    useRef,
+    useState,
+    useEffect,
+    CSSProperties,
+    useMemo,
+    useCallback,
 } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Checkbox, Box } from "@mui/material";
@@ -13,258 +13,219 @@ import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableColumnContext } from "../Table/TableColumnContext";
 import DataCell from "./DataCell";
 import {
-  TABLE_CHECKBOX_CONTAINER_SIZE,
-  TABLE_CHECKBOX_WIDTH,
+    TABLE_CHECKBOX_CONTAINER_SIZE,
+    TABLE_CHECKBOX_WIDTH,
 } from "@/constants/tableConstants";
+import { useTableStyles } from "@/styles";
 
 interface DataRowProps {
-  rowData: any;
-  height: number;
-  virtualIndex?: number;
-  onRowResize?: (rowId: string | number, newHeight: number) => void;
-  width: number;
+    rowData: any;
+    height: number;
+    virtualIndex?: number;
+    onRowResize?: (rowId: string | number, newHeight: number) => void;
+    width: number;
 }
 
 const DataRow: React.FC<DataRowProps> = ({
-  rowData,
-  height,
-  width,
-  virtualIndex = 0,
-  onRowResize,
+    rowData,
+    height,
+    width,
+    virtualIndex = 0,
+    onRowResize,
 }) => {
-  const {
-    rowSelectionEnabled,
-    getRowStyle,
-    resizeRowHeight,
-    rowIdKey,
-    selectedRowIds,
-    toggleRowSelection,
-  } = useTableRowsContext();
-  const { allColumns } = useTableColumnContext();
-  const theme = useTheme();
-  const rowRef = useRef<HTMLTableRowElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [resizing, setResizing] = useState(false);
-  const [startY, setStartY] = useState(0);
-  const [startHeight, setStartHeight] = useState(0);
-  const [editingCell, setEditingCell] = useState<string | null>(null);
-  const [tempValue, setTempValue] = useState<any>(null);
+    const {
+        rowSelectionEnabled,
+        getRowStyle,
+        resizeRowHeight,
+        rowIdKey,
+        selectedRowIds,
+        toggleRowSelection,
+    } = useTableRowsContext();
+    const { allColumns } = useTableColumnContext();
+    const theme = useTheme();
+    const rowRef = useRef<HTMLTableRowElement>(null);
+    const [resizing, setResizing] = useState(false);
+    const [startY, setStartY] = useState(0);
+    const [startHeight, setStartHeight] = useState(0);
 
-  const cellStyle: CSSProperties = useMemo(() => {
-    return {
-      padding: 16,
-      textAlign: "start" as const,
-      // // border
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      borderTop: "none",
-      borderInlineStart: "none",
-      borderInlineEnd: `1px solid ${theme.palette.divider}`,
-      // // end border
-      whiteSpace: "nowrap" as const,
-      textOverflow: "ellipsis" as const,
-      height: height - 2,
-      maxHeight: height - 2,
-    };
-  }, [theme]);
+    const { inputStyle } = useTableStyles();
 
-  const cellEditingStyle: CSSProperties = useMemo(() => {
-    return {
-      ...cellStyle,
-      borderBottom: `2px solid ${theme.palette.primary.main}`,
-      borderTop: `2px solid ${theme.palette.primary.main}`,
-      borderInlineStart: `2px solid ${theme.palette.primary.main}`,
-      borderInlineEnd: `2px solid ${theme.palette.primary.main}`,
-      backgroundColor: theme.palette.background.paper,
-    };
-  }, [theme]);
+    const cellStyle: CSSProperties = useMemo(() => {
+        return {
+            padding: 16,
+            textAlign: "start" as const,
+            // // border
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            borderTop: "none",
+            borderInlineStart: "none",
+            borderInlineEnd: `1px solid ${theme.palette.divider}`,
+            // // end border
+            overflow: "hidden" as const,
+            whiteSpace: "nowrap" as const,
+            textOverflow: "ellipsis" as const,
+            height: height - 2,
+            maxHeight: height - 2,
+        };
+    }, [theme]);
 
-  // Check if this row is selected
-  const isRowSelected =
-    rowSelectionEnabled && selectedRowIds.includes(rowData[rowIdKey]);
+    const cellEditingStyle: CSSProperties = useMemo(() => {
+        return {
+            ...cellStyle,
+            borderBottom: `2px solid ${theme.palette.primary.main}`,
+            borderTop: `2px solid ${theme.palette.primary.main}`,
+            borderInlineStart: `2px solid ${theme.palette.primary.main}`,
+            borderInlineEnd: `2px solid ${theme.palette.primary.main}`,
+            backgroundColor: theme.palette.background.paper,
+        };
+    }, [theme]);
 
-  const handleResizeStart = useCallback(
-    (e: React.MouseEvent) => {
-      setResizing(true);
-      setStartY(e.clientY);
-      setStartHeight(height);
-      e.preventDefault();
-    },
-    [height]
-  );
+    // Check if this row is selected
+    const isRowSelected =
+        rowSelectionEnabled && selectedRowIds.includes(rowData[rowIdKey]);
 
-  useEffect(() => {
-    const handleResizeMove = (e: MouseEvent) => {
-      if (!resizing) return;
+    const handleResizeStart = useCallback(
+        (e: React.MouseEvent) => {
+            setResizing(true);
+            setStartY(e.clientY);
+            setStartHeight(height);
+            e.preventDefault();
+        },
+        [height],
+    );
 
-      const deltaY = e.clientY - startY;
-      const newHeight = startHeight + deltaY;
+    useEffect(() => {
+        const handleResizeMove = (e: MouseEvent) => {
+            if (!resizing) return;
 
-      // Use requestAnimationFrame for smoother resizing
-      requestAnimationFrame(() => {
-        resizeRowHeight(rowData.id, newHeight);
-        onRowResize?.(rowData.id, newHeight);
-      });
-    };
+            const deltaY = e.clientY - startY;
+            const newHeight = startHeight + deltaY;
 
-    const handleResizeEnd = () => {
-      setResizing(false);
-    };
+            // Use requestAnimationFrame for smoother resizing
+            requestAnimationFrame(() => {
+                resizeRowHeight(rowData.id, newHeight);
+                onRowResize?.(rowData.id, newHeight);
+            });
+        };
 
-    if (resizing) {
-      document.addEventListener("mousemove", handleResizeMove);
-      document.addEventListener("mouseup", handleResizeEnd);
+        const handleResizeEnd = () => {
+            setResizing(false);
+        };
 
-      // Add a class to the body to prevent text selection during resize
-      document.body.classList.add("resizing");
-    } else {
-      document.body.classList.remove("resizing");
-    }
+        if (resizing) {
+            document.addEventListener("mousemove", handleResizeMove);
+            document.addEventListener("mouseup", handleResizeEnd);
 
-    return () => {
-      document.removeEventListener("mousemove", handleResizeMove);
-      document.removeEventListener("mouseup", handleResizeEnd);
-      document.body.classList.remove("resizing");
-    };
-  }, [resizing, startY, startHeight, resizeRowHeight, rowData.id]);
-
-  // Handle cell click to enter edit mode
-  const handleCellClick = (columnId: string, value: any) => {
-    const column = allColumns.find((col) => col.id === columnId);
-    if (column?.editable) {
-      setEditingCell(columnId);
-      setTempValue(value);
-
-      // Focus the input after a short delay to ensure it's rendered
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
+            // Add a class to the body to prevent text selection during resize
+            document.body.classList.add("resizing");
+        } else {
+            document.body.classList.remove("resizing");
         }
-      }, 10);
-    }
-  };
 
-  // Handle input change
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTempValue(e.target.value);
-    },
-    [setTempValue]
-  );
+        return () => {
+            document.removeEventListener("mousemove", handleResizeMove);
+            document.removeEventListener("mouseup", handleResizeEnd);
+            document.body.classList.remove("resizing");
+        };
+    }, [resizing, startY, startHeight, resizeRowHeight, rowData.id]);
 
-  // Handle input blur to exit edit mode
-  const handleInputBlur = useCallback(() => {
-    setEditingCell(null);
-  }, []);
+    const handleRowSelectionChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            if (
+                !toggleRowSelection ||
+                !rowData ||
+                rowData[rowIdKey] === undefined
+            )
+                return;
 
-  // Handle key press in input
-  const handleInputKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      setEditingCell(null);
-    } else if (e.key === "Escape") {
-      setEditingCell(null);
-    }
-  }, []);
+            const rowId = rowData[rowIdKey];
+            toggleRowSelection(rowId);
+        },
+        [rowData, rowIdKey, toggleRowSelection],
+    );
+    const backgroundColor = useMemo(() => {
+        if (isRowSelected) {
+            return theme.palette.action.selected;
+        }
+        return virtualIndex % 2 === 0
+            ? theme.palette.customTable.evenRow
+            : theme.palette.customTable.oddRow;
+    }, [isRowSelected, virtualIndex, theme]);
 
-  const handleRowSelectionChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!toggleRowSelection || !rowData || rowData[rowIdKey] === undefined)
-        return;
+    const overrideRowStyle = useMemo(() => {
+        if (getRowStyle) {
+            return getRowStyle(rowData, virtualIndex);
+        }
+        return {};
+    }, [getRowStyle, rowData, virtualIndex]);
 
-      const rowId = rowData[rowIdKey];
-      toggleRowSelection(rowId);
-    },
-    [rowData, rowIdKey, toggleRowSelection]
-  );
-  const backgroundColor = useMemo(() => {
-    if (isRowSelected) {
-      return theme.palette.action.selected;
-    }
-    return virtualIndex % 2 === 0
-      ? theme.palette.customTable.evenRow
-      : theme.palette.customTable.oddRow;
-  }, [isRowSelected, virtualIndex, theme]);
-
-  const overrideRowStyle = useMemo(() => {
-    if (getRowStyle) {
-      return getRowStyle(rowData, virtualIndex);
-    }
-    return {};
-  }, [getRowStyle, rowData, virtualIndex]);
-
-  return (
-    <tr
-      ref={rowRef}
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: backgroundColor,
-        color: theme.palette.text.secondary,
-        ...overrideRowStyle,
-      }}
-    >
-      {rowSelectionEnabled && (
-        <td>
-          <Box
-            sx={{
-              height: height - 2,
-              display: "flex",
-              alignItems: "center",
-              paddingInline: "8px",
-              borderInlineEnd: `1px solid ${theme.palette.divider}`,
-              width: TABLE_CHECKBOX_CONTAINER_SIZE,
-              minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
+    return (
+        <tr
+            ref={rowRef}
+            style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: backgroundColor,
+                color: theme.palette.text.secondary,
+                ...overrideRowStyle,
             }}
-          >
-            <Checkbox
-              checked={isRowSelected}
-              onChange={handleRowSelectionChange}
-              color="primary"
-              size="small"
-              sx={{
-                maxHeight: TABLE_CHECKBOX_WIDTH,
-                height: TABLE_CHECKBOX_WIDTH,
-                width: TABLE_CHECKBOX_WIDTH,
-                minWidth: TABLE_CHECKBOX_WIDTH,
-              }}
-            />
-          </Box>
-        </td>
-      )}
+        >
+            {rowSelectionEnabled && (
+                <td>
+                    <Box
+                        sx={{
+                            height: height - 2,
+                            display: "flex",
+                            alignItems: "center",
+                            paddingInline: "8px",
+                            borderInlineEnd: `1px solid ${theme.palette.divider}`,
+                            width: TABLE_CHECKBOX_CONTAINER_SIZE,
+                            minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
+                        }}
+                    >
+                        <Checkbox
+                            checked={isRowSelected}
+                            onChange={handleRowSelectionChange}
+                            color="primary"
+                            size="small"
+                            sx={{
+                                maxHeight: TABLE_CHECKBOX_WIDTH,
+                                height: TABLE_CHECKBOX_WIDTH,
+                                width: TABLE_CHECKBOX_WIDTH,
+                                minWidth: TABLE_CHECKBOX_WIDTH,
+                            }}
+                        />
+                    </Box>
+                </td>
+            )}
 
-      {allColumns.map((column) => (
-        <DataCell
-          key={column.id}
-          ref={inputRef}
-          column={column}
-          rowData={rowData}
-          tempValue={tempValue}
-          handleCellClick={handleCellClick}
-          handleInputChange={handleInputChange}
-          onBlur={handleInputBlur}
-          onKeyDown={handleInputKeyDown}
-          cellStyle={cellStyle}
-          cellEditingStyle={cellEditingStyle}
-          isEditing={editingCell === column.id}
-        />
-      ))}
-      <Box
-        style={{
-          position: "absolute" as const,
-          bottom: "-3px",
-          left: 0,
-          right: 0,
-          cursor: "row-resize",
-          zIndex: 10,
-          userSelect: "none" as const,
-          touchAction: "none" as const,
-          backgroundColor: theme.palette.divider,
-          height: 4,
-        }}
-        onMouseDown={handleResizeStart}
-      />
-    </tr>
-  );
+            {allColumns.map((column) => (
+                <DataCell
+                    key={column.id}
+                    column={column}
+                    rowData={rowData}
+                    cellStyle={cellStyle}
+                    cellEditingStyle={cellEditingStyle}
+                    inputStyle={inputStyle}
+                />
+            ))}
+            <Box
+                style={{
+                    position: "absolute" as const,
+                    bottom: "-3px",
+                    left: 0,
+                    right: 0,
+                    cursor: "row-resize",
+                    zIndex: 10,
+                    userSelect: "none" as const,
+                    touchAction: "none" as const,
+                    backgroundColor: theme.palette.divider,
+                    height: 4,
+                }}
+                onMouseDown={handleResizeStart}
+            />
+        </tr>
+    );
 };
 
 export default DataRow;

@@ -1,18 +1,16 @@
-import { Column } from "@/types/table.type";
+import { BaseColumn } from "@/types/table.type";
 
-export const STUDENT_TABLE_COLUMNS: Column[] = [
+export const STUDENT_TABLE_COLUMNS: BaseColumn[] = [
     {
         id: "id",
-        label: "المعرف",
+        label: "",
         type: "number",
         accessor: "id",
         editable: false,
-        sortable: false,
-        filterable: true,
-        filterMode: "popover",
-        // Server operations
-        // serverSortable: true,
-        // serverFilterable: true,
+        sortable: true,
+        filterable: false,
+        resizable: false,
+        initialWidth: 100,
     },
     {
         id: "name",
@@ -22,10 +20,7 @@ export const STUDENT_TABLE_COLUMNS: Column[] = [
         editable: true,
         sortable: true,
         filterable: true,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_name_column_width",
     },
     {
@@ -36,10 +31,7 @@ export const STUDENT_TABLE_COLUMNS: Column[] = [
         editable: true,
         sortable: true,
         filterable: true,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_email_column_width",
     },
     {
@@ -50,52 +42,44 @@ export const STUDENT_TABLE_COLUMNS: Column[] = [
         editable: true,
         sortable: true,
         filterable: true,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_date_of_birth_column_width",
     },
     {
         id: "gender",
         label: "الجنس",
-        type: "text",
+        type: "select",
         accessor: "gender",
         editable: true,
         sortable: true,
         filterable: true,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_gender_column_width",
+        options: [
+            { label: "ذكر", value: "male" },
+            { label: "أنثى", value: "female" },
+        ],
     },
     {
         id: "nationality",
         label: "الجنسية",
-        type: "text",
+        type: "country",
         accessor: "nationality",
         editable: true,
         sortable: true,
         filterable: true,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_nationality_column_width",
     },
     {
         id: "phone_number",
         label: "رقم الهاتف",
-        type: "text",
+        type: "phone",
         accessor: "phone_number",
         sortable: false,
         filterable: true,
         editable: true,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_phone_number_column_width",
     },
     {
@@ -106,10 +90,7 @@ export const STUDENT_TABLE_COLUMNS: Column[] = [
         sortable: true,
         filterable: true,
         editable: false,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_created_at_column_width",
     },
     {
@@ -120,10 +101,7 @@ export const STUDENT_TABLE_COLUMNS: Column[] = [
         sortable: true,
         filterable: true,
         editable: false,
-        filterMode: "popover",
-        // Server operations
-        serverSortable: true,
-        serverFilterable: true,
+        resizable: true,
         widthStorageKey: "student_table_student_updated_at_column_width",
     },
 ];
