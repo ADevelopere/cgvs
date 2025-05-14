@@ -3,8 +3,8 @@ import type {
     UpdateNumberTemplateVariableMutation,
     DeleteTemplateVariableMutation,
     TemplateNumberVariable,
-    NumberTemplateVariableInput,
-    Template
+    UpdateNumberTemplateVariableInput,
+    Template,
 } from "@/graphql/generated/types";
 
 export type NumberTemplateVariableSource =
@@ -12,7 +12,10 @@ export type NumberTemplateVariableSource =
     | UpdateNumberTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialNumberTemplateVariable = Partial<TemplateNumberVariable> & { id: string; name: string };
+type PartialNumberTemplateVariable = Partial<TemplateNumberVariable> & {
+    id: string;
+    name: string;
+};
 
 /**
  * Maps a number template variable from any source to a consistent TemplateNumberVariable type
@@ -24,56 +27,68 @@ const mapNumberTemplateVariable = (
     if (!variable) {
         // Create a minimal valid TemplateNumberVariable
         return {
-            id: '',
-            name: '',
+            id: "",
+            name: "",
             description: null,
             required: false,
             order: 0,
             preview_value: null,
             template: {
-                id: '',
-                name: '',
+                id: "",
+                name: "",
                 created_at: new Date(),
                 updated_at: new Date(),
             } as Template,
-            type: 'number',
+            type: "number",
             created_at: new Date(),
             updated_at: new Date(),
             min_value: null,
             max_value: null,
             decimal_places: null,
-            values: []
+            values: [],
         } as TemplateNumberVariable;
     }
 
     return {
         id: variable.id,
         name: variable.name,
-        description: variable.description ?? previousVariable?.description ?? null,
+        description:
+            variable.description ?? previousVariable?.description ?? null,
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
-        preview_value: variable.preview_value ?? previousVariable?.preview_value ?? null,
-        template: variable.template ?? previousVariable?.template ?? {
-            id: '',
-            name: '',
-            created_at: new Date(),
-            updated_at: new Date(),
-        } as Template,
-        type: 'number',
-        created_at: variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at: variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
+        preview_value:
+            variable.preview_value ?? previousVariable?.preview_value ?? null,
+        template:
+            variable.template ??
+            previousVariable?.template ??
+            ({
+                id: "",
+                name: "",
+                created_at: new Date(),
+                updated_at: new Date(),
+            } as Template),
+        type: "number",
+        created_at:
+            variable.created_at ?? previousVariable?.created_at ?? new Date(),
+        updated_at:
+            variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
         min_value: variable.min_value ?? previousVariable?.min_value ?? null,
         max_value: variable.max_value ?? previousVariable?.max_value ?? null,
-        decimal_places: variable.decimal_places ?? previousVariable?.decimal_places ?? null,
-        values: variable.values ?? previousVariable?.values ?? []
+        decimal_places:
+            variable.decimal_places ?? previousVariable?.decimal_places ?? null,
+        values: variable.values ?? previousVariable?.values ?? [],
     } as TemplateNumberVariable;
 };
 
 /**
  * Maps a creation number template variable mutation result to a TemplateNumberVariable
  */
-const mapCreateNumberTemplateVariable = (source: CreateNumberTemplateVariableMutation): TemplateNumberVariable => {
-    return mapNumberTemplateVariable(source.createNumberTemplateVariable as PartialNumberTemplateVariable);
+const mapCreateNumberTemplateVariable = (
+    source: CreateNumberTemplateVariableMutation,
+): TemplateNumberVariable => {
+    return mapNumberTemplateVariable(
+        source.createNumberTemplateVariable as PartialNumberTemplateVariable,
+    );
 };
 
 /**
@@ -131,7 +146,7 @@ export const mapSingleNumberTemplateVariable = (
  */
 export const mapNumberTemplateVariableToInput = (
     variable: TemplateNumberVariable,
-): NumberTemplateVariableInput => {
+): UpdateNumberTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,

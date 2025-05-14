@@ -44,11 +44,13 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
     return (
         <Box
             sx={{
+                height: "100%",
+
                 ...style,
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
             }}
+            className="split-pane-view-controller"
         >
             {/* controllers */}
             <Box

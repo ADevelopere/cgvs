@@ -3,8 +3,8 @@ import type {
     UpdateSelectTemplateVariableMutation,
     DeleteTemplateVariableMutation,
     TemplateSelectVariable,
-    SelectTemplateVariableInput,
-    Template
+    UpdateSelectTemplateVariableInput,
+    Template,
 } from "@/graphql/generated/types";
 
 export type SelectTemplateVariableSource =
@@ -12,7 +12,10 @@ export type SelectTemplateVariableSource =
     | UpdateSelectTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialSelectTemplateVariable = Partial<TemplateSelectVariable> & { id: string; name: string };
+type PartialSelectTemplateVariable = Partial<TemplateSelectVariable> & {
+    id: string;
+    name: string;
+};
 
 /**
  * Maps a select template variable from any source to a consistent TemplateSelectVariable type
@@ -24,54 +27,65 @@ const mapSelectTemplateVariable = (
     if (!variable) {
         // Create a minimal valid TemplateSelectVariable
         return {
-            id: '',
-            name: '',
+            id: "",
+            name: "",
             description: null,
             required: false,
             order: 0,
             preview_value: null,
             template: {
-                id: '',
-                name: '',
+                id: "",
+                name: "",
                 created_at: new Date(),
                 updated_at: new Date(),
             } as Template,
-            type: 'select',
+            type: "select",
             created_at: new Date(),
             updated_at: new Date(),
             multiple: false,
             options: [],
-            values: []
+            values: [],
         } as TemplateSelectVariable;
     }
 
     return {
         id: variable.id,
         name: variable.name,
-        description: variable.description ?? previousVariable?.description ?? null,
+        description:
+            variable.description ?? previousVariable?.description ?? null,
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
-        preview_value: variable.preview_value ?? previousVariable?.preview_value ?? null,
-        template: variable.template ?? previousVariable?.template ?? {
-            id: '',
-            name: '',
-            created_at: new Date(),
-            updated_at: new Date(),
-        } as Template,
-        type: 'select',
-        created_at: variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at: variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
+        preview_value:
+            variable.preview_value ?? previousVariable?.preview_value ?? null,
+        template:
+            variable.template ??
+            previousVariable?.template ??
+            ({
+                id: "",
+                name: "",
+                created_at: new Date(),
+                updated_at: new Date(),
+            } as Template),
+        type: "select",
+        created_at:
+            variable.created_at ?? previousVariable?.created_at ?? new Date(),
+        updated_at:
+            variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
         multiple: variable.multiple ?? previousVariable?.multiple ?? false,
         options: variable.options ?? previousVariable?.options ?? [],
-        values: variable.values ?? previousVariable?.values ?? []
+        values: variable.values ?? previousVariable?.values ?? [],
     } as TemplateSelectVariable;
 };
 
 /**
  * Maps a creation select template variable mutation result to a TemplateSelectVariable
  */
-const mapCreateSelectTemplateVariable = (source: CreateSelectTemplateVariableMutation): TemplateSelectVariable => {
-    return mapSelectTemplateVariable(source.createSelectTemplateVariable as PartialSelectTemplateVariable);
+const mapCreateSelectTemplateVariable = (
+    source: CreateSelectTemplateVariableMutation,
+): TemplateSelectVariable => {
+    return mapSelectTemplateVariable(
+        source.createSelectTemplateVariable as PartialSelectTemplateVariable,
+    );
 };
 
 /**
@@ -129,7 +143,7 @@ export const mapSingleSelectTemplateVariable = (
  */
 export const mapSelectTemplateVariableToInput = (
     variable: TemplateSelectVariable,
-): SelectTemplateVariableInput => {
+): UpdateSelectTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,

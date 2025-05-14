@@ -30,8 +30,6 @@ const BasicInfoTab: React.FC = () => {
     const { template, unsavedChanges, setUnsavedChanges } =
         useTemplateManagement();
 
-    console.log("BasicInfoTab template", template);
-
     const { updateTemplate, updateTemplateWithImage } =
         useTemplateCategoryManagement();
 

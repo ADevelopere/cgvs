@@ -247,15 +247,26 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         [mutateReorder],
     );
 
-    const contextValue: TemplateCategoryGraphQLContextType = {
-        flatTemplateCategoriesQuery,
-        paginatedTemplateCategoriesQuery,
-        templateCategoryQuery,
-        createTemplateCategoryMutation,
-        updateTemplateCategoryMutation,
-        deleteTemplateCategoryMutation,
-        reorderTemplateCategoriesMutation,
-    };
+    const contextValue = React.useMemo(
+        () => ({
+            flatTemplateCategoriesQuery,
+            paginatedTemplateCategoriesQuery,
+            templateCategoryQuery,
+            createTemplateCategoryMutation,
+            updateTemplateCategoryMutation,
+            deleteTemplateCategoryMutation,
+            reorderTemplateCategoriesMutation,
+        }),
+        [
+            flatTemplateCategoriesQuery,
+            paginatedTemplateCategoriesQuery,
+            templateCategoryQuery,
+            createTemplateCategoryMutation,
+            updateTemplateCategoryMutation,
+            deleteTemplateCategoryMutation,
+            reorderTemplateCategoriesMutation,
+        ],
+    );
 
     return (
         <TemplateCategoryGraphQLContext.Provider value={contextValue}>

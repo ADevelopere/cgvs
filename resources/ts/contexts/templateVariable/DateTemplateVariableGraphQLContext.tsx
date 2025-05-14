@@ -46,7 +46,7 @@ export const useDateTemplateVariableGraphQL = () => {
 
 export const DateTemplateVariableGraphQLProvider: React.FC<{
     children: React.ReactNode;
-    templateId?: string;
+    templateId: string;
 }> = ({ children, templateId }) => {
     // Create date template variable mutation
     const [mutateCreate] = Graphql.useCreateDateTemplateVariableMutation({

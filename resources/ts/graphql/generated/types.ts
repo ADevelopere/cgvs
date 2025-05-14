@@ -290,6 +290,44 @@ export type CountryCode =
   | 'ZM'
   | 'ZW';
 
+/** Input for creating date template variables */
+export type CreateDateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  max_date?: InputMaybe<Scalars['Date']['input']>;
+  min_date?: InputMaybe<Scalars['Date']['input']>;
+  name: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
+};
+
+/** Input for creating number template variables */
+export type CreateNumberTemplateVariableInput = {
+  decimal_places?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  max_value?: InputMaybe<Scalars['Float']['input']>;
+  min_value?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
+};
+
+/** Input for creating select template variables */
+export type CreateSelectTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  multiple: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  options: Array<Scalars['String']['input']>;
+  order: Scalars['Int']['input'];
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
+};
+
 export type CreateStudentInput = {
   date_of_birth?: InputMaybe<Scalars['Date']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
@@ -312,6 +350,19 @@ export type CreateTemplateInput = {
   image?: InputMaybe<Scalars['Upload']['input']>;
   name: Scalars['String']['input'];
   order?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Input for creating text template variables */
+export type CreateTextTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  max_length?: InputMaybe<Scalars['Int']['input']>;
+  min_length?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  pattern?: InputMaybe<Scalars['String']['input']>;
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
 };
 
 /** Dynamic date element that pulls data from various sources */
@@ -341,20 +392,6 @@ export type DataTextElement = {
   source_field: Scalars['String']['output'];
   source_type: DataSourceType;
   updated_at: Scalars['DateTime']['output'];
-};
-
-/** Input for date template variable mutations */
-export type DateTemplateVariableInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  format?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  max_date?: InputMaybe<Scalars['Date']['input']>;
-  min_date?: InputMaybe<Scalars['Date']['input']>;
-  name: Scalars['String']['input'];
-  order: Scalars['Int']['input'];
-  preview_value?: InputMaybe<Scalars['String']['input']>;
-  required: Scalars['Boolean']['input'];
-  template_id: Scalars['ID']['input'];
 };
 
 /** Static image element */
@@ -427,19 +464,19 @@ export type Mutation = {
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationCreateDateTemplateVariableArgs = {
-  input: DateTemplateVariableInput;
+  input: CreateDateTemplateVariableInput;
 };
 
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationCreateNumberTemplateVariableArgs = {
-  input: NumberTemplateVariableInput;
+  input: CreateNumberTemplateVariableInput;
 };
 
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationCreateSelectTemplateVariableArgs = {
-  input: SelectTemplateVariableInput;
+  input: CreateSelectTemplateVariableInput;
 };
 
 
@@ -463,7 +500,7 @@ export type MutationCreateTemplateCategoryArgs = {
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationCreateTextTemplateVariableArgs = {
-  input: TextTemplateVariableInput;
+  input: CreateTextTemplateVariableInput;
 };
 
 
@@ -524,19 +561,19 @@ export type MutationRestoreTemplateArgs = {
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationUpdateDateTemplateVariableArgs = {
-  input: DateTemplateVariableInput;
+  input: UpdateDateTemplateVariableInput;
 };
 
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationUpdateNumberTemplateVariableArgs = {
-  input: NumberTemplateVariableInput;
+  input: UpdateNumberTemplateVariableInput;
 };
 
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationUpdateSelectTemplateVariableArgs = {
-  input: SelectTemplateVariableInput;
+  input: UpdateSelectTemplateVariableInput;
 };
 
 
@@ -569,21 +606,7 @@ export type MutationUpdateTemplateWithImageArgs = {
 
 /** Indicates what fields are available at the top level of a mutation operation. */
 export type MutationUpdateTextTemplateVariableArgs = {
-  input: TextTemplateVariableInput;
-};
-
-/** Input for number template variable mutations */
-export type NumberTemplateVariableInput = {
-  decimal_places?: InputMaybe<Scalars['Int']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  max_value?: InputMaybe<Scalars['Float']['input']>;
-  min_value?: InputMaybe<Scalars['Float']['input']>;
-  name: Scalars['String']['input'];
-  order: Scalars['Int']['input'];
-  preview_value?: InputMaybe<Scalars['String']['input']>;
-  required: Scalars['Boolean']['input'];
-  template_id: Scalars['ID']['input'];
+  input: UpdateTextTemplateVariableInput;
 };
 
 /** Allows ordering a list of records. */
@@ -792,19 +815,6 @@ export type ReorderCategoriesInput = {
 export type ReorderTemplateInput = {
   id: Scalars['ID']['input'];
   order: Scalars['Int']['input'];
-};
-
-/** Input for select template variable mutations */
-export type SelectTemplateVariableInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  multiple: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
-  options: Array<Scalars['String']['input']>;
-  order: Scalars['Int']['input'];
-  preview_value?: InputMaybe<Scalars['String']['input']>;
-  required: Scalars['Boolean']['input'];
-  template_id: Scalars['ID']['input'];
 };
 
 /** Directions for ordering a list of records. */
@@ -1056,20 +1066,6 @@ export type TemplateVariable = {
   values: Array<RecipientGroupItemVariableValue>;
 };
 
-/** Input for text template variable mutations */
-export type TextTemplateVariableInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  max_length?: InputMaybe<Scalars['Int']['input']>;
-  min_length?: InputMaybe<Scalars['Int']['input']>;
-  name: Scalars['String']['input'];
-  order: Scalars['Int']['input'];
-  pattern?: InputMaybe<Scalars['String']['input']>;
-  preview_value?: InputMaybe<Scalars['String']['input']>;
-  required: Scalars['Boolean']['input'];
-  template_id: Scalars['ID']['input'];
-};
-
 /** Specify if you want to include or exclude trashed results from a query. */
 export type Trashed =
   /** Only return trashed results. */
@@ -1078,6 +1074,47 @@ export type Trashed =
   | 'WITH'
   /** Only return non-trashed results. */
   | 'WITHOUT';
+
+/** Input for updating date template variables */
+export type UpdateDateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  max_date?: InputMaybe<Scalars['Date']['input']>;
+  min_date?: InputMaybe<Scalars['Date']['input']>;
+  name: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
+};
+
+/** Input for updating number template variables */
+export type UpdateNumberTemplateVariableInput = {
+  decimal_places?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  max_value?: InputMaybe<Scalars['Float']['input']>;
+  min_value?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
+};
+
+/** Input for updating select template variables */
+export type UpdateSelectTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  multiple: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  options: Array<Scalars['String']['input']>;
+  order: Scalars['Int']['input'];
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
+};
 
 export type UpdateStudentInput = {
   date_of_birth?: InputMaybe<Scalars['Date']['input']>;
@@ -1109,6 +1146,20 @@ export type UpdateTemplateWithImageInput = {
   image?: InputMaybe<Scalars['Upload']['input']>;
   name: Scalars['String']['input'];
   order?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Input for updating text template variables */
+export type UpdateTextTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  max_length?: InputMaybe<Scalars['Int']['input']>;
+  min_length?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  pattern?: InputMaybe<Scalars['String']['input']>;
+  preview_value?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
+  template_id: Scalars['ID']['input'];
 };
 
 /** A user of the application */
@@ -1247,28 +1298,28 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: string, name: string, description?: string | null, order?: number | null, special_type?: TemplateCategoryType | null, created_at: any, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', id: string } | null } };
 
 export type CreateDateTemplateVariableMutationVariables = Exact<{
-  input: DateTemplateVariableInput;
+  input: CreateDateTemplateVariableInput;
 }>;
 
 
 export type CreateDateTemplateVariableMutation = { __typename?: 'Mutation', createDateTemplateVariable: { __typename?: 'TemplateDateVariable', id: string, name: string, description?: string | null, order: number, format?: string | null, min_date?: any | null, max_date?: any | null, preview_value?: string | null, required: boolean, created_at: any, updated_at: any, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type CreateNumberTemplateVariableMutationVariables = Exact<{
-  input: NumberTemplateVariableInput;
+  input: CreateNumberTemplateVariableInput;
 }>;
 
 
 export type CreateNumberTemplateVariableMutation = { __typename?: 'Mutation', createNumberTemplateVariable: { __typename?: 'TemplateNumberVariable', id: string, name: string, description?: string | null, order: number, decimal_places?: number | null, min_value?: number | null, max_value?: number | null, preview_value?: string | null, required: boolean, created_at: any, updated_at: any, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type CreateSelectTemplateVariableMutationVariables = Exact<{
-  input: SelectTemplateVariableInput;
+  input: CreateSelectTemplateVariableInput;
 }>;
 
 
 export type CreateSelectTemplateVariableMutation = { __typename?: 'Mutation', createSelectTemplateVariable: { __typename?: 'TemplateSelectVariable', id: string, name: string, description?: string | null, multiple: boolean, options: Array<string>, order: number, preview_value?: string | null, required: boolean, created_at: any, updated_at: any, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type CreateTextTemplateVariableMutationVariables = Exact<{
-  input: TextTemplateVariableInput;
+  input: CreateTextTemplateVariableInput;
 }>;
 
 
@@ -1282,28 +1333,28 @@ export type DeleteTemplateVariableMutationVariables = Exact<{
 export type DeleteTemplateVariableMutation = { __typename?: 'Mutation', deleteTemplateVariable: { __typename?: 'TemplateDateVariable', id: string, name: string, template: { __typename?: 'Template', id: string, name: string } } | { __typename?: 'TemplateNumberVariable', id: string, name: string, template: { __typename?: 'Template', id: string, name: string } } | { __typename?: 'TemplateSelectVariable', id: string, name: string, template: { __typename?: 'Template', id: string, name: string } } | { __typename?: 'TemplateTextVariable', id: string, name: string, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type UpdateDateTemplateVariableMutationVariables = Exact<{
-  input: DateTemplateVariableInput;
+  input: UpdateDateTemplateVariableInput;
 }>;
 
 
 export type UpdateDateTemplateVariableMutation = { __typename?: 'Mutation', updateDateTemplateVariable: { __typename?: 'TemplateDateVariable', id: string, name: string, description?: string | null, order: number, format?: string | null, min_date?: any | null, max_date?: any | null, preview_value?: string | null, required: boolean, created_at: any, updated_at: any, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type UpdateNumberTemplateVariableMutationVariables = Exact<{
-  input: NumberTemplateVariableInput;
+  input: UpdateNumberTemplateVariableInput;
 }>;
 
 
 export type UpdateNumberTemplateVariableMutation = { __typename?: 'Mutation', updateNumberTemplateVariable: { __typename?: 'TemplateNumberVariable', decimal_places?: number | null, id: string, name: string, description?: string | null, order: number, max_value?: number | null, min_value?: number | null, preview_value?: string | null, required: boolean, created_at: any, updated_at: any, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type UpdateSelectTemplateVariableMutationVariables = Exact<{
-  input: SelectTemplateVariableInput;
+  input: UpdateSelectTemplateVariableInput;
 }>;
 
 
-export type UpdateSelectTemplateVariableMutation = { __typename?: 'Mutation', updateSelectTemplateVariable: { __typename?: 'TemplateSelectVariable', created_at: any, description?: string | null, id: string, multiple: boolean, name: string, options: Array<string>, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any, category: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }> | null }, certificates: Array<{ __typename?: 'Certificate', created_at: any, id: string, release_date: any, updated_at: any, verification_code: string, recipientGroup: { __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any }, student: { __typename?: 'Student', created_at: any, date_of_birth?: any | null, email?: string | null, gender?: StudentGender | null, id: string, name: string, nationality?: CountryCode | null, phone_number?: string | null, updated_at: any }, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any } }>, elements: Array<{ __typename?: 'TemplateElement', alignment?: string | null, color?: string | null, created_at: any, font_family?: string | null, font_size?: number | null, id: string, language_constraint?: string | null, type: string, updated_at: any, x_coordinate: number, y_coordinate: number, dataDate?: { __typename?: 'DataDateElement', created_at: any, date_format?: string | null, element_id: string, source_field: string, source_type: DataSourceType, updated_at: any } | null, dataText?: { __typename?: 'DataTextElement', created_at: any, element_id: string, source_field: string, source_type: DataSourceType, updated_at: any } | null, image?: { __typename?: 'ImageElement', created_at: any, element_id: string, height?: number | null, image_url: string, updated_at: any, width?: number | null } | null, qrCode?: { __typename?: 'QrCodeElement', created_at: any, element_id: string, size?: number | null, updated_at: any } | null, staticText?: { __typename?: 'StaticTextElement', content: string, created_at: any, element_id: string, updated_at: any } | null, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any } }>, pre_deletion_category?: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, childCategories: Array<{ __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, templates?: Array<{ __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }> | null } | null, recipientGroups: Array<{ __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any, certificates: Array<{ __typename?: 'Certificate', created_at: any, id: string, release_date: any, updated_at: any, verification_code: string }>, items: Array<{ __typename?: 'TemplateRecipientGroupItem', created_at: any, id: string, updated_at: any }>, students: Array<{ __typename?: 'Student', created_at: any, date_of_birth?: any | null, email?: string | null, gender?: StudentGender | null, id: string, name: string, nationality?: CountryCode | null, phone_number?: string | null, updated_at: any }>, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any } }>, variables: Array<{ __typename?: 'TemplateDateVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } | { __typename?: 'TemplateNumberVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } | { __typename?: 'TemplateSelectVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } | { __typename?: 'TemplateTextVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> }> }> | null }>, parentCategory?: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any, templates?: Array<{ __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }> | null } | null } | null }> }> }, certificates: Array<{ __typename?: 'Certificate', created_at: any, id: string, release_date: any, updated_at: any, verification_code: string }>, elements: Array<{ __typename?: 'TemplateElement', alignment?: string | null, color?: string | null, created_at: any, font_family?: string | null, font_size?: number | null, id: string, language_constraint?: string | null, type: string, updated_at: any, x_coordinate: number, y_coordinate: number }>, pre_deletion_category?: { __typename?: 'TemplateCategory', created_at: any, description?: string | null, id: string, name: string, order?: number | null, special_type?: TemplateCategoryType | null, updated_at: any } | null, recipientGroups: Array<{ __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any }>, variables: Array<{ __typename?: 'TemplateDateVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } | { __typename?: 'TemplateNumberVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } | { __typename?: 'TemplateSelectVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } | { __typename?: 'TemplateTextVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any }> }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null, groupItem: { __typename?: 'TemplateRecipientGroupItem', created_at: any, id: string, updated_at: any, group: { __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any, certificates: Array<{ __typename?: 'Certificate', created_at: any, id: string, release_date: any, updated_at: any, verification_code: string }>, items: Array<{ __typename?: 'TemplateRecipientGroupItem', created_at: any, id: string, updated_at: any, group: { __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any, students: Array<{ __typename?: 'Student', created_at: any, date_of_birth?: any | null, email?: string | null, gender?: StudentGender | null, id: string, name: string, nationality?: CountryCode | null, phone_number?: string | null, updated_at: any, certificates?: Array<{ __typename?: 'Certificate', created_at: any, id: string, release_date: any, updated_at: any, verification_code: string }> | null, recipientGroups?: Array<{ __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any }> | null }>, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any } }, student: { __typename?: 'Student', created_at: any, date_of_birth?: any | null, email?: string | null, gender?: StudentGender | null, id: string, name: string, nationality?: CountryCode | null, phone_number?: string | null, updated_at: any, certificates?: Array<{ __typename?: 'Certificate', created_at: any, id: string, release_date: any, updated_at: any, verification_code: string }> | null, recipientGroups?: Array<{ __typename?: 'TemplateRecipientGroup', created_at: any, description?: string | null, id: string, name: string, updated_at: any }> | null }, variableValues: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null, groupItem: { __typename?: 'TemplateRecipientGroupItem', created_at: any, id: string, updated_at: any, student: { __typename?: 'Student', created_at: any, date_of_birth?: any | null, email?: string | null, gender?: StudentGender | null, id: string, name: string, nationality?: CountryCode | null, phone_number?: string | null, updated_at: any }, variableValues: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null, variable: { __typename?: 'TemplateDateVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } | { __typename?: 'TemplateNumberVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } | { __typename?: 'TemplateSelectVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } | { __typename?: 'TemplateTextVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any, template: { __typename?: 'Template', created_at: any, description?: string | null, id: string, image_url?: string | null, name: string, order?: number | null, trashed_at?: any | null, updated_at: any }, values: Array<{ __typename?: 'RecipientGroupItemVariableValue', created_at: any, id: string, updated_at: any, value?: string | null, value_indexed?: string | null }> } }> } }> }> } }, variable: { __typename?: 'TemplateDateVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } | { __typename?: 'TemplateNumberVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } | { __typename?: 'TemplateSelectVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } | { __typename?: 'TemplateTextVariable', created_at: any, description?: string | null, id: string, name: string, order: number, preview_value?: string | null, required: boolean, updated_at: any } }> } };
+export type UpdateSelectTemplateVariableMutation = { __typename?: 'Mutation', updateSelectTemplateVariable: { __typename?: 'TemplateSelectVariable', id: string, name: string, description?: string | null, order: number, options: Array<string>, multiple: boolean, preview_value?: string | null, required: boolean, created_at: any, updated_at: any, template: { __typename?: 'Template', id: string, name: string } } };
 
 export type UpdateTextTemplateVariableMutationVariables = Exact<{
-  input: TextTemplateVariableInput;
+  input: UpdateTextTemplateVariableInput;
 }>;
 
 
@@ -2086,7 +2137,7 @@ export type UpdateTemplateCategoryMutationHookResult = ReturnType<typeof useUpda
 export type UpdateTemplateCategoryMutationResult = Apollo.MutationResult<UpdateTemplateCategoryMutation>;
 export type UpdateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
 export const CreateDateTemplateVariableDocument = gql`
-    mutation createDateTemplateVariable($input: DateTemplateVariableInput!) {
+    mutation createDateTemplateVariable($input: CreateDateTemplateVariableInput!) {
   createDateTemplateVariable(input: $input) {
     id
     name
@@ -2133,7 +2184,7 @@ export type CreateDateTemplateVariableMutationHookResult = ReturnType<typeof use
 export type CreateDateTemplateVariableMutationResult = Apollo.MutationResult<CreateDateTemplateVariableMutation>;
 export type CreateDateTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>;
 export const CreateNumberTemplateVariableDocument = gql`
-    mutation createNumberTemplateVariable($input: NumberTemplateVariableInput!) {
+    mutation createNumberTemplateVariable($input: CreateNumberTemplateVariableInput!) {
   createNumberTemplateVariable(input: $input) {
     id
     name
@@ -2180,7 +2231,7 @@ export type CreateNumberTemplateVariableMutationHookResult = ReturnType<typeof u
 export type CreateNumberTemplateVariableMutationResult = Apollo.MutationResult<CreateNumberTemplateVariableMutation>;
 export type CreateNumberTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>;
 export const CreateSelectTemplateVariableDocument = gql`
-    mutation createSelectTemplateVariable($input: SelectTemplateVariableInput!) {
+    mutation createSelectTemplateVariable($input: CreateSelectTemplateVariableInput!) {
   createSelectTemplateVariable(input: $input) {
     id
     name
@@ -2226,7 +2277,7 @@ export type CreateSelectTemplateVariableMutationHookResult = ReturnType<typeof u
 export type CreateSelectTemplateVariableMutationResult = Apollo.MutationResult<CreateSelectTemplateVariableMutation>;
 export type CreateSelectTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>;
 export const CreateTextTemplateVariableDocument = gql`
-    mutation createTextTemplateVariable($input: TextTemplateVariableInput!) {
+    mutation createTextTemplateVariable($input: CreateTextTemplateVariableInput!) {
   createTextTemplateVariable(input: $input) {
     id
     name
@@ -2311,7 +2362,7 @@ export type DeleteTemplateVariableMutationHookResult = ReturnType<typeof useDele
 export type DeleteTemplateVariableMutationResult = Apollo.MutationResult<DeleteTemplateVariableMutation>;
 export type DeleteTemplateVariableMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>;
 export const UpdateDateTemplateVariableDocument = gql`
-    mutation updateDateTemplateVariable($input: DateTemplateVariableInput!) {
+    mutation updateDateTemplateVariable($input: UpdateDateTemplateVariableInput!) {
   updateDateTemplateVariable(input: $input) {
     id
     name
@@ -2358,7 +2409,7 @@ export type UpdateDateTemplateVariableMutationHookResult = ReturnType<typeof use
 export type UpdateDateTemplateVariableMutationResult = Apollo.MutationResult<UpdateDateTemplateVariableMutation>;
 export type UpdateDateTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>;
 export const UpdateNumberTemplateVariableDocument = gql`
-    mutation updateNumberTemplateVariable($input: NumberTemplateVariableInput!) {
+    mutation updateNumberTemplateVariable($input: UpdateNumberTemplateVariableInput!) {
   updateNumberTemplateVariable(input: $input) {
     decimal_places
     id
@@ -2405,538 +2456,22 @@ export type UpdateNumberTemplateVariableMutationHookResult = ReturnType<typeof u
 export type UpdateNumberTemplateVariableMutationResult = Apollo.MutationResult<UpdateNumberTemplateVariableMutation>;
 export type UpdateNumberTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>;
 export const UpdateSelectTemplateVariableDocument = gql`
-    mutation updateSelectTemplateVariable($input: SelectTemplateVariableInput!) {
+    mutation updateSelectTemplateVariable($input: UpdateSelectTemplateVariableInput!) {
   updateSelectTemplateVariable(input: $input) {
-    created_at
-    description
     id
-    multiple
     name
-    options
+    description
     order
+    options
+    multiple
     preview_value
     required
     template {
-      category {
-        childCategories {
-          childCategories {
-            created_at
-            description
-            id
-            name
-            order
-            parentCategory {
-              childCategories {
-                created_at
-                description
-                id
-                name
-                order
-                special_type
-                templates {
-                  category {
-                    created_at
-                    description
-                    id
-                    name
-                    order
-                    parentCategory {
-                      created_at
-                      description
-                      id
-                      name
-                      order
-                      special_type
-                      updated_at
-                    }
-                    special_type
-                    templates {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    updated_at
-                  }
-                  certificates {
-                    created_at
-                    id
-                    recipientGroup {
-                      created_at
-                      description
-                      id
-                      name
-                      updated_at
-                    }
-                    release_date
-                    student {
-                      created_at
-                      date_of_birth
-                      email
-                      gender
-                      id
-                      name
-                      nationality
-                      phone_number
-                      updated_at
-                    }
-                    template {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    updated_at
-                    verification_code
-                  }
-                  created_at
-                  description
-                  elements {
-                    alignment
-                    color
-                    created_at
-                    dataDate {
-                      created_at
-                      date_format
-                      element_id
-                      source_field
-                      source_type
-                      updated_at
-                    }
-                    dataText {
-                      created_at
-                      element_id
-                      source_field
-                      source_type
-                      updated_at
-                    }
-                    font_family
-                    font_size
-                    id
-                    image {
-                      created_at
-                      element_id
-                      height
-                      image_url
-                      updated_at
-                      width
-                    }
-                    language_constraint
-                    qrCode {
-                      created_at
-                      element_id
-                      size
-                      updated_at
-                    }
-                    staticText {
-                      content
-                      created_at
-                      element_id
-                      updated_at
-                    }
-                    template {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    type
-                    updated_at
-                    x_coordinate
-                    y_coordinate
-                  }
-                  id
-                  image_url
-                  name
-                  order
-                  pre_deletion_category {
-                    childCategories {
-                      created_at
-                      description
-                      id
-                      name
-                      order
-                      special_type
-                      updated_at
-                    }
-                    created_at
-                    description
-                    id
-                    name
-                    order
-                    parentCategory {
-                      created_at
-                      description
-                      id
-                      name
-                      order
-                      special_type
-                      updated_at
-                    }
-                    special_type
-                    templates {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    updated_at
-                  }
-                  recipientGroups {
-                    certificates {
-                      created_at
-                      id
-                      release_date
-                      updated_at
-                      verification_code
-                    }
-                    created_at
-                    description
-                    id
-                    items {
-                      created_at
-                      id
-                      updated_at
-                    }
-                    name
-                    students {
-                      created_at
-                      date_of_birth
-                      email
-                      gender
-                      id
-                      name
-                      nationality
-                      phone_number
-                      updated_at
-                    }
-                    template {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    updated_at
-                  }
-                  trashed_at
-                  updated_at
-                  variables {
-                    created_at
-                    description
-                    id
-                    name
-                    order
-                    preview_value
-                    required
-                    template {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    updated_at
-                    values {
-                      created_at
-                      id
-                      updated_at
-                      value
-                      value_indexed
-                    }
-                  }
-                }
-                updated_at
-              }
-              created_at
-              description
-              id
-              name
-              order
-              parentCategory {
-                created_at
-                description
-                id
-                name
-                order
-                special_type
-                templates {
-                  created_at
-                  description
-                  id
-                  image_url
-                  name
-                  order
-                  trashed_at
-                  updated_at
-                }
-                updated_at
-              }
-              special_type
-              updated_at
-            }
-            special_type
-            updated_at
-          }
-          created_at
-          description
-          id
-          name
-          order
-          special_type
-          updated_at
-        }
-        created_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      certificates {
-        created_at
-        id
-        release_date
-        updated_at
-        verification_code
-      }
-      created_at
-      description
-      elements {
-        alignment
-        color
-        created_at
-        font_family
-        font_size
-        id
-        language_constraint
-        type
-        updated_at
-        x_coordinate
-        y_coordinate
-      }
       id
-      image_url
       name
-      order
-      pre_deletion_category {
-        created_at
-        description
-        id
-        name
-        order
-        special_type
-        updated_at
-      }
-      recipientGroups {
-        created_at
-        description
-        id
-        name
-        updated_at
-      }
-      trashed_at
-      updated_at
-      variables {
-        created_at
-        description
-        id
-        name
-        order
-        preview_value
-        required
-        updated_at
-      }
     }
+    created_at
     updated_at
-    values {
-      created_at
-      groupItem {
-        created_at
-        group {
-          certificates {
-            created_at
-            id
-            release_date
-            updated_at
-            verification_code
-          }
-          created_at
-          description
-          id
-          items {
-            created_at
-            group {
-              created_at
-              description
-              id
-              name
-              students {
-                certificates {
-                  created_at
-                  id
-                  release_date
-                  updated_at
-                  verification_code
-                }
-                created_at
-                date_of_birth
-                email
-                gender
-                id
-                name
-                nationality
-                phone_number
-                recipientGroups {
-                  created_at
-                  description
-                  id
-                  name
-                  updated_at
-                }
-                updated_at
-              }
-              template {
-                created_at
-                description
-                id
-                image_url
-                name
-                order
-                trashed_at
-                updated_at
-              }
-              updated_at
-            }
-            id
-            student {
-              certificates {
-                created_at
-                id
-                release_date
-                updated_at
-                verification_code
-              }
-              created_at
-              date_of_birth
-              email
-              gender
-              id
-              name
-              nationality
-              phone_number
-              recipientGroups {
-                created_at
-                description
-                id
-                name
-                updated_at
-              }
-              updated_at
-            }
-            updated_at
-            variableValues {
-              created_at
-              groupItem {
-                created_at
-                id
-                student {
-                  created_at
-                  date_of_birth
-                  email
-                  gender
-                  id
-                  name
-                  nationality
-                  phone_number
-                  updated_at
-                }
-                updated_at
-                variableValues {
-                  created_at
-                  id
-                  updated_at
-                  value
-                  value_indexed
-                  variable {
-                    created_at
-                    description
-                    id
-                    name
-                    order
-                    preview_value
-                    required
-                    template {
-                      created_at
-                      description
-                      id
-                      image_url
-                      name
-                      order
-                      trashed_at
-                      updated_at
-                    }
-                    updated_at
-                    values {
-                      created_at
-                      id
-                      updated_at
-                      value
-                      value_indexed
-                    }
-                  }
-                }
-              }
-              id
-              updated_at
-              value
-              value_indexed
-            }
-          }
-          name
-          updated_at
-        }
-        id
-        updated_at
-      }
-      id
-      updated_at
-      value
-      value_indexed
-      variable {
-        created_at
-        description
-        id
-        name
-        order
-        preview_value
-        required
-        updated_at
-      }
-    }
   }
 }
     `;
@@ -2967,7 +2502,7 @@ export type UpdateSelectTemplateVariableMutationHookResult = ReturnType<typeof u
 export type UpdateSelectTemplateVariableMutationResult = Apollo.MutationResult<UpdateSelectTemplateVariableMutation>;
 export type UpdateSelectTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>;
 export const UpdateTextTemplateVariableDocument = gql`
-    mutation updateTextTemplateVariable($input: TextTemplateVariableInput!) {
+    mutation updateTextTemplateVariable($input: UpdateTextTemplateVariableInput!) {
   updateTextTemplateVariable(input: $input) {
     id
     name

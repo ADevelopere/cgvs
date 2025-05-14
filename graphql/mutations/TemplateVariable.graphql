@@ -1,53 +1,104 @@
-"Input for text template variable mutations"
-input TextTemplateVariableInput {
-    id: ID
+"Input for creating text template variables"
+input CreateTextTemplateVariableInput {
     template_id: ID! @rules(apply: ["required", "exists:templates,id"])
     name: String! @rules(apply: ["required", "min:3"])
     description: String
     preview_value: String
-    required: Boolean!
+    required: Boolean = false
     order: Int!
     min_length: Int
     max_length: Int
     pattern: String
 }
 
-"Input for number template variable mutations"
-input NumberTemplateVariableInput {
-    id: ID
+"Input for updating text template variables"
+input UpdateTextTemplateVariableInput {
+    id: ID! @rules(apply: ["required"])
     template_id: ID! @rules(apply: ["required", "exists:templates,id"])
     name: String! @rules(apply: ["required", "min:3"])
     description: String
     preview_value: String
-    required: Boolean!
+    required: Boolean = false
+    order: Int!
+    min_length: Int
+    max_length: Int
+    pattern: String
+}
+
+"Input for creating number template variables"
+input CreateNumberTemplateVariableInput {
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean = false
     order: Int!
     min_value: Float
     max_value: Float
     decimal_places: Int
 }
 
-"Input for date template variable mutations"
-input DateTemplateVariableInput {
-    id: ID
+"Input for updating number template variables"
+input UpdateNumberTemplateVariableInput {
+    id: ID! @rules(apply: ["required"])
     template_id: ID! @rules(apply: ["required", "exists:templates,id"])
     name: String! @rules(apply: ["required", "min:3"])
     description: String
     preview_value: String
-    required: Boolean!
+    required: Boolean = false
+    order: Int!
+    min_value: Float
+    max_value: Float
+    decimal_places: Int
+}
+
+"Input for creating date template variables"
+input CreateDateTemplateVariableInput {
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean = false
     order: Int!
     min_date: Date
     max_date: Date
     format: String
 }
 
-"Input for select template variable mutations"
-input SelectTemplateVariableInput {
-    id: ID
+"Input for updating date template variables"
+input UpdateDateTemplateVariableInput {
+    id: ID! @rules(apply: ["required"])
     template_id: ID! @rules(apply: ["required", "exists:templates,id"])
     name: String! @rules(apply: ["required", "min:3"])
     description: String
     preview_value: String
-    required: Boolean!
+    required: Boolean = false
+    order: Int!
+    min_date: Date
+    max_date: Date
+    format: String
+}
+
+"Input for creating select template variables"
+input CreateSelectTemplateVariableInput {
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean = false
+    order: Int!
+    options: [String!]! @rules(apply: ["required", "min:1"])
+    multiple: Boolean!
+}
+
+"Input for updating select template variables"
+input UpdateSelectTemplateVariableInput {
+    id: ID! @rules(apply: ["required"])
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean = false
     order: Int!
     options: [String!]! @rules(apply: ["required", "min:1"])
     multiple: Boolean!
@@ -56,49 +107,49 @@ input SelectTemplateVariableInput {
 extend type Mutation {
     "Create a new text template variable"
     createTextTemplateVariable(
-        input: TextTemplateVariableInput! @spread
+        input: CreateTextTemplateVariableInput! @spread
     ): TemplateTextVariable! @create
     # @can(ability: "create")
 
     "Update an existing text template variable"
     updateTextTemplateVariable(
-        input: TextTemplateVariableInput! @spread
+        input: UpdateTextTemplateVariableInput! @spread
     ): TemplateTextVariable! @update
     # @can(ability: "update")
 
     "Create a new number template variable"
     createNumberTemplateVariable(
-        input: NumberTemplateVariableInput! @spread
+        input: CreateNumberTemplateVariableInput! @spread
     ): TemplateNumberVariable! @create
     # @can(ability: "create")
 
     "Update an existing number template variable"
     updateNumberTemplateVariable(
-        input: NumberTemplateVariableInput! @spread
+        input: UpdateNumberTemplateVariableInput! @spread
     ): TemplateNumberVariable! @update
     # @can(ability: "update")
 
     "Create a new date template variable"
     createDateTemplateVariable(
-        input: DateTemplateVariableInput! @spread
+        input: CreateDateTemplateVariableInput! @spread
     ): TemplateDateVariable! @create
     # @can(ability: "create")
 
     "Update an existing date template variable"
     updateDateTemplateVariable(
-        input: DateTemplateVariableInput! @spread
+        input: UpdateDateTemplateVariableInput! @spread
     ): TemplateDateVariable! @update
     # @can(ability: "update")
 
     "Create a new select template variable"
     createSelectTemplateVariable(
-        input: SelectTemplateVariableInput! @spread
+        input: CreateSelectTemplateVariableInput! @spread
     ): TemplateSelectVariable! @create
     # @can(ability: "create")
 
     "Update an existing select template variable"
     updateSelectTemplateVariable(
-        input: SelectTemplateVariableInput! @spread
+        input: UpdateSelectTemplateVariableInput! @spread
     ): TemplateSelectVariable! @update
     # @can(ability: "update")
 

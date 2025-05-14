@@ -1,50 +1,117 @@
 "use client";
 
 import * as Graphql from "@/graphql/generated/types";
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+    useEffect,
+} from "react";
+import { useBlocker } from "react-router-dom";
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Button,
+} from "@mui/material";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import { mapSingleTextTemplateVariable } from "@/utils/templateVariable/text-template-variable-mappers";
-import { mapSingleNumberTemplateVariable } from "@/utils/templateVariable/number-template-variable-mappers";
-import { mapSingleDateTemplateVariable } from "@/utils/templateVariable/date-template-variable-mappers";
-import { mapSingleSelectTemplateVariable } from "@/utils/templateVariable/select-template-variable-mappers";
-import { useTemplateVariableGraphQL } from "./TemplateVariableGraphQLContext";
+import {
+    TemplateVariableGraphQLProvider,
+    useTemplateVariableGraphQL,
+} from "./TemplateVariableGraphQLContext";
+import { useTemplateManagement } from "../template/TemplateManagementContext";
+
+export type VariableType = "text" | "number" | "date" | "select";
+
+type FormMode = "create" | "edit";
+
+type EditingVariable = {
+    id: string;
+    type: VariableType;
+};
+
+type FormPaneState = {
+    mode: FormMode;
+    // For edit mode
+    editingVariable: EditingVariable | null;
+    // For create mode
+    createType: VariableType | null;
+};
+
+type TemporaryVariableValue =
+    | Graphql.UpdateTextTemplateVariableInput
+    | Graphql.UpdateNumberTemplateVariableInput
+    | Graphql.UpdateDateTemplateVariableInput
+    | Graphql.UpdateSelectTemplateVariableInput;
+
+type CreateFormValuesType =
+    | Graphql.CreateTextTemplateVariableInput
+    | Graphql.CreateNumberTemplateVariableInput
+    | Graphql.CreateDateTemplateVariableInput
+    | Graphql.CreateSelectTemplateVariableInput;
+
+type CreateFormData = {
+    type: VariableType | null;
+    values: CreateFormValuesType | null;
+};
 
 type TemplateVariableManagementContextType = {
     // States
     loading: boolean;
+    createFormData: CreateFormData;
+    formPaneState: FormPaneState;
+
+    // Form pane state management
+    trySetEditMode: (id: string, type: VariableType) => void;
+    trySetCreateMode: (type: VariableType) => void;
+
+    // Create form state management
+    setCreateFormData: (data: CreateFormData) => void;
+    resetCreateForm: () => void;
+
+    // Temporary value management
+    getTemporaryValue: (id: string) => TemporaryVariableValue | undefined;
+    setTemporaryValue: (
+        id: string,
+        value: TemporaryVariableValue | null,
+    ) => void;
 
     // Creation mutations for different variable types
     createTextTemplateVariable: (
-        variables: Graphql.CreateTextTemplateVariableMutationVariables
+        variables: Graphql.CreateTextTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     createNumberTemplateVariable: (
-        variables: Graphql.CreateNumberTemplateVariableMutationVariables
+        variables: Graphql.CreateNumberTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     createDateTemplateVariable: (
-        variables: Graphql.CreateDateTemplateVariableMutationVariables
+        variables: Graphql.CreateDateTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     createSelectTemplateVariable: (
-        variables: Graphql.CreateSelectTemplateVariableMutationVariables
+        variables: Graphql.CreateSelectTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     // Update mutations for different variable types
     updateTextTemplateVariable: (
-        variables: Graphql.UpdateTextTemplateVariableMutationVariables
+        variables: Graphql.UpdateTextTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     updateNumberTemplateVariable: (
-        variables: Graphql.UpdateNumberTemplateVariableMutationVariables
+        variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     updateDateTemplateVariable: (
-        variables: Graphql.UpdateDateTemplateVariableMutationVariables
+        variables: Graphql.UpdateDateTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     updateSelectTemplateVariable: (
-        variables: Graphql.UpdateSelectTemplateVariableMutationVariables
+        variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
     ) => Promise<boolean>;
 
     // Delete mutation (common for all types)
@@ -59,17 +126,128 @@ export const useTemplateVariableManagement = () => {
     const context = useContext(TemplateVariableManagementContext);
     if (!context) {
         throw new Error(
-            "useTemplateVariableManagement must be used within a TemplateVariableManagementProvider"
+            "useTemplateVariableManagement must be used within a TemplateVariableManagementProvider",
         );
     }
     return context;
 };
 
-export const TemplateVariableManagementProvider: React.FC<{
+const ManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     const notifications = useNotifications();
+    const { template } = useTemplateManagement();
+
     const [loading, setLoading] = useState(false);
+    const [temporaryValues, setTemporaryValues] = useState<
+        Map<string, TemporaryVariableValue>
+    >(new Map());
+    const [createFormData, setCreateFormData] = useState<CreateFormData>({
+        type: null,
+        values: null,
+    });
+    const [formPaneState, setFormPaneState] = useState<FormPaneState>({
+        mode: "create",
+        editingVariable: null,
+        createType: null,
+    });
+
+    // Dialog and navigation state
+    const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] =
+        useState(false);
+    const [pendingChange, setPendingChange] = useState<{
+        type: VariableType;
+        id?: string;
+    } | null>(null);
+    const [pendingNavigation, setPendingNavigation] = useState<{
+        pathname: string;
+    } | null>(null);
+
+    const setTemporaryValue = useCallback(
+        (id: string, value: TemporaryVariableValue | null) => {
+            if (!id) return;
+
+            if (value === null) {
+                // Remove the entry if value is null
+                setTemporaryValues((prev) => {
+                    const newMap = new Map(prev);
+                    newMap.delete(id);
+                    return newMap;
+                });
+            } else {
+                setTemporaryValues((prev) => {
+                    const newMap = new Map(prev);
+                    newMap.set(id, value);
+                    return newMap;
+                });
+            }
+        },
+        [setTemporaryValues],
+    );
+
+    const hasUnsavedChanges = useCallback(() => {
+        // Case 1: Check if creating new variable
+        if (createFormData.type || createFormData.values) {
+            return true;
+        }
+
+        // Case 2: Check for modifications to existing variables
+        if (!template?.variables) return false;
+
+        for (const [id, tempValue] of temporaryValues.entries()) {
+            if (!id) continue; // Skip entries without ID (new variables)
+
+            // Find original variable
+            const originalVariable = template.variables.find(
+                (v) => v.id === id,
+            );
+            if (!originalVariable) continue;
+
+            // Compare temporary value with original
+            const hasChanges =
+                JSON.stringify(tempValue) !== JSON.stringify(originalVariable);
+            if (hasChanges) return true;
+        }
+
+        return false;
+    }, [createFormData, temporaryValues, template?.variables]);
+
+    const blocker = useBlocker(hasUnsavedChanges());
+
+    useEffect(() => {
+        if (blocker.state === "blocked") {
+            setShowUnsavedChangesDialog(true);
+            setPendingNavigation({ pathname: blocker.location.pathname });
+        }
+    }, [blocker]);
+
+    const handleConfirmNavigation = useCallback(() => {
+        // Clear all temporary data
+        setTemporaryValues(new Map());
+        setCreateFormData({ type: null, values: null });
+
+        // Allow navigation to proceed
+        if (blocker.proceed) {
+            blocker.proceed();
+        }
+
+        setShowUnsavedChangesDialog(false);
+        setPendingNavigation(null);
+    }, [blocker]);
+
+    const handleCancelNavigation = useCallback(() => {
+        // Stay on current page
+        if (blocker.reset) {
+            blocker.reset();
+        }
+        setShowUnsavedChangesDialog(false);
+        setPendingNavigation(null);
+    }, [blocker]);
+
+    const getTemporaryValue = useCallback(
+        (id: string) => temporaryValues.get(id),
+        [temporaryValues],
+    );
 
     const {
         createTextTemplateVariableMutation,
@@ -85,10 +263,28 @@ export const TemplateVariableManagementProvider: React.FC<{
 
     // Text template variable handlers
     const handleCreateTextTemplateVariable = useCallback(
-        async (variables: Graphql.CreateTextTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.CreateTextTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createTextTemplateVariableMutation(variables);
+                const maxCurrentOrderOFVariablesOfTemplate =
+                    template?.variables?.reduce((max, variable) => {
+                        if (variable.order > max) {
+                            return variable.order;
+                        }
+                        return max;
+                    }, 0) ?? 0;
+                const newOrderOfVariable =
+                    maxCurrentOrderOFVariablesOfTemplate + 1;
+
+                const result = await createTextTemplateVariableMutation({
+                    input: {
+                        ...variables.input,
+                        order: newOrderOfVariable,
+                    },
+                });
+
                 if (result.data?.createTextTemplateVariable) {
                     notifications.show("Text variable created successfully", {
                         severity: "success",
@@ -116,10 +312,13 @@ export const TemplateVariableManagementProvider: React.FC<{
     );
 
     const handleUpdateTextTemplateVariable = useCallback(
-        async (variables: Graphql.UpdateTextTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.UpdateTextTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await updateTextTemplateVariableMutation(variables);
+                const result =
+                    await updateTextTemplateVariableMutation(variables);
                 if (result.data?.updateTextTemplateVariable) {
                     notifications.show("Text variable updated successfully", {
                         severity: "success",
@@ -148,10 +347,26 @@ export const TemplateVariableManagementProvider: React.FC<{
 
     // Number template variable handlers
     const handleCreateNumberTemplateVariable = useCallback(
-        async (variables: Graphql.CreateNumberTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.CreateNumberTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createNumberTemplateVariableMutation(variables);
+                const maxCurrentOrderOFVariablesOfTemplate =
+                    template?.variables?.reduce((max, variable) => {
+                        if (variable.order > max) {
+                            return variable.order;
+                        }
+                        return max;
+                    }, 0) ?? 0;
+                const newOrderOfVariable =
+                    maxCurrentOrderOFVariablesOfTemplate + 1;
+                const result = await createNumberTemplateVariableMutation({
+                    input: {
+                        ...variables.input,
+                        order: newOrderOfVariable,
+                    },
+                });
                 if (result.data?.createNumberTemplateVariable) {
                     notifications.show("Number variable created successfully", {
                         severity: "success",
@@ -179,10 +394,13 @@ export const TemplateVariableManagementProvider: React.FC<{
     );
 
     const handleUpdateNumberTemplateVariable = useCallback(
-        async (variables: Graphql.UpdateNumberTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await updateNumberTemplateVariableMutation(variables);
+                const result =
+                    await updateNumberTemplateVariableMutation(variables);
                 if (result.data?.updateNumberTemplateVariable) {
                     notifications.show("Number variable updated successfully", {
                         severity: "success",
@@ -211,10 +429,26 @@ export const TemplateVariableManagementProvider: React.FC<{
 
     // Date template variable handlers
     const handleCreateDateTemplateVariable = useCallback(
-        async (variables: Graphql.CreateDateTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.CreateDateTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createDateTemplateVariableMutation(variables);
+                const maxCurrentOrderOFVariablesOfTemplate =
+                    template?.variables?.reduce((max, variable) => {
+                        if (variable.order > max) {
+                            return variable.order;
+                        }
+                        return max;
+                    }, 0) ?? 0;
+                const newOrderOfVariable =
+                    maxCurrentOrderOFVariablesOfTemplate + 1;
+                const result = await createDateTemplateVariableMutation({
+                    input: {
+                        ...variables.input,
+                        order: newOrderOfVariable,
+                    },
+                });
                 if (result.data?.createDateTemplateVariable) {
                     notifications.show("Date variable created successfully", {
                         severity: "success",
@@ -242,10 +476,13 @@ export const TemplateVariableManagementProvider: React.FC<{
     );
 
     const handleUpdateDateTemplateVariable = useCallback(
-        async (variables: Graphql.UpdateDateTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.UpdateDateTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await updateDateTemplateVariableMutation(variables);
+                const result =
+                    await updateDateTemplateVariableMutation(variables);
                 if (result.data?.updateDateTemplateVariable) {
                     notifications.show("Date variable updated successfully", {
                         severity: "success",
@@ -274,10 +511,26 @@ export const TemplateVariableManagementProvider: React.FC<{
 
     // Select template variable handlers
     const handleCreateSelectTemplateVariable = useCallback(
-        async (variables: Graphql.CreateSelectTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.CreateSelectTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createSelectTemplateVariableMutation(variables);
+                const maxCurrentOrderOFVariablesOfTemplate =
+                    template?.variables?.reduce((max, variable) => {
+                        if (variable.order > max) {
+                            return variable.order;
+                        }
+                        return max;
+                    }, 0) ?? 0;
+                const newOrderOfVariable =
+                    maxCurrentOrderOFVariablesOfTemplate + 1;
+                const result = await createSelectTemplateVariableMutation({
+                    input: {
+                        ...variables.input,
+                        order: newOrderOfVariable,
+                    },
+                });
                 if (result.data?.createSelectTemplateVariable) {
                     notifications.show("Select variable created successfully", {
                         severity: "success",
@@ -305,10 +558,13 @@ export const TemplateVariableManagementProvider: React.FC<{
     );
 
     const handleUpdateSelectTemplateVariable = useCallback(
-        async (variables: Graphql.UpdateSelectTemplateVariableMutationVariables): Promise<boolean> => {
+        async (
+            variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
+        ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await updateSelectTemplateVariableMutation(variables);
+                const result =
+                    await updateSelectTemplateVariableMutation(variables);
                 if (result.data?.updateSelectTemplateVariable) {
                     notifications.show("Select variable updated successfully", {
                         severity: "success",
@@ -367,9 +623,89 @@ export const TemplateVariableManagementProvider: React.FC<{
         [deleteTemplateVariableMutation],
     );
 
+    const trySetCreateMode = useCallback(
+        (type: VariableType) => {
+            // Check if current create form has unsaved changes
+            if (createFormData.type || createFormData.values) {
+                setPendingChange({ type });
+                setShowUnsavedChangesDialog(true);
+                return;
+            }
+
+            // No unsaved changes, switch directly
+            setFormPaneState({
+                mode: "create",
+                editingVariable: null,
+                createType: type,
+            });
+            setCreateFormData({ type, values: null });
+        },
+        [createFormData],
+    );
+
+    const trySetEditMode = useCallback(
+        (id: string, type: VariableType) => {
+            // Check if current create form has unsaved changes
+            if (createFormData.type || createFormData.values) {
+                setPendingChange({ type, id });
+                setShowUnsavedChangesDialog(true);
+                return;
+            }
+
+            // No unsaved changes, switch directly
+            setFormPaneState({
+                mode: "edit",
+                editingVariable: { id, type },
+                createType: null,
+            });
+            setCreateFormData({ type: null, values: null });
+        },
+        [createFormData],
+    );
+
+    const handleConfirmChange = useCallback(() => {
+        if (!pendingChange) return;
+
+        if (pendingChange.id) {
+            // Switching to edit mode
+            setFormPaneState({
+                mode: "edit",
+                editingVariable: {
+                    id: pendingChange.id,
+                    type: pendingChange.type,
+                },
+                createType: null,
+            });
+        } else {
+            // Switching to create mode
+            setFormPaneState({
+                mode: "create",
+                editingVariable: null,
+                createType: pendingChange.type,
+            });
+        }
+
+        // Reset create form data
+        setCreateFormData({ type: null, values: null });
+        setShowUnsavedChangesDialog(false);
+        setPendingChange(null);
+    }, [pendingChange]);
+
+    const handleCancelChange = useCallback(() => {
+        setShowUnsavedChangesDialog(false);
+        setPendingChange(null);
+    }, []);
+
     const value = useMemo(
         () => ({
             loading,
+            createFormData,
+            formPaneState,
+            getTemporaryValue,
+            setTemporaryValue,
+            setCreateFormData,
+            resetCreateForm: () =>
+                setCreateFormData({ type: null, values: null }),
             createTextTemplateVariable: handleCreateTextTemplateVariable,
             updateTextTemplateVariable: handleUpdateTextTemplateVariable,
             createNumberTemplateVariable: handleCreateNumberTemplateVariable,
@@ -379,9 +715,15 @@ export const TemplateVariableManagementProvider: React.FC<{
             createSelectTemplateVariable: handleCreateSelectTemplateVariable,
             updateSelectTemplateVariable: handleUpdateSelectTemplateVariable,
             deleteTemplateVariable: handleDeleteTemplateVariable,
+            trySetEditMode,
+            trySetCreateMode,
         }),
         [
             loading,
+            createFormData,
+            setCreateFormData,
+            getTemporaryValue,
+            setTemporaryValue,
             handleCreateTextTemplateVariable,
             handleUpdateTextTemplateVariable,
             handleCreateNumberTemplateVariable,
@@ -391,12 +733,48 @@ export const TemplateVariableManagementProvider: React.FC<{
             handleCreateSelectTemplateVariable,
             handleUpdateSelectTemplateVariable,
             handleDeleteTemplateVariable,
+            formPaneState,
+            trySetEditMode,
+            trySetCreateMode,
+            setTemporaryValue,
         ],
     );
 
     return (
         <TemplateVariableManagementContext.Provider value={value}>
             {children}
+            <Dialog
+                open={showUnsavedChangesDialog}
+                onClose={handleCancelNavigation}
+            >
+                <DialogTitle>Unsaved Changes</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        You have unsaved changes. Do you want to discard them
+                        and continue?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelNavigation}>Cancel</Button>
+                    <Button onClick={handleConfirmNavigation} color="primary">
+                        Discard & Continue
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </TemplateVariableManagementContext.Provider>
     );
 };
+
+const WithGraphQL: React.FC<{
+    children: React.ReactNode;
+    templateId: string;
+}> = ({ children, templateId }) => {
+    return (
+        <TemplateVariableGraphQLProvider templateId={templateId}>
+            <ManagementProvider>{children}</ManagementProvider>
+        </TemplateVariableGraphQLProvider>
+    );
+};
+
+// TemplateVariableManagementProvider
+export const TemplateVariableManagementProvider = WithGraphQL;

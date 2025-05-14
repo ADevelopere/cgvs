@@ -3,7 +3,7 @@ import type {
     UpdateDateTemplateVariableMutation,
     DeleteTemplateVariableMutation,
     TemplateDateVariable,
-    DateTemplateVariableInput,
+    UpdateDateTemplateVariableInput,
     Template
 } from "@/graphql/generated/types";
 
@@ -131,7 +131,7 @@ export const mapSingleDateTemplateVariable = (
  */
 export const mapDateTemplateVariableToInput = (
     variable: TemplateDateVariable,
-): DateTemplateVariableInput => {
+): UpdateDateTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
