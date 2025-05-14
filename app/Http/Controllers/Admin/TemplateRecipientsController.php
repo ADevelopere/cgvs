@@ -13,24 +13,27 @@ use Shuchkin\SimpleXLSXGen;
 
 class TemplateRecipientsController extends Controller
 {
-    public function index(Template $template)
+    public function index(Request $request, Template $template)
     {
-        $recipients = $template->recipients()
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        // Get the first recipient group for the template for now
+        // Later you might want to specify which group you want to access
+        $recipientGroup = $template->recipientGroups()->first();
+        
+        if (!$recipientGroup) {
+            return response()->json([
+                'recipients' => [
+                    'data' => [],
+                    'total' => 0
+                ]
+            ]);
+        }
 
-        $recipients->getCollection()->transform(function ($recipient) {
-            return [
-                'id' => $recipient->id,
-                'template_id' => $recipient->template_id,
-                'is_valid' => $recipient->is_valid,
-                'validation_errors' => $recipient->validation_errors,
-                'data' => $recipient->getData(),
-            ];
-        });
+        $recipients = $recipientGroup->students()
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->get('per_page', 10));
 
         return response()->json([
-            'recipients' => $recipients,
+            'recipients' => $recipients
         ]);
     }
 

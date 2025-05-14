@@ -311,6 +311,15 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     category: category,
                 }));
             }
+
+            console.log(
+                "No templates found in category:",
+                JSON.stringify(
+                    getSerializableTemplateCategory(category),
+                    null,
+                    2,
+                ),
+            );
             return [];
         });
 
