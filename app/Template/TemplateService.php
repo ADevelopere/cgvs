@@ -6,10 +6,8 @@ use App\Models\Template;
 use App\Models\TemplateCategory;
 use App\Exceptions\TemplateStorageException;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use App\TemplateCategory\TemplateCategoryValidator;
@@ -207,7 +205,7 @@ class TemplateService
     }
 
     /**
-     * Update an existing template.
+     * Update an existing template with image handling.
      *
      * @param Template $template
      * @param UpdateTemplateWithImageInput $input
@@ -255,13 +253,13 @@ class TemplateService
             if ($input->name !== null) {
                 $template->name = $input->name;
             }
+            
             if ($input->description !== null) {
                 $template->description = $input->description;
             }
 
             if ($input->categoryId !== null && $input->categoryId !== $template->category_id) {
                 $newCategory = TemplateCategory::findOrFail($input->categoryId);
-
                 if (!$newCategory->isDeletionCategory()) {
                     $template->category_id = $input->categoryId;
                     if ($input->order === null) {
@@ -278,19 +276,49 @@ class TemplateService
                 }
             }
 
-            if ($input->image && $input->image->isValid()) {
-                if ($template->image_url) {
-                    Storage::disk('public')->delete($template->image_url);
+            // Handle image update
+            if ($input->image === null && $template->image_url) {
+                // Image is being removed
+                $oldPath = str_replace('/storage/', '', $template->getRawOriginal('image_url'));
+                if ($oldPath) {
+                    Storage::disk('public')->delete($oldPath);
+                    Log::info('Deleted template image', [
+                        'template_id' => $template->id,
+                        'old_path' => $oldPath
+                    ]);
                 }
-
+                $template->image_url = null;
+            } else if ($input->image !== null && $input->image->isValid()) {
+                // New image is being uploaded
+                if ($template->image_url) {
+                    // Delete old image if it exists
+                    $oldPath = str_replace('/storage/', '', $template->getRawOriginal('image_url'));
+                    if ($oldPath) {
+                        Storage::disk('public')->delete($oldPath);
+                        Log::info('Deleted old template image', [
+                            'template_id' => $template->id,
+                            'old_path' => $oldPath
+                        ]);
+                    }
+                }
+                
+                // Store new image
                 $path = $input->image->store('template_backgrounds', 'public');
                 if (!$path) {
                     throw new TemplateStorageException('Failed to store the background image.');
                 }
                 $template->image_url = $path;
+                Log::info('Stored new template image', [
+                    'template_id' => $template->id,
+                    'new_path' => $path
+                ]);
             }
 
             $template->save();
+
+            if ($template->image_url) {
+                $template->image_url = Storage::url($template->image_url);
+            }
 
             return $template;
         } catch (Exception $e) {
@@ -431,7 +459,14 @@ class TemplateService
         try {
             // Delete background file if it exists
             if ($template->image_url) {
-                Storage::disk('public')->delete($template->image_url);
+                $imagePath = str_replace('/storage/', '', $template->getRawOriginal('image_url'));
+                if ($imagePath) {
+                    Storage::disk('public')->delete($imagePath);
+                    Log::info('Deleted template image during permanent deletion', [
+                        'template_id' => $template->id,
+                        'path' => $imagePath
+                    ]);
+                }
             }
 
             // Store template data for return
