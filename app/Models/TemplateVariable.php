@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TemplateVariable extends Model implements LighthouseModel
 {
+    protected $table = 'template_variables';
+
     protected $fillable = [
         'template_id',
         'name',
@@ -17,12 +19,40 @@ class TemplateVariable extends Model implements LighthouseModel
         'description',
         'preview_value',
         'required',
-        'order'
+        'order',
+        // Text specific
+        'min_length',
+        'max_length',
+        'pattern',
+        // Number specific
+        'min_value',
+        'max_value',
+        'decimal_places',
+        // Date specific
+        'min_date',
+        'max_date',
+        'format',
+        // Select specific
+        'options',
+        'multiple'
     ];
 
     protected $casts = [
         'required' => 'boolean',
-        'order' => 'integer'
+        'order' => 'integer',
+        // Text specific
+        'min_length' => 'integer',
+        'max_length' => 'integer',
+        // Number specific
+        'min_value' => 'decimal:10',
+        'max_value' => 'decimal:10',
+        'decimal_places' => 'integer',
+        // Date specific
+        'min_date' => 'date',
+        'max_date' => 'date',
+        // Select specific
+        'options' => 'array',
+        'multiple' => 'boolean'
     ];
 
     protected static function booted()

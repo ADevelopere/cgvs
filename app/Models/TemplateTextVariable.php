@@ -5,24 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TemplateTextVariable extends Model
+class TemplateTextVariable extends TemplateVariable
 {
-    protected $primaryKey = 'variable_id';
-    public $incrementing = false;
-
-    protected $fillable = [
-        'min_length',
-        'max_length',
-        'pattern'
-    ];
-
-    protected $casts = [
-        'min_length' => 'integer',
-        'max_length' => 'integer'
-    ];
-
-    public function variable(): BelongsTo
+    protected static function booted()
     {
-        return $this->belongsTo(TemplateVariable::class, 'variable_id');
+        static::creating(function ($model) {
+            $model->type = 'text';
+        });
+
+        parent::booted();
+    }
+
+    public function scopeAllowedFields()
+    {
+        return [
+            'min_length',
+            'max_length',
+            'pattern'
+        ];
     }
 }

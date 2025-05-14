@@ -11,9 +11,8 @@ import type {
     TemplateConfigQuery,
     UpdateTemplateInput,
     UpdateTemplateWithImageMutation,
+    TemplateQuery,
 } from "@/graphql/generated/types";
-
-// export type UpdateTemplateWithImageMutation = { __typename?: 'Mutation', updateTemplateWithImage: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string } } };
 
 export type TemplateSource =
     | CreateTemplateMutation
@@ -22,7 +21,9 @@ export type TemplateSource =
     | RestoreTemplateMutation
     | ReorderTemplatesMutation
     | UpdateTemplateMutation
-    | UpdateTemplateWithImageMutation;
+    | UpdateTemplateWithImageMutation
+    | TemplateQuery // not implemented yet
+    ;
 
 type PartialTemplate = Partial<Template> & { id: string; name: string };
 type PartialTemplateCategory = Partial<TemplateCategory> & { id: string };
@@ -179,6 +180,83 @@ const mapUpdateTemplateWithImage = (
 };
 
 /**
+ * Maps a template variable from any source to a consistent TemplateVariable type
+ */
+const mapSingleTemplateVariable = (variable: any): any => {
+    if (!variable) {
+        return null;
+    }
+
+    const baseVariable = {
+        id: variable.id,
+        name: variable.name,
+        description: variable.description ?? null,
+        preview_value: variable.preview_value ?? null,
+        required: variable.required ?? false,
+        order: variable.order ?? 0,
+    };
+
+    switch (variable.__typename) {
+        case 'TemplateTextVariable':
+            return {
+                ...baseVariable,
+                min_length: variable.min_length ?? null,
+                max_length: variable.max_length ?? null,
+                pattern: variable.pattern ?? null,
+            };
+        case 'TemplateNumberVariable':
+            return {
+                ...baseVariable,
+                min_value: variable.min_value ?? null,
+                max_value: variable.max_value ?? null,
+                decimal_places: variable.decimal_places ?? null,
+            };
+        case 'TemplateDateVariable':
+            return {
+                ...baseVariable,
+                min_date: variable.min_date ?? null,
+                max_date: variable.max_date ?? null,
+                format: variable.format ?? null,
+            };
+        case 'TemplateSelectVariable':
+            return {
+                ...baseVariable,
+                options: variable.options ?? [],
+                multiple: variable.multiple ?? false,
+            };
+        default:
+            return baseVariable;
+    }
+};
+
+/**
+ * Maps a template from template query to a Template type
+ */
+const mapTemplateFromQuery = (
+    source: TemplateQuery,
+): Template | null => {
+    if (!source.template) {
+        return null;
+    }
+
+    const template = source.template;
+    return {
+        id: template.id,
+        name: template.name,
+        description: template.description ?? null,
+        image_url: template.image_url ?? null,
+        order: template.order ?? null,
+        created_at: template.created_at ?? new Date(),
+        updated_at: template.updated_at ?? new Date(),
+        trashed_at: template.trashed_at ?? null,
+        category: template.category
+            ? mapCategoryForTemplate(template.category as PartialTemplateCategory)
+            : ({} as TemplateCategory),
+        variables: template.variables?.map(mapSingleTemplateVariable) ?? []
+    } as Template;
+};
+
+/**
  * Maps any template source to a single Template or null
  */
 export const mapSingleTemplate = (
@@ -215,6 +293,11 @@ export const mapSingleTemplate = (
             previousTemplate ? [previousTemplate] : undefined,
         );
         return templates.length > 0 ? templates[0] : null;
+    }
+
+    // Handle template query
+    if ("template" in source) {
+        return mapTemplateFromQuery(source);
     }
 
     return null;

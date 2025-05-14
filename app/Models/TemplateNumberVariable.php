@@ -5,25 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TemplateNumberVariable extends Model
+class TemplateNumberVariable extends TemplateVariable
 {
-    protected $primaryKey = 'variable_id';
-    public $incrementing = false;
-
-    protected $fillable = [
-        'min_value',
-        'max_value',
-        'decimal_places'
-    ];
-
-    protected $casts = [
-        'min_value' => 'decimal:10',
-        'max_value' => 'decimal:10',
-        'decimal_places' => 'integer'
-    ];
-
-    public function variable(): BelongsTo
+    protected static function booted()
     {
-        return $this->belongsTo(TemplateVariable::class, 'variable_id');
+        static::creating(function ($model) {
+            $model->type = 'number';
+        });
+
+        parent::booted();
+    }
+
+    public function scopeAllowedFields()
+    {
+        return [
+            'min_value',
+            'max_value',
+            'decimal_places'
+        ];
     }
 }
