@@ -151,44 +151,28 @@ return new class extends Migration
             $table->string('preview_value')->nullable(); // Default value for preview
             $table->boolean('required')->default(false);
             $table->unsignedInteger('order'); // Display order
-            $table->timestamps();
-
-            $table->unique(['template_id', 'name']); // Variable names must be unique per template
-        });
-
-        // Text variable specific properties
-        Schema::create('template_text_variables', function (Blueprint $table) {
-            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            
+            // Text variable specific properties
             $table->unsignedInteger('min_length')->nullable();
             $table->unsignedInteger('max_length')->nullable();
             $table->string('pattern')->nullable(); // Regex pattern for validation
-            $table->timestamps();
-        });
-
-        // Number variable specific properties
-        Schema::create('template_number_variables', function (Blueprint $table) {
-            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            
+            // Number variable specific properties
             $table->decimal('min_value', 65, 10)->nullable();
             $table->decimal('max_value', 65, 10)->nullable();
             $table->unsignedInteger('decimal_places')->nullable();
-            $table->timestamps();
-        });
-
-        // Date variable specific properties
-        Schema::create('template_date_variables', function (Blueprint $table) {
-            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
+            
+            // Date variable specific properties
             $table->date('min_date')->nullable();
             $table->date('max_date')->nullable();
             $table->string('format')->nullable(); // e.g., 'Y-m-d', 'd/m/Y'
+            
+            // Select variable specific properties
+            $table->json('options')->nullable(); // Array of possible values
+            $table->boolean('multiple')->nullable(); // Whether multiple selections are allowed
+            
             $table->timestamps();
-        });
-
-        // Select/Choice variable specific properties
-        Schema::create('template_select_variables', function (Blueprint $table) {
-            $table->foreignId('variable_id')->primary()->constrained('template_variables')->onDelete('cascade');
-            $table->json('options'); // Array of possible values
-            $table->boolean('multiple')->default(false); // Whether multiple selections are allowed
-            $table->timestamps();
+            $table->unique(['template_id', 'name']); // Variable names must be unique per template
         });
 
         Schema::create('template_recipient_groups', function (Blueprint $table) {
@@ -246,10 +230,7 @@ return new class extends Migration
         Schema::dropIfExists('recipient_group_item_variable_values');
         Schema::dropIfExists('template_recipient_group_items');
         Schema::dropIfExists('template_recipient_groups');
-        Schema::dropIfExists('template_select_variables');
-        Schema::dropIfExists('template_date_variables');
-        Schema::dropIfExists('template_number_variables');
-        Schema::dropIfExists('template_text_variables');
+        // All variable types are now in the template_variables table
         Schema::dropIfExists('template_variables');
         Schema::dropIfExists('template_qr_code_elements');
         Schema::dropIfExists('template_image_elements');

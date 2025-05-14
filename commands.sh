@@ -6,6 +6,7 @@ commands=(
     "Run Database Seeder"
     "Fresh Database Migration"
     "Start Vite Dev Server"
+    "Validate GraphQL Schema"
     "Exit"
 )
 
@@ -23,6 +24,9 @@ function execute_command() {
             ;;
         "Start Vite Dev Server")
             bun run dev
+            ;;
+        "Validate GraphQL Schema")
+            php artisan lighthouse:validate-schema
             ;;
         "Exit")
             exit 0

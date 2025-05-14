@@ -1,0 +1,109 @@
+"Input for text template variable mutations"
+input TextTemplateVariableInput {
+    id: ID
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean!
+    order: Int!
+    min_length: Int
+    max_length: Int
+    pattern: String
+}
+
+"Input for number template variable mutations"
+input NumberTemplateVariableInput {
+    id: ID
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean!
+    order: Int!
+    min_value: Float
+    max_value: Float
+    decimal_places: Int
+}
+
+"Input for date template variable mutations"
+input DateTemplateVariableInput {
+    id: ID
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean!
+    order: Int!
+    min_date: Date
+    max_date: Date
+    format: String
+}
+
+"Input for select template variable mutations"
+input SelectTemplateVariableInput {
+    id: ID
+    template_id: ID! @rules(apply: ["required", "exists:templates,id"])
+    name: String! @rules(apply: ["required", "min:3"])
+    description: String
+    preview_value: String
+    required: Boolean!
+    order: Int!
+    options: [String!]! @rules(apply: ["required", "min:1"])
+    multiple: Boolean!
+}
+
+extend type Mutation {
+    "Create a new text template variable"
+    createTextTemplateVariable(
+        input: TextTemplateVariableInput! @spread
+    ): TemplateTextVariable! @create
+    # @can(ability: "create")
+
+    "Update an existing text template variable"
+    updateTextTemplateVariable(
+        input: TextTemplateVariableInput! @spread
+    ): TemplateTextVariable! @update
+    # @can(ability: "update")
+
+    "Create a new number template variable"
+    createNumberTemplateVariable(
+        input: NumberTemplateVariableInput! @spread
+    ): TemplateNumberVariable! @create
+    # @can(ability: "create")
+
+    "Update an existing number template variable"
+    updateNumberTemplateVariable(
+        input: NumberTemplateVariableInput! @spread
+    ): TemplateNumberVariable! @update
+    # @can(ability: "update")
+
+    "Create a new date template variable"
+    createDateTemplateVariable(
+        input: DateTemplateVariableInput! @spread
+    ): TemplateDateVariable! @create
+    # @can(ability: "create")
+
+    "Update an existing date template variable"
+    updateDateTemplateVariable(
+        input: DateTemplateVariableInput! @spread
+    ): TemplateDateVariable! @update
+    # @can(ability: "update")
+
+    "Create a new select template variable"
+    createSelectTemplateVariable(
+        input: SelectTemplateVariableInput! @spread
+    ): TemplateSelectVariable! @create
+    # @can(ability: "create")
+
+    "Update an existing select template variable"
+    updateSelectTemplateVariable(
+        input: SelectTemplateVariableInput! @spread
+    ): TemplateSelectVariable! @update
+    # @can(ability: "update")
+
+    "Delete a template variable"
+    deleteTemplateVariable(id: ID!): TemplateVariable!
+        @delete
+        #@can(ability: "delete")
+}

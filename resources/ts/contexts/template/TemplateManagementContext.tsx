@@ -11,10 +11,8 @@ import {
     Box,
     CircularProgress,
     Typography,
-    Button,
     Paper,
 } from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
 import {
@@ -66,7 +64,7 @@ export const TemplateManagementProvider: React.FC<{
 }> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const { id } = useParams<{ id: string }>();
-    const { allTemplates, templateToManage, fetchCategories } =
+    const { allTemplates, templateToManage } =
         useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
 
@@ -96,7 +94,7 @@ export const TemplateManagementProvider: React.FC<{
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const tab = (searchParams.get("tab") ||
+        const tab = (searchParams.get("tab") ??
             "basic") as TemplateManagementTabType;
         setActiveTab(tab);
     }, [searchParams]);
@@ -172,14 +170,14 @@ export const TemplateManagementProvider: React.FC<{
             }
         } catch (error: any) {
             setError(
-                error.response?.data?.message ||
+                error.response?.data?.message ??
                     "Failed to fetch template config",
             );
             setTabErrors((prev) => ({
                 ...prev,
                 basic: {
                     message:
-                        error.response?.data?.message ||
+                        error.response?.data?.message ??
                         "Failed to fetch template config",
                 },
             }));

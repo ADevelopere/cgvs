@@ -5,23 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TemplateSelectVariable extends Model
+class TemplateSelectVariable extends TemplateVariable
 {
-    protected $primaryKey = 'variable_id';
-    public $incrementing = false;
-
-    protected $fillable = [
-        'options',
-        'multiple'
-    ];
-
-    protected $casts = [
-        'options' => 'array',
-        'multiple' => 'boolean'
-    ];
-
-    public function variable(): BelongsTo
+    protected static function booted()
     {
-        return $this->belongsTo(TemplateVariable::class, 'variable_id');
+        static::creating(function ($model) {
+            $model->type = 'select';
+        });
+
+        parent::booted();
+    }
+
+    public function scopeAllowedFields()
+    {
+        return [
+            'options',
+            'multiple'
+        ];
     }
 }
