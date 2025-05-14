@@ -172,6 +172,7 @@ const NewTemplateList: React.FC = () => {
                             cursor: "col-resize",
                         },
                     }}
+                    storageKey="templateListSplitPane"
                 >
                     <Paper
                         sx={{
