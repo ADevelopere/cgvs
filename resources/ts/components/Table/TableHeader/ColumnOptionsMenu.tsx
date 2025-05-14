@@ -2,6 +2,7 @@ import type React from "react"
 import { Menu, MenuItem, Typography, Divider } from "@mui/material"
 import { PushPin, VisibilityOff, FitScreen, PinDrop } from "@mui/icons-material"
 import type { ColumnOptionsMenuProps } from "./types"
+import { useTableLocale } from "@/locale/table/TableLocaleContext"
 
 const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
   anchorEl,
@@ -18,8 +19,8 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
   onAutosize,
   onShowColumnManager,
 }) => {
+  const { strings } = useTableLocale()
   if (!columnId) return null
-
   return (
     <Menu
       anchorEl={anchorEl}
@@ -43,24 +44,24 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
       {isPinnedLeft ? (
         <MenuItem onClick={() => onUnpin(columnId)}>
           <PushPin style={{ marginRight: 8, transform: "rotate(45deg)" }} fontSize="small" />
-          Unpin from Left
+          {strings.column.unpin}
         </MenuItem>
       ) : (
         <MenuItem onClick={() => onPinLeft(columnId)}>
           <PushPin style={{ marginRight: 8, transform: "rotate(45deg)" }} fontSize="small" />
-          Pin to Left
+          {strings.column.pinLeft}
         </MenuItem>
       )}
 
       {isPinnedRight ? (
         <MenuItem onClick={() => onUnpin(columnId)}>
           <PushPin style={{ marginRight: 8 }} fontSize="small" />
-          Unpin from Right
+          {strings.column.unpin}
         </MenuItem>
       ) : (
         <MenuItem onClick={() => onPinRight(columnId)}>
           <PushPin style={{ marginRight: 8 }} fontSize="small" />
-          Pin to Right
+          {strings.column.pinRight}
         </MenuItem>
       )}
 
@@ -69,7 +70,7 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
       {/* Autosize option */}
       <MenuItem onClick={() => onAutosize(columnId)}>
         <FitScreen style={{ marginRight: 8 }} fontSize="small" />
-        Autosize Column
+        {strings.column.autosize}
       </MenuItem>
 
       <Divider />
@@ -77,13 +78,13 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
       {/* Hide option */}
       <MenuItem onClick={() => onHide(columnId)}>
         <VisibilityOff style={{ marginRight: 8 }} fontSize="small" />
-        Hide Column
+        {strings.column.hide}
       </MenuItem>
 
       {/* Column manager option */}
       <MenuItem onClick={onShowColumnManager}>
         <PinDrop style={{ marginRight: 8 }} fontSize="small" />
-        Manage Columns
+        {strings.column.showColumnManager}
       </MenuItem>
     </Menu>
   )

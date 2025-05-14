@@ -20,6 +20,7 @@ type StudentManagementContextType = {
     selectedStudents: string[];
     paginatorInfo: PaginatorInfo | null;
     queryParams: Graphql.StudentsQueryVariables;
+    loading: boolean;
 
     // Mutations
     createStudent: (
@@ -70,6 +71,8 @@ export const StudentManagementProvider: React.FC<{
     const [queryParams, setQueryParams] =
         useState<Graphql.StudentsQueryVariables>(DEFAULT_QUERY_PARAMS);
 
+    const [loading, setLoading] = useState(false);
+
     const {
         studentsQuery,
         createStudentMutation,
@@ -79,7 +82,12 @@ export const StudentManagementProvider: React.FC<{
 
     // Fetch students when query params change
     useEffect(() => {
+        console.log(
+            "Fetching students with params:",
+            JSON.stringify(queryParams),
+        );
         const fetchStudents = async () => {
+            setLoading(true);
             try {
                 const result: Graphql.StudentsQuery =
                     await studentsQuery(queryParams);
@@ -93,6 +101,8 @@ export const StudentManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 3000,
                 });
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -239,6 +249,7 @@ export const StudentManagementProvider: React.FC<{
             selectedStudents,
             paginatorInfo,
             queryParams,
+            loading,
             createStudent: handleCreateStudent,
             updateStudent: handleUpdateStudent,
             deleteStudent: handleDeleteStudent,
@@ -252,6 +263,7 @@ export const StudentManagementProvider: React.FC<{
             selectedStudents,
             paginatorInfo,
             queryParams,
+            loading,
             handleCreateStudent,
             handleUpdateStudent,
             handleDeleteStudent,

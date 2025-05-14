@@ -16,12 +16,19 @@ import {
     type FilterClause,
 } from "@/types/filters";
 import { useTableContext } from "./TableContext";
+import { OrderByClause, SortOrder } from "@/graphql/generated/types";
+
+type EditingState = {
+    isEditing: boolean;
+    tmpValue: any;
+    errorMessage: string | null;
+};
 
 export type TableDataContextType = {
     // Sorting
-    sortBy: string | null;
-    sortDirection: "asc" | "desc" | null;
+    orderByClause: OrderByClause[];
     sort: (columnId: string) => void;
+    getSortDirection: (columnId: string) => SortOrder | null;
 
     // Filtering
     filters: Record<string, FilterClause<any, any>>;
@@ -45,13 +52,6 @@ export type TableDataContextType = {
         columnId: string,
     ) => FilterClause<string, TextFilterOperation> | null;
 
-    applyDateFilter: (
-        filterClause: FilterClause<DateFilterValue, DateFilterOperation>,
-    ) => void;
-    getActiveDateFilter: (
-        columnId: string,
-    ) => FilterClause<DateFilterValue, DateFilterOperation> | null;
-
     applyNumberFilter: (
         filterClause: FilterClause<number, NumberFilterOperation>,
     ) => void;
@@ -59,17 +59,25 @@ export type TableDataContextType = {
         columnId: string,
     ) => FilterClause<number, NumberFilterOperation> | null;
 
+    applyDateFilter: (
+        filterClause: FilterClause<DateFilterValue, DateFilterOperation>,
+    ) => void;
+    getActiveDateFilter: (
+        columnId: string,
+    ) => FilterClause<DateFilterValue, DateFilterOperation> | null;
+
     clearFilter: (columnId: string) => void;
+
+    // Cell Editing
+    getEditingState: (rowId: string | number, columnId: string) => EditingState | null;
+    setEditingState: (rowId: string | number, columnId: string, state: EditingState | null) => void;
 };
 
 const TableDataContext = createContext<TableDataContextType | null>(null);
 
 export type TableDataProviderProps = {
-    onFilter?: (
-        filterClause: FilterClause<any, any> | null,
-        columnId: string,
-    ) => void;
-    onSort?: (columnId: string) => void;
+    onFilter?: (filterClause: FilterClause<any, any> | null) => void;
+    onSort?: (orderByClause: OrderByClause[]) => void;
     children: React.ReactNode;
 };
 
@@ -80,25 +88,38 @@ export const TableDataProvider = ({
 }: TableDataProviderProps) => {
     const { columns } = useTableContext();
 
-    const [sortBy, setSortBy] = useState<string | null>(null);
-    const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
-        null,
-    );
-
+    const [orderByClause, setOrderByClause] = useState<OrderByClause[]>([]);
     const [filters, setFilters] = useState<
         Record<string, FilterClause<any, any>>
     >({});
-
-    // State to track temporary filter values before they're applied
     const [tempFilterValues, setTempFilterValues] = useState<
         Record<string, string>
     >({});
+
+    // Cell editing state management
+    const [editingCells, setEditingCells] = useState<Record<string, EditingState>>({});
+
+    const getEditingState = useCallback((rowId: string | number, columnId: string): EditingState | null => {
+        const cellKey = `${rowId}:${columnId}`;
+        return editingCells[cellKey] ?? null;
+    }, [editingCells]);
+
+    const setEditingState = useCallback((rowId: string | number, columnId: string, state: EditingState | null) => {
+        const cellKey = `${rowId}:${columnId}`;
+        setEditingCells(prev => {
+            if (state === null) {
+                const { [cellKey]: removed, ...rest } = prev;
+                return rest;
+            }
+            return { ...prev, [cellKey]: state };
+        });
+    }, []);
 
     // Internal filter update handler
     const handleFilterUpdate = useCallback(
         (filterClause: FilterClause<any, any> | null, columnId: string) => {
             // Update local filters state
-            setFilters(prevFilters => {
+            setFilters((prevFilters) => {
                 if (filterClause === null) {
                     // If filter is null, remove the filter for this column
                     const { [columnId]: removed, ...rest } = prevFilters;
@@ -107,15 +128,22 @@ export const TableDataProvider = ({
                     // Add or update the filter for this column
                     return {
                         ...prevFilters,
-                        [columnId]: filterClause
+                        [columnId]: filterClause,
                     };
                 }
             });
+            console.log(
+                "Updated filters:",
+                JSON.stringify({
+                    ...filters,
+                    [columnId]: filterClause,
+                }),
+            );
 
             // Call the onFilter callback
-            onFilter?.(filterClause, columnId);
+            onFilter?.(filterClause);
         },
-        [onFilter]
+        [onFilter],
     );
 
     // Filter handling
@@ -254,22 +282,63 @@ export const TableDataProvider = ({
     // Sort handling
     const sort = useCallback(
         (columnId: string) => {
-            onSort?.(columnId);
+            setOrderByClause((prevOrderByClause) => {
+                const columnIndex = prevOrderByClause.findIndex(
+                    (clause) => clause.column === columnId,
+                );
+
+                let newOrderByClause = [...prevOrderByClause];
+
+                if (columnIndex === -1) {
+                    // Add new sort
+                    newOrderByClause.push({
+                        column: columnId,
+                        order: "ASC",
+                    });
+                } else if (newOrderByClause[columnIndex].order === "ASC") {
+                    // Change to DESC
+                    newOrderByClause[columnIndex] = {
+                        ...newOrderByClause[columnIndex],
+                        order: "DESC",
+                    };
+                } else {
+                    // Remove sort
+                    newOrderByClause = newOrderByClause.filter(
+                        (_, index) => index !== columnIndex,
+                    );
+                }
+                console.log(
+                    "New orderByClause:",
+                    JSON.stringify(newOrderByClause),
+                );
+
+                // Call the onSort callback with the updated sort clauses
+                onSort?.(newOrderByClause);
+                return newOrderByClause;
+            });
         },
-        [columns, sortBy, sortDirection, onSort],
+        [onSort],
     );
 
-    const value: TableDataContextType = useMemo(
-        () => ({
-            sortBy,
-            sortDirection,
-            sort,
+    const getSortDirection = useCallback(
+        (columnId: string): SortOrder | null => {
+            const clause = orderByClause.find(
+                (sortClause) => sortClause.column === columnId,
+            );
+            return clause?.order ?? null;
+        },
+        [orderByClause],
+    );
 
+    const value = useMemo(
+        () => ({
+            orderByClause,
+            sort,
+            getSortDirection,
             filters,
             filter,
             tempFilterValues,
             setTempFilterValues,
-
             applyFilter,
             applyTextFilter,
             getActiveTextFilter,
@@ -278,26 +347,27 @@ export const TableDataProvider = ({
             clearFilter,
             applyDateFilter,
             getActiveDateFilter,
+            getEditingState,
+            setEditingState,
         }),
         [
+            orderByClause,
             sort,
-            sortBy,
-            sortDirection,
-            filter,
+            getSortDirection,
             filters,
+            filter,
             tempFilterValues,
             setTempFilterValues,
-
             applyFilter,
             applyTextFilter,
             getActiveTextFilter,
-
             applyNumberFilter,
             getActiveNumberFilter,
             clearFilter,
-
             applyDateFilter,
             getActiveDateFilter,
+            getEditingState,
+            setEditingState,
         ],
     );
 

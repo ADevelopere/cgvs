@@ -1,16 +1,16 @@
+import { STUDENT_TABLE_COLUMNS } from "@/components/admin/student/column";
 import * as Graphql from "@/graphql/generated/types";
 import {
     DateFilterOperation,
     TextFilterOperation,
     DateFilterValue,
-    operationRequiresValue,
 } from "@/types/filters";
-import { STUDENT_TABLE_COLUMNS } from "@/components/admin/student/constants";
-import { Column } from "@/types/table.type";
-
+import { EditableColumn } from "@/types/table.type";
 
 // Helper function to get column definition (can be outside provider)
-export const getColumnDef = (columnId: keyof Graphql.Student): Column | undefined => {
+export const getColumnDef = (
+    columnId: keyof Graphql.Student,
+): EditableColumn | undefined => {
     return STUDENT_TABLE_COLUMNS.find((col) => col.id === columnId); // No cast needed if col.id is typed correctly
 };
 
@@ -192,9 +192,9 @@ export const formatDate = (
     try {
         // Convert to Date if it's a string
         const dateObj = typeof date === "string" ? new Date(date) : date;
-        
+
         // Format as YYYY-MM-DD HH:mm:ss
-        return dateObj.toISOString().slice(0, 19).replace('T', ' ');
+        return dateObj.toISOString().slice(0, 19).replace("T", " ");
     } catch {
         return undefined; // Handle invalid date object
     }
@@ -209,22 +209,33 @@ export const mapDateFilter = (
     const params: Partial<Graphql.StudentsQueryVariables> = {};
 
     // Handle boolean operations (is_empty, is_not_empty)
-    if (op === DateFilterOperation.IS_EMPTY || op === DateFilterOperation.IS_NOT_EMPTY) {
-        const suffix = op === DateFilterOperation.IS_EMPTY ? "_is_empty" : "_is_not_empty";
-        const paramKey = `${columnId}${suffix}` as keyof Graphql.StudentsQueryVariables;
+    if (
+        op === DateFilterOperation.IS_EMPTY ||
+        op === DateFilterOperation.IS_NOT_EMPTY
+    ) {
+        const suffix =
+            op === DateFilterOperation.IS_EMPTY ? "_is_empty" : "_is_not_empty";
+        const paramKey =
+            `${columnId}${suffix}` as keyof Graphql.StudentsQueryVariables;
         params[paramKey] = true;
         return params;
     }
 
     // Handle date range operations (between)
-    if (op === DateFilterOperation.BETWEEN && typeof value === "object" && value !== null) {
+    if (
+        op === DateFilterOperation.BETWEEN &&
+        typeof value === "object" &&
+        value !== null
+    ) {
         const { from, to } = value;
         if (from) {
-            const fromKey = `${columnId}_from` as keyof Graphql.StudentsQueryVariables;
+            const fromKey =
+                `${columnId}_from` as keyof Graphql.StudentsQueryVariables;
             params[fromKey] = formatDate(from);
         }
         if (to) {
-            const toKey = `${columnId}_to` as keyof Graphql.StudentsQueryVariables;
+            const toKey =
+                `${columnId}_to` as keyof Graphql.StudentsQueryVariables;
             params[toKey] = formatDate(to);
         }
         return params;
@@ -258,11 +269,13 @@ export const mapDateFilter = (
 
     // For single date operations, we use the 'from' value if available
     if (typeof value === "object" && value?.from) {
-        const paramKey = `${columnId}${suffix}` as keyof Graphql.StudentsQueryVariables;
+        const paramKey =
+            `${columnId}${suffix}` as keyof Graphql.StudentsQueryVariables;
         params[paramKey] = formatDate(value.from);
     } else if (typeof value === "string") {
         // Handle direct date string value
-        const paramKey = `${columnId}${suffix}` as keyof Graphql.StudentsQueryVariables;
+        const paramKey =
+            `${columnId}${suffix}` as keyof Graphql.StudentsQueryVariables;
         params[paramKey] = formatDate(value);
     }
 

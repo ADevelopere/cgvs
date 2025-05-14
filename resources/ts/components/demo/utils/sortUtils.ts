@@ -1,10 +1,10 @@
-import { Column } from "@/types/table.type"
+import { EditableColumn } from "@/types/table.type"
 
 export function applySorting(
   dataset: any[],
   sortBy: string | null,
   sortDirection: "asc" | "desc" | null,
-  columns: Column[],
+  columns: EditableColumn[],
 ): any[] {
   if (!sortBy || !sortDirection) {
     return dataset

@@ -1,4 +1,4 @@
-import { Column } from "@/types/table.type"
+import { EditableColumn } from "@/types/table.type"
 import type { FilterClause } from "@/types/filters"
 import {
   TextFilterOperation,
@@ -12,7 +12,7 @@ import {
 export function applyFilters(
   dataset: any[],
   filters: Record<string, FilterClause<any, any>>,
-  columns: Column[],
+  columns: EditableColumn[],
 ): any[] {
   if (Object.keys(filters).length === 0) {
     return dataset

@@ -1,7 +1,7 @@
 import Calendar from "@/types/Calendar";
 import moment from "moment-hijri";
 import { matchIsValidTel } from "mui-tel-input";
-import { CountryType } from "../country";
+import countries, { CountryType } from "../country";
 
 // Constants
 export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
@@ -13,7 +13,10 @@ export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
  * @param {boolean} isRequired - Whether the name is required.
  * @returns {boolean} - True if the name is valid, false otherwise.
  */
-export const isNameValid = (name: string, isRequired: boolean): boolean => {
+export const isArabicNameValid = (
+    name: string,
+    isRequired: boolean,
+): boolean => {
     if (name.trim().length === 0) {
         return !isRequired;
     }
@@ -47,6 +50,13 @@ export const isValidDate = (
     return date.isValid() && date.isSameOrBefore(maxDate);
 };
 
+export const isValidCountryCode = (countryCode: string): boolean => {
+    if(!countryCode) return false;
+    return countries.some(
+        (country) => country.code.toLowerCase() === countryCode.toLowerCase(),
+    );
+};
+
 // Function to validate country
 /**
  * Validates if the given country is valid.
@@ -67,5 +77,6 @@ export const isValidCountry = (country: CountryType): boolean => {
  * @returns {boolean} - True if the phone number is valid, false otherwise.
  */
 export const isValidPhoneNumber = (phone: string): boolean => {
+    if (!phone) return false;
     return matchIsValidTel(phone, { excludedCountries: ["IL"] });
 };

@@ -1,14 +1,33 @@
-export interface Column {
+export type ColumnTypes =
+    | "text"
+    | "number"
+    | "date"
+    | "select"
+    | "boolean"
+    | "country"
+    | "phone"
+    | "custom";
+
+export type BaseColumn = {
     id: string;
+    type: ColumnTypes;
     label: string;
-    type: string;
     accessor: string | ((row: any) => any);
     editable?: boolean;
     sortable?: boolean;
     filterable?: boolean;
-    filterMode?: "inline" | "popover";
+    resizable?: boolean;
+    initialWidth?: number;
+    minWidth?: number;
+    maxWidth?: number;
     widthStorageKey?: string;
-}
+    options?: { label: string; value: any }[]; // For select type columns
+};
+
+export type EditableColumn = BaseColumn & {
+    onUpdate?: (rowId: string | number, value: any) => Promise<void>;
+    getIsValid?: (value: any) => string | null | undefined;
+};
 
 export interface LoadMoreParams {
     visibleStartIndex: number;
