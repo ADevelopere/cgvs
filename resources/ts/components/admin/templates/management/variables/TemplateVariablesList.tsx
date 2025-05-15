@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import {
     Box,
     Button,
@@ -19,14 +19,20 @@ import type {
     TemplateVariable,
     TemplateVariableType,
 } from "@/graphql/generated/types";
-import { isDateVariableDifferent, isNumberVariableDifferent, isSelectVariableDifferent, isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
-
-// getTemporaryValue: (id: string) => TemporaryVariableValue | undefined;
-// const hasUnsavedChanges /.... here
+import {
+    isDateVariableDifferent,
+    isNumberVariableDifferent,
+    isSelectVariableDifferent,
+    isTextVariableDifferent,
+} from "@/utils/templateVariable/templateVariable";
 
 const Content: FC = () => {
-    const { getTemporaryValue, deleteTemplateVariable, trySetEditMode, setTemporaryValue } =
-        useTemplateVariableManagement();
+    const {
+        getTemporaryValue,
+        deleteTemplateVariable,
+        trySetEditMode,
+        setTemporaryValue,
+    } = useTemplateVariableManagement();
     const { template } = useTemplateManagement();
 
     const handleVariableClick = useCallback(
@@ -36,7 +42,7 @@ const Content: FC = () => {
             setTemporaryValue(id, variable);
             trySetEditMode(id, variable.type);
         },
-        [trySetEditMode],
+        [trySetEditMode, setTemporaryValue, trySetEditMode],
     );
 
     const handleDeleteClick = useCallback(
@@ -48,6 +54,29 @@ const Content: FC = () => {
             }
         },
         [deleteTemplateVariable],
+    );
+
+    const hasChanged = useCallback(
+        (variable: TemplateVariable) => {
+            const temp = getTemporaryValue(variable.id);
+            if (!temp) return false;
+            switch (variable.type) {
+                case "text":
+                    return isTextVariableDifferent(variable, temp);
+                case "number":
+                    return isNumberVariableDifferent(variable, temp);
+                case "date":
+                    return isDateVariableDifferent(variable, temp);
+                case "select":
+                    return isSelectVariableDifferent(
+                        variable as TemplateSelectVariable,
+                        temp,
+                    );
+                default:
+                    return false;
+            }
+        },
+        [getTemporaryValue],
     );
 
     if (!template?.variables || template.variables.length === 0) {
@@ -75,22 +104,7 @@ const Content: FC = () => {
         <List sx={{ width: "100%", bgcolor: "background.paper", flexGrow: 1 }}>
             {template.variables.map((variable) => {
                 const type = variable.type;
-                const temp = getTemporaryValue(variable.id);
-                const hasUnsavedChanges = () => {
-                    if (!temp) return false;
-                    switch (type) {
-                        case "text":
-                            return isTextVariableDifferent(variable, temp);
-                        case "number":
-                            return isNumberVariableDifferent(variable, temp);
-                        case "date":
-                            return isDateVariableDifferent(variable, temp);
-                        case "select":
-                            return isSelectVariableDifferent(variable as TemplateSelectVariable, temp);
-                        default:
-                            return false;
-                    }
-                };
+                const hasUnsavedChanges = hasChanged(variable);
 
                 return (
                     <ListItem
@@ -124,7 +138,7 @@ const Content: FC = () => {
                                         }}
                                     >
                                         <Typography>{variable.name}</Typography>
-                                        {hasUnsavedChanges() && (
+                                        {hasUnsavedChanges && (
                                             <Typography
                                                 component="span"
                                                 sx={{

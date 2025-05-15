@@ -17,8 +17,10 @@ import arLanguage from "@/locale/ar/language";
 import arCourseCategory from "@/locale/ar/templateCategory";
 import arError from "@/locale/ar/error";
 import arStudent from "@/locale/ar/student";
+import arTemplateVariable from "@/locale/ar/templateVariable";
 
 import AppLanguage from "./AppLanguage";
+import TemplateVariableTranslation from "./components/TemplateVariable";
 
 export type Translations = {
     headerTranslations: HeaderTranslations;
@@ -30,6 +32,7 @@ export type Translations = {
     templateCategoryTranslations: TemplateCategoryTranslation;
     errorTranslations: ErrorTranslations;
     studentTranslations?: StudentTranslations;
+    templateVariableTranslations?: TemplateVariableTranslation;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -43,6 +46,7 @@ const translations: Record<AppLanguage, Translations> = {
         templateCategoryTranslations: arCourseCategory,
         errorTranslations: arError,
         studentTranslations: arStudent,
+        templateVariableTranslations: arTemplateVariable,
     },
     // Add other languages here as needed
 };

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import {
     Box,
     TextField,
@@ -8,16 +8,14 @@ import {
 } from "@mui/material";
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import type {
-    CreateTextTemplateVariableInput,
-    UpdateTextTemplateVariableInput,
+    CreateNumberTemplateVariableInput,
+    UpdateNumberTemplateVariableInput,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
-import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/text-template-variable-mappers";
-import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
-import useAppTranslation from "@/locale/useAppTranslation";
 import TemplateVariableTranslation from "@/locale/components/TemplateVariable";
+import useAppTranslation from "@/locale/useAppTranslation";
 
-interface TextTemplateVariableFormBaseProps {
+interface NumberTemplateVariableFormBaseProps {
     // From useTemplateVariableManagement
     formPaneState: ReturnType<
         typeof useTemplateVariableManagement
@@ -34,39 +32,40 @@ interface TextTemplateVariableFormBaseProps {
     setTemporaryValue: ReturnType<
         typeof useTemplateVariableManagement
     >["setTemporaryValue"];
-    createTextTemplateVariable: ReturnType<
+    createNumberTemplateVariable: ReturnType<
         typeof useTemplateVariableManagement
-    >["createTextTemplateVariable"];
-    updateTextTemplateVariable: ReturnType<
+    >["createNumberTemplateVariable"];
+    updateNumberTemplateVariable: ReturnType<
         typeof useTemplateVariableManagement
-    >["updateTextTemplateVariable"];
+    >["updateNumberTemplateVariable"];
     // From useTemplateManagement
     template: ReturnType<typeof useTemplateManagement>["template"];
     strings: TemplateVariableTranslation | undefined;
 }
-interface TextTemplateVariableFormBaseState {
+
+interface NumberTemplateVariableFormBaseState {
     name: string;
     description: string;
-    min_length?: number;
-    max_length?: number;
-    pattern: string;
+    min_value?: number;
+    max_value?: number;
+    decimal_places?: number;
     preview_value: string;
     required: boolean;
     hasSavedOrCleared: boolean;
 }
 
-class TextTemplateVariableFormBase extends Component<
-    TextTemplateVariableFormBaseProps,
-    TextTemplateVariableFormBaseState
+class NumberTemplateVariableFormBase extends Component<
+    NumberTemplateVariableFormBaseProps,
+    NumberTemplateVariableFormBaseState
 > {
-    constructor(props: TextTemplateVariableFormBaseProps) {
+    constructor(props: NumberTemplateVariableFormBaseProps) {
         super(props);
         this.state = {
             name: "",
             description: "",
-            min_length: undefined,
-            max_length: undefined,
-            pattern: "",
+            min_value: undefined,
+            max_value: undefined,
+            decimal_places: undefined,
             preview_value: "",
             required: false,
             hasSavedOrCleared: false,
@@ -77,7 +76,9 @@ class TextTemplateVariableFormBase extends Component<
         this.initializeStateFromProps();
     }
 
-    componentDidUpdate(prevProps: Readonly<TextTemplateVariableFormBaseProps>) {
+    componentDidUpdate(
+        prevProps: Readonly<NumberTemplateVariableFormBaseProps>,
+    ) {
         const { formPaneState, createFormData, template } = this.props;
         const { mode, editingVariable } = formPaneState;
 
@@ -113,18 +114,12 @@ class TextTemplateVariableFormBase extends Component<
             currentEditingVariableId !== prevEditingVariableId ||
             prevTemplateId !== currentTemplateId
         ) {
-            console.log("Reinitializing due to mode/template/variable change");
             this.initializeStateFromProps();
         } else if (
             mode === "create" &&
             prevProps.createFormData.values !== createFormData.values &&
-            !this.state.hasSavedOrCleared // Avoid re-init if we just cleared it via save
+            !this.state.hasSavedOrCleared
         ) {
-            // If createFormData.values is updated externally, reflect it in local state
-            console.log("Reinitializing due to createFormData change", {
-                prevValues: prevProps.createFormData.values,
-                newValues: createFormData.values,
-            });
             this.initializeStateFromProps();
         }
     }
@@ -138,36 +133,29 @@ class TextTemplateVariableFormBase extends Component<
             const dataToPersist = {
                 name: this.state.name,
                 description: this.state.description,
-                min_length:
-                    this.state.min_length === undefined
+                min_value:
+                    this.state.min_value === undefined
                         ? null
-                        : Number(this.state.min_length),
-                max_length:
-                    this.state.max_length === undefined
+                        : Number(this.state.min_value),
+                max_value:
+                    this.state.max_value === undefined
                         ? null
-                        : Number(this.state.max_length),
-                pattern: this.state.pattern,
+                        : Number(this.state.max_value),
+                decimal_places:
+                    this.state.decimal_places === undefined
+                        ? null
+                        : Number(this.state.decimal_places),
                 preview_value: this.state.preview_value,
                 required: this.state.required,
             };
 
             if (mode === "edit" && editingVariable) {
-                setTemporaryValue(
-                    editingVariable.id,
-                    dataToPersist as UpdateTextTemplateVariableInput,
-                );
+                setTemporaryValue(editingVariable.id, dataToPersist);
             } else if (mode === "create") {
-                if (
-                    this.state.name ||
-                    this.state.description ||
-                    this.state.pattern ||
-                    this.state.preview_value
-                ) {
-                    setCreateFormData({
-                        type: "text",
-                        values: dataToPersist as CreateTextTemplateVariableInput,
-                    });
-                }
+                setCreateFormData({
+                    type: "number",
+                    values: dataToPersist as CreateNumberTemplateVariableInput,
+                });
             }
         }
     }
@@ -184,47 +172,22 @@ class TextTemplateVariableFormBase extends Component<
             currentState: this.state,
         });
 
-        let baseValues: Partial<CreateTextTemplateVariableInput> = {};
+        let baseValues: Partial<CreateNumberTemplateVariableInput> = {};
 
         if (isEditMode && editingVariable) {
             const temporaryValues = getTemporaryValue(editingVariable.id);
             console.log("Edit mode - temporary values:", temporaryValues);
 
             if (temporaryValues) {
-                baseValues = temporaryValues;
-                console.log("Edit mode - using temporary values:", baseValues);
-            } else if (this.props.template?.variables) {
-                // Fallback to the editingVariable's actual data
-                const templateTextVariable = this.props.template.variables.find(
-                    (variable) => variable.id === editingVariable.id,
-                );
-
-                if (templateTextVariable) {
-                    const currentVar =
-                        mapToCreateTextTemplateVariableInput(
-                            templateTextVariable,
-                        );
-                    baseValues = {
-                        name: currentVar.name || "",
-                        description: currentVar.description ?? null,
-                        min_length: currentVar.min_length ?? null,
-                        max_length: currentVar.max_length ?? null,
-                        pattern: currentVar.pattern ?? null,
-                        preview_value: currentVar.preview_value ?? null,
-                        required: currentVar.required ?? false,
-                    };
-                    console.log(
-                        "Edit mode - using template variable data:",
-                        baseValues,
-                    );
-                } else {
-                    console.warn(
-                        "Template variable not found, using empty values",
-                    );
-                }
+                baseValues =
+                    temporaryValues as CreateNumberTemplateVariableInput;
+            } else {
+                baseValues =
+                    editingVariable as unknown as CreateNumberTemplateVariableInput;
             }
         } else if (mode === "create" && createFormData.values) {
-            baseValues = createFormData.values;
+            baseValues =
+                createFormData.values as CreateNumberTemplateVariableInput;
             console.log(
                 "Create mode - using createFormData values:",
                 baseValues,
@@ -234,21 +197,22 @@ class TextTemplateVariableFormBase extends Component<
         const parseNumeric = (
             value: string | number | null | undefined,
         ): number | undefined => {
-            if (value === null || value === undefined || value === "")
+            if (value === null || value === undefined || value === "") {
                 return undefined;
-            const num = Number(value);
-            return isNaN(num) ? undefined : num;
+            }
+            const parsed = Number(value);
+            return isNaN(parsed) ? undefined : parsed;
         };
 
         const newState = {
             name: baseValues.name ?? "",
             description: baseValues.description ?? "",
-            min_length: parseNumeric(baseValues.min_length),
-            max_length: parseNumeric(baseValues.max_length),
-            pattern: baseValues.pattern ?? "",
+            min_value: parseNumeric(baseValues.min_value),
+            max_value: parseNumeric(baseValues.max_value),
+            decimal_places: parseNumeric(baseValues.decimal_places),
             preview_value: baseValues.preview_value ?? "",
             required: baseValues.required ?? false,
-            hasSavedOrCleared: false, // Reset flag on re-initialization
+            hasSavedOrCleared: false,
         };
 
         console.log("Setting new state:", newState);
@@ -256,45 +220,100 @@ class TextTemplateVariableFormBase extends Component<
     };
 
     handleChange =
-        (field: keyof CreateTextTemplateVariableInput) =>
+        (field: keyof CreateNumberTemplateVariableInput) =>
         (event: React.ChangeEvent<HTMLInputElement>) => {
-            const value =
-                event.target.type === "checkbox"
-                    ? event.target.checked
-                    : event.target.value;
+            const { formPaneState, setTemporaryValue, setCreateFormData } =
+                this.props;
+            const { mode, editingVariable } = formPaneState;
+            const isEditMode = mode === "edit";
 
-            this.setState((prevState) => {
-                if (field === "min_length" || field === "max_length") {
+            let value: string | number | boolean;
+
+            if (
+                field === "min_value" ||
+                field === "max_value" ||
+                field === "decimal_places"
+            ) {
+                value =
+                    event.target.value === "" ? "" : Number(event.target.value);
+            } else if (field === "required") {
+                value = event.target.checked;
+            } else {
+                value = event.target.value;
+            }
+
+            this.setState(
+                (prevState) => {
+                    // For numeric fields
+                    if (
+                        field === "min_value" ||
+                        field === "max_value" ||
+                        field === "decimal_places"
+                    ) {
+                        return {
+                            ...prevState,
+                            [field]: value === "" ? undefined : Number(value),
+                            hasSavedOrCleared: false,
+                        };
+                    }
+
+                    // For required field
+                    if (field === "required") {
+                        return {
+                            ...prevState,
+                            [field]: value as boolean,
+                            hasSavedOrCleared: false,
+                        };
+                    }
+
+                    // Handle string fields
                     return {
                         ...prevState,
-                        [field]: value === "" ? undefined : Number(value),
+                        [field]: value as string,
                         hasSavedOrCleared: false,
                     };
-                }
-
-                if (field === "required") {
-                    return {
-                        ...prevState,
-                        required: value as boolean,
-                        hasSavedOrCleared: false,
+                },
+                () => {
+                    const updatedValues = {
+                        name: this.state.name,
+                        description: this.state.description,
+                        min_value:
+                            this.state.min_value === undefined
+                                ? null
+                                : Number(this.state.min_value),
+                        max_value:
+                            this.state.max_value === undefined
+                                ? null
+                                : Number(this.state.max_value),
+                        decimal_places:
+                            this.state.decimal_places === undefined
+                                ? null
+                                : Number(this.state.decimal_places),
+                        preview_value: this.state.preview_value,
+                        required: this.state.required,
                     };
-                }
 
-                // Handle string fields
-                return {
-                    ...prevState,
-                    [field]: value as string,
-                    hasSavedOrCleared: false,
-                };
-            });
+                    if (isEditMode && editingVariable) {
+                        setTemporaryValue(
+                            editingVariable.id,
+                            updatedValues as UpdateNumberTemplateVariableInput,
+                        );
+                    } else {
+                        setCreateFormData({
+                            type: "number",
+                            values: updatedValues as CreateNumberTemplateVariableInput,
+                        });
+                    }
+                },
+            );
         };
 
     handleSave = async () => {
         const {
             template,
             formPaneState,
-            createTextTemplateVariable,
-            updateTextTemplateVariable,
+            createNumberTemplateVariable,
+            updateNumberTemplateVariable,
             setTemporaryValue,
             setCreateFormData,
         } = this.props;
@@ -317,15 +336,18 @@ class TextTemplateVariableFormBase extends Component<
         const baseValues = {
             name: this.state.name,
             description: this.state.description,
-            min_length:
-                this.state.min_length === undefined
+            min_value:
+                this.state.min_value === undefined
                     ? null
-                    : Number(this.state.min_length),
-            max_length:
-                this.state.max_length === undefined
+                    : Number(this.state.min_value),
+            max_value:
+                this.state.max_value === undefined
                     ? null
-                    : Number(this.state.max_length),
-            pattern: this.state.pattern,
+                    : Number(this.state.max_value),
+            decimal_places:
+                this.state.decimal_places === undefined
+                    ? null
+                    : Number(this.state.decimal_places),
             preview_value: this.state.preview_value,
             required: Boolean(this.state.required),
         };
@@ -339,7 +361,7 @@ class TextTemplateVariableFormBase extends Component<
             );
             const order = currentVariable?.order ?? 0;
 
-            success = await updateTextTemplateVariable({
+            success = await updateNumberTemplateVariable({
                 input: {
                     ...baseValues,
                     id: editingVariable.id,
@@ -347,36 +369,23 @@ class TextTemplateVariableFormBase extends Component<
                     order,
                 },
             });
-
             if (success) {
-                // Just clear temporary values but keep the form state
                 setTemporaryValue(editingVariable.id, null);
                 this.setState({ hasSavedOrCleared: true });
             }
         } else {
-            success = await createTextTemplateVariable({
+            // For new variables, put them at the end of the list
+            const order = (template.variables?.length ?? 0) + 1;
+            success = await createNumberTemplateVariable({
                 input: {
                     ...baseValues,
                     template_id: template.id,
-                    order: 0,
+                    order,
                 },
             });
-
             if (success) {
-                setCreateFormData({
-                    type: "text",
-                    values: null,
-                });
-                this.setState({
-                    name: "",
-                    description: "",
-                    min_length: undefined,
-                    max_length: undefined,
-                    pattern: "",
-                    preview_value: "",
-                    required: false,
-                    hasSavedOrCleared: true,
-                });
+                setCreateFormData({ type: null, values: null });
+                this.setState({ hasSavedOrCleared: true });
             }
         }
     };
@@ -396,45 +405,29 @@ class TextTemplateVariableFormBase extends Component<
         const formValues = {
             name: this.state.name,
             description: this.state.description,
-            min_length:
-                this.state.min_length === undefined
+            min_value:
+                this.state.min_value === undefined
                     ? null
-                    : Number(this.state.min_length),
-            max_length:
-                this.state.max_length === undefined
+                    : Number(this.state.min_value),
+            max_value:
+                this.state.max_value === undefined
                     ? null
-                    : Number(this.state.max_length),
-            pattern: this.state.pattern,
+                    : Number(this.state.max_value),
+            decimal_places:
+                this.state.decimal_places === undefined
+                    ? null
+                    : Number(this.state.decimal_places),
             preview_value: this.state.preview_value,
             required: Boolean(this.state.required),
         };
 
         if (mode === "edit" && editingVariable) {
-            console.log("Setting temporary value in edit mode:", {
-                id: editingVariable.id,
-                values: formValues,
-            });
             setTemporaryValue(editingVariable.id, formValues);
         } else if (mode === "create") {
-            if (
-                this.state.name ||
-                this.state.description ||
-                this.state.pattern ||
-                this.state.preview_value
-            ) {
-                console.log("Setting create form data:", {
-                    type: "text" as const,
-                    values: formValues,
-                });
-                setCreateFormData({
-                    type: "text" as const,
-                    values: {
-                        ...formValues,
-                        template_id: "", // This will be set during actual creation
-                        order: 0, // This will be set during actual creation
-                    },
-                });
-            }
+            setCreateFormData({
+                type: "number",
+                values: formValues as CreateNumberTemplateVariableInput,
+            });
         }
     };
 
@@ -454,19 +447,32 @@ class TextTemplateVariableFormBase extends Component<
             return false;
         }
 
+        const originalNumberVariable =
+            originalVariable as unknown as CreateNumberTemplateVariableInput;
         const currentStateAsVariable = {
             name: this.state.name,
             description: this.state.description,
-            min_length: this.state.min_length ?? null,
-            max_length: this.state.max_length ?? null,
-            pattern: this.state.pattern,
+            min_value: this.state.min_value ?? null,
+            max_value: this.state.max_value ?? null,
+            decimal_places: this.state.decimal_places ?? null,
             preview_value: this.state.preview_value,
             required: this.state.required,
         };
 
-        return isTextVariableDifferent(
-            originalVariable,
-            currentStateAsVariable,
+        // Compare relevant fields
+        return (
+            originalNumberVariable.name !== currentStateAsVariable.name ||
+            originalNumberVariable.description !==
+                currentStateAsVariable.description ||
+            originalNumberVariable.min_value !==
+                currentStateAsVariable.min_value ||
+            originalNumberVariable.max_value !==
+                currentStateAsVariable.max_value ||
+            originalNumberVariable.decimal_places !==
+                currentStateAsVariable.decimal_places ||
+            originalNumberVariable.preview_value !==
+                currentStateAsVariable.preview_value ||
+            originalNumberVariable.required !== currentStateAsVariable.required
         );
     };
 
@@ -478,15 +484,12 @@ class TextTemplateVariableFormBase extends Component<
         const hasChanges = isEditMode ? this.isDifferentFromOriginal() : true;
 
         return (
-            <Box
-                sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                onBlur={this.handleFormBlur}
-                tabIndex={-1} // Makes the Box focusable but not in tab order
-            >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <TextField
                     label={this.props.strings?.name ?? "Name"}
                     value={this.state.name}
                     onChange={this.handleChange("name")}
+                    onBlur={this.handleFormBlur}
                     fullWidth
                     required
                 />
@@ -495,39 +498,59 @@ class TextTemplateVariableFormBase extends Component<
                     label={this.props.strings?.description ?? "Description"}
                     value={this.state.description}
                     onChange={this.handleChange("description")}
+                    onBlur={this.handleFormBlur}
                     fullWidth
                     multiline
                     rows={3}
                 />
 
-                <TextField
-                    label={this.props.strings?.minimumLength ?? "Minimum Length"}
-                    value={this.state.min_length ?? ""}
-                    onChange={this.handleChange("min_length")}
-                    fullWidth
-                    type="number"
-                />
+                <Box sx={{ display: "flex", gap: 2 }}>
+                    <TextField
+                        label={
+                            this.props.strings?.minimumValue ?? "Minimum Value"
+                        }
+                        type="number"
+                        value={this.state.min_value ?? ""}
+                        onChange={this.handleChange("min_value")}
+                        onBlur={this.handleFormBlur}
+                        fullWidth
+                    />
+
+                    <TextField
+                        label={
+                            this.props.strings?.maximumValue ?? "Maximum Value"
+                        }
+                        type="number"
+                        value={this.state.max_value ?? ""}
+                        onChange={this.handleChange("max_value")}
+                        onBlur={this.handleFormBlur}
+                        fullWidth
+                    />
+                </Box>
 
                 <TextField
-                    label={this.props.strings?.maximumLength ?? "Maximum Length"}
-                    value={this.state.max_length ?? ""}
-                    onChange={this.handleChange("max_length")}
-                    fullWidth
+                    label={
+                        this.props.strings?.decimalPlaces ?? "Decimal Places"
+                    }
                     type="number"
-                />
-
-                <TextField
-                    label={this.props.strings?.pattern ?? "Pattern"}
-                    value={this.state.pattern}
-                    onChange={this.handleChange("pattern")}
+                    value={this.state.decimal_places ?? ""}
+                    onChange={this.handleChange("decimal_places")}
+                    onBlur={this.handleFormBlur}
                     fullWidth
-                    helperText={this.props.strings?.patternHelperText ?? "Regular expression pattern for validation"}
+                    slotProps={{
+                        htmlInput: {
+                            min: 0,
+                            max: 10,
+                        },
+                    }}
+                    helperText="Number of decimal places (0-10)"
                 />
 
                 <TextField
                     label={this.props.strings?.previewValue ?? "Preview Value"}
                     value={this.state.preview_value}
                     onChange={this.handleChange("preview_value")}
+                    onBlur={this.handleFormBlur}
                     fullWidth
                 />
 
@@ -547,9 +570,11 @@ class TextTemplateVariableFormBase extends Component<
                     onClick={this.handleSave}
                     disabled={hasValidationError || !hasChanges}
                 >
-                    {isEditMode ? 
-                        (this.props.strings?.updateVariable ?? "Update Variable") : 
-                        (this.props.strings?.createVariable ?? "Create Variable")}
+                    {isEditMode
+                        ? (this.props.strings?.updateVariable ??
+                          "Update Variable")
+                        : (this.props.strings?.createVariable ??
+                          "Create Variable")}
                 </Button>
             </Box>
         );
@@ -557,13 +582,13 @@ class TextTemplateVariableFormBase extends Component<
 }
 
 // Wrapper component to provide context props to the class component
-const TextTemplateVariableForm: React.FC = () => {
+const NumberTemplateVariableFormClass: React.FC = () => {
     const templateVariableManagementProps = useTemplateVariableManagement();
     const { template } = useTemplateManagement();
     const strings = useAppTranslation("templateVariableTranslations");
 
     return (
-        <TextTemplateVariableFormBase
+        <NumberTemplateVariableFormBase
             {...templateVariableManagementProps}
             template={template}
             strings={strings}
@@ -571,4 +596,4 @@ const TextTemplateVariableForm: React.FC = () => {
     );
 };
 
-export default TextTemplateVariableForm;
+export default NumberTemplateVariableFormClass;

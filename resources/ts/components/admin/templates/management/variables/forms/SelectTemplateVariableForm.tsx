@@ -52,7 +52,7 @@ const SelectTemplateVariableForm: FC = () => {
                     );
                 } else {
                     setCreateFormData({
-                        type: "SELECT",
+                        type: "select",
                         values: updatedValues as CreateSelectTemplateVariableInput,
                     });
                 }
@@ -74,7 +74,7 @@ const SelectTemplateVariableForm: FC = () => {
                 );
             } else {
                 setCreateFormData({
-                    type: "SELECT",
+                    type: "select",
                     values: updatedValues as CreateSelectTemplateVariableInput,
                 });
             }
@@ -96,7 +96,7 @@ const SelectTemplateVariableForm: FC = () => {
                 );
             } else {
                 setCreateFormData({
-                    type: "SELECT",
+                    type: "select",
                     values: updatedValues as CreateSelectTemplateVariableInput,
                 });
             }
@@ -107,7 +107,7 @@ const SelectTemplateVariableForm: FC = () => {
     const handleSubmit = useCallback(async () => {
         if (isEditMode && editingVariable) {
             await updateSelectTemplateVariable({
-                variables: {
+                input: {
                     id: editingVariable.id,
                     data: value as UpdateSelectTemplateVariableInput,
                 },
