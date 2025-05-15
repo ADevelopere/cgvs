@@ -52,7 +52,7 @@ const SelectTemplateVariableForm: FC = () => {
                     );
                 } else {
                     setCreateFormData({
-                        type: "select",
+                        type: "SELECT",
                         values: updatedValues as CreateSelectTemplateVariableInput,
                     });
                 }
@@ -74,7 +74,7 @@ const SelectTemplateVariableForm: FC = () => {
                 );
             } else {
                 setCreateFormData({
-                    type: "select",
+                    type: "SELECT",
                     values: updatedValues as CreateSelectTemplateVariableInput,
                 });
             }
@@ -96,7 +96,7 @@ const SelectTemplateVariableForm: FC = () => {
                 );
             } else {
                 setCreateFormData({
-                    type: "select",
+                    type: "SELECT",
                     values: updatedValues as CreateSelectTemplateVariableInput,
                 });
             }

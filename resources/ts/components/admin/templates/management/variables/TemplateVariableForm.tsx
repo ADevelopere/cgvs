@@ -1,14 +1,15 @@
 import { FC, useMemo } from "react";
 import { Box, Typography } from "@mui/material";
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
-import TextTemplateVariableForm from "./forms/TextTemplateVariableForm";
 import NumberTemplateVariableForm from "./forms/NumberTemplateVariableForm";
 import SelectTemplateVariableForm from "./forms/SelectTemplateVariableForm";
 import DateTemplateVariableForm from "./forms/DateTemplateVariableForm";
+import TextTemplateVariableForm from "./forms/TextTemplateVariableFormClass";
 
 const TemplateVariableForm: FC = () => {
     const { formPaneState } = useTemplateVariableManagement();
     const { mode, editingVariable, createType } = formPaneState;
+    console.log("Form pane state:", formPaneState);
 
     // Determine the current form type
     const currentType = useMemo(() => {

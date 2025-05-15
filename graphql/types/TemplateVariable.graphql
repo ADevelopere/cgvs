@@ -1,5 +1,15 @@
+enum TemplateVariableType {
+    text
+    number
+    date
+    select
+}
+
 "Base template variable interface"
-interface TemplateVariable @interface(resolveType: "App\\GraphQL\\Interfaces\\TemplateVariableResolver@resolveType") {
+interface TemplateVariable
+    @interface(
+        resolveType: "App\\GraphQL\\Interfaces\\TemplateVariableResolver@resolveType"
+    ) {
     id: ID!
     template: Template! @belongsTo
     name: String!
@@ -10,6 +20,7 @@ interface TemplateVariable @interface(resolveType: "App\\GraphQL\\Interfaces\\Te
     values: [RecipientGroupItemVariableValue!]! @hasMany
     created_at: DateTime!
     updated_at: DateTime!
+    type: TemplateVariableType!
 }
 
 "Text variable implementation"
@@ -27,6 +38,7 @@ type TemplateTextVariable implements TemplateVariable {
     min_length: Int
     max_length: Int
     pattern: String
+    type: TemplateVariableType!
 }
 
 "Number variable implementation"
@@ -44,6 +56,7 @@ type TemplateNumberVariable implements TemplateVariable {
     min_value: Float
     max_value: Float
     decimal_places: Int
+    type: TemplateVariableType!
 }
 
 "Date variable implementation"
@@ -61,6 +74,7 @@ type TemplateDateVariable implements TemplateVariable {
     min_date: Date
     max_date: Date
     format: String
+    type: TemplateVariableType!
 }
 
 "Select variable implementation"
@@ -77,4 +91,5 @@ type TemplateSelectVariable implements TemplateVariable {
     updated_at: DateTime!
     options: [String!]!
     multiple: Boolean!
+    type: TemplateVariableType!
 }

@@ -24,4 +24,9 @@ class TemplateDateVariable extends TemplateVariable
             'format'
         ];
     }
+
+    public function getTypeAttribute(): string
+    {
+        return 'date';
+    }
 }

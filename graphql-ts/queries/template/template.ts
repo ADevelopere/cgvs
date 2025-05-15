@@ -11,6 +11,7 @@ query template($id: ID!){
             id
         }
         variables {
+            type
             id
             name
             description
