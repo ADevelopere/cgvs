@@ -1,3 +1,5 @@
+import { TemplateVariableType } from "@/graphql/generated/types";
+
 export type TemplateCategorySpecialType = 'deleted' | 'uncategorized';
 
 export type TemplateCategory = {
@@ -31,8 +33,6 @@ export type Template = {
 export type TemplateConfig = {
     maxFileSize: number; // in KB
 };
-
-export type TemplateVariableType = "text" | "date" | "number" | "gender" ;
 
 export type TemplateVariable = {
     id: number;

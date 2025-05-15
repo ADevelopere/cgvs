@@ -22,8 +22,7 @@ export type TemplateSource =
     | ReorderTemplatesMutation
     | UpdateTemplateMutation
     | UpdateTemplateWithImageMutation
-    | TemplateQuery // not implemented yet
-    ;
+    | TemplateQuery; // not implemented yet
 
 type PartialTemplate = Partial<Template> & { id: string; name: string };
 type PartialTemplateCategory = Partial<TemplateCategory> & { id: string };
@@ -76,8 +75,7 @@ const mapTemplate = (
         name: template.name,
         description:
             template.description ?? previousTemplate?.description ?? null,
-        image_url:
-            template.image_url ?? previousTemplate?.image_url ?? null,
+        image_url: template.image_url ?? previousTemplate?.image_url ?? null,
         order: template.order ?? previousTemplate?.order ?? null,
         created_at:
             template.created_at ?? previousTemplate?.created_at ?? new Date(),
@@ -194,31 +192,32 @@ const mapSingleTemplateVariable = (variable: any): any => {
         preview_value: variable.preview_value ?? null,
         required: variable.required ?? false,
         order: variable.order ?? 0,
+        type: variable.type,
     };
 
     switch (variable.__typename) {
-        case 'TemplateTextVariable':
+        case "TemplateTextVariable":
             return {
                 ...baseVariable,
                 min_length: variable.min_length ?? null,
                 max_length: variable.max_length ?? null,
                 pattern: variable.pattern ?? null,
             };
-        case 'TemplateNumberVariable':
+        case "TemplateNumberVariable":
             return {
                 ...baseVariable,
                 min_value: variable.min_value ?? null,
                 max_value: variable.max_value ?? null,
                 decimal_places: variable.decimal_places ?? null,
             };
-        case 'TemplateDateVariable':
+        case "TemplateDateVariable":
             return {
                 ...baseVariable,
                 min_date: variable.min_date ?? null,
                 max_date: variable.max_date ?? null,
                 format: variable.format ?? null,
             };
-        case 'TemplateSelectVariable':
+        case "TemplateSelectVariable":
             return {
                 ...baseVariable,
                 options: variable.options ?? [],
@@ -232,9 +231,7 @@ const mapSingleTemplateVariable = (variable: any): any => {
 /**
  * Maps a template from template query to a Template type
  */
-const mapTemplateFromQuery = (
-    source: TemplateQuery,
-): Template | null => {
+const mapTemplateFromQuery = (source: TemplateQuery): Template | null => {
     if (!source.template) {
         return null;
     }
@@ -250,9 +247,11 @@ const mapTemplateFromQuery = (
         updated_at: template.updated_at ?? new Date(),
         trashed_at: template.trashed_at ?? null,
         category: template.category
-            ? mapCategoryForTemplate(template.category as PartialTemplateCategory)
+            ? mapCategoryForTemplate(
+                  template.category as PartialTemplateCategory,
+              )
             : ({} as TemplateCategory),
-        variables: template.variables?.map(mapSingleTemplateVariable) ?? []
+        variables: template.variables?.map(mapSingleTemplateVariable) ?? [],
     } as Template;
 };
 

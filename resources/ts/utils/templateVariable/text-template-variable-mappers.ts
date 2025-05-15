@@ -5,6 +5,7 @@ import type {
     TemplateTextVariable,
     UpdateTextTemplateVariableInput,
     Template,
+    CreateTextTemplateVariableInput,
 } from "@/graphql/generated/types";
 
 export type TextTemplateVariableSource =
@@ -154,5 +155,22 @@ export const mapTextTemplateVariableToInput = (
         template_id: variable.template.id,
         min_length: variable.min_length,
         max_length: variable.max_length,
+    };
+};
+
+
+export const mapToCreateTextTemplateVariableInput = (
+    source: TemplateTextVariable | null | undefined,
+): CreateTextTemplateVariableInput => {
+    return {
+        description: source?.description ?? null,
+        max_length: source?.max_length ?? null,
+        min_length: source?.min_length ?? null,
+        name: source?.name ?? "",
+        order: source?.order ?? 0,
+        pattern: source?.pattern ?? null,
+        preview_value: source?.preview_value ?? null,
+        required: source?.required ?? false,
+        template_id: source?.template.id ?? "",
     };
 };

@@ -932,6 +932,7 @@ export type TemplateDateVariable = TemplateVariable & {
   preview_value?: Maybe<Scalars['String']['output']>;
   required: Scalars['Boolean']['output'];
   template: Template;
+  type: TemplateVariableType;
   updated_at: Scalars['DateTime']['output'];
   values: Array<RecipientGroupItemVariableValue>;
 };
@@ -972,6 +973,7 @@ export type TemplateNumberVariable = TemplateVariable & {
   preview_value?: Maybe<Scalars['String']['output']>;
   required: Scalars['Boolean']['output'];
   template: Template;
+  type: TemplateVariableType;
   updated_at: Scalars['DateTime']['output'];
   values: Array<RecipientGroupItemVariableValue>;
 };
@@ -1030,6 +1032,7 @@ export type TemplateSelectVariable = TemplateVariable & {
   preview_value?: Maybe<Scalars['String']['output']>;
   required: Scalars['Boolean']['output'];
   template: Template;
+  type: TemplateVariableType;
   updated_at: Scalars['DateTime']['output'];
   values: Array<RecipientGroupItemVariableValue>;
 };
@@ -1048,6 +1051,7 @@ export type TemplateTextVariable = TemplateVariable & {
   preview_value?: Maybe<Scalars['String']['output']>;
   required: Scalars['Boolean']['output'];
   template: Template;
+  type: TemplateVariableType;
   updated_at: Scalars['DateTime']['output'];
   values: Array<RecipientGroupItemVariableValue>;
 };
@@ -1062,9 +1066,16 @@ export type TemplateVariable = {
   preview_value?: Maybe<Scalars['String']['output']>;
   required: Scalars['Boolean']['output'];
   template: Template;
+  type: TemplateVariableType;
   updated_at: Scalars['DateTime']['output'];
   values: Array<RecipientGroupItemVariableValue>;
 };
+
+export type TemplateVariableType =
+  | 'date'
+  | 'number'
+  | 'select'
+  | 'text';
 
 /** Specify if you want to include or exclude trashed results from a query. */
 export type Trashed =
@@ -1425,7 +1436,7 @@ export type TemplateQueryVariables = Exact<{
 }>;
 
 
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string }, variables: Array<{ __typename?: 'TemplateDateVariable', min_date?: any | null, max_date?: any | null, format?: string | null, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number } | { __typename?: 'TemplateNumberVariable', min_value?: number | null, max_value?: number | null, decimal_places?: number | null, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number } | { __typename?: 'TemplateSelectVariable', options: Array<string>, multiple: boolean, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number } | { __typename?: 'TemplateTextVariable', min_length?: number | null, max_length?: number | null, pattern?: string | null, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number }> } | null };
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: string, name: string, description?: string | null, image_url?: string | null, order?: number | null, created_at: any, updated_at: any, trashed_at?: any | null, category: { __typename?: 'TemplateCategory', id: string }, variables: Array<{ __typename?: 'TemplateDateVariable', min_date?: any | null, max_date?: any | null, format?: string | null, type: TemplateVariableType, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number } | { __typename?: 'TemplateNumberVariable', min_value?: number | null, max_value?: number | null, decimal_places?: number | null, type: TemplateVariableType, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number } | { __typename?: 'TemplateSelectVariable', options: Array<string>, multiple: boolean, type: TemplateVariableType, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number } | { __typename?: 'TemplateTextVariable', min_length?: number | null, max_length?: number | null, pattern?: string | null, type: TemplateVariableType, id: string, name: string, description?: string | null, preview_value?: string | null, required: boolean, order: number }> } | null };
 
 export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2818,6 +2829,7 @@ export const TemplateDocument = gql`
       id
     }
     variables {
+      type
       id
       name
       description

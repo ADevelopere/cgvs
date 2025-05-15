@@ -24,4 +24,9 @@ class TemplateNumberVariable extends TemplateVariable
             'decimal_places'
         ];
     }
+
+    public function getTypeAttribute(): string
+    {
+        return 'number';
+    }
 }

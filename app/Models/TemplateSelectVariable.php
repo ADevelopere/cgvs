@@ -23,4 +23,9 @@ class TemplateSelectVariable extends TemplateVariable
             'multiple'
         ];
     }
+
+        public function getTypeAttribute(): string
+    {
+        return 'select';
+    }
 }

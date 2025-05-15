@@ -19,8 +19,8 @@ import type {
     TemplateNumberVariable,
     TemplateSelectVariable,
     TemplateTextVariable,
+    TemplateVariableType,
 } from "@/graphql/generated/types";
-
 type TemplateVariableUnion =
     | TemplateTextVariable
     | TemplateNumberVariable
@@ -34,13 +34,9 @@ const Content: FC = () => {
 
     const handleVariableClick = useCallback(
         (id: string, variable: TemplateVariableUnion) => {
-            const type = variable.__typename
-                ?.replace("Template", "")
-                .replace("Variable", "")
-                .toLowerCase();
-            if (type) {
-                trySetEditMode(id, type as any);
-            }
+            console.log("Variable clicked:", variable);
+
+            trySetEditMode(id, variable.type);
         },
         [trySetEditMode],
     );
@@ -81,9 +77,8 @@ const Content: FC = () => {
         <List sx={{ width: "100%", bgcolor: "background.paper", flexGrow: 1 }}>
             {template.variables.map((variable) => {
                 const hasUnsavedChanges = !!getTemporaryValue(variable.id);
-                const type = (variable as TemplateVariableUnion).__typename
-                    ?.replace("Template", "")
-                    .replace("Variable", "");
+                const type = variable.type
+                   
 
                 return (
                     <ListItem
@@ -164,7 +159,7 @@ const Footer: FC = () => {
     };
 
     const handleVariableTypeSelect = (
-        type: "text" | "number" | "date" | "select",
+        type: TemplateVariableType,
     ) => {
         trySetCreateMode(type);
         handleMenuClose();
@@ -225,8 +220,21 @@ const TemplateVariablesList: FC = () => {
             }}
             id="template-variable-management-list"
         >
-            <Content />
-            <Footer />
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    overflowY: "auto",
+                }}
+            >
+                <Content />
+            </Box>
+            <Box
+                sx={{
+                    minHeight: "max-content",
+                }}
+            >
+                <Footer />
+            </Box>
         </Box>
     );
 };

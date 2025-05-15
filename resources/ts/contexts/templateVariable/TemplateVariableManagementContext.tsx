@@ -24,14 +24,13 @@ import {
     useTemplateVariableGraphQL,
 } from "./TemplateVariableGraphQLContext";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
-
-export type VariableType = "text" | "number" | "date" | "select";
+import { TemplateVariableType } from "@/graphql/generated/types";
 
 type FormMode = "create" | "edit";
 
 type EditingVariable = {
     id: string;
-    type: VariableType;
+    type: TemplateVariableType;
 };
 
 type FormPaneState = {
@@ -39,23 +38,23 @@ type FormPaneState = {
     // For edit mode
     editingVariable: EditingVariable | null;
     // For create mode
-    createType: VariableType | null;
+    createType: TemplateVariableType | null;
 };
 
 type TemporaryVariableValue =
-    | Graphql.UpdateTextTemplateVariableInput
-    | Graphql.UpdateNumberTemplateVariableInput
-    | Graphql.UpdateDateTemplateVariableInput
-    | Graphql.UpdateSelectTemplateVariableInput;
+    | Partial<Graphql.UpdateTextTemplateVariableInput>
+    | Partial<Graphql.UpdateNumberTemplateVariableInput>
+    | Partial<Graphql.UpdateDateTemplateVariableInput>
+    | Partial<Graphql.UpdateSelectTemplateVariableInput>;
 
 type CreateFormValuesType =
-    | Graphql.CreateTextTemplateVariableInput
-    | Graphql.CreateNumberTemplateVariableInput
-    | Graphql.CreateDateTemplateVariableInput
-    | Graphql.CreateSelectTemplateVariableInput;
+    | Partial<Graphql.CreateTextTemplateVariableInput>
+    | Partial<Graphql.CreateNumberTemplateVariableInput>
+    | Partial<Graphql.CreateDateTemplateVariableInput>
+    | Partial<Graphql.CreateSelectTemplateVariableInput>;
 
 type CreateFormData = {
-    type: VariableType | null;
+    type: TemplateVariableType | null;
     values: CreateFormValuesType | null;
 };
 
@@ -66,8 +65,8 @@ type TemplateVariableManagementContextType = {
     formPaneState: FormPaneState;
 
     // Form pane state management
-    trySetEditMode: (id: string, type: VariableType) => void;
-    trySetCreateMode: (type: VariableType) => void;
+    trySetEditMode: (id: string, type: TemplateVariableType) => void;
+    trySetCreateMode: (type: TemplateVariableType) => void;
 
     // Create form state management
     setCreateFormData: (data: CreateFormData) => void;
@@ -156,7 +155,7 @@ const ManagementProvider: React.FC<{
     const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] =
         useState(false);
     const [pendingChange, setPendingChange] = useState<{
-        type: VariableType;
+        type: TemplateVariableType;
         id?: string;
     } | null>(null);
     const [pendingNavigation, setPendingNavigation] = useState<{
@@ -266,6 +265,7 @@ const ManagementProvider: React.FC<{
         async (
             variables: Graphql.CreateTextTemplateVariableMutationVariables,
         ): Promise<boolean> => {
+            console.log("Creating text variable", variables);
             setLoading(true);
             try {
                 const maxCurrentOrderOFVariablesOfTemplate =
@@ -624,7 +624,7 @@ const ManagementProvider: React.FC<{
     );
 
     const trySetCreateMode = useCallback(
-        (type: VariableType) => {
+        (type: TemplateVariableType) => {
             // Check if current create form has unsaved changes
             if (createFormData.type || createFormData.values) {
                 setPendingChange({ type });
@@ -644,7 +644,7 @@ const ManagementProvider: React.FC<{
     );
 
     const trySetEditMode = useCallback(
-        (id: string, type: VariableType) => {
+        (id: string, type: TemplateVariableType) => {
             // Check if current create form has unsaved changes
             if (createFormData.type || createFormData.values) {
                 setPendingChange({ type, id });

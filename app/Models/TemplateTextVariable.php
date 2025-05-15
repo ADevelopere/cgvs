@@ -24,4 +24,9 @@ class TemplateTextVariable extends TemplateVariable
             'pattern'
         ];
     }
+
+    public function getTypeAttribute(): string
+    {
+        return 'text';
+    }
 }
