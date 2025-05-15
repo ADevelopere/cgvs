@@ -154,7 +154,7 @@ extend type Mutation {
     # @can(ability: "update")
 
     "Delete a template variable"
-    deleteTemplateVariable(id: ID!): TemplateVariable!
+    deleteTemplateVariable(id: ID! @where(key: "id")): TemplateVariable!
         @delete
         #@can(ability: "delete")
 }

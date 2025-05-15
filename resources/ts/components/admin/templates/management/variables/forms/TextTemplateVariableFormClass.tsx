@@ -10,10 +10,10 @@ import { useTemplateVariableManagement } from "@/contexts/templateVariable/Templ
 import type {
     CreateTextTemplateVariableInput,
     UpdateTextTemplateVariableInput,
-    TemplateTextVariable,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/text-template-variable-mappers";
+import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
 
 interface TextTemplateVariableFormBaseProps {
     // From useTemplateVariableManagement
@@ -98,6 +98,11 @@ class TextTemplateVariableFormBase extends Component<
             currentState: this.state,
         });
 
+        // Reset hasSavedOrCleared when mode changes
+        if (prevMode !== mode) {
+            this.setState({ hasSavedOrCleared: false });
+        }
+
         // Re-initialize if mode, edited item, or template changes.
         // Also, if in create mode and external createFormData.values changes.
         if (
@@ -176,46 +181,44 @@ class TextTemplateVariableFormBase extends Component<
             currentState: this.state,
         });
 
-        let baseValues: Partial<
-            CreateTextTemplateVariableInput & {
-                min_length?: number | null;
-                max_length?: number | null;
-            }
-        > = {};
+        let baseValues: Partial<CreateTextTemplateVariableInput> = {};
 
         if (isEditMode && editingVariable) {
             const temporaryValues = getTemporaryValue(editingVariable.id);
             console.log("Edit mode - temporary values:", temporaryValues);
+
             if (temporaryValues) {
                 baseValues = temporaryValues;
-            } else {
+                console.log("Edit mode - using temporary values:", baseValues);
+            } else if (this.props.template?.variables) {
                 // Fallback to the editingVariable's actual data
-                // Assuming editingVariable has compatible fields
-                const templateTextVariable =
-                    this.props.template?.variables.find(
-                        (variable) => variable.id === editingVariable.id,
-                    ) as TemplateTextVariable;
-
-                if (!templateTextVariable) {
-                    console.error("Template text variable not found");
-                    return;
-                }
-                const currentVar =
-                    mapToCreateTextTemplateVariableInput(templateTextVariable);
-
-                baseValues = {
-                    name: currentVar.name,
-                    description: currentVar.description,
-                    min_length: currentVar.min_length,
-                    max_length: currentVar.max_length,
-                    pattern: currentVar.pattern,
-                    preview_value: currentVar.preview_value,
-                    required: currentVar.required,
-                };
-                console.log(
-                    "Edit mode - using template variable data:",
-                    baseValues,
+                const templateTextVariable = this.props.template.variables.find(
+                    (variable) => variable.id === editingVariable.id,
                 );
+
+                if (templateTextVariable) {
+                    const currentVar =
+                        mapToCreateTextTemplateVariableInput(
+                            templateTextVariable,
+                        );
+                    baseValues = {
+                        name: currentVar.name || "",
+                        description: currentVar.description ?? null,
+                        min_length: currentVar.min_length ?? null,
+                        max_length: currentVar.max_length ?? null,
+                        pattern: currentVar.pattern ?? null,
+                        preview_value: currentVar.preview_value ?? null,
+                        required: currentVar.required ?? false,
+                    };
+                    console.log(
+                        "Edit mode - using template variable data:",
+                        baseValues,
+                    );
+                } else {
+                    console.warn(
+                        "Template variable not found, using empty values",
+                    );
+                }
             }
         } else if (mode === "create" && createFormData.values) {
             baseValues = createFormData.values;
@@ -343,17 +346,9 @@ class TextTemplateVariableFormBase extends Component<
             });
 
             if (success) {
+                // Just clear temporary values but keep the form state
                 setTemporaryValue(editingVariable.id, null);
-                this.setState({
-                    name: "",
-                    description: "",
-                    min_length: undefined,
-                    max_length: undefined,
-                    pattern: "",
-                    preview_value: "",
-                    required: false,
-                    hasSavedOrCleared: true,
-                });
+                this.setState({ hasSavedOrCleared: true });
             }
         } else {
             success = await createTextTemplateVariable({
@@ -440,10 +435,41 @@ class TextTemplateVariableFormBase extends Component<
         }
     };
 
+    isDifferentFromOriginal = (): boolean => {
+        const { template, formPaneState } = this.props;
+        const { editingVariable } = formPaneState;
+
+        if (!template?.variables || !editingVariable) {
+            return false;
+        }
+
+        const originalVariable = template.variables.find(
+            (v) => v.id === editingVariable.id,
+        );
+
+        if (!originalVariable) {
+            return false;
+        }
+
+        const currentStateAsVariable = {
+            name: this.state.name,
+            description: this.state.description,
+            min_length: this.state.min_length ?? null,
+            max_length: this.state.max_length ?? null,
+            pattern: this.state.pattern,
+            preview_value: this.state.preview_value,
+            required: this.state.required,
+        };
+
+        return isTextVariableDifferent(originalVariable, currentStateAsVariable);
+    };
+
     render() {
         const { formPaneState } = this.props;
         const { mode } = formPaneState;
         const isEditMode = mode === "edit";
+        const hasValidationError = !this.state.name;
+        const hasChanges = isEditMode ? this.isDifferentFromOriginal() : true;
 
         return (
             <Box
@@ -513,7 +539,7 @@ class TextTemplateVariableFormBase extends Component<
                     variant="contained"
                     color="primary"
                     onClick={this.handleSave}
-                    disabled={!this.state.name}
+                    disabled={hasValidationError || !hasChanges}
                 >
                     {isEditMode ? "Update" : "Create"} Variable
                 </Button>

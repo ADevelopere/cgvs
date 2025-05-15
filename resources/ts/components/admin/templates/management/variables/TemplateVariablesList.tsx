@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -15,27 +15,25 @@ import { Plus, Trash2 } from "lucide-react";
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import type {
-    TemplateDateVariable,
-    TemplateNumberVariable,
     TemplateSelectVariable,
-    TemplateTextVariable,
+    TemplateVariable,
     TemplateVariableType,
 } from "@/graphql/generated/types";
-type TemplateVariableUnion =
-    | TemplateTextVariable
-    | TemplateNumberVariable
-    | TemplateDateVariable
-    | TemplateSelectVariable;
+import { isDateVariableDifferent, isNumberVariableDifferent, isSelectVariableDifferent, isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
+
+// getTemporaryValue: (id: string) => TemporaryVariableValue | undefined;
+// const hasUnsavedChanges /.... here
 
 const Content: FC = () => {
-    const { getTemporaryValue, deleteTemplateVariable, trySetEditMode } =
+    const { getTemporaryValue, deleteTemplateVariable, trySetEditMode, setTemporaryValue } =
         useTemplateVariableManagement();
     const { template } = useTemplateManagement();
 
     const handleVariableClick = useCallback(
-        (id: string, variable: TemplateVariableUnion) => {
+        (id: string, variable: TemplateVariable) => {
             console.log("Variable clicked:", variable);
 
+            setTemporaryValue(id, variable);
             trySetEditMode(id, variable.type);
         },
         [trySetEditMode],
@@ -76,9 +74,23 @@ const Content: FC = () => {
     return (
         <List sx={{ width: "100%", bgcolor: "background.paper", flexGrow: 1 }}>
             {template.variables.map((variable) => {
-                const hasUnsavedChanges = !!getTemporaryValue(variable.id);
-                const type = variable.type
-                   
+                const type = variable.type;
+                const temp = getTemporaryValue(variable.id);
+                const hasUnsavedChanges = () => {
+                    if (!temp) return false;
+                    switch (type) {
+                        case "text":
+                            return isTextVariableDifferent(variable, temp);
+                        case "number":
+                            return isNumberVariableDifferent(variable, temp);
+                        case "date":
+                            return isDateVariableDifferent(variable, temp);
+                        case "select":
+                            return isSelectVariableDifferent(variable as TemplateSelectVariable, temp);
+                        default:
+                            return false;
+                    }
+                };
 
                 return (
                     <ListItem
@@ -99,10 +111,7 @@ const Content: FC = () => {
                     >
                         <ListItemButton
                             onClick={() =>
-                                handleVariableClick(
-                                    variable.id,
-                                    variable as TemplateVariableUnion,
-                                )
+                                handleVariableClick(variable.id, variable)
                             }
                         >
                             <ListItemText
@@ -115,7 +124,7 @@ const Content: FC = () => {
                                         }}
                                     >
                                         <Typography>{variable.name}</Typography>
-                                        {hasUnsavedChanges && (
+                                        {hasUnsavedChanges() && (
                                             <Typography
                                                 component="span"
                                                 sx={{
@@ -158,9 +167,7 @@ const Footer: FC = () => {
         setAnchorEl(null);
     };
 
-    const handleVariableTypeSelect = (
-        type: TemplateVariableType,
-    ) => {
+    const handleVariableTypeSelect = (type: TemplateVariableType) => {
         trySetCreateMode(type);
         handleMenuClose();
     };
