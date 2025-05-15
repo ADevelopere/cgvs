@@ -171,6 +171,6 @@ export const mapToCreateTextTemplateVariableInput = (
         pattern: source?.pattern ?? null,
         preview_value: source?.preview_value ?? null,
         required: source?.required ?? false,
-        template_id: source?.template.id ?? "",
+        template_id: source?.template?.id ?? "", // Add optional chaining for template
     };
 };

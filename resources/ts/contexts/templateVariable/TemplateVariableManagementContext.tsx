@@ -41,7 +41,7 @@ type FormPaneState = {
     createType: TemplateVariableType | null;
 };
 
-type TemporaryVariableValue =
+export type TemplateVariableTemporaryValue =
     | Partial<Graphql.UpdateTextTemplateVariableInput>
     | Partial<Graphql.UpdateNumberTemplateVariableInput>
     | Partial<Graphql.UpdateDateTemplateVariableInput>
@@ -73,10 +73,10 @@ type TemplateVariableManagementContextType = {
     resetCreateForm: () => void;
 
     // Temporary value management
-    getTemporaryValue: (id: string) => TemporaryVariableValue | undefined;
+    getTemporaryValue: (id: string) => TemplateVariableTemporaryValue | undefined;
     setTemporaryValue: (
         id: string,
-        value: TemporaryVariableValue | null,
+        value: TemplateVariableTemporaryValue | null,
     ) => void;
 
     // Creation mutations for different variable types
@@ -139,7 +139,7 @@ const ManagementProvider: React.FC<{
 
     const [loading, setLoading] = useState(false);
     const [temporaryValues, setTemporaryValues] = useState<
-        Map<string, TemporaryVariableValue>
+        Map<string, TemplateVariableTemporaryValue>
     >(new Map());
     const [createFormData, setCreateFormData] = useState<CreateFormData>({
         type: null,
@@ -163,7 +163,7 @@ const ManagementProvider: React.FC<{
     } | null>(null);
 
     const setTemporaryValue = useCallback(
-        (id: string, value: TemporaryVariableValue | null) => {
+        (id: string, value: TemplateVariableTemporaryValue | null) => {
             if (!id) return;
 
             if (value === null) {
