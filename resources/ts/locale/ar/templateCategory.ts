@@ -34,6 +34,7 @@ const templateCategory: TemplateCategoryTranslation = {
     delete: "حذف",
     more: "المزيد",
     manage: "إدارة",
+    manageButton: "إدارة",
     restoreTemplate: "استعادة القالب",
     description: "الوصف",
     parentCategory: "الفئة الرئيسية",

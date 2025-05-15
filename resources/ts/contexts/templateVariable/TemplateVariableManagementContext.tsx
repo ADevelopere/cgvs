@@ -25,6 +25,13 @@ import {
 } from "./TemplateVariableGraphQLContext";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
 import { TemplateVariableType } from "@/graphql/generated/types";
+import {
+    isDateVariableDifferent,
+    isNumberVariableDifferent,
+    isSelectVariableDifferent,
+    isTextVariableDifferent,
+} from "@/utils/templateVariable/templateVariable";
+import type { TemplateSelectVariable } from "@/graphql/generated/types";
 
 type FormMode = "create" | "edit";
 
@@ -151,9 +158,8 @@ const ManagementProvider: React.FC<{
         createType: null,
     });
 
-    // Dialog and navigation state
-    const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] =
-        useState(false);
+    // State for tracking pending changes
+    const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
     const [pendingChange, setPendingChange] = useState<{
         type: TemplateVariableType;
         id?: string;
@@ -184,28 +190,32 @@ const ManagementProvider: React.FC<{
         [setTemporaryValues],
     );
 
+    // Function to check for unsaved changes
     const hasUnsavedChanges = useCallback(() => {
-        // Case 1: Check if creating new variable
-        if (createFormData.type || createFormData.values) {
+        // Check if create form has any values
+        if (createFormData.values !== null) {
             return true;
         }
 
-        // Case 2: Check for modifications to existing variables
-        if (!template?.variables) return false;
+        // Check if there are any temporary values with changes
+        if (template?.variables && temporaryValues.size > 0) {
+            return template.variables.some(variable => {
+                const temp = temporaryValues.get(variable.id);
+                if (!temp) return false;
 
-        for (const [id, tempValue] of temporaryValues.entries()) {
-            if (!id) continue; // Skip entries without ID (new variables)
-
-            // Find original variable
-            const originalVariable = template.variables.find(
-                (v) => v.id === id,
-            );
-            if (!originalVariable) continue;
-
-            // Compare temporary value with original
-            const hasChanges =
-                JSON.stringify(tempValue) !== JSON.stringify(originalVariable);
-            if (hasChanges) return true;
+                switch (variable.type) {
+                    case "text":
+                        return isTextVariableDifferent(variable, temp);
+                    case "number":
+                        return isNumberVariableDifferent(variable, temp);
+                    case "date":
+                        return isDateVariableDifferent(variable, temp);
+                    case "select":
+                        return isSelectVariableDifferent(variable as TemplateSelectVariable, temp);
+                    default:
+                        return false;
+                }
+            });
         }
 
         return false;
@@ -213,6 +223,7 @@ const ManagementProvider: React.FC<{
 
     const blocker = useBlocker(hasUnsavedChanges());
 
+    // Effect to show dialog when navigation is blocked
     useEffect(() => {
         if (blocker.state === "blocked") {
             setShowUnsavedChangesDialog(true);
@@ -220,27 +231,60 @@ const ManagementProvider: React.FC<{
         }
     }, [blocker]);
 
+    // Handlers for form state changes
+    const handleConfirmFormChange = useCallback(() => {
+        if (!pendingChange) return;
+
+        // Update form state based on pending change
+        if (pendingChange.id) {
+            setFormPaneState({
+                mode: "edit",
+                editingVariable: {
+                    id: pendingChange.id,
+                    type: pendingChange.type,
+                },
+                createType: null,
+            });
+        } else {
+            setFormPaneState({
+                mode: "create",
+                editingVariable: null,
+                createType: pendingChange.type,
+            });
+            setCreateFormData({ type: pendingChange.type, values: null });
+        }
+
+        // Clear temporary state
+        setTemporaryValues(new Map());
+        setCreateFormData({ type: null, values: null });
+        setShowUnsavedChangesDialog(false);
+        setPendingChange(null);
+    }, [pendingChange]);
+
+    // Navigation handlers
     const handleConfirmNavigation = useCallback(() => {
         // Clear all temporary data
         setTemporaryValues(new Map());
         setCreateFormData({ type: null, values: null });
 
-        // Allow navigation to proceed
-        if (blocker.proceed) {
+        if (pendingNavigation && blocker.proceed) {
             blocker.proceed();
+        } else if (pendingChange) {
+            handleConfirmFormChange();
         }
 
         setShowUnsavedChangesDialog(false);
         setPendingNavigation(null);
-    }, [blocker]);
+        setPendingChange(null);
+    }, [blocker, pendingNavigation, pendingChange, handleConfirmFormChange]);
 
-    const handleCancelNavigation = useCallback(() => {
-        // Stay on current page
+    const handleCancelDialog = useCallback(() => {
         if (blocker.reset) {
             blocker.reset();
         }
         setShowUnsavedChangesDialog(false);
         setPendingNavigation(null);
+        setPendingChange(null);
     }, [blocker]);
 
     const getTemporaryValue = useCallback(
@@ -625,8 +669,8 @@ const ManagementProvider: React.FC<{
 
     const trySetCreateMode = useCallback(
         (type: TemplateVariableType) => {
-            // Check if current create form has unsaved changes
-            if (createFormData.type || createFormData.values) {
+            // Check if there are unsaved changes
+            if (hasUnsavedChanges()) {
                 setPendingChange({ type });
                 setShowUnsavedChangesDialog(true);
                 return;
@@ -640,13 +684,13 @@ const ManagementProvider: React.FC<{
             });
             setCreateFormData({ type, values: null });
         },
-        [createFormData],
+        [hasUnsavedChanges],
     );
 
     const trySetEditMode = useCallback(
         (id: string, type: TemplateVariableType) => {
-            // Check if current create form has unsaved changes
-            if (createFormData.type || createFormData.values) {
+            // Check if there are unsaved changes
+            if (hasUnsavedChanges()) {
                 setPendingChange({ type, id });
                 setShowUnsavedChangesDialog(true);
                 return;
@@ -660,41 +704,8 @@ const ManagementProvider: React.FC<{
             });
             setCreateFormData({ type: null, values: null });
         },
-        [createFormData],
+        [hasUnsavedChanges],
     );
-
-    const handleConfirmChange = useCallback(() => {
-        if (!pendingChange) return;
-
-        if (pendingChange.id) {
-            // Switching to edit mode
-            setFormPaneState({
-                mode: "edit",
-                editingVariable: {
-                    id: pendingChange.id,
-                    type: pendingChange.type,
-                },
-                createType: null,
-            });
-        } else {
-            // Switching to create mode
-            setFormPaneState({
-                mode: "create",
-                editingVariable: null,
-                createType: pendingChange.type,
-            });
-        }
-
-        // Reset create form data
-        setCreateFormData({ type: null, values: null });
-        setShowUnsavedChangesDialog(false);
-        setPendingChange(null);
-    }, [pendingChange]);
-
-    const handleCancelChange = useCallback(() => {
-        setShowUnsavedChangesDialog(false);
-        setPendingChange(null);
-    }, []);
 
     const value = useMemo(
         () => ({
@@ -745,7 +756,7 @@ const ManagementProvider: React.FC<{
             {children}
             <Dialog
                 open={showUnsavedChangesDialog}
-                onClose={handleCancelNavigation}
+                onClose={handleCancelDialog}
             >
                 <DialogTitle>Unsaved Changes</DialogTitle>
                 <DialogContent>
@@ -755,7 +766,7 @@ const ManagementProvider: React.FC<{
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelNavigation}>Cancel</Button>
+                    <Button onClick={handleCancelDialog}>Cancel</Button>
                     <Button onClick={handleConfirmNavigation} color="primary">
                         Discard & Continue
                     </Button>

@@ -1,9 +1,9 @@
 import { FC, useMemo } from "react";
 import { Box, Typography } from "@mui/material";
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
-import NumberTemplateVariableForm from "./forms/NumberTemplateVariableForm";
-import SelectTemplateVariableForm from "./forms/SelectTemplateVariableForm";
-import DateTemplateVariableForm from "./forms/DateTemplateVariableForm";
+import NumberTemplateVariableForm from "./forms/NumberTemplateVariableFormClass";
+import SelectTemplateVariableForm from "./forms/SelectTemplateVariableFormClass";
+import DateTemplateVariableForm from "./forms/DateTemplateVariableFormClass";
 import TextTemplateVariableForm from "./forms/TextTemplateVariableFormClass";
 
 const TemplateVariableForm: FC = () => {
