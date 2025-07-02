@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardPage from "@/views/admin/Dashboard";
 import TemplateCategoryManagement from "@/components/admin/templates/category/management/CategoryManagement";
 import GraphiQLApp from "@/views/GraphiQL";
-import NewTemplateList from "@/components/admin/templates/list/TemplateListContainer";
+import TemplateList from "@/components/admin/templates/list/TemplateList";
 import StudentsLayout from "@/components/layouts/admin/student/StudentsLayout";
 import AppContent from "@/components/demo/DemoTableContent";
 import StudentTable from "@/components/admin/student/StudentTable";
@@ -88,7 +88,7 @@ const routes: RouteObject[] = [
                 children: [
                     {
                         index: true,
-                        element: <NewTemplateList />,
+                        element: <TemplateList />,
                     },
                     {
                         path: ":id/manage",

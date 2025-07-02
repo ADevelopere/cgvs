@@ -68,16 +68,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     useEffect(() => {
         const updateDimentions = () => {
-            if (headerRef && headerRef.current) {
+            if (headerRef?.current) {
                 const height = headerRef.current.getBoundingClientRect().height;
                 setHeaderHeight(height);
             }
-            if (sideBarToggleRef && sideBarToggleRef.current) {
+            if (sideBarToggleRef?.current) {
                 const width =
                     sideBarToggleRef.current.getBoundingClientRect().width;
                 setSideBarToggleWidth(width);
             }
-            if (sidebarRef && sidebarRef.current) {
+            if (sidebarRef?.current) {
                 const width = sidebarRef.current.getBoundingClientRect().width;
                 setSideBarWidth(width);
             }

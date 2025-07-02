@@ -185,7 +185,7 @@ function Flow() {
                     padding: 0, // Remove padding
                     minZoom: -1000, // Ensure it doesn't zoom out too much when fitting
                     maxZoom: 1000, // Ensure it doesn't zoom in too much when fitting
-                    nodes: [{id: 'node-1'}],
+                    nodes: [{ id: "node-1" }],
                 }}
                 // Add theme-aware styling
                 style={{
@@ -214,8 +214,16 @@ function Flow() {
                     horizontal={helperLineHorizontal}
                     vertical={helperLineVertical}
                 />
-                <DownloadImage />
-                <DownloadPdf />
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <DownloadImage />
+                    {/* <DownloadPdf /> */}
+                </Box>
             </ReactFlow>
         </Box>
     );
