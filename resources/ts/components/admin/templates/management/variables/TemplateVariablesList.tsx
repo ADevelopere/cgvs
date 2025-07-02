@@ -15,34 +15,26 @@ import { Plus, Trash2 } from "lucide-react";
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import type {
-    TemplateSelectVariable,
     TemplateVariable,
     TemplateVariableType,
 } from "@/graphql/generated/types";
-import {
-    isDateVariableDifferent,
-    isNumberVariableDifferent,
-    isSelectVariableDifferent,
-    isTextVariableDifferent,
-} from "@/utils/templateVariable/templateVariable";
+import TemplateVariableModal from "./TemplateVariableModal";
 
-const Content: FC = () => {
+interface ContentProps {
+    onOpenModal: (variable: TemplateVariable) => void;
+}
+
+const Content: FC<ContentProps> = ({ onOpenModal }) => {
     const {
-        getTemporaryValue,
         deleteTemplateVariable,
-        trySetEditMode,
-        setTemporaryValue,
     } = useTemplateVariableManagement();
     const { template } = useTemplateManagement();
 
     const handleVariableClick = useCallback(
-        (id: string, variable: TemplateVariable) => {
-            console.log("Variable clicked:", variable);
-
-            setTemporaryValue(id, variable);
-            trySetEditMode(id, variable.type);
+        (variable: TemplateVariable) => {
+            onOpenModal(variable);
         },
-        [trySetEditMode, setTemporaryValue, trySetEditMode],
+        [onOpenModal],
     );
 
     const handleDeleteClick = useCallback(
@@ -54,29 +46,6 @@ const Content: FC = () => {
             }
         },
         [deleteTemplateVariable],
-    );
-
-    const hasChanged = useCallback(
-        (variable: TemplateVariable) => {
-            const temp = getTemporaryValue(variable.id);
-            if (!temp) return false;
-            switch (variable.type) {
-                case "text":
-                    return isTextVariableDifferent(variable, temp);
-                case "number":
-                    return isNumberVariableDifferent(variable, temp);
-                case "date":
-                    return isDateVariableDifferent(variable, temp);
-                case "select":
-                    return isSelectVariableDifferent(
-                        variable as TemplateSelectVariable,
-                        temp,
-                    );
-                default:
-                    return false;
-            }
-        },
-        [getTemporaryValue],
     );
 
     if (!template?.variables || template.variables.length === 0) {
@@ -101,10 +70,16 @@ const Content: FC = () => {
     }
 
     return (
-        <List sx={{ width: "100%", bgcolor: "background.paper", flexGrow: 1 }}>
+        <List sx={{ 
+            width: "100%", 
+            bgcolor: "background.paper", 
+            flexGrow: 1,
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+        }}>
             {template.variables.map((variable) => {
                 const type = variable.type;
-                const hasUnsavedChanges = hasChanged(variable);
 
                 return (
                     <ListItem
@@ -125,36 +100,11 @@ const Content: FC = () => {
                     >
                         <ListItemButton
                             onClick={() =>
-                                handleVariableClick(variable.id, variable)
+                                handleVariableClick(variable)
                             }
                         >
                             <ListItemText
-                                primary={
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 1,
-                                        }}
-                                    >
-                                        <Typography>{variable.name}</Typography>
-                                        {hasUnsavedChanges && (
-                                            <Typography
-                                                component="span"
-                                                sx={{
-                                                    bgcolor: "warning.main",
-                                                    color: "warning.contrastText",
-                                                    px: 1,
-                                                    py: 0.5,
-                                                    borderRadius: 1,
-                                                    fontSize: "0.75rem",
-                                                }}
-                                            >
-                                                Unsaved
-                                            </Typography>
-                                        )}
-                                    </Box>
-                                }
+                                primary={variable.name}
                                 secondary={type}
                             />
                         </ListItemButton>
@@ -165,9 +115,11 @@ const Content: FC = () => {
     );
 };
 
-const Footer: FC = () => {
-    const { trySetCreateMode } = useTemplateVariableManagement();
+interface FooterProps {
+    onOpenModal: (type: TemplateVariableType) => void;
+}
 
+const Footer: FC<FooterProps> = ({ onOpenModal }) => {
     // Popover menu state
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -182,8 +134,8 @@ const Footer: FC = () => {
     };
 
     const handleVariableTypeSelect = (type: TemplateVariableType) => {
-        trySetCreateMode(type);
         handleMenuClose();
+        onOpenModal(type);
     };
 
     return (
@@ -194,9 +146,10 @@ const Footer: FC = () => {
                     alignItems: "start",
                     justifyContent: "end",
                     width: "100%",
-                    borderBottom: "1px solid",
+                    borderTop: "1px solid",
                     borderColor: "divider",
-                    pb: 1,
+                    pt: 2,
+                    mt: 2,
                 }}
             >
                 <Button
@@ -229,34 +182,66 @@ const Footer: FC = () => {
 };
 
 const TemplateVariablesList: FC = () => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editingVariableID, setEditingVariableID] = useState<string | undefined>(undefined);
+    const [type, setType] = useState<TemplateVariableType>("text");
+
+    const handleEdit = (variable: TemplateVariable) => {
+        setEditingVariableID(variable.id);
+        setModalOpen(true);
+        setType(variable.type);
+    };
+
+    const handleCreate = (type: TemplateVariableType) => {
+        setEditingVariableID(undefined);
+        setModalOpen(true);
+        setType(type);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setEditingVariableID(undefined);
+    };
+
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                height: "100%",
-                justifyContent: "space-between",
-                paddingInlineEnd: 1,
-            }}
-            id="template-variable-management-list"
-        >
+        <>
             <Box
                 sx={{
-                    flexGrow: 1,
-                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    height: "100%",
+                    maxWidth: "800px",
+                    mx: "auto",
+                    p: 2,
                 }}
+                id="template-variable-management-list"
             >
-                <Content />
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        overflowY: "auto",
+                    }}
+                >
+                    <Content onOpenModal={handleEdit} />
+                </Box>
+                <Box
+                    sx={{
+                        minHeight: "max-content",
+                    }}
+                >
+                    <Footer onOpenModal={handleCreate} />
+                </Box>
             </Box>
-            <Box
-                sx={{
-                    minHeight: "max-content",
-                }}
-            >
-                <Footer />
-            </Box>
-        </Box>
+            
+            <TemplateVariableModal
+                open={modalOpen}
+                onClose={handleCloseModal}
+                editingVariableID={editingVariableID}
+                type={type}
+
+            />
+        </>
     );
 };
 

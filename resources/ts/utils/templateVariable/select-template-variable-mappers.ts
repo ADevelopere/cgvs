@@ -5,6 +5,7 @@ import type {
     TemplateSelectVariable,
     UpdateSelectTemplateVariableInput,
     Template,
+    CreateSelectTemplateVariableInput,
 } from "@/graphql/generated/types";
 
 export type SelectTemplateVariableSource =
@@ -156,3 +157,19 @@ export const mapSelectTemplateVariableToInput = (
         options: variable.options,
     };
 };
+
+export const mapToCreateSelectTemplateVariableInput = (
+    source: TemplateSelectVariable | null | undefined,
+): CreateSelectTemplateVariableInput => {
+    return {
+        name: source?.name ?? "",
+        description: source?.description ?? null,
+        order: source?.order ?? 0,
+        multiple: source?.multiple ?? false,
+        options: source?.options ?? [],
+        preview_value: source?.preview_value ?? null,
+        required: source?.required ?? false,
+        template_id: source?.template?.id ?? "",
+        };
+    };
+

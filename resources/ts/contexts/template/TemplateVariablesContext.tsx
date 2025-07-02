@@ -1,7 +1,6 @@
-import { ReactNode, useState, useCallback, useEffect, useMemo } from "react";
+import { ReactNode, useState, useCallback, useEffect, useMemo, createContext, useContext } from "react";
 import axios from "@/utils/axios";
 import { TemplateVariable } from "./template.types";
-import { createContext, useContext } from "react";
 import { Alert, Snackbar } from "@mui/material";
 import { useTemplateManagement } from "./TemplateManagementContext";
 
@@ -10,23 +9,24 @@ interface Notification {
     severity: "success" | "error";
 }
 
-export interface TemplateVariablesContext {
+type TemplateVariableOmitType = "id" | "template_id" | "created_at" | "updated_at";
+type TemplateVariablesContext = {
     variables: TemplateVariable[];
     loading: boolean;
     error: string | null;
     reorderInProgress: boolean;
-    fetchVariables: (templateId: number) => Promise<void>;
+    fetchVariables: (templateId: string) => Promise<void>;
     createVariable: (
         data: Omit<
             TemplateVariable,
-            "id" | "template_id" | "created_at" | "updated_at"
+            TemplateVariableOmitType
         >,
     ) => Promise<void>;
     updateVariable: (
         variableId: number,
         data: Omit<
             TemplateVariable,
-            "id" | "template_id" | "created_at" | "updated_at"
+            TemplateVariableOmitType
         >,
     ) => Promise<void>;
     deleteVariable: (variableId: number) => Promise<void>;
@@ -45,7 +45,7 @@ interface VariablesProviderProps {
 
 export function TemplateVariablesProvider({
     children,
-}: VariablesProviderProps) {
+}: Readonly<VariablesProviderProps>) {
     const { template } = useTemplateManagement();
     const templateId = useMemo(() => template?.id, [template?.id]);
 
@@ -66,7 +66,7 @@ export function TemplateVariablesProvider({
         setNotification(null);
     };
 
-    const fetchVariables = useCallback(async (templateId: number) => {
+    const fetchVariables = useCallback(async (templateId: string) => {
         setLoading(true);
         try {
             const response = await axios.get<TemplateVariable[]>(
@@ -80,7 +80,7 @@ export function TemplateVariablesProvider({
             setError(null); // Clear any previous errors
         } catch (error: any) {
             const errorMessage =
-                error.response?.data?.message || "Failed to fetch variables";
+                error.response?.data?.message ?? "Failed to fetch variables";
             setError(errorMessage);
             showNotification(errorMessage, "error");
         } finally {
@@ -113,7 +113,7 @@ export function TemplateVariablesProvider({
                 showNotification("Variable created successfully", "success");
             } catch (error: any) {
                 const errorMessage =
-                    error.response?.data?.message ||
+                    error.response?.data?.message ??
                     "Failed to create variable";
                 showNotification(errorMessage, "error");
                 throw error;
@@ -144,7 +144,7 @@ export function TemplateVariablesProvider({
                 showNotification("Variable updated successfully", "success");
             } catch (error: any) {
                 const errorMessage =
-                    error.response?.data?.message ||
+                    error.response?.data?.message ??
                     "Failed to update variable";
                 showNotification(errorMessage, "error");
                 throw error;
@@ -162,7 +162,7 @@ export function TemplateVariablesProvider({
             showNotification("Variable deleted successfully", "success");
         } catch (error: any) {
             const errorMessage =
-                error.response?.data?.message || "Failed to delete variable";
+                error.response?.data?.message ?? "Failed to delete variable";
             showNotification(errorMessage, "error");
             throw error;
         }
@@ -190,7 +190,7 @@ export function TemplateVariablesProvider({
             showNotification("Variables reordered successfully", "success");
         } catch (error: any) {
             const errorMessage =
-                error.response?.data?.message || "Failed to reorder variables";
+                error.response?.data?.message ?? "Failed to reorder variables";
             showNotification(errorMessage, "error");
             throw error;
         } finally {
@@ -237,19 +237,34 @@ export function TemplateVariablesProvider({
         [variables, reorderVariables],
     );
 
-    const value = {
-        variables,
-        loading,
-        error,
-        reorderInProgress,
-        fetchVariables,
-        createVariable,
-        updateVariable,
-        deleteVariable,
-        reorderVariables,
-        moveVariableUp,
-        moveVariableDown,
-    };
+    const value = useMemo(
+        () => ({
+            variables,
+            loading,
+            error,
+            reorderInProgress,
+            fetchVariables,
+            createVariable,
+            updateVariable,
+            deleteVariable,
+            reorderVariables,
+            moveVariableUp,
+            moveVariableDown,
+        }),
+        [
+            variables,
+            loading,
+            error,
+            reorderInProgress,
+            fetchVariables,
+            createVariable,
+            updateVariable,
+            deleteVariable,
+            reorderVariables,
+            moveVariableUp,
+            moveVariableDown,
+        ]
+    );
 
     return (
         <TemplateVariablesContext.Provider value={value}>

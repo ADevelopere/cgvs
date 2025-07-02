@@ -4,8 +4,8 @@ import React, {
     useState,
     useCallback,
     useMemo,
-    useEffect,
 } from "react";
+
 import {
     DashboardLayoutProviderProps,
     DashboardLayoutSlots,
@@ -27,7 +27,7 @@ export const DashboardLayoutProvider: React.FC<
     const [slots, setSlots] = useState<DashboardLayoutSlots>({
         ...initialSlots,
     });
-    const [title, setTitleState] = useState<Title | undefined>(
+    const [titleState, setTitleState] = useState<Title | undefined>(
         initialTitle || undefined,
     );
 
@@ -101,7 +101,7 @@ export const DashboardLayoutProvider: React.FC<
             navigation,
             setNavigation,
             slots,
-            title,
+            title: titleState,
             sidebarState,
             setDashboardSlot,
             resetSlots,
@@ -121,7 +121,7 @@ export const DashboardLayoutProvider: React.FC<
         navigation,
         setNavigation,
         slots,
-        title,
+        titleState,
         sidebarState,
         setDashboardSlot,
         resetSlots,

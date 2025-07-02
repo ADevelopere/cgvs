@@ -7,17 +7,7 @@ import {
     useContext,
     useMemo,
     useState,
-    useEffect,
 } from "react";
-import { useBlocker } from "react-router-dom";
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Button,
-} from "@mui/material";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     TemplateVariableGraphQLProvider,
@@ -25,17 +15,10 @@ import {
 } from "./TemplateVariableGraphQLContext";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
 import { TemplateVariableType } from "@/graphql/generated/types";
-import {
-    isDateVariableDifferent,
-    isNumberVariableDifferent,
-    isSelectVariableDifferent,
-    isTextVariableDifferent,
-} from "@/utils/templateVariable/templateVariable";
-import type { TemplateSelectVariable } from "@/graphql/generated/types";
 
 type FormMode = "create" | "edit";
 
-type EditingVariable = {
+export type EditingVariable = {
     id: string;
     type: TemplateVariableType;
 };
@@ -47,12 +30,6 @@ type FormPaneState = {
     // For create mode
     createType: TemplateVariableType | null;
 };
-
-export type TemplateVariableTemporaryValue =
-    | Partial<Graphql.UpdateTextTemplateVariableInput>
-    | Partial<Graphql.UpdateNumberTemplateVariableInput>
-    | Partial<Graphql.UpdateDateTemplateVariableInput>
-    | Partial<Graphql.UpdateSelectTemplateVariableInput>;
 
 type CreateFormValuesType =
     | Partial<Graphql.CreateTextTemplateVariableInput>
@@ -78,13 +55,6 @@ type TemplateVariableManagementContextType = {
     // Create form state management
     setCreateFormData: (data: CreateFormData) => void;
     resetCreateForm: () => void;
-
-    // Temporary value management
-    getTemporaryValue: (id: string) => TemplateVariableTemporaryValue | undefined;
-    setTemporaryValue: (
-        id: string,
-        value: TemplateVariableTemporaryValue | null,
-    ) => void;
 
     // Creation mutations for different variable types
     createTextTemplateVariable: (
@@ -145,9 +115,6 @@ const ManagementProvider: React.FC<{
     const { template } = useTemplateManagement();
 
     const [loading, setLoading] = useState(false);
-    const [temporaryValues, setTemporaryValues] = useState<
-        Map<string, TemplateVariableTemporaryValue>
-    >(new Map());
     const [createFormData, setCreateFormData] = useState<CreateFormData>({
         type: null,
         values: null,
@@ -157,140 +124,6 @@ const ManagementProvider: React.FC<{
         editingVariable: null,
         createType: null,
     });
-
-    // State for tracking pending changes
-    const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
-    const [pendingChange, setPendingChange] = useState<{
-        type: TemplateVariableType;
-        id?: string;
-    } | null>(null);
-    const [pendingNavigation, setPendingNavigation] = useState<{
-        pathname: string;
-    } | null>(null);
-
-    const setTemporaryValue = useCallback(
-        (id: string, value: TemplateVariableTemporaryValue | null) => {
-            if (!id) return;
-
-            if (value === null) {
-                // Remove the entry if value is null
-                setTemporaryValues((prev) => {
-                    const newMap = new Map(prev);
-                    newMap.delete(id);
-                    return newMap;
-                });
-            } else {
-                setTemporaryValues((prev) => {
-                    const newMap = new Map(prev);
-                    newMap.set(id, value);
-                    return newMap;
-                });
-            }
-        },
-        [setTemporaryValues],
-    );
-
-    // Function to check for unsaved changes
-    const hasUnsavedChanges = useCallback(() => {
-        // Check if create form has any values
-        if (createFormData.values !== null) {
-            return true;
-        }
-
-        // Check if there are any temporary values with changes
-        if (template?.variables && temporaryValues.size > 0) {
-            return template.variables.some(variable => {
-                const temp = temporaryValues.get(variable.id);
-                if (!temp) return false;
-
-                switch (variable.type) {
-                    case "text":
-                        return isTextVariableDifferent(variable, temp);
-                    case "number":
-                        return isNumberVariableDifferent(variable, temp);
-                    case "date":
-                        return isDateVariableDifferent(variable, temp);
-                    case "select":
-                        return isSelectVariableDifferent(variable as TemplateSelectVariable, temp);
-                    default:
-                        return false;
-                }
-            });
-        }
-
-        return false;
-    }, [createFormData, temporaryValues, template?.variables]);
-
-    const blocker = useBlocker(hasUnsavedChanges());
-
-    // Effect to show dialog when navigation is blocked
-    useEffect(() => {
-        if (blocker.state === "blocked") {
-            setShowUnsavedChangesDialog(true);
-            setPendingNavigation({ pathname: blocker.location.pathname });
-        }
-    }, [blocker]);
-
-    // Handlers for form state changes
-    const handleConfirmFormChange = useCallback(() => {
-        if (!pendingChange) return;
-
-        // Update form state based on pending change
-        if (pendingChange.id) {
-            setFormPaneState({
-                mode: "edit",
-                editingVariable: {
-                    id: pendingChange.id,
-                    type: pendingChange.type,
-                },
-                createType: null,
-            });
-        } else {
-            setFormPaneState({
-                mode: "create",
-                editingVariable: null,
-                createType: pendingChange.type,
-            });
-            setCreateFormData({ type: pendingChange.type, values: null });
-        }
-
-        // Clear temporary state
-        setTemporaryValues(new Map());
-        setCreateFormData({ type: null, values: null });
-        setShowUnsavedChangesDialog(false);
-        setPendingChange(null);
-    }, [pendingChange]);
-
-    // Navigation handlers
-    const handleConfirmNavigation = useCallback(() => {
-        // Clear all temporary data
-        setTemporaryValues(new Map());
-        setCreateFormData({ type: null, values: null });
-
-        if (pendingNavigation && blocker.proceed) {
-            blocker.proceed();
-        } else if (pendingChange) {
-            handleConfirmFormChange();
-        }
-
-        setShowUnsavedChangesDialog(false);
-        setPendingNavigation(null);
-        setPendingChange(null);
-    }, [blocker, pendingNavigation, pendingChange, handleConfirmFormChange]);
-
-    const handleCancelDialog = useCallback(() => {
-        if (blocker.reset) {
-            blocker.reset();
-        }
-        setShowUnsavedChangesDialog(false);
-        setPendingNavigation(null);
-        setPendingChange(null);
-    }, [blocker]);
-
-    const getTemporaryValue = useCallback(
-        (id: string) => temporaryValues.get(id),
-        [temporaryValues],
-    );
 
     const {
         createTextTemplateVariableMutation,
@@ -669,12 +502,6 @@ const ManagementProvider: React.FC<{
 
     const trySetCreateMode = useCallback(
         (type: TemplateVariableType) => {
-            // Check if there are unsaved changes
-            if (hasUnsavedChanges()) {
-                setPendingChange({ type });
-                setShowUnsavedChangesDialog(true);
-                return;
-            }
 
             // No unsaved changes, switch directly
             setFormPaneState({
@@ -684,17 +511,11 @@ const ManagementProvider: React.FC<{
             });
             setCreateFormData({ type, values: null });
         },
-        [hasUnsavedChanges],
+        [],
     );
 
     const trySetEditMode = useCallback(
         (id: string, type: TemplateVariableType) => {
-            // Check if there are unsaved changes
-            if (hasUnsavedChanges()) {
-                setPendingChange({ type, id });
-                setShowUnsavedChangesDialog(true);
-                return;
-            }
 
             // No unsaved changes, switch directly
             setFormPaneState({
@@ -704,7 +525,7 @@ const ManagementProvider: React.FC<{
             });
             setCreateFormData({ type: null, values: null });
         },
-        [hasUnsavedChanges],
+        [],
     );
 
     const value = useMemo(
@@ -712,8 +533,6 @@ const ManagementProvider: React.FC<{
             loading,
             createFormData,
             formPaneState,
-            getTemporaryValue,
-            setTemporaryValue,
             setCreateFormData,
             resetCreateForm: () =>
                 setCreateFormData({ type: null, values: null }),
@@ -733,8 +552,6 @@ const ManagementProvider: React.FC<{
             loading,
             createFormData,
             setCreateFormData,
-            getTemporaryValue,
-            setTemporaryValue,
             handleCreateTextTemplateVariable,
             handleUpdateTextTemplateVariable,
             handleCreateNumberTemplateVariable,
@@ -747,31 +564,12 @@ const ManagementProvider: React.FC<{
             formPaneState,
             trySetEditMode,
             trySetCreateMode,
-            setTemporaryValue,
         ],
     );
 
     return (
         <TemplateVariableManagementContext.Provider value={value}>
             {children}
-            <Dialog
-                open={showUnsavedChangesDialog}
-                onClose={handleCancelDialog}
-            >
-                <DialogTitle>Unsaved Changes</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        You have unsaved changes. Do you want to discard them
-                        and continue?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCancelDialog}>Cancel</Button>
-                    <Button onClick={handleConfirmNavigation} color="primary">
-                        Discard & Continue
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </TemplateVariableManagementContext.Provider>
     );
 };

@@ -15,6 +15,8 @@ class Template extends Model implements LighthouseModel
 {
     use SoftDeletes, HasFactory;
 
+    private const STORAGE_PATH = '/storage/';
+
     protected $fillable = [
         'name',
         'description',
@@ -76,10 +78,18 @@ class Template extends Model implements LighthouseModel
      */
     public function getImageUrlAttribute($value)
     {
-        if ($value && str_starts_with($value, '/storage/')) {
-            return $value;
+        if (!$value) {
+            return null;
         }
-        return $value ? Storage::url($value) : null;
+
+        if (str_starts_with($value, self::STORAGE_PATH)) {
+            // Fix duplicate /storage/ in path
+            return preg_replace('#^' . self::STORAGE_PATH . '+storage/#', self::STORAGE_PATH, $value);
+        }
+
+        $url = Storage::url($value);
+        // Fix any duplicate /storage/ in the generated URL
+        return preg_replace('#' . self::STORAGE_PATH . '+storage/#', self::STORAGE_PATH, $url);
     }
 
     protected static function booted()

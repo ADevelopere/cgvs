@@ -26,7 +26,7 @@ type TemplateListProps = {
     style?: React.CSSProperties;
 };
 
-const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
+const TemplateListContent: React.FC<TemplateListProps> = ({ templates, style }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
     const { currentCategory } = useTemplateCategoryManagement();
     console.log("currentCategory", currentCategory);
@@ -167,4 +167,4 @@ const TemplateList: React.FC<TemplateListProps> = ({ templates, style }) => {
     );
 };
 
-export default TemplateList;
+export default TemplateListContent;

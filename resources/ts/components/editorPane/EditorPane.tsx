@@ -481,7 +481,7 @@ const EditorPane: FC<EditorPaneProps> = ({
             );
 
             const rawDelta = boundedClientX - position;
-            const deltaX = direction === 'rtl' && orientation === 'vertical' ? -rawDelta : rawDelta;
+            const deltaX = direction === 'rtl' && orientation === 'vertical' ? rawDelta : -rawDelta;
 
             if (deltaX === 0) return;
 

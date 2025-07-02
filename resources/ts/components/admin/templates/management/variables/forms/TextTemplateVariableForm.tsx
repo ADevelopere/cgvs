@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
     Box,
     TextField,
@@ -9,129 +9,151 @@ import {
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import type {
     CreateTextTemplateVariableInput,
-    UpdateTextTemplateVariableInput,
+    TemplateTextVariable,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
+import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/text-template-variable-mappers";
+import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
+import useAppTranslation from "@/locale/useAppTranslation";
 
-const TextTemplateVariableForm: FC = () => {
-    const {
-        formPaneState,
-        createFormData,
-        getTemporaryValue,
-        setCreateFormData,
-        setTemporaryValue,
-        createTextTemplateVariable,
-        updateTextTemplateVariable,
-    } = useTemplateVariableManagement();
+const parseNumeric = (
+    value: string | number | null | undefined,
+): number | undefined => {
+    if (value === null || value === undefined || value === "") return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+};
+
+type TextTemplateVariableFormProps = {
+    editingVariableID?: string;
+    onDispose: () => void;
+};
+
+const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
+    onDispose,
+    editingVariableID,
+}) => {
     const { template } = useTemplateManagement();
 
-    const { mode, editingVariable } = formPaneState;
-    const isEditMode = mode === "edit";
+    // @ts-ignore
+    const editingVariable: TemplateTextVariable | null = useMemo(() => {
+        if (!template || !editingVariableID) return null;
 
-    // Get the current form values based on mode
-    const currentValues = useMemo(() => {
-        return isEditMode && editingVariable
-            ? (getTemporaryValue(
-                  editingVariable.id,
-              ) as Partial<UpdateTextTemplateVariableInput>)
-            : (createFormData.values as Partial<CreateTextTemplateVariableInput>);
-    }, [isEditMode, editingVariable, createFormData, getTemporaryValue]);
+        return (
+            template.variables.find((v) => v.id === editingVariableID) ?? null
+        );
+    }, [template, editingVariableID]);
 
-    const value: Partial<CreateTextTemplateVariableInput> = useMemo(() => {
-        return currentValues ?? {};
-    }, [currentValues]);
+    const { createTextTemplateVariable, updateTextTemplateVariable } =
+        useTemplateVariableManagement();
+
+    const strings = useAppTranslation("templateVariableTranslations");
+
+    const [state, setState] = useState<CreateTextTemplateVariableInput>(() => {
+        if (editingVariable) {
+            return mapToCreateTextTemplateVariableInput(editingVariable);
+        }
+        return {
+            name: "",
+            template_id: template?.id ?? "",
+            order: 0,
+        };
+    });
 
     const handleChange = useCallback(
         (field: keyof CreateTextTemplateVariableInput) =>
             (event: React.ChangeEvent<HTMLInputElement>) => {
-                const newValue =
+                const value =
                     event.target.type === "checkbox"
                         ? event.target.checked
                         : event.target.value;
 
-                const updatedValues = {
-                    ...value,
-                    [field]: newValue,
-                };
+                setState((prevState) => {
+                    if (field === "min_length" || field === "max_length") {
+                        return {
+                            ...prevState,
+                            [field]: value === "" ? undefined : Number(value),
+                        };
+                    }
 
-                if (isEditMode && editingVariable) {
-                    // In edit mode, update the temporary value
-                    setTemporaryValue(
-                        editingVariable.id,
-                        updatedValues as UpdateTextTemplateVariableInput,
-                    );
-                } else {
-                    // In create mode, update the create form data
-                    setCreateFormData({
-                        type: "text",
-                        values: updatedValues as CreateTextTemplateVariableInput,
-                    });
-                }
+                    if (field === "required") {
+                        return {
+                            ...prevState,
+                            required: value as boolean,
+                        };
+                    }
+
+                    // Handle string fields
+                    return {
+                        ...prevState,
+                        [field]: value as string,
+                    };
+                });
             },
-        [
-            isEditMode,
-            editingVariable,
-            value,
-            setCreateFormData,
-            setTemporaryValue,
-        ],
+        [],
     );
 
     const handleSave = useCallback(async () => {
-        if (!template) {
-            console.error("Template is not defined");
-            return;
-        }
-        const formValue = value as CreateTextTemplateVariableInput;
         let success = false;
 
-        if (isEditMode && editingVariable) {
+        if (editingVariableID) {
             success = await updateTextTemplateVariable({
                 input: {
-                    ...formValue,
-                    id: editingVariable.id,
-                    template_id: template.id,
+                    ...state,
+                    id: editingVariableID,
                 },
             });
+
             if (success) {
-                // Clear temporary value after successful update
-                setTemporaryValue(editingVariable.id, null);
+                onDispose();
             }
         } else {
             success = await createTextTemplateVariable({
                 input: {
-                    ...formValue,
-                    template_id: template.id,
+                    ...state,
                 },
             });
+
             if (success) {
-                // Clear create form data after successful creation
-                setCreateFormData({ type: null, values: null });
+                onDispose();
             }
         }
     }, [
-        value,
-        isEditMode,
-        editingVariable,
+        state,
+        editingVariableID,
         createTextTemplateVariable,
         updateTextTemplateVariable,
-        setTemporaryValue,
-        setCreateFormData,
+        onDispose,
     ]);
 
+    const isDifferentFromOriginal = useCallback((): boolean => {
+        if (!editingVariableID) {
+            return false;
+        }
+
+        if (!editingVariable) {
+            return true;
+        }
+
+        return isTextVariableDifferent(editingVariable, state);
+    }, [editingVariableID, editingVariable, state]);
+
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box
+            sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+            tabIndex={-1} // Makes the Box focusable but not in tab order
+        >
             <TextField
-                label="Name"
-                value={value.name ?? ""}
+                label={strings?.name ?? "Name"}
+                value={state.name}
                 onChange={handleChange("name")}
                 fullWidth
                 required
             />
 
             <TextField
-                label="Description"
-                value={value.description ?? ""}
+                label={strings?.description ?? "Description"}
+                value={state.description}
                 onChange={handleChange("description")}
                 fullWidth
                 multiline
@@ -139,32 +161,35 @@ const TextTemplateVariableForm: FC = () => {
             />
 
             <TextField
-                label="Minimum Length"
-                value={value.min_length ?? ""}
+                label={strings?.minimumLength ?? "Minimum Length"}
+                value={state.min_length ?? ""}
                 onChange={handleChange("min_length")}
                 fullWidth
                 type="number"
             />
 
             <TextField
-                label="Maximum Length"
-                value={value.max_length ?? ""}
+                label={strings?.maximumLength ?? "Maximum Length"}
+                value={state.max_length ?? ""}
                 onChange={handleChange("max_length")}
                 fullWidth
                 type="number"
             />
 
             <TextField
-                label="Pattern"
-                value={value.pattern ?? ""}
+                label={strings?.pattern ?? "Pattern"}
+                value={state.pattern}
                 onChange={handleChange("pattern")}
                 fullWidth
-                helperText="Regular expression pattern for validation"
+                helperText={
+                    strings?.patternHelperText ??
+                    "Regular expression pattern for validation"
+                }
             />
 
             <TextField
-                label="Preview Value"
-                value={value.preview_value ?? ""}
+                label={strings?.previewValue ?? "Preview Value"}
+                value={state.preview_value}
                 onChange={handleChange("preview_value")}
                 fullWidth
             />
@@ -172,20 +197,22 @@ const TextTemplateVariableForm: FC = () => {
             <FormControlLabel
                 control={
                     <Checkbox
-                        checked={value.required ?? false}
+                        checked={state.required ?? false}
                         onChange={handleChange("required")}
                     />
                 }
-                label="Required"
+                label={strings?.required ?? "Required"}
             />
 
             <Button
                 variant="contained"
                 color="primary"
                 onClick={handleSave}
-                disabled={!value.name} // Disable if name is not provided since it's required
+                disabled={!state.name || !isDifferentFromOriginal()}
             >
-                {isEditMode ? "Update" : "Create"} Variable
+                {editingVariableID
+                    ? (strings?.updateVariable ?? "Update Variable")
+                    : (strings?.createVariable ?? "Create Variable")}
             </Button>
         </Box>
     );

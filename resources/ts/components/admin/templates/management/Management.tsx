@@ -134,20 +134,7 @@ const Management: React.FC = () => {
                             {/* <RecipientsTab /> */}
                         </TabPanel>
                         <TabPanel value="editor">
-                            <Box
-                                sx={{
-                                    p: 2,
-                                    width: "100%",
-                                    height: "100%",
-
-                                    borderColor: "red",
-                                }}
-                                id="template-variable-management"
-                            >
-                                {/* EditorTab will go here */}
-                                <h1>EditorTab</h1>
-                            </Box>
-                            {/* <EditorTab /> */}
+                            <EditorTab />
                         </TabPanel>
                         <TabPanel value="preview">
                             <Box

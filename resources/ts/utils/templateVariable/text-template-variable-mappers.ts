@@ -163,14 +163,14 @@ export const mapToCreateTextTemplateVariableInput = (
     source: TemplateTextVariable | null | undefined,
 ): CreateTextTemplateVariableInput => {
     return {
-        description: source?.description ?? null,
-        max_length: source?.max_length ?? null,
-        min_length: source?.min_length ?? null,
         name: source?.name ?? "",
+        description: source?.description ?? null,
         order: source?.order ?? 0,
+        min_length: source?.min_length ?? null,
+        max_length: source?.max_length ?? null,
         pattern: source?.pattern ?? null,
         preview_value: source?.preview_value ?? null,
         required: source?.required ?? false,
-        template_id: source?.template?.id ?? "", // Add optional chaining for template
+        template_id: source?.template?.id ?? "",
     };
 };

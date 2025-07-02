@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { NodeProps } from "@xyflow/react";
+import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 
 // A4 landscape dimensions in pixels (297mm × 210mm at 96 DPI)
 const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
@@ -25,6 +26,7 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
             };
         }
     }, [template?.image_url]);
+
     return (
         <div
             style={{
@@ -32,7 +34,9 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 minHeight: `${dimensions.height}px`,
                 width: `${dimensions.width}px`,
                 minWidth: `${dimensions.width}px`,
-                image: `url(${template?.image_url})`,
+                backgroundImage: `url(${
+                template?.image_url ?? 
+                TEMPLATE_IMAGE_PLACEHOLDER_URL})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}

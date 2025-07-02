@@ -13,20 +13,19 @@ async function imageUrlToBytes(url: string): Promise<Uint8Array> {
 
 // Function to trigger PDF download
 async function downloadPdf(pdfBytes: Uint8Array, filename: string = "reactflow.pdf") {
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    // Convert Uint8Array to regular array for Blob
+    const blob = new Blob([Array.from(pdfBytes)], { type: "application/pdf" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(link.href); // Clean up
+    URL.revokeObjectURL(link.href);
 }
 
-// A4 landscape dimensions in points (PDF standard unit)
-// 1 point = 1/72 inch. A4 = 297mm x 210mm = 11.69in x 8.27in
-const A4_WIDTH_PT = 11.69 * 72; // approx 842
-const A4_HEIGHT_PT = 8.27 * 72; // approx 595
+const A4_WIDTH_PT = 11.69 * 72;
+const A4_HEIGHT_PT = 8.27 * 72;
 
 function DownloadPdf() {
     const { template } = useTemplateManagement();
@@ -49,7 +48,7 @@ function DownloadPdf() {
     }, [template?.image_url]);
 
     const theme = useTheme();
-    const { getNodes, getEdges } = useReactFlow(); // Get flow data access
+    const { getNodes, getEdges } = useReactFlow();
 
     const onClick = async () => {
         const nodes = getNodes();
@@ -64,18 +63,15 @@ function DownloadPdf() {
         try {
             const pdfDoc = await PDFDocument.create();
             const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const arabicFont = await pdfDoc.embedFont(StandardFonts.Helvetica); // Fallback for now
 
-            // Add a page with the correct dimensions
             const page = pdfDoc.addPage([dimensions.width, dimensions.height]);
             const { width, height } = page.getSize();
 
-            // Handle background image first
+            // Handle background image
             if (template?.image_url) {
                 try {
-                    // Convert image to bytes
                     const imageBytes = await imageUrlToBytes(template.image_url);
-                    
-                    // Determine image type and embed accordingly
                     let pdfImage;
                     if (template.image_url.toLowerCase().endsWith('.png')) {
                         pdfImage = await pdfDoc.embedPng(imageBytes);
@@ -83,7 +79,6 @@ function DownloadPdf() {
                         pdfImage = await pdfDoc.embedJpg(imageBytes);
                     }
 
-                    // Draw the background image
                     page.drawImage(pdfImage, {
                         x: 0,
                         y: 0,
@@ -97,40 +92,49 @@ function DownloadPdf() {
 
             // Draw nodes
             nodes.forEach(node => {
-                // Skip background image node as we've already handled it
                 if (node.type === 'image') return;
                 
-                const { position, data } = node;
-                const label: string = data.label as string || 'Node';
+                const { position, data, type } = node;
                 
                 // Calculate Y position (PDF coordinates start from bottom-left)
-                const pdfY = height - position.y - 20; // Adjusted for text height
+                const pdfY = height - position.y - 20;
 
-                // Draw only the text without background rectangle
-                page.drawText(label, {
-                    x: position.x,
-                    y: pdfY,
-                    size: 12,
-                    font: helveticaFont,
-                    color: rgb(1, 1, 1),
-                });
+                if (type === 'text') {
+                    // Handle text test nodes
+                    const text = data.text as string;
+                    const fontSize = (data.fontSize as number) ?? 12;
+                    const color = (data.color as string) ?? '#000000';
+                    
+                    // Convert hex color to RGB
+                    const r = parseInt(color.slice(1, 3), 16) / 255;
+                    const g = parseInt(color.slice(3, 5), 16) / 255;
+                    const b = parseInt(color.slice(5, 7), 16) / 255;
+
+                    // Split text by newlines to handle multiline text
+                    const lines = text.split('\n');
+                    lines.forEach((line, index) => {
+                        page.drawText(line, {
+                            x: position.x,
+                            y: pdfY - (index * fontSize), // Offset each line by font size
+                            size: fontSize,
+                            font: arabicFont,
+                            color: rgb(r, g, b),
+                        });
+                    });
+                } else {
+                    // Handle regular nodes
+                    const label: string = (data.label as string) ?? 'Node';
+                    page.drawText(label, {
+                        x: position.x,
+                        y: pdfY,
+                        size: 12,
+                        font: helveticaFont,
+                        color: rgb(0, 0, 0),
+                    });
+                }
             });
 
-            // --- Edge Drawing Logic (Optional, can be complex) ---
-            // edges.forEach(edge => { ... draw lines/curves ... });
-
-
-            // Encrypt the PDF
-            // await pdfDoc.encrypt({
-            //     userPassword: password,
-            //     ownerPassword: password, // Often same as user password for simplicity
-            //     permissions: {}, // Define permissions if needed
-            // });
-
-            // Serialize the PDFDocument to bytes (a Uint8Array)
             const pdfBytes = await pdfDoc.save();
-
-            // Trigger the download
             await downloadPdf(pdfBytes, `${template?.name || 'flow'}_protected.pdf`);
 
         } catch (error) {

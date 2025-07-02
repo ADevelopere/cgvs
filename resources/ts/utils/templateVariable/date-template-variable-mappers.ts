@@ -4,7 +4,8 @@ import type {
     DeleteTemplateVariableMutation,
     TemplateDateVariable,
     UpdateDateTemplateVariableInput,
-    Template
+    Template,
+    CreateDateTemplateVariableInput
 } from "@/graphql/generated/types";
 
 export type DateTemplateVariableSource =
@@ -143,5 +144,21 @@ export const mapDateTemplateVariableToInput = (
         min_date: variable.min_date,
         max_date: variable.max_date,
         format: variable.format,
+    };
+};
+
+export const mapToCreateDateTemplateVariableInput = (
+    source: TemplateDateVariable | null | undefined,
+): CreateDateTemplateVariableInput => {
+    return {
+        name: source?.name ?? "",
+        description: source?.description ?? null,
+        order: source?.order ?? 0,
+        min_date: source?.min_date ?? null,
+        max_date: source?.max_date ?? null,
+        format: source?.format ?? null,
+        preview_value: source?.preview_value ?? null,
+        required: source?.required ?? false,
+        template_id: source?.template?.id ?? "",
     };
 };

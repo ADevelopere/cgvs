@@ -16,7 +16,7 @@ import { TreeView } from "@/components/common/TreeView";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
-import TemplateList from "./TemplateListContent";
+import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/components/splitPane/SplitPane";
 
 const drawerWidth = 240;
@@ -132,7 +132,7 @@ const CategoryTree: React.FC = () => {
     );
 };
 
-const NewTemplateList: React.FC = () => {
+const TemplateList: React.FC = () => {
     const { headerHeight, sidebarState: dashboardsidebarState } =
         useDashboardLayout();
     const { allTemplates, currentCategory } = useTemplateCategoryManagement();
@@ -187,7 +187,7 @@ const NewTemplateList: React.FC = () => {
                     >
                         <CategoryTree />
                     </Paper>
-                    <TemplateList
+                    <TemplateListContent
                         templates={currentCategory?.templates || allTemplates}
                         style={{
                             paddingInlineStart: open ? 2 : 8,
@@ -201,7 +201,7 @@ const NewTemplateList: React.FC = () => {
 
             {isMobile && (
                 <Main>
-                    <TemplateList
+                    <TemplateListContent
                         templates={currentCategory?.templates || allTemplates}
                         style={{
                             paddingInlineStart: 2,
@@ -216,7 +216,7 @@ const NewTemplateList: React.FC = () => {
                         position: "fixed",
                         top: `${headerHeight}px`,
                         height: `calc(100% - ${headerHeight}px)`,
-                        width: drawerWidth, // The container for the paper
+                        width: drawerWidth, // The container for the paperTemplateListContainer
                         overflow: "hidden", // This will clip the paper during transition
                         flexShrink: 0,
                         "& .MuiDrawer-paper": {
@@ -238,4 +238,4 @@ const NewTemplateList: React.FC = () => {
     );
 };
 
-export default NewTemplateList;
+export default TemplateList;

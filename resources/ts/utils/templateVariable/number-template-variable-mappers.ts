@@ -5,6 +5,7 @@ import type {
     TemplateNumberVariable,
     UpdateNumberTemplateVariableInput,
     Template,
+    CreateNumberTemplateVariableInput,
 } from "@/graphql/generated/types";
 
 export type NumberTemplateVariableSource =
@@ -158,5 +159,21 @@ export const mapNumberTemplateVariableToInput = (
         min_value: variable.min_value,
         max_value: variable.max_value,
         decimal_places: variable.decimal_places,
+    };
+};
+
+export const mapToCreateNumberTemplateVariableInput = (
+    source: TemplateNumberVariable | null | undefined,
+): CreateNumberTemplateVariableInput => {
+    return {
+        name: source?.name ?? "",
+        description: source?.description ?? null,
+        order: source?.order ?? 0,
+        min_value: source?.min_value ?? null,
+        max_value: source?.max_value ?? null,
+        decimal_places: source?.decimal_places ?? null,
+        preview_value: source?.preview_value ?? null,
+        required: source?.required ?? false,
+        template_id: source?.template?.id ?? "",
     };
 };
