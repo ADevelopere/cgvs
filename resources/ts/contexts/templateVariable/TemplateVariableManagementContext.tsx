@@ -141,7 +141,11 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createTextTemplateVariableMutation],
+        [
+            createTextTemplateVariableMutation,
+            template?.variables,
+            notifications,
+        ],
     );
 
     const handleUpdateTextTemplateVariable = useCallback(
@@ -175,7 +179,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [updateTextTemplateVariableMutation],
+        [notifications, updateTextTemplateVariableMutation],
     );
 
     // Number template variable handlers
@@ -223,7 +227,11 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createNumberTemplateVariableMutation],
+        [
+            createNumberTemplateVariableMutation,
+            notifications,
+            template?.variables,
+        ],
     );
 
     const handleUpdateNumberTemplateVariable = useCallback(
@@ -305,7 +313,11 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createDateTemplateVariableMutation],
+        [
+            createDateTemplateVariableMutation,
+            template?.variables,
+            notifications,
+        ],
     );
 
     const handleUpdateDateTemplateVariable = useCallback(
@@ -387,7 +399,11 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createSelectTemplateVariableMutation],
+        [
+            createSelectTemplateVariableMutation,
+            template?.variables,
+            notifications,
+        ],
     );
 
     const handleUpdateSelectTemplateVariable = useCallback(
@@ -455,7 +471,6 @@ const ManagementProvider: React.FC<{
         },
         [deleteTemplateVariableMutation],
     );
-
 
     const value = useMemo(
         () => ({
