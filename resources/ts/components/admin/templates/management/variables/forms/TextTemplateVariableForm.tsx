@@ -16,14 +16,6 @@ import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/t
 import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-const parseNumeric = (
-    value: string | number | null | undefined,
-): number | undefined => {
-    if (value === null || value === undefined || value === "") return undefined;
-    const num = Number(value);
-    return isNaN(num) ? undefined : num;
-};
-
 type TextTemplateVariableFormProps = {
     editingVariableID?: string;
     onDispose: () => void;
@@ -35,7 +27,6 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 }) => {
     const { template } = useTemplateManagement();
 
-    // @ts-ignore
     const editingVariable: TemplateTextVariable | null = useMemo(() => {
         if (!template || !editingVariableID) return null;
 
@@ -208,7 +199,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
                 variant="contained"
                 color="primary"
                 onClick={handleSave}
-                disabled={!state.name || !isDifferentFromOriginal()}
+                disabled={!state.name || isDifferentFromOriginal()}
             >
                 {editingVariableID
                     ? (strings?.updateVariable ?? "Update Variable")

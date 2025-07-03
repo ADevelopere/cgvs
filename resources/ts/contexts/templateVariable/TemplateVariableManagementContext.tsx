@@ -14,47 +14,10 @@ import {
     useTemplateVariableGraphQL,
 } from "./TemplateVariableGraphQLContext";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
-import { TemplateVariableType } from "@/graphql/generated/types";
-
-type FormMode = "create" | "edit";
-
-export type EditingVariable = {
-    id: string;
-    type: TemplateVariableType;
-};
-
-type FormPaneState = {
-    mode: FormMode;
-    // For edit mode
-    editingVariable: EditingVariable | null;
-    // For create mode
-    createType: TemplateVariableType | null;
-};
-
-type CreateFormValuesType =
-    | Partial<Graphql.CreateTextTemplateVariableInput>
-    | Partial<Graphql.CreateNumberTemplateVariableInput>
-    | Partial<Graphql.CreateDateTemplateVariableInput>
-    | Partial<Graphql.CreateSelectTemplateVariableInput>;
-
-type CreateFormData = {
-    type: TemplateVariableType | null;
-    values: CreateFormValuesType | null;
-};
 
 type TemplateVariableManagementContextType = {
     // States
     loading: boolean;
-    createFormData: CreateFormData;
-    formPaneState: FormPaneState;
-
-    // Form pane state management
-    trySetEditMode: (id: string, type: TemplateVariableType) => void;
-    trySetCreateMode: (type: TemplateVariableType) => void;
-
-    // Create form state management
-    setCreateFormData: (data: CreateFormData) => void;
-    resetCreateForm: () => void;
 
     // Creation mutations for different variable types
     createTextTemplateVariable: (
@@ -115,15 +78,6 @@ const ManagementProvider: React.FC<{
     const { template } = useTemplateManagement();
 
     const [loading, setLoading] = useState(false);
-    const [createFormData, setCreateFormData] = useState<CreateFormData>({
-        type: null,
-        values: null,
-    });
-    const [formPaneState, setFormPaneState] = useState<FormPaneState>({
-        mode: "create",
-        editingVariable: null,
-        createType: null,
-    });
 
     const {
         createTextTemplateVariableMutation,
@@ -154,6 +108,8 @@ const ManagementProvider: React.FC<{
                     }, 0) ?? 0;
                 const newOrderOfVariable =
                     maxCurrentOrderOFVariablesOfTemplate + 1;
+
+                console.log("New Order of Variable:", newOrderOfVariable);
 
                 const result = await createTextTemplateVariableMutation({
                     input: {
@@ -500,42 +456,10 @@ const ManagementProvider: React.FC<{
         [deleteTemplateVariableMutation],
     );
 
-    const trySetCreateMode = useCallback(
-        (type: TemplateVariableType) => {
-
-            // No unsaved changes, switch directly
-            setFormPaneState({
-                mode: "create",
-                editingVariable: null,
-                createType: type,
-            });
-            setCreateFormData({ type, values: null });
-        },
-        [],
-    );
-
-    const trySetEditMode = useCallback(
-        (id: string, type: TemplateVariableType) => {
-
-            // No unsaved changes, switch directly
-            setFormPaneState({
-                mode: "edit",
-                editingVariable: { id, type },
-                createType: null,
-            });
-            setCreateFormData({ type: null, values: null });
-        },
-        [],
-    );
 
     const value = useMemo(
         () => ({
             loading,
-            createFormData,
-            formPaneState,
-            setCreateFormData,
-            resetCreateForm: () =>
-                setCreateFormData({ type: null, values: null }),
             createTextTemplateVariable: handleCreateTextTemplateVariable,
             updateTextTemplateVariable: handleUpdateTextTemplateVariable,
             createNumberTemplateVariable: handleCreateNumberTemplateVariable,
@@ -545,13 +469,9 @@ const ManagementProvider: React.FC<{
             createSelectTemplateVariable: handleCreateSelectTemplateVariable,
             updateSelectTemplateVariable: handleUpdateSelectTemplateVariable,
             deleteTemplateVariable: handleDeleteTemplateVariable,
-            trySetEditMode,
-            trySetCreateMode,
         }),
         [
             loading,
-            createFormData,
-            setCreateFormData,
             handleCreateTextTemplateVariable,
             handleUpdateTextTemplateVariable,
             handleCreateNumberTemplateVariable,
@@ -561,9 +481,6 @@ const ManagementProvider: React.FC<{
             handleCreateSelectTemplateVariable,
             handleUpdateSelectTemplateVariable,
             handleDeleteTemplateVariable,
-            formPaneState,
-            trySetEditMode,
-            trySetCreateMode,
         ],
     );
 
