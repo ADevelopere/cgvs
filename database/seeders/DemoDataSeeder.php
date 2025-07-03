@@ -229,6 +229,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'text',
             'description' => 'التخصص الأكاديمي',
             'required' => true,
+            'order' => 4,
             'min_length' => 3,
             'max_length' => 100
         ]);
@@ -239,6 +240,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'number',
             'description' => 'المعدل التراكمي',
             'required' => true,
+            'order' => 5,
             'min_value' => 0,
             'max_value' => 5,
             'decimal_places' => 2
@@ -322,7 +324,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'text',
             'description' => 'اسم المؤتمر أو ورشة العمل',
             'required' => true,
-            'order' => 6,
+            'order' => 4,
             'min_length' => 5,
             'max_length' => 200
         ]);
@@ -333,7 +335,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'text',
             'description' => 'مكان انعقاد الفعالية',
             'required' => true,
-            'order' => 7,
+            'order' => 5,
             'min_length' => 3,
             'max_length' => 100
         ]);
@@ -349,7 +351,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'text',
             'description' => 'سبب منح شهادة التقدير',
             'required' => true,
-            'order' => 8,
+            'order' => 4,
             'min_length' => 10,
             'max_length' => 500
         ]);
@@ -360,7 +362,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'select',
             'description' => 'مستوى التقدير',
             'required' => true,
-            'order' => 9,
+            'order' => 5,
             'options' => json_encode([
                 'ممتاز',
                 'جيد جداً',
@@ -380,7 +382,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'text',
             'description' => 'وصف العمل التطوعي',
             'required' => true,
-            'order' => 10,
+            'order' => 4,
             'min_length' => 5,
             'max_length' => 200
         ]);
@@ -391,7 +393,7 @@ class DemoDataSeeder extends Seeder
             'type' => 'number',
             'description' => 'إجمالي ساعات العمل التطوعي',
             'required' => true,
-            'order' => 11,
+            'order' => 5,
             'min_value' => 1,
             'max_value' => 1000
         ]);

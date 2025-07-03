@@ -64,19 +64,17 @@ export const TextTemplateVariableGraphQLProvider: React.FC<{
 
             if (!existingData?.template?.variables) return;
 
-            // Add the new variable to the template's variables array and sort by order
-            const updatedVariables = [
-                ...existingData.template.variables,
-                data.createTextTemplateVariable,
-            ].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
+            // Add the new variable to the template's variables array
             cache.writeQuery({
                 query: Graphql.TemplateDocument,
                 variables: { id: templateId },
                 data: {
                     template: {
                         ...existingData.template,
-                        variables: updatedVariables,
+                        variables: [
+                            ...existingData.template.variables,
+                            data.createDateTemplateVariable,
+                        ],
                     },
                 },
             });
