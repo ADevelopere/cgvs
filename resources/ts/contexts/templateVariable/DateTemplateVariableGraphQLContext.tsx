@@ -68,8 +68,8 @@ export const DateTemplateVariableGraphQLProvider: React.FC<{
                     template: {
                         ...existingData.template,
                         variables: [
-                            data.createDateTemplateVariable,
                             ...existingData.template.variables,
+                            data.createDateTemplateVariable,
                         ],
                     },
                 },

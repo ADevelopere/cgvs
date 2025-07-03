@@ -68,8 +68,8 @@ export const SelectTemplateVariableGraphQLProvider: React.FC<{
                     template: {
                         ...existingData.template,
                         variables: [
-                            data.createSelectTemplateVariable,
                             ...existingData.template.variables,
+                            data.createSelectTemplateVariable,
                         ],
                     },
                 },

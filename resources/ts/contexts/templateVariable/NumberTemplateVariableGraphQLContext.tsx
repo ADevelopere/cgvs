@@ -68,8 +68,8 @@ export const NumberTemplateVariableGraphQLProvider: React.FC<{
                     template: {
                         ...existingData.template,
                         variables: [
-                            data.createNumberTemplateVariable,
                             ...existingData.template.variables,
+                            data.createNumberTemplateVariable,
                         ],
                     },
                 },

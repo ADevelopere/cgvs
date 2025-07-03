@@ -7,8 +7,6 @@ import {
     Button,
     Typography,
     Alert,
-    Snackbar,
-    AlertColor,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,7 +19,6 @@ import {
     UpdateTemplateInput,
     UpdateTemplateWithImageInput,
 } from "@/graphql/generated/types";
-import { se } from "date-fns/locale";
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
@@ -48,8 +45,8 @@ const BasicInfoTab: React.FC = () => {
     useEffect(() => {
         if (template) {
             setFormData({
-                name: template.name || "",
-                description: template.description || "",
+                name: template.name ?? "",
+                description: template.description ?? "",
             });
             // Reset file states when the template context changes
             setSelectedImageFile(null);
@@ -71,9 +68,9 @@ const BasicInfoTab: React.FC = () => {
             return;
         }
         const originalData = {
-            name: template.name || "",
-            description: template.description || "",
-            image: template.image_url || null,
+            name: template.name ?? "",
+            description: template.description ?? "",
+            image: template.image_url ?? null,
         };
 
         const currentData = {
@@ -115,7 +112,7 @@ const BasicInfoTab: React.FC = () => {
             // This case might not be typical if a file is selected,
             // but good for completeness if the input is cleared.
             setSelectedImageFile(null);
-            setPreview(template?.image_url || null); // Revert to original or clear
+            setPreview(template?.image_url ?? null); // Revert to original or clear
         }
     };
 
@@ -125,7 +122,7 @@ const BasicInfoTab: React.FC = () => {
     };
 
     const handleSave = async () => {
-        if (!template || !template.id || !template.category?.id) {
+        if (!template?.id || !template.category?.id) {
             const msg = "Template data is incomplete for saving.";
             setError(msg);
             return;
@@ -173,10 +170,10 @@ const BasicInfoTab: React.FC = () => {
 
     const handleCancel = () => {
         setFormData({
-            name: template?.name || "",
-            description: template?.description || "",
+            name: template?.name ?? "",
+            description: template?.description ?? "",
         });
-        setPreview(template?.image_url || null);
+        setPreview(template?.image_url ?? null);
         setError(null);
     };
 
