@@ -2,11 +2,11 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
     overwrite: true,
-    schema: "http://localhost:8000/graphql",
+    schema: "http://localhost:8080/graphql",
     documents: [
-        "./resources/ts/**/*.ts",
-        "./resources/ts/**/*.tsx",
-        "./graphql-ts/**/*.ts",
+        // "./resources/ts/**/*.ts",
+        // "./resources/ts/**/*.tsx",
+        // "./graphql/graphql-ts/**/*.ts",
     ],
     generates: {
         "./resources/ts/graphql/generated/types.ts": {
@@ -27,10 +27,10 @@ const config: CodegenConfig = {
                 skipTypeNameForRoot: false,
             },
         },
-        "./graphql-generated/graphql.schema.json": {
+        "./graphql/graphql-generated/graphql.schema.json": {
             plugins: ["introspection"],
         },
-        "./graphql-generated/schema.graphql": {
+        "./graphql/graphql-generated/schema.graphql": {
             plugins: ["schema-ast"],
         },
     },

@@ -18,7 +18,7 @@ import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 
 // Create an upload link that handles multipart requests for file uploads
 const uploadLink = createUploadLink({
-    uri: "http://localhost:8000/graphql",
+    uri: "http://localhost:8080/graphql",
     credentials: "include", // This ensures cookies are sent with requests
     headers: {
         "X-Requested-With": "XMLHttpRequest",

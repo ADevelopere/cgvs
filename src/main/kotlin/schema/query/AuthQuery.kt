@@ -1,4 +1,7 @@
 package schema.query
 
-class AuthQuery {
+import com.expediagroup.graphql.server.operations.Query
+
+class AuthQuery : Query {
+
 }

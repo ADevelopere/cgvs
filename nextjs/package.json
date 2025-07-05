@@ -1,0 +1,45 @@
+{
+    "name": "nextjs",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --turbopack",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "codegen": "graphql-codegen --config codegen.ts",
+        "codegen:watch": "graphql-codegen --watch",
+        "generate:gql-ts": "node --loader ts-node/esm scripts/generate-gql-ts.ts"
+    },
+    "dependencies": {
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0",
+        "next": "15.3.5"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.3.1",
+        "@graphql-cli/introspect": "^2.1.0",
+        "@graphql-codegen/cli": "5.0.7",
+        "@graphql-codegen/client-preset": "4.8.3",
+        "@graphql-codegen/gql-tag-operations": "^4.0.17",
+        "@graphql-codegen/import-types-preset": "^3.0.1",
+        "@graphql-codegen/introspection": "^4.0.3",
+        "@graphql-codegen/schema-ast": "^4.1.0",
+        "@graphql-codegen/typescript": "^4.1.6",
+        "@graphql-codegen/typescript-generic-sdk": "^4.0.2",
+        "@graphql-codegen/typescript-operations": "^4.6.1",
+        "@graphql-codegen/typescript-react-apollo": "^4.3.3",
+        "@graphql-tools/load": "^8.1.0",
+        "@graphql-tools/merge": "^9.0.24",
+        "@graphql-tools/schema": "^10.0.23",
+        "@types/node": "^24.0.10",
+        "@types/react": "^19.1.8",
+        "@types/react-dom": "^19.1.6",
+        "eslint": "^9.30.1",
+        "eslint-config-next": "15.3.5",
+        "gql-generator": "^2.0.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3",
+        "worker-loader": "^3.0.8"
+    }
+}
