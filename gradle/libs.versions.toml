@@ -1,0 +1,89 @@
+[versions]
+exposed = "1.0.0-beta-3"
+h2 = "2.3.232"
+koin = "4.1.0"
+kotlin = "2.2.0"
+ktor = "3.2.0"
+logback = "1.5.18"
+postgres = "42.7.3"
+ucasoftKtor = "0.55.3"
+graphql-kotlin = "9.0.0-alpha.8"
+
+[libraries]
+# Koin
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+koin-loggerSlf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+
+# Ktor Server - versions are managed by the Ktor plugin
+ktor-server-core = { module = "io.ktor:ktor-server-core" }
+ktor-server-di = { module = "io.ktor:ktor-server-di" }
+ktor-server-contentNegotiation = { module = "io.ktor:ktor-server-content-negotiation" }
+ktor-serialization-kotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-json" }
+ktor-server-resources = { module = "io.ktor:ktor-server-resources" }
+ktor-server-requestValidation = { module = "io.ktor:ktor-server-request-validation" }
+ktor-server-autoHeadResponse = { module = "io.ktor:ktor-server-auto-head-response" }
+ktor-server-sessions = { module = "io.ktor:ktor-server-sessions" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth" }
+ktor-server-authJwt = { module = "io.ktor:ktor-server-auth-jwt" }
+ktor-server-csrf = { module = "io.ktor:ktor-server-csrf" }
+ktor-server-httpRedirect = { module = "io.ktor:ktor-server-http-redirect" }
+ktor-server-cors = { module = "io.ktor:ktor-server-cors" }
+ktor-server-compression = { module = "io.ktor:ktor-server-compression" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
+ktor-server-configYaml = { module = "io.ktor:ktor-server-config-yaml" }
+ktor-server-testHost = { module = "io.ktor:ktor-server-test-host" }
+
+# Ktor Client - versions are managed by the Ktor plugin
+ktor-client-core = { module = "io.ktor:ktor-client-core" }
+ktor-client-apache = { module = "io.ktor:ktor-client-apache" }
+
+# Database
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+
+# Logging
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# Ucasoft
+ucasoft-ktor-simpleCache = { module = "com.ucasoft.ktor:ktor-simple-cache", version.ref = "ucasoftKtor" }
+ucasoft-ktor-simpleRedisCache = { module = "com.ucasoft.ktor:ktor-simple-redis-cache", version.ref = "ucasoftKtor" }
+
+# Kotlin Test
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+# Graphql
+graphql-kotlin-ktor-server = { module = "com.expediagroup:graphql-kotlin-ktor-server", version.ref = "graphql-kotlin" }
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+[bundles]
+koin = ["koin-ktor", "koin-loggerSlf4j"]
+exposed = ["exposed-core", "exposed-jdbc", "exposed-kotlin-datetime"]
+ucasoftKtorCache = ["ucasoft-ktor-simpleCache", "ucasoft-ktor-simpleRedisCache"]
+
+ktorServer = [
+    "ktor-server-di",
+    "ktor-server-core",
+    "ktor-server-contentNegotiation",
+    "ktor-serialization-kotlinxJson",
+    "ktor-server-resources",
+    "ktor-server-requestValidation",
+    "ktor-server-autoHeadResponse",
+    "ktor-server-sessions",
+    "ktor-server-auth",
+    "ktor-server-authJwt",
+    "ktor-server-csrf",
+    "ktor-server-httpRedirect",
+    "ktor-server-cors",
+    "ktor-server-compression",
+    "ktor-server-netty",
+    "ktor-server-configYaml"
+]
+ktorClient = ["ktor-client-core", "ktor-client-apache"]
+
