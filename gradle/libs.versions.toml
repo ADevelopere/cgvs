@@ -1,6 +1,7 @@
 [versions]
 exposed = "1.0.0-beta-3"
 h2 = "2.3.232"
+hikariCP = "5.1.0"
 koin = "4.1.0"
 kotlin = "2.2.0"
 ktor = "3.2.0"
@@ -40,6 +41,7 @@ ktor-client-apache = { module = "io.ktor:ktor-client-apache" }
 # Database
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
+hikari-cp = { module = "com.zaxxer:HikariCP", version.ref = "hikariCP" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
