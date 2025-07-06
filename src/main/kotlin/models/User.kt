@@ -26,3 +26,16 @@ data class AuthPayload(
 data class LogoutResponse(
     val message: String
 )
+
+@Serializable
+data class LoginInput(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class RegisterInput(
+    val name: String,
+    val email: String,
+    val password: String
+)

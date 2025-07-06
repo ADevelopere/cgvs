@@ -11,3 +11,4 @@ postgres:
   domain: "https://jwt-provider-domain/"
   audience: "jwt-audience"
   realm: "ktor sample app"
+  secret: "your-super-secret-jwt-key-change-in-production"

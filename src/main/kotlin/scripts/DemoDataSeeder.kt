@@ -1,5 +1,6 @@
 package scripts
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -100,10 +101,10 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
 
             println("✅ Demo data seeding completed successfully!")
             println("📊 Summary:")
+            println("   - Admin user: admin@cgvs.com (password: cgvs@123)")
             println("   - Categories: ${categories.size}")
             println("   - Templates: ${categories.size}")
             println("   - Students: 1000")
-            println("   - Admin user: admin@cgsv.com")
 
         } catch (e: Exception) {
             println("❌ Error during seeding: ${e.message}")
@@ -112,27 +113,38 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         }
     }
 
-    private suspend fun createAdminUser() {
-        println("👤 Creating admin user...")
+    /**
+     * Creates an admin user for testing authentication
+     */
+    suspend fun createAdminUser(): User {
+        println("Creating admin user...")
 
         // Check if admin user already exists
-        val existingAdmin = repositoryManager.userRepository.findByEmail("admin@cgsv.com")
+        val existingAdmin = repositoryManager.userRepository.findByEmail("admin@cgvs.com")
         if (existingAdmin != null) {
-            println("   ⚠️  Admin user already exists, skipping...")
-            return
+            println("⚠️  Admin user already exists, skipping creation")
+            return existingAdmin
         }
 
+        // Create admin user with hashed password
+        val hashedPassword = BCrypt.withDefaults().hashToString(12, "cgvs@123".toCharArray())
+
         val adminUser = User(
-            name = "مدير النظام",
-            email = "admin@cgsv.com",
-            password = $$"$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // password
+            name = "System Administrator",
+            email = "admin@cgvs.com",
+            password = hashedPassword,
             isAdmin = true,
             createdAt = currentTime,
             updatedAt = currentTime
         )
 
-        repositoryManager.userRepository.create(adminUser)
-        println("   ✅ Admin user created")
+        val createdAdmin = repositoryManager.userRepository.create(adminUser)
+        println("✅ Admin user created successfully:")
+        println("   Email: admin@cgvs.com")
+        println("   Password: cgvs@123")
+        println("   Role: Administrator")
+
+        return createdAdmin
     }
 
     private suspend fun createTemplateCategories(): List<TemplateCategory> {

@@ -12,8 +12,23 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.plugins.cors.routing.*
 import kotlinx.serialization.Serializable
+import models.UserSession
+import org.koin.ktor.ext.inject
+import services.AuthService
 
 fun Application.configureSecurity() {
+    val authService by inject<AuthService>()
+    
+    // Configure Sessions
+    install(Sessions) {
+        cookie<UserSession>("CGSV_SESSION") {
+            cookie.path = "/"
+            cookie.maxAgeInSeconds = 3600 // 1 hour
+            cookie.httpOnly = true
+            cookie.secure = false // Set to true in production with HTTPS
+            cookie.extensions["SameSite"] = "lax"
+        }
+    }
 //    install(Sessions) {
 //        cookie<MySession>("MY_SESSION") {
 //            cookie.extensions["SameSite"] = "lax"
@@ -39,11 +54,44 @@ fun Application.configureSecurity() {
 //            }
 //        }
 //    }
-    // Please read the jwt property from the config file if you are using EngineMain
-    val jwtAudience = "jwt-audience"
-    val jwtDomain = "https://jwt-provider-domain/"
-    val jwtRealm = "ktor sample app"
-    val jwtSecret = "secret"
+    
+    // Read JWT configuration from application.yaml
+    val jwtAudience = environment.config.property("postgres.audience").getString()
+    val jwtDomain = environment.config.property("postgres.domain").getString()
+    val jwtRealm = environment.config.property("postgres.realm").getString()
+    val jwtSecret = environment.config.propertyOrNull("postgres.secret")?.getString() ?: "default-secret-key"
+    
+    // Configure Authentication
+    install(Authentication) {
+        jwt("auth-jwt") {
+            realm = jwtRealm
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(jwtSecret))
+                    .withAudience(jwtAudience)
+                    .withIssuer(jwtDomain)
+                    .build()
+            )
+            validate { credential ->
+                if (credential.payload.audience.contains(jwtAudience)) {
+                    JWTPrincipal(credential.payload)
+                } else null
+            }
+        }
+        
+        session<UserSession>("auth-session") {
+            validate { session ->
+                // Validate session with database
+                val dbSession = authService.validateSession(session.sessionId)
+                if (dbSession != null && session.isAuthenticated) {
+                    session
+                } else null
+            }
+            challenge {
+                call.respond(HttpStatusCode.Unauthorized, mapOf("error" to "Authentication required"))
+            }
+        }
+    }
 //    authentication {
 //        jwt {
 //            realm = jwtRealm
