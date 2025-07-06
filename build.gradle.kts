@@ -30,9 +30,42 @@ dependencies {
     implementation(libs.bundles.ucasoftKtorCache)
     implementation(libs.logback.classic)
     implementation(libs.graphql.kotlin.ktor.server)
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation(libs.hikari.cp)
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.kotlin.test.junit)
+}
+
+// Demo Data Tasks Group
+tasks.register<JavaExec>("seedDemoData") {
+    group = "Demo"
+    description = "Populate the database with demo data"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("scripts.SeedDemoDataApp")
+}
+
+tasks.register<JavaExec>("validateDemoData") {
+    group = "Demo"
+    description = "Validate that demo data was created successfully"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("scripts.ValidateDemoData")
+}
+
+tasks.register("runWithDemoData") {
+    group = "Demo"
+    description = "Seed demo data and then run the application"
+    dependsOn("seedDemoData", "run")
+    tasks.findByName("run")?.mustRunAfter("seedDemoData")
+}
+
+tasks.register("cleanDemoData") {
+    group = "Demo"
+    description = "Clean all demo data from the database"
+    doLast {
+        println("⚠️  To clean demo data, manually truncate tables or recreate the database")
+        println("   Example SQL commands:")
+        println("   TRUNCATE TABLE students, template_categories, templates, template_variables RESTART IDENTITY CASCADE;")
+        println("   DELETE FROM users WHERE email = 'admin@cgsv.com';")
+    }
 }
 
 
