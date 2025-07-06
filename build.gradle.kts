@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.graphql.kotlin.ktor.server)
     implementation(libs.hikari.cp)
+    implementation(libs.bcrypt)
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.kotlin.test.junit)
 }

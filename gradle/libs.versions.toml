@@ -9,11 +9,15 @@ logback = "1.5.18"
 postgres = "42.7.3"
 ucasoftKtor = "0.55.3"
 graphql-kotlin = "9.0.0-alpha.8"
+bcrypt = "0.10.2"
 
 [libraries]
 # Koin
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-loggerSlf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+
+# Security
+bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 
 # Ktor Server - versions are managed by the Ktor plugin
 ktor-server-core = { module = "io.ktor:ktor-server-core" }

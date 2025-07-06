@@ -15,6 +15,11 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import schema.query.HelloQueryService
+import schema.query.AuthQuery
+import schema.query.UserQuery
+import schema.mutation.AuthMutation
+import hooks.CustomSchemaGeneratorHooks
+import context.CustomGraphQLContextFactory
 import kotlin.time.Duration.Companion.seconds
 
 fun Application.graphQLModule() {
@@ -30,16 +35,21 @@ fun Application.graphQLModule() {
         schema {
             packages = listOf("models")
             queries = listOf(
-                HelloQueryService()
+                HelloQueryService(),
+                AuthQuery(),
+                UserQuery()
             )
-//            mutations = listOf(
-//            )
+            mutations = listOf(
+                AuthMutation()
+            )
+            hooks = CustomSchemaGeneratorHooks()
         }
         engine {
             dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(
             )
         }
         server {
+            contextFactory = CustomGraphQLContextFactory()
         }
     }
     routing {
