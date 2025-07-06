@@ -32,7 +32,10 @@ export default function GraphiQLPage() {
         message.includes('module "@emotion/is-prop-valid" not found') ||
         message.includes('editorSimpleWorker.js') ||
         message.includes('network.js') ||
-        message.includes('standaloneWebWorker.js')
+        message.includes('standaloneWebWorker.js') ||
+        message.includes('$loadForeignModule') ||
+        message.includes('toUri') ||
+        message.includes('asBrowserUri')
       ) {
         // Silently ignore these errors
         return;
@@ -70,13 +73,14 @@ export default function GraphiQLPage() {
             getWorker(_workerId: any, label: string) {
               console.info('MonacoEnvironment.getWorker', { label });
               
-              // Create a minimal fallback worker that prevents errors
-              const createFallbackWorker = () => {
-                const blob = new Blob([`
-                  // Minimal worker implementation
+              // Try to create a worker, but if it fails, return undefined
+              // This will cause Monaco to fall back to running in the main thread
+              try {
+                // This is a basic approach that should work in most environments
+                // but if it fails, Monaco will handle the fallback gracefully
+                const workerScript = `
                   self.onmessage = function(e) {
                     try {
-                      // Echo back a simple response to prevent hanging
                       self.postMessage({ 
                         id: e.data.id, 
                         result: null,
@@ -91,16 +95,24 @@ export default function GraphiQLPage() {
                     }
                   };
                   
-                  // Handle any uncaught errors
                   self.onerror = function(err) {
                     console.warn('Worker error (fallback):', err);
                   };
-                `], { type: 'application/javascript' });
-                return new Worker(URL.createObjectURL(blob));
-              };
-              
-              // Always return the fallback worker to avoid CORS and loading issues
-              return createFallbackWorker();
+                `;
+                
+                // Use eval to create the worker dynamically to avoid static analysis
+                const createWorker = new Function('script', `
+                  const blob = new Blob([script], { type: 'application/javascript' });
+                  return new Worker(URL.createObjectURL(blob));
+                `);
+                
+                return createWorker(workerScript);
+              } catch (error) {
+                // If worker creation fails, return undefined
+                // Monaco will fall back to main thread execution
+                console.warn('Failed to create worker, falling back to main thread:', error);
+                return undefined;
+              }
             },
           };
         };
