@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "name": "do-not-install-here",
+  "scripts": {
+    "preinstall": "echo '\u001b[31m🚫 Do not install here! CD into nextjs/ instead.\u001b[0m' && exit 1"
+  }
+}
