@@ -1,7 +1,7 @@
 [versions]
+hikariCP = "5.1.0"
 exposed = "1.0.0-beta-3"
 h2 = "2.3.232"
-hikariCP = "5.1.0"
 koin = "4.1.0"
 kotlin = "2.2.0"
 ktor = "3.2.0"
