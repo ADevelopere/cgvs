@@ -4,13 +4,13 @@
 set -e
 
 # Define paths
-GRAPHQL_DIR="./graphql-generated"
+GRAPHQL_DIR="./graphql"
 SCHEMA_PATH="$GRAPHQL_DIR/schema.graphql"
 GQLG_DIR="$GRAPHQL_DIR/gqlg"
 GQLG_TS_DIR="$GRAPHQL_DIR/gqlg-ts"
 
 echo "🚀 Starting GraphQL generation process..."
-
+ 
 # Clean up directories
 echo "🧹 Cleaning up generated directories..."
 rm -rf "$GQLG_DIR" "$GQLG_TS_DIR"
@@ -22,11 +22,15 @@ bun run codegen
 
 # Run gqlg
 echo "📝 Generating GraphQL types..."
-bunx gqlg --schemaFilePath "$SCHEMA_PATH" --destDirPath "$GQLG_DIR" --depthLimit 10
+bunx gqlg --schemaFilePath "$SCHEMA_PATH" --destDirPath "$GQLG_DIR"
 
 # Generate TypeScript files
 echo "🔄 Generating TypeScript files..."
-bun generate:gql-ts
+if jq -e '.scripts["generate:gql-ts"]' package.json > /dev/null 2>&1; then
+  bun run generate:gql-ts
+else
+  (cd scripts && bun run generate:gql-ts)
+fi
 
 # Second codegen run
 echo "🔄 Running second codegen..."
