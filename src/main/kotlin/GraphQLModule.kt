@@ -20,6 +20,7 @@ import schema.query.UserQuery
 import schema.mutation.AuthMutation
 import hooks.CustomSchemaGeneratorHooks
 import context.CustomGraphQLContextFactory
+import context.CustomDataFetcherExceptionHandler
 import kotlin.time.Duration.Companion.seconds
 
 fun Application.graphQLModule() {
@@ -45,8 +46,8 @@ fun Application.graphQLModule() {
             hooks = CustomSchemaGeneratorHooks()
         }
         engine {
-            dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(
-            )
+            dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory()
+            exceptionHandler = CustomDataFetcherExceptionHandler()
         }
         server {
             contextFactory = CustomGraphQLContextFactory()

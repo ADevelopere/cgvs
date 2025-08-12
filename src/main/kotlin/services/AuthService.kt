@@ -107,6 +107,10 @@ class AuthService(
         }
     }
 
+    suspend fun getUserById(userId: Int): User? {
+        return userRepository.findById(userId)
+    }
+
     private fun hashPassword(password: String): String {
         return BCrypt.withDefaults().hashToString(12, password.toCharArray())
     }

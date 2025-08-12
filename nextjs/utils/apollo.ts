@@ -1,20 +1,13 @@
 import {
     ApolloClient,
     InMemoryCache,
-    createHttpLink,
     from,
+    createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { getAuthToken } from "./auth";
+import { onError } from "@apollo/client/link/error";
+import { getAuthToken, clearAuthToken } from "./auth";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
-
-// const httpLink = createHttpLink({
-//     uri: "http://localhost:8000/graphql",
-//     credentials: "include", // This ensures cookies are sent with requests
-//     headers: {
-//         "X-Requested-With": "XMLHttpRequest",
-//     },
-// });
 
 // Create an upload link that handles multipart requests for file uploads
 const uploadLink = createUploadLink({
@@ -25,6 +18,7 @@ const uploadLink = createUploadLink({
     },
 });
 
+// Auth link to add JWT token to requests
 const authLink = setContext((_, { headers }) => {
     const token = getAuthToken();
     return {
@@ -35,13 +29,44 @@ const authLink = setContext((_, { headers }) => {
     };
 });
 
+// Error link to handle authentication errors
+const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
+    if (graphQLErrors) {
+        for (let err of graphQLErrors) {
+            switch (err.extensions?.code) {
+                case 'UNAUTHENTICATED':
+                case 'UNAUTHORIZED':
+                    // Clear auth token and redirect to login
+                    clearAuthToken();
+                    window.location.href = '/login';
+                    break;
+            }
+        }
+    }
+
+    if (networkError) {
+        console.error(`[Network error]: ${networkError}`);
+        
+        // Handle 401/403 network errors
+        if ('statusCode' in networkError && 
+            (networkError.statusCode === 401 || networkError.statusCode === 403)) {
+            clearAuthToken();
+            window.location.href = '/login';
+        }
+    }
+});
+
 // Create the Apollo Client instance
 const apolloClient = new ApolloClient({
-    link: from([authLink, uploadLink]),
+    link: from([errorLink, authLink, uploadLink]),
     cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: {
             fetchPolicy: "cache-and-network",
+            errorPolicy: "all",
+        },
+        query: {
+            errorPolicy: "all",
         },
     },
     devtools: {
