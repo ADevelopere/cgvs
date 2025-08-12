@@ -7,8 +7,9 @@ export const saveAuthToken = (token: string) => {
     // Save to localStorage
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     
-    // Save to cookies with HttpOnly and Secure flags
-    document.cookie = `${AUTH_TOKEN_KEY}=${token}; path=/; SameSite=Strict; Secure`;
+    // Save to cookies - match backend cookie settings
+    // Remove Secure flag for development (backend has secure = false)
+    document.cookie = `${AUTH_TOKEN_KEY}=${token}; path=/; SameSite=Lax`;
 };
 
 /**
@@ -18,8 +19,8 @@ export const clearAuthToken = () => {
     // Clear from localStorage
     localStorage.removeItem(AUTH_TOKEN_KEY);
     
-    // Clear from cookies by setting an expired date
-    document.cookie = `${AUTH_TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure`;
+    // Clear from cookies by setting an expired date - match the path and SameSite
+    document.cookie = `${AUTH_TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
 };
 
 /**

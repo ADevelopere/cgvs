@@ -1,0 +1,33 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "codegen": "graphql-codegen --config codegen.ts",
+        "codegen:watch": "graphql-codegen --watch",
+        "generate:gql-ts": "node --loader ts-node/esm generate-gql-ts.ts"
+    },
+    "devDependencies": {
+        "@graphql-cli/introspect": "^2.1.0",
+        "@graphql-codegen/cli": "5.0.6",
+        "@graphql-codegen/client-preset": "4.8.1",
+        "@graphql-codegen/import-types-preset": "^3.0.0",
+        "@graphql-codegen/introspection": "^4.0.3",
+        "@graphql-codegen/typescript": "^4.1.6",
+        "@graphql-codegen/typescript-generic-sdk": "^4.0.1",
+        "@graphql-codegen/typescript-operations": "^4.6.1",
+        "@graphql-codegen/typescript-react-apollo": "^4.3.2",
+        "@graphql-tools/load": "^8.1.0",
+        "@graphql-tools/merge": "^9.0.24",
+        "@graphql-tools/schema": "^10.0.23",
+        "gql-generator": "^2.0.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "@0no-co/graphqlsp": "^1.12.16",
+        "@graphql-codegen/gql-tag-operations": "^4.0.17",
+        "@graphql-codegen/schema-ast": "^4.1.0",
+        "@types/node": "^22.15.14",
+        "graphql": "^16.11.0"
+    }
+}
