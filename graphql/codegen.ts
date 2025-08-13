@@ -9,7 +9,7 @@ const config: CodegenConfig = {
         // "./graphql/graphql-ts/**/*.ts",
     ],
     generates: {
-        "./resources/ts/graphql/generated/types.ts": {
+        "../nextjs/graphql/generated/types.ts": {
             plugins: [
                 "typescript",
                 "typescript-operations",
@@ -27,10 +27,10 @@ const config: CodegenConfig = {
                 skipTypeNameForRoot: false,
             },
         },
-        "./graphql/graphql-generated/graphql.schema.json": {
+        "../graphql/generated/graphql.schema.json": {
             plugins: ["introspection"],
         },
-        "./graphql/graphql-generated/schema.graphql": {
+        "../graphql/generated/schema.graphql": {
             plugins: ["schema-ast"],
         },
     },

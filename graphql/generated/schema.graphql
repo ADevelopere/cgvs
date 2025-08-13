@@ -1,0 +1,75 @@
+"""This directive allows results to be deferred during execution"""
+directive @defer(
+  """Deferred behaviour is controlled by this argument"""
+  if: Boolean! = true
+
+  """A unique label that represents the fragment being deferred"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""
+This directive disables error propagation when a non nullable field returns null for the given operation.
+"""
+directive @experimental_disableErrorPropagation on MUTATION | QUERY | SUBSCRIPTION
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+"""A type representing a formatted kotlinx.datetime.LocalDateTime"""
+scalar LocalDateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type LogoutResponse {
+  message: String!
+}
+
+type Mutation {
+  """Login user with email and password"""
+  login(input: LoginInput!): AuthPayload
+
+  """Logout current user"""
+  logout: LogoutResponse!
+
+  """Register a new user"""
+  register(input: RegisterInput!): AuthPayload
+}
+
+type Query {
+  hello: String!
+
+  """Check if user is authenticated"""
+  isAuthenticated: Boolean!
+
+  """Get current authenticated user"""
+  me: User
+
+  """Get user by ID (authenticated users only)"""
+  user(id: Int!): User
+
+  """Get all users (admin only)"""
+  users: [User!]
+}
+
+input RegisterInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+type User {
+  createdAt: LocalDateTime!
+  email: String!
+  emailVerifiedAt: LocalDateTime
+  id: Int!
+  isAdmin: Boolean!
+  name: String!
+  password: String!
+  rememberToken: String
+  updatedAt: LocalDateTime!
+}
