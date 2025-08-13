@@ -20,6 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import isValidEmail from "@/utils/email";
 import useAppTranslation from "@/locale/useAppTranslation";
 import AuthTranslations from "@/locale/components/Auth";
+import { useRouter } from "next/navigation";
 
 type LoginFormProps = {};
 
@@ -27,8 +28,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");
     const [showPassword, setShowPassword] = useState(false);
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
     const { login, isAuthenticated, error, clearError, isLoading } = useAuth();
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
@@ -65,10 +65,10 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            const from = location.state?.from?.pathname || "/admin/dashboard";
-            navigate(from, { replace: true });
+            // Next.js doesn't have location.state, so always go to dashboard
+            router.replace("/admin/dashboard");
         }
-    }, [isAuthenticated, navigate, location]);
+    }, [isAuthenticated, router]);
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newEmail = e.target.value;
@@ -90,9 +90,9 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         }
 
         clearError();
-        const success = await login({ email, password });
+        const success = await login({ input: { email, password } });
         if (success) {
-            navigate("/admin/dashboard");
+            router.push("/admin/dashboard");
         }
     };
 

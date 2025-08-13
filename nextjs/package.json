@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev --turbopack",
+        "dev": "NODE_OPTIONS='--inspect' next dev --turbopack",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
@@ -11,9 +11,12 @@
     "dependencies": {
         "@apollo/client": "^3.13.9",
         "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
         "@mui/icons-material": "^7.3.1",
         "@mui/material": "^7.3.1",
         "@mui/styles": "^6.4.8",
+        "@mui/x-data-grid": "^8.10.0",
+        "@toolpad/core": "^0.16.0",
         "@types/apollo-upload-client": "^18.0.0",
         "@types/stylis": "^4.2.7",
         "apollo-upload-client": "^18.0.1",
