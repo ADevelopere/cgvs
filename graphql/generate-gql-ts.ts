@@ -55,7 +55,7 @@ ${content}
 `;
     
     // Create output directory structure
-    const relativePath = path.relative(path.join(__dirname, '..', 'graphql', 'graphql-generated', 'gqlg'), filePath);
+    const relativePath = path.relative(path.join(__dirname, 'generated', 'gqlg'), filePath);
     const outputPath = path.join(outputDir, relativePath).replace('.gql', '.ts');
     
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
@@ -81,13 +81,13 @@ function processDirectory(dir: string, outputDir: string) {
 
 // Get output directory from command line argument or use default
 const args = process.argv.slice(2);
-const outputDir = args[0] || path.join(__dirname, '..', 'graphql', 'graphql-generated', 'gqlg-ts');
+const outputDir = args[0] || path.join(__dirname, 'generated', 'gqlg-ts');
 
 // Create output directory if it doesn't exist
 fs.mkdirSync(outputDir, { recursive: true });
 
 // Start processing from the gqlg directory
-const inputDir = path.join(__dirname, '..', 'graphql', 'graphql-generated', 'gqlg');
+const inputDir = path.join(__dirname, 'generated', 'gqlg');
 processDirectory(inputDir, outputDir);
 
 console.log('Generation complete!');
