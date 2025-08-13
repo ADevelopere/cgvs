@@ -6,7 +6,7 @@ const config: CodegenConfig = {
     documents: [
         // "./resources/ts/**/*.ts",
         // "./resources/ts/**/*.tsx",
-        // "./graphql/graphql-ts/**/*.ts",
+        "./graphql-ts/**/*.ts",
     ],
     generates: {
         "../nextjs/graphql/generated/types.ts": {

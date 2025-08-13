@@ -16,8 +16,6 @@ data class User(
     val updatedAt: LocalDateTime
 )
 
-
-
 data class AuthPayload(
     val token: String,
     val user: User

@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
     createContext,
     useContext,
@@ -19,6 +21,7 @@ import {
 import { saveAuthToken, clearAuthToken, getAuthToken } from "@/utils/auth";
 import { Box, CircularProgress, Typography, Button } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
+import { loadFromLocalStorage } from "@/utils/storage";
 
 // Loading Component to avoid conditional hook calls
 const LoadingUI: React.FC<{
@@ -30,12 +33,12 @@ const LoadingUI: React.FC<{
     return (
         <Box
             sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh',
-                gap: 2
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100vh",
+                gap: 2,
             }}
         >
             {isLoading ? (
@@ -83,15 +86,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const apolloClient = useApolloClient();
     const [loginMutation] = useLoginMutation();
     const [logoutMutation] = useLogoutMutation();
-    
+
     // Group all state declarations together
     const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(localStorage.getItem("auth_token"));
+    const [token, setToken] = useState<string | null>(
+        loadFromLocalStorage("auth_token"),
+    );
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isTimedOut, setIsTimedOut] = useState(false);
-    
+
     // Refs after state
     const isFirstRender = useRef(true);
 
@@ -119,28 +124,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             try {
                 const response = await loginMutation({
                     variables: {
-                        email: credentials.email,
-                        password: credentials.password,
+                        input: {
+                            email: credentials.input.email,
+                            password: credentials.input.password,
+                        },
                     },
                 });
 
-                if (response.data?.login.token) {
-                    const { user: graphqlUser, token } = response.data.login;
-                    // Convert GraphQL user to our User type
-                    const fullUser: User = {
-                        ...graphqlUser,
-                        isAdmin: graphqlUser.isAdmin,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                    };
+                if (response?.data?.login) {
+                    if (response?.data?.login?.token) {
+                        const { user: graphqlUser, token } =
+                            response.data.login;
+                        // Convert GraphQL user to our User type
+                        const fullUser: User = {
+                            ...graphqlUser,
+                            isAdmin: graphqlUser.isAdmin,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                        };
 
-                    setUser(fullUser);
-                    setToken(token);
-                    setIsAuthenticated(true);
-                    saveAuthToken(token);
-                    return true;
+                        setUser(fullUser);
+                        setToken(token);
+                        setIsAuthenticated(true);
+                        saveAuthToken(token);
+                        return true;
+                    }
+                } else {
+                    setError("Invalid login credentials");
+                    return false;
                 }
+
                 setError("Invalid response from server");
+                console.log(
+                    "Invalid response from server",
+                    "loginMutation",
+                    response,
+                );
+                
                 return false;
             } catch (error) {
                 console.error("Login failed", error);
@@ -177,38 +197,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const timeoutPromise = new Promise<never>((_, reject) => {
             timeoutId = setTimeout(() => {
                 setIsTimedOut(true);
-                reject(new Error('Auth check timed out'));
+                reject(new Error("Auth check timed out"));
             }, 10000); // 10 second timeout
         });
 
         try {
-            const result = await Promise.race([
+            const result = (await Promise.race([
                 apolloClient.query<MeQuery>({
                     query: MeDocument,
                 }),
-                timeoutPromise
-            ]) as { data: MeQuery };
+                timeoutPromise,
+            ])) as { data: MeQuery };
 
             if (timeoutId) {
                 clearTimeout(timeoutId);
             }
-            
+
             if (result?.data?.me) {
                 const fullUser: User = {
                     ...result.data.me,
                     isAdmin: result.data.me.isAdmin,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
                 };
                 setUser(fullUser);
                 setToken(storedToken);
                 setIsAuthenticated(true);
             } else {
-                throw new Error('Invalid response from server');
+                throw new Error("Invalid response from server");
             }
         } catch (error) {
             console.error("Auth check failed", error);
-            setError(error instanceof Error ? error.message : "Failed to check authentication");
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to check authentication",
+            );
             logout();
         } finally {
             setIsLoading(false);
