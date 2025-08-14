@@ -1,0 +1,4 @@
+package tables
+
+class SQL {
+}
