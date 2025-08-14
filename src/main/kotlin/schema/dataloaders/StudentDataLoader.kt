@@ -1,4 +1,4 @@
-package dataloaders
+package schema.dataloaders
 
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import graphql.GraphQLContext

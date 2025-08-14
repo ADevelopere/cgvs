@@ -11,6 +11,8 @@ class TemplateService(
     private val templateRepository: TemplateRepository,
     private val templateCategoryRepository: TemplateCategoryRepository
 ) {
+
+
    suspend fun createTemplate(input: CreateTemplateInput): Template{
 
         // validate name
@@ -36,5 +38,9 @@ class TemplateService(
        ))
 
          return template
+    }
+
+    suspend fun findByIds(ids: List<Int>): List<Template> {
+        return templateRepository.findByIds(ids)
     }
 }

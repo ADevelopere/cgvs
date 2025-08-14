@@ -37,6 +37,14 @@ class TemplateRepository(private val database: Database) {
         )
     }
 
+    suspend fun findByIds(ids: List<Int>): List<Template> = dbQuery {
+        val templates = Templates.selectAll()
+            .where { Templates.id inList ids }
+            .map { rowToTemplate(it) }
+        // Sort to match the order of input ids
+        templates.sortedBy { ids.indexOf(it.id) }
+    }
+
     suspend fun findById(id: Int): Template? = dbQuery {
         Templates.selectAll()
             .where { Templates.id eq id }

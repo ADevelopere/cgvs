@@ -17,6 +17,23 @@ type AuthPayload {
   user: User!
 }
 
+enum CategorySpecialType {
+  deletion
+  main
+}
+
+input CreateTemplateCategoryInput {
+  description: String
+  name: String!
+  parentCategoryId: Int
+}
+
+input CreateTemplateInput {
+  categoryId: Int!
+  description: String
+  name: String!
+}
+
 """A type representing a formatted kotlinx.datetime.LocalDateTime"""
 scalar LocalDateTime
 
@@ -30,6 +47,9 @@ type LogoutResponse {
 }
 
 type Mutation {
+  createTemplate(input: CreateTemplateInput!): Template!
+  createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
+
   """Login user with email and password"""
   login(input: LoginInput!): AuthPayload
 
@@ -60,6 +80,31 @@ input RegisterInput {
   email: String!
   name: String!
   password: String!
+}
+
+type Template {
+  category: TemplateCategory!
+  categoryId: Int!
+  createdAt: LocalDateTime!
+  description: String
+  id: Int!
+  imageUrl: String
+  name: String!
+  order: Int
+  updatedAt: LocalDateTime!
+}
+
+type TemplateCategory {
+  categorySpecialType: CategorySpecialType
+  createdAt: LocalDateTime!
+  deletedAt: LocalDateTime
+  description: String
+  id: Int!
+  name: String!
+  order: Int
+  parentCategory: TemplateCategory
+  parentCategoryId: Int
+  updatedAt: LocalDateTime!
 }
 
 type User {

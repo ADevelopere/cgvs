@@ -5,7 +5,7 @@ import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalDate
-import dataloaders.TemplateDataLoader
+import schema.dataloaders.TemplateDataLoader
 import java.util.concurrent.CompletableFuture
 
 @Serializable

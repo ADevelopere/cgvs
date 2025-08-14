@@ -1,0 +1,45 @@
+mutation createTemplate($input: CreateTemplateInput!){
+    createTemplate(input: $input){
+        category{
+            categorySpecialType
+            createdAt
+            deletedAt
+            description
+            id
+            name
+            order
+            parentCategory{
+                categorySpecialType
+                createdAt
+                deletedAt
+                description
+                id
+                name
+                order
+                parentCategory{
+                    categorySpecialType
+                    createdAt
+                    deletedAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategoryId
+                    updatedAt
+                }
+                parentCategoryId
+                updatedAt
+            }
+            parentCategoryId
+            updatedAt
+        }
+        categoryId
+        createdAt
+        description
+        id
+        imageUrl
+        name
+        order
+        updatedAt
+    }
+}

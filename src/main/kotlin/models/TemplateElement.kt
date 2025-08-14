@@ -3,7 +3,7 @@ package models
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.datetime.LocalDateTime
-import dataloaders.TemplateDataLoader
+import schema.dataloaders.TemplateDataLoader
 import java.util.concurrent.CompletableFuture
 
 

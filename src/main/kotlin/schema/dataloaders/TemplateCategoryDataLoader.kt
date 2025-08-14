@@ -1,4 +1,4 @@
-package dataloaders
+package schema.dataloaders
 
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import com.expediagroup.graphql.generator.extensions.get
@@ -12,9 +12,7 @@ import org.dataloader.DataLoaderOptions
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.TemplateCategoryService
-import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.getValue
 
 val TemplateCategoryDataLoader: KotlinDataLoader<Int, TemplateCategory> =
     object : KotlinDataLoader<Int, TemplateCategory>, KoinComponent {
@@ -29,6 +27,30 @@ val TemplateCategoryDataLoader: KotlinDataLoader<Int, TemplateCategory> =
 
                     coroutineScope.future { // 5
                         service.findByIds(ids)
+                    }
+                },
+                DataLoaderOptions.newOptions()
+                    .setBatchLoaderContextProvider { graphQLContext }
+            )
+    }
+
+
+val TemplateCategoryChildrenDataLoader: KotlinDataLoader<Int, List<TemplateCategory>> =
+    object : KotlinDataLoader<Int, List<TemplateCategory>>, KoinComponent {
+        override val dataLoaderName = "TemplateCategoryChildrenDataLoader"
+        private val service: TemplateCategoryService by inject()
+        override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<TemplateCategory>> =
+            DataLoaderFactory.newDataLoader(
+                { parentIds, batchLoaderEnvironment ->
+                    val coroutineScope =
+                        batchLoaderEnvironment.getContext<GraphQLContext>()?.get<CoroutineScope>()
+                            ?: CoroutineScope(EmptyCoroutineContext)
+
+                    coroutineScope.future {
+                        // For each parentId, fetch its children
+                        parentIds.map { parentId ->
+                            service.findByParentId(parentId)
+                        }
                     }
                 },
                 DataLoaderOptions.newOptions()

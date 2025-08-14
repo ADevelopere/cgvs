@@ -60,7 +60,7 @@ const logger = {
 // Helper function to find a category in a hierarchical tree by ID
 const findCategoryInTreeById = (
     categories: TemplateCategory[],
-    categoryId: string,
+    categoryId: number,
 ): TemplateCategory | null => {
     for (const category of categories) {
         if (category.id === categoryId) {

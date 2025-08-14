@@ -51,7 +51,7 @@ class TemplateCategoryRepository(private val database: Database) {
             .map { rowToTemplateCategory(it) }
     }
 
-    suspend fun findByParent(parentId: Int): List<TemplateCategory> = dbQuery {
+    suspend fun findByParentId(parentId: Int): List<TemplateCategory> = dbQuery {
         TemplateCategories.selectAll()
             .where { TemplateCategories.parentCategoryId eq parentId }
             .map { rowToTemplateCategory(it) }
