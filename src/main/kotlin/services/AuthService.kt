@@ -50,7 +50,7 @@ class AuthService(
         return userRepository.create(newUser)
     }
 
-    suspend fun generateJWT(user: User): String {
+     fun generateJWT(user: User): String {
         return JWT.create()
             .withSubject("Authentication")
             .withIssuer(jwtDomain)

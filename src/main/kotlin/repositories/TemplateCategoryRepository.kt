@@ -1,43 +1,42 @@
 package repositories
 
-import models.TemplateCategory
-import tables.TemplateCategories
-import tables.SpecialType
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.v1.jdbc.Database
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import models.TemplateCategory
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.max
+import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import tables.CategorySpecialType
+import tables.TemplateCategories
+import util.now
 
 class TemplateCategoryRepository(private val database: Database) {
 
     suspend fun create(category: TemplateCategory): TemplateCategory = dbQuery {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+
         val insertStatement = TemplateCategories.insert {
             it[name] = category.name
             it[description] = category.description
             it[parentCategoryId] = category.parentCategoryId
             it[order] = category.order
-            it[specialType] = category.specialType
-            it[deletedAt] = category.deletedAt
-            it[createdAt] = now
-            it[updatedAt] = now
+            it[categorySpecialType] = category.categorySpecialType
+            it[createdAt] = now()
+            it[updatedAt] = now()
         }
 
         val id = insertStatement[TemplateCategories.id]
         category.copy(
             id = id,
-            createdAt = now,
-            updatedAt = now
         )
+    }
+
+    suspend fun findByIds(ids: List<Int>): List<TemplateCategory> = dbQuery {
+        val categories = TemplateCategories.selectAll()
+            .where { TemplateCategories.id inList ids }
+            .map { rowToTemplateCategory(it) }
+        // Sort to match the order of input ids
+        categories.sortedBy { ids.indexOf(it.id) }
     }
 
     suspend fun findById(id: Int): TemplateCategory? = dbQuery {
@@ -49,12 +48,6 @@ class TemplateCategoryRepository(private val database: Database) {
 
     suspend fun findAll(): List<TemplateCategory> = dbQuery {
         TemplateCategories.selectAll()
-            .map { rowToTemplateCategory(it) }
-    }
-
-    suspend fun findActive(): List<TemplateCategory> = dbQuery {
-        TemplateCategories.selectAll()
-            .where { TemplateCategories.deletedAt.isNull() }
             .map { rowToTemplateCategory(it) }
     }
 
@@ -70,9 +63,9 @@ class TemplateCategoryRepository(private val database: Database) {
             .map { rowToTemplateCategory(it) }
     }
 
-    suspend fun findBySpecialType(specialType: SpecialType): List<TemplateCategory> = dbQuery {
+    suspend fun findBySpecialType(categorySpecialType: CategorySpecialType): List<TemplateCategory> = dbQuery {
         TemplateCategories.selectAll()
-            .where { TemplateCategories.specialType eq specialType }
+            .where { TemplateCategories.categorySpecialType eq categorySpecialType }
             .map { rowToTemplateCategory(it) }
     }
 
@@ -83,9 +76,8 @@ class TemplateCategoryRepository(private val database: Database) {
                 it[description] = category.description
                 it[parentCategoryId] = category.parentCategoryId
                 it[order] = category.order
-                it[specialType] = category.specialType
-                it[deletedAt] = category.deletedAt
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+                it[categorySpecialType] = category.categorySpecialType
+                it[updatedAt] = now()
             }
         }
         return if (updated > 0) {
@@ -95,29 +87,19 @@ class TemplateCategoryRepository(private val database: Database) {
         }
     }
 
-    suspend fun softDelete(id: Int): Boolean {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-        val updated = dbQuery {
-            TemplateCategories.update({ TemplateCategories.id eq id }) {
-                it[deletedAt] = now
-                it[updatedAt] = now
-            }
+    suspend fun findMaxOrderByParentCategoryId(parentCategoryId: Int?): Int = dbQuery {
+        val maxOrderExpr = TemplateCategories.order.max()
+        val query = if (parentCategoryId == null) {
+            TemplateCategories
+                .select(maxOrderExpr)
+                .where { TemplateCategories.parentCategoryId.isNull() }
+        } else {
+            TemplateCategories
+                .select(maxOrderExpr)
+                .where { TemplateCategories.parentCategoryId eq parentCategoryId }
         }
-        return updated > 0
-    }
-
-    suspend fun restore(id: Int): Boolean {
-        val updated = dbQuery {
-            TemplateCategories.update({ TemplateCategories.id eq id }) {
-                it[deletedAt] = null
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-            }
-        }
-        return updated > 0
-    }
-
-    suspend fun delete(id: Int): Boolean = dbQuery {
-        TemplateCategories.deleteWhere { TemplateCategories.id eq id } > 0
+        val maxOrder = query.map { it[maxOrderExpr] }.singleOrNull()
+        maxOrder ?: 1
     }
 
     private fun rowToTemplateCategory(row: ResultRow): TemplateCategory {
@@ -127,8 +109,7 @@ class TemplateCategoryRepository(private val database: Database) {
             description = row[TemplateCategories.description],
             parentCategoryId = row[TemplateCategories.parentCategoryId],
             order = row[TemplateCategories.order],
-            specialType = row[TemplateCategories.specialType],
-            deletedAt = row[TemplateCategories.deletedAt],
+            categorySpecialType = row[TemplateCategories.categorySpecialType],
             createdAt = row[TemplateCategories.createdAt],
             updatedAt = row[TemplateCategories.updatedAt]
         )

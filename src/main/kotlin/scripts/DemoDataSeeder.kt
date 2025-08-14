@@ -158,7 +158,7 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                 description = categoryData.description,
                 parentCategoryId = null,
                 order = index + 1,
-                specialType = null,
+                categorySpecialType = null,
                 deletedAt = null,
                 createdAt = currentTime,
                 updatedAt = currentTime
@@ -174,7 +174,7 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                     description = subCategoryData.description,
                     parentCategoryId = createdParent.id,
                     order = subIndex + 1,
-                    specialType = null,
+                    categorySpecialType = null,
                     deletedAt = null,
                     createdAt = currentTime,
                     updatedAt = currentTime
@@ -208,9 +208,7 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                 description = "نموذج تجريبي لـ${category.name}",
                 imageUrl = demoImages[index % demoImages.size],
                 categoryId = category.id,
-                preDeletionCategoryId = null,
                 order = 1,
-                trashedAt = null,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )

@@ -20,6 +20,7 @@ class CustomDataFetcherExceptionHandler : DataFetcherExceptionHandler {
                     .extensions(mapOf("code" to "UNAUTHENTICATED"))
                     .build()
             }
+
             is AuthorizationException -> {
                 graphql.GraphqlErrorBuilder.newError()
                     .message(exception.message ?: "Access denied")
@@ -28,9 +29,12 @@ class CustomDataFetcherExceptionHandler : DataFetcherExceptionHandler {
                     .extensions(mapOf("code" to "UNAUTHORIZED"))
                     .build()
             }
+
             else -> {
                 graphql.GraphqlErrorBuilder.newError()
-                    .message("Internal server error")
+                    .message(
+                        "Internal server error" +
+                        (exception.message?.let { ": $it" } ?: ""))
                     .location(sourceLocation)
                     .path(path.toList())
                     .extensions(mapOf("code" to "INTERNAL_ERROR"))

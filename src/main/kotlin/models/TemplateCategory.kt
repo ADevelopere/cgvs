@@ -5,8 +5,18 @@ import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import dataloaders.TemplateCategoryDataLoader
-import tables.SpecialType
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import services.TemplateCategoryService
+import tables.CategorySpecialType
+import util.now
 import java.util.concurrent.CompletableFuture
+import kotlin.getValue
+
+
+object TemplateCategoryHelper : KoinComponent {
+    private val service: TemplateCategoryService by inject()
+}
 
 @Serializable
 data class TemplateCategory(
@@ -15,11 +25,11 @@ data class TemplateCategory(
     val description: String? = null,
     val parentCategoryId: Int? = null,
     val order: Int? = null,
-    val specialType: SpecialType? = null,
+    val categorySpecialType: CategorySpecialType? = null,
     val deletedAt: LocalDateTime? = null,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
-){
+    val createdAt: LocalDateTime = now(),
+    val updatedAt: LocalDateTime = now()
+) {
     fun parentCategory(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory?> {
         return if (parentCategoryId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, parentCategoryId)
@@ -29,16 +39,14 @@ data class TemplateCategory(
 
 data class CreateTemplateCategoryInput(
     val name: String,
-    val description: String? = null,
-    val parentCategoryId: String? = null,
-    val order: Int? = null,
-    val specialType: String? = null
+    val description: String?,
+    val parentCategoryId: Int?,
 )
 
 data class UpdateTemplateCategoryInput(
-    val name: String? = null,
-    val description: String? = null,
-    val parentCategoryId: String? = null,
-    val order: Int? = null,
-    val specialType: String? = null
+    val id: Int,
+    val name: String,
+    val description: String?,
+    val parentCategoryId: Int?,
+    val order: Int
 )
