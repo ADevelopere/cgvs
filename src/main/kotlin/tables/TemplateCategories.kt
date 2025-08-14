@@ -9,15 +9,15 @@ object TemplateCategories : Table() {
     val description = text("description").nullable()
     val parentCategoryId = integer("parent_category_id").references(id).nullable()
     val order = integer("order").nullable()
-    val specialType = enumerationByName("special_type", 10, SpecialType::class).nullable()
-    val deletedAt = datetime("deleted_at").nullable()
+    val categorySpecialType = enumerationByName("special_type", 10, CategorySpecialType::class).nullable()
+
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 
     override val primaryKey = PrimaryKey(id)
 }
 
-enum class SpecialType {
+enum class CategorySpecialType {
     deletion,
     main
 }

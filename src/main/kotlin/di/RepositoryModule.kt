@@ -9,17 +9,24 @@ import repositories.SessionRepository
 import services.AuthService
 import io.ktor.server.application.*
 import org.koin.core.qualifier.named
+import repositories.TemplateCategoryRepository
+import repositories.TemplateRepository
+import services.TemplateCategoryService
+import services.TemplateService
 
 val repositoryModule = module {
     single<Database> { Database.connect(DatabaseConfig.dataSource) }
     single<UserRepository> { UserRepository(get()) }
     single<SessionRepository> { SessionRepository(get()) }
-    single<GraphQLAuthenticationHandler> { GraphQLAuthenticationHandler() }
+    single<TemplateCategoryRepository> { TemplateCategoryRepository(get()) }
+    single<TemplateRepository> { TemplateRepository(get()) }
 }
 
-// Separate module for services that need application context
+// Separate module for services
 fun createServiceModule(application: Application) = module {
-    single<AuthService> { 
+    single<GraphQLAuthenticationHandler> { GraphQLAuthenticationHandler() }
+
+    single<AuthService> {
         val config = application.environment.config
         AuthService(
             userRepository = get(),
@@ -27,6 +34,19 @@ fun createServiceModule(application: Application) = module {
             jwtSecret = config.property("postgres.secret").getString(),
             jwtDomain = config.property("postgres.domain").getString(),
             jwtAudience = config.property("postgres.audience").getString()
+        )
+    }
+
+    single< TemplateCategoryService>{
+        TemplateCategoryService(
+            templateCategoryRepository = get(),
+        )
+    }
+
+    single<TemplateService> {
+        TemplateService(
+            templateRepository = get(),
+            templateCategoryRepository = get()
         )
     }
 }

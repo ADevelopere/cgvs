@@ -16,28 +16,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import util.now
 
 class TemplateRepository(private val database: Database) {
 
     suspend fun create(template: Template): Template = dbQuery {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val insertStatement = Templates.insert {
             it[name] = template.name
             it[description] = template.description
             it[imageUrl] = template.imageUrl
             it[categoryId] = template.categoryId
-            it[preDeletionCategoryId] = template.preDeletionCategoryId
             it[order] = template.order
-            it[trashedAt] = template.trashedAt
-            it[createdAt] = now
-            it[updatedAt] = now
+            it[createdAt] = now()
+            it[updatedAt] = now()
         }
 
         val id = insertStatement[Templates.id]
         template.copy(
             id = id,
-            createdAt = now,
-            updatedAt = now
         )
     }
 
@@ -72,9 +68,7 @@ class TemplateRepository(private val database: Database) {
                 it[description] = template.description
                 it[imageUrl] = template.imageUrl
                 it[categoryId] = template.categoryId
-                it[preDeletionCategoryId] = template.preDeletionCategoryId
                 it[order] = template.order
-                it[trashedAt] = template.trashedAt
                 it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
             }
         }
@@ -86,22 +80,20 @@ class TemplateRepository(private val database: Database) {
     }
 
     suspend fun softDelete(id: Int): Boolean {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val updated = dbQuery {
             Templates.update({ Templates.id eq id }) {
-                it[deletedAt] = now
-                it[updatedAt] = now
+                it[deletedAt] = now()
+                it[updatedAt] = now()
             }
         }
         return updated > 0
     }
 
     suspend fun trash(id: Int): Boolean {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val updated = dbQuery {
             Templates.update({ Templates.id eq id }) {
-                it[trashedAt] = now
-                it[updatedAt] = now
+                it[trashedAt] = now()
+                it[updatedAt] = now()
             }
         }
         return updated > 0
@@ -129,9 +121,7 @@ class TemplateRepository(private val database: Database) {
             description = row[Templates.description],
             imageUrl = row[Templates.imageUrl],
             categoryId = row[Templates.categoryId],
-            preDeletionCategoryId = row[Templates.preDeletionCategoryId],
             order = row[Templates.order],
-            trashedAt = row[Templates.trashedAt],
             createdAt = row[Templates.createdAt],
             updatedAt = row[Templates.updatedAt]
         )

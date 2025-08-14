@@ -12,3 +12,9 @@ postgres:
   audience: "jwt-audience"
   realm: "ktor sample app"
   secret: "your-super-secret-jwt-key-change-in-production"
+
+filesystem:
+  upload_limit: 2048
+
+image:
+  allowed_types: ['jpeg', 'png', 'jpg', 'gif']

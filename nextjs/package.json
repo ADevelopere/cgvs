@@ -22,6 +22,7 @@
         "apollo-upload-client": "^18.0.1",
         "jss": "^10.10.0",
         "jss-rtl": "^0.3.0",
+        "lucide-react": "^0.539.0",
         "next": "15.3.5",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",

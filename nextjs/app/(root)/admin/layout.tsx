@@ -1,20 +1,18 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
-import ErrorBoundary from "../../error/ErrorBoundary";
 import {
     Dashboard as DashboardIcon,
     Description as TemplatesIcon,
     Category as CategoryIcon,
     People as StudentsIcon,
 } from "@mui/icons-material";
-import { useAuth } from "@/contexts/AuthContext";
-import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
-import { NavigationProvider } from "@/contexts/NavigationContext";
-import DashboardLayout from "@/components/admin/layout/DashboardLayout";
-import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { HomeIcon } from "lucide-react";
-import DashboardEndActions from "../../common/DashboardEndActions";
+import { useAuth } from "@/contexts/AuthContext";
+import { NavigationProvider } from "@/contexts/NavigationContext";
+import DashboardLayout from "@/views/dashboard/layout/DashboardLayout";
+import DashboardEndActions from "@/components/common/DashboardEndActions";
 import { TemplateCategoryManagementProvider } from "@/contexts/template/TemplateCategoryManagementContext";
+import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
+import { Navigation, Title } from "@/contexts/adminLayout.types";
 
 const NAVIGATION: Navigation = [
     {
@@ -53,7 +51,11 @@ const TITLE: Title = {
     textColor: "text.primary",
 };
 
-const AdminLayout: React.FC = () => {
+const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}: {
+    children: React.ReactNode;
+}) => {
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
@@ -65,23 +67,21 @@ const AdminLayout: React.FC = () => {
     }
 
     return (
-        <ErrorBoundary>
-            <NavigationProvider>
-                <DashboardLayoutProvider
-                    initialTitle={TITLE}
-                    initialNavigation={NAVIGATION}
-                    initialSlots={{
-                        endActions: <DashboardEndActions />,
-                    }}
-                >
-                    <DashboardLayout>
-                        <TemplateCategoryManagementProvider>
-                            <Outlet />
-                        </TemplateCategoryManagementProvider>
-                    </DashboardLayout>
-                </DashboardLayoutProvider>
-            </NavigationProvider>
-        </ErrorBoundary>
+        <NavigationProvider>
+            <DashboardLayoutProvider
+                initialTitle={TITLE}
+                initialNavigation={NAVIGATION}
+                initialSlots={{
+                    endActions: <DashboardEndActions />,
+                }}
+            >
+                <DashboardLayout>
+                    <TemplateCategoryManagementProvider>
+                        {children}
+                    </TemplateCategoryManagementProvider>
+                </DashboardLayout>
+            </DashboardLayoutProvider>
+        </NavigationProvider>
     );
 };
 

@@ -21,7 +21,11 @@ import schema.mutation.AuthMutation
 import hooks.CustomSchemaGeneratorHooks
 import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
+import dataloaders.TemplateCategoryDataLoader
+import schema.mutation.TemplateCategoryMutation
+import schema.mutation.TemplateMutation
 import kotlin.time.Duration.Companion.seconds
+
 
 fun Application.graphQLModule() {
     install(WebSockets) {
@@ -41,12 +45,16 @@ fun Application.graphQLModule() {
                 UserQuery()
             )
             mutations = listOf(
-                AuthMutation()
+                AuthMutation(),
+                TemplateCategoryMutation(),
+                TemplateMutation()
             )
             hooks = CustomSchemaGeneratorHooks()
         }
         engine {
-            dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory()
+            dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(
+                TemplateCategoryDataLoader
+            )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }
         server {
