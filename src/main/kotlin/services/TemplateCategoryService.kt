@@ -61,4 +61,8 @@ class TemplateCategoryService(
     suspend fun findByIds(ids: List<Int>): List<TemplateCategory> {
       return  templateCategoryRepository.findByIds(ids)
     }
+
+    suspend fun findByParentId(parentId: Int): List<TemplateCategory> {
+        return templateCategoryRepository.findByParentId(parentId)
+    }
 }

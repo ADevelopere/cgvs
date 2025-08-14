@@ -4,19 +4,12 @@ import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
-import dataloaders.TemplateCategoryDataLoader
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import services.TemplateCategoryService
+import schema.dataloaders.TemplateCategoryChildrenDataLoader
+import schema.dataloaders.TemplateCategoryDataLoader
 import tables.CategorySpecialType
 import util.now
 import java.util.concurrent.CompletableFuture
-import kotlin.getValue
 
-
-object TemplateCategoryHelper : KoinComponent {
-    private val service: TemplateCategoryService by inject()
-}
 
 @Serializable
 data class TemplateCategory(
@@ -34,6 +27,13 @@ data class TemplateCategory(
         return if (parentCategoryId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, parentCategoryId)
         } else CompletableFuture.completedFuture(null)
+    }
+
+    fun childCategories(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateCategory>> {
+        return dataFetchingEnvironment.getValueFromDataLoader(
+            TemplateCategoryChildrenDataLoader.dataLoaderName,
+            id
+        )
     }
 }
 

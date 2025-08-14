@@ -34,7 +34,7 @@ class CustomDataFetcherExceptionHandler : DataFetcherExceptionHandler {
                 graphql.GraphqlErrorBuilder.newError()
                     .message(
                         "Internal server error" +
-                        (exception.message?.let { ": $it" } ?: ""))
+                            (exception.message?.let { ": $it" } ?: ""))
                     .location(sourceLocation)
                     .path(path.toList())
                     .extensions(mapOf("code" to "INTERNAL_ERROR"))

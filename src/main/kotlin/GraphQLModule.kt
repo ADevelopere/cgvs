@@ -21,7 +21,9 @@ import schema.mutation.AuthMutation
 import hooks.CustomSchemaGeneratorHooks
 import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
-import dataloaders.TemplateCategoryDataLoader
+import schema.dataloaders.TemplateCategoryChildrenDataLoader
+import schema.dataloaders.TemplateCategoryDataLoader
+import schema.dataloaders.TemplateDataLoader
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
 import kotlin.time.Duration.Companion.seconds
@@ -53,7 +55,9 @@ fun Application.graphQLModule() {
         }
         engine {
             dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(
-                TemplateCategoryDataLoader
+                TemplateCategoryDataLoader,
+                TemplateCategoryChildrenDataLoader,
+                TemplateDataLoader
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }
@@ -61,6 +65,7 @@ fun Application.graphQLModule() {
             contextFactory = CustomGraphQLContextFactory()
         }
     }
+
     routing {
         graphQLGetRoute()
         graphQLPostRoute()

@@ -4,7 +4,7 @@ import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
-import dataloaders.TemplateCategoryDataLoader
+import schema.dataloaders.TemplateCategoryDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
 

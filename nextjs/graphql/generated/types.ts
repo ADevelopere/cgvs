@@ -24,6 +24,22 @@ export type AuthPayload = {
   user: User;
 };
 
+export type CategorySpecialType =
+  | 'deletion'
+  | 'main';
+
+export type CreateTemplateCategoryInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  parentCategoryId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateTemplateInput = {
+  categoryId: Scalars['Int']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -36,12 +52,24 @@ export type LogoutResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createTemplate: Template;
+  createTemplateCategory: TemplateCategory;
   /** Login user with email and password */
   login?: Maybe<AuthPayload>;
   /** Logout current user */
   logout: LogoutResponse;
   /** Register a new user */
   register?: Maybe<AuthPayload>;
+};
+
+
+export type MutationCreateTemplateArgs = {
+  input: CreateTemplateInput;
+};
+
+
+export type MutationCreateTemplateCategoryArgs = {
+  input: CreateTemplateCategoryInput;
 };
 
 
@@ -76,6 +104,33 @@ export type RegisterInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+export type Template = {
+  __typename?: 'Template';
+  category: TemplateCategory;
+  categoryId: Scalars['Int']['output'];
+  createdAt: Scalars['LocalDateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+  updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+export type TemplateCategory = {
+  __typename?: 'TemplateCategory';
+  categorySpecialType?: Maybe<CategorySpecialType>;
+  createdAt: Scalars['LocalDateTime']['output'];
+  deletedAt?: Maybe<Scalars['LocalDateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+  parentCategory?: Maybe<TemplateCategory>;
+  parentCategoryId?: Maybe<Scalars['Int']['output']>;
+  updatedAt: Scalars['LocalDateTime']['output'];
 };
 
 export type User = {
