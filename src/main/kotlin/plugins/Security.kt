@@ -117,27 +117,27 @@ fun Application.configureSecurity() {
 //        checkHeader("X-CSRF-Token")
 //    }
 
-    install(CORS) {
-        allowHost("localhost:3000") // Next.js frontend
-        allowHost("localhost:3001") // Alternative frontend port
-        allowHost("127.0.0.1:3000")
-        allowHost("127.0.0.1:3001")
-        // Add your production domain here
-        // allowHost("your-production-domain.com", schemes = listOf("https"))
-        
-        allowCredentials = true
-        allowHeader(HttpHeaders.ContentType)
-        allowHeader(HttpHeaders.Authorization)
-        allowHeader("X-CSRF-TOKEN")
-        allowHeader("X-Requested-With")
-        
-        allowMethod(HttpMethod.Options)
-        allowMethod(HttpMethod.Get)
-        allowMethod(HttpMethod.Post)
-        allowMethod(HttpMethod.Put)
-        allowMethod(HttpMethod.Delete)
-        allowMethod(HttpMethod.Patch)
-    }
+//    install(CORS) {
+//        allowHost("localhost:3000") // Next.js frontend
+//        allowHost("localhost:3001") // Alternative frontend port
+//        allowHost("127.0.0.1:3000")
+//        allowHost("127.0.0.1:3001")
+//        // Add your production domain here
+//        // allowHost("your-production-domain.com", schemes = listOf("https"))
+//        
+//        allowCredentials = true
+//        allowHeader(HttpHeaders.ContentType)
+//        allowHeader(HttpHeaders.Authorization)
+//        allowHeader("X-CSRF-TOKEN")
+//        allowHeader("X-Requested-With")
+//        
+//        allowMethod(HttpMethod.Options)
+//        allowMethod(HttpMethod.Get)
+//        allowMethod(HttpMethod.Post)
+//        allowMethod(HttpMethod.Put)
+//        allowMethod(HttpMethod.Delete)
+//        allowMethod(HttpMethod.Patch)
+//    }
 //    authentication {
 //        oauth("auth-oauth-google") {
 //            urlProvider = { "http://localhost:8080/callback" }
