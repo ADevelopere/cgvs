@@ -3,6 +3,7 @@ package services
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.server.config.ApplicationConfig
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -15,10 +16,11 @@ import java.util.*
 class AuthService(
     private val userRepository: UserRepository,
     private val sessionRepository: SessionRepository,
-    private val jwtSecret: String,
-    private val jwtDomain: String,
-    private val jwtAudience: String
+    applicationConfig: ApplicationConfig
 ) {
+    private val jwtSecret: String = applicationConfig.property("postgres.secret").getString()
+    private val jwtDomain: String = applicationConfig.property("postgres.domain").getString()
+    private val jwtAudience: String = applicationConfig.property("postgres.audience").getString()
 
     suspend fun authenticateUser(email: String, password: String): User? {
         val user = userRepository.findByEmail(email)

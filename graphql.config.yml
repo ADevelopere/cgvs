@@ -1,8 +1,6 @@
 schema:
   [
-    "graphql-generated/schema.graphql",
-    "schema-directives.graphql",
-    "programmatic-types.graphql",
+    "graphql/generated/schema.graphql",
   ]
 documents: "**/**/*.graphql"
 extensions:

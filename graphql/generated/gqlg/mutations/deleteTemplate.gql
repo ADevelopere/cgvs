@@ -1,5 +1,5 @@
-mutation createTemplate($input: CreateTemplateInput!){
-    createTemplate(input: $input){
+mutation deleteTemplate($id: Int!){
+    deleteTemplate(id: $id){
         category{
             categorySpecialType
             childCategories{

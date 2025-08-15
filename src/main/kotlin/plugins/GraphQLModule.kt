@@ -15,7 +15,6 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
-import schema.query.HelloQueryService
 import schema.query.AuthQuery
 import schema.query.UserQuery
 import schema.mutation.AuthMutation
@@ -44,7 +43,6 @@ fun Application.graphQLModule() {
         schema {
             packages = listOf("models")
             queries = listOf(
-                HelloQueryService(),
                 AuthQuery(),
                 UserQuery()
             )
@@ -71,7 +69,6 @@ fun Application.graphQLModule() {
     routing {
         graphQLGetRoute()
         graphQLPostRoute()
-//        graphQLPostRouteWithMultipart()
         graphQLSubscriptionsRoute()
         graphiQLRoute()
         graphQLSDLRoute()

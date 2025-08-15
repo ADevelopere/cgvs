@@ -3,7 +3,7 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object TemplateRecipientGroups : Table() {
+object TemplateRecipientGroups : Table("template_recipient_groups") {
     val id = integer("id").autoIncrement()
     val templateId = integer("template_id").references(Templates.id)
     val name = varchar("name", 255)

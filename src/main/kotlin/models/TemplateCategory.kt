@@ -1,5 +1,6 @@
 package models
 
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
@@ -16,19 +17,20 @@ data class TemplateCategory(
     val id: Int = 0,
     val name: String,
     val description: String? = null,
-    val parentCategoryId: Int? = null,
+    @GraphQLIgnore val parentCategoryId: Int? = null,
     val order: Int? = null,
     val categorySpecialType: CategorySpecialType? = null,
-    val deletedAt: LocalDateTime? = null,
     val createdAt: LocalDateTime = now(),
     val updatedAt: LocalDateTime = now()
 ) {
+    @Suppress("unused")
     fun parentCategory(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory?> {
         return if (parentCategoryId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, parentCategoryId)
         } else CompletableFuture.completedFuture(null)
     }
 
+    @Suppress("unused")
     fun childCategories(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateCategory>> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateCategoryChildrenDataLoader.dataLoaderName,

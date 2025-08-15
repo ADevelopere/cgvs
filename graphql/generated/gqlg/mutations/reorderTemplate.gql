@@ -1,5 +1,5 @@
-mutation createTemplate($input: CreateTemplateInput!){
-    createTemplate(input: $input){
+mutation reorderTemplate($input: ReorderTemplateInput!){
+    reorderTemplate(input: $input){
         category{
             categorySpecialType
             childCategories{

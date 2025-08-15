@@ -607,8 +607,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
         createTemplateMutation,
         updateTemplateMutation,
         updateTemplateWithImageMutation,
-        moveTemplateToDeletionCategoryMutation,
-        restoreTemplateMutation,
+        suspendTemplateMutation: moveTemplateToDeletionCategoryMutation,
+        unsuspendTemplateMutation: restoreTemplateMutation,
     } = useTemplateGraphQL();
     const createTemplate = useCallback(
         async (

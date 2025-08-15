@@ -4,7 +4,7 @@ import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 import org.jetbrains.exposed.v1.datetime.date
 
-object TemplateVariables : Table() {
+object TemplateVariables : Table("template_variables") {
     val id = integer("id").autoIncrement()
     val templateId = integer("template_id").references(Templates.id)
     val name = varchar("name", 255)
@@ -32,7 +32,7 @@ object TemplateVariables : Table() {
     val updatedAt = datetime("updated_at")
 
     override val primaryKey = PrimaryKey(id)
-    
+
     init {
         uniqueIndex("template_variables_name_unique", templateId, name)
     }

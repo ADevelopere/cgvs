@@ -3,102 +3,20 @@ import { gql } from '@apollo/client';
 export const UNSUSPEND_TEMPLATE = gql`
 mutation unsuspendTemplate($id: Int!){
     unsuspendTemplate(id: $id){
+        id
+        name
+        description
+        imageUrl
         category{
-            categorySpecialType
-            childCategories{
-                categorySpecialType
-                childCategories{
-                    categorySpecialType
-                    createdAt
-                    description
-                    id
-                    name
-                    order
-                    parentCategory{
-                        categorySpecialType
-                        childCategories{
-                            categorySpecialType
-                            createdAt
-                            description
-                            id
-                            name
-                            order
-                            updatedAt
-                        }
-                        createdAt
-                        description
-                        id
-                        name
-                        order
-                        parentCategory{
-                            categorySpecialType
-                            createdAt
-                            description
-                            id
-                            name
-                            order
-                            updatedAt
-                        }
-                        updatedAt
-                    }
-                    updatedAt
-                }
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
-            createdAt
-            description
             id
             name
-            order
-            parentCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
-            updatedAt
         }
-        createdAt
-        description
-        id
-        imageUrl
-        name
         order
         preSuspensionCategory{
-            categorySpecialType
-            childCategories{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
-            createdAt
-            description
             id
             name
-            order
-            parentCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
-            updatedAt
         }
+        createdAt
         updatedAt
     }
 }

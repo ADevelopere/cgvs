@@ -2,9 +2,6 @@ package repositories
 
 import models.Template
 import tables.Templates
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -14,8 +11,10 @@ import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.max
+import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import tables.TemplateCategories
 import util.now
 
 class TemplateRepository(private val database: Database) {
@@ -63,12 +62,6 @@ class TemplateRepository(private val database: Database) {
             .map { rowToTemplate(it) }
     }
 
-    suspend fun findActive(): List<Template> = dbQuery {
-        Templates.selectAll()
-            .where { Templates.deletedAt.isNull() and Templates.trashedAt.isNull() }
-            .map { rowToTemplate(it) }
-    }
-
     suspend fun update(id: Int, template: Template): Template? {
         val updated = dbQuery {
             Templates.update({ Templates.id eq id }) {
@@ -77,7 +70,7 @@ class TemplateRepository(private val database: Database) {
                 it[imageUrl] = template.imageUrl
                 it[categoryId] = template.categoryId
                 it[order] = template.order
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+                it[updatedAt] = now()
             }
         }
         return if (updated > 0) {
@@ -87,39 +80,19 @@ class TemplateRepository(private val database: Database) {
         }
     }
 
-    suspend fun softDelete(id: Int): Boolean {
-        val updated = dbQuery {
-            Templates.update({ Templates.id eq id }) {
-                it[deletedAt] = now()
-                it[updatedAt] = now()
-            }
-        }
-        return updated > 0
-    }
-
-    suspend fun trash(id: Int): Boolean {
-        val updated = dbQuery {
-            Templates.update({ Templates.id eq id }) {
-                it[trashedAt] = now()
-                it[updatedAt] = now()
-            }
-        }
-        return updated > 0
-    }
-
-    suspend fun restore(id: Int): Boolean {
-        val updated = dbQuery {
-            Templates.update({ Templates.id eq id }) {
-                it[deletedAt] = null
-                it[trashedAt] = null
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-            }
-        }
-        return updated > 0
-    }
 
     suspend fun delete(id: Int): Boolean = dbQuery {
         Templates.deleteWhere { Templates.id eq id } > 0
+    }
+
+    suspend fun findMaxOrderByCategoryId(categoryId: Int): Int = dbQuery {
+        val maxOrderExpr = Templates.order.max()
+        val query =  Templates
+            .select(maxOrderExpr)
+            .where { Templates.categoryId eq categoryId }
+
+        val maxOrder = query.map { it[maxOrderExpr] }.singleOrNull()
+        maxOrder ?: 1
     }
 
     private fun rowToTemplate(row: ResultRow): Template {

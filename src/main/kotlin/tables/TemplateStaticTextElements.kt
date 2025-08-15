@@ -3,7 +3,7 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object TemplateStaticTextElements : Table() {
+object TemplateStaticTextElements : Table("template_static_text_elements") {
     val elementId = integer("element_id").references(TemplateElements.id)
     val content = text("content")
     val createdAt = datetime("created_at")
