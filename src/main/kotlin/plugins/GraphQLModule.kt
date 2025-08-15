@@ -26,6 +26,7 @@ import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateDataLoader
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
+import schema.query.TemplateConfigQuery
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -44,7 +45,8 @@ fun Application.graphQLModule() {
             packages = listOf("models")
             queries = listOf(
                 AuthQuery(),
-                UserQuery()
+                UserQuery(),
+                TemplateConfigQuery()
             )
             mutations = listOf(
                 AuthMutation(),

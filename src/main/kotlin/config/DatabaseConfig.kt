@@ -41,6 +41,7 @@ object DatabaseConfig {
                 Sessions,
                 TemplateCategories,
                 Templates,
+                TemplateConfigs,
                 Students,
                 TemplateElements,
                 TemplateStaticTextElements,
