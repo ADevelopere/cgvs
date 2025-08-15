@@ -1,16 +1,13 @@
+package plugins
+
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.plugins.csrf.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
-import io.ktor.server.plugins.cors.routing.*
 import kotlinx.serialization.Serializable
 import models.UserSession
 import org.koin.ktor.ext.inject
@@ -18,7 +15,7 @@ import services.AuthService
 
 fun Application.configureSecurity() {
     val authService by inject<AuthService>()
-    
+
     // Configure Sessions
     install(Sessions) {
         cookie<UserSession>("CGSV_SESSION") {
@@ -30,7 +27,7 @@ fun Application.configureSecurity() {
         }
     }
 //    install(Sessions) {
-//        cookie<MySession>("MY_SESSION") {
+//        cookie<plugins.MySession>("MY_SESSION") {
 //            cookie.extensions["SameSite"] = "lax"
 //        }
 //    }
@@ -54,13 +51,13 @@ fun Application.configureSecurity() {
 //            }
 //        }
 //    }
-    
+
     // Read JWT configuration from application.yaml
     val jwtAudience = environment.config.property("postgres.audience").getString()
     val jwtDomain = environment.config.property("postgres.domain").getString()
     val jwtRealm = environment.config.property("postgres.realm").getString()
     val jwtSecret = environment.config.propertyOrNull("postgres.secret")?.getString() ?: "default-secret-key"
-    
+
     // Configure Authentication
     install(Authentication) {
         jwt("auth-jwt") {
@@ -78,7 +75,7 @@ fun Application.configureSecurity() {
                 } else null
             }
         }
-        
+
         session<UserSession>("auth-session") {
             validate { session ->
                 // Validate session with database
@@ -124,13 +121,13 @@ fun Application.configureSecurity() {
 //        allowHost("127.0.0.1:3001")
 //        // Add your production domain here
 //        // allowHost("your-production-domain.com", schemes = listOf("https"))
-//        
+//
 //        allowCredentials = true
 //        allowHeader(HttpHeaders.ContentType)
 //        allowHeader(HttpHeaders.Authorization)
 //        allowHeader("X-CSRF-TOKEN")
 //        allowHeader("X-Requested-With")
-//        
+//
 //        allowMethod(HttpMethod.Options)
 //        allowMethod(HttpMethod.Get)
 //        allowMethod(HttpMethod.Post)
@@ -157,7 +154,7 @@ fun Application.configureSecurity() {
 //    }
 //    routing {
 //        get("/session/increment") {
-//            val session = call.sessions.get<MySession>() ?: MySession()
+//            val session = call.sessions.get<plugins.MySession>() ?: plugins.MySession()
 //            call.sessions.set(session.copy(count = session.count + 1))
 //            call.respondText("Counter is ${session.count}. Refresh to increment.")
 //        }
@@ -180,7 +177,7 @@ fun Application.configureSecurity() {
 //
 //            get("/callback") {
 //                val principal: OAuthAccessTokenResponse.OAuth2? = call.authentication.principal()
-//                call.sessions.set(UserSession(principal?.accessToken.toString()))
+//                call.sessions.set(plugins.UserSession(principal?.accessToken.toString()))
 //                call.respondRedirect("/hello")
 //            }
 //        }

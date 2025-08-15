@@ -1,5 +1,6 @@
-import com.expediagroup.graphql.dataloader.KotlinDataLoaderRegistryFactory
+package plugins
 
+import com.expediagroup.graphql.dataloader.KotlinDataLoaderRegistryFactory
 import com.expediagroup.graphql.server.ktor.GraphQL
 import com.expediagroup.graphql.server.ktor.defaultGraphQLStatusPages
 import com.expediagroup.graphql.server.ktor.graphQLGetRoute
@@ -34,6 +35,7 @@ fun Application.graphQLModule() {
         pingPeriod = 1.seconds
         contentConverter = JacksonWebsocketContentConverter()
     }
+
     install(StatusPages) {
         defaultGraphQLStatusPages()
     }
@@ -69,6 +71,7 @@ fun Application.graphQLModule() {
     routing {
         graphQLGetRoute()
         graphQLPostRoute()
+//        graphQLPostRouteWithMultipart()
         graphQLSubscriptionsRoute()
         graphiQLRoute()
         graphQLSDLRoute()
