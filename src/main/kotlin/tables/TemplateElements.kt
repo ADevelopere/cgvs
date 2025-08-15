@@ -3,7 +3,7 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object TemplateElements : Table() {
+object TemplateElements : Table("template_elements") {
     val id = integer("id").autoIncrement()
     val templateId = integer("template_id").references(Templates.id)
     val type = enumerationByName("type", 20, ElementType::class)

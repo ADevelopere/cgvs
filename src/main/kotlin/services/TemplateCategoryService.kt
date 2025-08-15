@@ -31,7 +31,7 @@ class TemplateCategoryService(
                 ?: throw IllegalArgumentException("Parent category with ID ${input.parentCategoryId} does not exist.")
 
             // Validate not deletion category
-            check (existingParentCategory.categorySpecialType != CategorySpecialType.deletion) {
+            check (existingParentCategory.categorySpecialType != CategorySpecialType.Suspension) {
                 "Cannot create a category under a deletion category."
             }
 

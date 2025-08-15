@@ -1,5 +1,6 @@
 package models
 
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
@@ -9,28 +10,32 @@ import util.now
 import java.util.concurrent.CompletableFuture
 
 @Serializable
+@Suppress("unused")
 data class Template(
     val id: Int = 0,
     val name: String,
     val description: String? = null,
     val imageUrl: String? = null,
-    val categoryId: Int,
-    val order: Int? = null,
+    @GraphQLIgnore val categoryId: Int,
+    val order: Int,
+    @GraphQLIgnore val preSuspensionCategoryId: Int? = null,
     val createdAt: LocalDateTime = now(),
     val updatedAt: LocalDateTime = now()
 ){
+    @Suppress("unused")
     fun category(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory> {
         return dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, categoryId)
     }
+
+    @Suppress("unused")
+    fun preSuspensionCategory(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory?> {
+        return if (preSuspensionCategoryId != null) {
+            dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, preSuspensionCategoryId)
+        } else {
+            CompletableFuture.completedFuture(null)
+        }
+    }
 }
-
-
-// Template configuration
-data class TemplateConfig(
-    val maxBackgroundSize: Int = 10485760, // 10MB in bytes
-    val allowedFileTypes: List<String> = listOf("jpg", "jpeg", "png", "pdf")
-)
-
 
 // Input types for mutations
 data class CreateTemplateInput(
@@ -43,18 +48,10 @@ data class UpdateTemplateInput(
     val id: Int,
     val name: String? = null,
     val description: String? = null,
-    val categoryId: Int? = null
-)
-
-data class UpdateTemplateWithImageInput(
-    val id: Int,
-    val name: String? = null,
-    val description: String? = null,
-    val categoryId: Int? = null,
-    val imageFile: String? = null // This would be a file upload in real implementation
+    val categoryId: Int
 )
 
 data class ReorderTemplateInput(
-    val id: String,
+    val id: Int,
     val order: Int
 )

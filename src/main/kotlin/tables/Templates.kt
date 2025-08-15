@@ -9,10 +9,8 @@ object Templates : Table() {
     val description = text("description").nullable()
     val imageUrl = varchar("image_url", 500).nullable()
     val categoryId = integer("category_id").references(TemplateCategories.id)
-    val preDeletionCategoryId = integer("pre_deletion_category_id").references(TemplateCategories.id).nullable()
-    val order = integer("order").nullable()
-    val deletedAt = datetime("deleted_at").nullable()
-    val trashedAt = datetime("trashed_at").nullable()
+    val order = integer("order")
+    val preSuspensionCategoryId = integer("pre_suspension_category_id").references(TemplateCategories.id).nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 

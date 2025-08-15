@@ -18,8 +18,8 @@ type AuthPayload {
 }
 
 enum CategorySpecialType {
-  deletion
-  main
+  Main
+  Suspension
 }
 
 input CreateTemplateCategoryInput {
@@ -49,6 +49,7 @@ type LogoutResponse {
 type Mutation {
   createTemplate(input: CreateTemplateInput!): Template!
   createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
+  deleteTemplate(id: Int!): Template
 
   """Login user with email and password"""
   login(input: LoginInput!): AuthPayload
@@ -58,6 +59,10 @@ type Mutation {
 
   """Register a new user"""
   register(input: RegisterInput!): AuthPayload
+  reorderTemplate(input: ReorderTemplateInput!): Template
+  suspendTemplate(id: Int!): Template
+  unsuspendTemplate(id: Int!): Template
+  updateTemplate(input: UpdateTemplateInput!): Template
 }
 
 type Query {
@@ -82,29 +87,40 @@ input RegisterInput {
   password: String!
 }
 
+input ReorderTemplateInput {
+  id: Int!
+  order: Int!
+}
+
 type Template {
   category: TemplateCategory!
-  categoryId: Int!
   createdAt: LocalDateTime!
   description: String
   id: Int!
   imageUrl: String
   name: String!
-  order: Int
+  order: Int!
+  preSuspensionCategory: TemplateCategory
   updatedAt: LocalDateTime!
 }
 
 type TemplateCategory {
   categorySpecialType: CategorySpecialType
+  childCategories: [TemplateCategory!]!
   createdAt: LocalDateTime!
-  deletedAt: LocalDateTime
   description: String
   id: Int!
   name: String!
   order: Int
   parentCategory: TemplateCategory
-  parentCategoryId: Int
   updatedAt: LocalDateTime!
+}
+
+input UpdateTemplateInput {
+  categoryId: Int!
+  description: String
+  id: Int!
+  name: String
 }
 
 type User {

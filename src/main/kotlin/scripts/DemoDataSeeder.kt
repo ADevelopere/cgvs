@@ -159,7 +159,6 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                 parentCategoryId = null,
                 order = index + 1,
                 categorySpecialType = null,
-                deletedAt = null,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )
@@ -175,7 +174,6 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                     parentCategoryId = createdParent.id,
                     order = subIndex + 1,
                     categorySpecialType = null,
-                    deletedAt = null,
                     createdAt = currentTime,
                     updatedAt = currentTime
                 )

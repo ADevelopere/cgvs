@@ -31,27 +31,27 @@ fun Application.configureHTTP() {
     }
 
     // Configure CORS to allow file uploads from frontend
-    install(CORS) {
-        allowMethod(HttpMethod.Get)
-        allowMethod(HttpMethod.Post)
-        allowMethod(HttpMethod.Put)
-        allowMethod(HttpMethod.Delete)
-        allowMethod(HttpMethod.Patch)
-        allowMethod(HttpMethod.Options)
-
-        allowHeader(HttpHeaders.Authorization)
-        allowHeader(HttpHeaders.ContentType)
-        allowHeader(HttpHeaders.Accept)
-        allowHeader("X-Requested-With")
-        allowHeader("Apollo-Require-Preflight") // For Apollo uploads
-        allowHeader("Content-Type: multipart/form-data") // For file uploads
-
-        // Allow credentials for authentication
-        allowCredentials = true
-
-        // TODO: Replace with specific origins in production
-        anyHost()
-    }
+//    install(CORS) {
+//        allowMethod(HttpMethod.Get)
+//        allowMethod(HttpMethod.Post)
+//        allowMethod(HttpMethod.Put)
+//        allowMethod(HttpMethod.Delete)
+//        allowMethod(HttpMethod.Patch)
+//        allowMethod(HttpMethod.Options)
+//
+//        allowHeader(HttpHeaders.Authorization)
+//        allowHeader(HttpHeaders.ContentType)
+//        allowHeader(HttpHeaders.Accept)
+//        allowHeader("X-Requested-With")
+//        allowHeader("Apollo-Require-Preflight") // For Apollo uploads
+//        allowHeader("Content-Type: multipart/form-data") // For file uploads
+//
+//        // Allow credentials for authentication
+//        allowCredentials = true
+//
+//        // TODO: Replace with specific origins in production
+//        anyHost()
+//    }
 
     // Configure compression
     install(Compression) {

@@ -63,11 +63,20 @@ class TemplateCategoryRepository(private val database: Database) {
             .map { rowToTemplateCategory(it) }
     }
 
-    suspend fun findBySpecialType(categorySpecialType: CategorySpecialType): List<TemplateCategory> = dbQuery {
+    suspend fun suspensionCategory(): TemplateCategory? = dbQuery {
         TemplateCategories.selectAll()
-            .where { TemplateCategories.categorySpecialType eq categorySpecialType }
+            .where { TemplateCategories.categorySpecialType eq CategorySpecialType.Suspension }
             .map { rowToTemplateCategory(it) }
+            .singleOrNull()
     }
+
+    suspend fun mainCategory(): TemplateCategory? = dbQuery {
+        TemplateCategories.selectAll()
+            .where { TemplateCategories.categorySpecialType eq CategorySpecialType.Main }
+            .map { rowToTemplateCategory(it) }
+            .singleOrNull()
+    }
+
 
     suspend fun update(id: Int, category: TemplateCategory): TemplateCategory? {
         val updated = dbQuery {

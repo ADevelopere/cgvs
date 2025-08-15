@@ -3,7 +3,7 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object TemplateImageElements : Table() {
+object TemplateImageElements : Table("template_image_elements") {
     val elementId = integer("element_id").references(TemplateElements.id)
     val imageUrl = varchar("image_url", 500)
     val width = integer("width").nullable()

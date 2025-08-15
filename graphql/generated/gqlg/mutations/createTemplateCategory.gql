@@ -1,8 +1,52 @@
 mutation createTemplateCategory($input: CreateTemplateCategoryInput!){
     createTemplateCategory(input: $input){
         categorySpecialType
+        childCategories{
+            categorySpecialType
+            childCategories{
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                parentCategory{
+                    categorySpecialType
+                    childCategories{
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        updatedAt
+                    }
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory{
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        updatedAt
+                    }
+                    updatedAt
+                }
+                updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            updatedAt
+        }
         createdAt
-        deletedAt
         description
         id
         name
@@ -10,26 +54,12 @@ mutation createTemplateCategory($input: CreateTemplateCategoryInput!){
         parentCategory{
             categorySpecialType
             createdAt
-            deletedAt
             description
             id
             name
             order
-            parentCategory{
-                categorySpecialType
-                createdAt
-                deletedAt
-                description
-                id
-                name
-                order
-                parentCategoryId
-                updatedAt
-            }
-            parentCategoryId
             updatedAt
         }
-        parentCategoryId
         updatedAt
     }
 }

@@ -3,7 +3,7 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object TemplateCategories : Table() {
+object TemplateCategories : Table("template_categories") {
     val id = integer("id").autoIncrement()
     val name = varchar("name", 255)
     val description = text("description").nullable()
@@ -14,10 +14,14 @@ object TemplateCategories : Table() {
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 
-    override val primaryKey = PrimaryKey(id)
+    init {
+        uniqueIndex(categorySpecialType)
+    }
+
+    override val primaryKey = PrimaryKey(id, name = "PK_TemplateCategories_Id")
 }
 
 enum class CategorySpecialType {
-    deletion,
-    main
+    Main,
+    Suspension,
 }

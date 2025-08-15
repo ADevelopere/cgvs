@@ -25,8 +25,8 @@ export type AuthPayload = {
 };
 
 export type CategorySpecialType =
-  | 'deletion'
-  | 'main';
+  | 'Main'
+  | 'Suspension';
 
 export type CreateTemplateCategoryInput = {
   description?: InputMaybe<Scalars['String']['input']>;
@@ -54,12 +54,17 @@ export type Mutation = {
   __typename?: 'Mutation';
   createTemplate: Template;
   createTemplateCategory: TemplateCategory;
+  deleteTemplate?: Maybe<Template>;
   /** Login user with email and password */
   login?: Maybe<AuthPayload>;
   /** Logout current user */
   logout: LogoutResponse;
   /** Register a new user */
   register?: Maybe<AuthPayload>;
+  reorderTemplate?: Maybe<Template>;
+  suspendTemplate?: Maybe<Template>;
+  unsuspendTemplate?: Maybe<Template>;
+  updateTemplate?: Maybe<Template>;
 };
 
 
@@ -73,6 +78,11 @@ export type MutationCreateTemplateCategoryArgs = {
 };
 
 
+export type MutationDeleteTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
@@ -80,6 +90,26 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   input: RegisterInput;
+};
+
+
+export type MutationReorderTemplateArgs = {
+  input: ReorderTemplateInput;
+};
+
+
+export type MutationSuspendTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUnsuspendTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateTemplateArgs = {
+  input: UpdateTemplateInput;
 };
 
 export type Query = {
@@ -106,31 +136,42 @@ export type RegisterInput = {
   password: Scalars['String']['input'];
 };
 
+export type ReorderTemplateInput = {
+  id: Scalars['Int']['input'];
+  order: Scalars['Int']['input'];
+};
+
 export type Template = {
   __typename?: 'Template';
   category: TemplateCategory;
-  categoryId: Scalars['Int']['output'];
   createdAt: Scalars['LocalDateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  order?: Maybe<Scalars['Int']['output']>;
+  order: Scalars['Int']['output'];
+  preSuspensionCategory?: Maybe<TemplateCategory>;
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
 export type TemplateCategory = {
   __typename?: 'TemplateCategory';
   categorySpecialType?: Maybe<CategorySpecialType>;
+  childCategories: Array<TemplateCategory>;
   createdAt: Scalars['LocalDateTime']['output'];
-  deletedAt?: Maybe<Scalars['LocalDateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
   parentCategory?: Maybe<TemplateCategory>;
-  parentCategoryId?: Maybe<Scalars['Int']['output']>;
   updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+export type UpdateTemplateInput = {
+  categoryId: Scalars['Int']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -196,6 +237,48 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', createdAt: any, email: string, emailVerifiedAt?: any | null, id: number, isAdmin: boolean, name: string, password: string, rememberToken?: string | null, updatedAt: any }> | null };
+
+export type CreateTemplateMutationVariables = Exact<{
+  input: CreateTemplateInput;
+}>;
+
+
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type DeleteTemplateMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+
+export type ReorderTemplateMutationVariables = Exact<{
+  input: ReorderTemplateInput;
+}>;
+
+
+export type ReorderTemplateMutation = { __typename?: 'Mutation', reorderTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+
+export type SuspendTemplateMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+
+export type UnsuspendTemplateMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+
+export type UpdateTemplateMutationVariables = Exact<{
+  input: UpdateTemplateInput;
+}>;
+
+
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
 
 
 export const PlaceholderDocument = gql`
@@ -593,3 +676,777 @@ export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariable
 export function refetchUsersQuery(variables?: UsersQueryVariables) {
       return { query: UsersDocument, variables: variables }
     }
+export const CreateTemplateDocument = gql`
+    mutation createTemplate($input: CreateTemplateInput!) {
+  createTemplate(input: $input) {
+    category {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          createdAt
+          description
+          id
+          name
+          order
+          parentCategory {
+            categorySpecialType
+            childCategories {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    imageUrl
+    name
+    order
+    preSuspensionCategory {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type CreateTemplateMutationFn = Apollo.MutationFunction<CreateTemplateMutation, CreateTemplateMutationVariables>;
+
+/**
+ * __useCreateTemplateMutation__
+ *
+ * To run a mutation, you first call `useCreateTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTemplateMutation, { data, loading, error }] = useCreateTemplateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTemplateMutation(baseOptions?: Apollo.MutationHookOptions<CreateTemplateMutation, CreateTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTemplateMutation, CreateTemplateMutationVariables>(CreateTemplateDocument, options);
+      }
+export type CreateTemplateMutationHookResult = ReturnType<typeof useCreateTemplateMutation>;
+export type CreateTemplateMutationResult = Apollo.MutationResult<CreateTemplateMutation>;
+export type CreateTemplateMutationOptions = Apollo.BaseMutationOptions<CreateTemplateMutation, CreateTemplateMutationVariables>;
+export const DeleteTemplateDocument = gql`
+    mutation deleteTemplate($id: Int!) {
+  deleteTemplate(id: $id) {
+    category {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          createdAt
+          description
+          id
+          name
+          order
+          parentCategory {
+            categorySpecialType
+            childCategories {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    imageUrl
+    name
+    order
+    preSuspensionCategory {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type DeleteTemplateMutationFn = Apollo.MutationFunction<DeleteTemplateMutation, DeleteTemplateMutationVariables>;
+
+/**
+ * __useDeleteTemplateMutation__
+ *
+ * To run a mutation, you first call `useDeleteTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTemplateMutation, { data, loading, error }] = useDeleteTemplateMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTemplateMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateMutation, DeleteTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTemplateMutation, DeleteTemplateMutationVariables>(DeleteTemplateDocument, options);
+      }
+export type DeleteTemplateMutationHookResult = ReturnType<typeof useDeleteTemplateMutation>;
+export type DeleteTemplateMutationResult = Apollo.MutationResult<DeleteTemplateMutation>;
+export type DeleteTemplateMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateMutation, DeleteTemplateMutationVariables>;
+export const ReorderTemplateDocument = gql`
+    mutation reorderTemplate($input: ReorderTemplateInput!) {
+  reorderTemplate(input: $input) {
+    category {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          createdAt
+          description
+          id
+          name
+          order
+          parentCategory {
+            categorySpecialType
+            childCategories {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    imageUrl
+    name
+    order
+    preSuspensionCategory {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type ReorderTemplateMutationFn = Apollo.MutationFunction<ReorderTemplateMutation, ReorderTemplateMutationVariables>;
+
+/**
+ * __useReorderTemplateMutation__
+ *
+ * To run a mutation, you first call `useReorderTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReorderTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reorderTemplateMutation, { data, loading, error }] = useReorderTemplateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useReorderTemplateMutation(baseOptions?: Apollo.MutationHookOptions<ReorderTemplateMutation, ReorderTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReorderTemplateMutation, ReorderTemplateMutationVariables>(ReorderTemplateDocument, options);
+      }
+export type ReorderTemplateMutationHookResult = ReturnType<typeof useReorderTemplateMutation>;
+export type ReorderTemplateMutationResult = Apollo.MutationResult<ReorderTemplateMutation>;
+export type ReorderTemplateMutationOptions = Apollo.BaseMutationOptions<ReorderTemplateMutation, ReorderTemplateMutationVariables>;
+export const SuspendTemplateDocument = gql`
+    mutation suspendTemplate($id: Int!) {
+  suspendTemplate(id: $id) {
+    category {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          createdAt
+          description
+          id
+          name
+          order
+          parentCategory {
+            categorySpecialType
+            childCategories {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    imageUrl
+    name
+    order
+    preSuspensionCategory {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type SuspendTemplateMutationFn = Apollo.MutationFunction<SuspendTemplateMutation, SuspendTemplateMutationVariables>;
+
+/**
+ * __useSuspendTemplateMutation__
+ *
+ * To run a mutation, you first call `useSuspendTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSuspendTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [suspendTemplateMutation, { data, loading, error }] = useSuspendTemplateMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSuspendTemplateMutation(baseOptions?: Apollo.MutationHookOptions<SuspendTemplateMutation, SuspendTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SuspendTemplateMutation, SuspendTemplateMutationVariables>(SuspendTemplateDocument, options);
+      }
+export type SuspendTemplateMutationHookResult = ReturnType<typeof useSuspendTemplateMutation>;
+export type SuspendTemplateMutationResult = Apollo.MutationResult<SuspendTemplateMutation>;
+export type SuspendTemplateMutationOptions = Apollo.BaseMutationOptions<SuspendTemplateMutation, SuspendTemplateMutationVariables>;
+export const UnsuspendTemplateDocument = gql`
+    mutation unsuspendTemplate($id: Int!) {
+  unsuspendTemplate(id: $id) {
+    category {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          createdAt
+          description
+          id
+          name
+          order
+          parentCategory {
+            categorySpecialType
+            childCategories {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    imageUrl
+    name
+    order
+    preSuspensionCategory {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type UnsuspendTemplateMutationFn = Apollo.MutationFunction<UnsuspendTemplateMutation, UnsuspendTemplateMutationVariables>;
+
+/**
+ * __useUnsuspendTemplateMutation__
+ *
+ * To run a mutation, you first call `useUnsuspendTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnsuspendTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unsuspendTemplateMutation, { data, loading, error }] = useUnsuspendTemplateMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUnsuspendTemplateMutation(baseOptions?: Apollo.MutationHookOptions<UnsuspendTemplateMutation, UnsuspendTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnsuspendTemplateMutation, UnsuspendTemplateMutationVariables>(UnsuspendTemplateDocument, options);
+      }
+export type UnsuspendTemplateMutationHookResult = ReturnType<typeof useUnsuspendTemplateMutation>;
+export type UnsuspendTemplateMutationResult = Apollo.MutationResult<UnsuspendTemplateMutation>;
+export type UnsuspendTemplateMutationOptions = Apollo.BaseMutationOptions<UnsuspendTemplateMutation, UnsuspendTemplateMutationVariables>;
+export const UpdateTemplateDocument = gql`
+    mutation updateTemplate($input: UpdateTemplateInput!) {
+  updateTemplate(input: $input) {
+    category {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          createdAt
+          description
+          id
+          name
+          order
+          parentCategory {
+            categorySpecialType
+            childCategories {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    imageUrl
+    name
+    order
+    preSuspensionCategory {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      parentCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type UpdateTemplateMutationFn = Apollo.MutationFunction<UpdateTemplateMutation, UpdateTemplateMutationVariables>;
+
+/**
+ * __useUpdateTemplateMutation__
+ *
+ * To run a mutation, you first call `useUpdateTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTemplateMutation, { data, loading, error }] = useUpdateTemplateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTemplateMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTemplateMutation, UpdateTemplateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTemplateMutation, UpdateTemplateMutationVariables>(UpdateTemplateDocument, options);
+      }
+export type UpdateTemplateMutationHookResult = ReturnType<typeof useUpdateTemplateMutation>;
+export type UpdateTemplateMutationResult = Apollo.MutationResult<UpdateTemplateMutation>;
+export type UpdateTemplateMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateMutation, UpdateTemplateMutationVariables>;
