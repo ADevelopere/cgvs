@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     configureDI()
     configureDatabase()
-//    configureHTTP()
+    configureHTTP()
     configureRouting()
     graphQLModule()
     configureSecurity()

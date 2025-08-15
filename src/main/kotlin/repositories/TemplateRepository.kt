@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import tables.TemplateCategories
 import util.now
 
 class TemplateRepository(private val database: Database) {
@@ -56,7 +55,7 @@ class TemplateRepository(private val database: Database) {
             .map { rowToTemplate(it) }
     }
 
-    suspend fun findByCategory(categoryId: Int): List<Template> = dbQuery {
+    suspend fun findByCategoryId(categoryId: Int): List<Template> = dbQuery {
         Templates.selectAll()
             .where { Templates.categoryId eq categoryId }
             .map { rowToTemplate(it) }

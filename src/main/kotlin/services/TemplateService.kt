@@ -161,4 +161,16 @@ class TemplateService(
     suspend fun findByIds(ids: List<Int>): List<Template> {
         return templateRepository.findByIds(ids)
     }
+
+    suspend fun findById(id: Int): Template? {
+        return templateRepository.findById(id)
+    }
+
+    suspend fun findAll(): List<Template> {
+        return templateRepository.findAll()
+    }
+
+    suspend fun findByCategoryId(categoryId: Int): List<Template> {
+        return templateRepository.findByCategoryId(categoryId)
+    }
 }

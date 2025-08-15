@@ -18,15 +18,17 @@ import io.ktor.server.websocket.pingPeriod
 import schema.query.AuthQuery
 import schema.query.UserQuery
 import schema.mutation.AuthMutation
-import hooks.CustomSchemaGeneratorHooks
 import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
+import hooks.customSchemaGeneratorHooks
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateDataLoader
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
+import schema.query.PaginatedUserQuery
 import schema.query.TemplateConfigQuery
+import schema.query.TemplateQuery
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -42,10 +44,12 @@ fun Application.graphQLModule() {
 
     install(GraphQL) {
         schema {
-            packages = listOf("models")
+            packages = listOf("models", "schema")
             queries = listOf(
                 AuthQuery(),
                 UserQuery(),
+//                PaginatedUserQuery(),
+                TemplateQuery(),
                 TemplateConfigQuery()
             )
             mutations = listOf(
@@ -53,7 +57,10 @@ fun Application.graphQLModule() {
                 TemplateCategoryMutation(),
                 TemplateMutation()
             )
-            hooks = CustomSchemaGeneratorHooks()
+            hooks = customSchemaGeneratorHooks
+
+
+
         }
         engine {
             dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(

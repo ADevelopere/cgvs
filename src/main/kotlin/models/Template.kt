@@ -6,6 +6,7 @@ import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
+import schema.directive.PaginationInfo
 import util.now
 import java.util.concurrent.CompletableFuture
 
@@ -54,4 +55,9 @@ data class UpdateTemplateInput(
 data class ReorderTemplateInput(
     val id: Int,
     val order: Int
+)
+
+data class PaginatedTemplatesResponse(
+    val data: List<Template>,
+    val paginationInfo: PaginationInfo? = null
 )

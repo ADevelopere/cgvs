@@ -112,17 +112,58 @@ export type MutationUpdateTemplateArgs = {
   input: UpdateTemplateInput;
 };
 
+export type PaginatedTemplatesResponse = {
+  __typename?: 'PaginatedTemplatesResponse';
+  data: Array<Template>;
+  paginationInfo?: Maybe<PaginationInfo>;
+};
+
+export type PaginationInfo = {
+  __typename?: 'PaginationInfo';
+  count: Scalars['Int']['output'];
+  currentPage: Scalars['Int']['output'];
+  firstItem?: Maybe<Scalars['Int']['output']>;
+  hasMorePages: Scalars['Boolean']['output'];
+  lastItem?: Maybe<Scalars['Int']['output']>;
+  lastPage?: Maybe<Scalars['Int']['output']>;
+  perPage: Scalars['Int']['output'];
+  total?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PaginationType =
+  /** Cursor-based pagination compatible with Relay specification */
+  | 'CONNECTION'
+  /** Offset-based pagination with total count */
+  | 'PAGINATOR'
+  /** Simple offset-based pagination without total count */
+  | 'SIMPLE';
+
 export type Query = {
   __typename?: 'Query';
-  hello: Scalars['String']['output'];
   /** Check if user is authenticated */
   isAuthenticated: Scalars['Boolean']['output'];
   /** Get current authenticated user */
   me?: Maybe<User>;
+  paginatedTemplates: PaginatedTemplatesResponse;
+  template?: Maybe<Template>;
+  templateConfig?: Maybe<TemplateConfig>;
+  templates: Array<Template>;
   /** Get user by ID (authenticated users only) */
   user?: Maybe<User>;
   /** Get all users (admin only) */
   users?: Maybe<Array<User>>;
+};
+
+
+export type QueryPaginatedTemplatesArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryTemplateArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -165,6 +206,12 @@ export type TemplateCategory = {
   order?: Maybe<Scalars['Int']['output']>;
   parentCategory?: Maybe<TemplateCategory>;
   updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+export type TemplateConfig = {
+  __typename?: 'TemplateConfig';
+  allowedFileTypes: Array<Scalars['String']['output']>;
+  maxBackgroundSize: Scalars['Int']['output'];
 };
 
 export type UpdateTemplateInput = {
@@ -211,11 +258,6 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register?: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', createdAt: any, email: string, emailVerifiedAt?: any | null, id: number, isAdmin: boolean, name: string, password: string, rememberToken?: string | null, updatedAt: any } } | null };
 
-export type HelloQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type HelloQuery = { __typename?: 'Query', hello: string };
-
 export type IsAuthenticatedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -243,42 +285,42 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate?: { __typename?: 'Template', id: number, name: string, category: { __typename?: 'TemplateCategory', id: number, name: string } } | null };
 
 export type ReorderTemplateMutationVariables = Exact<{
   input: ReorderTemplateInput;
 }>;
 
 
-export type ReorderTemplateMutation = { __typename?: 'Mutation', reorderTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+export type ReorderTemplateMutation = { __typename?: 'Mutation', reorderTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type SuspendTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UnsuspendTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UpdateTemplateMutationVariables = Exact<{
   input: UpdateTemplateInput;
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } | null };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 
 export const PlaceholderDocument = gql`
@@ -445,46 +487,6 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
-export const HelloDocument = gql`
-    query hello {
-  hello
-}
-    `;
-
-/**
- * __useHelloQuery__
- *
- * To run a query within a React component, call `useHelloQuery` and pass it any options that fit your needs.
- * When your component renders, `useHelloQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useHelloQuery({
- *   variables: {
- *   },
- * });
- */
-export function useHelloQuery(baseOptions?: Apollo.QueryHookOptions<HelloQuery, HelloQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<HelloQuery, HelloQueryVariables>(HelloDocument, options);
-      }
-export function useHelloLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HelloQuery, HelloQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<HelloQuery, HelloQueryVariables>(HelloDocument, options);
-        }
-export function useHelloSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<HelloQuery, HelloQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<HelloQuery, HelloQueryVariables>(HelloDocument, options);
-        }
-export type HelloQueryHookResult = ReturnType<typeof useHelloQuery>;
-export type HelloLazyQueryHookResult = ReturnType<typeof useHelloLazyQuery>;
-export type HelloSuspenseQueryHookResult = ReturnType<typeof useHelloSuspenseQuery>;
-export type HelloQueryResult = Apollo.QueryResult<HelloQuery, HelloQueryVariables>;
-export function refetchHelloQuery(variables?: HelloQueryVariables) {
-      return { query: HelloDocument, variables: variables }
-    }
 export const IsAuthenticatedDocument = gql`
     query isAuthenticated {
   isAuthenticated
@@ -679,102 +681,20 @@ export function refetchUsersQuery(variables?: UsersQueryVariables) {
 export const CreateTemplateDocument = gql`
     mutation createTemplate($input: CreateTemplateInput!) {
   createTemplate(input: $input) {
+    id
+    name
+    description
+    imageUrl
     category {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        childCategories {
-          categorySpecialType
-          createdAt
-          description
-          id
-          name
-          order
-          parentCategory {
-            categorySpecialType
-            childCategories {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            createdAt
-            description
-            id
-            name
-            order
-            parentCategory {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            updatedAt
-          }
-          updatedAt
-        }
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
-    createdAt
-    description
-    id
-    imageUrl
-    name
     order
     preSuspensionCategory {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
+    createdAt
     updatedAt
   }
 }
@@ -808,103 +728,12 @@ export type CreateTemplateMutationOptions = Apollo.BaseMutationOptions<CreateTem
 export const DeleteTemplateDocument = gql`
     mutation deleteTemplate($id: Int!) {
   deleteTemplate(id: $id) {
-    category {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        childCategories {
-          categorySpecialType
-          createdAt
-          description
-          id
-          name
-          order
-          parentCategory {
-            categorySpecialType
-            childCategories {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            createdAt
-            description
-            id
-            name
-            order
-            parentCategory {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            updatedAt
-          }
-          updatedAt
-        }
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
-      id
-      name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
-    }
-    createdAt
-    description
     id
-    imageUrl
     name
-    order
-    preSuspensionCategory {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
+    category {
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
-    updatedAt
   }
 }
     `;
@@ -937,102 +766,20 @@ export type DeleteTemplateMutationOptions = Apollo.BaseMutationOptions<DeleteTem
 export const ReorderTemplateDocument = gql`
     mutation reorderTemplate($input: ReorderTemplateInput!) {
   reorderTemplate(input: $input) {
+    id
+    name
+    description
+    imageUrl
     category {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        childCategories {
-          categorySpecialType
-          createdAt
-          description
-          id
-          name
-          order
-          parentCategory {
-            categorySpecialType
-            childCategories {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            createdAt
-            description
-            id
-            name
-            order
-            parentCategory {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            updatedAt
-          }
-          updatedAt
-        }
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
-    createdAt
-    description
-    id
-    imageUrl
-    name
     order
     preSuspensionCategory {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
+    createdAt
     updatedAt
   }
 }
@@ -1066,102 +813,20 @@ export type ReorderTemplateMutationOptions = Apollo.BaseMutationOptions<ReorderT
 export const SuspendTemplateDocument = gql`
     mutation suspendTemplate($id: Int!) {
   suspendTemplate(id: $id) {
+    id
+    name
+    description
+    imageUrl
     category {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        childCategories {
-          categorySpecialType
-          createdAt
-          description
-          id
-          name
-          order
-          parentCategory {
-            categorySpecialType
-            childCategories {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            createdAt
-            description
-            id
-            name
-            order
-            parentCategory {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            updatedAt
-          }
-          updatedAt
-        }
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
-    createdAt
-    description
-    id
-    imageUrl
-    name
     order
     preSuspensionCategory {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
+    createdAt
     updatedAt
   }
 }
@@ -1195,102 +860,20 @@ export type SuspendTemplateMutationOptions = Apollo.BaseMutationOptions<SuspendT
 export const UnsuspendTemplateDocument = gql`
     mutation unsuspendTemplate($id: Int!) {
   unsuspendTemplate(id: $id) {
+    id
+    name
+    description
+    imageUrl
     category {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        childCategories {
-          categorySpecialType
-          createdAt
-          description
-          id
-          name
-          order
-          parentCategory {
-            categorySpecialType
-            childCategories {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            createdAt
-            description
-            id
-            name
-            order
-            parentCategory {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            updatedAt
-          }
-          updatedAt
-        }
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
-    createdAt
-    description
-    id
-    imageUrl
-    name
     order
     preSuspensionCategory {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
+    createdAt
     updatedAt
   }
 }
@@ -1324,102 +907,20 @@ export type UnsuspendTemplateMutationOptions = Apollo.BaseMutationOptions<Unsusp
 export const UpdateTemplateDocument = gql`
     mutation updateTemplate($input: UpdateTemplateInput!) {
   updateTemplate(input: $input) {
+    id
+    name
+    description
+    imageUrl
     category {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        childCategories {
-          categorySpecialType
-          createdAt
-          description
-          id
-          name
-          order
-          parentCategory {
-            categorySpecialType
-            childCategories {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            createdAt
-            description
-            id
-            name
-            order
-            parentCategory {
-              categorySpecialType
-              createdAt
-              description
-              id
-              name
-              order
-              updatedAt
-            }
-            updatedAt
-          }
-          updatedAt
-        }
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
-    createdAt
-    description
-    id
-    imageUrl
-    name
     order
     preSuspensionCategory {
-      categorySpecialType
-      childCategories {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      createdAt
-      description
       id
       name
-      order
-      parentCategory {
-        categorySpecialType
-        createdAt
-        description
-        id
-        name
-        order
-        updatedAt
-      }
-      updatedAt
     }
+    createdAt
     updatedAt
   }
 }
