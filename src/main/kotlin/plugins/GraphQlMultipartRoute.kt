@@ -1,26 +1,40 @@
 package plugins
 
+import com.expediagroup.graphql.generator.extensions.get
+import com.expediagroup.graphql.generator.extensions.plus
 import com.expediagroup.graphql.server.execution.GraphQLServer
 import com.expediagroup.graphql.server.ktor.GraphQL
 import com.expediagroup.graphql.server.ktor.KtorGraphQLServer
 import com.expediagroup.graphql.server.types.GraphQLRequest
+import com.expediagroup.graphql.server.types.GraphQLServerRequest
+import com.expediagroup.graphql.server.types.GraphQLServerResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.*
+import io.ktor.http.cio.Request
 import io.ktor.http.content.*
-import io.ktor.serialization.jackson.jackson
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
-import io.ktor.utils.io.core.readBytes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
+import kotlinx.io.readByteArray
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
-private suspend inline fun KtorGraphQLServer.executeRequest(call: ApplicationCall) =
-    execute(call.request)?.let {
+private suspend inline fun KtorGraphQLServer.executeRequest(call: ApplicationCall) {
+    val e = execute(call.request)
+    e?.let {
         call.respond(it)
     } ?: call.respond(HttpStatusCode.BadRequest)
+}
+
+
 /**
  * Enhanced GraphQL POST route that supports both JSON and multipart/form-data requests
  * This extends the standard graphQLPostRoute to handle file uploads via GraphQL multipart request spec
@@ -38,11 +52,23 @@ fun Route.graphQLPostRouteWithMultipart(
 
     val route = post(endpoint) {
         val contentType = call.request.contentType()
-
         when {
             contentType.match(ContentType.MultiPart.FormData) -> {
-                handleMultipartGraphQLRequest(call, graphQLPlugin.server)
+                val processedRequest = processMultipartGraphQLRequest(call)
+                if (processedRequest != null) {
+                    try {
+                        graphQLPlugin.server.executeRequest(call)
+                    } catch (e: Exception) {
+                        println("Error executing multipart GraphQL request: ${e.message}")
+                        e.printStackTrace()
+                        call.respond(
+                            HttpStatusCode.InternalServerError,
+                            mapOf("errors" to listOf(mapOf("message" to "Internal server error: ${e.message}")))
+                        )
+                    }
+                }
             }
+
             else -> {
                 // Delegate to standard GraphQL server for JSON/GraphQL requests
                 graphQLPlugin.server.executeRequest(call)
@@ -59,10 +85,10 @@ fun Route.graphQLPostRouteWithMultipart(
 }
 
 /**
- * Handles multipart GraphQL requests according to the GraphQL multipart request specification
- * See: https://github.com/jaydenseric/graphql-multipart-request-spec
+ * Processes multipart GraphQL requests according to the GraphQL multipart request specification
+ * Returns the processed GraphQLRequest or null if there was an error
  */
-private suspend fun handleMultipartGraphQLRequest(call: ApplicationCall, server: GraphQLServer<*>) {
+private suspend fun processMultipartGraphQLRequest(call: ApplicationCall): GraphQLRequest? {
     try {
         val multipart = call.receiveMultipart()
         var operations: String? = null
@@ -77,20 +103,24 @@ private suspend fun handleMultipartGraphQLRequest(call: ApplicationCall, server:
                             operations = part.value
                             println("GraphQL Operations: ${part.value}")
                         }
+
                         "map" -> {
                             map = part.value
                             println("GraphQL Variable Map: ${part.value}")
                         }
+
                         else -> {
                             println("Additional form field: ${part.name} = ${part.value}")
                         }
                     }
                 }
+
                 is PartData.FileItem -> {
                     val fileUpload = processFileUpload(part)
                     files[part.name ?: "unknown"] = fileUpload
                     printFileUploadInfo(part.name ?: "unknown", fileUpload)
                 }
+
                 else -> {
                     println("Unsupported part type: ${part::class.simpleName}")
                 }
@@ -100,7 +130,7 @@ private suspend fun handleMultipartGraphQLRequest(call: ApplicationCall, server:
 
         if (operations == null) {
             call.respond(HttpStatusCode.BadRequest, "Missing 'operations' field in multipart request")
-            return
+            return null
         }
 
         // Parse the GraphQL request
@@ -113,7 +143,7 @@ private suspend fun handleMultipartGraphQLRequest(call: ApplicationCall, server:
         } catch (e: Exception) {
             println("Error parsing GraphQL operations: ${e.message}")
             call.respond(HttpStatusCode.BadRequest, "Invalid GraphQL operations: ${e.message}")
-            return
+            return null
         }
 
         // Process file mappings if provided
@@ -125,18 +155,15 @@ private suspend fun handleMultipartGraphQLRequest(call: ApplicationCall, server:
 
         println("\n=== PROCESSED GRAPHQL REQUEST ===")
         println("Query: ${processedRequest.query}")
-        println("Variables: ${processedRequest.variables}")
         println("Files attached: ${files.size}")
 
-        // Execute the GraphQL request through the server
-        // Note: This is a simplified version. You might need to adapt based on your server's execution method
-        val response = server.execute(processedRequest)
-        call.respond(HttpStatusCode.OK, response)
+        return processedRequest
 
     } catch (e: Exception) {
-        println("Error processing multipart GraphQL request: ${e.message}")
+//        println("Error processing multipart GraphQL request: ${e.message}")
         e.printStackTrace()
         call.respond(HttpStatusCode.InternalServerError, "Error processing request: ${e.message}")
+        return null
     }
 }
 
@@ -144,7 +171,7 @@ private suspend fun handleMultipartGraphQLRequest(call: ApplicationCall, server:
  * Processes a file upload from multipart data
  */
 private suspend fun processFileUpload(part: PartData.FileItem): FileUpload {
-    val bytes = part.provider().readRemaining().readBytes()
+    val bytes = part.provider().readRemaining().readByteArray()
     return FileUpload(
         filename = part.originalFileName ?: "unknown",
         contentType = part.contentType?.toString() ?: "application/octet-stream",
@@ -171,18 +198,18 @@ private fun processFileVariables(
             val file = files[fileKey]
             if (file != null) {
                 variablePaths.forEach { path ->
-                    // This is a simplified version - you might need more sophisticated path resolution
+                    // This is a simplified version - you might need more sophisticated plugins.path resolution
                     // For paths like "variables.file" or "variables.files.0"
                     val cleanPath = path.removePrefix("variables.")
                     mutableVariables[cleanPath] = file
-                    println("Mapped file '$fileKey' to variable '$cleanPath'")
+//                    println("Mapped file '$fileKey' to variable '$cleanPath'")
                 }
             }
         }
 
         return request.copy(variables = mutableVariables)
     } catch (e: Exception) {
-        println("Error processing file variables: ${e.message}")
+//        println("Error processing file variables: ${e.message}")
         return request
     }
 }
@@ -195,12 +222,6 @@ private fun printFileUploadInfo(fieldName: String, upload: FileUpload) {
     println("Filename: ${upload.filename}")
     println("Content Type: ${upload.contentType}")
     println("Size: ${upload.size} bytes (${formatFileSize(upload.size)})")
-
-    // Print first few bytes for debugging
-    if (upload.content.isNotEmpty()) {
-        val preview = upload.content.take(16).joinToString(" ") { "%02x".format(it) }
-        println("First 16 bytes: $preview")
-    }
 
     // Detect file type from magic bytes
     val detectedType = detectFileType(upload.content)

@@ -37,7 +37,7 @@ ktor-server-compression = { module = "io.ktor:ktor-server-compression" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
 ktor-server-configYaml = { module = "io.ktor:ktor-server-config-yaml" }
 ktor-server-testHost = { module = "io.ktor:ktor-server-test-host" }
-
+ktor-server-double-receive = { module = "io.ktor:ktor-server-double-receive" }
 # Ktor Client - versions are managed by the Ktor plugin
 ktor-client-core = { module = "io.ktor:ktor-client-core" }
 ktor-client-apache = { module = "io.ktor:ktor-client-apache" }
@@ -89,7 +89,9 @@ ktorServer = [
     "ktor-server-cors",
     "ktor-server-compression",
     "ktor-server-netty",
-    "ktor-server-configYaml"
+    "ktor-server-configYaml",
+    "ktor-server-testHost",
+    "ktor-server-double-receive"
 ]
 ktorClient = ["ktor-client-core", "ktor-client-apache"]
 

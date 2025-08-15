@@ -1,5 +1,3 @@
-package com.cgsv
-
 import com.ucasoft.ktor.simpleCache.SimpleCache
 import com.ucasoft.ktor.simpleCache.cacheOutput
 import com.ucasoft.ktor.simpleRedisCache.redisCache

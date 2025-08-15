@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.graphql.kotlin.ktor.server)
     implementation(libs.hikari.cp)
     implementation(libs.bcrypt)
+    implementation("io.ktor:ktor-server-call-logging:2.3.0")
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.kotlin.test.junit)
 }
