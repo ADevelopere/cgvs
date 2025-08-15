@@ -12,6 +12,9 @@ This directive disables error propagation when a non nullable field returns null
 """
 directive @experimental_disableErrorPropagation on MUTATION | QUERY | SUBSCRIPTION
 
+"""Enable pagination for this field with configurable options"""
+directive @paginate(defaultCount: Int!, edgeType: String!, includePaginationInfo: Boolean!, maxCount: Int!, type: PaginationType!) on FIELD_DEFINITION
+
 type AuthPayload {
   token: String!
   user: User!
@@ -65,14 +68,43 @@ type Mutation {
   updateTemplate(input: UpdateTemplateInput!): Template
 }
 
-type Query {
-  hello: String!
+type PaginatedTemplatesResponse {
+  data: [Template!]!
+  paginationInfo: PaginationInfo
+}
 
+type PaginationInfo {
+  count: Int!
+  currentPage: Int!
+  firstItem: Int
+  hasMorePages: Boolean!
+  lastItem: Int
+  lastPage: Int
+  perPage: Int!
+  total: Int
+}
+
+enum PaginationType {
+  """Cursor-based pagination compatible with Relay specification"""
+  CONNECTION
+
+  """Offset-based pagination with total count"""
+  PAGINATOR
+
+  """Simple offset-based pagination without total count"""
+  SIMPLE
+}
+
+type Query {
   """Check if user is authenticated"""
   isAuthenticated: Boolean!
 
   """Get current authenticated user"""
   me: User
+  paginatedTemplates(first: Int, page: Int, skip: Int): PaginatedTemplatesResponse!
+  template(id: Int!): Template
+  templateConfig: TemplateConfig
+  templates: [Template!]!
 
   """Get user by ID (authenticated users only)"""
   user(id: Int!): User
@@ -114,6 +146,11 @@ type TemplateCategory {
   order: Int
   parentCategory: TemplateCategory
   updatedAt: LocalDateTime!
+}
+
+type TemplateConfig {
+  allowedFileTypes: [String!]!
+  maxBackgroundSize: Int!
 }
 
 input UpdateTemplateInput {

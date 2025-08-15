@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import kotlinx.serialization.Serializable
@@ -115,8 +116,6 @@ fun Application.configureSecurity() {
 //    }
 
 //    install(CORS) {
-//        allowHost("localhost:3000") // Next.js frontend
-//        allowHost("localhost:3001") // Alternative frontend port
 //        allowHost("127.0.0.1:3000")
 //        allowHost("127.0.0.1:3001")
 //        // Add your production domain here
@@ -135,6 +134,7 @@ fun Application.configureSecurity() {
 //        allowMethod(HttpMethod.Delete)
 //        allowMethod(HttpMethod.Patch)
 //    }
+
 //    authentication {
 //        oauth("auth-oauth-google") {
 //            urlProvider = { "http://localhost:8080/callback" }

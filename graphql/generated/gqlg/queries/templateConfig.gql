@@ -1,0 +1,6 @@
+query templateConfig{
+    templateConfig{
+        allowedFileTypes
+        maxBackgroundSize
+    }
+}
