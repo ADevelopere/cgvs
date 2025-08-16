@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { Title } from "@/contexts/adminLayout.types";
 
@@ -75,7 +75,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
             return (
                 <Box ref={ref}>
                     <Link
-                        to={homeUrl}
+                        href={homeUrl}
                         style={{
                             textDecoration: "none",
                             color: "inherit",

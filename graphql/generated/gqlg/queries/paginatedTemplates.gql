@@ -21,6 +21,96 @@ query paginatedTemplates($first: Int, $page: Int, $skip: Int){
                                 id
                                 name
                                 order
+                                templates{
+                                    category{
+                                        categorySpecialType
+                                        createdAt
+                                        description
+                                        id
+                                        name
+                                        order
+                                        parentCategory{
+                                            categorySpecialType
+                                            createdAt
+                                            description
+                                            id
+                                            name
+                                            order
+                                            parentCategory{
+                                                categorySpecialType
+                                                createdAt
+                                                description
+                                                id
+                                                name
+                                                order
+                                                templates{
+                                                    createdAt
+                                                    description
+                                                    id
+                                                    imageUrl
+                                                    name
+                                                    order
+                                                    preSuspensionCategory{
+                                                        categorySpecialType
+                                                        childCategories{
+                                                            categorySpecialType
+                                                            createdAt
+                                                            description
+                                                            id
+                                                            name
+                                                            order
+                                                            updatedAt
+                                                        }
+                                                        createdAt
+                                                        description
+                                                        id
+                                                        name
+                                                        order
+                                                        parentCategory{
+                                                            categorySpecialType
+                                                            createdAt
+                                                            description
+                                                            id
+                                                            name
+                                                            order
+                                                            updatedAt
+                                                        }
+                                                        templates{
+                                                            createdAt
+                                                            description
+                                                            id
+                                                            imageUrl
+                                                            name
+                                                            order
+                                                            updatedAt
+                                                        }
+                                                        updatedAt
+                                                    }
+                                                    updatedAt
+                                                }
+                                                updatedAt
+                                            }
+                                            updatedAt
+                                        }
+                                        templates{
+                                            createdAt
+                                            description
+                                            id
+                                            imageUrl
+                                            name
+                                            order
+                                            updatedAt
+                                        }
+                                        updatedAt
+                                    }
+                                    createdAt
+                                    description
+                                    id
+                                    imageUrl
+                                    name
+                                    order
+                                    updatedAt
+                                }
                                 updatedAt
                             }
                             createdAt
@@ -28,15 +118,6 @@ query paginatedTemplates($first: Int, $page: Int, $skip: Int){
                             id
                             name
                             order
-                            parentCategory{
-                                categorySpecialType
-                                createdAt
-                                description
-                                id
-                                name
-                                order
-                                updatedAt
-                            }
                             updatedAt
                         }
                         updatedAt
@@ -53,15 +134,6 @@ query paginatedTemplates($first: Int, $page: Int, $skip: Int){
                 id
                 name
                 order
-                parentCategory{
-                    categorySpecialType
-                    createdAt
-                    description
-                    id
-                    name
-                    order
-                    updatedAt
-                }
                 updatedAt
             }
             createdAt
@@ -72,29 +144,11 @@ query paginatedTemplates($first: Int, $page: Int, $skip: Int){
             order
             preSuspensionCategory{
                 categorySpecialType
-                childCategories{
-                    categorySpecialType
-                    createdAt
-                    description
-                    id
-                    name
-                    order
-                    updatedAt
-                }
                 createdAt
                 description
                 id
                 name
                 order
-                parentCategory{
-                    categorySpecialType
-                    createdAt
-                    description
-                    id
-                    name
-                    order
-                    updatedAt
-                }
                 updatedAt
             }
             updatedAt

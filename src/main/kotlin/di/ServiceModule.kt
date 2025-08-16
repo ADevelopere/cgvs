@@ -8,7 +8,7 @@ import services.TemplateService
 val serviceModule = module {
     single<TemplateCategoryService> {
         TemplateCategoryService(
-            templateCategoryRepository = get(),
+            repository = get(),
         )
     }
 

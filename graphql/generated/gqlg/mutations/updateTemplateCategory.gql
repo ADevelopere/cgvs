@@ -1,5 +1,5 @@
-mutation createTemplateCategory($input: CreateTemplateCategoryInput!){
-    createTemplateCategory(input: $input){
+mutation updateTemplateCategory($input: UpdateTemplateCategoryInput!){
+    updateTemplateCategory(input: $input){
         categorySpecialType
         childCategories{
             categorySpecialType

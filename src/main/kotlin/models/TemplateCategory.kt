@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
+import schema.dataloaders.TemplateCategoryTemplatesDataLoader
 import tables.CategorySpecialType
 import util.now
 import java.util.concurrent.CompletableFuture
@@ -37,6 +38,13 @@ data class TemplateCategory(
             id
         )
     }
+
+    fun templates(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<Template>> {
+        return dataFetchingEnvironment.getValueFromDataLoader(
+            TemplateCategoryTemplatesDataLoader.dataLoaderName,
+            id
+        )
+    }
 }
 
 data class CreateTemplateCategoryInput(
@@ -50,5 +58,4 @@ data class UpdateTemplateCategoryInput(
     val name: String,
     val description: String?,
     val parentCategoryId: Int?,
-    val order: Int
 )

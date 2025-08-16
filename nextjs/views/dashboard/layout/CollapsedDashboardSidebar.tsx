@@ -1,5 +1,6 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     List,
     ListItem,
@@ -12,8 +13,8 @@ import {
 } from "@mui/material";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { useNavigation } from "@/contexts/NavigationContext";
-import { NavigationItem, NavigationPageItem } from "../../../contexts/adminLayout.types";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
+import { NavigationItem, NavigationPageItem } from "@/contexts/adminLayout.types";
 
 const NavItem: React.FC<{
     item: NavigationPageItem;
@@ -21,6 +22,7 @@ const NavItem: React.FC<{
 }> = ({ item, pathname }) => {
     const { theme } = useAppTheme();
     const { isPathActive } = useNavigation();
+
     const linkPath = item.pattern || (item.segment ? `/${item.segment}` : "#");
     const itemIsActive = isPathActive(item);
 
@@ -28,9 +30,8 @@ const NavItem: React.FC<{
         <ListItem disablePadding sx={{ width: "100%" }}>
             <Tooltip title={item.title || ""} placement="right">
                 <ListItemButton
-                    component={NavLink}
-                    to={linkPath}
-                    end
+                    component={Link}
+                    href={linkPath}
                     selected={itemIsActive}
                     sx={{
                         p: 0,
@@ -110,7 +111,7 @@ const RenderNavItem: React.FC<{
 
 export const CollapsedDashboardSidebar: React.FC = () => {
     const { theme } = useAppTheme();
-    const location = useLocation();
+    const pathname = usePathname();
     const { navigation, slots } = useDashboardLayout();
 
     if (slots?.collapsedSidebar) {
@@ -136,7 +137,7 @@ export const CollapsedDashboardSidebar: React.FC = () => {
                     <RenderNavItem
                         key={index}
                         item={item}
-                        pathname={location.pathname}
+                        pathname={pathname}
                     />
                 ))}
             </List>

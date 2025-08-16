@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     List,
     ListItem,
@@ -10,8 +11,6 @@ import {
     Divider,
     Collapse,
     Box,
-    Theme,
-    SxProps,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useAppTheme } from "@/contexts/ThemeContext";
@@ -47,72 +46,110 @@ const NavItem: React.FC<{
     return (
         <>
             <ListItem disablePadding sx={{ width: "100%" }}>
-                <ListItemButton
-                    component={!hasChildren ? NavLink : "div"}
-                    to={!hasChildren ? linkPath : undefined}
-                    // @ts-ignore - NavLink specific prop `end` might not be recognized on 'div'
-                    end={!hasChildren} // Match exact path for NavLink active state
-                    selected={itemIsActive} // Apply selected state based on active status
-                    sx={{
-                        p: 0,
-                        py: 1,
-                        margin: "0 !important",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "start",
-                        gap: 0.5,
-                        width: "100%",
-                        color: theme.palette.text.secondary,
-                        paddingInlineStart: theme.spacing(2 + level * 2), // Indentation based on level
-                        marginBottom: theme.spacing(0.5), // Space between items
-                        "&.Mui-selected": {
-                            color: theme.palette.primary.main,
-                            backgroundColor: theme.palette.action.selected,
-                            fontWeight: "fontWeightBold",
-                            "& .MuiListItemIcon-root": {
+                {!hasChildren ? (
+                    <ListItemButton
+                        component={Link}
+                        href={linkPath}
+                        selected={itemIsActive}
+                        sx={{
+                            p: 0,
+                            py: 1,
+                            margin: "0 !important",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "start",
+                            gap: 0.5,
+                            width: "100%",
+                            color: theme.palette.text.secondary,
+                            paddingInlineStart: theme.spacing(2 + level * 2),
+                            marginBottom: theme.spacing(0.5),
+                            "&.Mui-selected": {
                                 color: theme.palette.primary.main,
-                            },
-                            "&:hover": {
-                                backgroundColor: theme.palette.action.hover, // Keep hover consistent
-                            },
-                        },
-                        "&:hover": {
-                            backgroundColor: theme.palette.action.hover,
-                        },
-                    }}
-                    onClick={handleClick}
-                    style={!hasChildren ? navLinkStyle : {}} // Apply style only for NavLink
-                >
-                    {item.icon && (
-                        <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
-                            {item.icon}
-                        </ListItemIcon>
-                    )}
-                    <ListItemText
-                        primary={item.title}
-                        // Use slotProps instead of deprecated primaryTypographyProps
-                        slotProps={{
-                            primary: {
-                                sx: {
-                                    fontSize: "0.875rem",
-                                    fontWeight: itemIsActive
-                                        ? "fontWeightMedium"
-                                        : "fontWeightRegular",
-                                    textAlign: "start",
+                                backgroundColor: theme.palette.action.selected,
+                                fontWeight: "fontWeightBold",
+                                "& .MuiListItemIcon-root": {
+                                    color: theme.palette.primary.main,
+                                },
+                                "&:hover": {
+                                    backgroundColor: theme.palette.action.hover,
                                 },
                             },
+                            "&:hover": {
+                                backgroundColor: theme.palette.action.hover,
+                            },
                         }}
-                    />
-                    {hasChildren && (open ? <ExpandLess /> : <ExpandMore />)}
-                </ListItemButton>
+                        onClick={handleClick}
+                        style={navLinkStyle}
+                    >
+                        {item.icon && (
+                            <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
+                                {item.icon}
+                            </ListItemIcon>
+                        )}
+                        <ListItemText
+                            primary={item.title}
+                            slotProps={{
+                                primary: {
+                                    sx: {
+                                        fontSize: "0.875rem",
+                                        fontWeight: itemIsActive
+                                            ? "fontWeightMedium"
+                                            : "fontWeightRegular",
+                                        textAlign: "start",
+                                    },
+                                },
+                            }}
+                        />
+                    </ListItemButton>
+                ) : (
+                    <ListItemButton
+                        component="div"
+                        selected={false}
+                        sx={{
+                            p: 0,
+                            py: 1,
+                            margin: "0 !important",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "start",
+                            gap: 0.5,
+                            width: "100%",
+                            color: theme.palette.text.secondary,
+                            paddingInlineStart: theme.spacing(2 + level * 2),
+                            marginBottom: theme.spacing(0.5),
+                            "&:hover": {
+                                backgroundColor: theme.palette.action.hover,
+                            },
+                        }}
+                        onClick={handleClick}
+                    >
+                        {item.icon && (
+                            <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
+                                {item.icon}
+                            </ListItemIcon>
+                        )}
+                        <ListItemText
+                            primary={item.title}
+                            slotProps={{
+                                primary: {
+                                    sx: {
+                                        fontSize: "0.875rem",
+                                        fontWeight: "fontWeightRegular",
+                                        textAlign: "start",
+                                    },
+                                },
+                            }}
+                        />
+                        {open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                )}
             </ListItem>
             {hasChildren && (
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        {/* Render children recursively */}
                         {item.children?.map((child, index) => (
                             <RenderNavItem
-                                key={`${item.segment || item.title}-${index}`} // Ensure unique key
+                                key={`${item.segment || item.title}-${index}`}
                                 item={child}
                                 level={level + 1}
                                 pathname={pathname}
@@ -167,7 +204,7 @@ const RenderNavItem: React.FC<{
 
 export const ExpandedDashboardSidebar: React.FC = () => {
     const { theme } = useAppTheme();
-    const location = useLocation();
+    const pathname = usePathname();
     const { navigation, slots } = useDashboardLayout();
 
     if (slots?.expandedSidebar) {
@@ -191,10 +228,10 @@ export const ExpandedDashboardSidebar: React.FC = () => {
             <List component="nav" sx={{ p: 0 }}>
                 {navigation.map((item, index) => (
                     <RenderNavItem
-                        key={index} // Use index as key for top-level items
+                        key={index}
                         item={item}
-                        level={0} // Top-level items are at level 0
-                        pathname={location.pathname}
+                        level={0}
+                        pathname={pathname}
                     />
                 ))}
             </List>

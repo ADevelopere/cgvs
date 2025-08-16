@@ -53,6 +53,7 @@ type Mutation {
   createTemplate(input: CreateTemplateInput!): Template!
   createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
   deleteTemplate(id: Int!): Template
+  deleteTemplateCategory(id: Int!): TemplateCategory!
 
   """Login user with email and password"""
   login(input: LoginInput!): AuthPayload
@@ -66,6 +67,7 @@ type Mutation {
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
   updateTemplate(input: UpdateTemplateInput!): Template
+  updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
 }
 
 type PaginatedTemplatesResponse {
@@ -98,11 +100,15 @@ enum PaginationType {
 type Query {
   """Check if user is authenticated"""
   isAuthenticated: Boolean!
+  mainTemplateCategory: TemplateCategory
 
   """Get current authenticated user"""
   me: User
   paginatedTemplates(first: Int, page: Int, skip: Int): PaginatedTemplatesResponse!
+  suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
+  templateCategories: [TemplateCategory!]!
+  templateCategory(id: Int!): TemplateCategory
   templateConfig: TemplateConfig
   templates: [Template!]!
 
@@ -145,12 +151,20 @@ type TemplateCategory {
   name: String!
   order: Int
   parentCategory: TemplateCategory
+  templates: [Template!]!
   updatedAt: LocalDateTime!
 }
 
 type TemplateConfig {
   allowedFileTypes: [String!]!
   maxBackgroundSize: Int!
+}
+
+input UpdateTemplateCategoryInput {
+  description: String
+  id: Int!
+  name: String!
+  parentCategoryId: Int
 }
 
 input UpdateTemplateInput {

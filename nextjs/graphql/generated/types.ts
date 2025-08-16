@@ -55,6 +55,7 @@ export type Mutation = {
   createTemplate: Template;
   createTemplateCategory: TemplateCategory;
   deleteTemplate?: Maybe<Template>;
+  deleteTemplateCategory: TemplateCategory;
   /** Login user with email and password */
   login?: Maybe<AuthPayload>;
   /** Logout current user */
@@ -65,6 +66,7 @@ export type Mutation = {
   suspendTemplate?: Maybe<Template>;
   unsuspendTemplate?: Maybe<Template>;
   updateTemplate?: Maybe<Template>;
+  updateTemplateCategory: TemplateCategory;
 };
 
 
@@ -79,6 +81,11 @@ export type MutationCreateTemplateCategoryArgs = {
 
 
 export type MutationDeleteTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteTemplateCategoryArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -112,6 +119,11 @@ export type MutationUpdateTemplateArgs = {
   input: UpdateTemplateInput;
 };
 
+
+export type MutationUpdateTemplateCategoryArgs = {
+  input: UpdateTemplateCategoryInput;
+};
+
 export type PaginatedTemplatesResponse = {
   __typename?: 'PaginatedTemplatesResponse';
   data: Array<Template>;
@@ -142,10 +154,14 @@ export type Query = {
   __typename?: 'Query';
   /** Check if user is authenticated */
   isAuthenticated: Scalars['Boolean']['output'];
+  mainTemplateCategory?: Maybe<TemplateCategory>;
   /** Get current authenticated user */
   me?: Maybe<User>;
   paginatedTemplates: PaginatedTemplatesResponse;
+  suspensionTemplateCategory?: Maybe<TemplateCategory>;
   template?: Maybe<Template>;
+  templateCategories: Array<TemplateCategory>;
+  templateCategory?: Maybe<TemplateCategory>;
   templateConfig?: Maybe<TemplateConfig>;
   templates: Array<Template>;
   /** Get user by ID (authenticated users only) */
@@ -163,6 +179,11 @@ export type QueryPaginatedTemplatesArgs = {
 
 
 export type QueryTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryTemplateCategoryArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -205,6 +226,7 @@ export type TemplateCategory = {
   name: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
   parentCategory?: Maybe<TemplateCategory>;
+  templates: Array<Template>;
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
@@ -212,6 +234,13 @@ export type TemplateConfig = {
   __typename?: 'TemplateConfig';
   allowedFileTypes: Array<Scalars['String']['output']>;
   maxBackgroundSize: Scalars['Int']['output'];
+};
+
+export type UpdateTemplateCategoryInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  parentCategoryId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UpdateTemplateInput = {
@@ -321,6 +350,75 @@ export type UpdateTemplateMutationVariables = Exact<{
 
 
 export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+
+export type PaginatedTemplatesQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type PaginatedTemplatesQuery = { __typename?: 'Query', paginatedTemplates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage?: number | null, perPage: number, total?: number | null } | null } };
+
+export type TemplateQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+
+export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TemplateConfigQuery = { __typename?: 'Query', templateConfig?: { __typename?: 'TemplateConfig', allowedFileTypes: Array<string>, maxBackgroundSize: number } | null };
+
+export type TemplatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TemplatesQuery = { __typename?: 'Query', templates: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }> };
+
+export type CreateTemplateCategoryMutationVariables = Exact<{
+  input: CreateTemplateCategoryInput;
+}>;
+
+
+export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } };
+
+export type DeleteTemplateCategoryMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } };
+
+export type UpdateTemplateCategoryMutationVariables = Exact<{
+  input: UpdateTemplateCategoryInput;
+}>;
+
+
+export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } };
+
+export type MainTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
+
+export type SuspensionTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspensionTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
+
+export type TemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any }> }> };
+
+export type TemplateCategoryQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
 
 
 export const PlaceholderDocument = gql`
@@ -951,3 +1049,1035 @@ export function useUpdateTemplateMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateTemplateMutationHookResult = ReturnType<typeof useUpdateTemplateMutation>;
 export type UpdateTemplateMutationResult = Apollo.MutationResult<UpdateTemplateMutation>;
 export type UpdateTemplateMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateMutation, UpdateTemplateMutationVariables>;
+export const PaginatedTemplatesDocument = gql`
+    query paginatedTemplates($first: Int, $page: Int, $skip: Int) {
+  paginatedTemplates(first: $first, page: $page, skip: $skip) {
+    data {
+      id
+      name
+      description
+      imageUrl
+      category {
+        id
+        name
+      }
+      order
+      preSuspensionCategory {
+        id
+        name
+      }
+      createdAt
+      updatedAt
+    }
+    paginationInfo {
+      count
+      currentPage
+      firstItem
+      hasMorePages
+      lastItem
+      lastPage
+      perPage
+      total
+    }
+  }
+}
+    `;
+
+/**
+ * __usePaginatedTemplatesQuery__
+ *
+ * To run a query within a React component, call `usePaginatedTemplatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePaginatedTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePaginatedTemplatesQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      page: // value for 'page'
+ *      skip: // value for 'skip'
+ *   },
+ * });
+ */
+export function usePaginatedTemplatesQuery(baseOptions?: Apollo.QueryHookOptions<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>(PaginatedTemplatesDocument, options);
+      }
+export function usePaginatedTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>(PaginatedTemplatesDocument, options);
+        }
+export function usePaginatedTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>(PaginatedTemplatesDocument, options);
+        }
+export type PaginatedTemplatesQueryHookResult = ReturnType<typeof usePaginatedTemplatesQuery>;
+export type PaginatedTemplatesLazyQueryHookResult = ReturnType<typeof usePaginatedTemplatesLazyQuery>;
+export type PaginatedTemplatesSuspenseQueryHookResult = ReturnType<typeof usePaginatedTemplatesSuspenseQuery>;
+export type PaginatedTemplatesQueryResult = Apollo.QueryResult<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>;
+export function refetchPaginatedTemplatesQuery(variables?: PaginatedTemplatesQueryVariables) {
+      return { query: PaginatedTemplatesDocument, variables: variables }
+    }
+export const TemplateDocument = gql`
+    query template($id: Int!) {
+  template(id: $id) {
+    id
+    name
+    description
+    imageUrl
+    category {
+      id
+      name
+    }
+    order
+    preSuspensionCategory {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useTemplateQuery__
+ *
+ * To run a query within a React component, call `useTemplateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTemplateQuery(baseOptions: Apollo.QueryHookOptions<TemplateQuery, TemplateQueryVariables> & ({ variables: TemplateQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+      }
+export function useTemplateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+        }
+export function useTemplateSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateQuery, TemplateQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateQuery, TemplateQueryVariables>(TemplateDocument, options);
+        }
+export type TemplateQueryHookResult = ReturnType<typeof useTemplateQuery>;
+export type TemplateLazyQueryHookResult = ReturnType<typeof useTemplateLazyQuery>;
+export type TemplateSuspenseQueryHookResult = ReturnType<typeof useTemplateSuspenseQuery>;
+export type TemplateQueryResult = Apollo.QueryResult<TemplateQuery, TemplateQueryVariables>;
+export function refetchTemplateQuery(variables: TemplateQueryVariables) {
+      return { query: TemplateDocument, variables: variables }
+    }
+export const TemplateConfigDocument = gql`
+    query templateConfig {
+  templateConfig {
+    allowedFileTypes
+    maxBackgroundSize
+  }
+}
+    `;
+
+/**
+ * __useTemplateConfigQuery__
+ *
+ * To run a query within a React component, call `useTemplateConfigQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateConfigQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateConfigQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTemplateConfigQuery(baseOptions?: Apollo.QueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+      }
+export function useTemplateConfigLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+        }
+export function useTemplateConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateConfigQuery, TemplateConfigQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateConfigQuery, TemplateConfigQueryVariables>(TemplateConfigDocument, options);
+        }
+export type TemplateConfigQueryHookResult = ReturnType<typeof useTemplateConfigQuery>;
+export type TemplateConfigLazyQueryHookResult = ReturnType<typeof useTemplateConfigLazyQuery>;
+export type TemplateConfigSuspenseQueryHookResult = ReturnType<typeof useTemplateConfigSuspenseQuery>;
+export type TemplateConfigQueryResult = Apollo.QueryResult<TemplateConfigQuery, TemplateConfigQueryVariables>;
+export function refetchTemplateConfigQuery(variables?: TemplateConfigQueryVariables) {
+      return { query: TemplateConfigDocument, variables: variables }
+    }
+export const TemplatesDocument = gql`
+    query templates {
+  templates {
+    id
+    name
+    description
+    imageUrl
+    category {
+      id
+      name
+    }
+    order
+    preSuspensionCategory {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useTemplatesQuery__
+ *
+ * To run a query within a React component, call `useTemplatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplatesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTemplatesQuery(baseOptions?: Apollo.QueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+      }
+export function useTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+        }
+export function useTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplatesQuery, TemplatesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplatesQuery, TemplatesQueryVariables>(TemplatesDocument, options);
+        }
+export type TemplatesQueryHookResult = ReturnType<typeof useTemplatesQuery>;
+export type TemplatesLazyQueryHookResult = ReturnType<typeof useTemplatesLazyQuery>;
+export type TemplatesSuspenseQueryHookResult = ReturnType<typeof useTemplatesSuspenseQuery>;
+export type TemplatesQueryResult = Apollo.QueryResult<TemplatesQuery, TemplatesQueryVariables>;
+export function refetchTemplatesQuery(variables?: TemplatesQueryVariables) {
+      return { query: TemplatesDocument, variables: variables }
+    }
+export const CreateTemplateCategoryDocument = gql`
+    mutation createTemplateCategory($input: CreateTemplateCategoryInput!) {
+  createTemplateCategory(input: $input) {
+    categorySpecialType
+    childCategories {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        parentCategory {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            templates {
+              category {
+                categorySpecialType
+                childCategories {
+                  categorySpecialType
+                  createdAt
+                  description
+                  id
+                  name
+                  order
+                  updatedAt
+                }
+                createdAt
+                description
+                id
+                name
+                order
+                parentCategory {
+                  categorySpecialType
+                  createdAt
+                  description
+                  id
+                  name
+                  order
+                  parentCategory {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      preSuspensionCategory {
+                        categorySpecialType
+                        childCategories {
+                          categorySpecialType
+                          createdAt
+                          description
+                          id
+                          name
+                          order
+                          updatedAt
+                        }
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        parentCategory {
+                          categorySpecialType
+                          createdAt
+                          description
+                          id
+                          name
+                          order
+                          updatedAt
+                        }
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  updatedAt
+                }
+                templates {
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              imageUrl
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    name
+    order
+    parentCategory {
+      categorySpecialType
+      createdAt
+      description
+      id
+      name
+      order
+      updatedAt
+    }
+    templates {
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type CreateTemplateCategoryMutationFn = Apollo.MutationFunction<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
+
+/**
+ * __useCreateTemplateCategoryMutation__
+ *
+ * To run a mutation, you first call `useCreateTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTemplateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTemplateCategoryMutation, { data, loading, error }] = useCreateTemplateCategoryMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>(CreateTemplateCategoryDocument, options);
+      }
+export type CreateTemplateCategoryMutationHookResult = ReturnType<typeof useCreateTemplateCategoryMutation>;
+export type CreateTemplateCategoryMutationResult = Apollo.MutationResult<CreateTemplateCategoryMutation>;
+export type CreateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
+export const DeleteTemplateCategoryDocument = gql`
+    mutation deleteTemplateCategory($id: Int!) {
+  deleteTemplateCategory(id: $id) {
+    categorySpecialType
+    childCategories {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        parentCategory {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            templates {
+              category {
+                categorySpecialType
+                childCategories {
+                  categorySpecialType
+                  createdAt
+                  description
+                  id
+                  name
+                  order
+                  updatedAt
+                }
+                createdAt
+                description
+                id
+                name
+                order
+                parentCategory {
+                  categorySpecialType
+                  createdAt
+                  description
+                  id
+                  name
+                  order
+                  parentCategory {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      preSuspensionCategory {
+                        categorySpecialType
+                        childCategories {
+                          categorySpecialType
+                          createdAt
+                          description
+                          id
+                          name
+                          order
+                          updatedAt
+                        }
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        parentCategory {
+                          categorySpecialType
+                          createdAt
+                          description
+                          id
+                          name
+                          order
+                          updatedAt
+                        }
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  updatedAt
+                }
+                templates {
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              imageUrl
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    name
+    order
+    parentCategory {
+      categorySpecialType
+      createdAt
+      description
+      id
+      name
+      order
+      updatedAt
+    }
+    templates {
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type DeleteTemplateCategoryMutationFn = Apollo.MutationFunction<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
+
+/**
+ * __useDeleteTemplateCategoryMutation__
+ *
+ * To run a mutation, you first call `useDeleteTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTemplateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTemplateCategoryMutation, { data, loading, error }] = useDeleteTemplateCategoryMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>(DeleteTemplateCategoryDocument, options);
+      }
+export type DeleteTemplateCategoryMutationHookResult = ReturnType<typeof useDeleteTemplateCategoryMutation>;
+export type DeleteTemplateCategoryMutationResult = Apollo.MutationResult<DeleteTemplateCategoryMutation>;
+export type DeleteTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
+export const UpdateTemplateCategoryDocument = gql`
+    mutation updateTemplateCategory($input: UpdateTemplateCategoryInput!) {
+  updateTemplateCategory(input: $input) {
+    categorySpecialType
+    childCategories {
+      categorySpecialType
+      childCategories {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        parentCategory {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            templates {
+              category {
+                categorySpecialType
+                childCategories {
+                  categorySpecialType
+                  createdAt
+                  description
+                  id
+                  name
+                  order
+                  updatedAt
+                }
+                createdAt
+                description
+                id
+                name
+                order
+                parentCategory {
+                  categorySpecialType
+                  createdAt
+                  description
+                  id
+                  name
+                  order
+                  parentCategory {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      preSuspensionCategory {
+                        categorySpecialType
+                        childCategories {
+                          categorySpecialType
+                          createdAt
+                          description
+                          id
+                          name
+                          order
+                          updatedAt
+                        }
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        parentCategory {
+                          categorySpecialType
+                          createdAt
+                          description
+                          id
+                          name
+                          order
+                          updatedAt
+                        }
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  updatedAt
+                }
+                templates {
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              imageUrl
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      name
+      order
+      updatedAt
+    }
+    createdAt
+    description
+    id
+    name
+    order
+    parentCategory {
+      categorySpecialType
+      createdAt
+      description
+      id
+      name
+      order
+      updatedAt
+    }
+    templates {
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      updatedAt
+    }
+    updatedAt
+  }
+}
+    `;
+export type UpdateTemplateCategoryMutationFn = Apollo.MutationFunction<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
+
+/**
+ * __useUpdateTemplateCategoryMutation__
+ *
+ * To run a mutation, you first call `useUpdateTemplateCategoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTemplateCategoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTemplateCategoryMutation, { data, loading, error }] = useUpdateTemplateCategoryMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTemplateCategoryMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>(UpdateTemplateCategoryDocument, options);
+      }
+export type UpdateTemplateCategoryMutationHookResult = ReturnType<typeof useUpdateTemplateCategoryMutation>;
+export type UpdateTemplateCategoryMutationResult = Apollo.MutationResult<UpdateTemplateCategoryMutation>;
+export type UpdateTemplateCategoryMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
+export const MainTemplateCategoryDocument = gql`
+    query mainTemplateCategory {
+  mainTemplateCategory {
+    id
+    name
+    description
+    categorySpecialType
+    parentCategory {
+      id
+      name
+    }
+    order
+    childCategories {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useMainTemplateCategoryQuery__
+ *
+ * To run a query within a React component, call `useMainTemplateCategoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMainTemplateCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMainTemplateCategoryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMainTemplateCategoryQuery(baseOptions?: Apollo.QueryHookOptions<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>(MainTemplateCategoryDocument, options);
+      }
+export function useMainTemplateCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>(MainTemplateCategoryDocument, options);
+        }
+export function useMainTemplateCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>(MainTemplateCategoryDocument, options);
+        }
+export type MainTemplateCategoryQueryHookResult = ReturnType<typeof useMainTemplateCategoryQuery>;
+export type MainTemplateCategoryLazyQueryHookResult = ReturnType<typeof useMainTemplateCategoryLazyQuery>;
+export type MainTemplateCategorySuspenseQueryHookResult = ReturnType<typeof useMainTemplateCategorySuspenseQuery>;
+export type MainTemplateCategoryQueryResult = Apollo.QueryResult<MainTemplateCategoryQuery, MainTemplateCategoryQueryVariables>;
+export function refetchMainTemplateCategoryQuery(variables?: MainTemplateCategoryQueryVariables) {
+      return { query: MainTemplateCategoryDocument, variables: variables }
+    }
+export const SuspensionTemplateCategoryDocument = gql`
+    query suspensionTemplateCategory {
+  suspensionTemplateCategory {
+    id
+    name
+    description
+    categorySpecialType
+    parentCategory {
+      id
+      name
+    }
+    order
+    childCategories {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useSuspensionTemplateCategoryQuery__
+ *
+ * To run a query within a React component, call `useSuspensionTemplateCategoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSuspensionTemplateCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSuspensionTemplateCategoryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSuspensionTemplateCategoryQuery(baseOptions?: Apollo.QueryHookOptions<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>(SuspensionTemplateCategoryDocument, options);
+      }
+export function useSuspensionTemplateCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>(SuspensionTemplateCategoryDocument, options);
+        }
+export function useSuspensionTemplateCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>(SuspensionTemplateCategoryDocument, options);
+        }
+export type SuspensionTemplateCategoryQueryHookResult = ReturnType<typeof useSuspensionTemplateCategoryQuery>;
+export type SuspensionTemplateCategoryLazyQueryHookResult = ReturnType<typeof useSuspensionTemplateCategoryLazyQuery>;
+export type SuspensionTemplateCategorySuspenseQueryHookResult = ReturnType<typeof useSuspensionTemplateCategorySuspenseQuery>;
+export type SuspensionTemplateCategoryQueryResult = Apollo.QueryResult<SuspensionTemplateCategoryQuery, SuspensionTemplateCategoryQueryVariables>;
+export function refetchSuspensionTemplateCategoryQuery(variables?: SuspensionTemplateCategoryQueryVariables) {
+      return { query: SuspensionTemplateCategoryDocument, variables: variables }
+    }
+export const TemplateCategoriesDocument = gql`
+    query templateCategories {
+  templateCategories {
+    id
+    name
+    description
+    categorySpecialType
+    parentCategory {
+      id
+    }
+    order
+    templates {
+      id
+      name
+      description
+      imageUrl
+      order
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useTemplateCategoriesQuery__
+ *
+ * To run a query within a React component, call `useTemplateCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTemplateCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>(TemplateCategoriesDocument, options);
+      }
+export function useTemplateCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>(TemplateCategoriesDocument, options);
+        }
+export function useTemplateCategoriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>(TemplateCategoriesDocument, options);
+        }
+export type TemplateCategoriesQueryHookResult = ReturnType<typeof useTemplateCategoriesQuery>;
+export type TemplateCategoriesLazyQueryHookResult = ReturnType<typeof useTemplateCategoriesLazyQuery>;
+export type TemplateCategoriesSuspenseQueryHookResult = ReturnType<typeof useTemplateCategoriesSuspenseQuery>;
+export type TemplateCategoriesQueryResult = Apollo.QueryResult<TemplateCategoriesQuery, TemplateCategoriesQueryVariables>;
+export function refetchTemplateCategoriesQuery(variables?: TemplateCategoriesQueryVariables) {
+      return { query: TemplateCategoriesDocument, variables: variables }
+    }
+export const TemplateCategoryDocument = gql`
+    query templateCategory($id: Int!) {
+  templateCategory(id: $id) {
+    id
+    name
+    description
+    categorySpecialType
+    parentCategory {
+      id
+      name
+    }
+    order
+    childCategories {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useTemplateCategoryQuery__
+ *
+ * To run a query within a React component, call `useTemplateCategoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTemplateCategoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTemplateCategoryQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTemplateCategoryQuery(baseOptions: Apollo.QueryHookOptions<TemplateCategoryQuery, TemplateCategoryQueryVariables> & ({ variables: TemplateCategoryQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TemplateCategoryQuery, TemplateCategoryQueryVariables>(TemplateCategoryDocument, options);
+      }
+export function useTemplateCategoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TemplateCategoryQuery, TemplateCategoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TemplateCategoryQuery, TemplateCategoryQueryVariables>(TemplateCategoryDocument, options);
+        }
+export function useTemplateCategorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TemplateCategoryQuery, TemplateCategoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TemplateCategoryQuery, TemplateCategoryQueryVariables>(TemplateCategoryDocument, options);
+        }
+export type TemplateCategoryQueryHookResult = ReturnType<typeof useTemplateCategoryQuery>;
+export type TemplateCategoryLazyQueryHookResult = ReturnType<typeof useTemplateCategoryLazyQuery>;
+export type TemplateCategorySuspenseQueryHookResult = ReturnType<typeof useTemplateCategorySuspenseQuery>;
+export type TemplateCategoryQueryResult = Apollo.QueryResult<TemplateCategoryQuery, TemplateCategoryQueryVariables>;
+export function refetchTemplateCategoryQuery(variables: TemplateCategoryQueryVariables) {
+      return { query: TemplateCategoryDocument, variables: variables }
+    }
