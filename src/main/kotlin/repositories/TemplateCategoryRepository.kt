@@ -4,6 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import models.TemplateCategory
 import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -111,6 +113,20 @@ class TemplateCategoryRepository(private val database: Database) {
         maxOrder ?: 1
     }
 
+    suspend fun findByOrderAndParentCategoryId(order: Int, parentCategoryId: Int?): TemplateCategory? = dbQuery {
+        TemplateCategories.selectAll()
+            .where {
+                (TemplateCategories.order eq order) and
+                    (TemplateCategories.parentCategoryId eq parentCategoryId)
+            }
+            .map { rowToTemplateCategory(it) }
+            .singleOrNull()
+    }
+
+    suspend fun delete(id: Int): Boolean? = dbQuery {
+        TemplateCategories.deleteWhere { TemplateCategories.id eq id } > 0
+    }
+
     private fun rowToTemplateCategory(row: ResultRow): TemplateCategory {
         return TemplateCategory(
             id = row[TemplateCategories.id],
@@ -123,6 +139,7 @@ class TemplateCategoryRepository(private val database: Database) {
             updatedAt = row[TemplateCategories.updatedAt]
         )
     }
+
 
     /**
      * A helper function to execute a database transaction on a dedicated IO thread pool

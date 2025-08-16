@@ -6,7 +6,7 @@ import React, {
     useMemo,
     useEffect,
 } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
@@ -61,8 +61,9 @@ const TemplateManagementContext = createContext<
 export const TemplateManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const [searchParams] = useSearchParams();
-    const { id } = useParams<{ id: string }>();
+    const searchParams = useSearchParams();
+    const params = useParams<{ id: string }>();
+    const id = params?.id;
     const { allTemplates, templateToManage } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
 
@@ -71,7 +72,7 @@ export const TemplateManagementProvider: React.FC<{
         loading: apolloLoading,
         error: apolloError,
     } = useTemplateQuery({
-        variables: { id: id ?? "" },
+        variables: { id: id ? parseInt(id, 10) : 0 },
         skip: !id,
         fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
     });
@@ -146,7 +147,8 @@ export const TemplateManagementProvider: React.FC<{
 
                 // Then check allTemplates for immediate UI update
                 if (id && !templateToManage) {
-                    const localTemplate = allTemplates.find((t) => t.id === id);
+                    const templateId = parseInt(id, 10);
+                    const localTemplate = allTemplates.find((t) => t.id === templateId);
                     template = localTemplate;
                 }
 

@@ -11,14 +11,7 @@ type TemplateCategoryGraphQLContextType = {
     /**
      * Query to fetch all template categories in a flat structure
      */
-    flatTemplateCategoriesQuery: () => Promise<FetchResult<Types.FlatTemplateCategoriesQuery>>;
-
-    /**
-     * Query to fetch template categories with pagination
-     */
-    paginatedTemplateCategoriesQuery: (
-        variables?: Types.TemplateCategoriesQueryVariables,
-    ) => Promise<FetchResult<Types.TemplateCategoriesQuery>>;
+    templateCategoriesQuery: () => Promise<FetchResult<Types.TemplateCategoriesQuery>>;
 
     /**
      * Query to fetch a single template category by ID
@@ -50,14 +43,6 @@ type TemplateCategoryGraphQLContextType = {
     deleteTemplateCategoryMutation: (
         variables: Types.DeleteTemplateCategoryMutationVariables,
     ) => Promise<FetchResult<Types.DeleteTemplateCategoryMutation>>;
-
-    /**
-     * Mutation to reorder template categories
-     * @param variables - The reorder template categories variables
-     */
-    reorderTemplateCategoriesMutation: (
-        variables: Types.ReorderTemplateCategoriesMutationVariables,
-    ) => Promise<FetchResult<Types.ReorderTemplateCategoriesMutation>>;
 };
 
 const TemplateCategoryGraphQLContext = createContext<
@@ -78,18 +63,16 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Query for fetching flat categories
-    const { refetch: refetchFlat} = Types.useFlatTemplateCategoriesQuery();
+    const { refetch: refetchFlat} = Types.useTemplateCategoriesQuery();
 
     // Query for fetching paginated categories
     const { refetch: refetchPaginated } = Types.useTemplateCategoriesQuery({
         skip: true, // Skip initial execution since we'll only use refetch
-        variables: { first: 10 }, // Default page size
     });
 
     // Query for fetching single category
     const { refetch: refetchSingle } = Types.useTemplateCategoryQuery({
         skip: true, // Skip initial execution since we'll only use refetch
-        variables: { id: "" }, // Placeholder value, will be replaced in refetch
     });
 
     // Create category mutation
@@ -97,19 +80,19 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.createTemplateCategory) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>(
+            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
                 {
-                    query: Types.FlatTemplateCategoriesDocument,
+                    query: Types.TemplateCategoriesDocument,
                 },
             );
 
-            if (!existingData?.flatTemplateCategories) return;
+            if (!existingData?.templateCategories) return;
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Types.TemplateCategoriesDocument,
                 data: {
-                    flatTemplateCategories: [
-                        ...existingData.flatTemplateCategories,
+                    templateCategories: [
+                        ...existingData.templateCategories,
                         data.createTemplateCategory,
                     ],
                 },
@@ -122,18 +105,18 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.updateTemplateCategory) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>(
+            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
                 {
-                    query: Types.FlatTemplateCategoriesDocument,
+                    query: Types.TemplateCategoriesDocument,
                 },
             );
 
-            if (!existingData?.flatTemplateCategories) return;
+            if (!existingData?.templateCategories) return;
 
             const updatedCategory = mapTemplateCategory(data);
             if (!updatedCategory) return;
 
-            const updatedData = existingData.flatTemplateCategories.map(
+            const updatedData = existingData.templateCategories.map(
                 (category) =>
                     category.id === updatedCategory.id
                         ? data.updateTemplateCategory
@@ -141,9 +124,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
             );
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Types.TemplateCategoriesDocument,
                 data: {
-                    flatTemplateCategories: updatedData,
+                    templateCategories: updatedData,
                 },
             });
         },
@@ -154,55 +137,36 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         update(cache, { data }) {
             if (!data?.deleteTemplateCategory) return;
 
-            const existingData = cache.readQuery<Types.FlatTemplateCategoriesQuery>(
+            const existingData = cache.readQuery<Types.TemplateCategoriesQuery>(
                 {
-                    query: Types.FlatTemplateCategoriesDocument,
+                    query: Types.TemplateCategoriesDocument,
                 },
             );
 
-            if (!existingData?.flatTemplateCategories) return;
+            if (!existingData?.templateCategories) return;
 
-            const updatedData = existingData.flatTemplateCategories.filter(
+            const updatedData = existingData.templateCategories.filter(
                 (category) => category.id !== data.deleteTemplateCategory.id,
             );
 
             cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
+                query: Types.TemplateCategoriesDocument,
                 data: {
-                    flatTemplateCategories: updatedData,
+                    templateCategories: updatedData,
                 },
             });
         },
     });
 
-    // Reorder categories mutation
-    const [mutateReorder] = Types.useReorderTemplateCategoriesMutation({
-        update(cache, { data }) {
-            if (!data?.reorderTemplateCategories) return;
-
-            cache.writeQuery({
-                query: Types.FlatTemplateCategoriesDocument,
-                data: {
-                    flatTemplateCategories: data.reorderTemplateCategories,
-                },
-            });
-        },
-    });
 
     // Wrapper functions for mutations and queries
-    const flatTemplateCategoriesQuery = useCallback(
+    const templateCategoriesQuery = useCallback(
         async () => {
             return refetchFlat();
         },
         [refetchFlat],
     );
 
-    const paginatedTemplateCategoriesQuery = useCallback(
-        async (variables?: Types.TemplateCategoriesQueryVariables) => {
-            return refetchPaginated(variables || { first: 10 });
-        },
-        [refetchPaginated],
-    );
 
     const templateCategoryQuery = useCallback(
         async (variables: Types.QueryTemplateCategoryArgs) => {
@@ -238,33 +202,21 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         [mutateDelete],
     );
 
-    const reorderTemplateCategoriesMutation = useCallback(
-        async (variables: Types.ReorderTemplateCategoriesMutationVariables) => {
-            return mutateReorder({
-                variables,
-            });
-        },
-        [mutateReorder],
-    );
 
     const contextValue = React.useMemo(
         () => ({
-            flatTemplateCategoriesQuery,
-            paginatedTemplateCategoriesQuery,
+            templateCategoriesQuery,
             templateCategoryQuery,
             createTemplateCategoryMutation,
             updateTemplateCategoryMutation,
             deleteTemplateCategoryMutation,
-            reorderTemplateCategoriesMutation,
         }),
         [
-            flatTemplateCategoriesQuery,
-            paginatedTemplateCategoriesQuery,
+            templateCategoriesQuery,
             templateCategoryQuery,
             createTemplateCategoryMutation,
             updateTemplateCategoryMutation,
             deleteTemplateCategoryMutation,
-            reorderTemplateCategoriesMutation,
         ],
     );
 

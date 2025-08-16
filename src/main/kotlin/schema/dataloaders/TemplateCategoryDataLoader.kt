@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.extensions.get
 import graphql.GraphQLContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
+import models.Template
 import models.TemplateCategory
 import org.dataloader.DataLoader
 import org.dataloader.DataLoaderFactory
@@ -12,6 +13,7 @@ import org.dataloader.DataLoaderOptions
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.TemplateCategoryService
+import services.TemplateService
 import kotlin.coroutines.EmptyCoroutineContext
 
 val TemplateCategoryDataLoader: KotlinDataLoader<Int, TemplateCategory> =
@@ -50,6 +52,29 @@ val TemplateCategoryChildrenDataLoader: KotlinDataLoader<Int, List<TemplateCateg
                         // For each parentId, fetch its children
                         parentIds.map { parentId ->
                             service.findByParentId(parentId)
+                        }
+                    }
+                },
+                DataLoaderOptions.newOptions()
+                    .setBatchLoaderContextProvider { graphQLContext }
+            )
+    }
+
+val TemplateCategoryTemplatesDataLoader: KotlinDataLoader<Int, List<Template>> =
+    object : KotlinDataLoader<Int, List<Template>>, KoinComponent {
+        override val dataLoaderName = "TemplateCategoryTemplatesDataLoader"
+        private val service: TemplateService by inject()
+        override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<Template>> =
+            DataLoaderFactory.newDataLoader(
+                { categoryIds, batchLoaderEnvironment ->
+                    val coroutineScope =
+                        batchLoaderEnvironment.getContext<GraphQLContext>()?.get<CoroutineScope>()
+                            ?: CoroutineScope(EmptyCoroutineContext)
+
+                    coroutineScope.future {
+                        // For each categoryId, fetch its templates
+                        categoryIds.map { categoryId ->
+                            service.findByCategoryId(categoryId)
                         }
                     }
                 },

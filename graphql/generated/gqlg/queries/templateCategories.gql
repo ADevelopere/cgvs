@@ -1,5 +1,5 @@
-mutation createTemplateCategory($input: CreateTemplateCategoryInput!){
-    createTemplateCategory(input: $input){
+query templateCategories{
+    templateCategories{
         categorySpecialType
         childCategories{
             categorySpecialType

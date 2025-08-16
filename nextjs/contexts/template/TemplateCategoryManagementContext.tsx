@@ -13,8 +13,7 @@ import {
     Template,
     TemplateCategory,
     UpdateTemplateMutationVariables,
-    UpdateTemplateWithImageMutationVariables,
-    useFlatTemplateCategoriesQuery,
+    useTemplateCategoriesQuery,
 } from "@/graphql/generated/types";
 
 import { CircularProgress } from "@mui/material";
@@ -35,7 +34,7 @@ import {
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { mapSingleTemplate } from "@/utils/template/template-mappers";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 // Logger utility
 const logger = {
@@ -144,20 +143,20 @@ type TemplateCategoryManagementContextType = {
      * Creates a new template category with the specified name and optional parent category.
      * After successful creation, the new category is added to the `categories` list and set as the `currentCategory`.
      */
-    createCategory: (name: string, parentId?: string) => void;
+    createCategory: (name: string, parentId?: number) => void;
     /**
      * Updates the name of an existing template category identified by its ID.
      * This modifies the category's name in the backend and updates the corresponding category in the local `categories` state.
      */
     updateCategory: (
         category: TemplateCategory,
-        parentCategoryId?: string | null,
+        parentCategoryId?: number | null,
     ) => void;
     /**
      * Deletes a template category identified by its ID.
      * This removes the category from the backend and the local `categories` state. If the deleted category was the `currentCategory`, the selection is cleared.
      */
-    deleteCategory: (categoryId: string) => void;
+    deleteCategory: (categoryId: number) => void;
     /**
      * Sorts the `categories` array based on the specified field ('name' or 'id') and order ('asc' or 'desc').
      * This function reorders the categories list displayed to the user.
@@ -179,7 +178,7 @@ type TemplateCategoryManagementContextType = {
      * Creates a new template with the specified name within the given category ID.
      * After successful creation, the new template is added to the `templates` list for the current category and potentially set as the `currentTemplate`.
      */
-    createTemplate: (name: string, categoryId: string) => void;
+    createTemplate: (name: string, categoryId: number) => void;
     /**
      * Updates the name of an existing template identified by its ID.
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
@@ -188,19 +187,16 @@ type TemplateCategoryManagementContextType = {
         input: UpdateTemplateMutationVariables,
     ) => Promise<Template | null>;
 
-    updateTemplateWithImage: (
-        input: UpdateTemplateWithImageMutationVariables,
-    ) => Promise<Template | null>;
     /**
      * Deletes a template identified by its ID.
      * This changes the templates's parent category to the deletion category.
      */
-    moveTemplateToDeletionCategory(templateId: string): void;
+    suspendTemplate(templateId: number): void;
     /**
      * Restores a template from the deletion category back to its original category.
      * This will move the template from the deletion category to the specified category and update both categories.
      */
-    restoreTemplate: (templateId: string) => Promise<void>;
+    unsuspendTemplate: (templateId: number) => Promise<void>;
 
     /**
      * Sorts the `templates` array (associated with the `currentCategory`) based on the specified field ('name' or 'id') and order ('asc' or 'desc').
@@ -229,7 +225,7 @@ type TemplateCategoryManagementContextType = {
     setOnNewTemplateCancel: (callback: (() => void) | undefined) => void;
 
     templateToManage?: Template;
-    manageTemplate: (templateId: string) => void;
+    manageTemplate: (templateId: number) => void;
 };
 
 const TemplateCategoryManagementContext = createContext<
@@ -251,7 +247,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const messages = useAppTranslation("templateCategoryTranslations");
     const notifications = useNotifications();
 
-    const navigate = useNavigate();
+    const router = useRouter();
     const [templateToManage, setTemplateToManage] = useState<
         Template | undefined
     >(undefined);
@@ -261,7 +257,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         loading: apolloLoading,
         error: apolloError,
         refetch: refetchCategoriesQuery,
-    } = useFlatTemplateCategoriesQuery();
+    } = useTemplateCategoriesQuery();
 
     const [currentCategoryState, setCurrentCategoryState] =
         useState<TemplateCategory | null>(null);
@@ -288,21 +284,21 @@ export const TemplateCategoryManagementProvider: React.FC<{
     }>({ sortBy: "order", order: "asc" });
 
     const allCategoriesFromCache = useMemo(() => {
-        if (!apolloCategoryData?.flatTemplateCategories) {
+        if (!apolloCategoryData?.templateCategories) {
             return [];
         }
         const mapped = mapTemplateCategories({
-            flatTemplateCategories: apolloCategoryData.flatTemplateCategories,
+            flatTemplateCategories: apolloCategoryData.templateCategories,
         });
         return buildCategoryHierarchy(mapped);
     }, [apolloCategoryData]);
 
     const allTemplatesFromCache = useMemo(() => {
-        if (!apolloCategoryData?.flatTemplateCategories) {
+        if (!apolloCategoryData?.templateCategories) {
             return [];
         }
         const mapped = mapTemplateCategories({
-            flatTemplateCategories: apolloCategoryData.flatTemplateCategories,
+            flatTemplateCategories: apolloCategoryData.templateCategories,
         });
         const allTemplates = mapped.flatMap((category) => {
             if (category.templates) {
@@ -329,7 +325,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     const regularCategoriesFromCache = useMemo(() => {
         const regularCategories = allCategoriesFromCache.filter(
-            (cat) => cat.special_type !== "deletion",
+            (cat) => cat.categorySpecialType !== "Suspension",
         );
         logger.log(
             "Regular categories from cache:",
@@ -345,7 +341,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const deletionCategoryFromCache = useMemo(() => {
         const deletionCategory =
             allCategoriesFromCache.find(
-                (cat) => cat.special_type === "deletion",
+                (cat) => cat.categorySpecialType === "Suspension",
             ) || null;
         if (deletionCategory) {
             logger.log(
@@ -433,7 +429,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const createCategory = useCallback(
-        async (name: string, parentId?: string) => {
+        async (name: string, parentId?: number) => {
             try {
                 const response = await createTemplateCategoryMutation({
                     input: { name, parentCategoryId: parentId },
@@ -487,15 +483,14 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const updateCategory = useCallback(
         async (
             category: TemplateCategory,
-            parentCategoryId?: string | null,
+            parentCategoryId?: number | null,
         ) => {
             try {
                 const response = await updateTemplateCategoryMutation({
-                    id: category.id,
                     input: {
+                        id: category.id,
                         name: category.name,
                         description: category.description,
-                        order: category.order,
                         parentCategoryId: parentCategoryId,
                     },
                 });
@@ -544,7 +539,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const deleteCategory = useCallback(
-        async (categoryId: string) => {
+        async (categoryId: number) => {
             try {
                 logger.info(messages.attemptingToDeleteCategory, categoryId);
                 await deleteTemplateCategoryMutation({ id: categoryId });
@@ -606,24 +601,17 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const {
         createTemplateMutation,
         updateTemplateMutation,
-        updateTemplateWithImageMutation,
-        suspendTemplateMutation: moveTemplateToDeletionCategoryMutation,
-        unsuspendTemplateMutation: restoreTemplateMutation,
+        suspendTemplateMutation,
+        unsuspendTemplateMutation,
     } = useTemplateGraphQL();
     const createTemplate = useCallback(
-        async (
-            name: string,
-            categoryId: string,
-            description?: string,
-            image?: File,
-        ) => {
+        async (name: string, categoryId: number, description?: string) => {
             try {
                 const response = await createTemplateMutation({
                     input: {
                         name,
                         categoryId,
                         description,
-                        image,
                     },
                 });
                 // Cache updated by Apollo. currentCategoryState.templates should reflect this.
@@ -662,7 +650,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     name,
                     categoryId,
                     hasDescription: !!description,
-                    hasBackground: !!image,
                 });
 
                 throw error;
@@ -675,7 +662,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         async (variables: UpdateTemplateMutationVariables) => {
             try {
                 const templateToUpdate = templatesForCurrentCategory.find(
-                    (temp) => temp.id === variables.id,
+                    (temp) => temp.id === variables.input.id,
                 );
                 const response = await updateTemplateMutation(variables);
                 // Cache updated by Apollo.
@@ -729,72 +716,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
         ],
     );
 
-    const updateTemplateWithImage = useCallback(
-        async (variables: UpdateTemplateWithImageMutationVariables) => {
-            try {
-                const templateToUpdate = templatesForCurrentCategory.find(
-                    (temp) => temp.id === variables.id,
-                );
-                const response =
-                    await updateTemplateWithImageMutation(variables);
-                // Cache updated by Apollo.
-                const updatedTemplateData =
-                    response.data?.updateTemplateWithImage;
-                if (updatedTemplateData) {
-                    const updatedTemplate = mapSingleTemplate(
-                        { updateTemplateWithImage: updatedTemplateData },
-                        templateToUpdate || undefined,
-                    );
-                    if (updatedTemplate) {
-                        setCurrentTemplate(updatedTemplate);
-                    }
-                    notifications.show(messages.templateUpdatedSuccessfully, {
-                        severity: "success",
-                        autoHideDuration: 3000,
-                    });
-
-                    return updatedTemplate;
-                } else {
-                    throw new Error(messages.templateUpdateFailed);
-                }
-            } catch (error: unknown) {
-                const gqlError = error as {
-                    message?: string;
-                    graphQLErrors?: Array<{ message: string }>;
-                };
-                const errorMessage =
-                    gqlError.graphQLErrors?.[0]?.message ||
-                    gqlError.message ||
-                    messages.templateUpdateFailed;
-
-                notifications.show(errorMessage, {
-                    severity: "error",
-                    autoHideDuration: 5000,
-                });
-                logger.error(messages.errorUpdatingTemplate, {
-                    error: gqlError,
-                    variables: variables,
-                });
-
-                throw error;
-                // return null;
-            }
-        },
-        [
-            updateTemplateWithImageMutation,
-            templatesForCurrentCategory,
-            currentTemplate,
-            setCurrentTemplate,
-            notifications,
-            messages,
-        ],
-    );
-
-    const moveTemplateToDeletionCategory = useCallback(
-        async (templateId: string) => {
+    const suspendTemplate = useCallback(
+        async (templateId: number) => {
             try {
                 logger.info(messages.movingTemplateToDeletion, templateId);
-                await moveTemplateToDeletionCategoryMutation({ templateId });
+                await suspendTemplateMutation({ id: templateId });
                 // Cache updated by Apollo.
                 if (currentTemplate?.id === templateId) {
                     setCurrentTemplate(null);
@@ -829,7 +755,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             }
         },
         [
-            moveTemplateToDeletionCategoryMutation,
+            suspendTemplateMutation,
             currentTemplate?.id,
             setCurrentTemplate,
             notifications,
@@ -837,11 +763,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
         ],
     );
 
-    const restoreTemplate = useCallback(
-        async (templateId: string) => {
+    const unsuspendTemplate = useCallback(
+        async (templateId: number) => {
             try {
                 logger.info("Restoring template", templateId);
-                await restoreTemplateMutation({ templateId });
+                await unsuspendTemplateMutation({ id: templateId });
                 notifications.show(messages.templateRestoredSuccessfully, {
                     severity: "success",
                     autoHideDuration: 3000,
@@ -869,7 +795,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             }
         },
         [
-            restoreTemplateMutation,
+            unsuspendTemplateMutation,
             currentCategoryState?.id,
             setCurrentTemplate,
             notifications,
@@ -878,7 +804,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const manageTemplate = useCallback(
-        (templateId: string) => {
+        (templateId: number) => {
             const template = allTemplatesFromCache.find(
                 (t) => t.id === templateId,
             );
@@ -887,9 +813,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 return;
             }
             setTemplateToManage(template);
-            navigate(`/admin/templates/${templateId}/manage`);
+            router.push(`/admin/templates/${templateId}/manage`);
         },
-        [navigate, allTemplatesFromCache],
+        [router, allTemplatesFromCache],
     );
 
     // Sorting functions
@@ -945,7 +871,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         fetchCategories();
     }, [fetchCategories]);
 
-    const value = useMemo(
+    const value: TemplateCategoryManagementContextType = useMemo(
         () => ({
             fetchCategories,
             fetchError: apolloError || null,
@@ -960,15 +886,14 @@ export const TemplateCategoryManagementProvider: React.FC<{
             createCategory,
             updateCategory,
             deleteCategory,
-            moveTemplateToDeletionCategory,
-            restoreTemplate,
+            suspendTemplate,
+            unsuspendTemplate,
             // sortCategories,
             allTemplates: allTemplatesFromCache,
             currentTemplate,
             setCurrentTemplate,
             createTemplate,
             updateTemplate,
-            updateTemplateWithImage,
             // sortTemplates,
             isAddingTemplate,
             setIsAddingTemplate,
@@ -991,15 +916,14 @@ export const TemplateCategoryManagementProvider: React.FC<{
             createCategory,
             updateCategory,
             deleteCategory,
-            moveTemplateToDeletionCategory,
-            restoreTemplate,
+            suspendTemplate,
+            unsuspendTemplate,
             // sortCategories,
             allTemplatesFromCache,
             templatesForCurrentCategory,
             currentTemplate, // setCurrentTemplate is stable
             createTemplate,
             updateTemplate,
-            updateTemplateWithImage,
             // sortTemplates,
             isAddingTemplate, // setIsAddingTemplate is stable
             onNewTemplateCancel, // setOnNewTemplateCancel is stable

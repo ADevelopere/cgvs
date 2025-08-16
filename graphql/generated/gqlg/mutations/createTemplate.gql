@@ -20,6 +20,96 @@ mutation createTemplate($input: CreateTemplateInput!){
                             id
                             name
                             order
+                            templates{
+                                category{
+                                    categorySpecialType
+                                    createdAt
+                                    description
+                                    id
+                                    name
+                                    order
+                                    parentCategory{
+                                        categorySpecialType
+                                        createdAt
+                                        description
+                                        id
+                                        name
+                                        order
+                                        parentCategory{
+                                            categorySpecialType
+                                            createdAt
+                                            description
+                                            id
+                                            name
+                                            order
+                                            templates{
+                                                createdAt
+                                                description
+                                                id
+                                                imageUrl
+                                                name
+                                                order
+                                                preSuspensionCategory{
+                                                    categorySpecialType
+                                                    childCategories{
+                                                        categorySpecialType
+                                                        createdAt
+                                                        description
+                                                        id
+                                                        name
+                                                        order
+                                                        updatedAt
+                                                    }
+                                                    createdAt
+                                                    description
+                                                    id
+                                                    name
+                                                    order
+                                                    parentCategory{
+                                                        categorySpecialType
+                                                        createdAt
+                                                        description
+                                                        id
+                                                        name
+                                                        order
+                                                        updatedAt
+                                                    }
+                                                    templates{
+                                                        createdAt
+                                                        description
+                                                        id
+                                                        imageUrl
+                                                        name
+                                                        order
+                                                        updatedAt
+                                                    }
+                                                    updatedAt
+                                                }
+                                                updatedAt
+                                            }
+                                            updatedAt
+                                        }
+                                        updatedAt
+                                    }
+                                    templates{
+                                        createdAt
+                                        description
+                                        id
+                                        imageUrl
+                                        name
+                                        order
+                                        updatedAt
+                                    }
+                                    updatedAt
+                                }
+                                createdAt
+                                description
+                                id
+                                imageUrl
+                                name
+                                order
+                                updatedAt
+                            }
                             updatedAt
                         }
                         createdAt
@@ -27,15 +117,6 @@ mutation createTemplate($input: CreateTemplateInput!){
                         id
                         name
                         order
-                        parentCategory{
-                            categorySpecialType
-                            createdAt
-                            description
-                            id
-                            name
-                            order
-                            updatedAt
-                        }
                         updatedAt
                     }
                     updatedAt
@@ -52,15 +133,6 @@ mutation createTemplate($input: CreateTemplateInput!){
             id
             name
             order
-            parentCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
         createdAt
@@ -71,29 +143,11 @@ mutation createTemplate($input: CreateTemplateInput!){
         order
         preSuspensionCategory{
             categorySpecialType
-            childCategories{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             createdAt
             description
             id
             name
             order
-            parentCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
         updatedAt

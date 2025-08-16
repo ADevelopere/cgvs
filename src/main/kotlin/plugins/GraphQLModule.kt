@@ -27,6 +27,7 @@ import schema.dataloaders.TemplateDataLoader
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
 import schema.query.PaginatedUserQuery
+import schema.query.TemplateCategoryQuery
 import schema.query.TemplateConfigQuery
 import schema.query.TemplateQuery
 import kotlin.time.Duration.Companion.seconds
@@ -50,7 +51,8 @@ fun Application.graphQLModule() {
                 UserQuery(),
 //                PaginatedUserQuery(),
                 TemplateQuery(),
-                TemplateConfigQuery()
+                TemplateConfigQuery(),
+                TemplateCategoryQuery()
             )
             mutations = listOf(
                 AuthMutation(),
