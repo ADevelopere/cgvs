@@ -1,6 +1,6 @@
 package repositories
 
-import models.TemplateVariable
+import schema.type.TemplateVariable
 import tables.TemplateVariables
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -16,8 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 import org.jetbrains.exposed.v1.core.and
 
 class TemplateVariableRepository(private val database: Database) {

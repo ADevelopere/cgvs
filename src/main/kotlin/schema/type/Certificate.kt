@@ -1,4 +1,4 @@
-package models
+package schema.type
 
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment

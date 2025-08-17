@@ -1,4 +1,7 @@
 package schema.type
 
-class Gender {
+enum class Gender {
+    Male,
+    Female,
+    Other
 }

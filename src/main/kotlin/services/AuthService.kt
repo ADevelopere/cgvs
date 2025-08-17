@@ -7,8 +7,8 @@ import io.ktor.server.config.ApplicationConfig
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import models.User
-import models.Session
+import schema.type.User
+import schema.type.Session
 import repositories.UserRepository
 import repositories.SessionRepository
 import java.util.*

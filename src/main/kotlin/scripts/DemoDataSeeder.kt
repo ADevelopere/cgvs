@@ -6,12 +6,16 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import models.*
 import repositories.RepositoryManager
-import tables.Gender
-import tables.Nationality
 import config.DatabaseConfig
 import io.ktor.server.config.*
+import schema.type.Gender
+import schema.type.Nationality
+import schema.type.Student
+import schema.type.Template
+import schema.type.TemplateCategory
+import schema.type.TemplateVariable
+import schema.type.User
 import kotlin.random.Random
 
 /**
@@ -381,7 +385,13 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                 minDate = null,
                 maxDate = null,
                 format = null,
-                options = listOf("تقنية المعلومات", "إدارة الأعمال", "الموارد البشرية", "التسويق الرقمي", "إدارة المشاريع"),
+                options = listOf(
+                    "تقنية المعلومات",
+                    "إدارة الأعمال",
+                    "الموارد البشرية",
+                    "التسويق الرقمي",
+                    "إدارة المشاريع"
+                ),
                 multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
@@ -586,10 +596,12 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
             val lastName = arabicLastNames.random()
             val fullName = "$firstName $middleName $lastName"
 
+            val phoneNumber = if (random.nextFloat() < 0.6) generatePhoneNumber() else null
+
             val student = Student(
                 name = fullName,
                 email = if (random.nextFloat() < 0.7) generateEmail(firstName, lastName) else null,
-                phoneNumber = if (random.nextFloat() < 0.6) generatePhoneNumber() else null,
+                phoneNumber = phoneNumber,
                 dateOfBirth = if (random.nextFloat() < 0.8) generateDateOfBirth() else null,
                 gender = if (random.nextFloat() < 0.9) genders.random() else null,
                 nationality = if (random.nextFloat() < 0.75) nationalities.random() else null,
@@ -616,10 +628,13 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         return "${firstNameSafe}${lastNameSafe}$randomNum@${domains.random()}"
     }
 
-    private fun generatePhoneNumber(): String {
-        val prefix = "05"
-        val number = random.nextInt(10000000, 99999999)
-        return "$prefix$number"
+    private fun generatePhoneNumber(): schema.type.PhoneNumber {
+        // Generate a random Saudi mobile number (E.164 format: +9665XXXXXXXX)
+        val countryCode = "+966"
+        val secondDigit = random.nextInt(0, 10)
+        val rest = random.nextInt(1000000, 9999999)
+        val number = "${countryCode}5${secondDigit}${rest}"
+        return schema.type.PhoneNumber(number)
     }
 
     private fun generateDateOfBirth(): LocalDate {

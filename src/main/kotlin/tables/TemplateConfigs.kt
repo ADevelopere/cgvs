@@ -1,6 +1,6 @@
 package tables
 
-import models.TemplateConfigKey
+import schema.type.TemplateConfigKey
 import org.jetbrains.exposed.v1.core.Table
 
 object TemplateConfigs : Table() {

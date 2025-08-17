@@ -4,11 +4,15 @@ import com.expediagroup.graphql.generator.directives.KotlinDirectiveWiringFactor
 import com.expediagroup.graphql.generator.directives.KotlinSchemaDirectiveWiring
 import com.expediagroup.graphql.generator.hooks.SchemaGeneratorHooks
 import graphql.schema.GraphQLType
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
-import scalars.graphqlLocalDateTimeType
+import schema.scalars.graphqlLocalDateTimeType
+import schema.scalars.graphqlLocalDateType
 import schema.directive.PaginateDirectiveWiring
+import schema.scalars.graphqlPhoneNumberType
+import schema.type.PhoneNumber
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
@@ -17,6 +21,8 @@ import kotlin.reflect.KType
 val customSchemaGeneratorHooks = object : SchemaGeneratorHooks {
     override fun willGenerateGraphQLType(type: KType): GraphQLType? = when (type.classifier as? KClass<*>) {
         LocalDateTime::class -> graphqlLocalDateTimeType
+        LocalDate::class -> graphqlLocalDateType
+        PhoneNumber::class -> graphqlPhoneNumberType
         Koin::class -> null  // Explicitly exclude Koin type
         KoinComponent::class -> null  // Explicitly exclude KoinComponent type
         else -> null
@@ -50,8 +56,10 @@ val customSchemaGeneratorHooks = object : SchemaGeneratorHooks {
             else -> super.isValidFunction(kClass, function)
         }
     }
+
     val customWiringFactory = KotlinDirectiveWiringFactory(
-        manualWiring = mapOf<String, KotlinSchemaDirectiveWiring>("paginate" to PaginateDirectiveWiring()))
+        manualWiring = mapOf<String, KotlinSchemaDirectiveWiring>("paginate" to PaginateDirectiveWiring())
+    )
 
     override val wiringFactory: KotlinDirectiveWiringFactory
         get() = customWiringFactory

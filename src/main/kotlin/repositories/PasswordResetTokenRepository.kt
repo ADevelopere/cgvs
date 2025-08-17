@@ -1,6 +1,6 @@
 package repositories
 
-import models.PasswordResetToken
+import schema.type.PasswordResetToken
 import tables.PasswordResetTokens
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

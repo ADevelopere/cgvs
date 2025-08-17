@@ -1,9 +1,9 @@
 package schema.mutation
 
 import com.expediagroup.graphql.server.operations.Mutation
-import models.CreateTemplateCategoryInput
-import models.TemplateCategory
-import models.UpdateTemplateCategoryInput
+import schema.type.CreateTemplateCategoryInput
+import schema.type.TemplateCategory
+import schema.type.UpdateTemplateCategoryInput
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.TemplateCategoryService

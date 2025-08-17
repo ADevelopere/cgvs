@@ -35,6 +35,8 @@ dependencies {
     implementation(libs.hikari.cp)
     implementation(libs.bcrypt)
     implementation("io.ktor:ktor-server-call-logging:2.3.0")
+    implementation(libs.libphonenumber)
+    implementation(libs.commonsValidator)
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.kotlin.test.junit)
 }

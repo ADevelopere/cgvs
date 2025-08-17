@@ -2,7 +2,7 @@ package schema.dataloaders
 
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import graphql.GraphQLContext
-import models.Certificate
+import schema.type.Certificate
 import org.dataloader.DataLoader
 
 val CertificateDataLoader = object : KotlinDataLoader<String, Certificate> {

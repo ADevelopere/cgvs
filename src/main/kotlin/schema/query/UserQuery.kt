@@ -6,8 +6,8 @@ import com.expediagroup.graphql.server.operations.Query
 import graphql.schema.DataFetchingEnvironment
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
-import models.User
-import models.UserSession
+import schema.type.User
+import schema.type.UserSession
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import repositories.UserRepository

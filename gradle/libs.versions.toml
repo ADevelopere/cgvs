@@ -3,13 +3,15 @@ hikariCP = "5.1.0"
 exposed = "1.0.0-beta-3"
 h2 = "2.3.232"
 koin = "4.1.0"
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 ktor = "3.2.2"
 logback = "1.5.18"
 postgres = "42.7.3"
 ucasoftKtor = "0.55.3"
 graphql-kotlin = "9.0.0-alpha.8"
 bcrypt = "0.10.2"
+libphonenumber = "9.0.12"
+commonsValidator = "1.10.0"
 
 [libraries]
 # Koin
@@ -62,6 +64,8 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 
 # Graphql
 graphql-kotlin-ktor-server = { module = "com.expediagroup:graphql-kotlin-ktor-server", version.ref = "graphql-kotlin" }
+libphonenumber = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphonenumber" }
+commonsValidator = { module = "commons-validator:commons-validator", version.ref = "commonsValidator" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -1,6 +1,6 @@
 package repositories
 
-import models.User
+import schema.type.User
 import tables.Users
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

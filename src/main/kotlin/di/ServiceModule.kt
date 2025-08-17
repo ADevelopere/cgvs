@@ -1,6 +1,7 @@
 package di
 
 import org.koin.dsl.module
+import services.StudentService
 import services.TemplateCategoryService
 import services.TemplateConfigService
 import services.TemplateService
@@ -21,6 +22,12 @@ val serviceModule = module {
 
     single<TemplateConfigService> {
         TemplateConfigService(
+            repository = get()
+        )
+    }
+
+    single<StudentService> {
+        StudentService(
             repository = get()
         )
     }

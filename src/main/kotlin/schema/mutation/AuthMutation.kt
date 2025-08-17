@@ -5,11 +5,11 @@ import com.expediagroup.graphql.server.operations.Mutation
 import graphql.schema.DataFetchingEnvironment
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
-import models.AuthPayload
-import models.LoginInput
-import models.LogoutResponse
-import models.RegisterInput
-import models.UserSession
+import schema.type.AuthPayload
+import schema.type.LoginInput
+import schema.type.LogoutResponse
+import schema.type.RegisterInput
+import schema.type.UserSession
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.AuthService

@@ -1,18 +1,14 @@
-package models
+package schema.type
 
-import kotlinx.serialization.Serializable
-import tables.Gender
-import tables.Nationality
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import schema.directive.PaginationInfo
 
-@Serializable
 data class Student(
     val id: Int = 0,
     val name: String,
     val email: String? = null,
-    val phoneNumber: String? = null,
+    val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: LocalDate? = null,
     val gender: Gender? = null,
     val nationality: Nationality? = null,
@@ -23,16 +19,16 @@ data class Student(
 data class CreateStudentInput(
     val name: String,
     val email: String? = null,
-    val phoneNumber: String? = null,
-    val dateOfBirth: String? = null, // ISO date string
-    val gender: String? = null,
-    val nationality: String? = null
+    val phoneNumber: PhoneNumber? = null,
+    val dateOfBirth: LocalDate? = null, // ISO date string
+    val gender: Gender? = null,
+    val nationality: Nationality? = null
 )
 
 data class UpdateStudentInput(
     val name: String? = null,
     val email: String? = null,
-    val phoneNumber: String? = null,
+    val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: String? = null, // ISO date string
     val gender: String? = null,
     val nationality: String? = null

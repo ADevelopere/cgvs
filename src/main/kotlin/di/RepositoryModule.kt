@@ -4,6 +4,7 @@ import config.DatabaseConfig
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.koin.dsl.module
 import repositories.SessionRepository
+import repositories.StudentRepository
 import repositories.TemplateCategoryRepository
 import repositories.TemplateRepository
 import repositories.UserRepository
@@ -14,4 +15,5 @@ val repositoryModule = module {
     single<SessionRepository> { SessionRepository(get()) }
     single<TemplateCategoryRepository> { TemplateCategoryRepository(get()) }
     single<TemplateRepository> { TemplateRepository(get()) }
+    single<StudentRepository> { StudentRepository(get()) }
 }
