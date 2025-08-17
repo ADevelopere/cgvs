@@ -25,6 +25,15 @@ enum CategorySpecialType {
   Suspension
 }
 
+input CreateStudentInput {
+  dateOfBirth: LocalDate
+  email: Email
+  gender: Gender
+  name: String!
+  nationality: Nationality
+  phoneNumber: PhoneNumber
+}
+
 input CreateTemplateCategoryInput {
   description: String
   name: String!
@@ -36,6 +45,18 @@ input CreateTemplateInput {
   description: String
   name: String!
 }
+
+"""A type representing a validated email address"""
+scalar Email
+
+enum Gender {
+  Female
+  Male
+  Other
+}
+
+"""A type representing a formatted kotlinx.datetime.LocalDate"""
+scalar LocalDate
 
 """A type representing a formatted kotlinx.datetime.LocalDateTime"""
 scalar LocalDateTime
@@ -50,8 +71,10 @@ type LogoutResponse {
 }
 
 type Mutation {
+  createStudent(input: CreateStudentInput!): Student!
   createTemplate(input: CreateTemplateInput!): Template!
   createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
+  deleteStudent(id: Int!): Student!
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory!
 
@@ -63,11 +86,265 @@ type Mutation {
 
   """Register a new user"""
   register(input: RegisterInput!): AuthPayload
-  reorderTemplate(input: ReorderTemplateInput!): Template
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
+  updateStudent(input: UpdateStudentInput!): Student!
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
+}
+
+enum Nationality {
+  AD
+  AE
+  AF
+  AG
+  AI
+  AL
+  AM
+  AO
+  AQ
+  AR
+  AS
+  AT
+  AU
+  AW
+  AX
+  AZ
+  BA
+  BB
+  BD
+  BE
+  BF
+  BG
+  BH
+  BI
+  BJ
+  BL
+  BM
+  BN
+  BO
+  BR
+  BS
+  BT
+  BV
+  BW
+  BY
+  BZ
+  CA
+  CC
+  CD
+  CF
+  CG
+  CH
+  CI
+  CK
+  CL
+  CM
+  CN
+  CO
+  CR
+  CU
+  CV
+  CW
+  CX
+  CY
+  CZ
+  DE
+  DJ
+  DK
+  DM
+  DO
+  DZ
+  EC
+  EE
+  EG
+  EH
+  ER
+  ES
+  ET
+  FI
+  FJ
+  FK
+  FM
+  FO
+  FR
+  GA
+  GB
+  GD
+  GE
+  GF
+  GG
+  GH
+  GI
+  GL
+  GM
+  GN
+  GP
+  GQ
+  GR
+  GS
+  GT
+  GU
+  GW
+  GY
+  HK
+  HM
+  HN
+  HR
+  HT
+  HU
+  ID
+  IE
+  IM
+  IN
+  IO
+  IQ
+  IR
+  IS
+  IT
+  JE
+  JM
+  JO
+  JP
+  KE
+  KG
+  KH
+  KI
+  KM
+  KN
+  KP
+  KR
+  KW
+  KY
+  KZ
+  LA
+  LB
+  LC
+  LI
+  LK
+  LR
+  LS
+  LT
+  LU
+  LV
+  LY
+  MA
+  MC
+  MD
+  ME
+  MF
+  MG
+  MH
+  MK
+  ML
+  MM
+  MN
+  MO
+  MP
+  MQ
+  MR
+  MS
+  MT
+  MU
+  MV
+  MW
+  MX
+  MY
+  MZ
+  NA
+  NC
+  NE
+  NF
+  NG
+  NI
+  NL
+  NO
+  NP
+  NR
+  NU
+  NZ
+  OM
+  PA
+  PE
+  PF
+  PG
+  PH
+  PK
+  PL
+  PM
+  PN
+  PR
+  PS
+  PT
+  PW
+  PY
+  QA
+  RE
+  RO
+  RS
+  RU
+  RW
+  SA
+  SB
+  SC
+  SD
+  SE
+  SG
+  SH
+  SI
+  SJ
+  SK
+  SL
+  SM
+  SN
+  SO
+  SR
+  SS
+  ST
+  SV
+  SX
+  SY
+  SZ
+  TC
+  TD
+  TF
+  TG
+  TH
+  TJ
+  TK
+  TL
+  TM
+  TN
+  TO
+  TR
+  TV
+  TW
+  TZ
+  UA
+  UG
+  US
+  UY
+  UZ
+  VA
+  VC
+  VE
+  VG
+  VI
+  VN
+  VU
+  WF
+  WS
+  XK
+  YE
+  YT
+  ZA
+  ZM
+  ZW
+}
+
+type PaginatedStudentResponse {
+  data: [Student!]!
+  paginationInfo: PaginationInfo
 }
 
 type PaginatedTemplatesResponse {
@@ -97,6 +374,9 @@ enum PaginationType {
   SIMPLE
 }
 
+"""A type representing a validated phone number"""
+scalar PhoneNumber
+
 type Query {
   """Check if user is authenticated"""
   isAuthenticated: Boolean!
@@ -104,7 +384,10 @@ type Query {
 
   """Get current authenticated user"""
   me: User
+  paginatedStudents(first: Int, page: Int, skip: Int): PaginatedStudentResponse!
   paginatedTemplates(first: Int, page: Int, skip: Int): PaginatedTemplatesResponse!
+  student(id: Int!): Student
+  students: [Student!]!
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]!
@@ -120,14 +403,21 @@ type Query {
 }
 
 input RegisterInput {
-  email: String!
+  email: Email!
   name: String!
   password: String!
 }
 
-input ReorderTemplateInput {
+type Student {
+  createdAt: LocalDateTime!
+  dateOfBirth: LocalDate
+  email: Email
+  gender: Gender
   id: Int!
-  order: Int!
+  name: String!
+  nationality: Nationality
+  phoneNumber: PhoneNumber
+  updatedAt: LocalDateTime!
 }
 
 type Template {
@@ -160,6 +450,16 @@ type TemplateConfig {
   maxBackgroundSize: Int!
 }
 
+input UpdateStudentInput {
+  dateOfBirth: LocalDate
+  email: Email
+  gender: Gender
+  id: Int!
+  name: String!
+  nationality: Nationality
+  phoneNumber: PhoneNumber
+}
+
 input UpdateTemplateCategoryInput {
   description: String
   id: Int!
@@ -176,7 +476,7 @@ input UpdateTemplateInput {
 
 type User {
   createdAt: LocalDateTime!
-  email: String!
+  email: Email!
   emailVerifiedAt: LocalDateTime
   id: Int!
   isAdmin: Boolean!

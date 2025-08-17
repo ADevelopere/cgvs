@@ -1,0 +1,13 @@
+query students{
+    students{
+        createdAt
+        dateOfBirth
+        email
+        gender
+        id
+        name
+        nationality
+        phoneNumber
+        updatedAt
+    }
+}

@@ -1,0 +1,25 @@
+query paginatedStudents($first: Int, $page: Int, $skip: Int){
+    paginatedStudents(first: $first, page: $page, skip: $skip){
+        data{
+            createdAt
+            dateOfBirth
+            email
+            gender
+            id
+            name
+            nationality
+            phoneNumber
+            updatedAt
+        }
+        paginationInfo{
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+        }
+    }
+}
