@@ -1,4 +1,6 @@
 package schema.type
 
-class Order {
+enum class SortOrder {
+    ASC,
+    DESC
 }

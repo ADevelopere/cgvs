@@ -5,7 +5,7 @@ import schema.type.PaginatedTemplatesResponse
 import schema.type.Template
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.directive.PaginateDirective
+import schema.type.PaginationArgs
 import services.TemplateService
 import kotlin.getValue
 
@@ -16,18 +16,11 @@ class TemplateQuery : Query, KoinComponent {
         return service.findById(id)
     }
 
-    suspend fun templates(): List<Template> {
-        return service.findAll()
-    }
-
-    @PaginateDirective(defaultCount = 15, maxCount = 100)
-    suspend fun paginatedTemplates(
-        first: Int? = null,
-        skip: Int? = null,
-        page: Int? = null
+    suspend fun templates(
+        paginationArgs: PaginationArgs? = null,
     ): PaginatedTemplatesResponse {
         // Fetch only the paginated items from database for better performance
-        val paginatedResult = service.findPaginatedWithInfo(first, skip, page)
+        val paginatedResult = service.findPaginatedWithInfo(paginationArgs)
 
         return PaginatedTemplatesResponse(
             data = paginatedResult.data,

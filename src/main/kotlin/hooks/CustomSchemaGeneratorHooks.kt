@@ -1,7 +1,5 @@
 package hooks
 
-import com.expediagroup.graphql.generator.directives.KotlinDirectiveWiringFactory
-import com.expediagroup.graphql.generator.directives.KotlinSchemaDirectiveWiring
 import com.expediagroup.graphql.generator.hooks.SchemaGeneratorHooks
 import graphql.schema.GraphQLType
 import kotlinx.datetime.LocalDate
@@ -10,7 +8,6 @@ import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
 import schema.scalars.graphqlLocalDateTimeType
 import schema.scalars.graphqlLocalDateType
-import schema.directive.PaginateDirectiveWiring
 import schema.scalars.graphqlEmailType
 import schema.scalars.graphqlPhoneNumberType
 import schema.type.Email
@@ -59,11 +56,4 @@ val customSchemaGeneratorHooks = object : SchemaGeneratorHooks {
             else -> super.isValidFunction(kClass, function)
         }
     }
-
-    val customWiringFactory = KotlinDirectiveWiringFactory(
-        manualWiring = mapOf<String, KotlinSchemaDirectiveWiring>("paginate" to PaginateDirectiveWiring())
-    )
-
-    override val wiringFactory: KotlinDirectiveWiringFactory
-        get() = customWiringFactory
 }
