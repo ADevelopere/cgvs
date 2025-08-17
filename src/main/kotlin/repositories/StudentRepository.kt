@@ -15,6 +15,7 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import schema.type.Email
 import schema.type.Gender
 import schema.type.Nationality
 import schema.type.PhoneNumber
@@ -25,7 +26,7 @@ class StudentRepository(private val database: Database) : PaginatableRepository<
         val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val insertStatement = Students.insert {
             it[name] = student.name
-            it[email] = student.email
+            it[email] = student.email?.value
             it[phoneNumber] = student.phoneNumber?.number
             it[dateOfBirth] = student.dateOfBirth
             it[gender] = student.gender
@@ -100,7 +101,7 @@ class StudentRepository(private val database: Database) : PaginatableRepository<
         val updated = dbQuery {
             Students.update({ Students.id eq id }) {
                 it[name] = student.name
-                it[email] = student.email
+                it[email] = student.email?.value
                 it[phoneNumber] = student.phoneNumber?.number
                 it[dateOfBirth] = student.dateOfBirth
                 it[gender] = student.gender
@@ -148,10 +149,17 @@ class StudentRepository(private val database: Database) : PaginatableRepository<
             null
         }
 
+        val emailValue = row[Students.email]
+        val email = if (emailValue != null) {
+            Email(emailValue)
+        } else {
+            null
+        }
+
         return Student(
             id = row[Students.id],
             name = row[Students.name],
-            email = row[Students.email],
+            email = email,
             phoneNumber = phoneNumber,
             dateOfBirth = row[Students.dateOfBirth],
             gender = row[Students.gender],

@@ -11,7 +11,9 @@ import org.koin.core.component.KoinComponent
 import schema.scalars.graphqlLocalDateTimeType
 import schema.scalars.graphqlLocalDateType
 import schema.directive.PaginateDirectiveWiring
+import schema.scalars.graphqlEmailType
 import schema.scalars.graphqlPhoneNumberType
+import schema.type.Email
 import schema.type.PhoneNumber
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -23,6 +25,7 @@ val customSchemaGeneratorHooks = object : SchemaGeneratorHooks {
         LocalDateTime::class -> graphqlLocalDateTimeType
         LocalDate::class -> graphqlLocalDateType
         PhoneNumber::class -> graphqlPhoneNumberType
+        Email::class -> graphqlEmailType
         Koin::class -> null  // Explicitly exclude Koin type
         KoinComponent::class -> null  // Explicitly exclude KoinComponent type
         else -> null

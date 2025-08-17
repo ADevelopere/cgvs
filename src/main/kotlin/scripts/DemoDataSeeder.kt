@@ -9,6 +9,7 @@ import kotlinx.datetime.toLocalDateTime
 import repositories.RepositoryManager
 import config.DatabaseConfig
 import io.ktor.server.config.*
+import schema.type.Email
 import schema.type.Gender
 import schema.type.Nationality
 import schema.type.Student
@@ -135,7 +136,7 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
 
         val adminUser = User(
             name = "System Administrator",
-            email = "admin@cgvs.com",
+            email = Email("admin@cgvs.com"),
             password = hashedPassword,
             isAdmin = true,
             createdAt = currentTime,
@@ -619,13 +620,13 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         println("   ✅ Created 1000 students")
     }
 
-    private fun generateEmail(firstName: String, lastName: String): String {
+    private fun generateEmail(firstName: String, lastName: String): Email {
         val domains = listOf("gmail.com", "hotmail.com", "outlook.com", "yahoo.com")
         val randomNum = random.nextInt(100, 999)
         // Use simple transliteration for email-safe names
         val firstNameSafe = "$firstName${random.nextInt(1000, 9999)}"
         val lastNameSafe = "$lastName${random.nextInt(100, 999)}"
-        return "${firstNameSafe}${lastNameSafe}$randomNum@${domains.random()}"
+        return Email("${firstNameSafe}${lastNameSafe}$randomNum@${domains.random()}")
     }
 
     private fun generatePhoneNumber(): schema.type.PhoneNumber {

@@ -15,6 +15,7 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import schema.type.Email
 
 class UserRepository(private val database: Database) {
 
@@ -22,7 +23,7 @@ class UserRepository(private val database: Database) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val insertStatement = Users.insert {
             it[name] = user.name
-            it[email] = user.email
+            it[email] = user.email.value
             it[password] = user.password
             it[emailVerifiedAt] = user.emailVerifiedAt
             it[isAdmin] = user.isAdmin
@@ -61,7 +62,7 @@ class UserRepository(private val database: Database) {
         val updated = dbQuery {
             Users.update({ Users.id eq id }) {
                 it[name] = user.name
-                it[email] = user.email
+                it[email] = user.email.value
                 it[password] = user.password
                 it[emailVerifiedAt] = user.emailVerifiedAt
                 it[isAdmin] = user.isAdmin
@@ -83,7 +84,7 @@ class UserRepository(private val database: Database) {
         return User(
             id = row[Users.id],
             name = row[Users.name],
-            email = row[Users.email],
+            email = Email(row[Users.email]),
             password = row[Users.password],
             emailVerifiedAt = row[Users.emailVerifiedAt],
             isAdmin = row[Users.isAdmin],

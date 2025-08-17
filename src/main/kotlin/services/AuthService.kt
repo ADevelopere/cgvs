@@ -11,6 +11,7 @@ import schema.type.User
 import schema.type.Session
 import repositories.UserRepository
 import repositories.SessionRepository
+import schema.type.RegisterInput
 import java.util.*
 
 class AuthService(
@@ -24,26 +25,28 @@ class AuthService(
 
     suspend fun authenticateUser(email: String, password: String): User? {
         val user = userRepository.findByEmail(email)
-        return if (user != null && BCrypt.verifyer().verify(password.toCharArray(), user.password.toCharArray()).verified) {
+        return if (user != null && BCrypt.verifyer()
+                .verify(password.toCharArray(), user.password.toCharArray()).verified
+        ) {
             user
         } else {
             null
         }
     }
 
-    suspend fun registerUser(name: String, email: String, password: String): User? {
+    suspend fun registerUser(input: RegisterInput): User? {
         // Check if user already exists
-        val existingUser = userRepository.findByEmail(email)
+        val existingUser = userRepository.findByEmail(input.email.value)
         if (existingUser != null) {
             return null
         }
 
-        val hashedPassword = hashPassword(password)
+        val hashedPassword = hashPassword(input.password)
         val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
         val newUser = User(
-            name = name,
-            email = email,
+            name = input.name,
+            email = input.email,
             password = hashedPassword,
             createdAt = now,
             updatedAt = now
@@ -52,13 +55,13 @@ class AuthService(
         return userRepository.create(newUser)
     }
 
-     fun generateJWT(user: User): String {
+    fun generateJWT(user: User): String {
         return JWT.create()
             .withSubject("Authentication")
             .withIssuer(jwtDomain)
             .withAudience(jwtAudience)
             .withClaim("userId", user.id)
-            .withClaim("email", user.email)
+            .withClaim("email", user.email.value)
             .withClaim("isAdmin", user.isAdmin)
             .withExpiresAt(Date(System.currentTimeMillis() + 3600000)) // 1 hour
             .sign(Algorithm.HMAC256(jwtSecret))
