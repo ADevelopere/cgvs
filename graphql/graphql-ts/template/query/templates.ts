@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const PAGINATED_TEMPLATES = gql`
-query templates($first: Int, $page: Int, $skip: Int){
-    templates(first: $first, page: $page, skip: $skip){
+query templates($paginationArgs: PaginationArgsInput){
+    templates(paginationArgs: $paginationArgs){
         data{
             id
             name
