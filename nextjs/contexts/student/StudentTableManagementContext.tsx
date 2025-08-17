@@ -1,11 +1,10 @@
 import { EditableColumn } from "@/types/table.type";
-import { STUDENT_TABLE_COLUMNS } from "@/components/admin/student/column";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useStudentManagement } from "./StudentManagementContext";
 import {
-    StudentGender,
+    Gender,
     CountryCode,
-    UpdateStudentInput,
+    UpdateStudentOptionalFieldsInput,
 } from "@/graphql/generated/types";
 import validator from "validator";
 import {
@@ -13,6 +12,7 @@ import {
     isValidPhoneNumber,
 } from "@/utils/student/validators";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { STUDENT_TABLE_COLUMNS } from "@/views/student/column";
 
 interface StudentTableManagementContextType {
     columns: EditableColumn[];
@@ -141,25 +141,25 @@ export const StudentTableManagementProvider: React.FC<{
 
     const handleUpdateCell = useCallback(
         async (
-            rowId: string | number,
+            rowId: number,
             columnId: string,
             value: any,
         ): Promise<void> => {
             console.log("Updating cell", { rowId, columnId, value });
-            const input: UpdateStudentInput = {
-                id: String(rowId),
+            const input: UpdateStudentOptionalFieldsInput = {
+                id: rowId,
                 [columnId]: value,
             };
 
             // Type conversion based on column
             switch (columnId) {
                 case "date_of_birth":
-                    input.date_of_birth = value
+                    input.dateOfBirth = value
                         ? new Date(value).toISOString().split("T")[0]
                         : null;
                     break;
                 case "gender":
-                    input.gender = value as StudentGender;
+                    input.gender = value as Gender;
                     break;
                 case "nationality":
                     input.nationality = value as CountryCode;
@@ -178,7 +178,7 @@ export const StudentTableManagementProvider: React.FC<{
 
                 const enhancedColumn: EditableColumn = {
                     ...column,
-                    onUpdate: (rowId: string | number, value: any) =>
+                    onUpdate: (rowId: number, value: any) =>
                         handleUpdateCell(
                             rowId,
                             column.accessor as string,

@@ -30,9 +30,9 @@ data class PaginationInfo(
     val firstItem: Int?,
     val hasMorePages: Boolean,
     val lastItem: Int?,
-    val lastPage: Int?,
+    val lastPage: Int,
     val perPage: Int,
-    val total: Int?
+    val total: Int
 )
 
 

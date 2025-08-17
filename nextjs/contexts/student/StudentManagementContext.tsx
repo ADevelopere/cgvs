@@ -10,15 +10,15 @@ import {
 } from "react";
 import * as Graphql from "@/graphql/generated/types";
 import { useStudentGraphQL } from "./StudentGraphQLContext";
-import { PaginatorInfo, Student } from "@/graphql/generated/types";
+import { PaginationInfo, Student } from "@/graphql/generated/types";
 import { mapSingleStudent } from "@/utils/student/student-mappers";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
 type StudentManagementContextType = {
     // States
     students: Student[];
-    selectedStudents: string[];
-    paginatorInfo: PaginatorInfo | null;
+    selectedStudents: number[];
+    paginationInfo: PaginationInfo | null | undefined;
     queryParams: Graphql.StudentsQueryVariables;
     loading: boolean;
 
@@ -29,11 +29,11 @@ type StudentManagementContextType = {
     updateStudent: (
         variables: Graphql.UpdateStudentMutationVariables,
     ) => Promise<boolean>;
-    deleteStudent: (id: string) => Promise<boolean>;
+    deleteStudent: (id: number) => Promise<boolean>;
 
     // Query params methods
     setQueryParams: (params: Partial<Graphql.StudentsQueryVariables>) => void;
-    toggleStudentSelect: (studentId: string) => void;
+    toggleStudentSelect: (studentId: number) => void;
     selectAllStudents: () => void;
     clearSelectedStudents: () => void;
 };
@@ -53,9 +53,11 @@ export const useStudentManagement = () => {
 };
 
 const DEFAULT_QUERY_PARAMS: Graphql.StudentsQueryVariables = {
-    first: 100,
-    page: 1,
-    orderBy: [{ column: "name", order: "ASC" }],
+    paginationArgs: {
+        first: 100,
+        page: 1,
+    },
+    orderBy: [{ column: "NAME", order: "ASC" }],
 };
 
 export const StudentManagementProvider: React.FC<{
@@ -64,8 +66,8 @@ export const StudentManagementProvider: React.FC<{
     const notifications = useNotifications();
 
     const [students, setStudents] = useState<Student[]>([]);
-    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-    const [paginatorInfo, setPaginatorInfo] = useState<PaginatorInfo | null>(
+    const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
+    const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null | undefined>(
         null,
     );
     const [queryParams, setQueryParams] =
@@ -93,7 +95,7 @@ export const StudentManagementProvider: React.FC<{
                     await studentsQuery(queryParams);
                 if (result.students) {
                     setStudents(result.students.data);
-                    setPaginatorInfo(result.students.paginatorInfo);
+                    setPaginationInfo(result.students.paginationInfo);
                 }
             } catch (error) {
                 console.error("Error fetching students:", error);
@@ -194,7 +196,7 @@ export const StudentManagementProvider: React.FC<{
     );
 
     const handleDeleteStudent = useCallback(
-        async (id: string): Promise<boolean> => {
+        async (id: number): Promise<boolean> => {
             try {
                 const result = await deleteStudentMutation({ id });
                 if (result.data?.deleteStudent) {
@@ -224,7 +226,7 @@ export const StudentManagementProvider: React.FC<{
         [deleteStudentMutation],
     );
 
-    const handleToggleStudentSelect = useCallback((studentId: string) => {
+    const handleToggleStudentSelect = useCallback((studentId: number) => {
         setSelectedStudents((prev) => {
             // If student is already selected, remove them
             if (prev.includes(studentId)) {
@@ -243,11 +245,11 @@ export const StudentManagementProvider: React.FC<{
         setSelectedStudents([]);
     }, []);
 
-    const value = useMemo(
+    const value : StudentManagementContextType= useMemo(
         () => ({
             students,
             selectedStudents,
-            paginatorInfo,
+            paginationInfo,
             queryParams,
             loading,
             createStudent: handleCreateStudent,
@@ -261,7 +263,7 @@ export const StudentManagementProvider: React.FC<{
         [
             students,
             selectedStudents,
-            paginatorInfo,
+            paginationInfo,
             queryParams,
             loading,
             handleCreateStudent,

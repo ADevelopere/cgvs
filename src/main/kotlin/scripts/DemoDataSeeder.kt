@@ -11,7 +11,7 @@ import config.DatabaseConfig
 import io.ktor.server.config.*
 import schema.type.Email
 import schema.type.Gender
-import schema.type.Nationality
+import schema.type.CountryCode
 import schema.type.Student
 import schema.type.Template
 import schema.type.TemplateCategory
@@ -588,7 +588,7 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
     private suspend fun createStudents() {
         println("🎓 Creating students...")
 
-        val nationalities = Nationality.entries
+        val nationalities = CountryCode.entries
         val genders = Gender.entries
 
         repeat(1000) { index ->

@@ -1,4 +1,4 @@
-mutation updateStudent($input: UpdateStudentInput!){
+mutation updateStudent($input: UpdateStudentOptionalFieldsInput!){
     updateStudent(input: $input){
         createdAt
         dateOfBirth
