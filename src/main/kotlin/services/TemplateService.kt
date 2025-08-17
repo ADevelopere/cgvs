@@ -7,6 +7,7 @@ import repositories.TemplateRepository
 import schema.type.UpdateTemplateInput
 import schema.pagination.PaginationResult
 import schema.pagination.PaginationUtils
+import schema.type.PaginationArgs
 import tables.CategorySpecialType
 
 class TemplateService(
@@ -17,19 +18,11 @@ class TemplateService(
      * Find templates with pagination and return pagination info
      */
     suspend fun findPaginatedWithInfo(
-        first: Int? = null,
-        skip: Int? = null,
-        page: Int? = null,
-        defaultCount: Int = 15,
-        maxCount: Int = 100
+        paginationArgs: PaginationArgs? = null,
     ): PaginationResult<Template> {
         return PaginationUtils.findPaginatedWithInfo(
             repository = templateRepository,
-            first = first,
-            skip = skip,
-            page = page,
-            defaultCount = defaultCount,
-            maxCount = maxCount
+            paginationArgs
         )
     }
 

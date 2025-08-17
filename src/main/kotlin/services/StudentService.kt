@@ -4,9 +4,10 @@ import schema.type.CreateStudentInput
 import schema.type.Student
 import repositories.StudentRepository
 import schema.pagination.PaginationResult
-import schema.pagination.PaginationUtils
+import schema.type.OrderStudentsByClause
+import schema.type.PaginationArgs
+import schema.type.StudentSortArgs
 import schema.type.UpdateStudentInput
-import util.now
 
 class StudentService(
     private val repository: StudentRepository
@@ -15,26 +16,13 @@ class StudentService(
         return repository.findById(id)
     }
 
-    suspend fun findAll(): List<Student> {
-        return repository.findAll()
-    }
-
-    suspend fun findPaginatedWithInfo(
-        first: Int? = null,
-        skip: Int? = null,
-        page: Int? = null,
-        defaultCount: Int = 15,
-        maxCount: Int = 100
-    ): PaginationResult<Student> {
-        return PaginationUtils.findPaginatedWithInfo(
-            repository = repository,
-            first = first,
-            skip = skip,
-            page = page,
-            defaultCount = defaultCount,
-            maxCount = maxCount
-        )
-    }
+//    suspend fun students(
+//        paginationArgs: PaginationArgs? = null,
+//        orderBy: List<OrderStudentsByClause>? = null,
+//        sortArgs: StudentSortArgs? = null
+//    ): PaginationResult<Student> {
+//
+//    }
 
     suspend fun create(input: CreateStudentInput): Student {
         // Validate name length

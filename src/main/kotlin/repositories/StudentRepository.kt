@@ -20,7 +20,7 @@ import schema.type.Gender
 import schema.type.Nationality
 import schema.type.PhoneNumber
 
-class StudentRepository(private val database: Database) : PaginatableRepository<Student> {
+class StudentRepository(private val database: Database) {
 
     suspend fun create(student: Student): Student = dbQuery {
         val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
@@ -57,11 +57,6 @@ class StudentRepository(private val database: Database) : PaginatableRepository<
             .singleOrNull()
     }
 
-    suspend fun findAll(): List<Student> = dbQuery {
-        Students.selectAll()
-            .map { rowToStudent(it) }
-    }
-
     suspend fun findActive(): List<Student> = dbQuery {
         Students.selectAll()
             .where { Students.deletedAt.isNull() }
@@ -80,10 +75,17 @@ class StudentRepository(private val database: Database) : PaginatableRepository<
             .map { rowToStudent(it) }
     }
 
+
+    suspend fun findAll(): List<Student> = dbQuery {
+        Students.selectAll()
+            .map { rowToStudent(it) }
+    }
+
+
     /**
      * Fetches students with pagination (limit/offset)
      */
-    override suspend fun findPaginated(limit: Int, offset: Int): List<Student> = dbQuery {
+    suspend fun students(limit: Int, offset: Int): List<Student> = dbQuery {
         Students.selectAll()
             .limit(limit)
             .offset(offset.toLong())
@@ -93,7 +95,7 @@ class StudentRepository(private val database: Database) : PaginatableRepository<
     /**
      * Returns the total count of students
      */
-    override suspend fun countAll(): Int = dbQuery {
+    suspend fun countAll(): Int = dbQuery {
         Students.selectAll().count().toInt()
     }
 
