@@ -1,4 +1,4 @@
-package scalars
+package schema.scalars
 
 import graphql.GraphQLContext
 import graphql.execution.CoercedVariables

@@ -1,9 +1,7 @@
 package repositories
 
-import models.Student
+import schema.type.Student
 import tables.Students
-import tables.Gender
-import tables.Nationality
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -17,15 +15,18 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import schema.type.Gender
+import schema.type.Nationality
+import schema.type.PhoneNumber
 
-class StudentRepository(private val database: Database) {
+class StudentRepository(private val database: Database) : PaginatableRepository<Student> {
 
     suspend fun create(student: Student): Student = dbQuery {
         val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         val insertStatement = Students.insert {
             it[name] = student.name
             it[email] = student.email
-            it[phoneNumber] = student.phoneNumber
+            it[phoneNumber] = student.phoneNumber?.number
             it[dateOfBirth] = student.dateOfBirth
             it[gender] = student.gender
             it[nationality] = student.nationality
@@ -78,12 +79,29 @@ class StudentRepository(private val database: Database) {
             .map { rowToStudent(it) }
     }
 
+    /**
+     * Fetches students with pagination (limit/offset)
+     */
+    override suspend fun findPaginated(limit: Int, offset: Int): List<Student> = dbQuery {
+        Students.selectAll()
+            .limit(limit)
+            .offset(offset.toLong())
+            .map { rowToStudent(it) }
+    }
+
+    /**
+     * Returns the total count of students
+     */
+    override suspend fun countAll(): Int = dbQuery {
+        Students.selectAll().count().toInt()
+    }
+
     suspend fun update(id: Int, student: Student): Student? {
         val updated = dbQuery {
             Students.update({ Students.id eq id }) {
                 it[name] = student.name
                 it[email] = student.email
-                it[phoneNumber] = student.phoneNumber
+                it[phoneNumber] = student.phoneNumber?.number
                 it[dateOfBirth] = student.dateOfBirth
                 it[gender] = student.gender
                 it[nationality] = student.nationality
@@ -123,11 +141,18 @@ class StudentRepository(private val database: Database) {
     }
 
     private fun rowToStudent(row: ResultRow): Student {
+        val phoneNumberValue = row[Students.phoneNumber]
+        val phoneNumber = if (phoneNumberValue != null) {
+            PhoneNumber(phoneNumberValue)
+        } else {
+            null
+        }
+
         return Student(
             id = row[Students.id],
             name = row[Students.name],
             email = row[Students.email],
-            phoneNumber = row[Students.phoneNumber],
+            phoneNumber = phoneNumber,
             dateOfBirth = row[Students.dateOfBirth],
             gender = row[Students.gender],
             nationality = row[Students.nationality],

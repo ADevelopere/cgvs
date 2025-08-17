@@ -1,4 +1,17 @@
 package schema.mutation
 
-class StudentMutation {
+import com.expediagroup.graphql.server.operations.Mutation
+import schema.type.CreateStudentInput
+import schema.type.Student
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import services.StudentService
+import kotlin.getValue
+
+class StudentMutation : Mutation, KoinComponent {
+    private val service: StudentService by inject()
+
+    suspend fun createStudent(input: CreateStudentInput): Student {
+        return service.create(input)
+    }
 }

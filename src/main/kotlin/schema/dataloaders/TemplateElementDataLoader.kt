@@ -2,7 +2,7 @@ package schema.dataloaders
 
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import graphql.GraphQLContext
-import models.TemplateElement
+import schema.type.TemplateElement
 import org.dataloader.DataLoader
 
 val TemplateElementDataLoader = object : KotlinDataLoader<String, TemplateElement> {

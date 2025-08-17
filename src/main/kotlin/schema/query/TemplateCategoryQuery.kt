@@ -1,7 +1,7 @@
 package schema.query
 
 import com.expediagroup.graphql.server.operations.Query
-import models.TemplateCategory
+import schema.type.TemplateCategory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.TemplateCategoryService

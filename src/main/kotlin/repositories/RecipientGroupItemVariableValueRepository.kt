@@ -1,6 +1,6 @@
 package repositories
 
-import models.RecipientGroupItemVariableValue
+import schema.type.RecipientGroupItemVariableValue
 import tables.RecipientGroupItemVariableValues
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

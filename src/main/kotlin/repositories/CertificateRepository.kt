@@ -1,6 +1,6 @@
 package repositories
 
-import models.Certificate
+import schema.type.Certificate
 import tables.Certificates
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

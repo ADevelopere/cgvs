@@ -1,17 +1,39 @@
 package services
 
-import models.CreateTemplateInput
-import models.ReorderTemplateInput
-import models.Template
+import schema.type.CreateTemplateInput
+import schema.type.Template
 import repositories.TemplateCategoryRepository
 import repositories.TemplateRepository
+import schema.type.UpdateTemplateInput
+import schema.pagination.PaginationResult
+import schema.pagination.PaginationUtils
 import tables.CategorySpecialType
 
 class TemplateService(
     private val templateRepository: TemplateRepository,
     private val templateCategoryRepository: TemplateCategoryRepository
 ) {
-    suspend fun createTemplate(input: CreateTemplateInput): Template {
+    /**
+     * Find templates with pagination and return pagination info
+     */
+    suspend fun findPaginatedWithInfo(
+        first: Int? = null,
+        skip: Int? = null,
+        page: Int? = null,
+        defaultCount: Int = 15,
+        maxCount: Int = 100
+    ): PaginationResult<Template> {
+        return PaginationUtils.findPaginatedWithInfo(
+            repository = templateRepository,
+            first = first,
+            skip = skip,
+            page = page,
+            defaultCount = defaultCount,
+            maxCount = maxCount
+        )
+    }
+
+    suspend fun create(input: CreateTemplateInput): Template {
 
         // validate name
         check(input.name.length in 3..255) {
@@ -43,7 +65,7 @@ class TemplateService(
         return template
     }
 
-    suspend fun updateTemplate(input: models.UpdateTemplateInput): Template? {
+    suspend fun update(input: UpdateTemplateInput): Template? {
         // Validate template exists
         val existingTemplate = templateRepository.findById(input.id)
             ?: throw IllegalArgumentException("Template with ID ${input.id} does not exist.")
@@ -78,23 +100,7 @@ class TemplateService(
         )
     }
 
-    suspend fun reorderTemplate(input: ReorderTemplateInput): Template? {
-        // Validate template exists
-        val existingTemplate = templateRepository.findById(input.id)
-            ?: throw IllegalArgumentException("Template with ID ${input.id} does not exist.")
-
-        // Validate order is non-negative
-        check(input.order >= 0) {
-            "Order must be a non-negative integer."
-        }
-
-        return templateRepository.update(
-            input.id,
-            existingTemplate.copy(order = input.order)
-        )
-    }
-
-    suspend fun deleteTemplate(id: Int): Template? {
+    suspend fun delete(id: Int): Template? {
         // Validate template exists
         val existingTemplate = templateRepository.findById(id)
             ?: throw IllegalArgumentException("Template with ID $id does not exist.")
@@ -108,7 +114,7 @@ class TemplateService(
         }
     }
 
-    suspend fun suspendTemplate(id: Int): Template? {
+    suspend fun suspend(id: Int): Template? {
         // Validate template exists
         val existingTemplate = templateRepository.findById(id)
             ?: throw IllegalArgumentException("Template with ID $id does not exist.")
@@ -124,7 +130,7 @@ class TemplateService(
         return templateRepository.update(id, suspendedTemplate)
     }
 
-    suspend fun unsuspendTemplate(id: Int): Template? {
+    suspend fun unsuspend(id: Int): Template? {
         // Validate template exists
         val existingTemplate = templateRepository.findById(id)
             ?: throw IllegalArgumentException("Template with ID $id does not exist.")

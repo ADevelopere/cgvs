@@ -1,6 +1,6 @@
 package repositories
 
-import models.TemplateRecipientGroup
+import schema.type.TemplateRecipientGroup
 import tables.TemplateRecipientGroups
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

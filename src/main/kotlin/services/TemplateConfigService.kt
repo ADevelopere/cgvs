@@ -1,6 +1,6 @@
 package services
 
-import models.TemplateConfig
+import schema.type.TemplateConfig
 import repositories.TemplateConfigRepository
 
 class TemplateConfigService(private val repository: TemplateConfigRepository) {

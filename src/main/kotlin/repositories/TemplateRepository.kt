@@ -1,6 +1,6 @@
 package repositories
 
-import models.Template
+import schema.type.Template
 import tables.Templates
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
@@ -16,7 +16,23 @@ import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import util.now
 
-class TemplateRepository(private val database: Database) {
+class TemplateRepository(private val database: Database) : PaginatableRepository<Template> {
+    /**
+     * Fetches templates with pagination (limit/offset)
+     */
+    override suspend fun findPaginated(limit: Int, offset: Int): List<Template> = dbQuery {
+        Templates.selectAll()
+            .limit(limit)
+            .offset(offset.toLong())
+            .map { rowToTemplate(it) }
+    }
+
+    /**
+     * Returns the total count of templates
+     */
+    override suspend fun countAll(): Int = dbQuery {
+        Templates.selectAll().count().toInt()
+    }
 
     suspend fun create(template: Template): Template = dbQuery {
         val insertStatement = Templates.insert {

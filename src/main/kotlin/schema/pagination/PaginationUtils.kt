@@ -66,6 +66,68 @@ object PaginationUtils {
     }
 
     /**
+     * Create a pagination result from already paginated data (for database performance optimization)
+     * This function is useful when you've already fetched a specific page from the database
+     * and need to create pagination info without having all the data in memory.
+     */
+    fun <T> createPaginationResultFromPaginatedData(
+        items: List<T>,
+        total: Int,
+        perPage: Int,
+        currentPage: Int,
+        offset: Int
+    ): PaginationResult<T> {
+        val lastPage = if (total > 0) ((total - 1) / perPage) + 1 else 1
+        val hasMorePages = currentPage < lastPage
+
+        val paginationInfo = PaginationInfo(
+            count = items.size,
+            currentPage = currentPage,
+            firstItem = if (items.isNotEmpty()) offset + 1 else null,
+            hasMorePages = hasMorePages,
+            lastItem = if (items.isNotEmpty()) offset + items.size else null,
+            lastPage = lastPage,
+            perPage = perPage,
+            total = total
+        )
+
+        return PaginationResult(
+            data = items,
+            paginationInfo = paginationInfo
+        )
+    }
+
+    /**
+     * Generic function to fetch paginated data from any repository that implements PaginatableRepository
+     * This eliminates duplication across service classes
+     */
+    suspend fun <T> findPaginatedWithInfo(
+        repository: repositories.PaginatableRepository<T>,
+        first: Int? = null,
+        skip: Int? = null,
+        page: Int? = null,
+        defaultCount: Int = 15,
+        maxCount: Int = 100
+    ): PaginationResult<T> {
+        val perPage = minOf(first ?: defaultCount, maxCount)
+        val currentPage = page ?: 1
+        val offset = skip ?: ((currentPage - 1) * perPage)
+
+        // Fetch only the required items from database
+        val paginatedItems = repository.findPaginated(perPage, offset)
+        val total = repository.countAll()
+
+        // Create pagination info for the already paginated items
+        return createPaginationResultFromPaginatedData(
+            items = paginatedItems,
+            total = total,
+            perPage = perPage,
+            currentPage = currentPage,
+            offset = offset
+        )
+    }
+
+    /**
      * Create a simple paginated list without pagination info
      */
     fun <T> paginateSimple(
@@ -140,7 +202,7 @@ fun <T> paginationRange(
     val startIndex = if (after != null) {
         try {
             after.toInt() + 1
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             0
         }
     } else 0
@@ -148,7 +210,7 @@ fun <T> paginationRange(
     val endIndex = if (before != null) {
         try {
             minOf(before.toInt(), items.size)
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             items.size
         }
     } else items.size

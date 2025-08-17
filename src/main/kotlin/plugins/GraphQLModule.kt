@@ -24,9 +24,10 @@ import hooks.customSchemaGeneratorHooks
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateDataLoader
+import schema.mutation.StudentMutation
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
-import schema.query.PaginatedUserQuery
+import schema.query.StudentQuery
 import schema.query.TemplateCategoryQuery
 import schema.query.TemplateConfigQuery
 import schema.query.TemplateQuery
@@ -45,22 +46,25 @@ fun Application.graphQLModule() {
 
     install(GraphQL) {
         schema {
-            packages = listOf("models", "schema")
+            packages = listOf("schema/type", "schema", "com.google.i18n.phonenumbers")
             queries = listOf(
                 AuthQuery(),
                 UserQuery(),
 //                PaginatedUserQuery(),
                 TemplateQuery(),
                 TemplateConfigQuery(),
-                TemplateCategoryQuery()
+                TemplateCategoryQuery(),
+
+                StudentQuery()
             )
             mutations = listOf(
                 AuthMutation(),
                 TemplateCategoryMutation(),
-                TemplateMutation()
+                TemplateMutation(),
+
+                StudentMutation()
             )
             hooks = customSchemaGeneratorHooks
-
 
 
         }

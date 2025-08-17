@@ -1,8 +1,8 @@
 package services
 
-import models.CreateTemplateCategoryInput
-import models.TemplateCategory
-import models.UpdateTemplateCategoryInput
+import schema.type.CreateTemplateCategoryInput
+import schema.type.TemplateCategory
+import schema.type.UpdateTemplateCategoryInput
 import repositories.TemplateCategoryRepository
 import tables.CategorySpecialType
 import java.lang.IllegalArgumentException
