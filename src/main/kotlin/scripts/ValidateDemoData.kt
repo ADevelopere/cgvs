@@ -88,7 +88,7 @@ object ValidateDemoData {
         print("🔧 Checking template variables... ")
         var totalVariables = 0
         templates.forEach { template ->
-            val variables = repositoryManager.templateVariableRepository.findByTemplate(template.id)
+            val variables = repositoryManager.templateVariableRepository.findTemplateVariablesByTemplate(template.id)
             totalVariables += variables.size
         }
         if (totalVariables > 0) {

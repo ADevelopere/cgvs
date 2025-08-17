@@ -7,6 +7,7 @@ import repositories.SessionRepository
 import repositories.StudentRepository
 import repositories.TemplateCategoryRepository
 import repositories.TemplateRepository
+import repositories.TemplateVariableRepository
 import repositories.UserRepository
 
 val repositoryModule = module {
@@ -16,4 +17,5 @@ val repositoryModule = module {
     single<TemplateCategoryRepository> { TemplateCategoryRepository(get()) }
     single<TemplateRepository> { TemplateRepository(get()) }
     single<StudentRepository> { StudentRepository(get()) }
+    single<TemplateVariableRepository> { TemplateVariableRepository(get()) }
 }

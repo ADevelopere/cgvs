@@ -69,9 +69,7 @@ class TemplateVariableRepository(private val database: Database) {
             it[previewValue] = variable.previewValue
         }
 
-        variable.copy(
-            id = baseId,
-        )
+        variable.apply { id = baseId }
     }
 
     suspend fun updateTextTemplateVariable(variable: TextTemplateVariable): TextTemplateVariable? = dbQuery {
@@ -111,9 +109,7 @@ class TemplateVariableRepository(private val database: Database) {
                 it[previewValue] = variable.previewValue?.toBigDecimal()
             }
 
-            variable.copy(
-                id = baseId,
-            )
+            variable.apply { id = baseId }
         }
 
     suspend fun updateNumberTemplateVariable(variable: NumberTemplateVariable): NumberTemplateVariable? =
@@ -155,9 +151,7 @@ class TemplateVariableRepository(private val database: Database) {
             it[previewValue] = variable.previewValue
         }
 
-        variable.copy(
-            id = baseId,
-        )
+        variable.apply { id = baseId }
     }
 
     suspend fun updateDateTemplateVariable(variable: DateTemplateVariable): DateTemplateVariable? =
@@ -201,9 +195,7 @@ class TemplateVariableRepository(private val database: Database) {
                 it[previewValue] = variable.previewValue
             }
 
-            variable.copy(
-                id = baseId,
-            )
+            variable.apply { id = baseId }
         }
 
     suspend fun updateSelectTemplateVariable(variable: SelectTemplateVariable): SelectTemplateVariable? =

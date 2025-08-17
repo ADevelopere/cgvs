@@ -1,5 +1,6 @@
 package schema.type
 
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.datetime.LocalDateTime
@@ -15,17 +16,19 @@ enum class TemplateVariableType {
     SELECT
 }
 
-sealed class TemplateVariable {
-    abstract val id: Int
-    abstract val templateId: Int
-    abstract val name: String
-    abstract val description: String?
-    abstract val type: TemplateVariableType
-    abstract val required: Boolean
-    abstract val order: Int
-    abstract val createdAt: LocalDateTime
-    abstract val updatedAt: LocalDateTime
-
+@GraphQLIgnore
+abstract class TemplateVariable(
+    var id: Int,
+    @GraphQLIgnore
+    val templateId: Int,
+    val name: String,
+    val description: String?,
+    val type: TemplateVariableType,
+    val required: Boolean,
+    val order: Int,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
+) {
     open fun template(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<Template?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateDataLoader.dataLoaderName, templateId
@@ -134,65 +137,81 @@ data class UpdateSelectCreateTemplateVariableInput(
     val multiple: Boolean = false
 ) : UpdateTemplateVariableInput
 
-data class TextTemplateVariable(
-    override val id: Int = 0,
-    override val templateId: Int,
-    override val name: String,
-    override val description: String?,
-    override val type: TemplateVariableType = TemplateVariableType.TEXT,
-    override val required: Boolean,
-    override val order: Int,
-    override val createdAt: LocalDateTime = now(),
-    override val updatedAt: LocalDateTime = now(),
+
+@GraphQLIgnore
+class TextTemplateVariable(
+    id: Int = 0,
+    templateId: Int,
+    name: String,
+    description: String?,
+    type: TemplateVariableType = TemplateVariableType.TEXT,
+    required: Boolean,
+    order: Int,
+    createdAt: LocalDateTime = now(),
+    updatedAt: LocalDateTime = now(),
     val previewValue: String?,
     val minLength: Int? = null,
     val maxLength: Int? = null,
     val pattern: String? = null
-) : TemplateVariable()
+) : TemplateVariable(
+    id, templateId, name, description, type, required, order, createdAt, updatedAt
+)
 
-data class NumberTemplateVariable(
-    override val id: Int = 0,
-    override val templateId: Int,
-    override val name: String,
-    override val description: String?,
-    override val type: TemplateVariableType = TemplateVariableType.NUMBER,
-    override val required: Boolean,
-    override val order: Int,
-    override val createdAt: LocalDateTime = now(),
-    override val updatedAt: LocalDateTime = now(),
+@GraphQLIgnore
+class NumberTemplateVariable(
+    id: Int = 0,
+    templateId: Int,
+    name: String,
+    description: String?,
+    type: TemplateVariableType = TemplateVariableType.TEXT,
+    required: Boolean,
+    order: Int,
+    createdAt: LocalDateTime = now(),
+    updatedAt: LocalDateTime = now(),
     val previewValue: Double?,
     val minValue: Double? = null,
     val maxValue: Double? = null,
     val decimalPlaces: Int? = null
-) : TemplateVariable()
+) : TemplateVariable(
+    id, templateId, name, description, type, required, order, createdAt, updatedAt
+)
 
-data class DateTemplateVariable(
-    override val id: Int = 0,
-    override val templateId: Int,
-    override val name: String,
-    override val description: String?,
-    override val type: TemplateVariableType = TemplateVariableType.DATE,
-    override val required: Boolean,
-    override val order: Int,
-    override val createdAt: LocalDateTime = now(),
-    override val updatedAt: LocalDateTime = now(),
+
+@GraphQLIgnore
+class DateTemplateVariable(
+    id: Int = 0,
+    templateId: Int,
+    name: String,
+    description: String?,
+    type: TemplateVariableType = TemplateVariableType.TEXT,
+    required: Boolean,
+    order: Int,
+    createdAt: LocalDateTime = now(),
+    updatedAt: LocalDateTime = now(),
     val previewValue: LocalDate?,
     val minDate: LocalDate? = null,
     val maxDate: LocalDate? = null,
     val format: String? = null
-) : TemplateVariable()
+) : TemplateVariable(
+    id, templateId, name, description, type, required, order, createdAt, updatedAt
+)
 
-data class SelectTemplateVariable(
-    override val id: Int = 0,
-    override val templateId: Int,
-    override val name: String,
-    override val description: String?,
-    override val type: TemplateVariableType = TemplateVariableType.SELECT,
-    override val required: Boolean,
-    override val order: Int,
-    override val createdAt: LocalDateTime = now(),
-    override val updatedAt: LocalDateTime = now(),
+
+@GraphQLIgnore
+class SelectTemplateVariable(
+    id: Int = 0,
+    templateId: Int,
+    name: String,
+    description: String?,
+    type: TemplateVariableType = TemplateVariableType.TEXT,
+    required: Boolean,
+    order: Int,
+    createdAt: LocalDateTime = now(),
+    updatedAt: LocalDateTime = now(),
     val previewValue: String?,
     val options: List<String>? = null,
     val multiple: Boolean? = null
-) : TemplateVariable()
+) : TemplateVariable(
+    id, templateId, name, description, type, required, order, createdAt, updatedAt
+)
+

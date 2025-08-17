@@ -1,17 +1,26 @@
 const fs = require('fs');
 const path = require('path');
 
+module.exports.createDateTemplateVariable = fs.readFileSync(path.join(__dirname, 'createDateTemplateVariable.gql'), 'utf8');
+module.exports.createNumberTemplateVariable = fs.readFileSync(path.join(__dirname, 'createNumberTemplateVariable.gql'), 'utf8');
+module.exports.createSelectTemplateVariable = fs.readFileSync(path.join(__dirname, 'createSelectTemplateVariable.gql'), 'utf8');
 module.exports.createStudent = fs.readFileSync(path.join(__dirname, 'createStudent.gql'), 'utf8');
 module.exports.createTemplate = fs.readFileSync(path.join(__dirname, 'createTemplate.gql'), 'utf8');
 module.exports.createTemplateCategory = fs.readFileSync(path.join(__dirname, 'createTemplateCategory.gql'), 'utf8');
+module.exports.createTextTemplateVariable = fs.readFileSync(path.join(__dirname, 'createTextTemplateVariable.gql'), 'utf8');
 module.exports.deleteStudent = fs.readFileSync(path.join(__dirname, 'deleteStudent.gql'), 'utf8');
 module.exports.deleteTemplate = fs.readFileSync(path.join(__dirname, 'deleteTemplate.gql'), 'utf8');
 module.exports.deleteTemplateCategory = fs.readFileSync(path.join(__dirname, 'deleteTemplateCategory.gql'), 'utf8');
+module.exports.deleteTemplateVariable = fs.readFileSync(path.join(__dirname, 'deleteTemplateVariable.gql'), 'utf8');
 module.exports.login = fs.readFileSync(path.join(__dirname, 'login.gql'), 'utf8');
 module.exports.logout = fs.readFileSync(path.join(__dirname, 'logout.gql'), 'utf8');
 module.exports.register = fs.readFileSync(path.join(__dirname, 'register.gql'), 'utf8');
 module.exports.suspendTemplate = fs.readFileSync(path.join(__dirname, 'suspendTemplate.gql'), 'utf8');
 module.exports.unsuspendTemplate = fs.readFileSync(path.join(__dirname, 'unsuspendTemplate.gql'), 'utf8');
+module.exports.updateDateTemplateVariable = fs.readFileSync(path.join(__dirname, 'updateDateTemplateVariable.gql'), 'utf8');
+module.exports.updateNumberTemplateVariable = fs.readFileSync(path.join(__dirname, 'updateNumberTemplateVariable.gql'), 'utf8');
+module.exports.updateSelectTemplateVariable = fs.readFileSync(path.join(__dirname, 'updateSelectTemplateVariable.gql'), 'utf8');
 module.exports.updateStudent = fs.readFileSync(path.join(__dirname, 'updateStudent.gql'), 'utf8');
 module.exports.updateTemplate = fs.readFileSync(path.join(__dirname, 'updateTemplate.gql'), 'utf8');
 module.exports.updateTemplateCategory = fs.readFileSync(path.join(__dirname, 'updateTemplateCategory.gql'), 'utf8');
+module.exports.updateTextTemplateVariable = fs.readFileSync(path.join(__dirname, 'updateTextTemplateVariable.gql'), 'utf8');

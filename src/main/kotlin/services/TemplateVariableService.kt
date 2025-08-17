@@ -108,25 +108,32 @@ class TemplateVariableService(
             ?: throw IllegalArgumentException("Failed to update text template variable with ID ${input.id}.")
     }
 
-    suspend fun updateNumberTemplateVariable(variable: UpdateNumberCreateTemplateVariableInput): NumberTemplateVariable{
+    suspend fun updateNumberTemplateVariable(variable: UpdateNumberCreateTemplateVariableInput): NumberTemplateVariable {
         val existingVariable = checkUpdateInput(variable, TemplateVariableType.NUMBER)
 
         return repository.updateNumberTemplateVariable(existingVariable as NumberTemplateVariable)
             ?: throw IllegalArgumentException("Failed to update number template variable with ID ${variable.id}.")
     }
 
-    suspend fun updateDateTemplateVariable(input: UpdateDateCreateTemplateVariableInput): DateTemplateVariable{
+    suspend fun updateDateTemplateVariable(input: UpdateDateCreateTemplateVariableInput): DateTemplateVariable {
         val existingVariable = checkUpdateInput(input, TemplateVariableType.DATE)
 
         return repository.updateDateTemplateVariable(existingVariable as DateTemplateVariable)
             ?: throw IllegalArgumentException("Failed to update date template variable with ID ${input.id}.")
     }
 
-    suspend fun updateSelectTemplateVariable(input: UpdateSelectCreateTemplateVariableInput): SelectTemplateVariable{
+    suspend fun updateSelectTemplateVariable(input: UpdateSelectCreateTemplateVariableInput): SelectTemplateVariable {
         val existingVariable = checkUpdateInput(input, TemplateVariableType.SELECT)
 
         return repository.updateSelectTemplateVariable(existingVariable as SelectTemplateVariable)
             ?: throw IllegalArgumentException("Failed to update select template variable with ID ${input.id}.")
+    }
+
+    suspend fun deleteTemplateVariable(id: Int): TemplateVariable {
+        val variable = repository.findTemplateVariableById(id)
+            ?: throw IllegalArgumentException("Template variable with ID $id does not exist.")
+        require(repository.deleteTemplateVariable(id)) { "Failed to delete template variable with ID $id." }
+        return variable
     }
 
 

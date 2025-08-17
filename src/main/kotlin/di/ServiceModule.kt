@@ -5,6 +5,7 @@ import services.StudentService
 import services.TemplateCategoryService
 import services.TemplateConfigService
 import services.TemplateService
+import services.TemplateVariableService
 
 val serviceModule = module {
     single<TemplateCategoryService> {
@@ -29,6 +30,13 @@ val serviceModule = module {
     single<StudentService> {
         StudentService(
             repository = get()
+        )
+    }
+
+    single<TemplateVariableService> {
+        TemplateVariableService(
+            repository = get(),
+            templateRepository = get()
         )
     }
 }

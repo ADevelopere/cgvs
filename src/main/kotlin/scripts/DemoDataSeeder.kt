@@ -15,7 +15,10 @@ import schema.type.CountryCode
 import schema.type.Student
 import schema.type.Template
 import schema.type.TemplateCategory
-import schema.type.TemplateVariable
+import schema.type.TextTemplateVariable
+import schema.type.NumberTemplateVariable
+import schema.type.DateTemplateVariable
+import schema.type.SelectTemplateVariable
 import schema.type.User
 import kotlin.random.Random
 
@@ -241,151 +244,106 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
 
     private suspend fun createBaseVariables(template: Template) {
         val baseVariables = listOf(
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "اسم الطالب",
-                type = "text",
                 description = "الاسم الكامل للطالب",
-                previewValue = "محمد أحمد العتيبي",
                 required = true,
                 order = 1,
+                previewValue = "محمد أحمد العتيبي",
                 minLength = 3,
                 maxLength = 100,
                 pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            DateTemplateVariable(
                 templateId = template.id,
                 name = "تاريخ الإصدار",
-                type = "date",
                 description = "تاريخ إصدار الشهادة",
-                previewValue = "2024-01-15",
                 required = true,
                 order = 2,
-                minLength = null,
-                maxLength = null,
-                pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
+                previewValue = currentTime.date,
                 minDate = null,
                 maxDate = null,
                 format = "Y-m-d",
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "الرقم المرجعي",
-                type = "text",
                 description = "الرقم المرجعي للشهادة",
-                previewValue = "CERT2024",
                 required = true,
                 order = 3,
+                previewValue = "CERT2024",
                 minLength = 8,
                 maxLength = 8,
                 pattern = "^[A-Z0-9]{8}$",
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )
         )
 
         baseVariables.forEach { variable ->
-            repositoryManager.templateVariableRepository.create(variable)
+            when (variable) {
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+            }
         }
     }
 
     private suspend fun createAcademicVariables(template: Template) {
         val academicVariables = listOf(
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "التخصص",
-                type = "text",
                 description = "التخصص الأكاديمي",
-                previewValue = "علوم الحاسب",
                 required = true,
                 order = 4,
+                previewValue = "علوم الحاسب",
                 minLength = 3,
                 maxLength = 100,
                 pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            NumberTemplateVariable(
                 templateId = template.id,
                 name = "المعدل",
-                type = "number",
                 description = "المعدل التراكمي",
-                previewValue = "4.50",
                 required = true,
                 order = 5,
-                minLength = null,
-                maxLength = null,
-                pattern = null,
-                minValue = 0,
-                maxValue = 5,
+                previewValue = 4.5,
+                minValue = 0.0,
+                maxValue = 5.0,
                 decimalPlaces = 2,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )
         )
 
         academicVariables.forEach { variable ->
-            repositoryManager.templateVariableRepository.create(variable)
+            when (variable) {
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+            }
         }
     }
 
     private suspend fun createProfessionalVariables(template: Template) {
         val professionalVariables = listOf(
-            TemplateVariable(
+            SelectTemplateVariable(
                 templateId = template.id,
                 name = "المجال",
-                type = "select",
                 description = "مجال التدريب",
-                previewValue = "تقنية المعلومات",
                 required = true,
                 order = 4,
-                minLength = null,
-                maxLength = null,
-                pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
+                previewValue = "تقنية المعلومات",
                 options = listOf(
                     "تقنية المعلومات",
                     "إدارة الأعمال",
@@ -397,129 +355,88 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            NumberTemplateVariable(
                 templateId = template.id,
                 name = "مدة التدريب",
-                type = "number",
                 description = "عدد ساعات التدريب",
-                previewValue = "40",
                 required = true,
                 order = 5,
-                minLength = null,
-                maxLength = null,
-                pattern = null,
-                minValue = 1,
-                maxValue = 1000,
+                previewValue = 40.0,
+                minValue = 1.0,
+                maxValue = 1000.0,
                 decimalPlaces = 0,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )
         )
 
         professionalVariables.forEach { variable ->
-            repositoryManager.templateVariableRepository.create(variable)
+            when (variable) {
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+            }
         }
     }
 
     private suspend fun createAttendanceVariables(template: Template) {
         val attendanceVariables = listOf(
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "اسم الفعالية",
-                type = "text",
                 description = "اسم المؤتمر أو ورشة العمل",
-                previewValue = "مؤتمر التقنية السنوي",
                 required = true,
                 order = 4,
+                previewValue = "مؤتمر التقنية السنوي",
                 minLength = 5,
                 maxLength = 200,
                 pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "مكان الانعقاد",
-                type = "text",
                 description = "مكان انعقاد الفعالية",
-                previewValue = "الرياض",
                 required = true,
                 order = 5,
+                previewValue = "الرياض",
                 minLength = 3,
                 maxLength = 100,
                 pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )
         )
 
         attendanceVariables.forEach { variable ->
-            repositoryManager.templateVariableRepository.create(variable)
+            repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
         }
     }
 
     private suspend fun createAppreciationVariables(template: Template) {
         val appreciationVariables = listOf(
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "سبب التقدير",
-                type = "text",
                 description = "سبب منح شهادة التقدير",
-                previewValue = "التفوق الأكاديمي والإنجاز المتميز",
                 required = true,
                 order = 4,
+                previewValue = "التفوق الأكاديمي والإنجاز المتميز",
                 minLength = 10,
                 maxLength = 500,
                 pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            SelectTemplateVariable(
                 templateId = template.id,
                 name = "المستوى",
-                type = "select",
                 description = "مستوى التقدير",
-                previewValue = "ممتاز",
                 required = true,
                 order = 5,
-                minLength = null,
-                maxLength = null,
-                pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
+                previewValue = "ممتاز",
                 options = listOf("ممتاز", "جيد جداً", "جيد", "مقبول"),
                 multiple = false,
                 createdAt = currentTime,
@@ -528,60 +445,52 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         )
 
         appreciationVariables.forEach { variable ->
-            repositoryManager.templateVariableRepository.create(variable)
+            when (variable) {
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+            }
         }
     }
 
     private suspend fun createVolunteerVariables(template: Template) {
         val volunteerVariables = listOf(
-            TemplateVariable(
+            TextTemplateVariable(
                 templateId = template.id,
                 name = "نوع العمل التطوعي",
-                type = "text",
                 description = "وصف العمل التطوعي",
-                previewValue = "تطوع في الأعمال الخيرية",
                 required = true,
                 order = 4,
+                previewValue = "تطوع في الأعمال الخيرية",
                 minLength = 5,
                 maxLength = 200,
                 pattern = null,
-                minValue = null,
-                maxValue = null,
-                decimalPlaces = null,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             ),
-            TemplateVariable(
+            NumberTemplateVariable(
                 templateId = template.id,
                 name = "عدد ساعات التطوع",
-                type = "number",
                 description = "إجمالي ساعات العمل التطوعي",
-                previewValue = "100",
                 required = true,
                 order = 5,
-                minLength = null,
-                maxLength = null,
-                pattern = null,
-                minValue = 1,
-                maxValue = 1000,
+                previewValue = 100.0,
+                minValue = 1.0,
+                maxValue = 1000.0,
                 decimalPlaces = 0,
-                minDate = null,
-                maxDate = null,
-                format = null,
-                options = null,
-                multiple = false,
                 createdAt = currentTime,
                 updatedAt = currentTime
             )
         )
 
         volunteerVariables.forEach { variable ->
-            repositoryManager.templateVariableRepository.create(variable)
+            when (variable) {
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+            }
         }
     }
 
