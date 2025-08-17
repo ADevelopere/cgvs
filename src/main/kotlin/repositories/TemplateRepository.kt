@@ -30,8 +30,8 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
     /**
      * Returns the total count of templates
      */
-    override suspend fun countAll(): Int = dbQuery {
-        Templates.selectAll().count().toInt()
+    override suspend fun countAll(): Long = dbQuery {
+        Templates.selectAll().count()
     }
 
     suspend fun create(template: Template): Template = dbQuery {
@@ -102,7 +102,7 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
 
     suspend fun findMaxOrderByCategoryId(categoryId: Int): Int = dbQuery {
         val maxOrderExpr = Templates.order.max()
-        val query =  Templates
+        val query = Templates
             .select(maxOrderExpr)
             .where { Templates.categoryId eq categoryId }
 

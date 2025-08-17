@@ -9,9 +9,9 @@ interface PaginatableRepository<T> {
      * Fetch paginated items from the repository
      */
     suspend fun findPaginated(limit: Int, offset: Int): List<T>
-    
+
     /**
      * Get the total count of items in the repository
      */
-    suspend fun countAll(): Int
+    suspend fun countAll(): Long
 }
