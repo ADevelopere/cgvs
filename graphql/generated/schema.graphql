@@ -12,9 +12,6 @@ This directive disables error propagation when a non nullable field returns null
 """
 directive @experimental_disableErrorPropagation on MUTATION | QUERY | SUBSCRIPTION
 
-"""Enable pagination for this field with configurable options"""
-directive @paginate(defaultCount: Int!, edgeType: String!, includePaginationInfo: Boolean!, maxCount: Int!, type: PaginationType!) on FIELD_DEFINITION
-
 type AuthPayload {
   token: String!
   user: User!
@@ -342,6 +339,21 @@ enum Nationality {
   ZW
 }
 
+input OrderStudentsByClauseInput {
+  column: OrderStudentsByColumn!
+  order: SortOrder!
+}
+
+enum OrderStudentsByColumn {
+  CREATED_AT
+  DATE_OF_BIRTH
+  EMAIL
+  GENDER
+  ID
+  NAME
+  UPDATED_AT
+}
+
 type PaginatedStudentResponse {
   data: [Student!]!
   paginationInfo: PaginationInfo
@@ -350,6 +362,17 @@ type PaginatedStudentResponse {
 type PaginatedTemplatesResponse {
   data: [Template!]!
   paginationInfo: PaginationInfo
+}
+
+input PaginationArgsInput {
+  after: String
+  before: String
+  defaultCount: Int
+  first: Int
+  last: Int
+  maxCount: Int
+  page: Int
+  skip: Int
 }
 
 type PaginationInfo {
@@ -363,17 +386,6 @@ type PaginationInfo {
   total: Int
 }
 
-enum PaginationType {
-  """Cursor-based pagination compatible with Relay specification"""
-  CONNECTION
-
-  """Offset-based pagination with total count"""
-  PAGINATOR
-
-  """Simple offset-based pagination without total count"""
-  SIMPLE
-}
-
 """A type representing a validated phone number"""
 scalar PhoneNumber
 
@@ -384,16 +396,14 @@ type Query {
 
   """Get current authenticated user"""
   me: User
-  paginatedStudents(first: Int, page: Int, skip: Int): PaginatedStudentResponse!
-  paginatedTemplates(first: Int, page: Int, skip: Int): PaginatedTemplatesResponse!
   student(id: Int!): Student
-  students: [Student!]!
+  students(orderBy: [OrderStudentsByClauseInput!], paginationArgs: PaginationArgsInput, sortArgs: StudentSortArgsInput): PaginatedStudentResponse!
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]!
   templateCategory(id: Int!): TemplateCategory
   templateConfig: TemplateConfig
-  templates: [Template!]!
+  templates(paginationArgs: PaginationArgsInput): PaginatedTemplatesResponse!
 
   """Get user by ID (authenticated users only)"""
   user(id: Int!): User
@@ -408,6 +418,11 @@ input RegisterInput {
   password: String!
 }
 
+enum SortOrder {
+  ASC
+  DESC
+}
+
 type Student {
   createdAt: LocalDateTime!
   dateOfBirth: LocalDate
@@ -418,6 +433,48 @@ type Student {
   nationality: Nationality
   phoneNumber: PhoneNumber
   updatedAt: LocalDateTime!
+}
+
+input StudentSortArgsInput {
+  birthDate: LocalDateTime
+  birthDateAfter: LocalDateTime
+  birthDateBefore: LocalDateTime
+  birthDateFrom: LocalDateTime
+  birthDateIsEmpty: Boolean
+  birthDateIsNotEmpty: Boolean
+  birthDateNot: LocalDateTime
+  birthDateOnOrAfter: LocalDateTime
+  birthDateOnOrBefore: LocalDateTime
+  birthDateTo: LocalDateTime
+  createdAt: LocalDateTime
+  createdAtAfter: LocalDateTime
+  createdAtBefore: LocalDateTime
+  createdAtFrom: LocalDateTime
+  createdAtIsEmpty: Boolean
+  createdAtIsNotEmpty: Boolean
+  createdAtNot: LocalDateTime
+  createdAtOnOrAfter: LocalDateTime
+  createdAtOnOrBefore: LocalDateTime
+  createdAtTo: LocalDateTime
+  email: String
+  emailEndsWith: String
+  emailEquals: Email
+  emailIsEmpty: Boolean
+  emailIsNotEmpty: Boolean
+  emailNotContains: String
+  emailNotEquals: String
+  emailStartsWith: String
+  gender: Gender
+  name: String
+  nameEndsWith: String
+  nameEquals: String
+  nameIsEmpty: Boolean
+  nameIsNotEmpty: Boolean
+  nameNotContains: String
+  nameNotEquals: String
+  nameStartsWith: String
+  nationality: Nationality
+  phoneNumber: PhoneNumber
 }
 
 type Template {

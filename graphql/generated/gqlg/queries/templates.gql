@@ -1,49 +1,28 @@
-query templates{
-    templates{
-        category{
-            categorySpecialType
-            childCategories{
+query templates($paginationArgs: PaginationArgsInput){
+    templates(paginationArgs: $paginationArgs){
+        data{
+            category{
                 categorySpecialType
                 childCategories{
                     categorySpecialType
-                    createdAt
-                    description
-                    id
-                    name
-                    order
-                    parentCategory{
+                    childCategories{
                         categorySpecialType
-                        childCategories{
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        parentCategory{
                             categorySpecialType
-                            createdAt
-                            description
-                            id
-                            name
-                            order
-                            templates{
+                            childCategories{
+                                categorySpecialType
                                 createdAt
                                 description
                                 id
-                                imageUrl
                                 name
                                 order
-                                preSuspensionCategory{
-                                    categorySpecialType
-                                    childCategories{
-                                        categorySpecialType
-                                        createdAt
-                                        description
-                                        id
-                                        name
-                                        order
-                                        updatedAt
-                                    }
-                                    createdAt
-                                    description
-                                    id
-                                    name
-                                    order
-                                    parentCategory{
+                                templates{
+                                    category{
                                         categorySpecialType
                                         createdAt
                                         description
@@ -57,41 +36,97 @@ query templates{
                                             id
                                             name
                                             order
-                                            templates{
+                                            parentCategory{
+                                                categorySpecialType
                                                 createdAt
                                                 description
                                                 id
-                                                imageUrl
                                                 name
                                                 order
+                                                templates{
+                                                    createdAt
+                                                    description
+                                                    id
+                                                    imageUrl
+                                                    name
+                                                    order
+                                                    preSuspensionCategory{
+                                                        categorySpecialType
+                                                        childCategories{
+                                                            categorySpecialType
+                                                            createdAt
+                                                            description
+                                                            id
+                                                            name
+                                                            order
+                                                            updatedAt
+                                                        }
+                                                        createdAt
+                                                        description
+                                                        id
+                                                        name
+                                                        order
+                                                        parentCategory{
+                                                            categorySpecialType
+                                                            createdAt
+                                                            description
+                                                            id
+                                                            name
+                                                            order
+                                                            updatedAt
+                                                        }
+                                                        templates{
+                                                            createdAt
+                                                            description
+                                                            id
+                                                            imageUrl
+                                                            name
+                                                            order
+                                                            updatedAt
+                                                        }
+                                                        updatedAt
+                                                    }
+                                                    updatedAt
+                                                }
                                                 updatedAt
                                             }
                                             updatedAt
                                         }
+                                        templates{
+                                            createdAt
+                                            description
+                                            id
+                                            imageUrl
+                                            name
+                                            order
+                                            updatedAt
+                                        }
                                         updatedAt
                                     }
-                                    templates{
-                                        createdAt
-                                        description
-                                        id
-                                        imageUrl
-                                        name
-                                        order
-                                        updatedAt
-                                    }
+                                    createdAt
+                                    description
+                                    id
+                                    imageUrl
+                                    name
+                                    order
                                     updatedAt
                                 }
                                 updatedAt
                             }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
                             updatedAt
                         }
-                        createdAt
-                        description
-                        id
-                        name
-                        order
                         updatedAt
                     }
+                    createdAt
+                    description
+                    id
+                    name
+                    order
                     updatedAt
                 }
                 createdAt
@@ -104,9 +139,10 @@ query templates{
             createdAt
             description
             id
+            imageUrl
             name
             order
-            parentCategory{
+            preSuspensionCategory{
                 categorySpecialType
                 createdAt
                 description
@@ -115,23 +151,17 @@ query templates{
                 order
                 updatedAt
             }
-            templates{
-                createdAt
-                description
-                id
-                imageUrl
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
-        createdAt
-        description
-        id
-        imageUrl
-        name
-        order
-        updatedAt
+        paginationInfo{
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+        }
     }
 }

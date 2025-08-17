@@ -1,13 +1,25 @@
-query students{
-    students{
-        createdAt
-        dateOfBirth
-        email
-        gender
-        id
-        name
-        nationality
-        phoneNumber
-        updatedAt
+query students($orderBy: [OrderStudentsByClauseInput!], $paginationArgs: PaginationArgsInput, $sortArgs: StudentSortArgsInput){
+    students(orderBy: $orderBy, paginationArgs: $paginationArgs, sortArgs: $sortArgs){
+        data{
+            createdAt
+            dateOfBirth
+            email
+            gender
+            id
+            name
+            nationality
+            phoneNumber
+            updatedAt
+        }
+        paginationInfo{
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+        }
     }
 }

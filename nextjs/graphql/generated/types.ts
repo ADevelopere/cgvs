@@ -401,6 +401,20 @@ export type Nationality =
   | 'ZM'
   | 'ZW';
 
+export type OrderStudentsByClauseInput = {
+  column: OrderStudentsByColumn;
+  order: SortOrder;
+};
+
+export type OrderStudentsByColumn =
+  | 'CREATED_AT'
+  | 'DATE_OF_BIRTH'
+  | 'EMAIL'
+  | 'GENDER'
+  | 'ID'
+  | 'NAME'
+  | 'UPDATED_AT';
+
 export type PaginatedStudentResponse = {
   __typename?: 'PaginatedStudentResponse';
   data: Array<Student>;
@@ -411,6 +425,17 @@ export type PaginatedTemplatesResponse = {
   __typename?: 'PaginatedTemplatesResponse';
   data: Array<Template>;
   paginationInfo?: Maybe<PaginationInfo>;
+};
+
+export type PaginationArgsInput = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  defaultCount?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  maxCount?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type PaginationInfo = {
@@ -425,14 +450,6 @@ export type PaginationInfo = {
   total?: Maybe<Scalars['Int']['output']>;
 };
 
-export type PaginationType =
-  /** Cursor-based pagination compatible with Relay specification */
-  | 'CONNECTION'
-  /** Offset-based pagination with total count */
-  | 'PAGINATOR'
-  /** Simple offset-based pagination without total count */
-  | 'SIMPLE';
-
 export type Query = {
   __typename?: 'Query';
   /** Check if user is authenticated */
@@ -440,16 +457,14 @@ export type Query = {
   mainTemplateCategory?: Maybe<TemplateCategory>;
   /** Get current authenticated user */
   me?: Maybe<User>;
-  paginatedStudents: PaginatedStudentResponse;
-  paginatedTemplates: PaginatedTemplatesResponse;
   student?: Maybe<Student>;
-  students: Array<Student>;
+  students: PaginatedStudentResponse;
   suspensionTemplateCategory?: Maybe<TemplateCategory>;
   template?: Maybe<Template>;
   templateCategories: Array<TemplateCategory>;
   templateCategory?: Maybe<TemplateCategory>;
   templateConfig?: Maybe<TemplateConfig>;
-  templates: Array<Template>;
+  templates: PaginatedTemplatesResponse;
   /** Get user by ID (authenticated users only) */
   user?: Maybe<User>;
   /** Get all users (admin only) */
@@ -457,22 +472,15 @@ export type Query = {
 };
 
 
-export type QueryPaginatedStudentsArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryPaginatedTemplatesArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
 export type QueryStudentArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryStudentsArgs = {
+  orderBy?: InputMaybe<Array<OrderStudentsByClauseInput>>;
+  paginationArgs?: InputMaybe<PaginationArgsInput>;
+  sortArgs?: InputMaybe<StudentSortArgsInput>;
 };
 
 
@@ -486,6 +494,11 @@ export type QueryTemplateCategoryArgs = {
 };
 
 
+export type QueryTemplatesArgs = {
+  paginationArgs?: InputMaybe<PaginationArgsInput>;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['Int']['input'];
 };
@@ -495,6 +508,10 @@ export type RegisterInput = {
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
+
+export type SortOrder =
+  | 'ASC'
+  | 'DESC';
 
 export type Student = {
   __typename?: 'Student';
@@ -507,6 +524,48 @@ export type Student = {
   nationality?: Maybe<Nationality>;
   phoneNumber?: Maybe<Scalars['PhoneNumber']['output']>;
   updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+export type StudentSortArgsInput = {
+  birthDate?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateAfter?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateBefore?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateFrom?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateIsEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  birthDateIsNotEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  birthDateNot?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateOnOrAfter?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateOnOrBefore?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  birthDateTo?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAt?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtAfter?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtBefore?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtFrom?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtIsEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtIsNotEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtNot?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtOnOrAfter?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtOnOrBefore?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  createdAtTo?: InputMaybe<Scalars['LocalDateTime']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  emailEndsWith?: InputMaybe<Scalars['String']['input']>;
+  emailEquals?: InputMaybe<Scalars['Email']['input']>;
+  emailIsEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  emailIsNotEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  emailNotContains?: InputMaybe<Scalars['String']['input']>;
+  emailNotEquals?: InputMaybe<Scalars['String']['input']>;
+  emailStartsWith?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<Gender>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  nameEndsWith?: InputMaybe<Scalars['String']['input']>;
+  nameEquals?: InputMaybe<Scalars['String']['input']>;
+  nameIsEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  nameIsNotEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  nameNotContains?: InputMaybe<Scalars['String']['input']>;
+  nameNotEquals?: InputMaybe<Scalars['String']['input']>;
+  nameStartsWith?: InputMaybe<Scalars['String']['input']>;
+  nationality?: InputMaybe<Nationality>;
+  phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
 export type Template = {
@@ -625,6 +684,43 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', createdAt: any, email: any, emailVerifiedAt?: any | null, id: number, isAdmin: boolean, name: string, password: string, rememberToken?: string | null, updatedAt: any }> | null };
 
+export type CreateStudentMutationVariables = Exact<{
+  input: CreateStudentInput;
+}>;
+
+
+export type CreateStudentMutation = { __typename?: 'Mutation', createStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
+
+export type DeleteStudentMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteStudentMutation = { __typename?: 'Mutation', deleteStudent: { __typename?: 'Student', id: number, name: string, createdAt: any, updatedAt: any } };
+
+export type UpdateStudentMutationVariables = Exact<{
+  input: UpdateStudentInput;
+}>;
+
+
+export type UpdateStudentMutation = { __typename?: 'Mutation', updateStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
+
+export type StudentQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } | null };
+
+export type StudentsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<OrderStudentsByClauseInput> | OrderStudentsByClauseInput>;
+  paginationArgs?: InputMaybe<PaginationArgsInput>;
+  sortArgs?: InputMaybe<StudentSortArgsInput>;
+}>;
+
+
+export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'PaginatedStudentResponse', data: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage?: number | null, perPage: number, total?: number | null } | null } };
+
 export type CreateTemplateMutationVariables = Exact<{
   input: CreateTemplateInput;
 }>;
@@ -660,15 +756,6 @@ export type UpdateTemplateMutationVariables = Exact<{
 
 export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
-export type PaginatedTemplatesQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-
-export type PaginatedTemplatesQuery = { __typename?: 'Query', paginatedTemplates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage?: number | null, perPage: number, total?: number | null } | null } };
-
 export type TemplateQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
@@ -681,10 +768,12 @@ export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TemplateConfigQuery = { __typename?: 'Query', templateConfig?: { __typename?: 'TemplateConfig', allowedFileTypes: Array<string>, maxBackgroundSize: number } | null };
 
-export type TemplatesQueryVariables = Exact<{ [key: string]: never; }>;
+export type TemplatesQueryVariables = Exact<{
+  paginationArgs?: InputMaybe<PaginationArgsInput>;
+}>;
 
 
-export type TemplatesQuery = { __typename?: 'Query', templates: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }> };
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage?: number | null, perPage: number, total?: number | null } | null } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
@@ -1085,6 +1174,244 @@ export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariable
 export function refetchUsersQuery(variables?: UsersQueryVariables) {
       return { query: UsersDocument, variables: variables }
     }
+export const CreateStudentDocument = gql`
+    mutation createStudent($input: CreateStudentInput!) {
+  createStudent(input: $input) {
+    id
+    name
+    gender
+    nationality
+    dateOfBirth
+    email
+    phoneNumber
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateStudentMutationFn = Apollo.MutationFunction<CreateStudentMutation, CreateStudentMutationVariables>;
+
+/**
+ * __useCreateStudentMutation__
+ *
+ * To run a mutation, you first call `useCreateStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateStudentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createStudentMutation, { data, loading, error }] = useCreateStudentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateStudentMutation(baseOptions?: Apollo.MutationHookOptions<CreateStudentMutation, CreateStudentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateStudentMutation, CreateStudentMutationVariables>(CreateStudentDocument, options);
+      }
+export type CreateStudentMutationHookResult = ReturnType<typeof useCreateStudentMutation>;
+export type CreateStudentMutationResult = Apollo.MutationResult<CreateStudentMutation>;
+export type CreateStudentMutationOptions = Apollo.BaseMutationOptions<CreateStudentMutation, CreateStudentMutationVariables>;
+export const DeleteStudentDocument = gql`
+    mutation deleteStudent($id: Int!) {
+  deleteStudent(id: $id) {
+    id
+    name
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteStudentMutationFn = Apollo.MutationFunction<DeleteStudentMutation, DeleteStudentMutationVariables>;
+
+/**
+ * __useDeleteStudentMutation__
+ *
+ * To run a mutation, you first call `useDeleteStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteStudentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteStudentMutation, { data, loading, error }] = useDeleteStudentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteStudentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteStudentMutation, DeleteStudentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteStudentMutation, DeleteStudentMutationVariables>(DeleteStudentDocument, options);
+      }
+export type DeleteStudentMutationHookResult = ReturnType<typeof useDeleteStudentMutation>;
+export type DeleteStudentMutationResult = Apollo.MutationResult<DeleteStudentMutation>;
+export type DeleteStudentMutationOptions = Apollo.BaseMutationOptions<DeleteStudentMutation, DeleteStudentMutationVariables>;
+export const UpdateStudentDocument = gql`
+    mutation updateStudent($input: UpdateStudentInput!) {
+  updateStudent(input: $input) {
+    id
+    name
+    gender
+    nationality
+    dateOfBirth
+    email
+    phoneNumber
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateStudentMutationFn = Apollo.MutationFunction<UpdateStudentMutation, UpdateStudentMutationVariables>;
+
+/**
+ * __useUpdateStudentMutation__
+ *
+ * To run a mutation, you first call `useUpdateStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateStudentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateStudentMutation, { data, loading, error }] = useUpdateStudentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateStudentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateStudentMutation, UpdateStudentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateStudentMutation, UpdateStudentMutationVariables>(UpdateStudentDocument, options);
+      }
+export type UpdateStudentMutationHookResult = ReturnType<typeof useUpdateStudentMutation>;
+export type UpdateStudentMutationResult = Apollo.MutationResult<UpdateStudentMutation>;
+export type UpdateStudentMutationOptions = Apollo.BaseMutationOptions<UpdateStudentMutation, UpdateStudentMutationVariables>;
+export const StudentDocument = gql`
+    query student($id: Int!) {
+  student(id: $id) {
+    id
+    name
+    gender
+    nationality
+    dateOfBirth
+    email
+    phoneNumber
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useStudentQuery__
+ *
+ * To run a query within a React component, call `useStudentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStudentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStudentQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useStudentQuery(baseOptions: Apollo.QueryHookOptions<StudentQuery, StudentQueryVariables> & ({ variables: StudentQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StudentQuery, StudentQueryVariables>(StudentDocument, options);
+      }
+export function useStudentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StudentQuery, StudentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StudentQuery, StudentQueryVariables>(StudentDocument, options);
+        }
+export function useStudentSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<StudentQuery, StudentQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StudentQuery, StudentQueryVariables>(StudentDocument, options);
+        }
+export type StudentQueryHookResult = ReturnType<typeof useStudentQuery>;
+export type StudentLazyQueryHookResult = ReturnType<typeof useStudentLazyQuery>;
+export type StudentSuspenseQueryHookResult = ReturnType<typeof useStudentSuspenseQuery>;
+export type StudentQueryResult = Apollo.QueryResult<StudentQuery, StudentQueryVariables>;
+export function refetchStudentQuery(variables: StudentQueryVariables) {
+      return { query: StudentDocument, variables: variables }
+    }
+export const StudentsDocument = gql`
+    query students($orderBy: [OrderStudentsByClauseInput!], $paginationArgs: PaginationArgsInput, $sortArgs: StudentSortArgsInput) {
+  students(
+    orderBy: $orderBy
+    paginationArgs: $paginationArgs
+    sortArgs: $sortArgs
+  ) {
+    data {
+      id
+      name
+      gender
+      nationality
+      dateOfBirth
+      email
+      phoneNumber
+      createdAt
+      updatedAt
+    }
+    paginationInfo {
+      count
+      currentPage
+      firstItem
+      hasMorePages
+      lastItem
+      lastPage
+      perPage
+      total
+    }
+  }
+}
+    `;
+
+/**
+ * __useStudentsQuery__
+ *
+ * To run a query within a React component, call `useStudentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStudentsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      paginationArgs: // value for 'paginationArgs'
+ *      sortArgs: // value for 'sortArgs'
+ *   },
+ * });
+ */
+export function useStudentsQuery(baseOptions?: Apollo.QueryHookOptions<StudentsQuery, StudentsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StudentsQuery, StudentsQueryVariables>(StudentsDocument, options);
+      }
+export function useStudentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StudentsQuery, StudentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StudentsQuery, StudentsQueryVariables>(StudentsDocument, options);
+        }
+export function useStudentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<StudentsQuery, StudentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StudentsQuery, StudentsQueryVariables>(StudentsDocument, options);
+        }
+export type StudentsQueryHookResult = ReturnType<typeof useStudentsQuery>;
+export type StudentsLazyQueryHookResult = ReturnType<typeof useStudentsLazyQuery>;
+export type StudentsSuspenseQueryHookResult = ReturnType<typeof useStudentsSuspenseQuery>;
+export type StudentsQueryResult = Apollo.QueryResult<StudentsQuery, StudentsQueryVariables>;
+export function refetchStudentsQuery(variables?: StudentsQueryVariables) {
+      return { query: StudentsDocument, variables: variables }
+    }
 export const CreateTemplateDocument = gql`
     mutation createTemplate($input: CreateTemplateInput!) {
   createTemplate(input: $input) {
@@ -1311,77 +1638,6 @@ export function useUpdateTemplateMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateTemplateMutationHookResult = ReturnType<typeof useUpdateTemplateMutation>;
 export type UpdateTemplateMutationResult = Apollo.MutationResult<UpdateTemplateMutation>;
 export type UpdateTemplateMutationOptions = Apollo.BaseMutationOptions<UpdateTemplateMutation, UpdateTemplateMutationVariables>;
-export const PaginatedTemplatesDocument = gql`
-    query paginatedTemplates($first: Int, $page: Int, $skip: Int) {
-  paginatedTemplates(first: $first, page: $page, skip: $skip) {
-    data {
-      id
-      name
-      description
-      imageUrl
-      category {
-        id
-        name
-      }
-      order
-      preSuspensionCategory {
-        id
-        name
-      }
-      createdAt
-      updatedAt
-    }
-    paginationInfo {
-      count
-      currentPage
-      firstItem
-      hasMorePages
-      lastItem
-      lastPage
-      perPage
-      total
-    }
-  }
-}
-    `;
-
-/**
- * __usePaginatedTemplatesQuery__
- *
- * To run a query within a React component, call `usePaginatedTemplatesQuery` and pass it any options that fit your needs.
- * When your component renders, `usePaginatedTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePaginatedTemplatesQuery({
- *   variables: {
- *      first: // value for 'first'
- *      page: // value for 'page'
- *      skip: // value for 'skip'
- *   },
- * });
- */
-export function usePaginatedTemplatesQuery(baseOptions?: Apollo.QueryHookOptions<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>(PaginatedTemplatesDocument, options);
-      }
-export function usePaginatedTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>(PaginatedTemplatesDocument, options);
-        }
-export function usePaginatedTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>(PaginatedTemplatesDocument, options);
-        }
-export type PaginatedTemplatesQueryHookResult = ReturnType<typeof usePaginatedTemplatesQuery>;
-export type PaginatedTemplatesLazyQueryHookResult = ReturnType<typeof usePaginatedTemplatesLazyQuery>;
-export type PaginatedTemplatesSuspenseQueryHookResult = ReturnType<typeof usePaginatedTemplatesSuspenseQuery>;
-export type PaginatedTemplatesQueryResult = Apollo.QueryResult<PaginatedTemplatesQuery, PaginatedTemplatesQueryVariables>;
-export function refetchPaginatedTemplatesQuery(variables?: PaginatedTemplatesQueryVariables) {
-      return { query: PaginatedTemplatesDocument, variables: variables }
-    }
 export const TemplateDocument = gql`
     query template($id: Int!) {
   template(id: $id) {
@@ -1483,23 +1739,35 @@ export function refetchTemplateConfigQuery(variables?: TemplateConfigQueryVariab
       return { query: TemplateConfigDocument, variables: variables }
     }
 export const TemplatesDocument = gql`
-    query templates {
-  templates {
-    id
-    name
-    description
-    imageUrl
-    category {
+    query templates($paginationArgs: PaginationArgsInput) {
+  templates(paginationArgs: $paginationArgs) {
+    data {
       id
       name
+      description
+      imageUrl
+      category {
+        id
+        name
+      }
+      order
+      preSuspensionCategory {
+        id
+        name
+      }
+      createdAt
+      updatedAt
     }
-    order
-    preSuspensionCategory {
-      id
-      name
+    paginationInfo {
+      count
+      currentPage
+      firstItem
+      hasMorePages
+      lastItem
+      lastPage
+      perPage
+      total
     }
-    createdAt
-    updatedAt
   }
 }
     `;
@@ -1516,6 +1784,7 @@ export const TemplatesDocument = gql`
  * @example
  * const { data, loading, error } = useTemplatesQuery({
  *   variables: {
+ *      paginationArgs: // value for 'paginationArgs'
  *   },
  * });
  */
