@@ -1,13 +1,11 @@
 package schema.type
 
-import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 
-@Serializable
 data class User(
     val id: Int = 0,
     val name: String,
-    val email: String,
+    val email: Email,
     val emailVerifiedAt: LocalDateTime? = null,
     val password: String,
     val isAdmin: Boolean = false,
@@ -25,15 +23,13 @@ data class LogoutResponse(
     val message: String
 )
 
-@Serializable
 data class LoginInput(
     val email: String,
     val password: String
 )
 
-@Serializable
 data class RegisterInput(
     val name: String,
-    val email: String,
+    val email: Email,
     val password: String
 )

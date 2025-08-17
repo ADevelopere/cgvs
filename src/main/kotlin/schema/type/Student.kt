@@ -7,7 +7,7 @@ import schema.directive.PaginationInfo
 data class Student(
     val id: Int = 0,
     val name: String,
-    val email: String? = null,
+    val email: Email? = null,
     val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: LocalDate? = null,
     val gender: Gender? = null,
@@ -18,7 +18,7 @@ data class Student(
 
 data class CreateStudentInput(
     val name: String,
-    val email: String? = null,
+    val email: Email? = null,
     val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: LocalDate? = null, // ISO date string
     val gender: Gender? = null,
@@ -27,7 +27,7 @@ data class CreateStudentInput(
 
 data class UpdateStudentInput(
     val name: String? = null,
-    val email: String? = null,
+    val email: Email? = null,
     val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: String? = null, // ISO date string
     val gender: String? = null,

@@ -57,7 +57,7 @@ class AuthMutation : Mutation, KoinComponent {
     ): AuthPayload? {
         val call = dfe.graphQlContext.get<ApplicationCall>("applicationCall")
 
-        val user = authService.registerUser(input.name, input.email, input.password)
+        val user = authService.registerUser(input)
 
         return if (user != null) {
             // Generate JWT token

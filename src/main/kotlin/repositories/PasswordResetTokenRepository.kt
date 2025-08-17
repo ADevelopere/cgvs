@@ -15,13 +15,14 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import schema.type.Email
 
 class PasswordResetTokenRepository(private val database: Database) {
 
     suspend fun create(token: PasswordResetToken): PasswordResetToken = dbQuery {
         val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
         PasswordResetTokens.insert {
-            it[email] = token.email
+            it[email] = token.email.value
             it[this.token] = token.token
             it[createdAt] = now
         }
@@ -71,7 +72,7 @@ class PasswordResetTokenRepository(private val database: Database) {
 
     private fun rowToPasswordResetToken(row: ResultRow): PasswordResetToken {
         return PasswordResetToken(
-            email = row[PasswordResetTokens.email],
+            email = Email(row[PasswordResetTokens.email]),
             token = row[PasswordResetTokens.token],
             createdAt = row[PasswordResetTokens.createdAt]
         )
