@@ -1,23 +1,35 @@
 import { gql } from '@apollo/client';
 
-export const TEMPLATES = gql`
-query templates{
-    templates{
-        id
-        name
-        description
-        imageUrl
-        category{
+export const PAGINATED_TEMPLATES = gql`
+query paginatedTemplates($first: Int, $page: Int, $skip: Int){
+    paginatedTemplates(first: $first, page: $page, skip: $skip){
+        data{
             id
             name
+            description
+            imageUrl
+            category{
+                id
+                name
+            }
+            order
+            preSuspensionCategory{
+                id
+                name
+            }
+            createdAt
+            updatedAt
         }
-        order
-        preSuspensionCategory{
-            id
-            name
+        paginationInfo{
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
         }
-        createdAt
-        updatedAt
     }
 }
 `;
