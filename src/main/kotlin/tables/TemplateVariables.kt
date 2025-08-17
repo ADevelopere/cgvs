@@ -1,5 +1,6 @@
 package tables
 
+import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 import org.jetbrains.exposed.v1.datetime.date
@@ -25,7 +26,7 @@ object TemplateVariableBase : Table("template_variable_base") {
 
 // Text variable properties table
 object TextTemplateVariables : Table("text_template_variables") {
-    val id = integer("id").references(TemplateVariableBase.id)
+    val id = integer("id").references(TemplateVariableBase.id, onDelete = ReferenceOption.CASCADE)
     val minLength = integer("min_length").nullable()
     val maxLength = integer("max_length").nullable()
     val pattern = varchar("pattern", 255).nullable()
@@ -35,7 +36,7 @@ object TextTemplateVariables : Table("text_template_variables") {
 
 // Number variable properties table
 object NumberTemplateVariables : Table("number_template_variables") {
-    val id = integer("id").references(TemplateVariableBase.id)
+    val id = integer("id").references(TemplateVariableBase.id, onDelete = ReferenceOption.CASCADE)
     val minValue = decimal("min_value", 65, 10).nullable()
     val maxValue = decimal("max_value", 65, 10).nullable()
     val decimalPlaces = integer("decimal_places").nullable()
@@ -45,7 +46,7 @@ object NumberTemplateVariables : Table("number_template_variables") {
 
 // Date variable properties table
 object DateTemplateVariables : Table("date_template_variables") {
-    val id = integer("id").references(TemplateVariableBase.id)
+    val id = integer("id").references(TemplateVariableBase.id, onDelete = ReferenceOption.CASCADE)
     val minDate = date("min_date").nullable()
     val maxDate = date("max_date").nullable()
     val format = varchar("format", 50).nullable()
@@ -55,7 +56,7 @@ object DateTemplateVariables : Table("date_template_variables") {
 
 // Select variable properties table
 object SelectTemplateVariables : Table("select_template_variables") {
-    val id = integer("id").references(TemplateVariableBase.id)
+    val id = integer("id").references(TemplateVariableBase.id, onDelete = ReferenceOption.CASCADE)
     val options = text("options").nullable() // JSON array
     val multiple = bool("multiple").nullable()
     val previewValue = varchar("preview_value", 255).nullable()

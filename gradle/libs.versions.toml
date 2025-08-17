@@ -12,8 +12,10 @@ graphql-kotlin = "9.0.0-alpha.8"
 bcrypt = "0.10.2"
 libphonenumber = "9.0.12"
 commonsValidator = "1.10.0"
+kaml = "0.91.0"
 
 [libraries]
+kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 # Koin
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-loggerSlf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }

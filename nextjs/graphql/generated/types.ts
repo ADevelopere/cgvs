@@ -279,6 +279,38 @@ export type CountryCode =
   | 'ZM'
   | 'ZW';
 
+export type CreateDateCreateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  maxDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  minDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  name: Scalars['String']['input'];
+  previewValue?: InputMaybe<Scalars['LocalDate']['input']>;
+  required: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type CreateNumberCreateTemplateVariableInput = {
+  decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  maxValue?: InputMaybe<Scalars['Float']['input']>;
+  minValue?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  previewValue?: InputMaybe<Scalars['Float']['input']>;
+  required: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type CreateSelectCreateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  multiple: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  options: Array<Scalars['String']['input']>;
+  previewValue?: InputMaybe<Scalars['String']['input']>;
+  required: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
 export type CreateStudentInput = {
   dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
   email?: InputMaybe<Scalars['Email']['input']>;
@@ -300,6 +332,34 @@ export type CreateTemplateInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateTextCreateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  maxLength?: InputMaybe<Scalars['Int']['input']>;
+  minLength?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  pattern?: InputMaybe<Scalars['String']['input']>;
+  previewValue?: InputMaybe<Scalars['String']['input']>;
+  required: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type DateTemplateVariable = {
+  __typename?: 'DateTemplateVariable';
+  createdAt: Scalars['LocalDateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  format?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  maxDate?: Maybe<Scalars['LocalDate']['output']>;
+  minDate?: Maybe<Scalars['LocalDate']['output']>;
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
+  previewValue?: Maybe<Scalars['LocalDate']['output']>;
+  required: Scalars['Boolean']['output'];
+  template?: Maybe<Template>;
+  type: TemplateVariableType;
+  updatedAt: Scalars['LocalDateTime']['output'];
+};
+
 export type Gender =
   | 'Female'
   | 'Male'
@@ -317,12 +377,17 @@ export type LogoutResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createDateTemplateVariable: DateTemplateVariable;
+  createNumberTemplateVariable: NumberTemplateVariable;
+  createSelectTemplateVariable: SelectTemplateVariable;
   createStudent: Student;
   createTemplate: Template;
   createTemplateCategory: TemplateCategory;
+  createTextTemplateVariable: TextTemplateVariable;
   deleteStudent: Student;
   deleteTemplate?: Maybe<Template>;
   deleteTemplateCategory: TemplateCategory;
+  deleteTemplateVariable: TemplateVariable;
   /** Login user with email and password */
   login?: Maybe<AuthPayload>;
   /** Logout current user */
@@ -331,9 +396,28 @@ export type Mutation = {
   register?: Maybe<AuthPayload>;
   suspendTemplate?: Maybe<Template>;
   unsuspendTemplate?: Maybe<Template>;
+  updateDateTemplateVariable: DateTemplateVariable;
+  updateNumberTemplateVariable: NumberTemplateVariable;
+  updateSelectTemplateVariable: SelectTemplateVariable;
   updateStudent: Student;
   updateTemplate?: Maybe<Template>;
   updateTemplateCategory: TemplateCategory;
+  updateTextTemplateVariable: TextTemplateVariable;
+};
+
+
+export type MutationCreateDateTemplateVariableArgs = {
+  input: CreateDateCreateTemplateVariableInput;
+};
+
+
+export type MutationCreateNumberTemplateVariableArgs = {
+  input: CreateNumberCreateTemplateVariableInput;
+};
+
+
+export type MutationCreateSelectTemplateVariableArgs = {
+  input: CreateSelectCreateTemplateVariableInput;
 };
 
 
@@ -352,6 +436,11 @@ export type MutationCreateTemplateCategoryArgs = {
 };
 
 
+export type MutationCreateTextTemplateVariableArgs = {
+  input: CreateTextCreateTemplateVariableInput;
+};
+
+
 export type MutationDeleteStudentArgs = {
   id: Scalars['Int']['input'];
 };
@@ -363,6 +452,11 @@ export type MutationDeleteTemplateArgs = {
 
 
 export type MutationDeleteTemplateCategoryArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteTemplateVariableArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -387,6 +481,21 @@ export type MutationUnsuspendTemplateArgs = {
 };
 
 
+export type MutationUpdateDateTemplateVariableArgs = {
+  input: UpdateDateCreateTemplateVariableInput;
+};
+
+
+export type MutationUpdateNumberTemplateVariableArgs = {
+  input: UpdateNumberCreateTemplateVariableInput;
+};
+
+
+export type MutationUpdateSelectTemplateVariableArgs = {
+  input: UpdateSelectCreateTemplateVariableInput;
+};
+
+
 export type MutationUpdateStudentArgs = {
   input: UpdateStudentOptionalFieldsInput;
 };
@@ -399,6 +508,28 @@ export type MutationUpdateTemplateArgs = {
 
 export type MutationUpdateTemplateCategoryArgs = {
   input: UpdateTemplateCategoryInput;
+};
+
+
+export type MutationUpdateTextTemplateVariableArgs = {
+  input: UpdateTextCreateTemplateVariableInput;
+};
+
+export type NumberTemplateVariable = {
+  __typename?: 'NumberTemplateVariable';
+  createdAt: Scalars['LocalDateTime']['output'];
+  decimalPlaces?: Maybe<Scalars['Int']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  maxValue?: Maybe<Scalars['Float']['output']>;
+  minValue?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
+  previewValue?: Maybe<Scalars['Float']['output']>;
+  required: Scalars['Boolean']['output'];
+  template?: Maybe<Template>;
+  type: TemplateVariableType;
+  updatedAt: Scalars['LocalDateTime']['output'];
 };
 
 export type OrderStudentsByClauseInput = {
@@ -509,6 +640,22 @@ export type RegisterInput = {
   password: Scalars['String']['input'];
 };
 
+export type SelectTemplateVariable = {
+  __typename?: 'SelectTemplateVariable';
+  createdAt: Scalars['LocalDateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  multiple?: Maybe<Scalars['Boolean']['output']>;
+  name: Scalars['String']['output'];
+  options?: Maybe<Array<Scalars['String']['output']>>;
+  order: Scalars['Int']['output'];
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required: Scalars['Boolean']['output'];
+  template?: Maybe<Template>;
+  type: TemplateVariableType;
+  updatedAt: Scalars['LocalDateTime']['output'];
+};
+
 export type SortOrder =
   | 'ASC'
   | 'DESC';
@@ -601,6 +748,73 @@ export type TemplateConfig = {
   maxBackgroundSize: Scalars['Int']['output'];
 };
 
+export type TemplateVariable = {
+  createdAt: Scalars['LocalDateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
+  required: Scalars['Boolean']['output'];
+  template?: Maybe<Template>;
+  type: TemplateVariableType;
+  updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+export type TemplateVariableType =
+  | 'DATE'
+  | 'NUMBER'
+  | 'SELECT'
+  | 'TEXT';
+
+export type TextTemplateVariable = {
+  __typename?: 'TextTemplateVariable';
+  createdAt: Scalars['LocalDateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  maxLength?: Maybe<Scalars['Int']['output']>;
+  minLength?: Maybe<Scalars['Int']['output']>;
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
+  pattern?: Maybe<Scalars['String']['output']>;
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required: Scalars['Boolean']['output'];
+  template?: Maybe<Template>;
+  type: TemplateVariableType;
+  updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+export type UpdateDateCreateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  maxDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  minDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  name: Scalars['String']['input'];
+  previewValue?: InputMaybe<Scalars['LocalDate']['input']>;
+  required: Scalars['Boolean']['input'];
+};
+
+export type UpdateNumberCreateTemplateVariableInput = {
+  decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  maxValue?: InputMaybe<Scalars['Float']['input']>;
+  minValue?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  previewValue?: InputMaybe<Scalars['Float']['input']>;
+  required: Scalars['Boolean']['input'];
+};
+
+export type UpdateSelectCreateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  multiple: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  options: Array<Scalars['String']['input']>;
+  previewValue?: InputMaybe<Scalars['String']['input']>;
+  required: Scalars['Boolean']['input'];
+};
+
 export type UpdateStudentOptionalFieldsInput = {
   dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
   email?: InputMaybe<Scalars['Email']['input']>;
@@ -623,6 +837,17 @@ export type UpdateTemplateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTextCreateTemplateVariableInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  maxLength?: InputMaybe<Scalars['Int']['input']>;
+  minLength?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  pattern?: InputMaybe<Scalars['String']['input']>;
+  previewValue?: InputMaybe<Scalars['String']['input']>;
+  required: Scalars['Boolean']['input'];
 };
 
 export type User = {
@@ -817,6 +1042,69 @@ export type TemplateCategoryQueryVariables = Exact<{
 
 
 export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
+
+export type CreateDateTemplateVariableMutationVariables = Exact<{
+  input: CreateDateCreateTemplateVariableInput;
+}>;
+
+
+export type CreateDateTemplateVariableMutation = { __typename?: 'Mutation', createDateTemplateVariable: { __typename?: 'DateTemplateVariable', createdAt: any, description?: string | null, format?: string | null, id: number, maxDate?: any | null, minDate?: any | null, name: string, order: number, previewValue?: any | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type CreateNumberTemplateVariableMutationVariables = Exact<{
+  input: CreateNumberCreateTemplateVariableInput;
+}>;
+
+
+export type CreateNumberTemplateVariableMutation = { __typename?: 'Mutation', createNumberTemplateVariable: { __typename?: 'NumberTemplateVariable', createdAt: any, decimalPlaces?: number | null, description?: string | null, id: number, maxValue?: number | null, minValue?: number | null, name: string, order: number, previewValue?: number | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type CreateSelectTemplateVariableMutationVariables = Exact<{
+  input: CreateSelectCreateTemplateVariableInput;
+}>;
+
+
+export type CreateSelectTemplateVariableMutation = { __typename?: 'Mutation', createSelectTemplateVariable: { __typename?: 'SelectTemplateVariable', createdAt: any, description?: string | null, id: number, multiple?: boolean | null, name: string, options?: Array<string> | null, order: number, previewValue?: string | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type CreateTextTemplateVariableMutationVariables = Exact<{
+  input: CreateTextCreateTemplateVariableInput;
+}>;
+
+
+export type CreateTextTemplateVariableMutation = { __typename?: 'Mutation', createTextTemplateVariable: { __typename?: 'TextTemplateVariable', createdAt: any, description?: string | null, id: number, maxLength?: number | null, minLength?: number | null, name: string, order: number, pattern?: string | null, previewValue?: string | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type DeleteTemplateVariableMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTemplateVariableMutation = { __typename?: 'Mutation', deleteTemplateVariable: never };
+
+export type UpdateDateTemplateVariableMutationVariables = Exact<{
+  input: UpdateDateCreateTemplateVariableInput;
+}>;
+
+
+export type UpdateDateTemplateVariableMutation = { __typename?: 'Mutation', updateDateTemplateVariable: { __typename?: 'DateTemplateVariable', createdAt: any, description?: string | null, format?: string | null, id: number, maxDate?: any | null, minDate?: any | null, name: string, order: number, previewValue?: any | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type UpdateNumberTemplateVariableMutationVariables = Exact<{
+  input: UpdateNumberCreateTemplateVariableInput;
+}>;
+
+
+export type UpdateNumberTemplateVariableMutation = { __typename?: 'Mutation', updateNumberTemplateVariable: { __typename?: 'NumberTemplateVariable', createdAt: any, decimalPlaces?: number | null, description?: string | null, id: number, maxValue?: number | null, minValue?: number | null, name: string, order: number, previewValue?: number | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type UpdateSelectTemplateVariableMutationVariables = Exact<{
+  input: UpdateSelectCreateTemplateVariableInput;
+}>;
+
+
+export type UpdateSelectTemplateVariableMutation = { __typename?: 'Mutation', updateSelectTemplateVariable: { __typename?: 'SelectTemplateVariable', createdAt: any, description?: string | null, id: number, multiple?: boolean | null, name: string, options?: Array<string> | null, order: number, previewValue?: string | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
+
+export type UpdateTextTemplateVariableMutationVariables = Exact<{
+  input: UpdateTextCreateTemplateVariableInput;
+}>;
+
+
+export type UpdateTextTemplateVariableMutation = { __typename?: 'Mutation', updateTextTemplateVariable: { __typename?: 'TextTemplateVariable', createdAt: any, description?: string | null, id: number, maxLength?: number | null, minLength?: number | null, name: string, order: number, pattern?: string | null, previewValue?: string | null, required: boolean, type: TemplateVariableType, updatedAt: any, template?: { __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, category: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any, childCategories: Array<{ __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any }>, parentCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } | null }> } | null } | null, templates: Array<{ __typename?: 'Template', createdAt: any, description?: string | null, id: number, imageUrl?: string | null, name: string, order: number, updatedAt: any }> } }> }> } | null }> }> }, preSuspensionCategory?: { __typename?: 'TemplateCategory', categorySpecialType?: CategorySpecialType | null, createdAt: any, description?: string | null, id: number, name: string, order?: number | null, updatedAt: any } | null } | null } };
 
 
 export const PlaceholderDocument = gql`
@@ -2156,3 +2444,1770 @@ export type TemplateCategoryQueryResult = Apollo.QueryResult<TemplateCategoryQue
 export function refetchTemplateCategoryQuery(variables: TemplateCategoryQueryVariables) {
       return { query: TemplateCategoryDocument, variables: variables }
     }
+export const CreateDateTemplateVariableDocument = gql`
+    mutation createDateTemplateVariable($input: CreateDateCreateTemplateVariableInput!) {
+  createDateTemplateVariable(input: $input) {
+    createdAt
+    description
+    format
+    id
+    maxDate
+    minDate
+    name
+    order
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type CreateDateTemplateVariableMutationFn = Apollo.MutationFunction<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateDateTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateDateTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDateTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDateTemplateVariableMutation, { data, loading, error }] = useCreateDateTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateDateTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>(CreateDateTemplateVariableDocument, options);
+      }
+export type CreateDateTemplateVariableMutationHookResult = ReturnType<typeof useCreateDateTemplateVariableMutation>;
+export type CreateDateTemplateVariableMutationResult = Apollo.MutationResult<CreateDateTemplateVariableMutation>;
+export type CreateDateTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>;
+export const CreateNumberTemplateVariableDocument = gql`
+    mutation createNumberTemplateVariable($input: CreateNumberCreateTemplateVariableInput!) {
+  createNumberTemplateVariable(input: $input) {
+    createdAt
+    decimalPlaces
+    description
+    id
+    maxValue
+    minValue
+    name
+    order
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type CreateNumberTemplateVariableMutationFn = Apollo.MutationFunction<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateNumberTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateNumberTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateNumberTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createNumberTemplateVariableMutation, { data, loading, error }] = useCreateNumberTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateNumberTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>(CreateNumberTemplateVariableDocument, options);
+      }
+export type CreateNumberTemplateVariableMutationHookResult = ReturnType<typeof useCreateNumberTemplateVariableMutation>;
+export type CreateNumberTemplateVariableMutationResult = Apollo.MutationResult<CreateNumberTemplateVariableMutation>;
+export type CreateNumberTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>;
+export const CreateSelectTemplateVariableDocument = gql`
+    mutation createSelectTemplateVariable($input: CreateSelectCreateTemplateVariableInput!) {
+  createSelectTemplateVariable(input: $input) {
+    createdAt
+    description
+    id
+    multiple
+    name
+    options
+    order
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type CreateSelectTemplateVariableMutationFn = Apollo.MutationFunction<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateSelectTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateSelectTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSelectTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSelectTemplateVariableMutation, { data, loading, error }] = useCreateSelectTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSelectTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>(CreateSelectTemplateVariableDocument, options);
+      }
+export type CreateSelectTemplateVariableMutationHookResult = ReturnType<typeof useCreateSelectTemplateVariableMutation>;
+export type CreateSelectTemplateVariableMutationResult = Apollo.MutationResult<CreateSelectTemplateVariableMutation>;
+export type CreateSelectTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>;
+export const CreateTextTemplateVariableDocument = gql`
+    mutation createTextTemplateVariable($input: CreateTextCreateTemplateVariableInput!) {
+  createTextTemplateVariable(input: $input) {
+    createdAt
+    description
+    id
+    maxLength
+    minLength
+    name
+    order
+    pattern
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type CreateTextTemplateVariableMutationFn = Apollo.MutationFunction<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateTextTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateTextTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTextTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTextTemplateVariableMutation, { data, loading, error }] = useCreateTextTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTextTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>(CreateTextTemplateVariableDocument, options);
+      }
+export type CreateTextTemplateVariableMutationHookResult = ReturnType<typeof useCreateTextTemplateVariableMutation>;
+export type CreateTextTemplateVariableMutationResult = Apollo.MutationResult<CreateTextTemplateVariableMutation>;
+export type CreateTextTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>;
+export const DeleteTemplateVariableDocument = gql`
+    mutation deleteTemplateVariable($id: Int!) {
+  deleteTemplateVariable(id: $id) {
+    createdAt
+    description
+    id
+    name
+    order
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type DeleteTemplateVariableMutationFn = Apollo.MutationFunction<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>;
+
+/**
+ * __useDeleteTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useDeleteTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTemplateVariableMutation, { data, loading, error }] = useDeleteTemplateVariableMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>(DeleteTemplateVariableDocument, options);
+      }
+export type DeleteTemplateVariableMutationHookResult = ReturnType<typeof useDeleteTemplateVariableMutation>;
+export type DeleteTemplateVariableMutationResult = Apollo.MutationResult<DeleteTemplateVariableMutation>;
+export type DeleteTemplateVariableMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>;
+export const UpdateDateTemplateVariableDocument = gql`
+    mutation updateDateTemplateVariable($input: UpdateDateCreateTemplateVariableInput!) {
+  updateDateTemplateVariable(input: $input) {
+    createdAt
+    description
+    format
+    id
+    maxDate
+    minDate
+    name
+    order
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type UpdateDateTemplateVariableMutationFn = Apollo.MutationFunction<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateDateTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateDateTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDateTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDateTemplateVariableMutation, { data, loading, error }] = useUpdateDateTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateDateTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>(UpdateDateTemplateVariableDocument, options);
+      }
+export type UpdateDateTemplateVariableMutationHookResult = ReturnType<typeof useUpdateDateTemplateVariableMutation>;
+export type UpdateDateTemplateVariableMutationResult = Apollo.MutationResult<UpdateDateTemplateVariableMutation>;
+export type UpdateDateTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>;
+export const UpdateNumberTemplateVariableDocument = gql`
+    mutation updateNumberTemplateVariable($input: UpdateNumberCreateTemplateVariableInput!) {
+  updateNumberTemplateVariable(input: $input) {
+    createdAt
+    decimalPlaces
+    description
+    id
+    maxValue
+    minValue
+    name
+    order
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type UpdateNumberTemplateVariableMutationFn = Apollo.MutationFunction<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateNumberTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateNumberTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateNumberTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateNumberTemplateVariableMutation, { data, loading, error }] = useUpdateNumberTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateNumberTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>(UpdateNumberTemplateVariableDocument, options);
+      }
+export type UpdateNumberTemplateVariableMutationHookResult = ReturnType<typeof useUpdateNumberTemplateVariableMutation>;
+export type UpdateNumberTemplateVariableMutationResult = Apollo.MutationResult<UpdateNumberTemplateVariableMutation>;
+export type UpdateNumberTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>;
+export const UpdateSelectTemplateVariableDocument = gql`
+    mutation updateSelectTemplateVariable($input: UpdateSelectCreateTemplateVariableInput!) {
+  updateSelectTemplateVariable(input: $input) {
+    createdAt
+    description
+    id
+    multiple
+    name
+    options
+    order
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type UpdateSelectTemplateVariableMutationFn = Apollo.MutationFunction<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateSelectTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateSelectTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSelectTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSelectTemplateVariableMutation, { data, loading, error }] = useUpdateSelectTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSelectTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>(UpdateSelectTemplateVariableDocument, options);
+      }
+export type UpdateSelectTemplateVariableMutationHookResult = ReturnType<typeof useUpdateSelectTemplateVariableMutation>;
+export type UpdateSelectTemplateVariableMutationResult = Apollo.MutationResult<UpdateSelectTemplateVariableMutation>;
+export type UpdateSelectTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>;
+export const UpdateTextTemplateVariableDocument = gql`
+    mutation updateTextTemplateVariable($input: UpdateTextCreateTemplateVariableInput!) {
+  updateTextTemplateVariable(input: $input) {
+    createdAt
+    description
+    id
+    maxLength
+    minLength
+    name
+    order
+    pattern
+    previewValue
+    required
+    template {
+      category {
+        categorySpecialType
+        childCategories {
+          categorySpecialType
+          childCategories {
+            categorySpecialType
+            createdAt
+            description
+            id
+            name
+            order
+            parentCategory {
+              categorySpecialType
+              childCategories {
+                categorySpecialType
+                createdAt
+                description
+                id
+                name
+                order
+                templates {
+                  category {
+                    categorySpecialType
+                    createdAt
+                    description
+                    id
+                    name
+                    order
+                    parentCategory {
+                      categorySpecialType
+                      createdAt
+                      description
+                      id
+                      name
+                      order
+                      parentCategory {
+                        categorySpecialType
+                        createdAt
+                        description
+                        id
+                        name
+                        order
+                        templates {
+                          createdAt
+                          description
+                          id
+                          imageUrl
+                          name
+                          order
+                          preSuspensionCategory {
+                            categorySpecialType
+                            childCategories {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            createdAt
+                            description
+                            id
+                            name
+                            order
+                            parentCategory {
+                              categorySpecialType
+                              createdAt
+                              description
+                              id
+                              name
+                              order
+                              updatedAt
+                            }
+                            templates {
+                              createdAt
+                              description
+                              id
+                              imageUrl
+                              name
+                              order
+                              updatedAt
+                            }
+                            updatedAt
+                          }
+                          updatedAt
+                        }
+                        updatedAt
+                      }
+                      updatedAt
+                    }
+                    templates {
+                      createdAt
+                      description
+                      id
+                      imageUrl
+                      name
+                      order
+                      updatedAt
+                    }
+                    updatedAt
+                  }
+                  createdAt
+                  description
+                  id
+                  imageUrl
+                  name
+                  order
+                  updatedAt
+                }
+                updatedAt
+              }
+              createdAt
+              description
+              id
+              name
+              order
+              updatedAt
+            }
+            updatedAt
+          }
+          createdAt
+          description
+          id
+          name
+          order
+          updatedAt
+        }
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      createdAt
+      description
+      id
+      imageUrl
+      name
+      order
+      preSuspensionCategory {
+        categorySpecialType
+        createdAt
+        description
+        id
+        name
+        order
+        updatedAt
+      }
+      updatedAt
+    }
+    type
+    updatedAt
+  }
+}
+    `;
+export type UpdateTextTemplateVariableMutationFn = Apollo.MutationFunction<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateTextTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateTextTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTextTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTextTemplateVariableMutation, { data, loading, error }] = useUpdateTextTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTextTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>(UpdateTextTemplateVariableDocument, options);
+      }
+export type UpdateTextTemplateVariableMutationHookResult = ReturnType<typeof useUpdateTextTemplateVariableMutation>;
+export type UpdateTextTemplateVariableMutationResult = Apollo.MutationResult<UpdateTextTemplateVariableMutation>;
+export type UpdateTextTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>;

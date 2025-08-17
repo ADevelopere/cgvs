@@ -27,6 +27,7 @@ import schema.dataloaders.TemplateDataLoader
 import schema.mutation.StudentMutation
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
+import schema.mutation.TemplateVariableMutation
 import schema.query.StudentQuery
 import schema.query.TemplateCategoryQuery
 import schema.query.TemplateConfigQuery
@@ -46,7 +47,7 @@ fun Application.graphQLModule() {
 
     install(GraphQL) {
         schema {
-            packages = listOf("schema/type", "schema", "com.google.i18n.phonenumbers")
+            packages = listOf("schema", "com.google.i18n.phonenumbers")
             queries = listOf(
                 AuthQuery(),
                 UserQuery(),
@@ -61,7 +62,7 @@ fun Application.graphQLModule() {
                 AuthMutation(),
                 TemplateCategoryMutation(),
                 TemplateMutation(),
-
+                TemplateVariableMutation(),
                 StudentMutation()
             )
             hooks = customSchemaGeneratorHooks

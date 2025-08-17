@@ -271,6 +271,38 @@ enum CountryCode {
   ZW
 }
 
+input CreateDateCreateTemplateVariableInput {
+  description: String
+  format: String
+  maxDate: LocalDate
+  minDate: LocalDate
+  name: String!
+  previewValue: LocalDate
+  required: Boolean!
+  templateId: Int!
+}
+
+input CreateNumberCreateTemplateVariableInput {
+  decimalPlaces: Int
+  description: String
+  maxValue: Float
+  minValue: Float
+  name: String!
+  previewValue: Float
+  required: Boolean!
+  templateId: Int!
+}
+
+input CreateSelectCreateTemplateVariableInput {
+  description: String
+  multiple: Boolean!
+  name: String!
+  options: [String!]!
+  previewValue: String
+  required: Boolean!
+  templateId: Int!
+}
+
 input CreateStudentInput {
   dateOfBirth: LocalDate
   email: Email
@@ -290,6 +322,33 @@ input CreateTemplateInput {
   categoryId: Int!
   description: String
   name: String!
+}
+
+input CreateTextCreateTemplateVariableInput {
+  description: String
+  maxLength: Int
+  minLength: Int
+  name: String!
+  pattern: String
+  previewValue: String
+  required: Boolean!
+  templateId: Int!
+}
+
+type DateTemplateVariable {
+  createdAt: LocalDateTime!
+  description: String
+  format: String
+  id: Int!
+  maxDate: LocalDate
+  minDate: LocalDate
+  name: String!
+  order: Int!
+  previewValue: LocalDate
+  required: Boolean!
+  template: Template
+  type: TemplateVariableType!
+  updatedAt: LocalDateTime!
 }
 
 """A type representing a validated email address"""
@@ -317,12 +376,17 @@ type LogoutResponse {
 }
 
 type Mutation {
+  createDateTemplateVariable(input: CreateDateCreateTemplateVariableInput!): DateTemplateVariable!
+  createNumberTemplateVariable(input: CreateNumberCreateTemplateVariableInput!): NumberTemplateVariable!
+  createSelectTemplateVariable(input: CreateSelectCreateTemplateVariableInput!): SelectTemplateVariable!
   createStudent(input: CreateStudentInput!): Student!
   createTemplate(input: CreateTemplateInput!): Template!
   createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
+  createTextTemplateVariable(input: CreateTextCreateTemplateVariableInput!): TextTemplateVariable!
   deleteStudent(id: Int!): Student!
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory!
+  deleteTemplateVariable(id: Int!): TemplateVariable!
 
   """Login user with email and password"""
   login(input: LoginInput!): AuthPayload
@@ -334,9 +398,29 @@ type Mutation {
   register(input: RegisterInput!): AuthPayload
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
+  updateDateTemplateVariable(input: UpdateDateCreateTemplateVariableInput!): DateTemplateVariable!
+  updateNumberTemplateVariable(input: UpdateNumberCreateTemplateVariableInput!): NumberTemplateVariable!
+  updateSelectTemplateVariable(input: UpdateSelectCreateTemplateVariableInput!): SelectTemplateVariable!
   updateStudent(input: UpdateStudentOptionalFieldsInput!): Student!
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
+  updateTextTemplateVariable(input: UpdateTextCreateTemplateVariableInput!): TextTemplateVariable!
+}
+
+type NumberTemplateVariable {
+  createdAt: LocalDateTime!
+  decimalPlaces: Int
+  description: String
+  id: Int!
+  maxValue: Float
+  minValue: Float
+  name: String!
+  order: Int!
+  previewValue: Float
+  required: Boolean!
+  template: Template
+  type: TemplateVariableType!
+  updatedAt: LocalDateTime!
 }
 
 input OrderStudentsByClauseInput {
@@ -416,6 +500,21 @@ input RegisterInput {
   email: Email!
   name: String!
   password: String!
+}
+
+type SelectTemplateVariable {
+  createdAt: LocalDateTime!
+  description: String
+  id: Int!
+  multiple: Boolean
+  name: String!
+  options: [String!]
+  order: Int!
+  previewValue: String
+  required: Boolean!
+  template: Template
+  type: TemplateVariableType!
+  updatedAt: LocalDateTime!
 }
 
 enum SortOrder {
@@ -507,6 +606,73 @@ type TemplateConfig {
   maxBackgroundSize: Int!
 }
 
+interface TemplateVariable {
+  createdAt: LocalDateTime!
+  description: String
+  id: Int!
+  name: String!
+  order: Int!
+  required: Boolean!
+  template: Template
+  type: TemplateVariableType!
+  updatedAt: LocalDateTime!
+}
+
+enum TemplateVariableType {
+  DATE
+  NUMBER
+  SELECT
+  TEXT
+}
+
+type TextTemplateVariable {
+  createdAt: LocalDateTime!
+  description: String
+  id: Int!
+  maxLength: Int
+  minLength: Int
+  name: String!
+  order: Int!
+  pattern: String
+  previewValue: String
+  required: Boolean!
+  template: Template
+  type: TemplateVariableType!
+  updatedAt: LocalDateTime!
+}
+
+input UpdateDateCreateTemplateVariableInput {
+  description: String
+  format: String
+  id: Int!
+  maxDate: LocalDate
+  minDate: LocalDate
+  name: String!
+  previewValue: LocalDate
+  required: Boolean!
+}
+
+input UpdateNumberCreateTemplateVariableInput {
+  decimalPlaces: Int
+  description: String
+  id: Int!
+  maxValue: Float
+  minValue: Float
+  name: String!
+  previewValue: Float
+  required: Boolean!
+}
+
+input UpdateSelectCreateTemplateVariableInput {
+  description: String
+  id: Int!
+  multiple: Boolean!
+  name: String!
+  options: [String!]!
+  previewValue: String
+  required: Boolean!
+}
+
 input UpdateStudentOptionalFieldsInput {
   dateOfBirth: LocalDate
   email: Email
@@ -529,6 +695,17 @@ input UpdateTemplateInput {
   description: String
   id: Int!
   name: String
+}
+
+input UpdateTextCreateTemplateVariableInput {
+  description: String
+  id: Int!
+  maxLength: Int
+  minLength: Int
+  name: String!
+  pattern: String
+  previewValue: String
+  required: Boolean!
 }
 
 type User {
