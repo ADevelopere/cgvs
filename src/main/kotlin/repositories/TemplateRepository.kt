@@ -66,6 +66,12 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
             .singleOrNull()
     }
 
+    suspend fun exists(id: Int): Boolean = dbQuery {
+        Templates.selectAll()
+            .where { Templates.id eq id }
+            .count() > 0
+    }
+
     suspend fun findAll(): List<Template> = dbQuery {
         Templates.selectAll()
             .map { rowToTemplate(it) }
