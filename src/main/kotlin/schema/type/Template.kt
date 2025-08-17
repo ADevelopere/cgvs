@@ -52,11 +52,6 @@ data class UpdateTemplateInput(
     val categoryId: Int
 )
 
-data class ReorderTemplateInput(
-    val id: Int,
-    val order: Int
-)
-
 data class PaginatedTemplatesResponse(
     val data: List<Template>,
     val paginationInfo: PaginationInfo? = null

@@ -5,6 +5,7 @@ import tables.Gender
 import tables.Nationality
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import schema.directive.PaginationInfo
 
 @Serializable
 data class Student(
@@ -35,4 +36,9 @@ data class UpdateStudentInput(
     val dateOfBirth: String? = null, // ISO date string
     val gender: String? = null,
     val nationality: String? = null
+)
+
+data class PaginatedStudentResponse(
+    val data: List<Student>,
+    val paginationInfo: PaginationInfo? = null
 )
