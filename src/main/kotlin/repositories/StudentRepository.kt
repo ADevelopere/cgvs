@@ -1,24 +1,17 @@
 package repositories
 
-import schema.type.Student
-import tables.Students
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.v1.jdbc.Database
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import schema.type.Email
-import schema.type.Gender
-import schema.type.Nationality
-import schema.type.PhoneNumber
+import schema.type.*
+import tables.Students
 
 class StudentRepository(private val database: Database) {
 
@@ -50,32 +43,6 @@ class StudentRepository(private val database: Database) {
             .singleOrNull()
     }
 
-    suspend fun findByEmail(email: String): Student? = dbQuery {
-        Students.selectAll()
-            .where { Students.email eq email }
-            .map { rowToStudent(it) }
-            .singleOrNull()
-    }
-
-    suspend fun findActive(): List<Student> = dbQuery {
-        Students.selectAll()
-            .where { Students.deletedAt.isNull() }
-            .map { rowToStudent(it) }
-    }
-
-    suspend fun findByGender(gender: Gender): List<Student> = dbQuery {
-        Students.selectAll()
-            .where { Students.gender eq gender }
-            .map { rowToStudent(it) }
-    }
-
-    suspend fun findByNationality(nationality: Nationality): List<Student> = dbQuery {
-        Students.selectAll()
-            .where { Students.nationality eq nationality }
-            .map { rowToStudent(it) }
-    }
-
-
     suspend fun findAll(): List<Student> = dbQuery {
         Students.selectAll()
             .map { rowToStudent(it) }
@@ -83,20 +50,124 @@ class StudentRepository(private val database: Database) {
 
 
     /**
-     * Fetches students with pagination (limit/offset)
-     */
-    suspend fun students(limit: Int, offset: Int): List<Student> = dbQuery {
-        Students.selectAll()
-            .limit(limit)
-            .offset(offset.toLong())
-            .map { rowToStudent(it) }
-    }
-
-    /**
      * Returns the total count of students
      */
-    suspend fun countAll(): Int = dbQuery {
-        Students.selectAll().count().toInt()
+    suspend fun students(
+        paginationArgs: PaginationArgs? = null,
+        orderBy: List<OrderStudentsByClause>? = null,
+        sortArgs: StudentSortArgs? = null
+    ): PaginatedStudentResponse = dbQuery {
+        var query = Students.selectAll()
+
+        // Filtering (StudentSortArgs)
+        sortArgs?.let { args ->
+            // Name filters
+            args.name?.let { query = query.andWhere { Students.name like "%$it%" } }
+            args.nameNotContains?.let { query = query.andWhere { Students.name notLike "%$it%" } }
+            args.nameEquals?.let { query = query.andWhere { Students.name eq it } }
+            args.nameNotEquals?.let { query = query.andWhere { Students.name neq it } }
+            args.nameStartsWith?.let { query = query.andWhere { Students.name like "$it%" } }
+            args.nameEndsWith?.let { query = query.andWhere { Students.name like "%$it" } }
+            args.nameIsEmpty?.let { if (it) query = query.andWhere { Students.name eq "" } }
+            args.nameIsNotEmpty?.let { if (it) query = query.andWhere { Students.name neq "" } }
+
+            // Email filters
+            args.email?.let { query = query.andWhere { Students.email like "%$it%" } }
+            args.emailNotContains?.let { query = query.andWhere { Students.email notLike "%$it%" } }
+            args.emailEquals?.let { query = query.andWhere { Students.email eq it.value } }
+            args.emailNotEquals?.let { query = query.andWhere { Students.email neq it } }
+            args.emailStartsWith?.let { query = query.andWhere { Students.email like "$it%" } }
+            args.emailEndsWith?.let { query = query.andWhere { Students.email like "%$it" } }
+            args.emailIsEmpty?.let { if (it) query = query.andWhere { Students.email.isNull() } }
+            args.emailIsNotEmpty?.let { if (it) query = query.andWhere { Students.email.isNotNull() } }
+
+            // Phone number filter
+            args.phoneNumber?.let { query = query.andWhere { Students.phoneNumber eq it.number } }
+
+            // Gender filter
+            args.gender?.let { query = query.andWhere { Students.gender eq it } }
+
+            // Nationality filter
+            args.nationality?.let { query = query.andWhere { Students.nationality eq it } }
+
+            // Created at filters
+            args.createdAt?.let { query = query.andWhere { Students.createdAt eq it } }
+            args.createdAtNot?.let { query = query.andWhere { Students.createdAt neq it } }
+            args.createdAtFrom?.let { query = query.andWhere { Students.createdAt greaterEq it } }
+            args.createdAtTo?.let { query = query.andWhere { Students.createdAt lessEq it } }
+            args.createdAtAfter?.let { query = query.andWhere { Students.createdAt greater it } }
+            args.createdAtBefore?.let { query = query.andWhere { Students.createdAt less it } }
+            args.createdAtOnOrAfter?.let { query = query.andWhere { Students.createdAt greaterEq it } }
+            args.createdAtOnOrBefore?.let { query = query.andWhere { Students.createdAt lessEq it } }
+            args.createdAtIsEmpty?.let { if (it) query = query.andWhere { Students.createdAt.isNull() } }
+            args.createdAtIsNotEmpty?.let { if (it) query = query.andWhere { Students.createdAt.isNotNull() } }
+
+            // Birthdate filters (dateOfBirth is LocalDate, birthDate fields are LocalDateTime)
+            args.birthDate?.let { query = query.andWhere { Students.dateOfBirth eq it.date } }
+            args.birthDateNot?.let { query = query.andWhere { Students.dateOfBirth neq it.date } }
+            args.birthDateFrom?.let { query = query.andWhere { Students.dateOfBirth greaterEq it.date } }
+            args.birthDateTo?.let { query = query.andWhere { Students.dateOfBirth lessEq it.date } }
+            args.birthDateAfter?.let { query = query.andWhere { Students.dateOfBirth greater it.date } }
+            args.birthDateBefore?.let { query = query.andWhere { Students.dateOfBirth less it.date } }
+            args.birthDateOnOrAfter?.let { query = query.andWhere { Students.dateOfBirth greaterEq it.date } }
+            args.birthDateOnOrBefore?.let { query = query.andWhere { Students.dateOfBirth lessEq it.date } }
+            args.birthDateIsEmpty?.let { if (it) query = query.andWhere { Students.dateOfBirth.isNull() } }
+            args.birthDateIsNotEmpty?.let { if (it) query = query.andWhere { Students.dateOfBirth.isNotNull() } }
+        }
+
+        // Ordering (OrderStudentsByClause)
+        orderBy?.forEach { clause ->
+            val sortOrder = when (clause.order) {
+                SortOrder.ASC -> org.jetbrains.exposed.v1.core.SortOrder.ASC
+                SortOrder.DESC -> org.jetbrains.exposed.v1.core.SortOrder.DESC
+            }
+            query = when (clause.column) {
+                OrderStudentsByColumn.ID -> query.orderBy(Students.id, sortOrder)
+                OrderStudentsByColumn.NAME -> query.orderBy(Students.name, sortOrder)
+                OrderStudentsByColumn.EMAIL -> query.orderBy(Students.email, sortOrder)
+                OrderStudentsByColumn.DATE_OF_BIRTH -> query.orderBy(Students.dateOfBirth, sortOrder)
+
+                OrderStudentsByColumn.GENDER -> query.orderBy(Students.gender, sortOrder)
+                OrderStudentsByColumn.CREATED_AT -> query.orderBy(Students.createdAt, sortOrder)
+                OrderStudentsByColumn.UPDATED_AT -> query.orderBy(Students.updatedAt, sortOrder)
+            }
+        }
+
+        val total = runBlocking {
+            countAll().toInt()
+        }
+
+        val perPage = minOf(
+            paginationArgs?.first ?: paginationArgs?.defaultCount ?: PaginationArgs.DEFAULT_COUNT,
+            paginationArgs?.maxCount ?: PaginationArgs.MAX_COUNT
+        )
+        val currentPage = paginationArgs?.page ?: 1
+        val offset = paginationArgs?.skip ?: ((currentPage - 1) * perPage)
+        val lastPage = if (total > 0) ((total - 1) / perPage) + 1 else 1
+        val hasMorePages = currentPage < lastPage
+
+        query = query.limit(perPage).offset(offset.toLong())
+
+        val items = query.map { rowToStudent(it) }
+        val paginationInfo = PaginationInfo(
+            count = items.size,
+            currentPage = currentPage,
+            firstItem = if (items.isNotEmpty()) offset + 1 else null,
+            hasMorePages = hasMorePages,
+            lastItem = if (items.isNotEmpty()) offset + items.size else null,
+            lastPage = lastPage,
+            perPage = perPage,
+            total = total
+        )
+
+        PaginatedStudentResponse(
+            data = items,
+            paginationInfo = paginationInfo
+        )
+    }
+
+    suspend fun countAll(): Long = dbQuery {
+        Students.selectAll().count()
     }
 
     suspend fun update(id: Int, student: Student): Student? {
@@ -116,27 +187,6 @@ class StudentRepository(private val database: Database) {
         } else {
             null
         }
-    }
-
-    suspend fun softDelete(id: Int): Boolean {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-        val updated = dbQuery {
-            Students.update({ Students.id eq id }) {
-                it[deletedAt] = now
-                it[updatedAt] = now
-            }
-        }
-        return updated > 0
-    }
-
-    suspend fun restore(id: Int): Boolean {
-        val updated = dbQuery {
-            Students.update({ Students.id eq id }) {
-                it[deletedAt] = null
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-            }
-        }
-        return updated > 0
     }
 
     suspend fun delete(id: Int): Boolean = dbQuery {

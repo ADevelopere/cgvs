@@ -59,10 +59,10 @@ object PaginationUtils {
         repository: repositories.PaginatableRepository<T>,
         paginationArgs: PaginationArgs?,
     ): PaginationResult<T> {
-        val total = repository.countAll()
+        val total = repository.countAll().toInt()
         val perPage = minOf(
-            paginationArgs?.first ?: paginationArgs?.defaultCount ?: PaginationArgs.DefaultCount,
-            paginationArgs?.maxCount ?: PaginationArgs.MaxCount
+            paginationArgs?.first ?: paginationArgs?.defaultCount ?: PaginationArgs.DEFAULT_COUNT,
+            paginationArgs?.maxCount ?: PaginationArgs.MAX_COUNT
         )
         val currentPage = paginationArgs?.page ?: 1
         val offset = paginationArgs?.skip ?: ((currentPage - 1) * perPage)

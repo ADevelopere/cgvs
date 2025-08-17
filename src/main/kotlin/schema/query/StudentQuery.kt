@@ -18,17 +18,11 @@ class StudentQuery : Query, KoinComponent {
         return service.findById(id)
     }
 
-//    suspend fun students(
-//        paginationArgs: PaginationArgs? = null,
-//        orderBy: List<OrderStudentsByClause>? = null,
-//        sortArgs: StudentSortArgs? = null
-//    ): PaginatedStudentResponse {
-//        // Fetch only the paginated items from database for better performance
-//        val result = service.students(paginationArgs, orderBy, sortArgs)
-//
-//        return PaginatedStudentResponse(
-//            data = result.data,
-//            paginationInfo = result.paginationInfo
-//        )
-//    }
+   suspend fun students(
+       paginationArgs: PaginationArgs? = null,
+       orderBy: List<OrderStudentsByClause>? = null,
+       sortArgs: StudentSortArgs? = null
+   ): PaginatedStudentResponse {
+       return service.students(paginationArgs, orderBy, sortArgs)
+   }
 }

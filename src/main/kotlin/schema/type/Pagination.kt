@@ -12,12 +12,12 @@ data class PaginationArgs(
     val before: String? = null,
     val last: Int? = null,
     val page: Int? = null,
-    val defaultCount: Int = 10,
-    val maxCount: Int = 100
+    val defaultCount: Int? = 10,
+    val maxCount: Int? = 100
 ){
     companion object{
-        const val DefaultCount = 10
-        const val MaxCount = 100
+        const val DEFAULT_COUNT = 10
+        const val MAX_COUNT = 100
     }
 }
 

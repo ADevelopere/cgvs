@@ -3,8 +3,8 @@ package services
 import schema.type.CreateStudentInput
 import schema.type.Student
 import repositories.StudentRepository
-import schema.pagination.PaginationResult
 import schema.type.OrderStudentsByClause
+import schema.type.PaginatedStudentResponse
 import schema.type.PaginationArgs
 import schema.type.StudentSortArgs
 import schema.type.UpdateStudentInput
@@ -16,13 +16,13 @@ class StudentService(
         return repository.findById(id)
     }
 
-//    suspend fun students(
-//        paginationArgs: PaginationArgs? = null,
-//        orderBy: List<OrderStudentsByClause>? = null,
-//        sortArgs: StudentSortArgs? = null
-//    ): PaginationResult<Student> {
-//
-//    }
+    suspend fun students(
+        paginationArgs: PaginationArgs? = null,
+        orderBy: List<OrderStudentsByClause>? = null,
+        sortArgs: StudentSortArgs? = null
+    ): PaginatedStudentResponse {
+        return repository.students(paginationArgs, orderBy, sortArgs)
+    }
 
     suspend fun create(input: CreateStudentInput): Student {
         // Validate name length
