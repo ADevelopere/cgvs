@@ -3,6 +3,7 @@ package schema.type
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import schema.directive.PaginationInfo
+import util.now
 
 data class Student(
     val id: Int = 0,
@@ -12,8 +13,8 @@ data class Student(
     val dateOfBirth: LocalDate? = null,
     val gender: Gender? = null,
     val nationality: Nationality? = null,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val createdAt: LocalDateTime = now(),
+    val updatedAt: LocalDateTime = now()
 )
 
 data class CreateStudentInput(
@@ -23,18 +24,40 @@ data class CreateStudentInput(
     val dateOfBirth: LocalDate? = null, // ISO date string
     val gender: Gender? = null,
     val nationality: Nationality? = null
-)
+) {
+    fun toStudent() = Student(
+        name = name,
+        email = email,
+        phoneNumber = phoneNumber,
+        dateOfBirth = dateOfBirth,
+        gender = gender,
+        nationality = nationality
+    )
+
+}
 
 data class UpdateStudentInput(
-    val name: String? = null,
+    val id: Int,
+    val name: String,
     val email: Email? = null,
     val phoneNumber: PhoneNumber? = null,
-    val dateOfBirth: String? = null, // ISO date string
-    val gender: String? = null,
-    val nationality: String? = null
-)
+    val dateOfBirth: LocalDate? = null, // ISO date string
+    val gender: Gender? = null,
+    val nationality: Nationality? = null
+) {
+    fun toStudent() = Student(
+        name = name,
+        email = email,
+        phoneNumber = phoneNumber,
+        dateOfBirth = dateOfBirth,
+        gender = gender,
+        nationality = nationality
+    )
+
+}
 
 data class PaginatedStudentResponse(
     val data: List<Student>,
     val paginationInfo: PaginationInfo? = null
 )
+

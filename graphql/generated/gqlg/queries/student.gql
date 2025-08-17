@@ -1,0 +1,13 @@
+query student($id: Int!){
+    student(id: $id){
+        createdAt
+        dateOfBirth
+        email
+        gender
+        id
+        name
+        nationality
+        phoneNumber
+        updatedAt
+    }
+}
