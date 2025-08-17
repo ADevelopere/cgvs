@@ -149,10 +149,10 @@ class TextTemplateVariable(
     order: Int,
     createdAt: LocalDateTime = now(),
     updatedAt: LocalDateTime = now(),
-    val previewValue: String?,
     val minLength: Int? = null,
     val maxLength: Int? = null,
-    val pattern: String? = null
+    val pattern: String? = null,
+    val previewValue: String?,
 ) : TemplateVariable(
     id, templateId, name, description, type, required, order, createdAt, updatedAt
 )
@@ -168,10 +168,10 @@ class NumberTemplateVariable(
     order: Int,
     createdAt: LocalDateTime = now(),
     updatedAt: LocalDateTime = now(),
-    val previewValue: Double?,
     val minValue: Double? = null,
     val maxValue: Double? = null,
-    val decimalPlaces: Int? = null
+    val decimalPlaces: Int? = null,
+    val previewValue: Double?,
 ) : TemplateVariable(
     id, templateId, name, description, type, required, order, createdAt, updatedAt
 )
@@ -188,10 +188,10 @@ class DateTemplateVariable(
     order: Int,
     createdAt: LocalDateTime = now(),
     updatedAt: LocalDateTime = now(),
-    val previewValue: LocalDate?,
     val minDate: LocalDate? = null,
     val maxDate: LocalDate? = null,
-    val format: String? = null
+    val format: String? = null,
+    val previewValue: LocalDate?,
 ) : TemplateVariable(
     id, templateId, name, description, type, required, order, createdAt, updatedAt
 )
@@ -208,9 +208,9 @@ class SelectTemplateVariable(
     order: Int,
     createdAt: LocalDateTime = now(),
     updatedAt: LocalDateTime = now(),
-    val previewValue: String?,
     val options: List<String>? = null,
-    val multiple: Boolean? = null
+    val multiple: Boolean? = null,
+    val previewValue: String?,
 ) : TemplateVariable(
     id, templateId, name, description, type, required, order, createdAt, updatedAt
 )
