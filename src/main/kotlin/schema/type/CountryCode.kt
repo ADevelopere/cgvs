@@ -1,6 +1,6 @@
 package schema.type
 
-enum class Nationality {
+enum class CountryCode {
     SA, PS, YE, SY, EG, KW, QA, OM, BH, LB, JO, IQ, LY, AE, TN, DZ, MA,
     SD, ID, MR, SO, KM, DJ, ER, SS, EH, AD, AF, AG, AI, AL, AM, AO, AQ,
     AR, AS, AT, AU, AW, AX, AZ, BA, BB, BD, BE, BF, BG, BI, BJ, BL, BM,

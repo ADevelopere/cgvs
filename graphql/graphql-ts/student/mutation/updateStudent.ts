@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const UPDATE_STUDENT = gql`
-    mutation updateStudent($input: UpdateStudentInput!){
+    mutation updateStudent($input: UpdateStudentOptionalFieldsInput!){
         updateStudent(input: $input){
             id
             name

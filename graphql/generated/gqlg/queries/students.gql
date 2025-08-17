@@ -1,5 +1,5 @@
-query students($orderBy: [OrderStudentsByClauseInput!], $paginationArgs: PaginationArgsInput, $sortArgs: StudentSortArgsInput){
-    students(orderBy: $orderBy, paginationArgs: $paginationArgs, sortArgs: $sortArgs){
+query students($filterArgs: StudentFilterArgsInput, $orderBy: [OrderStudentsByClauseInput!], $paginationArgs: PaginationArgsInput){
+    students(filterArgs: $filterArgs, orderBy: $orderBy, paginationArgs: $paginationArgs){
         data{
             createdAt
             dateOfBirth

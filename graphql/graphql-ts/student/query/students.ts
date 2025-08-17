@@ -4,12 +4,12 @@ export const STUDENTS = gql`
     query students(
         $orderBy: [OrderStudentsByClauseInput!]
         $paginationArgs: PaginationArgsInput
-        $sortArgs: StudentSortArgsInput
+        $filterArgs: StudentFilterArgsInput
     ) {
         students(
             orderBy: $orderBy
             paginationArgs: $paginationArgs
-            sortArgs: $sortArgs
+            filterArgs: $filterArgs
         ) {
             data {
                 id

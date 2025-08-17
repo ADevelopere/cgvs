@@ -60,15 +60,10 @@ export const useStudentGraphQL = () => {
     return context;
 };
 
-type StudentsQueryVariables = {
-    first?: number;
-    page?: number;
-    orderBy?: Array<Graphql.OrderByClause>;
-};
 
 export const StudentGraphQLProvider: React.FC<{
     children: React.ReactNode;
-    queryVariables?: StudentsQueryVariables;
+    queryVariables?: Graphql.StudentsQueryVariables;
 }> = ({ children, queryVariables }) => {
     // Student queries
     const studentQueryRef = Graphql.useStudentQuery({

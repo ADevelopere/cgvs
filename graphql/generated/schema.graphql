@@ -22,75 +22,7 @@ enum CategorySpecialType {
   Suspension
 }
 
-input CreateStudentInput {
-  dateOfBirth: LocalDate
-  email: Email
-  gender: Gender
-  name: String!
-  nationality: Nationality
-  phoneNumber: PhoneNumber
-}
-
-input CreateTemplateCategoryInput {
-  description: String
-  name: String!
-  parentCategoryId: Int
-}
-
-input CreateTemplateInput {
-  categoryId: Int!
-  description: String
-  name: String!
-}
-
-"""A type representing a validated email address"""
-scalar Email
-
-enum Gender {
-  Female
-  Male
-  Other
-}
-
-"""A type representing a formatted kotlinx.datetime.LocalDate"""
-scalar LocalDate
-
-"""A type representing a formatted kotlinx.datetime.LocalDateTime"""
-scalar LocalDateTime
-
-input LoginInput {
-  email: String!
-  password: String!
-}
-
-type LogoutResponse {
-  message: String!
-}
-
-type Mutation {
-  createStudent(input: CreateStudentInput!): Student!
-  createTemplate(input: CreateTemplateInput!): Template!
-  createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
-  deleteStudent(id: Int!): Student!
-  deleteTemplate(id: Int!): Template
-  deleteTemplateCategory(id: Int!): TemplateCategory!
-
-  """Login user with email and password"""
-  login(input: LoginInput!): AuthPayload
-
-  """Logout current user"""
-  logout: LogoutResponse!
-
-  """Register a new user"""
-  register(input: RegisterInput!): AuthPayload
-  suspendTemplate(id: Int!): Template
-  unsuspendTemplate(id: Int!): Template
-  updateStudent(input: UpdateStudentInput!): Student!
-  updateTemplate(input: UpdateTemplateInput!): Template
-  updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
-}
-
-enum Nationality {
+enum CountryCode {
   AD
   AE
   AF
@@ -339,6 +271,74 @@ enum Nationality {
   ZW
 }
 
+input CreateStudentInput {
+  dateOfBirth: LocalDate
+  email: Email
+  gender: Gender
+  name: String!
+  nationality: CountryCode
+  phoneNumber: PhoneNumber
+}
+
+input CreateTemplateCategoryInput {
+  description: String
+  name: String!
+  parentCategoryId: Int
+}
+
+input CreateTemplateInput {
+  categoryId: Int!
+  description: String
+  name: String!
+}
+
+"""A type representing a validated email address"""
+scalar Email
+
+enum Gender {
+  Female
+  Male
+  Other
+}
+
+"""A type representing a formatted kotlinx.datetime.LocalDate"""
+scalar LocalDate
+
+"""A type representing a formatted kotlinx.datetime.LocalDateTime"""
+scalar LocalDateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type LogoutResponse {
+  message: String!
+}
+
+type Mutation {
+  createStudent(input: CreateStudentInput!): Student!
+  createTemplate(input: CreateTemplateInput!): Template!
+  createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
+  deleteStudent(id: Int!): Student!
+  deleteTemplate(id: Int!): Template
+  deleteTemplateCategory(id: Int!): TemplateCategory!
+
+  """Login user with email and password"""
+  login(input: LoginInput!): AuthPayload
+
+  """Logout current user"""
+  logout: LogoutResponse!
+
+  """Register a new user"""
+  register(input: RegisterInput!): AuthPayload
+  suspendTemplate(id: Int!): Template
+  unsuspendTemplate(id: Int!): Template
+  updateStudent(input: UpdateStudentOptionalFieldsInput!): Student!
+  updateTemplate(input: UpdateTemplateInput!): Template
+  updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
+}
+
 input OrderStudentsByClauseInput {
   column: OrderStudentsByColumn!
   order: SortOrder!
@@ -381,9 +381,9 @@ type PaginationInfo {
   firstItem: Int
   hasMorePages: Boolean!
   lastItem: Int
-  lastPage: Int
+  lastPage: Int!
   perPage: Int!
-  total: Int
+  total: Int!
 }
 
 """A type representing a validated phone number"""
@@ -397,7 +397,7 @@ type Query {
   """Get current authenticated user"""
   me: User
   student(id: Int!): Student
-  students(orderBy: [OrderStudentsByClauseInput!], paginationArgs: PaginationArgsInput, sortArgs: StudentSortArgsInput): PaginatedStudentResponse!
+  students(filterArgs: StudentFilterArgsInput, orderBy: [OrderStudentsByClauseInput!], paginationArgs: PaginationArgsInput): PaginatedStudentResponse!
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]!
@@ -430,12 +430,12 @@ type Student {
   gender: Gender
   id: Int!
   name: String!
-  nationality: Nationality
+  nationality: CountryCode
   phoneNumber: PhoneNumber
   updatedAt: LocalDateTime!
 }
 
-input StudentSortArgsInput {
+input StudentFilterArgsInput {
   birthDate: LocalDateTime
   birthDateAfter: LocalDateTime
   birthDateBefore: LocalDateTime
@@ -473,7 +473,7 @@ input StudentSortArgsInput {
   nameNotContains: String
   nameNotEquals: String
   nameStartsWith: String
-  nationality: Nationality
+  nationality: CountryCode
   phoneNumber: PhoneNumber
 }
 
@@ -507,13 +507,13 @@ type TemplateConfig {
   maxBackgroundSize: Int!
 }
 
-input UpdateStudentInput {
+input UpdateStudentOptionalFieldsInput {
   dateOfBirth: LocalDate
   email: Email
   gender: Gender
   id: Int!
-  name: String!
-  nationality: Nationality
+  name: String
+  nationality: CountryCode
   phoneNumber: PhoneNumber
 }
 

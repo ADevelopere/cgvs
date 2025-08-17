@@ -55,12 +55,12 @@ class StudentRepository(private val database: Database) {
     suspend fun students(
         paginationArgs: PaginationArgs? = null,
         orderBy: List<OrderStudentsByClause>? = null,
-        sortArgs: StudentSortArgs? = null
+        filterArgs: StudentFilterArgs? = null
     ): PaginatedStudentResponse = dbQuery {
         var query = Students.selectAll()
 
         // Filtering (StudentSortArgs)
-        sortArgs?.let { args ->
+        filterArgs?.let { args ->
             // Name filters
             args.name?.let { query = query.andWhere { Students.name like "%$it%" } }
             args.nameNotContains?.let { query = query.andWhere { Students.name notLike "%$it%" } }

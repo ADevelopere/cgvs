@@ -31,129 +31,7 @@ export type CategorySpecialType =
   | 'Main'
   | 'Suspension';
 
-export type CreateStudentInput = {
-  dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
-  email?: InputMaybe<Scalars['Email']['input']>;
-  gender?: InputMaybe<Gender>;
-  name: Scalars['String']['input'];
-  nationality?: InputMaybe<Nationality>;
-  phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
-};
-
-export type CreateTemplateCategoryInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  parentCategoryId?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type CreateTemplateInput = {
-  categoryId: Scalars['Int']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
-export type Gender =
-  | 'Female'
-  | 'Male'
-  | 'Other';
-
-export type LoginInput = {
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-};
-
-export type LogoutResponse = {
-  __typename?: 'LogoutResponse';
-  message: Scalars['String']['output'];
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  createStudent: Student;
-  createTemplate: Template;
-  createTemplateCategory: TemplateCategory;
-  deleteStudent: Student;
-  deleteTemplate?: Maybe<Template>;
-  deleteTemplateCategory: TemplateCategory;
-  /** Login user with email and password */
-  login?: Maybe<AuthPayload>;
-  /** Logout current user */
-  logout: LogoutResponse;
-  /** Register a new user */
-  register?: Maybe<AuthPayload>;
-  suspendTemplate?: Maybe<Template>;
-  unsuspendTemplate?: Maybe<Template>;
-  updateStudent: Student;
-  updateTemplate?: Maybe<Template>;
-  updateTemplateCategory: TemplateCategory;
-};
-
-
-export type MutationCreateStudentArgs = {
-  input: CreateStudentInput;
-};
-
-
-export type MutationCreateTemplateArgs = {
-  input: CreateTemplateInput;
-};
-
-
-export type MutationCreateTemplateCategoryArgs = {
-  input: CreateTemplateCategoryInput;
-};
-
-
-export type MutationDeleteStudentArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type MutationDeleteTemplateArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type MutationDeleteTemplateCategoryArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type MutationLoginArgs = {
-  input: LoginInput;
-};
-
-
-export type MutationRegisterArgs = {
-  input: RegisterInput;
-};
-
-
-export type MutationSuspendTemplateArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type MutationUnsuspendTemplateArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type MutationUpdateStudentArgs = {
-  input: UpdateStudentInput;
-};
-
-
-export type MutationUpdateTemplateArgs = {
-  input: UpdateTemplateInput;
-};
-
-
-export type MutationUpdateTemplateCategoryArgs = {
-  input: UpdateTemplateCategoryInput;
-};
-
-export type Nationality =
+export type CountryCode =
   | 'AD'
   | 'AE'
   | 'AF'
@@ -401,6 +279,128 @@ export type Nationality =
   | 'ZM'
   | 'ZW';
 
+export type CreateStudentInput = {
+  dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
+  email?: InputMaybe<Scalars['Email']['input']>;
+  gender?: InputMaybe<Gender>;
+  name: Scalars['String']['input'];
+  nationality?: InputMaybe<CountryCode>;
+  phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
+};
+
+export type CreateTemplateCategoryInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  parentCategoryId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateTemplateInput = {
+  categoryId: Scalars['Int']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type Gender =
+  | 'Female'
+  | 'Male'
+  | 'Other';
+
+export type LoginInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+export type LogoutResponse = {
+  __typename?: 'LogoutResponse';
+  message: Scalars['String']['output'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createStudent: Student;
+  createTemplate: Template;
+  createTemplateCategory: TemplateCategory;
+  deleteStudent: Student;
+  deleteTemplate?: Maybe<Template>;
+  deleteTemplateCategory: TemplateCategory;
+  /** Login user with email and password */
+  login?: Maybe<AuthPayload>;
+  /** Logout current user */
+  logout: LogoutResponse;
+  /** Register a new user */
+  register?: Maybe<AuthPayload>;
+  suspendTemplate?: Maybe<Template>;
+  unsuspendTemplate?: Maybe<Template>;
+  updateStudent: Student;
+  updateTemplate?: Maybe<Template>;
+  updateTemplateCategory: TemplateCategory;
+};
+
+
+export type MutationCreateStudentArgs = {
+  input: CreateStudentInput;
+};
+
+
+export type MutationCreateTemplateArgs = {
+  input: CreateTemplateInput;
+};
+
+
+export type MutationCreateTemplateCategoryArgs = {
+  input: CreateTemplateCategoryInput;
+};
+
+
+export type MutationDeleteStudentArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteTemplateCategoryArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationLoginArgs = {
+  input: LoginInput;
+};
+
+
+export type MutationRegisterArgs = {
+  input: RegisterInput;
+};
+
+
+export type MutationSuspendTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUnsuspendTemplateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateStudentArgs = {
+  input: UpdateStudentOptionalFieldsInput;
+};
+
+
+export type MutationUpdateTemplateArgs = {
+  input: UpdateTemplateInput;
+};
+
+
+export type MutationUpdateTemplateCategoryArgs = {
+  input: UpdateTemplateCategoryInput;
+};
+
 export type OrderStudentsByClauseInput = {
   column: OrderStudentsByColumn;
   order: SortOrder;
@@ -445,9 +445,9 @@ export type PaginationInfo = {
   firstItem?: Maybe<Scalars['Int']['output']>;
   hasMorePages: Scalars['Boolean']['output'];
   lastItem?: Maybe<Scalars['Int']['output']>;
-  lastPage?: Maybe<Scalars['Int']['output']>;
+  lastPage: Scalars['Int']['output'];
   perPage: Scalars['Int']['output'];
-  total?: Maybe<Scalars['Int']['output']>;
+  total: Scalars['Int']['output'];
 };
 
 export type Query = {
@@ -478,9 +478,9 @@ export type QueryStudentArgs = {
 
 
 export type QueryStudentsArgs = {
+  filterArgs?: InputMaybe<StudentFilterArgsInput>;
   orderBy?: InputMaybe<Array<OrderStudentsByClauseInput>>;
   paginationArgs?: InputMaybe<PaginationArgsInput>;
-  sortArgs?: InputMaybe<StudentSortArgsInput>;
 };
 
 
@@ -521,12 +521,12 @@ export type Student = {
   gender?: Maybe<Gender>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  nationality?: Maybe<Nationality>;
+  nationality?: Maybe<CountryCode>;
   phoneNumber?: Maybe<Scalars['PhoneNumber']['output']>;
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
-export type StudentSortArgsInput = {
+export type StudentFilterArgsInput = {
   birthDate?: InputMaybe<Scalars['LocalDateTime']['input']>;
   birthDateAfter?: InputMaybe<Scalars['LocalDateTime']['input']>;
   birthDateBefore?: InputMaybe<Scalars['LocalDateTime']['input']>;
@@ -564,7 +564,7 @@ export type StudentSortArgsInput = {
   nameNotContains?: InputMaybe<Scalars['String']['input']>;
   nameNotEquals?: InputMaybe<Scalars['String']['input']>;
   nameStartsWith?: InputMaybe<Scalars['String']['input']>;
-  nationality?: InputMaybe<Nationality>;
+  nationality?: InputMaybe<CountryCode>;
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
@@ -601,13 +601,13 @@ export type TemplateConfig = {
   maxBackgroundSize: Scalars['Int']['output'];
 };
 
-export type UpdateStudentInput = {
+export type UpdateStudentOptionalFieldsInput = {
   dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
   email?: InputMaybe<Scalars['Email']['input']>;
   gender?: InputMaybe<Gender>;
   id: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  nationality?: InputMaybe<Nationality>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  nationality?: InputMaybe<CountryCode>;
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
@@ -689,7 +689,7 @@ export type CreateStudentMutationVariables = Exact<{
 }>;
 
 
-export type CreateStudentMutation = { __typename?: 'Mutation', createStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
+export type CreateStudentMutation = { __typename?: 'Mutation', createStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
 
 export type DeleteStudentMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -699,27 +699,27 @@ export type DeleteStudentMutationVariables = Exact<{
 export type DeleteStudentMutation = { __typename?: 'Mutation', deleteStudent: { __typename?: 'Student', id: number, name: string, createdAt: any, updatedAt: any } };
 
 export type UpdateStudentMutationVariables = Exact<{
-  input: UpdateStudentInput;
+  input: UpdateStudentOptionalFieldsInput;
 }>;
 
 
-export type UpdateStudentMutation = { __typename?: 'Mutation', updateStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
+export type UpdateStudentMutation = { __typename?: 'Mutation', updateStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
 
 export type StudentQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } | null };
+export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } | null };
 
 export type StudentsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<OrderStudentsByClauseInput> | OrderStudentsByClauseInput>;
   paginationArgs?: InputMaybe<PaginationArgsInput>;
-  sortArgs?: InputMaybe<StudentSortArgsInput>;
+  filterArgs?: InputMaybe<StudentFilterArgsInput>;
 }>;
 
 
-export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'PaginatedStudentResponse', data: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: Nationality | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage?: number | null, perPage: number, total?: number | null } | null } };
+export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'PaginatedStudentResponse', data: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
 
 export type CreateTemplateMutationVariables = Exact<{
   input: CreateTemplateInput;
@@ -773,7 +773,7 @@ export type TemplatesQueryVariables = Exact<{
 }>;
 
 
-export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage?: number | null, perPage: number, total?: number | null } | null } };
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
@@ -1252,7 +1252,7 @@ export type DeleteStudentMutationHookResult = ReturnType<typeof useDeleteStudent
 export type DeleteStudentMutationResult = Apollo.MutationResult<DeleteStudentMutation>;
 export type DeleteStudentMutationOptions = Apollo.BaseMutationOptions<DeleteStudentMutation, DeleteStudentMutationVariables>;
 export const UpdateStudentDocument = gql`
-    mutation updateStudent($input: UpdateStudentInput!) {
+    mutation updateStudent($input: UpdateStudentOptionalFieldsInput!) {
   updateStudent(input: $input) {
     id
     name
@@ -1344,11 +1344,11 @@ export function refetchStudentQuery(variables: StudentQueryVariables) {
       return { query: StudentDocument, variables: variables }
     }
 export const StudentsDocument = gql`
-    query students($orderBy: [OrderStudentsByClauseInput!], $paginationArgs: PaginationArgsInput, $sortArgs: StudentSortArgsInput) {
+    query students($orderBy: [OrderStudentsByClauseInput!], $paginationArgs: PaginationArgsInput, $filterArgs: StudentFilterArgsInput) {
   students(
     orderBy: $orderBy
     paginationArgs: $paginationArgs
-    sortArgs: $sortArgs
+    filterArgs: $filterArgs
   ) {
     data {
       id
@@ -1389,7 +1389,7 @@ export const StudentsDocument = gql`
  *   variables: {
  *      orderBy: // value for 'orderBy'
  *      paginationArgs: // value for 'paginationArgs'
- *      sortArgs: // value for 'sortArgs'
+ *      filterArgs: // value for 'filterArgs'
  *   },
  * });
  */

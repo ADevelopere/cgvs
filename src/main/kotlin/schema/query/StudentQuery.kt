@@ -7,7 +7,7 @@ import org.koin.core.component.inject
 import schema.type.OrderStudentsByClause
 import schema.type.PaginationArgs
 import schema.type.Student
-import schema.type.StudentSortArgs
+import schema.type.StudentFilterArgs
 import services.StudentService
 import kotlin.getValue
 
@@ -21,8 +21,8 @@ class StudentQuery : Query, KoinComponent {
    suspend fun students(
        paginationArgs: PaginationArgs? = null,
        orderBy: List<OrderStudentsByClause>? = null,
-       sortArgs: StudentSortArgs? = null
+       filterArgs: StudentFilterArgs? = null
    ): PaginatedStudentResponse {
-       return service.students(paginationArgs, orderBy, sortArgs)
+       return service.students(paginationArgs, orderBy, filterArgs)
    }
 }

@@ -11,7 +11,7 @@ data class Student(
     val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: LocalDate? = null,
     val gender: Gender? = null,
-    val nationality: Nationality? = null,
+    val nationality: CountryCode? = null,
     val createdAt: LocalDateTime = now(),
     val updatedAt: LocalDateTime = now()
 )
@@ -22,7 +22,7 @@ data class CreateStudentInput(
     val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: LocalDate? = null, // ISO date string
     val gender: Gender? = null,
-    val nationality: Nationality? = null
+    val nationality: CountryCode? = null
 ) {
     fun toStudent() = Student(
         name = name,
@@ -35,25 +35,15 @@ data class CreateStudentInput(
 
 }
 
-data class UpdateStudentInput(
+data class UpdateStudentOptionalFieldsInput(
     val id: Int,
-    val name: String,
+    val name: String? = null,
     val email: Email? = null,
     val phoneNumber: PhoneNumber? = null,
     val dateOfBirth: LocalDate? = null, // ISO date string
     val gender: Gender? = null,
-    val nationality: Nationality? = null
-) {
-    fun toStudent() = Student(
-        name = name,
-        email = email,
-        phoneNumber = phoneNumber,
-        dateOfBirth = dateOfBirth,
-        gender = gender,
-        nationality = nationality
-    )
-
-}
+    val nationality: CountryCode? = null
+)
 
 data class PaginatedStudentResponse(
     val data: List<Student>,
@@ -63,7 +53,7 @@ data class PaginatedStudentResponse(
 /**
  * Arguments for sorting, filtering, and paginating students in the students query.
  */
-data class StudentSortArgs(
+data class StudentFilterArgs(
     val name: String? = null,
     val nameNotContains: String? = null,
     val nameEquals: String? = null,
@@ -84,7 +74,7 @@ data class StudentSortArgs(
 
     val phoneNumber: PhoneNumber? = null,
     val gender: Gender? = null,
-    val nationality: Nationality? = null,
+    val nationality: CountryCode? = null,
 
     val createdAt: LocalDateTime? = null,
     val createdAtNot: LocalDateTime? = null,
