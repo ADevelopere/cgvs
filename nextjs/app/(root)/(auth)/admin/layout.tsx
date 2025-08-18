@@ -8,7 +8,6 @@ import {
     People as StudentsIcon,
 } from "@mui/icons-material";
 import { HomeIcon } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import DashboardLayout from "@/views/dashboard/layout/DashboardLayout";
 import DashboardEndActions from "@/components/common/DashboardEndActions";
@@ -60,16 +59,6 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
 }: {
     children: React.ReactNode;
 }) => {
-    // const { isAuthenticated, isLoading } = useAuth();
-
-    // if (isLoading) {
-    //     return null; // or a loading spinner
-    // }
-
-    // if (!isAuthenticated) {
-    //     return null;
-    // }
-
     return (
         <NavigationProvider>
             <DashboardLayoutProvider

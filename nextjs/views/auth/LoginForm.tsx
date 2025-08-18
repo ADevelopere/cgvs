@@ -163,7 +163,12 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                 </Alert>
             )}
 
-            <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                method="POST"
+            >
                 <TextField
                     margin="normal"
                     required
@@ -204,30 +209,42 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
                     variant="outlined"
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Lock sx={{ fontSize: 20 }} />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    edge="end"
-                                >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Lock sx={{ fontSize: 20 }} />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        edge="end"
+                                    >
+                                        {showPassword ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                     sx={{ mb: 1 }}
                 />
 
                 <Box
-                    sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}
+                    sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        mb: 2,
+                    }}
                 >
                     <Link href="#" variant="body2" underline="hover">
                         {strings.forgotPassword}
@@ -268,12 +285,16 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                     </Typography>
                 </Divider>
 
-                <Box sx={{ textAlign: "center", mt: 2, 
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 1,
-                 }}>
+                <Box
+                    sx={{
+                        textAlign: "center",
+                        mt: 2,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: 1,
+                    }}
+                >
                     <Typography variant="body2" color="text.secondary">
                         {strings.dontHaveAccountQuestion}
                     </Typography>

@@ -16,6 +16,7 @@ import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
+import Image from "next/image";
 
 interface CardViewProps {
     templates: Template[];
@@ -40,18 +41,19 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
             {templates.map((template) => (
                 <Grid size={{ xs: 16, sm: 6, md: 4 }} key={template.id}>
                     <Card>
-                        <CardMedia
-                            component="img"
-                            image={
-                                template.image_url ||
-                                TEMPLATE_IMAGE_PLACEHOLDER_URL
-                            }
-                            alt={template.name}
-                            sx={{
-                                height: { xs: 140, sm: 170, md: 200 },
-                                objectFit: "cover",
-                            }}
-                        />
+                        <CardMedia>
+                            <Image
+                                src={
+                                    template.imageUrl ||
+                                    TEMPLATE_IMAGE_PLACEHOLDER_URL
+                                }
+                                alt={template.name}
+                                layout="responsive"
+                                width={500} // Adjust width as needed
+                                height={300} // Adjust height as needed
+                                objectFit="cover"
+                            />
+                        </CardMedia>
                         <CardContent>
                             <Typography
                                 gutterBottom
@@ -70,7 +72,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                                 gutterBottom
                             >
                                 {strings.createdLabel}
-                                {formatDate(template.created_at)}
+                                {formatDate(template.createdAt)}
                             </Typography>
                         </CardContent>
                         <CardActions>
@@ -78,7 +80,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                                 size="small"
                                 startIcon={<SettingsIcon />}
                                 onClick={() =>
-                                    manageTemplate(template.id.toString())
+                                    manageTemplate(template.id)
                                 }
                             >
                                 {strings.manage}

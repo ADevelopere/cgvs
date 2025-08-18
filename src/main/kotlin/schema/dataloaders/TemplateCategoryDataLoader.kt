@@ -19,7 +19,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 val TemplateCategoryDataLoader: KotlinDataLoader<Int, TemplateCategory> =
     object : KotlinDataLoader<Int, TemplateCategory>, KoinComponent {
         override val dataLoaderName = "TemplateCategoryDataLoader"
-        private val service: TemplateCategoryService by inject()
+        private val templateCategoryService: TemplateCategoryService by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, TemplateCategory> =
             DataLoaderFactory.newDataLoader(
                 { ids, batchLoaderEnvironment ->
@@ -28,7 +28,7 @@ val TemplateCategoryDataLoader: KotlinDataLoader<Int, TemplateCategory> =
                             ?: CoroutineScope(EmptyCoroutineContext) // 4
 
                     coroutineScope.future { // 5
-                        service.findByIds(ids)
+                        templateCategoryService.findByIds(ids)
                     }
                 },
                 DataLoaderOptions.newOptions()
@@ -40,7 +40,7 @@ val TemplateCategoryDataLoader: KotlinDataLoader<Int, TemplateCategory> =
 val TemplateCategoryChildrenDataLoader: KotlinDataLoader<Int, List<TemplateCategory>> =
     object : KotlinDataLoader<Int, List<TemplateCategory>>, KoinComponent {
         override val dataLoaderName = "TemplateCategoryChildrenDataLoader"
-        private val service: TemplateCategoryService by inject()
+        private val templateCategoryService: TemplateCategoryService by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<TemplateCategory>> =
             DataLoaderFactory.newDataLoader(
                 { parentIds, batchLoaderEnvironment ->
@@ -51,7 +51,7 @@ val TemplateCategoryChildrenDataLoader: KotlinDataLoader<Int, List<TemplateCateg
                     coroutineScope.future {
                         // For each parentId, fetch its children
                         parentIds.map { parentId ->
-                            service.findByParentId(parentId)
+                            templateCategoryService.findByParentId(parentId)
                         }
                     }
                 },
@@ -63,7 +63,7 @@ val TemplateCategoryChildrenDataLoader: KotlinDataLoader<Int, List<TemplateCateg
 val TemplateCategoryTemplatesDataLoader: KotlinDataLoader<Int, List<Template>> =
     object : KotlinDataLoader<Int, List<Template>>, KoinComponent {
         override val dataLoaderName = "TemplateCategoryTemplatesDataLoader"
-        private val service: TemplateService by inject()
+        private val templateService: TemplateService by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<Template>> =
             DataLoaderFactory.newDataLoader(
                 { categoryIds, batchLoaderEnvironment ->
@@ -74,7 +74,7 @@ val TemplateCategoryTemplatesDataLoader: KotlinDataLoader<Int, List<Template>> =
                     coroutineScope.future {
                         // For each categoryId, fetch its templates
                         categoryIds.map { categoryId ->
-                            service.findByCategoryId(categoryId)
+                            templateService.findByCategoryId(categoryId)
                         }
                     }
                 },

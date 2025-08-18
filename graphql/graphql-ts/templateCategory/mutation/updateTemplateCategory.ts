@@ -6,11 +6,11 @@ mutation updateTemplateCategory($input: UpdateTemplateCategoryInput!){
         id
         name
         description
-        order
+        categorySpecialType
         parentCategory{
             id
         }
-        categorySpecialType
+        order
         createdAt
         updatedAt
     }

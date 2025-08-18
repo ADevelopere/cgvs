@@ -5255,13 +5255,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "LocalDateTime",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "LocalDateTime",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -5355,13 +5351,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "LocalDateTime",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "LocalDateTime",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -5371,19 +5363,15 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "name": null,
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "TemplateVariable",
-                    "ofType": null
-                  }
+                  "kind": "INTERFACE",
+                  "name": "TemplateVariable",
+                  "ofType": null
                 }
               }
             },
@@ -5419,19 +5407,15 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "name": null,
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "TemplateCategory",
-                    "ofType": null
-                  }
+                  "kind": "OBJECT",
+                  "name": "TemplateCategory",
+                  "ofType": null
                 }
               }
             },
@@ -5443,13 +5427,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "LocalDateTime",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "LocalDateTime",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -5527,19 +5507,15 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "name": null,
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Template",
-                    "ofType": null
-                  }
+                  "kind": "OBJECT",
+                  "name": "Template",
+                  "ofType": null
                 }
               }
             },
@@ -5551,13 +5527,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "LocalDateTime",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "LocalDateTime",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

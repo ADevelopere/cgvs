@@ -2,16 +2,16 @@
 
 import React, { createContext, useContext, useCallback } from "react";
 import * as Types from "@/graphql/generated/types";
-import {
-    mapTemplateCategory,
-} from "@/utils/template/template-category-mapper";
+import { mapTemplateCategory } from "@/utils/template/template-category-mapper";
 import { FetchResult } from "@apollo/client";
 
 type TemplateCategoryGraphQLContextType = {
     /**
      * Query to fetch all template categories in a flat structure
      */
-    templateCategoriesQuery: () => Promise<FetchResult<Types.TemplateCategoriesQuery>>;
+    templateCategoriesQuery: () => Promise<
+        FetchResult<Types.TemplateCategoriesQuery>
+    >;
 
     /**
      * Query to fetch a single template category by ID
@@ -63,7 +63,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Query for fetching flat categories
-    const { refetch: refetchFlat} = Types.useTemplateCategoriesQuery();
+    const { refetch: refetchFlat } = Types.useTemplateCategoriesQuery();
 
     // Query for fetching paginated categories
     const { refetch: refetchPaginated } = Types.useTemplateCategoriesQuery({
@@ -93,7 +93,10 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
                 data: {
                     templateCategories: [
                         ...existingData.templateCategories,
-                        data.createTemplateCategory,
+                        {
+                            ...data.createTemplateCategory,
+                            templates: [],
+                        },
                     ],
                 },
             });
@@ -119,7 +122,10 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
             const updatedData = existingData.templateCategories.map(
                 (category) =>
                     category.id === updatedCategory.id
-                        ? data.updateTemplateCategory
+                        ? { 
+                            ...data.updateTemplateCategory,
+                            templates: category.templates,
+                        }
                         : category,
             );
 
@@ -158,15 +164,10 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         },
     });
 
-
     // Wrapper functions for mutations and queries
-    const templateCategoriesQuery = useCallback(
-        async () => {
-            return refetchFlat();
-        },
-        [refetchFlat],
-    );
-
+    const templateCategoriesQuery = useCallback(async () => {
+        return refetchFlat();
+    }, [refetchFlat]);
 
     const templateCategoryQuery = useCallback(
         async (variables: Types.QueryTemplateCategoryArgs) => {
@@ -201,7 +202,6 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         },
         [mutateDelete],
     );
-
 
     const contextValue = React.useMemo(
         () => ({

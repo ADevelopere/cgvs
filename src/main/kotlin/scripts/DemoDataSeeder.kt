@@ -20,6 +20,7 @@ import schema.type.NumberTemplateVariable
 import schema.type.DateTemplateVariable
 import schema.type.SelectTemplateVariable
 import schema.type.User
+import tables.CategorySpecialType
 import kotlin.random.Random
 
 /**
@@ -159,13 +160,39 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         println("📁 Creating template categories...")
         val allCategories = mutableListOf<TemplateCategory>()
 
+        // Create special type categories first (main and suspension)
+        val mainCategory = TemplateCategory(
+            name = "الفئة الرئيسية",
+            description = "الفئة الرئيسية لجميع الشهادات",
+            parentCategoryId = null,
+            order = 0,
+            categorySpecialType = CategorySpecialType.Main,
+            createdAt = currentTime,
+            updatedAt = currentTime
+        )
+        val createdMain = repositoryManager.templateCategoryRepository.create(mainCategory)
+        allCategories.add(createdMain)
+
+        val suspensionCategory = TemplateCategory(
+            name = "فئة الإيقاف",
+            description = "فئة الشهادات الموقوفة أو المعلقة",
+            parentCategoryId = null,
+            order = 1,
+            categorySpecialType = CategorySpecialType.Suspension,
+            createdAt = currentTime,
+            updatedAt = currentTime
+        )
+        val createdSuspension = repositoryManager.templateCategoryRepository.create(suspensionCategory)
+        allCategories.add(createdSuspension)
+
+        // Now create the rest of the categories as before
         templateCategoriesData.forEachIndexed { index, categoryData ->
             // Create parent category
             val parentCategory = TemplateCategory(
                 name = categoryData.name,
                 description = categoryData.description,
                 parentCategoryId = null,
-                order = index + 1,
+                order = index + 2, // shift order to avoid 0 and 1
                 categorySpecialType = null,
                 createdAt = currentTime,
                 updatedAt = currentTime
@@ -201,11 +228,10 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         // Create one template per top-level category
         val topLevelCategories = categories.filter { it.parentCategoryId == null }
         val demoImages = listOf(
-            "img/demo1.jpg",
-            "img/demo2.jpg",
-            "img/demo3.jpg",
-            "img/demo4.jpg",
-            "img/demo5.jpg"
+            "demo1.png",
+            "demo2.png",
+            "demo3.png",
+            "demo4.png",
         )
 
         topLevelCategories.forEachIndexed { index, category ->
