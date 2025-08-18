@@ -13,7 +13,7 @@ object Sessions : Table() {
     override val primaryKey = PrimaryKey(id)
 
     init {
-        index("sessions_user_id_index",true,  userId)
-        index("sessions_last_activity_index",true, lastActivity)
+        index("sessions_user_id_index", false, userId) // Removed unique constraint
+        index("sessions_last_activity_index", true, lastActivity)
     }
 }

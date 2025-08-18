@@ -22,6 +22,7 @@ import { saveAuthToken, clearAuthToken, getAuthToken } from "@/utils/auth";
 import { Box, CircularProgress, Typography, Button } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { loadFromLocalStorage } from "@/utils/storage";
+import { useRouter } from "next/navigation";
 
 // Loading Component to avoid conditional hook calls
 const LoadingUI: React.FC<{
@@ -86,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const apolloClient = useApolloClient();
     const [loginMutation] = useLoginMutation();
     const [logoutMutation] = useLogoutMutation();
+    const router = useRouter();
 
     // Group all state declarations together
     const [user, setUser] = useState<User | null>(null);
@@ -116,8 +118,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }, [logoutMutation, apolloClient]);
 
+    // Add a function to handle redirection after login
+    const handlePostLoginRedirect = (redirectUrl: string | null) => {
+        if (redirectUrl) {
+            window.location.href = redirectUrl;
+        } else {
+            window.location.href = "/admin/dashboard";
+        }
+    };
+
+    // Modify the login function to include redirection
     const login = useCallback(
-        async (credentials: LoginMutationVariables): Promise<boolean> => {
+        async (credentials: LoginMutationVariables, redirectUrl: string | null = null): Promise<boolean> => {
             setIsLoading(true);
             clearError();
 
@@ -133,9 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 if (response?.data?.login) {
                     if (response?.data?.login?.token) {
-                        const { user: graphqlUser, token } =
-                            response.data.login;
-                        // Convert GraphQL user to our User type
+                        const { user: graphqlUser, token } = response.data.login;
                         const fullUser: User = {
                             ...graphqlUser,
                             isAdmin: graphqlUser.isAdmin,
@@ -147,6 +157,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                         setToken(token);
                         setIsAuthenticated(true);
                         saveAuthToken(token);
+
+                        // Redirect after successful login
+                        handlePostLoginRedirect(redirectUrl);
+
                         return true;
                     }
                 } else {
@@ -155,41 +169,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
 
                 setError("Invalid response from server");
-                console.log(
-                    "Invalid response from server",
-                    "loginMutation",
-                    response,
-                );
-                
+                console.log("Invalid response from server", "loginMutation", response);
+
                 return false;
             } catch (error) {
                 console.error("Login failed", error);
                 if (error instanceof ApolloError) {
-                    // Handle GraphQL errors
                     const firstError = error.graphQLErrors[0];
                     setError(
-                        firstError?.message ||
-                            "An error occurred while trying to sign in.",
+                        firstError?.message || "An error occurred while trying to sign in."
                     );
                 } else {
-                    setError(
-                        "An error occurred while trying to sign in. Please try again.",
-                    );
+                    setError("An error occurred while trying to sign in. Please try again.");
                 }
                 return false;
             } finally {
                 setIsLoading(false);
             }
         },
-        [loginMutation, clearError],
+        [loginMutation, clearError]
     );
 
+    // Modify the checkAuth function to handle redirection
     const checkAuth = useCallback(async () => {
         const storedToken = getAuthToken();
         if (!storedToken) {
             logout();
             setIsLoading(false);
             isFirstRender.current = false;
+            router.push("/login"); // Redirect to login if no token
             return;
         }
 
@@ -234,11 +242,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     : "Failed to check authentication",
             );
             logout();
+            router.push("/login"); // Redirect to login on failure
         } finally {
             setIsLoading(false);
             isFirstRender.current = false;
         }
-    }, [logout, apolloClient]);
+    }, [logout, apolloClient, router]);
 
     // Check authentication status when the component mounts
     useEffect(() => {

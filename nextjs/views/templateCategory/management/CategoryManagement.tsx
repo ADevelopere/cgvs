@@ -14,7 +14,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import SplitPane from "@/components/splitPane/SplitPane";
 import { DeleteIcon, FileStack, PanelLeft, PanelRight } from "lucide-react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import DeletionTemplatesCategory from "./DeletionTemplatesCategory";
+import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
 import { DeleteOutline } from "@mui/icons-material";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
@@ -218,7 +218,7 @@ const This: React.FC = () => {
                             </SplitPane>
                         </TabPanel>
                         <TabPanel value="deleted">
-                            <DeletionTemplatesCategory />
+                            <SuspenstionTemplatesCategory />
                         </TabPanel>
                     </TabContext>
                 </Box>
