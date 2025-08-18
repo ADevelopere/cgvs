@@ -34,10 +34,10 @@ dependencies {
     implementation(libs.graphql.kotlin.ktor.server)
     implementation(libs.hikari.cp)
     implementation(libs.bcrypt)
-//    implementation(libs.kaml)
-    implementation("io.ktor:ktor-server-call-logging:2.3.0")
     implementation(libs.libphonenumber)
     implementation(libs.commonsValidator)
+    implementation(libs.bundles.gcp)
+    implementation("com.google.protobuf:protobuf-java:3.25.3")
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.kotlin.test.junit)
 }

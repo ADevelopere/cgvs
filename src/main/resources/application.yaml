@@ -28,3 +28,9 @@ filesystem:
 image:
   allowed_types: ['jpeg', 'png', 'jpg', 'gif']
   max_size: 5242880  # 5MB max image size
+
+gcp:
+  project_id: "hardy-mercury-407317"
+  secret_id: "cgvs-service-account-json"
+  secret_version: "latest"
+  bucket_name: "cgvs"
