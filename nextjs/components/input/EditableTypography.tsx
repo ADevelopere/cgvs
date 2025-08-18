@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef } from "react";
 import Typography, { TypographyProps } from "@mui/material/Typography";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
