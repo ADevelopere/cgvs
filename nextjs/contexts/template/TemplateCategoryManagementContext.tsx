@@ -288,7 +288,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             return [];
         }
         const mapped = mapTemplateCategories({
-            flatTemplateCategories: apolloCategoryData.templateCategories,
+            templateCategories: apolloCategoryData.templateCategories,
         });
         return buildCategoryHierarchy(mapped);
     }, [apolloCategoryData]);
@@ -298,7 +298,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             return [];
         }
         const mapped = mapTemplateCategories({
-            flatTemplateCategories: apolloCategoryData.templateCategories,
+            templateCategories: apolloCategoryData.templateCategories,
         });
         const allTemplates = mapped.flatMap((category) => {
             if (category.templates) {

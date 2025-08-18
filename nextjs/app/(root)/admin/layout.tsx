@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
     Dashboard as DashboardIcon,
@@ -13,6 +15,8 @@ import DashboardEndActions from "@/components/common/DashboardEndActions";
 import { TemplateCategoryManagementProvider } from "@/contexts/template/TemplateCategoryManagementContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { Navigation, Title } from "@/contexts/adminLayout.types";
+import { TemplateCategoryGraphQLProvider } from "@/contexts/template/TemplateCategoryGraphQLContext";
+import { TemplateGraphQLProvider } from "@/contexts/template/TemplateGraphQLContext";
 
 const NAVIGATION: Navigation = [
     {
@@ -56,15 +60,15 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const { isAuthenticated, isLoading } = useAuth();
+    // const { isAuthenticated, isLoading } = useAuth();
 
-    if (isLoading) {
-        return null; // or a loading spinner
-    }
+    // if (isLoading) {
+    //     return null; // or a loading spinner
+    // }
 
-    if (!isAuthenticated) {
-        return null;
-    }
+    // if (!isAuthenticated) {
+    //     return null;
+    // }
 
     return (
         <NavigationProvider>
@@ -75,11 +79,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
                     endActions: <DashboardEndActions />,
                 }}
             >
-                <DashboardLayout>
-                    <TemplateCategoryManagementProvider>
-                        {children}
-                    </TemplateCategoryManagementProvider>
-                </DashboardLayout>
+                <TemplateCategoryGraphQLProvider>
+                    <TemplateGraphQLProvider>
+                        <TemplateCategoryManagementProvider>
+                            <DashboardLayout>{children}</DashboardLayout>
+                        </TemplateCategoryManagementProvider>
+                    </TemplateGraphQLProvider>
+                </TemplateCategoryGraphQLProvider>
             </DashboardLayoutProvider>
         </NavigationProvider>
     );
