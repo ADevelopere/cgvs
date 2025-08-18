@@ -174,10 +174,10 @@ export const mapToCreateSelectTemplateVariableInput = (
 ): CreateSelectTemplateVariableInput => {
     return {
         name: source?.name ?? "",
-        description: source?.description ?? null,
+        description: source?.description,
         multiple: source?.multiple ?? false,
         options: source?.options ?? [],
-        previewValue: source?.selectPreviewValue ?? null,
+        previewValue: source?.selectPreviewValue,
         required: source?.required ?? false,
         templateId: source?.template?.id ?? 0,
         };

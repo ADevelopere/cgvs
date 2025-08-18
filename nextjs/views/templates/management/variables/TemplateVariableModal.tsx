@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useEffect } from "react";
 import {
     Dialog,
@@ -22,7 +24,7 @@ import SelectTemplateVariableForm from "./forms/SelectTemplateVariableForm";
 interface TemplateVariableModalProps {
     open: boolean;
     onClose: () => void;
-    editingVariableID?: string;
+    editingVariableID?: number;
     type: TemplateVariableType;
 }
 
@@ -82,21 +84,21 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    {type === "text" && (
+                    {type === "TEXT" && (
                         <TextTemplateVariableForm
                             editingVariableID={editingVariableID}
                             onDispose={onClose}
                         />
                     )}
-                    {type === "number" && <NumberTemplateVariableForm
+                    {type === "NUMBER" && <NumberTemplateVariableForm
                         editingVariableID={editingVariableID}
                         onDispose={onClose}
                     />}
-                    {type === "select" && <SelectTemplateVariableForm
+                    {type === "SELECT" && <SelectTemplateVariableForm
                         editingVariableID={editingVariableID}
                         onDispose={onClose}
                     />}
-                    {type === "date" && (
+                    {type === "DATE" && (
                         <DateTemplateVariableForm
                             editingVariableID={editingVariableID}
                             onDispose={onClose}

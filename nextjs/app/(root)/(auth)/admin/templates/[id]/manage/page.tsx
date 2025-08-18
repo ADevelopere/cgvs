@@ -1,10 +1,10 @@
-import Management from '@/components/admin/templates/management/Management';
 import { TemplateManagementProvider } from '@/contexts/template/TemplateManagementContext';
+import TemplateManagement from '@/views/templates/management/TemplateManagement';
 
 const TemplateManagementPage = () => {
     return (
         <TemplateManagementProvider>
-                <Management />
+                <TemplateManagement />
         </TemplateManagementProvider>
     );
 };

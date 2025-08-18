@@ -1,3 +1,5 @@
+"use client";
+
 import { NodeProps, Handle, Position } from '@xyflow/react';
 import { useEffect } from 'react';
 

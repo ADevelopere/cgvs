@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback, useMemo } from "react";
 import {
     Box,
@@ -12,7 +14,7 @@ import {
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import type {
     CreateSelectTemplateVariableInput,
-    TemplateSelectVariable,
+    SelectTemplateVariable,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import TagInput from "@/components/input/TagInput";
@@ -21,7 +23,7 @@ import { isSelectVariableDifferent } from "@/utils/templateVariable/templateVari
 import useAppTranslation from "@/locale/useAppTranslation";
 
 type SelectTemplateVariableFormProps = {
-    editingVariableID?: string;
+    editingVariableID?: number;
     onDispose: () => void;
 };
 
@@ -31,8 +33,8 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
 }) => {
     const { template } = useTemplateManagement();
     // @ts-ignore
-    const editingVariable: TemplateSelectVariable | null = useMemo(() => {
-        if (!template || !editingVariableID) return null;
+    const editingVariable: SelectTemplateVariable | null = useMemo(() => {
+        if (!template?.variables || !editingVariableID) return null;
 
         return (
             template.variables.find((v) => v.id === editingVariableID) ?? null
@@ -51,10 +53,10 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
             }
             return {
                 name: "",
+                required: false,
                 options: [],
                 multiple: false,
-                template_id: template?.id ?? "",
-                order: 0,
+                templateId: template?.id ?? 0,
             };
         },
     );
@@ -86,7 +88,7 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
         (event: SelectChangeEvent<string>) => {
             setState((prevState) => ({
                 ...prevState,
-                preview_value: event.target.value,
+                previewValue: event.target.value,
             }));
         },
         [],
@@ -171,7 +173,7 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
 
             {state.options.length > 0 && (
                 <Select
-                    value={state.preview_value ?? ""}
+                    value={state.previewValue ?? ""}
                     onChange={handlePreviewValueChange}
                     fullWidth
                     displayEmpty

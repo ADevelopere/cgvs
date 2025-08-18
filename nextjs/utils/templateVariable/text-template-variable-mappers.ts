@@ -174,11 +174,11 @@ export const mapToCreateTextTemplateVariableInput = (
 ): CreateTextTemplateVariableInput => {
     return {
         name: source?.name ?? "",
-        description: source?.description ?? null,
-        minLength: source?.minLength ?? null,
-        maxLength: source?.maxLength ?? null,
-        pattern: source?.pattern ?? null,
-        previewValue: source?.textPreviewValue ?? null,
+        description: source?.description,
+        minLength: source?.minLength,
+        maxLength: source?.maxLength,
+        pattern: source?.pattern,
+        previewValue: source?.textPreviewValue,
         required: source?.required ?? false,
         templateId: source?.template?.id ?? 0,
     };

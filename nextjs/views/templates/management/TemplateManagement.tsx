@@ -1,4 +1,6 @@
-import { useSearchParams } from "react-router-dom";
+"use client";
+
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Box, useTheme,  Fade, IconButton } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -48,9 +50,10 @@ const indexToTab = (index: number): TemplateManagementTabType => {
     return tabs[index];
 };
 
-const Management: React.FC = () => {
+const TemplateManagement: React.FC = () => {
     const theme = useTheme();
-    const [_, setSearchParams] = useSearchParams();
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const { template, activeTab, setActiveTab, setTabError } =
         useTemplateManagement();
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -70,7 +73,9 @@ const Management: React.FC = () => {
     ) => {
         try {
             setActiveTab(newValue);
-            setSearchParams({ tab: newValue });
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('tab', newValue);
+            router.push(`?${params.toString()}`);
         } catch (error) {
             handleTabError(error, newValue, setTabError);
         }
@@ -180,4 +185,4 @@ const Management: React.FC = () => {
     );
 };
 
-export default Management;
+export default TemplateManagement;

@@ -47,7 +47,7 @@ export const useTextTemplateVariableGraphQL = () => {
 
 export const TextTemplateVariableGraphQLProvider: React.FC<{
     children: React.ReactNode;
-    templateId: string;
+    templateId: number;
 }> = ({ children, templateId }) => {
     // Create text template variable mutation
     const [mutateCreate] = Graphql.useCreateTextTemplateVariableMutation({

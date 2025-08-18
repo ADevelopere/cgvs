@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback, useMemo } from "react";
 import {
     Box,
@@ -9,7 +11,7 @@ import {
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import type {
     CreateTextTemplateVariableInput,
-    TemplateTextVariable,
+    TextTemplateVariable,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/text-template-variable-mappers";
@@ -17,7 +19,7 @@ import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariab
 import useAppTranslation from "@/locale/useAppTranslation";
 
 type TextTemplateVariableFormProps = {
-    editingVariableID?: string;
+    editingVariableID?: number;
     onDispose: () => void;
 };
 
@@ -27,8 +29,8 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 }) => {
     const { template } = useTemplateManagement();
 
-    const editingVariable: TemplateTextVariable | null = useMemo(() => {
-        if (!template || !editingVariableID) return null;
+    const editingVariable: TextTemplateVariable | null = useMemo(() => {
+        if (!template?.variables || !editingVariableID) return null;
 
         return (
             template.variables.find((v) => v.id === editingVariableID) ?? null
@@ -46,8 +48,8 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
         }
         return {
             name: "",
-            template_id: template?.id ?? "",
-            order: 0,
+            required: false,
+            templateId: template?.id ?? 0,
         };
     });
 
@@ -60,7 +62,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
                         : event.target.value;
 
                 setState((prevState) => {
-                    if (field === "min_length" || field === "max_length") {
+                    if (field === "minLength" || field === "maxLength") {
                         return {
                             ...prevState,
                             [field]: value === "" ? undefined : Number(value),
@@ -153,16 +155,16 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 
             <TextField
                 label={strings?.minimumLength ?? "Minimum Length"}
-                value={state.min_length ?? ""}
-                onChange={handleChange("min_length")}
+                value={state.minLength ?? ""}
+                onChange={handleChange("minLength")}
                 fullWidth
                 type="number"
             />
 
             <TextField
                 label={strings?.maximumLength ?? "Maximum Length"}
-                value={state.max_length ?? ""}
-                onChange={handleChange("max_length")}
+                value={state.maxLength ?? ""}
+                onChange={handleChange("maxLength")}
                 fullWidth
                 type="number"
             />
@@ -180,8 +182,8 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 
             <TextField
                 label={strings?.previewValue ?? "Preview Value"}
-                value={state.preview_value}
-                onChange={handleChange("preview_value")}
+                value={state.previewValue}
+                onChange={handleChange("previewValue")}
                 fullWidth
             />
 

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from "react";
 import {
     Tab,
@@ -11,7 +13,6 @@ import {
 } from "@mui/material";
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
 import { TemplateManagementTabType } from "@/contexts/template/TemplateManagementContext";
-import { Link } from "react-router-dom";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import useAppTranslation from "@/locale/useAppTranslation";

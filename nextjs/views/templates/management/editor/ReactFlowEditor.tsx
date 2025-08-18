@@ -1,3 +1,5 @@
+"use client";
+
 import {
     ReactFlow,
     Controls,
@@ -66,9 +68,9 @@ function Flow() {
     });
 
     useEffect(() => {
-        if (template?.image_url) {
+        if (template?.imageUrl) {
             const img = new Image();
-            img.src = template.image_url;
+            img.src = template.imageUrl;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -76,7 +78,7 @@ function Flow() {
                 });
             };
         }
-    }, [template?.image_url]);
+    }, [template?.imageUrl]);
 
     useEffect(() => {
         logger.log("Dimensions changed:", dimensions);

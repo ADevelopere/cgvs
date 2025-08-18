@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback, useMemo } from "react";
 import {
     Box,
@@ -9,14 +11,14 @@ import {
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import type {
     CreateNumberTemplateVariableInput,
-    TemplateNumberVariable,
+    NumberTemplateVariable,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { isNumberVariableDifferent } from "@/utils/templateVariable/templateVariable";
 
 type NumberTemplateVariableFormProps = {
-    editingVariableID?: string;
+    editingVariableID?: number;
     onDispose: () => void;
 };
 
@@ -26,8 +28,8 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
 }) => {
     const { template } = useTemplateManagement();
 
-    const editingVariable: TemplateNumberVariable | null = useMemo(() => {
-        if (!template || !editingVariableID) return null;
+    const editingVariable: NumberTemplateVariable | null = useMemo(() => {
+        if (!template?.variables || !editingVariableID) return null;
 
         return (
             template.variables.find((v) => v.id === editingVariableID) ?? null
@@ -44,20 +46,19 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
             if (editingVariable) {
                 return {
                     name: editingVariable.name,
-                    description: editingVariable.description ?? "",
-                    min_value: editingVariable.min_value,
-                    max_value: editingVariable.max_value,
-                    decimal_places: editingVariable.decimal_places,
-                    preview_value: editingVariable.preview_value ?? "",
+                    description: editingVariable.description,
+                    minValue: editingVariable.minValue,
+                    maxValue: editingVariable.maxValue,
+                    decimalPlaces: editingVariable.decimalPlaces,
+                    previewValue: editingVariable.numberPreviewValue,
                     required: editingVariable.required,
-                    template_id: template?.id ?? "",
-                    order: editingVariable.order,
+                    templateId: template?.id ?? 0,
                 };
             }
             return {
                 name: "",
-                template_id: template?.id ?? "",
-                order: 0,
+                templateId: template?.id ?? 0,
+                required: false,
             };
         },
     );
@@ -79,7 +80,7 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
     );
 
     const handleNumericChange = useCallback(
-        (field: "min_value" | "max_value" | "decimal_places") =>
+        (field: "minValue" | "maxValue" | "decimalPlaces") =>
             (event: React.ChangeEvent<HTMLInputElement>) => {
                 const value = event.target.value;
                 const numericValue = value === "" ? null : Number(value);
@@ -157,25 +158,25 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
             <TextField
                 label={strings?.minimumValue ?? "Minimum Value"}
                 type="number"
-                value={state.min_value ?? ""}
-                onChange={handleNumericChange("min_value")}
+                value={state.minValue ?? ""}
+                onChange={handleNumericChange("minValue")}
             />
             <TextField
                 label={strings?.maximumValue ?? "Maximum Value"}
                 type="number"
-                value={state.max_value ?? ""}
-                onChange={handleNumericChange("max_value")}
+                value={state.maxValue ?? ""}
+                onChange={handleNumericChange("maxValue")}
             />
             <TextField
                 label={strings?.decimalPlaces ?? "Decimal Places"}
                 type="number"
-                value={state.decimal_places ?? ""}
-                onChange={handleNumericChange("decimal_places")}
+                value={state.decimalPlaces ?? ""}
+                onChange={handleNumericChange("decimalPlaces")}
             />
             <TextField
                 label={strings?.previewValue ?? "Preview Value"}
-                value={state.preview_value ?? ""}
-                onChange={handleChange("preview_value")}
+                value={state.previewValue ?? ""}
+                onChange={handleChange("previewValue")}
             />
             <FormControlLabel
                 control={

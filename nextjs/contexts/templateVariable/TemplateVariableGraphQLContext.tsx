@@ -159,7 +159,7 @@ export const Provider: React.FC<{
 
 const WithGraphQL: React.FC<{
     children: React.ReactNode;
-    templateId: string;
+    templateId: number;
 }> = ({ children, templateId }) => {
     return (
         <TextTemplateVariableGraphQLProvider templateId={templateId}>
