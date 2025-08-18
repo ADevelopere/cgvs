@@ -578,28 +578,28 @@ input StudentFilterArgsInput {
 
 type Template {
   category: TemplateCategory!
-  createdAt: LocalDateTime!
+  createdAt: LocalDateTime
   description: String
   id: Int!
   imageUrl: String
   name: String!
   order: Int!
   preSuspensionCategory: TemplateCategory
-  updatedAt: LocalDateTime!
-  variables: [TemplateVariable!]!
+  updatedAt: LocalDateTime
+  variables: [TemplateVariable!]
 }
 
 type TemplateCategory {
   categorySpecialType: CategorySpecialType
-  childCategories: [TemplateCategory!]!
-  createdAt: LocalDateTime!
+  childCategories: [TemplateCategory!]
+  createdAt: LocalDateTime
   description: String
   id: Int!
   name: String!
   order: Int
   parentCategory: TemplateCategory
-  templates: [Template!]!
-  updatedAt: LocalDateTime!
+  templates: [Template!]
+  updatedAt: LocalDateTime
 }
 
 type TemplateConfig {

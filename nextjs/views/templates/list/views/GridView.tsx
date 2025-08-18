@@ -15,6 +15,8 @@ import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
+import Image from "next/image";
+
 interface GridViewProps {
     templates: Template[];
 }
@@ -73,21 +75,15 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                             alignItems: "center",
                         }}
                     >
-                        <img
+                        <Image
                             src={
-                                template.image_url ??
+                                template.imageUrl ??
                                 TEMPLATE_IMAGE_PLACEHOLDER_URL
                             }
                             alt={template.name}
-                            loading="lazy"
-                            style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                            }}
+                            layout="fill"
+                            objectFit="cover"
+                            priority={false} // Adjust priority if needed
                         />
                     </Box>
                     <ImageListItemBar

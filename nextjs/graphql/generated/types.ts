@@ -279,7 +279,7 @@ export type CountryCode =
   | 'ZM'
   | 'ZW';
 
-export type CreateDateCreateTemplateVariableInput = {
+export type CreateDateTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   format?: InputMaybe<Scalars['String']['input']>;
   maxDate?: InputMaybe<Scalars['LocalDate']['input']>;
@@ -290,7 +290,7 @@ export type CreateDateCreateTemplateVariableInput = {
   templateId: Scalars['Int']['input'];
 };
 
-export type CreateNumberCreateTemplateVariableInput = {
+export type CreateNumberTemplateVariableInput = {
   decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   maxValue?: InputMaybe<Scalars['Float']['input']>;
@@ -301,7 +301,7 @@ export type CreateNumberCreateTemplateVariableInput = {
   templateId: Scalars['Int']['input'];
 };
 
-export type CreateSelectCreateTemplateVariableInput = {
+export type CreateSelectTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   multiple: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
@@ -332,7 +332,7 @@ export type CreateTemplateInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateTextCreateTemplateVariableInput = {
+export type CreateTextTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   maxLength?: InputMaybe<Scalars['Int']['input']>;
   minLength?: InputMaybe<Scalars['Int']['input']>;
@@ -407,17 +407,17 @@ export type Mutation = {
 
 
 export type MutationCreateDateTemplateVariableArgs = {
-  input: CreateDateCreateTemplateVariableInput;
+  input: CreateDateTemplateVariableInput;
 };
 
 
 export type MutationCreateNumberTemplateVariableArgs = {
-  input: CreateNumberCreateTemplateVariableInput;
+  input: CreateNumberTemplateVariableInput;
 };
 
 
 export type MutationCreateSelectTemplateVariableArgs = {
-  input: CreateSelectCreateTemplateVariableInput;
+  input: CreateSelectTemplateVariableInput;
 };
 
 
@@ -437,7 +437,7 @@ export type MutationCreateTemplateCategoryArgs = {
 
 
 export type MutationCreateTextTemplateVariableArgs = {
-  input: CreateTextCreateTemplateVariableInput;
+  input: CreateTextTemplateVariableInput;
 };
 
 
@@ -482,17 +482,17 @@ export type MutationUnsuspendTemplateArgs = {
 
 
 export type MutationUpdateDateTemplateVariableArgs = {
-  input: UpdateDateCreateTemplateVariableInput;
+  input: UpdateDateTemplateVariableInput;
 };
 
 
 export type MutationUpdateNumberTemplateVariableArgs = {
-  input: UpdateNumberCreateTemplateVariableInput;
+  input: UpdateNumberTemplateVariableInput;
 };
 
 
 export type MutationUpdateSelectTemplateVariableArgs = {
-  input: UpdateSelectCreateTemplateVariableInput;
+  input: UpdateSelectTemplateVariableInput;
 };
 
 
@@ -512,7 +512,7 @@ export type MutationUpdateTemplateCategoryArgs = {
 
 
 export type MutationUpdateTextTemplateVariableArgs = {
-  input: UpdateTextCreateTemplateVariableInput;
+  input: UpdateTextTemplateVariableInput;
 };
 
 export type NumberTemplateVariable = TemplateVariable & {
@@ -718,29 +718,29 @@ export type StudentFilterArgsInput = {
 export type Template = {
   __typename?: 'Template';
   category: TemplateCategory;
-  createdAt: Scalars['LocalDateTime']['output'];
+  createdAt?: Maybe<Scalars['LocalDateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   order: Scalars['Int']['output'];
   preSuspensionCategory?: Maybe<TemplateCategory>;
-  updatedAt: Scalars['LocalDateTime']['output'];
-  variables: Array<TemplateVariable>;
+  updatedAt?: Maybe<Scalars['LocalDateTime']['output']>;
+  variables?: Maybe<Array<TemplateVariable>>;
 };
 
 export type TemplateCategory = {
   __typename?: 'TemplateCategory';
   categorySpecialType?: Maybe<CategorySpecialType>;
-  childCategories: Array<TemplateCategory>;
-  createdAt: Scalars['LocalDateTime']['output'];
+  childCategories?: Maybe<Array<TemplateCategory>>;
+  createdAt?: Maybe<Scalars['LocalDateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
   parentCategory?: Maybe<TemplateCategory>;
-  templates: Array<Template>;
-  updatedAt: Scalars['LocalDateTime']['output'];
+  templates?: Maybe<Array<Template>>;
+  updatedAt?: Maybe<Scalars['LocalDateTime']['output']>;
 };
 
 export type TemplateConfig = {
@@ -784,7 +784,7 @@ export type TextTemplateVariable = TemplateVariable & {
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
-export type UpdateDateCreateTemplateVariableInput = {
+export type UpdateDateTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   format?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
@@ -795,7 +795,7 @@ export type UpdateDateCreateTemplateVariableInput = {
   required: Scalars['Boolean']['input'];
 };
 
-export type UpdateNumberCreateTemplateVariableInput = {
+export type UpdateNumberTemplateVariableInput = {
   decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
@@ -806,7 +806,7 @@ export type UpdateNumberCreateTemplateVariableInput = {
   required: Scalars['Boolean']['input'];
 };
 
-export type UpdateSelectCreateTemplateVariableInput = {
+export type UpdateSelectTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   multiple: Scalars['Boolean']['input'];
@@ -840,7 +840,7 @@ export type UpdateTemplateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateTextCreateTemplateVariableInput = {
+export type UpdateTextTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   maxLength?: InputMaybe<Scalars['Int']['input']>;
@@ -952,7 +952,7 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -966,28 +966,28 @@ export type SuspendTemplateMutationVariables = Exact<{
 }>;
 
 
-export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UnsuspendTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UpdateTemplateMutationVariables = Exact<{
   input: UpdateTemplateInput;
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, variables?: Array<{ __typename?: 'DateTemplateVariable', minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'NumberTemplateVariable', minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'SelectTemplateVariable', options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'TextTemplateVariable', minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number }> | null } | null };
 
 export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -999,14 +999,14 @@ export type TemplatesQueryVariables = Exact<{
 }>;
 
 
-export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
 }>;
 
 
-export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } };
+export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } };
 
 export type DeleteTemplateCategoryMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -1020,29 +1020,92 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, order?: number | null, categorySpecialType?: CategorySpecialType | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } };
+export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } };
 
 export type MainTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
+export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> | null } | null };
 
 export type SuspensionTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspensionTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
+export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspensionTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> | null } | null };
 
 export type TemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt: any, updatedAt: any }> }> };
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null }> | null }> };
 
 export type TemplateCategoryQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> } | null };
+export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, childCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> | null } | null };
+
+export type CreateDateTemplateVariableMutationVariables = Exact<{
+  input: CreateDateTemplateVariableInput;
+}>;
+
+
+export type CreateDateTemplateVariableMutation = { __typename?: 'Mutation', createDateTemplateVariable: { __typename?: 'DateTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type CreateNumberTemplateVariableMutationVariables = Exact<{
+  input: CreateNumberTemplateVariableInput;
+}>;
+
+
+export type CreateNumberTemplateVariableMutation = { __typename?: 'Mutation', createNumberTemplateVariable: { __typename?: 'NumberTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type CreateSelectTemplateVariableMutationVariables = Exact<{
+  input: CreateSelectTemplateVariableInput;
+}>;
+
+
+export type CreateSelectTemplateVariableMutation = { __typename?: 'Mutation', createSelectTemplateVariable: { __typename?: 'SelectTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type CreateTextTemplateVariableMutationVariables = Exact<{
+  input: CreateTextTemplateVariableInput;
+}>;
+
+
+export type CreateTextTemplateVariableMutation = { __typename?: 'Mutation', createTextTemplateVariable: { __typename?: 'TextTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type DeleteTemplateVariableMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTemplateVariableMutation = { __typename?: 'Mutation', deleteTemplateVariable: { __typename?: 'DateTemplateVariable', id: number, name: string, template?: { __typename?: 'Template', id: number, name: string } | null } | { __typename?: 'NumberTemplateVariable', id: number, name: string, template?: { __typename?: 'Template', id: number, name: string } | null } | { __typename?: 'SelectTemplateVariable', id: number, name: string, template?: { __typename?: 'Template', id: number, name: string } | null } | { __typename?: 'TextTemplateVariable', id: number, name: string, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type UpdateDateTemplateVariableMutationVariables = Exact<{
+  input: UpdateDateTemplateVariableInput;
+}>;
+
+
+export type UpdateDateTemplateVariableMutation = { __typename?: 'Mutation', updateDateTemplateVariable: { __typename?: 'DateTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type UpdateNumberTemplateVariableMutationVariables = Exact<{
+  input: UpdateNumberTemplateVariableInput;
+}>;
+
+
+export type UpdateNumberTemplateVariableMutation = { __typename?: 'Mutation', updateNumberTemplateVariable: { __typename?: 'NumberTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type UpdateSelectTemplateVariableMutationVariables = Exact<{
+  input: UpdateSelectTemplateVariableInput;
+}>;
+
+
+export type UpdateSelectTemplateVariableMutation = { __typename?: 'Mutation', updateSelectTemplateVariable: { __typename?: 'SelectTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
+
+export type UpdateTextTemplateVariableMutationVariables = Exact<{
+  input: UpdateTextTemplateVariableInput;
+}>;
+
+
+export type UpdateTextTemplateVariableMutation = { __typename?: 'Mutation', updateTextTemplateVariable: { __typename?: 'TextTemplateVariable', id: number, name: string, description?: string | null, type: TemplateVariableType, required: boolean, order: number, minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, createdAt: any, updatedAt: any, template?: { __typename?: 'Template', id: number, name: string } | null } };
 
 
 export const PlaceholderDocument = gql`
@@ -1880,6 +1943,37 @@ export const TemplateDocument = gql`
       id
       name
     }
+    variables {
+      type
+      id
+      name
+      description
+      required
+      order
+      ... on TextTemplateVariable {
+        minLength
+        maxLength
+        pattern
+        textPreviewValue
+      }
+      ... on NumberTemplateVariable {
+        minValue
+        maxValue
+        decimalPlaces
+        numberPreviewValue
+      }
+      ... on DateTemplateVariable {
+        minDate
+        maxDate
+        format
+        datePreviewValue
+      }
+      ... on SelectTemplateVariable {
+        options
+        multiple
+        selectPreviewValue
+      }
+    }
     createdAt
     updatedAt
   }
@@ -2045,6 +2139,7 @@ export const CreateTemplateCategoryDocument = gql`
     }
     order
     createdAt
+    updatedAt
   }
 }
     `;
@@ -2117,11 +2212,11 @@ export const UpdateTemplateCategoryDocument = gql`
     id
     name
     description
-    order
+    categorySpecialType
     parentCategory {
       id
     }
-    categorySpecialType
+    order
     createdAt
     updatedAt
   }
@@ -2382,3 +2477,423 @@ export type TemplateCategoryQueryResult = Apollo.QueryResult<TemplateCategoryQue
 export function refetchTemplateCategoryQuery(variables: TemplateCategoryQueryVariables) {
       return { query: TemplateCategoryDocument, variables: variables }
     }
+export const CreateDateTemplateVariableDocument = gql`
+    mutation createDateTemplateVariable($input: CreateDateTemplateVariableInput!) {
+  createDateTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    minDate
+    maxDate
+    format
+    datePreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateDateTemplateVariableMutationFn = Apollo.MutationFunction<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateDateTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateDateTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDateTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDateTemplateVariableMutation, { data, loading, error }] = useCreateDateTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateDateTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>(CreateDateTemplateVariableDocument, options);
+      }
+export type CreateDateTemplateVariableMutationHookResult = ReturnType<typeof useCreateDateTemplateVariableMutation>;
+export type CreateDateTemplateVariableMutationResult = Apollo.MutationResult<CreateDateTemplateVariableMutation>;
+export type CreateDateTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateDateTemplateVariableMutation, CreateDateTemplateVariableMutationVariables>;
+export const CreateNumberTemplateVariableDocument = gql`
+    mutation createNumberTemplateVariable($input: CreateNumberTemplateVariableInput!) {
+  createNumberTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    minValue
+    maxValue
+    decimalPlaces
+    numberPreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateNumberTemplateVariableMutationFn = Apollo.MutationFunction<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateNumberTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateNumberTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateNumberTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createNumberTemplateVariableMutation, { data, loading, error }] = useCreateNumberTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateNumberTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>(CreateNumberTemplateVariableDocument, options);
+      }
+export type CreateNumberTemplateVariableMutationHookResult = ReturnType<typeof useCreateNumberTemplateVariableMutation>;
+export type CreateNumberTemplateVariableMutationResult = Apollo.MutationResult<CreateNumberTemplateVariableMutation>;
+export type CreateNumberTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateNumberTemplateVariableMutation, CreateNumberTemplateVariableMutationVariables>;
+export const CreateSelectTemplateVariableDocument = gql`
+    mutation createSelectTemplateVariable($input: CreateSelectTemplateVariableInput!) {
+  createSelectTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    options
+    multiple
+    selectPreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateSelectTemplateVariableMutationFn = Apollo.MutationFunction<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateSelectTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateSelectTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSelectTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSelectTemplateVariableMutation, { data, loading, error }] = useCreateSelectTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSelectTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>(CreateSelectTemplateVariableDocument, options);
+      }
+export type CreateSelectTemplateVariableMutationHookResult = ReturnType<typeof useCreateSelectTemplateVariableMutation>;
+export type CreateSelectTemplateVariableMutationResult = Apollo.MutationResult<CreateSelectTemplateVariableMutation>;
+export type CreateSelectTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateSelectTemplateVariableMutation, CreateSelectTemplateVariableMutationVariables>;
+export const CreateTextTemplateVariableDocument = gql`
+    mutation createTextTemplateVariable($input: CreateTextTemplateVariableInput!) {
+  createTextTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    minLength
+    maxLength
+    pattern
+    textPreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateTextTemplateVariableMutationFn = Apollo.MutationFunction<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>;
+
+/**
+ * __useCreateTextTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useCreateTextTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTextTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTextTemplateVariableMutation, { data, loading, error }] = useCreateTextTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTextTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>(CreateTextTemplateVariableDocument, options);
+      }
+export type CreateTextTemplateVariableMutationHookResult = ReturnType<typeof useCreateTextTemplateVariableMutation>;
+export type CreateTextTemplateVariableMutationResult = Apollo.MutationResult<CreateTextTemplateVariableMutation>;
+export type CreateTextTemplateVariableMutationOptions = Apollo.BaseMutationOptions<CreateTextTemplateVariableMutation, CreateTextTemplateVariableMutationVariables>;
+export const DeleteTemplateVariableDocument = gql`
+    mutation deleteTemplateVariable($id: Int!) {
+  deleteTemplateVariable(id: $id) {
+    id
+    name
+    template {
+      id
+      name
+    }
+  }
+}
+    `;
+export type DeleteTemplateVariableMutationFn = Apollo.MutationFunction<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>;
+
+/**
+ * __useDeleteTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useDeleteTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTemplateVariableMutation, { data, loading, error }] = useDeleteTemplateVariableMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>(DeleteTemplateVariableDocument, options);
+      }
+export type DeleteTemplateVariableMutationHookResult = ReturnType<typeof useDeleteTemplateVariableMutation>;
+export type DeleteTemplateVariableMutationResult = Apollo.MutationResult<DeleteTemplateVariableMutation>;
+export type DeleteTemplateVariableMutationOptions = Apollo.BaseMutationOptions<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>;
+export const UpdateDateTemplateVariableDocument = gql`
+    mutation updateDateTemplateVariable($input: UpdateDateTemplateVariableInput!) {
+  updateDateTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    minDate
+    maxDate
+    format
+    datePreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateDateTemplateVariableMutationFn = Apollo.MutationFunction<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateDateTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateDateTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDateTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDateTemplateVariableMutation, { data, loading, error }] = useUpdateDateTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateDateTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>(UpdateDateTemplateVariableDocument, options);
+      }
+export type UpdateDateTemplateVariableMutationHookResult = ReturnType<typeof useUpdateDateTemplateVariableMutation>;
+export type UpdateDateTemplateVariableMutationResult = Apollo.MutationResult<UpdateDateTemplateVariableMutation>;
+export type UpdateDateTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateDateTemplateVariableMutation, UpdateDateTemplateVariableMutationVariables>;
+export const UpdateNumberTemplateVariableDocument = gql`
+    mutation updateNumberTemplateVariable($input: UpdateNumberTemplateVariableInput!) {
+  updateNumberTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    minValue
+    maxValue
+    decimalPlaces
+    numberPreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateNumberTemplateVariableMutationFn = Apollo.MutationFunction<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateNumberTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateNumberTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateNumberTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateNumberTemplateVariableMutation, { data, loading, error }] = useUpdateNumberTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateNumberTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>(UpdateNumberTemplateVariableDocument, options);
+      }
+export type UpdateNumberTemplateVariableMutationHookResult = ReturnType<typeof useUpdateNumberTemplateVariableMutation>;
+export type UpdateNumberTemplateVariableMutationResult = Apollo.MutationResult<UpdateNumberTemplateVariableMutation>;
+export type UpdateNumberTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateNumberTemplateVariableMutation, UpdateNumberTemplateVariableMutationVariables>;
+export const UpdateSelectTemplateVariableDocument = gql`
+    mutation updateSelectTemplateVariable($input: UpdateSelectTemplateVariableInput!) {
+  updateSelectTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    options
+    multiple
+    selectPreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateSelectTemplateVariableMutationFn = Apollo.MutationFunction<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateSelectTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateSelectTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSelectTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSelectTemplateVariableMutation, { data, loading, error }] = useUpdateSelectTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSelectTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>(UpdateSelectTemplateVariableDocument, options);
+      }
+export type UpdateSelectTemplateVariableMutationHookResult = ReturnType<typeof useUpdateSelectTemplateVariableMutation>;
+export type UpdateSelectTemplateVariableMutationResult = Apollo.MutationResult<UpdateSelectTemplateVariableMutation>;
+export type UpdateSelectTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateSelectTemplateVariableMutation, UpdateSelectTemplateVariableMutationVariables>;
+export const UpdateTextTemplateVariableDocument = gql`
+    mutation updateTextTemplateVariable($input: UpdateTextTemplateVariableInput!) {
+  updateTextTemplateVariable(input: $input) {
+    id
+    name
+    description
+    type
+    required
+    order
+    minLength
+    maxLength
+    pattern
+    textPreviewValue
+    template {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateTextTemplateVariableMutationFn = Apollo.MutationFunction<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>;
+
+/**
+ * __useUpdateTextTemplateVariableMutation__
+ *
+ * To run a mutation, you first call `useUpdateTextTemplateVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTextTemplateVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTextTemplateVariableMutation, { data, loading, error }] = useUpdateTextTemplateVariableMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTextTemplateVariableMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>(UpdateTextTemplateVariableDocument, options);
+      }
+export type UpdateTextTemplateVariableMutationHookResult = ReturnType<typeof useUpdateTextTemplateVariableMutation>;
+export type UpdateTextTemplateVariableMutationResult = Apollo.MutationResult<UpdateTextTemplateVariableMutation>;
+export type UpdateTextTemplateVariableMutationOptions = Apollo.BaseMutationOptions<UpdateTextTemplateVariableMutation, UpdateTextTemplateVariableMutationVariables>;

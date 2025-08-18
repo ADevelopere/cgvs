@@ -1,8 +1,10 @@
+"use client";
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;

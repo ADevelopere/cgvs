@@ -21,8 +21,8 @@ data class TemplateCategory(
     @GraphQLIgnore val parentCategoryId: Int? = null,
     val order: Int? = null,
     val categorySpecialType: CategorySpecialType? = null,
-    val createdAt: LocalDateTime = now(),
-    val updatedAt: LocalDateTime = now()
+    val createdAt: LocalDateTime? = now(),
+    val updatedAt: LocalDateTime? = now()
 ) {
     @Suppress("unused")
     fun parentCategory(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory?> {
@@ -32,14 +32,14 @@ data class TemplateCategory(
     }
 
     @Suppress("unused")
-    fun childCategories(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateCategory>> {
+    fun childCategories(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateCategory>?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateCategoryChildrenDataLoader.dataLoaderName,
             id
         )
     }
 
-    fun templates(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<Template>> {
+    fun templates(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<Template>?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateCategoryTemplatesDataLoader.dataLoaderName,
             id

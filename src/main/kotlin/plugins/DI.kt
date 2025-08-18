@@ -15,7 +15,7 @@ fun Application.configureDI() {
             repositoryModule,
             serviceModule,
             applicationDependantModule(this@configureDI),
-            storageModule(this@configureDI)
+            storageModule()
         )
     }
 }

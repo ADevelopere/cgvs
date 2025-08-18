@@ -20,8 +20,8 @@ data class Template(
     @GraphQLIgnore val categoryId: Int,
     val order: Int,
     @GraphQLIgnore val preSuspensionCategoryId: Int? = null,
-    val createdAt: LocalDateTime = now(),
-    val updatedAt: LocalDateTime = now()
+    val createdAt: LocalDateTime? = now(),
+    val updatedAt: LocalDateTime? = now()
 ){
     fun category(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory> {
         return dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, categoryId)
@@ -35,7 +35,7 @@ data class Template(
         }
     }
 
-    fun variables(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateVariable>> {
+    fun variables(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateVariable>?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateVariablesDataLoader.dataLoaderName, id
         )

@@ -78,7 +78,7 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
                                     <Avatar
                                         variant="rounded"
                                         src={
-                                            template.image_url ||
+                                            template.imageUrl ||
                                             TEMPLATE_IMAGE_PLACEHOLDER_URL
                                         }
                                         alt={template.name}
@@ -117,7 +117,7 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
                                             minWidth: { sm: "120px" },
                                         }}
                                     >
-                                        {formatDate(template.created_at)}
+                                        {formatDate(template.createdAt)}
                                     </TableCell>
                                 </>
                             )}

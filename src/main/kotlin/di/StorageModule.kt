@@ -6,6 +6,5 @@ import storage.gcp.getStorage
 
 fun storageModule() = module {
     val storage = getStorage()
-
     println(storage.toString())
 }

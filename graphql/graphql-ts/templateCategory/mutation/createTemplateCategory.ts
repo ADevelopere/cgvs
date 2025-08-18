@@ -12,6 +12,7 @@ mutation createTemplateCategory($input: CreateTemplateCategoryInput!){
         }
         order
         createdAt
+        updatedAt
     }
 }
 `;

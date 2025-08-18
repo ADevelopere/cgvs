@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import services.StorageService
 import util.now
 
 class TemplateRepository(private val database: Database) : PaginatableRepository<Template> {
@@ -117,11 +118,15 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
     }
 
     private fun rowToTemplate(row: ResultRow): Template {
+        val imgFileName = row[Templates.imageUrl]
+        val imgUrl = if (imgFileName != null) StorageService.TEMPLATE_BASE_URL + imgFileName else null
+
+
         return Template(
             id = row[Templates.id],
             name = row[Templates.name],
             description = row[Templates.description],
-            imageUrl = row[Templates.imageUrl],
+            imageUrl = imgUrl,
             categoryId = row[Templates.categoryId],
             order = row[Templates.order],
             createdAt = row[Templates.createdAt],
