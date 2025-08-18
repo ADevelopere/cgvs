@@ -5,7 +5,6 @@ import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
 import useAppTranslation from "@/locale/useAppTranslation";
 import {
-    TemplateCategoryManagementProvider,
     useTemplateCategoryManagement,
 } from "@/contexts/template/TemplateCategoryManagementContext";
 import TemplateCategoryManagementCategoryPane from "./CategoryPane";
@@ -239,19 +238,17 @@ const TemplateCategoryManagement: React.FC = () => {
     }, []);
 
     return (
-        <TemplateCategoryManagementProvider>
-            <Box
-                sx={{
-                    top: `${appBarHeight}px`,
-                    height: `calc(100vh - ${appBarHeight}px - 48px)`,
-                    display: "flex",
-                    flexDirection: "column",
-                    p: 3,
-                }}
-            >
-                <This />
-            </Box>
-        </TemplateCategoryManagementProvider>
+        <Box
+            sx={{
+                top: `${appBarHeight}px`,
+                height: `calc(100vh - ${appBarHeight}px - 48px)`,
+                display: "flex",
+                flexDirection: "column",
+                p: 3,
+            }}
+        >
+            <This />
+        </Box>
     );
 };
 
