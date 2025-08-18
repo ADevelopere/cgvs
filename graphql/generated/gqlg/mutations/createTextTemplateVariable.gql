@@ -1,4 +1,4 @@
-mutation createTextTemplateVariable($input: CreateTextCreateTemplateVariableInput!){
+mutation createTextTemplateVariable($input: CreateTextTemplateVariableInput!){
     createTextTemplateVariable(input: $input){
         createdAt
         description

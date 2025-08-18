@@ -25,13 +25,13 @@ type RenderCategoryItemProps = {
     selectedCategory: TemplateCategory | null;
     handleCategoryClick: (category: TemplateCategory) => void;
     handleOpenEditDialog: (category: TemplateCategory) => void;
-    deleteCategory: (categoryId: string) => void;
+    deleteCategory: (categoryId: number) => void;
     validateCategoryName: (name: string) => string;
     handleCategoryNameEdit: (
         category: TemplateCategory,
         newValue: string,
     ) => void;
-    createCategory: (name: string, parentId?: string) => void;
+    createCategory: (name: string, parentId?: number) => void;
 };
 
 const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
@@ -146,7 +146,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
                             }}
                             color="error"
                             disabled={
-                                !!category.special_type ||
+                                !!category.categorySpecialType ||
                                 (category.templates?.length ?? 0) > 0
                             }
                         >

@@ -10,35 +10,35 @@ import services.TemplateVariableService
 class TemplateVariableMutation : Mutation, KoinComponent {
 	private val service: TemplateVariableService by inject()
 
-	suspend fun createTextTemplateVariable(input: CreateTextCreateTemplateVariableInput): TextTemplateVariable {
+	suspend fun createTextTemplateVariable(input: CreateTextTemplateVariableInput): TextTemplateVariable {
 		return service.createTextTemplateVariable(input)
 	}
 
-	suspend fun updateTextTemplateVariable(input: UpdateTextCreateTemplateVariableInput): TextTemplateVariable {
+	suspend fun updateTextTemplateVariable(input: UpdateTextTemplateVariableInput): TextTemplateVariable {
 		return service.updateTextTemplateVariable(input)
 	}
 
-	suspend fun createNumberTemplateVariable(input: CreateNumberCreateTemplateVariableInput): NumberTemplateVariable {
+	suspend fun createNumberTemplateVariable(input: CreateNumberTemplateVariableInput): NumberTemplateVariable {
 		return service.createNumberTemplateVariable(input)
 	}
 
-	suspend fun updateNumberTemplateVariable(input: UpdateNumberCreateTemplateVariableInput): NumberTemplateVariable {
+	suspend fun updateNumberTemplateVariable(input: UpdateNumberTemplateVariableInput): NumberTemplateVariable {
 		return service.updateNumberTemplateVariable(input)
 	}
 
-	suspend fun createDateTemplateVariable(input: CreateDateCreateTemplateVariableInput): DateTemplateVariable {
+	suspend fun createDateTemplateVariable(input: CreateDateTemplateVariableInput): DateTemplateVariable {
 		return service.createDateTemplateVariable(input)
 	}
 
-	suspend fun updateDateTemplateVariable(input: UpdateDateCreateTemplateVariableInput): DateTemplateVariable {
+	suspend fun updateDateTemplateVariable(input: UpdateDateTemplateVariableInput): DateTemplateVariable {
 		return service.updateDateTemplateVariable(input)
 	}
 
-	suspend fun createSelectTemplateVariable(input: CreateSelectCreateTemplateVariableInput): SelectTemplateVariable {
+	suspend fun createSelectTemplateVariable(input: CreateSelectTemplateVariableInput): SelectTemplateVariable {
 		return service.createSelectTemplateVariable(input)
 	}
 
-	suspend fun updateSelectTemplateVariable(input: UpdateSelectCreateTemplateVariableInput): SelectTemplateVariable {
+	suspend fun updateSelectTemplateVariable(input: UpdateSelectTemplateVariableInput): SelectTemplateVariable {
 		return service.updateSelectTemplateVariable(input)
 	}
 

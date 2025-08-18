@@ -271,7 +271,7 @@ enum CountryCode {
   ZW
 }
 
-input CreateDateCreateTemplateVariableInput {
+input CreateDateTemplateVariableInput {
   description: String
   format: String
   maxDate: LocalDate
@@ -282,7 +282,7 @@ input CreateDateCreateTemplateVariableInput {
   templateId: Int!
 }
 
-input CreateNumberCreateTemplateVariableInput {
+input CreateNumberTemplateVariableInput {
   decimalPlaces: Int
   description: String
   maxValue: Float
@@ -293,7 +293,7 @@ input CreateNumberCreateTemplateVariableInput {
   templateId: Int!
 }
 
-input CreateSelectCreateTemplateVariableInput {
+input CreateSelectTemplateVariableInput {
   description: String
   multiple: Boolean!
   name: String!
@@ -324,7 +324,7 @@ input CreateTemplateInput {
   name: String!
 }
 
-input CreateTextCreateTemplateVariableInput {
+input CreateTextTemplateVariableInput {
   description: String
   maxLength: Int
   minLength: Int
@@ -376,13 +376,13 @@ type LogoutResponse {
 }
 
 type Mutation {
-  createDateTemplateVariable(input: CreateDateCreateTemplateVariableInput!): DateTemplateVariable!
-  createNumberTemplateVariable(input: CreateNumberCreateTemplateVariableInput!): NumberTemplateVariable!
-  createSelectTemplateVariable(input: CreateSelectCreateTemplateVariableInput!): SelectTemplateVariable!
+  createDateTemplateVariable(input: CreateDateTemplateVariableInput!): DateTemplateVariable!
+  createNumberTemplateVariable(input: CreateNumberTemplateVariableInput!): NumberTemplateVariable!
+  createSelectTemplateVariable(input: CreateSelectTemplateVariableInput!): SelectTemplateVariable!
   createStudent(input: CreateStudentInput!): Student!
   createTemplate(input: CreateTemplateInput!): Template!
   createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
-  createTextTemplateVariable(input: CreateTextCreateTemplateVariableInput!): TextTemplateVariable!
+  createTextTemplateVariable(input: CreateTextTemplateVariableInput!): TextTemplateVariable!
   deleteStudent(id: Int!): Student!
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory!
@@ -398,13 +398,13 @@ type Mutation {
   register(input: RegisterInput!): AuthPayload
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
-  updateDateTemplateVariable(input: UpdateDateCreateTemplateVariableInput!): DateTemplateVariable!
-  updateNumberTemplateVariable(input: UpdateNumberCreateTemplateVariableInput!): NumberTemplateVariable!
-  updateSelectTemplateVariable(input: UpdateSelectCreateTemplateVariableInput!): SelectTemplateVariable!
+  updateDateTemplateVariable(input: UpdateDateTemplateVariableInput!): DateTemplateVariable!
+  updateNumberTemplateVariable(input: UpdateNumberTemplateVariableInput!): NumberTemplateVariable!
+  updateSelectTemplateVariable(input: UpdateSelectTemplateVariableInput!): SelectTemplateVariable!
   updateStudent(input: UpdateStudentOptionalFieldsInput!): Student!
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
-  updateTextTemplateVariable(input: UpdateTextCreateTemplateVariableInput!): TextTemplateVariable!
+  updateTextTemplateVariable(input: UpdateTextTemplateVariableInput!): TextTemplateVariable!
 }
 
 type NumberTemplateVariable implements TemplateVariable {
@@ -642,7 +642,7 @@ type TextTemplateVariable implements TemplateVariable {
   updatedAt: LocalDateTime!
 }
 
-input UpdateDateCreateTemplateVariableInput {
+input UpdateDateTemplateVariableInput {
   description: String
   format: String
   id: Int!
@@ -653,7 +653,7 @@ input UpdateDateCreateTemplateVariableInput {
   required: Boolean!
 }
 
-input UpdateNumberCreateTemplateVariableInput {
+input UpdateNumberTemplateVariableInput {
   decimalPlaces: Int
   description: String
   id: Int!
@@ -664,7 +664,7 @@ input UpdateNumberCreateTemplateVariableInput {
   required: Boolean!
 }
 
-input UpdateSelectCreateTemplateVariableInput {
+input UpdateSelectTemplateVariableInput {
   description: String
   id: Int!
   multiple: Boolean!
@@ -698,7 +698,7 @@ input UpdateTemplateInput {
   name: String
 }
 
-input UpdateTextCreateTemplateVariableInput {
+input UpdateTextTemplateVariableInput {
   description: String
   id: Int!
   maxLength: Int

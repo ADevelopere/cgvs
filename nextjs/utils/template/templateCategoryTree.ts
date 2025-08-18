@@ -4,7 +4,7 @@ import { Template, TemplateCategory } from "@/graphql/generated/types";
 export const updateCategoryInTree = (
     categories: TemplateCategory[],
     categoryToUpdate: TemplateCategory,
-    parentCategoryId?: string,
+    parentCategoryId?: number,
 ): TemplateCategory[] => {
     return categories.map((cat) => {
         // If this is the category we're updating
@@ -57,7 +57,7 @@ export const updateCategoryInTree = (
 export const updateTemplateInCategoryTree = (
     categories: TemplateCategory[],
     templateToUpdate: Template,
-    targetCategoryId?: string,
+    targetCategoryId?: number,
 ): TemplateCategory[] => {
     return categories.map((cat) => {
         // If this is the target category for the template

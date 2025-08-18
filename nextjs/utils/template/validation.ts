@@ -28,7 +28,7 @@ export const validateVariableValue = (
 
     // Type validation
     switch (variable.type) {
-        case 'number':
+        case 'NUMBER':
             if (isNaN(Number(value))) {
                 return {
                     isValid: false,
@@ -36,7 +36,7 @@ export const validateVariableValue = (
                 };
             }
             break;
-        case 'date':
+        case 'DATE':
             if (isNaN(Date.parse(value))) {
                 return {
                     isValid: false,

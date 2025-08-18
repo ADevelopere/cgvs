@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_TEXT_TEMPLATE_VARIABLE = gql`
-mutation createTextTemplateVariable($input: CreateTextCreateTemplateVariableInput!){
+mutation createTextTemplateVariable($input: CreateTextTemplateVariableInput!){
     createTextTemplateVariable(input: $input){
         id
         name

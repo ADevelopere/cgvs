@@ -50,7 +50,7 @@ interface UpdateTemplateVariableInput {
     val required: Boolean
 }
 
-data class CreateTextCreateTemplateVariableInput(
+data class CreateTextTemplateVariableInput(
     override val templateId: Int,
     override val name: String,
     override val description: String? = null,
@@ -61,7 +61,7 @@ data class CreateTextCreateTemplateVariableInput(
     val pattern: String? = null
 ) : CreateTemplateVariableInput
 
-data class CreateNumberCreateTemplateVariableInput(
+data class CreateNumberTemplateVariableInput(
     override val templateId: Int,
     override val name: String,
     override val description: String? = null,
@@ -72,7 +72,7 @@ data class CreateNumberCreateTemplateVariableInput(
     val decimalPlaces: Int? = null
 ) : CreateTemplateVariableInput
 
-data class CreateDateCreateTemplateVariableInput(
+data class CreateDateTemplateVariableInput(
     override val templateId: Int,
     override val name: String,
     override val description: String? = null,
@@ -83,7 +83,7 @@ data class CreateDateCreateTemplateVariableInput(
     val format: String? = null
 ) : CreateTemplateVariableInput
 
-data class CreateSelectCreateTemplateVariableInput(
+data class CreateSelectTemplateVariableInput(
     override val templateId: Int,
     override val name: String,
     override val description: String? = null,
@@ -93,7 +93,7 @@ data class CreateSelectCreateTemplateVariableInput(
     val multiple: Boolean = false
 ) : CreateTemplateVariableInput
 
-data class UpdateTextCreateTemplateVariableInput(
+data class UpdateTextTemplateVariableInput(
     override val id: Int,
     override val name: String,
     override val description: String? = null,
@@ -104,7 +104,7 @@ data class UpdateTextCreateTemplateVariableInput(
     val pattern: String? = null
 ) : UpdateTemplateVariableInput
 
-data class UpdateNumberCreateTemplateVariableInput(
+data class UpdateNumberTemplateVariableInput(
     override val id: Int,
     override val name: String,
     override val description: String? = null,
@@ -115,7 +115,7 @@ data class UpdateNumberCreateTemplateVariableInput(
     val decimalPlaces: Int? = null
 ) : UpdateTemplateVariableInput
 
-data class UpdateDateCreateTemplateVariableInput(
+data class UpdateDateTemplateVariableInput(
     override val id: Int,
     override val name: String,
     override val description: String? = null,
@@ -126,7 +126,7 @@ data class UpdateDateCreateTemplateVariableInput(
     val format: String? = null
 ) : UpdateTemplateVariableInput
 
-data class UpdateSelectCreateTemplateVariableInput(
+data class UpdateSelectTemplateVariableInput(
     override val id: Int,
     override val name: String,
     override val description: String? = null,

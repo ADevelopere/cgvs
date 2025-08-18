@@ -1,13 +1,11 @@
 import type {
     CreateTemplateCategoryMutation,
     DeleteTemplateCategoryMutation,
-    ReorderTemplateCategoriesMutation,
     UpdateTemplateCategoryMutation,
-    DeletionTemplateCategoryQuery,
+    SuspensionTemplateCategoryQuery,
     MainTemplateCategoryQuery,
     TemplateCategoryQuery,
     TemplateCategoriesQuery,
-    FlatTemplateCategoriesQuery,
     TemplateCategory,
     Template
 } from '@/graphql/generated/types';
@@ -15,13 +13,11 @@ import type {
 export type TemplateCategorySource = 
     | CreateTemplateCategoryMutation
     | DeleteTemplateCategoryMutation
-    | ReorderTemplateCategoriesMutation
     | UpdateTemplateCategoryMutation
-    | DeletionTemplateCategoryQuery
+    | SuspensionTemplateCategoryQuery
     | MainTemplateCategoryQuery
     | TemplateCategoryQuery
     | TemplateCategoriesQuery
-    | FlatTemplateCategoriesQuery;
 
 // Base mapper for Template type
 const mapTemplate = (template: any): Template => ({
@@ -50,14 +46,11 @@ const mapCreateTemplateCategoryMutation = (source: CreateTemplateCategoryMutatio
 const mapDeleteTemplateCategoryMutation = (source: DeleteTemplateCategoryMutation): TemplateCategory =>
     mapBaseTemplateCategory(source.deleteTemplateCategory);
 
-const mapReorderTemplateCategoriesMutation = (source: ReorderTemplateCategoriesMutation): TemplateCategory[] =>
-    source.reorderTemplateCategories.map(mapBaseTemplateCategory);
-
 const mapUpdateTemplateCategoryMutation = (source: UpdateTemplateCategoryMutation): TemplateCategory =>
     mapBaseTemplateCategory(source.updateTemplateCategory);
 
-const mapDeletionTemplateCategoryQuery = (source: DeletionTemplateCategoryQuery): TemplateCategory =>
-    mapBaseTemplateCategory(source.deletionTemplateCategory);
+const mapSuspensionTemplateCategoryQuery = (source: SuspensionTemplateCategoryQuery): TemplateCategory =>
+    mapBaseTemplateCategory(source.suspensionTemplateCategory);
 
 const mapMainTemplateCategoryQuery = (source: MainTemplateCategoryQuery): TemplateCategory =>
     mapBaseTemplateCategory(source.mainTemplateCategory);
@@ -66,14 +59,14 @@ const mapTemplateCategoryQuery = (source: TemplateCategoryQuery): TemplateCatego
     source.templateCategory ? mapBaseTemplateCategory(source.templateCategory) : null;
 
 const mapTemplateCategoriesQuery = (source: TemplateCategoriesQuery): TemplateCategory[] =>
-    source.templateCategories.data.map(mapBaseTemplateCategory);
+    source.templateCategories.map(mapBaseTemplateCategory);
 
-const mapFlatTemplateCategoriesQuery = (source: FlatTemplateCategoriesQuery): TemplateCategory[] =>
-    source.flatTemplateCategories.map(mapBaseTemplateCategory);
+const mapFlatTemplateCategoriesQuery = (source: TemplateCategoriesQuery): TemplateCategory[] =>
+    source.templateCategories.map(mapBaseTemplateCategory);
 
 // Helper function to build category hierarchy from flat structure
 export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): TemplateCategory[] => {
-    const categoryMap = new Map<string, TemplateCategory>();
+    const categoryMap = new Map<number, TemplateCategory>();
     const rootCategories: TemplateCategory[] = [];
 
     // First pass: create map of all categories
@@ -113,7 +106,7 @@ export const getSerializableTemplateCategory = (category: TemplateCategory): any
     return {
         id: category.id,
         name: category.name,
-        special_type: category.special_type,
+        special_type: category.categorySpecialType,
         templates: category.templates?.map(template => ({
             id: template.id,
             name: template.name,
@@ -133,7 +126,7 @@ export const getSerializableCategories = (categories: TemplateCategory[]): any[]
     return categories.map(category => ({
         id: category.id,
         name: category.name,
-        special_type: category.special_type,
+        special_type: category.categorySpecialType,
                 templates: category.templates?.map(template => ({
             id: template.id,
             name: template.name,
@@ -165,16 +158,13 @@ export const mapTemplateCategory = (source: TemplateCategorySource | undefined |
             return mapTemplateCategoryQuery(source);
         }
         if ('deletionTemplateCategory' in source) {
-            return mapDeletionTemplateCategoryQuery(source);
+            return mapSuspensionTemplateCategoryQuery(source);
         }
         if ('mainTemplateCategory' in source) {
             return mapMainTemplateCategoryQuery(source);
         }
         if ('templateCategories' in source) {
             return mapTemplateCategoriesQuery(source)[0] || null;
-        }
-        if ('reorderTemplateCategories' in source) {
-            return mapReorderTemplateCategoriesMutation(source)[0] || null;
         }
     } catch (error) {
         console.error('Error mapping template category:', error);
@@ -194,12 +184,10 @@ export const mapTemplateCategories = (source: TemplateCategorySource | undefined
         if ('templateCategories' in source) {
             return mapTemplateCategoriesQuery(source);
         }
-        if ('reorderTemplateCategories' in source) {
-            return mapReorderTemplateCategoriesMutation(source);
-        }
-        if ('flatTemplateCategories' in source) {
-            return mapFlatTemplateCategoriesQuery(source);
-        }
+
+        // if ('flatTemplateCategories' in source) {
+        //     return mapFlatTemplateCategoriesQuery(source);
+        // }
 
         const category = mapTemplateCategory(source);
         return category ? [category] : [];

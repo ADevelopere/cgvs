@@ -1,4 +1,4 @@
-mutation createNumberTemplateVariable($input: CreateNumberCreateTemplateVariableInput!){
+mutation createNumberTemplateVariable($input: CreateNumberTemplateVariableInput!){
     createNumberTemplateVariable(input: $input){
         createdAt
         decimalPlaces

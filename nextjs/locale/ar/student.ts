@@ -6,12 +6,12 @@ const student: StudentTranslations = {
     // header columns, same as column id values
     name: "الاسم",
     email: "البريد الإلكتروني",
-    phone_number: "رقم الهاتف",
-    date_of_birth: "تاريخ الميلاد",
+    phoneNumber: "رقم الهاتف",
+    dateOfBirth: "تاريخ الميلاد",
     gender: "الجنس",
     nationality: "الجنسية",
-    created_at: "تاريخ الإنشاء",
-    updated_at: "تاريخ التحديث",
+    createdAt: "تاريخ الإنشاء",
+    updatedAt: "تاريخ التحديث",
 
     // actions and buttons
     actions: "الإجراءات",

@@ -9,8 +9,8 @@ export type TemplateCategory = {
     parent_category_id?: number | null;
     order: number | null;
     special_type?: TemplateCategorySpecialType;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
     deleted_at?: string;
     parentCategory?: TemplateCategory;
     childCategories?: TemplateCategory[];
@@ -21,11 +21,11 @@ export type Template = {
     id: number;
     name: string;
     description?: string;
-    image_url?: string;
+    imageUrl?: string;
     category_id: number;
     order: number | null;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
     deleted_at?: string;
     category?: TemplateCategory;
 };
@@ -45,8 +45,8 @@ export type TemplateVariable = {
     required?: boolean;
     is_key?: boolean;
     order: number;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
 };
 
 export type Recipient = {
@@ -54,5 +54,5 @@ export type Recipient = {
     data: Record<string, any>;
     is_valid: boolean;
     validation_errors: string[] | null;
-    created_at: string;
+    createdAt: string;
 };

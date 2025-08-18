@@ -11,15 +11,14 @@ import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder
 interface TemplateRow {
     id: string;
     name: string;
-    created_at: string;
-    trashed_at: string;
-    image_url: string | null;
+    createdAt: string;
+    imageUrl: string | null;
 }
 
 const DeletionTemplatesCategory: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
     const { theme } = useAppTheme();
-    const { deletionCategory, restoreTemplate } =
+    const { suspensionCategory, suspendTemplate } =
         useTemplateCategoryManagement();
     const [sortModel, setSortModel] = useState<GridSortModel>([
         {
@@ -29,7 +28,7 @@ const DeletionTemplatesCategory: React.FC = () => {
     ]);
 
     // Get templates from the deleted category
-    const templates = deletionCategory?.templates ?? [];
+    const templates = suspensionCategory?.templates ?? [];
 
     const columns: GridColDef[] = [
         {
@@ -48,7 +47,7 @@ const DeletionTemplatesCategory: React.FC = () => {
                     <Box
                         component="img"
                         src={
-                            params.row.image_url ??
+                            params.row.imageUrl ??
                             TEMPLATE_IMAGE_PLACEHOLDER_URL
                         }
                         alt={`${params.row.name} ${strings.image}`}
@@ -68,10 +67,10 @@ const DeletionTemplatesCategory: React.FC = () => {
             flex: 1,
         },
         {
-            field: "created_at",
+            field: "createdAt",
             headerName: strings.createdAt,
             flex: 1,
-            renderCell: (params) => formatDate(params.row.created_at),
+            renderCell: (params) => formatDate(params.row.createdAt),
         },
         {
             field: "trashed_at",
@@ -88,7 +87,7 @@ const DeletionTemplatesCategory: React.FC = () => {
                 <Button
                     variant="outlined"
                     size="small"
-                    onClick={() => restoreTemplate(params.row.id)}
+                    onClick={() => suspendTemplate(params.row.id)}
                     color="primary"
                 >
                     {strings.restoreTemplate}
@@ -100,9 +99,8 @@ const DeletionTemplatesCategory: React.FC = () => {
     const rows: TemplateRow[] = templates.map((template) => ({
         id: template.id.toString(),
         name: template.name,
-        created_at: template.created_at,
-        trashed_at: template.trashed_at,
-        image_url: template.image_url ?? null,
+        createdAt: template.createdAt,
+        imageUrl: template.imageUrl ?? null,
     }));
 
     const appBarHeight = useAppBarHeight();

@@ -1,27 +1,28 @@
 import type {
     CreateTemplateMutation,
     DeleteTemplateMutation,
-    MoveTemplateToDeletionCategoryMutation,
-    RestoreTemplateMutation,
-    ReorderTemplatesMutation,
+    SuspendTemplateMutation,
+    UnsuspendTemplateMutation,
     UpdateTemplateMutation,
     Template,
     TemplateCategory,
     TemplateConfig,
     TemplateConfigQuery,
     UpdateTemplateInput,
-    UpdateTemplateWithImageMutation,
     TemplateQuery,
 } from "@/graphql/generated/types";
+import { mapSingleTextTemplateVariable } from "../templateVariable/text-template-variable-mappers";
+import { mapSingleNumberTemplateVariable } from "../templateVariable/number-template-variable-mappers";
+import { mapSingleSelectTemplateVariable } from "../templateVariable/select-template-variable-mappers";
+import { mapSingleDateTemplateVariable } from "../templateVariable/date-template-variable-mappers";
 
 export type TemplateSource =
     | CreateTemplateMutation
     | DeleteTemplateMutation
-    | MoveTemplateToDeletionCategoryMutation
-    | RestoreTemplateMutation
-    | ReorderTemplatesMutation
+    | SuspendTemplateMutation
+    | UnsuspendTemplateMutation
     | UpdateTemplateMutation
-    | UpdateTemplateWithImageMutation
+    | UpdateTemplateMutation
     | TemplateQuery; // not implemented yet
 
 type PartialTemplate = Partial<Template> & { id: string; name: string };
@@ -41,10 +42,10 @@ const mapCategoryForTemplate = (
         id: category.id,
         name: category.name ?? "",
         description: category.description ?? null,
-        special_type: category.special_type ?? null,
+        special_type: category.categorySpecialType ?? null,
         order: category.order ?? null,
-        created_at: category.created_at ?? new Date(),
-        updated_at: category.updated_at ?? new Date(),
+        createdAt: category.createdAt ?? new Date(),
+        updatedAt: category.updatedAt ?? new Date(),
         templates: category.templates ?? [],
         childCategories: Array.isArray(category.childCategories)
             ? category.childCategories.map((child) =>
@@ -75,18 +76,31 @@ const mapTemplate = (
         name: template.name,
         description:
             template.description ?? previousTemplate?.description ?? null,
-        image_url: template.image_url ?? previousTemplate?.image_url ?? null,
+        imageUrl: template.imageUrl ?? previousTemplate?.imageUrl ?? null,
         order: template.order ?? previousTemplate?.order ?? null,
-        created_at:
-            template.created_at ?? previousTemplate?.created_at ?? new Date(),
-        updated_at:
-            template.updated_at ?? previousTemplate?.updated_at ?? new Date(),
-        trashed_at: template.trashed_at ?? previousTemplate?.trashed_at ?? null,
+        createdAt:
+            template.createdAt ?? previousTemplate?.createdAt ?? new Date(),
+        updatedAt:
+            template.updatedAt ?? previousTemplate?.updatedAt ?? new Date(),
         category: template.category
             ? mapCategoryForTemplate(
                   template.category as PartialTemplateCategory,
               )
             : (previousTemplate?.category ?? ({} as TemplateCategory)),
+        variables: template.variables?.map((variable: any) => {
+            switch (variable.__typename) {
+                case "TemplateTextVariable":
+                    return mapSingleTextTemplateVariable(variable);
+                case "TemplateNumberVariable":
+                    return mapSingleNumberTemplateVariable(variable);
+                case "TemplateSelectVariable":
+                    return mapSingleSelectTemplateVariable(variable);
+                case "TemplateDateVariable":
+                    return mapSingleDateTemplateVariable(variable);
+                default:
+                    return null;
+            }
+        }) ?? [],
     } as Template;
 };
 
@@ -111,44 +125,29 @@ const mapDeleteTemplate = (
 };
 
 /**
- * Maps a move template to a deletion category mutation result to a Template
+ * Maps a suspend template mutation result to a Template
  */
-const mapMoveTemplateToDeletion = (
-    source: MoveTemplateToDeletionCategoryMutation,
+const mapSuspendTemplate = (
+    source: SuspendTemplateMutation,
     previousTemplate?: Template,
 ): Template => {
     return mapTemplate(
-        source.moveTemplateToDeletionCategory as PartialTemplate,
+        source.suspendTemplate as PartialTemplate,
         previousTemplate,
     );
 };
 
 /**
- * Maps a restore template mutation result to a Template
+ * Maps an unsuspend template mutation result to a Template
  */
-const mapRestoreTemplate = (
-    source: RestoreTemplateMutation,
+const mapUnsuspendTemplate = (
+    source: UnsuspendTemplateMutation,
     previousTemplate?: Template,
 ): Template => {
     return mapTemplate(
-        source.restoreTemplate as PartialTemplate,
+        source.unsuspendTemplate as PartialTemplate,
         previousTemplate,
     );
-};
-
-/**
- * Maps a reorder templates mutation result to Template[]
- */
-const mapReorderTemplates = (
-    source: ReorderTemplatesMutation,
-    previousTemplates?: Template[],
-): Template[] => {
-    return source.reorderTemplates.map((template) => {
-        const previousTemplate = previousTemplates?.find(
-            (prev) => prev.id === template.id,
-        );
-        return mapTemplate(template as PartialTemplate, previousTemplate);
-    });
 };
 
 /**
@@ -164,18 +163,6 @@ const mapUpdateTemplate = (
     );
 };
 
-/**
- * Maps an update template with image mutation result to a Template
- */
-const mapUpdateTemplateWithImage = (
-    source: UpdateTemplateWithImageMutation,
-    previousTemplate?: Template,
-): Template => {
-    return mapTemplate(
-        source.updateTemplateWithImage as PartialTemplate,
-        previousTemplate,
-    );
-};
 
 /**
  * Maps a template variable from any source to a consistent TemplateVariable type
@@ -189,7 +176,6 @@ const mapSingleTemplateVariable = (variable: any): any => {
         id: variable.id,
         name: variable.name,
         description: variable.description ?? null,
-        preview_value: variable.preview_value ?? null,
         required: variable.required ?? false,
         order: variable.order ?? 0,
         type: variable.type,
@@ -241,11 +227,9 @@ const mapTemplateFromQuery = (source: TemplateQuery): Template | null => {
         id: template.id,
         name: template.name,
         description: template.description ?? null,
-        image_url: template.image_url ?? null,
-        order: template.order ?? null,
-        created_at: template.created_at ?? new Date(),
-        updated_at: template.updated_at ?? new Date(),
-        trashed_at: template.trashed_at ?? null,
+        imageUrl: template.imageUrl ?? null,
+        createdAt: template.createdAt ?? new Date(),
+        updatedAt: template.updatedAt ?? new Date(),
         category: template.category
             ? mapCategoryForTemplate(
                   template.category as PartialTemplateCategory,
@@ -273,25 +257,14 @@ export const mapSingleTemplate = (
     if ("updateTemplate" in source) {
         return mapUpdateTemplate(source, previousTemplate);
     }
-    if ("updateTemplateWithImage" in source) {
-        return mapUpdateTemplateWithImage(source, previousTemplate);
-    }
     if ("deleteTemplate" in source) {
         return mapDeleteTemplate(source, previousTemplate);
     }
-    if ("moveTemplateToDeletionCategory" in source) {
-        return mapMoveTemplateToDeletion(source, previousTemplate);
+    if ("suspendTemplate" in source) {
+        return mapSuspendTemplate(source, previousTemplate);
     }
-    if ("restoreTemplate" in source) {
-        return mapRestoreTemplate(source, previousTemplate);
-    }
-    if ("reorderTemplates" in source) {
-        // For reorder, return the first template if any exist
-        const templates = mapReorderTemplates(
-            source,
-            previousTemplate ? [previousTemplate] : undefined,
-        );
-        return templates.length > 0 ? templates[0] : null;
+    if ("unsuspendTemplate" in source) {
+        return mapUnsuspendTemplate(source, previousTemplate);
     }
 
     // Handle template query
@@ -313,11 +286,6 @@ export const mapTemplates = (
         return [];
     }
 
-    // Handle reorderTemplates specially as it returns an array
-    if ("reorderTemplates" in source) {
-        return mapReorderTemplates(source, previousTemplates);
-    }
-
     // For single template results, wrap in an array if not null
     const previousTemplate =
         previousTemplates?.length === 1 ? previousTemplates[0] : undefined;
@@ -328,7 +296,7 @@ export const mapTemplates = (
 export const mapTemplateConfig = (
     source: TemplateConfigQuery,
 ): TemplateConfig => {
-    if (!source) {
+    if (!source || !source.templateConfig) {
         return {} as TemplateConfig;
     }
 
@@ -342,9 +310,9 @@ export const mapTemplateToUpdateInput = (
     template: Template,
 ): UpdateTemplateInput => {
     return {
+        id: template.id,
         name: template.name,
         description: template.description,
         categoryId: template.category.id,
-        order: template.order,
     };
 };

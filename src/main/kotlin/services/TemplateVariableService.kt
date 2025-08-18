@@ -2,10 +2,10 @@ package services
 
 import repositories.TemplateRepository
 import repositories.TemplateVariableRepository
-import schema.type.CreateDateCreateTemplateVariableInput
-import schema.type.CreateNumberCreateTemplateVariableInput
-import schema.type.CreateSelectCreateTemplateVariableInput
-import schema.type.CreateTextCreateTemplateVariableInput
+import schema.type.CreateDateTemplateVariableInput
+import schema.type.CreateNumberTemplateVariableInput
+import schema.type.CreateSelectTemplateVariableInput
+import schema.type.CreateTextTemplateVariableInput
 import schema.type.DateTemplateVariable
 import schema.type.NumberTemplateVariable
 import schema.type.SelectTemplateVariable
@@ -13,17 +13,17 @@ import schema.type.CreateTemplateVariableInput
 import schema.type.TemplateVariable
 import schema.type.TemplateVariableType
 import schema.type.TextTemplateVariable
-import schema.type.UpdateDateCreateTemplateVariableInput
-import schema.type.UpdateNumberCreateTemplateVariableInput
-import schema.type.UpdateSelectCreateTemplateVariableInput
+import schema.type.UpdateDateTemplateVariableInput
+import schema.type.UpdateNumberTemplateVariableInput
+import schema.type.UpdateSelectTemplateVariableInput
 import schema.type.UpdateTemplateVariableInput
-import schema.type.UpdateTextCreateTemplateVariableInput
+import schema.type.UpdateTextTemplateVariableInput
 
 class TemplateVariableService(
     private val repository: TemplateVariableRepository,
     private val templateRepository: TemplateRepository
 ) {
-    suspend fun createTextTemplateVariable(input: CreateTextCreateTemplateVariableInput): TextTemplateVariable {
+    suspend fun createTextTemplateVariable(input: CreateTextTemplateVariableInput): TextTemplateVariable {
         checkCreateInput(input)
 
         val order = repository.findMaxOrderByTemplateId(input.templateId) + 1
@@ -42,7 +42,7 @@ class TemplateVariableService(
         )
     }
 
-    suspend fun createNumberTemplateVariable(input: CreateNumberCreateTemplateVariableInput): NumberTemplateVariable {
+    suspend fun createNumberTemplateVariable(input: CreateNumberTemplateVariableInput): NumberTemplateVariable {
         checkCreateInput(input)
 
         val order = repository.findMaxOrderByTemplateId(input.templateId) + 1
@@ -62,7 +62,7 @@ class TemplateVariableService(
         )
     }
 
-    suspend fun createDateTemplateVariable(input: CreateDateCreateTemplateVariableInput): DateTemplateVariable {
+    suspend fun createDateTemplateVariable(input: CreateDateTemplateVariableInput): DateTemplateVariable {
         checkCreateInput(input)
 
         val order = repository.findMaxOrderByTemplateId(input.templateId) + 1
@@ -82,7 +82,7 @@ class TemplateVariableService(
         )
     }
 
-    suspend fun createSelectTemplateVariable(input: CreateSelectCreateTemplateVariableInput): SelectTemplateVariable {
+    suspend fun createSelectTemplateVariable(input: CreateSelectTemplateVariableInput): SelectTemplateVariable {
         checkCreateInput(input)
 
         val order = repository.findMaxOrderByTemplateId(input.templateId) + 1
@@ -101,28 +101,28 @@ class TemplateVariableService(
         )
     }
 
-    suspend fun updateTextTemplateVariable(input: UpdateTextCreateTemplateVariableInput): TextTemplateVariable {
+    suspend fun updateTextTemplateVariable(input: UpdateTextTemplateVariableInput): TextTemplateVariable {
         val existingVariable = checkUpdateInput(input, TemplateVariableType.TEXT)
 
         return repository.updateTextTemplateVariable(existingVariable as TextTemplateVariable)
             ?: throw IllegalArgumentException("Failed to update text template variable with ID ${input.id}.")
     }
 
-    suspend fun updateNumberTemplateVariable(variable: UpdateNumberCreateTemplateVariableInput): NumberTemplateVariable {
+    suspend fun updateNumberTemplateVariable(variable: UpdateNumberTemplateVariableInput): NumberTemplateVariable {
         val existingVariable = checkUpdateInput(variable, TemplateVariableType.NUMBER)
 
         return repository.updateNumberTemplateVariable(existingVariable as NumberTemplateVariable)
             ?: throw IllegalArgumentException("Failed to update number template variable with ID ${variable.id}.")
     }
 
-    suspend fun updateDateTemplateVariable(input: UpdateDateCreateTemplateVariableInput): DateTemplateVariable {
+    suspend fun updateDateTemplateVariable(input: UpdateDateTemplateVariableInput): DateTemplateVariable {
         val existingVariable = checkUpdateInput(input, TemplateVariableType.DATE)
 
         return repository.updateDateTemplateVariable(existingVariable as DateTemplateVariable)
             ?: throw IllegalArgumentException("Failed to update date template variable with ID ${input.id}.")
     }
 
-    suspend fun updateSelectTemplateVariable(input: UpdateSelectCreateTemplateVariableInput): SelectTemplateVariable {
+    suspend fun updateSelectTemplateVariable(input: UpdateSelectTemplateVariableInput): SelectTemplateVariable {
         val existingVariable = checkUpdateInput(input, TemplateVariableType.SELECT)
 
         return repository.updateSelectTemplateVariable(existingVariable as SelectTemplateVariable)

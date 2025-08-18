@@ -2,7 +2,7 @@ import type {
     CreateSelectTemplateVariableMutation,
     UpdateSelectTemplateVariableMutation,
     DeleteTemplateVariableMutation,
-    TemplateSelectVariable,
+    SelectTemplateVariable,
     UpdateSelectTemplateVariableInput,
     Template,
     CreateSelectTemplateVariableInput,
@@ -13,40 +13,54 @@ export type SelectTemplateVariableSource =
     | UpdateSelectTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialSelectTemplateVariable = Partial<TemplateSelectVariable> & {
+type PartialSelectTemplateVariable = Partial<SelectTemplateVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a select template variable from any source to a consistent TemplateSelectVariable type
+ * Maps a select template variable from any source to a consistent SelectTemplateVariable type
  */
 const mapSelectTemplateVariable = (
     variable: PartialSelectTemplateVariable | null | undefined,
-    previousVariable?: TemplateSelectVariable | null,
-): TemplateSelectVariable => {
+    previousVariable?: SelectTemplateVariable | null,
+): SelectTemplateVariable => {
     if (!variable) {
-        // Create a minimal valid TemplateSelectVariable
+        // Create a minimal valid SelectTemplateVariable
         return {
-            id: "",
+            id: 0,
             name: "",
             description: null,
             required: false,
             order: 0,
-            preview_value: null,
+            previewValue: null,
             template: {
-                id: "",
+                id: 0,
                 name: "",
-                created_at: new Date(),
-                updated_at: new Date(),
+                order: 0,
+                category: {
+                    id: 0,
+                    name: "",
+                    description: null,
+                    imageUrl: null,
+                    order: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    templates: [],
+                    childCategories: [],
+                    parentCategory: null,
+                },
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                variables: [],
             } as Template,
-            type: "select",
-            created_at: new Date(),
-            updated_at: new Date(),
+            type: "SELECT",
+            createdAt: new Date(),
+            updatedAt: new Date(),
             multiple: false,
             options: [],
             values: [],
-        } as TemplateSelectVariable;
+        } as SelectTemplateVariable;
     }
 
     return {
@@ -56,46 +70,45 @@ const mapSelectTemplateVariable = (
             variable.description ?? previousVariable?.description ?? null,
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
-        preview_value:
-            variable.preview_value ?? previousVariable?.preview_value ?? null,
+        previewValue:
+            variable.selectPreviewValue ?? previousVariable?.selectPreviewValue ?? null,
         template:
             variable.template ??
             previousVariable?.template ??
             ({
-                id: "",
+                id: 0,
                 name: "",
-                created_at: new Date(),
-                updated_at: new Date(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
             } as Template),
-        type: "select",
-        created_at:
-            variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at:
-            variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
+        type: "SELECT",
+        createdAt:
+            variable.createdAt ?? previousVariable?.createdAt ?? new Date(),
+        updatedAt:
+            variable.updatedAt ?? previousVariable?.updatedAt ?? new Date(),
         multiple: variable.multiple ?? previousVariable?.multiple ?? false,
         options: variable.options ?? previousVariable?.options ?? [],
-        values: variable.values ?? previousVariable?.values ?? [],
-    } as TemplateSelectVariable;
+    } as SelectTemplateVariable;
 };
 
 /**
- * Maps a creation select template variable mutation result to a TemplateSelectVariable
+ * Maps a creation select template variable mutation result to a SelectTemplateVariable
  */
 const mapCreateSelectTemplateVariable = (
     source: CreateSelectTemplateVariableMutation,
-): TemplateSelectVariable => {
+): SelectTemplateVariable => {
     return mapSelectTemplateVariable(
         source.createSelectTemplateVariable as PartialSelectTemplateVariable,
     );
 };
 
 /**
- * Maps an update select template variable mutation result to a TemplateSelectVariable
+ * Maps an update select template variable mutation result to a SelectTemplateVariable
  */
 const mapUpdateSelectTemplateVariable = (
     source: UpdateSelectTemplateVariableMutation,
-    previousVariable?: TemplateSelectVariable,
-): TemplateSelectVariable => {
+    previousVariable?: SelectTemplateVariable,
+): SelectTemplateVariable => {
     return mapSelectTemplateVariable(
         source.updateSelectTemplateVariable as PartialSelectTemplateVariable,
         previousVariable,
@@ -103,12 +116,12 @@ const mapUpdateSelectTemplateVariable = (
 };
 
 /**
- * Maps a delete template variable mutation result to a TemplateSelectVariable
+ * Maps a delete template variable mutation result to a SelectTemplateVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: TemplateSelectVariable,
-): TemplateSelectVariable => {
+    previousVariable?: SelectTemplateVariable,
+): SelectTemplateVariable => {
     return mapSelectTemplateVariable(
         source.deleteTemplateVariable as PartialSelectTemplateVariable,
         previousVariable,
@@ -116,12 +129,12 @@ const mapDeleteTemplateVariable = (
 };
 
 /**
- * Maps any select template variable source to a single TemplateSelectVariable or null
+ * Maps any select template variable source to a single SelectTemplateVariable or null
  */
 export const mapSingleSelectTemplateVariable = (
     source: SelectTemplateVariableSource | undefined | null,
-    previousVariable?: TemplateSelectVariable,
-): TemplateSelectVariable | null => {
+    previousVariable?: SelectTemplateVariable,
+): SelectTemplateVariable | null => {
     if (!source) {
         return null;
     }
@@ -140,36 +153,33 @@ export const mapSingleSelectTemplateVariable = (
 };
 
 /**
- * Maps a TemplateSelectVariable to a SelectTemplateVariableInput
+ * Maps a SelectTemplateVariable to a SelectTemplateVariableInput
  */
 export const mapSelectTemplateVariableToInput = (
-    variable: TemplateSelectVariable,
+    variable: SelectTemplateVariable,
 ): UpdateSelectTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
         description: variable.description,
         required: variable.required,
-        order: variable.order,
-        preview_value: variable.preview_value,
-        template_id: variable.template.id,
-        multiple: variable.multiple,
-        options: variable.options,
+        previewValue: variable.selectPreviewValue,
+        options: variable?.options ?? [],
+        multiple: variable?.multiple ?? false,
     };
 };
 
 export const mapToCreateSelectTemplateVariableInput = (
-    source: TemplateSelectVariable | null | undefined,
+    source: SelectTemplateVariable | null | undefined,
 ): CreateSelectTemplateVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description ?? null,
-        order: source?.order ?? 0,
         multiple: source?.multiple ?? false,
         options: source?.options ?? [],
-        preview_value: source?.preview_value ?? null,
+        previewValue: source?.selectPreviewValue ?? null,
         required: source?.required ?? false,
-        template_id: source?.template?.id ?? "",
+        templateId: source?.template?.id ?? 0,
         };
     };
 

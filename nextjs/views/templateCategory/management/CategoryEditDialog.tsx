@@ -17,7 +17,7 @@ interface Props {
     category: TemplateCategory | null;
     categories: TemplateCategory[];
     onClose: () => void;
-    onSave: (data: { name: string; description?: string; parentId?: string | null }) => void;
+    onSave: (data: { name: string; description?: string; parentId?: number | null }) => void;
 }
 
 const CategoryEditDialog: React.FC<Props> = ({
@@ -30,7 +30,7 @@ const CategoryEditDialog: React.FC<Props> = ({
     const strings = useAppTranslation("templateCategoryTranslations");
     const [name, setName] = useState(category?.name ?? '');
     const [description, setDescription] = useState(category?.description ?? '');
-    const [parentId, setParentId] = useState<string | null>(category?.parentCategory?.id ?? null);
+    const [parentId, setParentId] = useState<number | null>(category?.parentCategory?.id ?? null);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -54,7 +54,7 @@ const CategoryEditDialog: React.FC<Props> = ({
         onSave({
             name,
             description: description || undefined,
-            parentId: category?.special_type ? undefined : parentId,
+            parentId: category?.categorySpecialType ? undefined : parentId,
         });
         handleClose();
     };
@@ -102,8 +102,7 @@ const CategoryEditDialog: React.FC<Props> = ({
                         onChange={(e) => setDescription(e.target.value)}
                     />
 
-                    
-                    {!category?.special_type && (
+                    {!category?.categorySpecialType && (
                         <Autocomplete
                             value={availableParentCategories.find(c => c.id === parentId) || null}
                             onChange={(_, newValue) => setParentId(newValue?.id ?? null)}

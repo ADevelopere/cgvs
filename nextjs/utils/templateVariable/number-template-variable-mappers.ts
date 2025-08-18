@@ -2,7 +2,7 @@ import type {
     CreateNumberTemplateVariableMutation,
     UpdateNumberTemplateVariableMutation,
     DeleteTemplateVariableMutation,
-    TemplateNumberVariable,
+    NumberTemplateVariable,
     UpdateNumberTemplateVariableInput,
     Template,
     CreateNumberTemplateVariableInput,
@@ -13,41 +13,54 @@ export type NumberTemplateVariableSource =
     | UpdateNumberTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialNumberTemplateVariable = Partial<TemplateNumberVariable> & {
+type PartialNumberTemplateVariable = Partial<NumberTemplateVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a number template variable from any source to a consistent TemplateNumberVariable type
+ * Maps a number template variable from any source to a consistent NumberTemplateVariable type
  */
 const mapNumberTemplateVariable = (
     variable: PartialNumberTemplateVariable | null | undefined,
-    previousVariable?: TemplateNumberVariable | null,
-): TemplateNumberVariable => {
+    previousVariable?: NumberTemplateVariable | null,
+): NumberTemplateVariable => {
     if (!variable) {
-        // Create a minimal valid TemplateNumberVariable
+        // Create a minimal valid NumberTemplateVariable
         return {
-            id: "",
+            id: 0,
             name: "",
             description: null,
             required: false,
             order: 0,
-            preview_value: null,
+            numberPreviewValue: null,
             template: {
-                id: "",
+                id: 0,
                 name: "",
-                created_at: new Date(),
-                updated_at: new Date(),
+                order: 0,
+                category: {
+                    id: 0,
+                    name: "",
+                    description: null,
+                    imageUrl: null,
+                    order: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    templates: [],
+                    childCategories: [],
+                    parentCategory: null,
+                },
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                variables: [],
             } as Template,
-            type: "number",
-            created_at: new Date(),
-            updated_at: new Date(),
-            min_value: null,
-            max_value: null,
-            decimal_places: null,
-            values: [],
-        } as TemplateNumberVariable;
+            type: "NUMBER",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            minValue: null,
+            maxValue: null,
+            decimalPlaces: null,
+        } as NumberTemplateVariable;
     }
 
     return {
@@ -58,47 +71,46 @@ const mapNumberTemplateVariable = (
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
         preview_value:
-            variable.preview_value ?? previousVariable?.preview_value ?? null,
+            variable.numberPreviewValue ?? previousVariable?.numberPreviewValue ?? null,
         template:
             variable.template ??
             previousVariable?.template ??
             ({
-                id: "",
+                id: 0,
                 name: "",
-                created_at: new Date(),
-                updated_at: new Date(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
             } as Template),
-        type: "number",
-        created_at:
-            variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at:
-            variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
-        min_value: variable.min_value ?? previousVariable?.min_value ?? null,
-        max_value: variable.max_value ?? previousVariable?.max_value ?? null,
-        decimal_places:
-            variable.decimal_places ?? previousVariable?.decimal_places ?? null,
-        values: variable.values ?? previousVariable?.values ?? [],
-    } as TemplateNumberVariable;
+        type: "NUMBER",
+        createdAt:
+            variable.createdAt ?? previousVariable?.createdAt ?? new Date(),
+        updatedAt:
+            variable.updatedAt ?? previousVariable?.updatedAt ?? new Date(),
+        minValue: variable.minValue ?? previousVariable?.minValue ?? null,
+        maxValue: variable.maxValue ?? previousVariable?.maxValue ?? null,
+        decimalPlaces:
+            variable.decimalPlaces ?? previousVariable?.decimalPlaces ?? null,
+    } as NumberTemplateVariable;
 };
 
 /**
- * Maps a creation number template variable mutation result to a TemplateNumberVariable
+ * Maps a creation number template variable mutation result to a NumberTemplateVariable
  */
 const mapCreateNumberTemplateVariable = (
     source: CreateNumberTemplateVariableMutation,
-): TemplateNumberVariable => {
+): NumberTemplateVariable => {
     return mapNumberTemplateVariable(
         source.createNumberTemplateVariable as PartialNumberTemplateVariable,
     );
 };
 
 /**
- * Maps an update number template variable mutation result to a TemplateNumberVariable
+ * Maps an update number template variable mutation result to a NumberTemplateVariable
  */
 const mapUpdateNumberTemplateVariable = (
     source: UpdateNumberTemplateVariableMutation,
-    previousVariable?: TemplateNumberVariable,
-): TemplateNumberVariable => {
+    previousVariable?: NumberTemplateVariable,
+): NumberTemplateVariable => {
     return mapNumberTemplateVariable(
         source.updateNumberTemplateVariable as PartialNumberTemplateVariable,
         previousVariable,
@@ -106,12 +118,12 @@ const mapUpdateNumberTemplateVariable = (
 };
 
 /**
- * Maps a delete template variable mutation result to a TemplateNumberVariable
+ * Maps a delete template variable mutation result to a NumberTemplateVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: TemplateNumberVariable,
-): TemplateNumberVariable => {
+    previousVariable?: NumberTemplateVariable,
+): NumberTemplateVariable => {
     return mapNumberTemplateVariable(
         source.deleteTemplateVariable as PartialNumberTemplateVariable,
         previousVariable,
@@ -119,12 +131,12 @@ const mapDeleteTemplateVariable = (
 };
 
 /**
- * Maps any number template variable source to a single TemplateNumberVariable or null
+ * Maps any number template variable source to a single NumberTemplateVariable or null
  */
 export const mapSingleNumberTemplateVariable = (
     source: NumberTemplateVariableSource | undefined | null,
-    previousVariable?: TemplateNumberVariable,
-): TemplateNumberVariable | null => {
+    previousVariable?: NumberTemplateVariable,
+): NumberTemplateVariable | null => {
     if (!source) {
         return null;
     }
@@ -143,37 +155,34 @@ export const mapSingleNumberTemplateVariable = (
 };
 
 /**
- * Maps a TemplateNumberVariable to a NumberTemplateVariableInput
+ * Maps a NumberTemplateVariable to a NumberTemplateVariableInput
  */
 export const mapNumberTemplateVariableToInput = (
-    variable: TemplateNumberVariable,
+    variable: NumberTemplateVariable,
 ): UpdateNumberTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
         description: variable.description,
         required: variable.required,
-        order: variable.order,
-        preview_value: variable.preview_value,
-        template_id: variable.template.id,
-        min_value: variable.min_value,
-        max_value: variable.max_value,
-        decimal_places: variable.decimal_places,
+        previewValue: variable.numberPreviewValue,
+        minValue: variable.minValue,
+        maxValue: variable.maxValue,
+        decimalPlaces: variable.decimalPlaces,
     };
 };
 
 export const mapToCreateNumberTemplateVariableInput = (
-    source: TemplateNumberVariable | null | undefined,
+    source: NumberTemplateVariable | null | undefined,
 ): CreateNumberTemplateVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description ?? null,
-        order: source?.order ?? 0,
-        min_value: source?.min_value ?? null,
-        max_value: source?.max_value ?? null,
-        decimal_places: source?.decimal_places ?? null,
-        preview_value: source?.preview_value ?? null,
+        minValue: source?.minValue ?? null,
+        maxValue: source?.maxValue ?? null,
+        decimalPlaces: source?.decimalPlaces ?? null,
+        previewValue: source?.numberPreviewValue ?? null,
         required: source?.required ?? false,
-        template_id: source?.template?.id ?? "",
+        templateId: source?.template?.id ?? 0,
     };
 };

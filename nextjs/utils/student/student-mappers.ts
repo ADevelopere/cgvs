@@ -5,7 +5,7 @@ import {
     StudentsQuery,
     UpdateStudentMutation,
     Student,
-    UpdateStudentInput,
+    UpdateStudentOptionalFieldsInput,
 } from "@/graphql/generated/types";
 
 export type StudentSource =
@@ -33,13 +33,13 @@ const mapStudent = (
         name: student.name,
         gender: student.gender ?? previousStudent?.gender ?? null,
         nationality: student.nationality ?? previousStudent?.nationality ?? null,
-        date_of_birth: student.date_of_birth ?? previousStudent?.date_of_birth ?? null,
+        dateOfBirth: student.dateOfBirth ?? previousStudent?.dateOfBirth ?? null,
         email: student.email ?? previousStudent?.email ?? null,
-        phone_number: student.phone_number ?? previousStudent?.phone_number ?? null,
-        created_at: student.created_at ?? previousStudent?.created_at ?? new Date(),
-        updated_at: student.updated_at ?? previousStudent?.updated_at ?? new Date(),
-        certificates: student.certificates ?? previousStudent?.certificates ?? [],
-        recipientGroups: student.recipientGroups ?? previousStudent?.recipientGroups ?? [],
+        phoneNumber: student.phoneNumber ?? previousStudent?.phoneNumber ?? null,
+        createdAt: student.createdAt ?? previousStudent?.createdAt ?? new Date(),
+        updatedAt: student.updatedAt ?? previousStudent?.updatedAt ?? new Date(),
+        // certificates: student.certificates ?? previousStudent?.certificates ?? [],
+        // recipientGroups: student.recipientGroups ?? previousStudent?.recipientGroups ?? [],
     } as Student;
 };
 
@@ -131,14 +131,14 @@ export const mapStudents = (
  */
 export const mapStudentToUpdateInput = (
     student: Student,
-): UpdateStudentInput => {
+): UpdateStudentOptionalFieldsInput => {
     return {
         id: student.id,
         name: student.name,
         gender: student.gender,
         nationality: student.nationality,
-        date_of_birth: student.date_of_birth,
+        dateOfBirth: student.dateOfBirth,
         email: student.email,
-        phone_number: student.phone_number,
+        phoneNumber: student.phoneNumber,
     };
 };

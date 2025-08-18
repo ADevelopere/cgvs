@@ -37,7 +37,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         regularCategories,
         createTemplate: addTemplate,
         updateTemplate,
-        moveTemplateToDeletionCategory,
+        suspendTemplate,
         trySelectCategory,
         setIsAddingTemplate,
         setOnNewTemplateCancel,
@@ -126,7 +126,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
         try {
             updateTemplate({
-                id: template.id,
                 input: mapTemplateToUpdateInput({ ...template, name: newName }),
             });
             return ""; // success
@@ -147,7 +146,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
     const handleEditTemplate = (updatedTemplate: Template) => {
         updateTemplate({
-            id: updatedTemplate.id,
             input: mapTemplateToUpdateInput(updatedTemplate),
         });
         setIsEditDialogOpen(false);
@@ -290,7 +288,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                 <Tooltip title={strings.delete}>
                                     <IconButton
                                         onClick={() =>
-                                            moveTemplateToDeletionCategory(
+                                            suspendTemplate(
                                                 template.id,
                                             )
                                         }

@@ -153,7 +153,7 @@ export const StudentTableManagementProvider: React.FC<{
 
             // Type conversion based on column
             switch (columnId) {
-                case "date_of_birth":
+                case "dateOfBirth":
                     input.dateOfBirth = value
                         ? new Date(value).toISOString().split("T")[0]
                         : null;
@@ -201,10 +201,10 @@ export const StudentTableManagementProvider: React.FC<{
                     case "nationality":
                         enhancedColumn.getIsValid = validateNationality;
                         break;
-                    case "date_of_birth":
+                    case "dateOfBirth":
                         enhancedColumn.getIsValid = validateDateOfBirth;
                         break;
-                    case "phone_number":
+                    case "phoneNumber":
                         enhancedColumn.getIsValid = validatePhoneNumber;
                         break;
                 }

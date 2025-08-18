@@ -105,7 +105,7 @@ type TemplateCategoryManagementContextType = {
      * Represents the special deleted category (special_type='deleted') that holds trashed templates.
      * This is a single category object that serves as a parent for all deleted templates.
      */
-    deletionCategory: TemplateCategory | null;
+    suspensionCategory: TemplateCategory | null;
     /**
      * Represents the currently selected template category.
      * When a category is selected, its associated templates are displayed. It's `null` if no category is currently selected.
@@ -338,16 +338,16 @@ export const TemplateCategoryManagementProvider: React.FC<{
         return regularCategories;
     }, [allCategoriesFromCache]);
 
-    const deletionCategoryFromCache = useMemo(() => {
-        const deletionCategory =
+    const suspensionCategoryFromCache = useMemo(() => {
+        const suspensionCategory =
             allCategoriesFromCache.find(
                 (cat) => cat.categorySpecialType === "Suspension",
             ) || null;
-        if (deletionCategory) {
+        if (suspensionCategory) {
             logger.log(
                 "Deletion category from cache:",
                 JSON.stringify(
-                    getSerializableTemplateCategory(deletionCategory),
+                    getSerializableTemplateCategory(suspensionCategory),
                     null,
                     2,
                 ),
@@ -355,7 +355,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         } else {
             logger.log("No deletion category found in cache.");
         }
-        return deletionCategory;
+        return suspensionCategory;
     }, [allCategoriesFromCache]);
 
     const sortedRegularCategories = useMemo(() => {
@@ -876,7 +876,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             fetchCategories,
             fetchError: apolloError || null,
             regularCategories: sortedRegularCategories,
-            deletionCategory: deletionCategoryFromCache,
+            suspensionCategory: suspensionCategoryFromCache,
             currentCategory: currentCategoryState,
             setCurrentCategory,
             trySelectCategory,
@@ -906,7 +906,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             fetchCategories,
             apolloError,
             sortedRegularCategories,
-            deletionCategoryFromCache,
+            suspensionCategoryFromCache,
             currentCategoryState,
             setCurrentCategory,
             trySelectCategory,

@@ -92,7 +92,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     }: {
         name: string;
         description?: string;
-        parentId?: string | null;
+        parentId?: number | null;
     }) => {
         if (categoryToEdit) {
             // TODO: Update the updateCategory function in the context to handle description and parentId

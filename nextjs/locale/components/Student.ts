@@ -6,12 +6,12 @@ type StudentTranslations = {
     // header columns, same as column id values
     name: string;
     email: string;
-    phone_number: string;
-    date_of_birth: string;
+    phoneNumber: string;
+    dateOfBirth: string;
     gender: string;
     nationality: string;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
 
     // actions and buttons
     actions: string;
