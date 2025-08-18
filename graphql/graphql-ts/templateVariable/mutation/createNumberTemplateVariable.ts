@@ -12,7 +12,7 @@ mutation createNumberTemplateVariable($input: CreateNumberCreateTemplateVariable
         minValue
         maxValue
         decimalPlaces
-        previewValue
+        numberPreviewValue
         template{
             id
             name

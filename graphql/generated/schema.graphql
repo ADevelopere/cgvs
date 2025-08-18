@@ -335,8 +335,9 @@ input CreateTextCreateTemplateVariableInput {
   templateId: Int!
 }
 
-type DateTemplateVariable {
+type DateTemplateVariable implements TemplateVariable {
   createdAt: LocalDateTime!
+  datePreviewValue: LocalDate
   description: String
   format: String
   id: Int!
@@ -344,7 +345,6 @@ type DateTemplateVariable {
   minDate: LocalDate
   name: String!
   order: Int!
-  previewValue: LocalDate
   required: Boolean!
   template: Template
   type: TemplateVariableType!
@@ -407,7 +407,7 @@ type Mutation {
   updateTextTemplateVariable(input: UpdateTextCreateTemplateVariableInput!): TextTemplateVariable!
 }
 
-type NumberTemplateVariable {
+type NumberTemplateVariable implements TemplateVariable {
   createdAt: LocalDateTime!
   decimalPlaces: Int
   description: String
@@ -415,8 +415,8 @@ type NumberTemplateVariable {
   maxValue: Float
   minValue: Float
   name: String!
+  numberPreviewValue: Float
   order: Int!
-  previewValue: Float
   required: Boolean!
   template: Template
   type: TemplateVariableType!
@@ -502,7 +502,7 @@ input RegisterInput {
   password: String!
 }
 
-type SelectTemplateVariable {
+type SelectTemplateVariable implements TemplateVariable {
   createdAt: LocalDateTime!
   description: String
   id: Int!
@@ -510,8 +510,8 @@ type SelectTemplateVariable {
   name: String!
   options: [String!]
   order: Int!
-  previewValue: String
   required: Boolean!
+  selectPreviewValue: String
   template: Template
   type: TemplateVariableType!
   updatedAt: LocalDateTime!
@@ -586,6 +586,7 @@ type Template {
   order: Int!
   preSuspensionCategory: TemplateCategory
   updatedAt: LocalDateTime!
+  variables: [TemplateVariable!]!
 }
 
 type TemplateCategory {
@@ -625,7 +626,7 @@ enum TemplateVariableType {
   TEXT
 }
 
-type TextTemplateVariable {
+type TextTemplateVariable implements TemplateVariable {
   createdAt: LocalDateTime!
   description: String
   id: Int!
@@ -634,9 +635,9 @@ type TextTemplateVariable {
   name: String!
   order: Int!
   pattern: String
-  previewValue: String
   required: Boolean!
   template: Template
+  textPreviewValue: String
   type: TemplateVariableType!
   updatedAt: LocalDateTime!
 }

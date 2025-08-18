@@ -32,7 +32,7 @@ class TemplateVariableService(
                 templateId = input.templateId,
                 name = input.name,
                 description = input.description,
-                previewValue = input.previewValue,
+                textPreviewValue = input.previewValue,
                 required = input.required,
                 order = order,
                 minLength = input.minLength,
@@ -54,7 +54,7 @@ class TemplateVariableService(
                 description = input.description,
                 required = input.required,
                 order = order,
-                previewValue = input.previewValue,
+                numberPreviewValue = input.previewValue,
                 minValue = input.minValue,
                 maxValue = input.maxValue,
                 decimalPlaces = input.decimalPlaces
@@ -74,7 +74,7 @@ class TemplateVariableService(
                 description = input.description,
                 required = input.required,
                 order = order,
-                previewValue = input.previewValue,
+                datePreviewValue = input.previewValue,
                 minDate = input.minDate,
                 maxDate = input.maxDate,
                 format = input.format
@@ -94,7 +94,7 @@ class TemplateVariableService(
                 description = input.description,
                 required = input.required,
                 order = order,
-                previewValue = input.previewValue,
+                selectPreviewValue = input.previewValue,
                 options = input.options,
                 multiple = input.multiple
             )
@@ -134,6 +134,10 @@ class TemplateVariableService(
             ?: throw IllegalArgumentException("Template variable with ID $id does not exist.")
         require(repository.deleteTemplateVariable(id)) { "Failed to delete template variable with ID $id." }
         return variable
+    }
+
+    suspend fun findByTemplateId(templateId: Int): List<TemplateVariable> {
+        return repository.findTemplateVariablesByTemplateId(templateId)
     }
 
 

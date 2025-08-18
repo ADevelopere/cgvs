@@ -8,7 +8,6 @@ mutation createTextTemplateVariable($input: CreateTextCreateTemplateVariableInpu
         name
         order
         pattern
-        previewValue
         required
         template{
             category{
@@ -93,6 +92,44 @@ mutation createTextTemplateVariable($input: CreateTextCreateTemplateVariableInpu
                                                             name
                                                             order
                                                             updatedAt
+                                                            variables{
+                                                                createdAt
+                                                                description
+                                                                id
+                                                                name
+                                                                order
+                                                                required
+                                                                template{
+                                                                    createdAt
+                                                                    description
+                                                                    id
+                                                                    imageUrl
+                                                                    name
+                                                                    order
+                                                                    preSuspensionCategory{
+                                                                        categorySpecialType
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        updatedAt
+                                                                    }
+                                                                    updatedAt
+                                                                    variables{
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        required
+                                                                        type
+                                                                        updatedAt
+                                                                    }
+                                                                }
+                                                                type
+                                                                updatedAt
+                                                            }
                                                         }
                                                         updatedAt
                                                     }
@@ -152,17 +189,9 @@ mutation createTextTemplateVariable($input: CreateTextCreateTemplateVariableInpu
             imageUrl
             name
             order
-            preSuspensionCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
+        textPreviewValue
         type
         updatedAt
     }

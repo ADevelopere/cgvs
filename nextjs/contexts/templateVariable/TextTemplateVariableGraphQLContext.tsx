@@ -44,9 +44,6 @@ export const useTextTemplateVariableGraphQL = () => {
     return context;
 };
 
-type TextTemplateVariableQueryVariables = {
-    id: string;
-};
 
 export const TextTemplateVariableGraphQLProvider: React.FC<{
     children: React.ReactNode;
@@ -73,7 +70,7 @@ export const TextTemplateVariableGraphQLProvider: React.FC<{
                         ...existingData.template,
                         variables: [
                             ...existingData.template.variables,
-                            data.createDateTemplateVariable,
+                            data.createTextTemplateVariable,
                         ],
                     },
                 },

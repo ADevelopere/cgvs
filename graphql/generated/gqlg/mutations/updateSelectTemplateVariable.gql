@@ -7,8 +7,8 @@ mutation updateSelectTemplateVariable($input: UpdateSelectCreateTemplateVariable
         name
         options
         order
-        previewValue
         required
+        selectPreviewValue
         template{
             category{
                 categorySpecialType
@@ -92,6 +92,44 @@ mutation updateSelectTemplateVariable($input: UpdateSelectCreateTemplateVariable
                                                             name
                                                             order
                                                             updatedAt
+                                                            variables{
+                                                                createdAt
+                                                                description
+                                                                id
+                                                                name
+                                                                order
+                                                                required
+                                                                template{
+                                                                    createdAt
+                                                                    description
+                                                                    id
+                                                                    imageUrl
+                                                                    name
+                                                                    order
+                                                                    preSuspensionCategory{
+                                                                        categorySpecialType
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        updatedAt
+                                                                    }
+                                                                    updatedAt
+                                                                    variables{
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        required
+                                                                        type
+                                                                        updatedAt
+                                                                    }
+                                                                }
+                                                                type
+                                                                updatedAt
+                                                            }
                                                         }
                                                         updatedAt
                                                     }
@@ -151,15 +189,6 @@ mutation updateSelectTemplateVariable($input: UpdateSelectCreateTemplateVariable
             imageUrl
             name
             order
-            preSuspensionCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
         type

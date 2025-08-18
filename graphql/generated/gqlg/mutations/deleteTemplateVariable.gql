@@ -89,6 +89,44 @@ mutation deleteTemplateVariable($id: Int!){
                                                             name
                                                             order
                                                             updatedAt
+                                                            variables{
+                                                                createdAt
+                                                                description
+                                                                id
+                                                                name
+                                                                order
+                                                                required
+                                                                template{
+                                                                    createdAt
+                                                                    description
+                                                                    id
+                                                                    imageUrl
+                                                                    name
+                                                                    order
+                                                                    preSuspensionCategory{
+                                                                        categorySpecialType
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        updatedAt
+                                                                    }
+                                                                    updatedAt
+                                                                    variables{
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        required
+                                                                        type
+                                                                        updatedAt
+                                                                    }
+                                                                }
+                                                                type
+                                                                updatedAt
+                                                            }
                                                         }
                                                         updatedAt
                                                     }
@@ -148,15 +186,6 @@ mutation deleteTemplateVariable($id: Int!){
             imageUrl
             name
             order
-            preSuspensionCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
         type

@@ -1,6 +1,7 @@
 mutation createDateTemplateVariable($input: CreateDateCreateTemplateVariableInput!){
     createDateTemplateVariable(input: $input){
         createdAt
+        datePreviewValue
         description
         format
         id
@@ -8,7 +9,6 @@ mutation createDateTemplateVariable($input: CreateDateCreateTemplateVariableInpu
         minDate
         name
         order
-        previewValue
         required
         template{
             category{
@@ -93,6 +93,44 @@ mutation createDateTemplateVariable($input: CreateDateCreateTemplateVariableInpu
                                                             name
                                                             order
                                                             updatedAt
+                                                            variables{
+                                                                createdAt
+                                                                description
+                                                                id
+                                                                name
+                                                                order
+                                                                required
+                                                                template{
+                                                                    createdAt
+                                                                    description
+                                                                    id
+                                                                    imageUrl
+                                                                    name
+                                                                    order
+                                                                    preSuspensionCategory{
+                                                                        categorySpecialType
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        updatedAt
+                                                                    }
+                                                                    updatedAt
+                                                                    variables{
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        required
+                                                                        type
+                                                                        updatedAt
+                                                                    }
+                                                                }
+                                                                type
+                                                                updatedAt
+                                                            }
                                                         }
                                                         updatedAt
                                                     }
@@ -152,15 +190,6 @@ mutation createDateTemplateVariable($input: CreateDateCreateTemplateVariableInpu
             imageUrl
             name
             order
-            preSuspensionCategory{
-                categorySpecialType
-                createdAt
-                description
-                id
-                name
-                order
-                updatedAt
-            }
             updatedAt
         }
         type

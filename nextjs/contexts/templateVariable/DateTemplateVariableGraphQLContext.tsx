@@ -62,7 +62,7 @@ export const DateTemplateVariableGraphQLProvider: React.FC<{
 
             // Add the new variable to the template's variables array
             cache.writeQuery({
-                query: Graphql.TemplateDocument,
+                query: Graphql.TemplateDocument,    
                 variables: { id: templateId },
                 data: {
                     template: {
