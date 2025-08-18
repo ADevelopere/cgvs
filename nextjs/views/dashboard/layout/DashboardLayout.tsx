@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import React, { useState, useEffect, useMemo } from "react";
 import { ToggleSideBarButton } from "./ToggleSideBarButton";

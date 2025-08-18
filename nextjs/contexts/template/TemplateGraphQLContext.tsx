@@ -18,8 +18,8 @@ type TemplateGraphQLContextType = {
      * @param variables - The templates query variables
      */
     paginatedTemplatesQuery: (
-        variables: Graphql.QueryPaginatedTemplatesArgs,
-    ) => Promise<Graphql.PaginatedTemplatesQuery>;
+        variables: Graphql.QueryTemplatesArgs,
+    ) => Promise<Graphql.TemplatesQuery>;
 
     templateConfigQuery: () => Promise<Graphql.TemplateConfigQuery>;
 
@@ -86,7 +86,7 @@ export const TemplateGraphQLProvider: React.FC<{
         skip: true,
     });
 
-    const templatesQueryRef = Graphql.usePaginatedTemplatesQuery({
+    const templatesQueryRef = Graphql.useTemplatesQuery({
         skip: true,
     });
 
@@ -107,7 +107,7 @@ export const TemplateGraphQLProvider: React.FC<{
     );
 
     const paginatedTemplatesQuery = useCallback(
-        async (variables: Graphql.QueryPaginatedTemplatesArgs) => {
+        async (variables: Graphql.QueryTemplatesArgs) => {
             const result = await templatesQueryRef.refetch(variables);
             if (!result.data) {
                 throw new Error("No data returned from templates query");

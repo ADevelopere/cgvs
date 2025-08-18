@@ -1,5 +1,6 @@
+"use client";
+
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
     Avatar,
     IconButton,
@@ -16,11 +17,12 @@ import {
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useRouter } from "next/navigation";
 
 const UserMenu: React.FC = () => {
     const strings = useAppTranslation("headerTranslations");
     const { user, logout } = useAuth();
-    const navigate = useNavigate();
+    const router = useRouter();
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -34,7 +36,7 @@ const UserMenu: React.FC = () => {
     const handleLogout = async () => {
         handleClose(); // Close the menu first
         logout();
-        navigate("/login", { replace: true });
+        router.push("/login");
     };
 
     return (
@@ -55,7 +57,7 @@ const UserMenu: React.FC = () => {
                 <MenuItem
                     onClick={() => {
                         handleClose();
-                        navigate("/admin/profile");
+                        router.push("/admin/profile");
                     }}
                 >
                     <ListItemIcon>
@@ -66,7 +68,7 @@ const UserMenu: React.FC = () => {
                 <MenuItem
                     onClick={() => {
                         handleClose();
-                        navigate("/admin/preferences");
+                        router.push("/admin/preferences");
                     }}
                 >
                     <ListItemIcon>

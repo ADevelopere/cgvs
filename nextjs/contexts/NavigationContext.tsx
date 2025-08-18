@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { NavigationPageItem } from './adminLayout.types';
