@@ -20,6 +20,10 @@ export function getStorageKey(prefix: string, key: string): string {
 
 // Generic save to localStorage with error handling
 export function saveToLocalStorage<T>(key: string, data: T): void {
+    if (typeof window === 'undefined') {
+        console.warn('localStorage is not available in this environment.');
+        return;
+    }
     try {
         localStorage.setItem(key, JSON.stringify(data));
     } catch (error) {
@@ -29,6 +33,10 @@ export function saveToLocalStorage<T>(key: string, data: T): void {
 
 // Generic load from localStorage with error handling
 export function loadFromLocalStorage<T>(key: string): T | null {
+    if (typeof window === 'undefined') {
+        console.warn('localStorage is not available in this environment.');
+        return null;
+    }
     try {
         const item = localStorage.getItem(key);
         return item ? JSON.parse(item) : null;

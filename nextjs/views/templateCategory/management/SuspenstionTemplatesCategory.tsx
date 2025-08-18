@@ -11,16 +11,16 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
 
 interface TemplateRow {
-    id: string;
+    id: number;
     name: string;
     createdAt: string;
     imageUrl: string | null;
 }
 
-const DeletionTemplatesCategory: React.FC = () => {
+const SuspenstionTemplatesCategory: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
     const { theme } = useAppTheme();
-    const { suspensionCategory, suspendTemplate } =
+    const { suspensionCategory, unsuspendTemplate } =
         useTemplateCategoryManagement();
     const [sortModel, setSortModel] = useState<GridSortModel>([
         {
@@ -89,7 +89,7 @@ const DeletionTemplatesCategory: React.FC = () => {
                 <Button
                     variant="outlined"
                     size="small"
-                    onClick={() => suspendTemplate(params.row.id)}
+                    onClick={() => unsuspendTemplate(params.row.id)}
                     color="primary"
                 >
                     {strings.restoreTemplate}
@@ -99,7 +99,7 @@ const DeletionTemplatesCategory: React.FC = () => {
     ];
 
     const rows: TemplateRow[] = templates.map((template) => ({
-        id: template.id.toString(),
+        id: template.id,
         name: template.name,
         createdAt: template.createdAt,
         imageUrl: template.imageUrl ?? null,
@@ -147,4 +147,4 @@ const DeletionTemplatesCategory: React.FC = () => {
     );
 };
 
-export default DeletionTemplatesCategory;
+export default SuspenstionTemplatesCategory;

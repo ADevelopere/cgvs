@@ -44,14 +44,11 @@ class TemplateService(
             "Cannot create template in a deletion category."
         }
 
-        val order = templateRepository.findMaxOrderByCategoryId(categoryId) + 1
-
         val template = templateRepository.create(
             Template(
                 name = input.name,
                 description = input.description,
                 categoryId = categoryId,
-                order = order,
             )
         )
 
@@ -115,6 +112,10 @@ class TemplateService(
         val suspensionCategory = templateCategoryRepository.suspensionCategory()
             ?: throw IllegalArgumentException("Suspension category does not exist.")
 
+        check(existingTemplate.categoryId != suspensionCategory.id) {
+            "Template with ID $id is already suspended."
+        }
+
         val suspendedTemplate = existingTemplate.copy(
             categoryId = suspensionCategory.id,
             preSuspensionCategoryId = existingTemplate.categoryId
@@ -135,7 +136,7 @@ class TemplateService(
             ?: throw IllegalArgumentException("Main category does not exist.")
 
         // Validate it is suspended
-        check(existingTemplate.preSuspensionCategoryId != null) {
+        check(existingTemplate.categoryId == suspensionCategory.id) {
             throw IllegalArgumentException("Template with ID $id is not suspended.")
         }
 
@@ -143,18 +144,16 @@ class TemplateService(
             throw IllegalArgumentException("Template with ID $id is not in the suspension category.")
         }
 
-        val restoredTemplate = templateCategoryRepository.findById(existingTemplate.preSuspensionCategoryId)
-            ?.let { preSuspensionCategory ->
-                existingTemplate.copy(
-                    categoryId = preSuspensionCategory.id,
-                    preSuspensionCategoryId = null
-                )
-            } ?: existingTemplate.copy(
-            categoryId = mainCategory.id,
+        val preSuspensionCategory = existingTemplate.preSuspensionCategoryId?.let {
+            templateCategoryRepository.findById(it)
+        }
+
+        val unsuspendTemplate = existingTemplate.copy(
+            categoryId = preSuspensionCategory?.id ?: mainCategory.id,
             preSuspensionCategoryId = null
         )
 
-        return templateRepository.update(id, restoredTemplate)
+        return templateRepository.update(id, unsuspendTemplate)
     }
 
     suspend fun findByIds(ids: List<Int>): List<Template> {

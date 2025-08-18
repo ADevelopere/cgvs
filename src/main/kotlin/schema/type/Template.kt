@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
+import services.StorageService
 import util.now
 import java.util.concurrent.CompletableFuture
 
@@ -16,9 +17,9 @@ data class Template(
     val id: Int = 0,
     val name: String,
     val description: String? = null,
-    val imageUrl: String? = null,
+    @GraphQLIgnore val imageFileName: String? = null,
     @GraphQLIgnore val categoryId: Int,
-    val order: Int,
+    val order: Int = 0,
     @GraphQLIgnore val preSuspensionCategoryId: Int? = null,
     val createdAt: LocalDateTime? = now(),
     val updatedAt: LocalDateTime? = now()
@@ -38,6 +39,12 @@ data class Template(
     fun variables(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateVariable>?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateVariablesDataLoader.dataLoaderName, id
+        )
+    }
+
+    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String?> {
+        return CompletableFuture.completedFuture(
+            if (imageFileName != null) StorageService.TEMPLATE_BASE_URL + imageFileName else null
         )
     }
 }

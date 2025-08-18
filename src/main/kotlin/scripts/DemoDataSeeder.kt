@@ -238,7 +238,7 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
             val template = Template(
                 name = "نموذج ${category.name}",
                 description = "نموذج تجريبي لـ${category.name}",
-                imageUrl = demoImages[index % demoImages.size],
+                imageFileName = demoImages[index % demoImages.size],
                 categoryId = category.id,
                 order = 1,
                 createdAt = currentTime,

@@ -10,6 +10,7 @@ import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.select
@@ -36,12 +37,14 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
     }
 
     suspend fun create(template: Template): Template = dbQuery {
+        val newOrder = runBlocking { findMaxOrderByCategoryId(template.categoryId) + 1 }
+
         val insertStatement = Templates.insert {
             it[name] = template.name
             it[description] = template.description
-            it[imageUrl] = template.imageUrl
             it[categoryId] = template.categoryId
-            it[order] = template.order
+            it[imageFileName] = template.imageFileName
+            it[order] = newOrder
             it[createdAt] = now()
             it[updatedAt] = now()
         }
@@ -89,9 +92,9 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
             Templates.update({ Templates.id eq id }) {
                 it[name] = template.name
                 it[description] = template.description
-                it[imageUrl] = template.imageUrl
                 it[categoryId] = template.categoryId
                 it[order] = template.order
+                it[preSuspensionCategoryId] = template.preSuspensionCategoryId
                 it[updatedAt] = now()
             }
         }
@@ -118,17 +121,14 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
     }
 
     private fun rowToTemplate(row: ResultRow): Template {
-        val imgFileName = row[Templates.imageUrl]
-        val imgUrl = if (imgFileName != null) StorageService.TEMPLATE_BASE_URL + imgFileName else null
-
-
         return Template(
             id = row[Templates.id],
             name = row[Templates.name],
             description = row[Templates.description],
-            imageUrl = imgUrl,
+            imageFileName = row[Templates.imageFileName],
             categoryId = row[Templates.categoryId],
             order = row[Templates.order],
+            preSuspensionCategoryId = row[Templates.preSuspensionCategoryId],
             createdAt = row[Templates.createdAt],
             updatedAt = row[Templates.updatedAt]
         )
