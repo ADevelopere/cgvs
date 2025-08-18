@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { NodeProps } from "@xyflow/react";
@@ -15,9 +17,9 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
     });
 
     useEffect(() => {
-        if (template?.image_url) {
+        if (template?.imageUrl) {
             const img = new Image();
-            img.src = template.image_url;
+            img.src = template.imageUrl;
             img.onload = () => {
                 setDimensions({
                     width: img.width,
@@ -25,7 +27,7 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 });
             };
         }
-    }, [template?.image_url]);
+    }, [template?.imageUrl]);
 
     return (
         <div
@@ -35,7 +37,7 @@ const BackgroundImageNode: React.FC<NodeProps> = () => {
                 width: `${dimensions.width}px`,
                 minWidth: `${dimensions.width}px`,
                 backgroundImage: `url(${
-                template?.image_url ?? 
+                template?.imageUrl ??
                 TEMPLATE_IMAGE_PLACEHOLDER_URL})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",

@@ -1,3 +1,5 @@
+"use client";
+
 import { Grid, Paper, Stack, Box, IconButton, Tooltip } from "@mui/material";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import ImportExport from "./ImportExport";

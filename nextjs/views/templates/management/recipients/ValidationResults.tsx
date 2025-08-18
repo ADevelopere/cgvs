@@ -1,3 +1,5 @@
+"use client";
+
 import { Alert, Box, Paper, SxProps, Theme, Typography } from '@mui/material';
 import { useTemplateRecipients } from '@/contexts/template/TemplateRecipientsContext';
 

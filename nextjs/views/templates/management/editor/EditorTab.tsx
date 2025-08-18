@@ -1,3 +1,5 @@
+"use client";
+
 import EditorPaneViewController from "@/components/editorPane/EditorPaneViewController";
 import { Box } from "@mui/material";
 import ReactFlowEditor from "./ReactFlowEditor";

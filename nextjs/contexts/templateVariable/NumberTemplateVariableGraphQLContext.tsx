@@ -46,7 +46,7 @@ export const useNumberTemplateVariableGraphQL = () => {
 
 export const NumberTemplateVariableGraphQLProvider: React.FC<{
     children: React.ReactNode;
-    templateId: string;
+    templateId: number;
 }> = ({ children, templateId }) => {
     // Create number template variable mutation
     const [mutateCreate] = Graphql.useCreateNumberTemplateVariableMutation({

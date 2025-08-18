@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo } from 'react';
 import {
     Box,
@@ -19,7 +21,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useTemplateVariables } from '@/contexts/template/TemplateVariablesContext';
 import { useTemplateRecipients } from '@/contexts/template/TemplateRecipientsContext';
 import { validateVariableValue } from '@/utils/template/validation';
-import { TemplateVariable, TemplateVariableType } from '@/contexts/template/template.types';
+import { TemplateVariable } from '@/contexts/template/template.types';
 
 export default function NewRecipientForm() {
     const { variables } = useTemplateVariables();
