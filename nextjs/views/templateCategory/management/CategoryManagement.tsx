@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
@@ -83,7 +85,7 @@ const This: React.FC = () => {
     return (
         <>
             {fetchErrorView ? (
-                { fetchErrorView }
+                fetchErrorView
             ) : (
                 <Box
                     sx={{
@@ -237,17 +239,19 @@ const TemplateCategoryManagement: React.FC = () => {
     }, []);
 
     return (
-        <Box
-            sx={{
-                top: `${appBarHeight}px`,
-                height: `calc(100vh - ${appBarHeight}px - 48px)`,
-                display: "flex",
-                flexDirection: "column",
-                p: 3,
-            }}
-        >
-            <This />
-        </Box>
+        <TemplateCategoryManagementProvider>
+            <Box
+                sx={{
+                    top: `${appBarHeight}px`,
+                    height: `calc(100vh - ${appBarHeight}px - 48px)`,
+                    display: "flex",
+                    flexDirection: "column",
+                    p: 3,
+                }}
+            >
+                <This />
+            </Box>
+        </TemplateCategoryManagementProvider>
     );
 };
 

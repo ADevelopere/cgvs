@@ -23,7 +23,9 @@ import context.CustomDataFetcherExceptionHandler
 import hooks.customSchemaGeneratorHooks
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
+import schema.dataloaders.TemplateCategoryTemplatesDataLoader
 import schema.dataloaders.TemplateDataLoader
+import schema.dataloaders.TemplateVariablesDataLoader
 import schema.mutation.StudentMutation
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
@@ -73,7 +75,9 @@ fun Application.graphQLModule() {
             dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(
                 TemplateCategoryDataLoader,
                 TemplateCategoryChildrenDataLoader,
-                TemplateDataLoader
+                TemplateCategoryTemplatesDataLoader,
+                TemplateDataLoader,
+                TemplateVariablesDataLoader,
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }
