@@ -60,24 +60,11 @@ const routes: RouteObject[] = [
     },
     {
         path: "/admin",
-        element: (
-            <WithAuth>
-                <AdminLayout />
-            </WithAuth>
-        ),
         errorElement: <RouteError />,
         children: [
             {
-                index: true,
-                element: <DashboardPage />,
-            },
-            {
                 path: "table",
                 element: <AppContent />,
-            },
-            {
-                path: "dashboard",
-                element: <DashboardPage />,
             },
             {
                 path: "categories",

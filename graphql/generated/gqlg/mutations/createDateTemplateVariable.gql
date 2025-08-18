@@ -1,4 +1,4 @@
-mutation createDateTemplateVariable($input: CreateDateCreateTemplateVariableInput!){
+mutation createDateTemplateVariable($input: CreateDateTemplateVariableInput!){
     createDateTemplateVariable(input: $input){
         createdAt
         datePreviewValue

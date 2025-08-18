@@ -13,7 +13,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useAppTheme } from "@/contexts/ThemeContext";
 // Base interface for tree items with required id
 export interface BaseTreeItem {
-    id: string;
+    id: string | number;
     [key: string]: any;
 }
 
@@ -56,11 +56,11 @@ export function TreeView<T extends BaseTreeItem>({
 }) {
     const { isRtl } = useAppTheme();
 
-    const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+    const [expandedItems, setExpandedItems] = useState<Set<string | number>>(new Set());
     const [searchTerm, setSearchTerm] = useState("");
 
     // Function to toggle expand/collapse
-    const toggleExpand = (itemId: string, event: React.MouseEvent) => {
+    const toggleExpand = (itemId: string | number, event: React.MouseEvent) => {
         event.stopPropagation();
         setExpandedItems((prev) => {
             const newSet = new Set(prev);
@@ -170,9 +170,9 @@ export function TreeView<T extends BaseTreeItem>({
     useEffect(() => {
         if (!searchTerm.trim()) return;
 
-        const itemsToExpand = new Set<string>();
+        const itemsToExpand = new Set<string | number>();
 
-        const findAndExpandParents = (items: T[], parentIds: string[] = []) => {
+        const findAndExpandParents = (items: T[], parentIds: (string | number)[] = []) => {
             items.forEach((item) => {
                 const currentPath = [...parentIds, item.id];
 
@@ -209,9 +209,9 @@ export function TreeView<T extends BaseTreeItem>({
             // Find and expand all parent nodes
             const findParents = (
                 items: T[],
-                targetId: string,
-                path: string[] = [],
-            ): string[] | null => {
+                targetId: string | number,
+                path: (string | number)[] = [],
+            ): (string | number)[] | null => {
                 for (const item of items) {
                     if (item.id === targetId) {
                         return path;

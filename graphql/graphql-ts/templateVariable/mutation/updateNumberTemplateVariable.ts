@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const UPDATE_NUMBER_TEMPLATE_VARIABLE = gql`
-mutation updateNumberTemplateVariable($input: UpdateNumberCreateTemplateVariableInput!){
+mutation updateNumberTemplateVariable($input: UpdateNumberTemplateVariableInput!){
     updateNumberTemplateVariable(input: $input){
         id
         name

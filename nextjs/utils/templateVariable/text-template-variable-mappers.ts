@@ -2,7 +2,7 @@ import type {
     CreateTextTemplateVariableMutation,
     UpdateTextTemplateVariableMutation,
     DeleteTemplateVariableMutation,
-    TemplateTextVariable,
+    TextTemplateVariable,
     UpdateTextTemplateVariableInput,
     Template,
     CreateTextTemplateVariableInput,
@@ -13,40 +13,53 @@ export type TextTemplateVariableSource =
     | UpdateTextTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialTextTemplateVariable = Partial<TemplateTextVariable> & {
+type PartialTextTemplateVariable = Partial<TextTemplateVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a text template variable from any source to a consistent TemplateTextVariable type
+ * Maps a text template variable from any source to a consistent TextTemplateVariable type
  */
 const mapTextTemplateVariable = (
     variable: PartialTextTemplateVariable | null | undefined,
-    previousVariable?: TemplateTextVariable | null,
-): TemplateTextVariable => {
+    previousVariable?: TextTemplateVariable | null,
+): TextTemplateVariable => {
     if (!variable) {
-        // Create a minimal valid TemplateTextVariable
+        // Create a minimal valid TextTemplateVariable
         return {
-            id: "",
+            id: 0,
             name: "",
             description: null,
             required: false,
             order: 0,
-            preview_value: null,
+            previewValue: null,
             template: {
-                id: "",
+                id: 0,
                 name: "",
-                created_at: new Date(),
-                updated_at: new Date(),
+                order: 0,
+                category: {
+                    id: 0,
+                    name: "",
+                    description: null,
+                    imageUrl: null,
+                    order: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    templates: [],
+                    childCategories: [],
+                    parentCategory: null,
+                },
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                variables: [],
             } as Template,
-            type: "text",
-            created_at: new Date(),
-            updated_at: new Date(),
-            min_length: null,
-            max_length: null,
-            values: [],
-        } as TemplateTextVariable;
+            type: "TEXT",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            minLength: null,
+            maxLength: null,
+        } as TextTemplateVariable;
     }
 
     return {
@@ -56,46 +69,45 @@ const mapTextTemplateVariable = (
             variable.description ?? previousVariable?.description ?? null,
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
-        preview_value:
-            variable.preview_value ?? previousVariable?.preview_value ?? null,
+        previewValue:
+            variable.textPreviewValue ?? previousVariable?.textPreviewValue ?? null,
         template:
             variable.template ??
             previousVariable?.template ??
             ({
-                id: "",
+                id: 0,
                 name: "",
-                created_at: new Date(),
-                updated_at: new Date(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
             } as Template),
-        type: "text",
-        created_at:
-            variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at:
-            variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
-        min_length: variable.min_length ?? previousVariable?.min_length ?? null,
-        max_length: variable.max_length ?? previousVariable?.max_length ?? null,
-        values: variable.values ?? previousVariable?.values ?? [],
-    } as TemplateTextVariable;
+        type: "TEXT",
+        createdAt:
+            variable.createdAt ?? previousVariable?.createdAt ?? new Date(),
+        updatedAt:
+            variable.updatedAt ?? previousVariable?.updatedAt ?? new Date(),
+        minLength: variable.minLength ?? previousVariable?.minLength ?? null,
+        maxLength: variable.maxLength ?? previousVariable?.maxLength ?? null,
+    } as TextTemplateVariable;
 };
 
 /**
- * Maps a creation text template variable mutation result to a TemplateTextVariable
+ * Maps a creation text template variable mutation result to a TextTemplateVariable
  */
 const mapCreateTextTemplateVariable = (
     source: CreateTextTemplateVariableMutation,
-): TemplateTextVariable => {
+): TextTemplateVariable => {
     return mapTextTemplateVariable(
         source.createTextTemplateVariable as PartialTextTemplateVariable,
     );
 };
 
 /**
- * Maps an update text template variable mutation result to a TemplateTextVariable
+ * Maps an update text template variable mutation result to a TextTemplateVariable
  */
 const mapUpdateTextTemplateVariable = (
     source: UpdateTextTemplateVariableMutation,
-    previousVariable?: TemplateTextVariable,
-): TemplateTextVariable => {
+    previousVariable?: TextTemplateVariable,
+): TextTemplateVariable => {
     return mapTextTemplateVariable(
         source.updateTextTemplateVariable as PartialTextTemplateVariable,
         previousVariable,
@@ -103,12 +115,12 @@ const mapUpdateTextTemplateVariable = (
 };
 
 /**
- * Maps a delete template variable mutation result to a TemplateTextVariable
+ * Maps a delete template variable mutation result to a TextTemplateVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: TemplateTextVariable,
-): TemplateTextVariable => {
+    previousVariable?: TextTemplateVariable,
+): TextTemplateVariable => {
     return mapTextTemplateVariable(
         source.deleteTemplateVariable as PartialTextTemplateVariable,
         previousVariable,
@@ -116,12 +128,12 @@ const mapDeleteTemplateVariable = (
 };
 
 /**
- * Maps any text template variable source to a single TemplateTextVariable or null
+ * Maps any text template variable source to a single TextTemplateVariable or null
  */
 export const mapSingleTextTemplateVariable = (
     source: TextTemplateVariableSource | undefined | null,
-    previousVariable?: TemplateTextVariable,
-): TemplateTextVariable | null => {
+    previousVariable?: TextTemplateVariable,
+): TextTemplateVariable | null => {
     if (!source) {
         return null;
     }
@@ -140,37 +152,34 @@ export const mapSingleTextTemplateVariable = (
 };
 
 /**
- * Maps a TemplateTextVariable to a TextTemplateVariableInput
+ * Maps a TextTemplateVariable to a TextTemplateVariableInput
  */
 export const mapTextTemplateVariableToInput = (
-    variable: TemplateTextVariable,
+    variable: TextTemplateVariable,
 ): UpdateTextTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
         description: variable.description,
         required: variable.required,
-        order: variable.order,
-        preview_value: variable.preview_value,
-        template_id: variable.template.id,
-        min_length: variable.min_length,
-        max_length: variable.max_length,
+        previewValue: variable.textPreviewValue,
+        minLength: variable.minLength,
+        maxLength: variable.maxLength,
     };
 };
 
 
 export const mapToCreateTextTemplateVariableInput = (
-    source: TemplateTextVariable | null | undefined,
+    source: TextTemplateVariable | null | undefined,
 ): CreateTextTemplateVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description ?? null,
-        order: source?.order ?? 0,
-        min_length: source?.min_length ?? null,
-        max_length: source?.max_length ?? null,
+        minLength: source?.minLength ?? null,
+        maxLength: source?.maxLength ?? null,
         pattern: source?.pattern ?? null,
-        preview_value: source?.preview_value ?? null,
+        previewValue: source?.textPreviewValue ?? null,
         required: source?.required ?? false,
-        template_id: source?.template?.id ?? "",
+        templateId: source?.template?.id ?? 0,
     };
 };

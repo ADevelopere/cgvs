@@ -1579,7 +1579,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "CreateDateCreateTemplateVariableInput",
+        "name": "CreateDateTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -1699,7 +1699,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "CreateNumberCreateTemplateVariableInput",
+        "name": "CreateNumberTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -1819,7 +1819,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "CreateSelectCreateTemplateVariableInput",
+        "name": "CreateSelectTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -2139,7 +2139,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "CreateTextCreateTemplateVariableInput",
+        "name": "CreateTextTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -2634,7 +2634,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "CreateDateCreateTemplateVariableInput",
+                    "name": "CreateDateTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -2667,7 +2667,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "CreateNumberCreateTemplateVariableInput",
+                    "name": "CreateNumberTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -2700,7 +2700,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "CreateSelectCreateTemplateVariableInput",
+                    "name": "CreateSelectTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -2832,7 +2832,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "CreateTextCreateTemplateVariableInput",
+                    "name": "CreateTextTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -3125,7 +3125,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "UpdateDateCreateTemplateVariableInput",
+                    "name": "UpdateDateTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -3158,7 +3158,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "UpdateNumberCreateTemplateVariableInput",
+                    "name": "UpdateNumberTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -3191,7 +3191,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "UpdateSelectCreateTemplateVariableInput",
+                    "name": "UpdateSelectTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -3319,7 +3319,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "UpdateTextCreateTemplateVariableInput",
+                    "name": "UpdateTextTemplateVariableInput",
                     "ofType": null
                   }
                 },
@@ -6029,7 +6029,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "UpdateDateCreateTemplateVariableInput",
+        "name": "UpdateDateTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -6149,7 +6149,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "UpdateNumberCreateTemplateVariableInput",
+        "name": "UpdateNumberTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -6269,7 +6269,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "UpdateSelectCreateTemplateVariableInput",
+        "name": "UpdateSelectTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,
@@ -6629,7 +6629,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "UpdateTextCreateTemplateVariableInput",
+        "name": "UpdateTextTemplateVariableInput",
         "description": null,
         "isOneOf": false,
         "fields": null,

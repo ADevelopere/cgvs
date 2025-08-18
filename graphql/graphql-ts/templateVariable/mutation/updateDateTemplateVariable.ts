@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const UPDATE_DATE_TEMPLATE_VARIABLE = gql`
-mutation updateDateTemplateVariable($input: UpdateDateCreateTemplateVariableInput!){
+mutation updateDateTemplateVariable($input: UpdateDateTemplateVariableInput!){
     updateDateTemplateVariable(input: $input){
         id
         name

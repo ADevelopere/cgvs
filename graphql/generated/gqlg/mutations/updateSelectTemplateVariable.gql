@@ -1,4 +1,4 @@
-mutation updateSelectTemplateVariable($input: UpdateSelectCreateTemplateVariableInput!){
+mutation updateSelectTemplateVariable($input: UpdateSelectTemplateVariableInput!){
     updateSelectTemplateVariable(input: $input){
         createdAt
         description

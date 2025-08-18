@@ -2,10 +2,10 @@ import type {
     CreateDateTemplateVariableMutation,
     UpdateDateTemplateVariableMutation,
     DeleteTemplateVariableMutation,
-    TemplateDateVariable,
+    DateTemplateVariable,
     UpdateDateTemplateVariableInput,
     Template,
-    CreateDateTemplateVariableInput
+    CreateDateTemplateVariableInput,
 } from "@/graphql/generated/types";
 
 export type DateTemplateVariableSource =
@@ -13,77 +13,102 @@ export type DateTemplateVariableSource =
     | UpdateDateTemplateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialDateTemplateVariable = Partial<TemplateDateVariable> & { id: string; name: string };
+type PartialDateTemplateVariable = Partial<DateTemplateVariable> & {
+    id: string;
+    name: string;
+};
 
 /**
- * Maps a date template variable from any source to a consistent TemplateDateVariable type
+ * Maps a date template variable from any source to a consistent DateTemplateVariable type
  */
 const mapDateTemplateVariable = (
     variable: PartialDateTemplateVariable | null | undefined,
-    previousVariable?: TemplateDateVariable | null,
-): TemplateDateVariable => {
+    previousVariable?: DateTemplateVariable | null,
+): DateTemplateVariable => {
     if (!variable) {
-        // Create a minimal valid TemplateDateVariable
+        // Create a minimal valid DateTemplateVariable
         return {
-            id: '',
-            name: '',
+            id: 0,
+            name: "",
             description: null,
             required: false,
             order: 0,
-            preview_value: null,
+            datePreviewValue: null,
             template: {
-                id: '',
-                name: '',
-                created_at: new Date(),
-                updated_at: new Date(),
+                id: 0,
+                name: "",
+                order: 0,
+                category: {
+                    id: 0,
+                    name: "",
+                    description: null,
+                    imageUrl: null,
+                    order: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    templates: [],
+                    childCategories: [],
+                    parentCategory: null,
+                },
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                variables: [],
             } as Template,
-            type: 'date',
-            created_at: new Date(),
-            updated_at: new Date(),
-            min_date: null,
-            max_date: null,
+            type: "DATE",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            minDate: null,
+            maxDate: null,
             format: null,
-            values: []
-        } as TemplateDateVariable;
+        } as DateTemplateVariable;
     }
 
     return {
         id: variable.id,
         name: variable.name,
-        description: variable.description ?? previousVariable?.description ?? null,
+        description:
+            variable.description ?? previousVariable?.description ?? null,
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
-        preview_value: variable.preview_value ?? previousVariable?.preview_value ?? null,
-        template: variable.template ?? previousVariable?.template ?? {
-            id: '',
-            name: '',
-            created_at: new Date(),
-            updated_at: new Date(),
-        } as Template,
-        type: 'date',
-        created_at: variable.created_at ?? previousVariable?.created_at ?? new Date(),
-        updated_at: variable.updated_at ?? previousVariable?.updated_at ?? new Date(),
-        min_date: variable.min_date ?? previousVariable?.min_date ?? null,
-        max_date: variable.max_date ?? previousVariable?.max_date ?? null,
+        // previewValue: variable.preview_value ?? previousVariable?.preview_value ?? null,
+        template:
+            variable.template ??
+            previousVariable?.template ??
+            ({
+                id: 0,
+                name: "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            } as Template),
+        type: "DATE", // Ensure this matches the expected TemplateVariableType
+        createdAt:
+            variable.createdAt ?? previousVariable?.createdAt ?? new Date(),
+        updatedAt:
+            variable.updatedAt ?? previousVariable?.updatedAt ?? new Date(),
+        minDate: variable.minDate ?? previousVariable?.minDate ?? null,
+        maxDate: variable.maxDate ?? previousVariable?.maxDate ?? null,
         format: variable.format ?? previousVariable?.format ?? null,
-        values: variable.values ?? previousVariable?.values ?? []
-    } as TemplateDateVariable;
+    } as DateTemplateVariable;
 };
 
 /**
- * Maps a creation date template variable mutation result to a TemplateDateVariable
+ * Maps a creation date template variable mutation result to a DateTemplateVariable
  */
-const mapCreateDateTemplateVariable = (source: CreateDateTemplateVariableMutation): TemplateDateVariable => {
-    return mapDateTemplateVariable(source.createDateTemplateVariable as PartialDateTemplateVariable);
+const mapCreateDateTemplateVariable = (
+    source: CreateDateTemplateVariableMutation,
+): DateTemplateVariable => {
+    return mapDateTemplateVariable(
+        source.createDateTemplateVariable as PartialDateTemplateVariable,
+    );
 };
 
 /**
- * Maps an update date template variable mutation result to a TemplateDateVariable
+ * Maps an update date template variable mutation result to a DateTemplateVariable
  */
 const mapUpdateDateTemplateVariable = (
     source: UpdateDateTemplateVariableMutation,
-    previousVariable?: TemplateDateVariable,
-): TemplateDateVariable => {
+    previousVariable?: DateTemplateVariable,
+): DateTemplateVariable => {
     return mapDateTemplateVariable(
         source.updateDateTemplateVariable as PartialDateTemplateVariable,
         previousVariable,
@@ -91,12 +116,12 @@ const mapUpdateDateTemplateVariable = (
 };
 
 /**
- * Maps a delete template variable mutation result to a TemplateDateVariable
+ * Maps a delete template variable mutation result to a DateTemplateVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: TemplateDateVariable,
-): TemplateDateVariable => {
+    previousVariable?: DateTemplateVariable,
+): DateTemplateVariable => {
     return mapDateTemplateVariable(
         source.deleteTemplateVariable as PartialDateTemplateVariable,
         previousVariable,
@@ -104,12 +129,12 @@ const mapDeleteTemplateVariable = (
 };
 
 /**
- * Maps any date template variable source to a single TemplateDateVariable or null
+ * Maps any date template variable source to a single DateTemplateVariable or null
  */
 export const mapSingleDateTemplateVariable = (
     source: DateTemplateVariableSource | undefined | null,
-    previousVariable?: TemplateDateVariable,
-): TemplateDateVariable | null => {
+    previousVariable?: DateTemplateVariable,
+): DateTemplateVariable | null => {
     if (!source) {
         return null;
     }
@@ -128,37 +153,34 @@ export const mapSingleDateTemplateVariable = (
 };
 
 /**
- * Maps a TemplateDateVariable to a DateTemplateVariableInput
+ * Maps a DateTemplateVariable to a DateTemplateVariableInput
  */
 export const mapDateTemplateVariableToInput = (
-    variable: TemplateDateVariable,
+    variable: DateTemplateVariable,
 ): UpdateDateTemplateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
         description: variable.description,
         required: variable.required,
-        order: variable.order,
-        preview_value: variable.preview_value,
-        template_id: variable.template.id,
-        min_date: variable.min_date,
-        max_date: variable.max_date,
+        previewValue: variable.datePreviewValue,
+        minDate: variable.minDate,
+        maxDate: variable.maxDate,
         format: variable.format,
     };
 };
 
 export const mapToCreateDateTemplateVariableInput = (
-    source: TemplateDateVariable | null | undefined,
+    source: DateTemplateVariable | null | undefined,
 ): CreateDateTemplateVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description ?? null,
-        order: source?.order ?? 0,
-        min_date: source?.min_date ?? null,
-        max_date: source?.max_date ?? null,
+        minDate: source?.minDate ?? null,
+        maxDate: source?.maxDate ?? null,
         format: source?.format ?? null,
-        preview_value: source?.preview_value ?? null,
+        previewValue: source?.datePreviewValue ?? null,
         required: source?.required ?? false,
-        template_id: source?.template?.id ?? "",
+        templateId: source?.template?.id ?? 0,
     };
 };

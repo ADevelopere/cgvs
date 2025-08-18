@@ -30,7 +30,7 @@ const TemplateEditDialog: React.FC<Props> = ({
     const strings = useAppTranslation("templateCategoryTranslations");
     const [name, setName] = useState(template?.name ?? '');
     const [description, setDescription] = useState(template?.description ?? '');
-    const [categoryId, setCategoryId] = useState<string>(template?.category?.id ?? '');
+    const [categoryId, setCategoryId] = useState<number | null>(template?.category?.id ?? null);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -100,7 +100,7 @@ const TemplateEditDialog: React.FC<Props> = ({
                     />
                     <Autocomplete
                         value={categories.find(c => c.id === categoryId) || null}
-                        onChange={(_, newValue) => setCategoryId(newValue?.id ?? '')}
+                        onChange={(_, newValue) => setCategoryId(newValue?.id ?? null)}
                         options={categories}
                         getOptionLabel={(option) => option.name}
                         renderInput={(params) => (

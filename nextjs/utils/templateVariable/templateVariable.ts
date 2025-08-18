@@ -1,8 +1,8 @@
 import type {
-    TemplateTextVariable,
-    TemplateNumberVariable,
-    TemplateDateVariable,
-    TemplateSelectVariable,
+    TextTemplateVariable,
+    NumberTemplateVariable,
+    DateTemplateVariable,
+    SelectTemplateVariable,
     UpdateTextTemplateVariableInput,
     UpdateNumberTemplateVariableInput,
     UpdateDateTemplateVariableInput,
@@ -66,7 +66,7 @@ function isDifferent<T>(
  * Checks if a text variable's temporary value is different from the original
  */
 export function isTextVariableDifferent(
-    original: TemplateTextVariable,
+    original: TextTemplateVariable,
     temporary: Partial<UpdateTextTemplateVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) {
@@ -78,13 +78,13 @@ export function isTextVariableDifferent(
     if (isDifferent(temporary.required, original.required)) {
         return true;
     }
-    if (isDifferent(temporary.preview_value, original.preview_value)) {
+    if (isDifferent(temporary.previewValue, original.textPreviewValue)) {
         return true;
     }
-    if (isDifferent(temporary.min_length, original.min_length)) {
+    if (isDifferent(temporary.minLength, original.minLength)) {
         return true;
     }
-    if (isDifferent(temporary.max_length, original.max_length)) {
+    if (isDifferent(temporary.maxLength, original.maxLength)) {
         return true;
     }
     if (isDifferent(temporary.pattern, original.pattern)) {
@@ -98,17 +98,17 @@ export function isTextVariableDifferent(
  * Checks if a number variable's temporary value is different from the original
  */
 export function isNumberVariableDifferent(
-    original: TemplateNumberVariable,
+    original: NumberTemplateVariable,
     temporary: Partial<UpdateNumberTemplateVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
     if (isDifferent(temporary.required, original.required)) return true;
-    if (isDifferent(temporary.preview_value, original.preview_value))
+    if (isDifferent(temporary.previewValue, original.numberPreviewValue))
         return true;
-    if (isDifferent(temporary.min_value, original.min_value)) return true;
-    if (isDifferent(temporary.max_value, original.max_value)) return true;
-    if (isDifferent(temporary.decimal_places, original.decimal_places))
+    if (isDifferent(temporary.minValue, original.minValue)) return true;
+    if (isDifferent(temporary.maxValue, original.maxValue)) return true;
+    if (isDifferent(temporary.decimalPlaces, original.decimalPlaces))
         return true;
 
     return false;
@@ -118,16 +118,16 @@ export function isNumberVariableDifferent(
  * Checks if a date variable's temporary value is different from the original
  */
 export function isDateVariableDifferent(
-    original: TemplateDateVariable,
+    original: DateTemplateVariable,
     temporary: Partial<UpdateDateTemplateVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
     if (isDifferent(temporary.required, original.required)) return true;
-    if (isDifferent(temporary.preview_value, original.preview_value))
+    if (isDifferent(temporary.previewValue, original.datePreviewValue))
         return true;
-    if (isDifferent(temporary.min_date, original.min_date)) return true;
-    if (isDifferent(temporary.max_date, original.max_date)) return true;
+    if (isDifferent(temporary.minDate, original.minDate)) return true;
+    if (isDifferent(temporary.maxDate, original.maxDate)) return true;
     if (isDifferent(temporary.format, original.format)) return true;
 
     return false;
@@ -137,13 +137,13 @@ export function isDateVariableDifferent(
  * Checks if a select variable's temporary value is different from the original
  */
 export function isSelectVariableDifferent(
-    original: TemplateSelectVariable,
+    original: SelectTemplateVariable,
     temporary: Partial<UpdateSelectTemplateVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
     if (isDifferent(temporary.required, original.required)) return true;
-    if (isDifferent(temporary.preview_value, original.preview_value))
+    if (isDifferent(temporary.previewValue, original.selectPreviewValue))
         return true;
     if (isDifferent(temporary.multiple, original.multiple)) return true;
 
