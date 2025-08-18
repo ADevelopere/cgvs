@@ -11,7 +11,7 @@ mutation createSelectTemplateVariable($input: CreateSelectCreateTemplateVariable
         order
         options
         multiple
-        previewValue
+        selectPreviewValue
         template{
             id
             name

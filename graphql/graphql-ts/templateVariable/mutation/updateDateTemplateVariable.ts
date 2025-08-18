@@ -12,7 +12,7 @@ mutation updateDateTemplateVariable($input: UpdateDateCreateTemplateVariableInpu
         minDate
         maxDate
         format
-        previewValue
+        datePreviewValue
         template{
             id
             name

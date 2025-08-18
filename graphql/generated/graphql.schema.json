@@ -2280,6 +2280,18 @@
             "deprecationReason": null
           },
           {
+            "name": "datePreviewValue",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "LocalDate",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "description",
             "description": null,
             "args": [],
@@ -2376,18 +2388,6 @@
             "deprecationReason": null
           },
           {
-            "name": "previewValue",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "LocalDate",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "required",
             "description": null,
             "args": [],
@@ -2449,7 +2449,13 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "TemplateVariable",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -3443,6 +3449,18 @@
             "deprecationReason": null
           },
           {
+            "name": "numberPreviewValue",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "order",
             "description": null,
             "args": [],
@@ -3454,18 +3472,6 @@
                 "name": "Int",
                 "ofType": null
               }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "previewValue",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -3532,7 +3538,13 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "TemplateVariable",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -4482,18 +4494,6 @@
             "deprecationReason": null
           },
           {
-            "name": "previewValue",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "required",
             "description": null,
             "args": [],
@@ -4505,6 +4505,18 @@
                 "name": "Boolean",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "selectPreviewValue",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -4555,7 +4567,13 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "TemplateVariable",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -5347,6 +5365,30 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "variables",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "TemplateVariable",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -5724,7 +5766,28 @@
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
-        "possibleTypes": []
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "DateTemplateVariable",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "NumberTemplateVariable",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "SelectTemplateVariable",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TextTemplateVariable",
+            "ofType": null
+          }
+        ]
       },
       {
         "kind": "ENUM",
@@ -5881,18 +5944,6 @@
             "deprecationReason": null
           },
           {
-            "name": "previewValue",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "required",
             "description": null,
             "args": [],
@@ -5915,6 +5966,18 @@
             "type": {
               "kind": "OBJECT",
               "name": "Template",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "textPreviewValue",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5954,7 +6017,13 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "TemplateVariable",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },

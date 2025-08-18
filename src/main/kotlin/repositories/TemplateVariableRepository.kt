@@ -66,7 +66,7 @@ class TemplateVariableRepository(private val database: Database) {
             it[minLength] = variable.minLength
             it[maxLength] = variable.maxLength
             it[pattern] = variable.pattern
-            it[previewValue] = variable.previewValue
+            it[previewValue] = variable.textPreviewValue
         }
 
         variable.apply { id = baseId }
@@ -80,7 +80,7 @@ class TemplateVariableRepository(private val database: Database) {
                 it[minLength] = variable.minLength
                 it[maxLength] = variable.maxLength
                 it[pattern] = variable.pattern
-                it[previewValue] = variable.previewValue
+                it[previewValue] = variable.textPreviewValue
             }
             if (updated > 0) {
                 runBlocking { findTextTemplateVariableById(variable.id) }
@@ -106,7 +106,7 @@ class TemplateVariableRepository(private val database: Database) {
                 it[minValue] = variable.minValue?.toBigDecimal()
                 it[maxValue] = variable.maxValue?.toBigDecimal()
                 it[decimalPlaces] = variable.decimalPlaces
-                it[previewValue] = variable.previewValue?.toBigDecimal()
+                it[previewValue] = variable.numberPreviewValue?.toBigDecimal()
             }
 
             variable.apply { id = baseId }
@@ -122,7 +122,7 @@ class TemplateVariableRepository(private val database: Database) {
                     it[minValue] = variable.minValue?.toBigDecimal()
                     it[maxValue] = variable.maxValue?.toBigDecimal()
                     it[decimalPlaces] = variable.decimalPlaces
-                    it[previewValue] = variable.previewValue?.toBigDecimal()
+                    it[previewValue] = variable.numberPreviewValue?.toBigDecimal()
                 }
 
                 if (updated > 0) {
@@ -148,7 +148,7 @@ class TemplateVariableRepository(private val database: Database) {
             it[minDate] = variable.minDate
             it[maxDate] = variable.maxDate
             it[format] = variable.format
-            it[previewValue] = variable.previewValue
+            it[previewValue] = variable.datePreviewValue
         }
 
         variable.apply { id = baseId }
@@ -166,7 +166,7 @@ class TemplateVariableRepository(private val database: Database) {
                     it[minDate] = variable.minDate
                     it[maxDate] = variable.maxDate
                     it[format] = variable.format
-                    it[previewValue] = variable.previewValue
+                    it[previewValue] = variable.datePreviewValue
                 }
 
                 if (updated > 0) {
@@ -192,7 +192,7 @@ class TemplateVariableRepository(private val database: Database) {
                 it[id] = baseId
                 it[options] = Json.encodeToString(variable.options)
                 it[multiple] = variable.multiple
-                it[previewValue] = variable.previewValue
+                it[previewValue] = variable.selectPreviewValue
             }
 
             variable.apply { id = baseId }
@@ -238,7 +238,7 @@ class TemplateVariableRepository(private val database: Database) {
         }
     }
 
-    suspend fun findTemplateVariablesByTemplate(templateId: Int): List<TemplateVariable> = dbQuery {
+    suspend fun findTemplateVariablesByTemplateId(templateId: Int): List<TemplateVariable> = dbQuery {
         val baseRows = TemplateVariableBase.selectAll()
             .where { TemplateVariableBase.templateId eq templateId }
             .orderBy(TemplateVariableBase.order)
@@ -288,7 +288,7 @@ class TemplateVariableRepository(private val database: Database) {
             minLength = row[TextTemplateVariables.minLength],
             maxLength = row[TextTemplateVariables.maxLength],
             pattern = row[TextTemplateVariables.pattern],
-            previewValue = row[TextTemplateVariables.previewValue],
+            textPreviewValue = row[TextTemplateVariables.previewValue],
         )
     }
 
@@ -305,7 +305,7 @@ class TemplateVariableRepository(private val database: Database) {
             minValue = row[NumberTemplateVariables.minValue]?.toDouble(),
             maxValue = row[NumberTemplateVariables.maxValue]?.toDouble(),
             decimalPlaces = row[NumberTemplateVariables.decimalPlaces],
-            previewValue = row[NumberTemplateVariables.previewValue]?.toDouble(),
+            numberPreviewValue = row[NumberTemplateVariables.previewValue]?.toDouble(),
         )
     }
 
@@ -322,7 +322,7 @@ class TemplateVariableRepository(private val database: Database) {
             minDate = row[DateTemplateVariables.minDate],
             maxDate = row[DateTemplateVariables.maxDate],
             format = row[DateTemplateVariables.format],
-            previewValue = row[DateTemplateVariables.previewValue],
+            datePreviewValue = row[DateTemplateVariables.previewValue],
         )
     }
 
@@ -338,7 +338,7 @@ class TemplateVariableRepository(private val database: Database) {
             updatedAt = row[TemplateVariableBase.updatedAt],
             options = row[SelectTemplateVariables.options]?.let { Json.decodeFromString<List<String>>(it) },
             multiple = row[SelectTemplateVariables.multiple],
-            previewValue = row[SelectTemplateVariables.previewValue],
+            selectPreviewValue = row[SelectTemplateVariables.previewValue],
         )
     }
 

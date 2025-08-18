@@ -83,6 +83,62 @@ query templates($paginationArgs: PaginationArgsInput){
                                                             name
                                                             order
                                                             updatedAt
+                                                            variables{
+                                                                createdAt
+                                                                description
+                                                                id
+                                                                name
+                                                                order
+                                                                required
+                                                                template{
+                                                                    category{
+                                                                        categorySpecialType
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        templates{
+                                                                            createdAt
+                                                                            description
+                                                                            id
+                                                                            imageUrl
+                                                                            name
+                                                                            order
+                                                                            updatedAt
+                                                                        }
+                                                                        updatedAt
+                                                                    }
+                                                                    createdAt
+                                                                    description
+                                                                    id
+                                                                    imageUrl
+                                                                    name
+                                                                    order
+                                                                    preSuspensionCategory{
+                                                                        categorySpecialType
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        updatedAt
+                                                                    }
+                                                                    updatedAt
+                                                                    variables{
+                                                                        createdAt
+                                                                        description
+                                                                        id
+                                                                        name
+                                                                        order
+                                                                        required
+                                                                        type
+                                                                        updatedAt
+                                                                    }
+                                                                }
+                                                                type
+                                                                updatedAt
+                                                            }
                                                         }
                                                         updatedAt
                                                     }
@@ -90,15 +146,6 @@ query templates($paginationArgs: PaginationArgsInput){
                                                 }
                                                 updatedAt
                                             }
-                                            updatedAt
-                                        }
-                                        templates{
-                                            createdAt
-                                            description
-                                            id
-                                            imageUrl
-                                            name
-                                            order
                                             updatedAt
                                         }
                                         updatedAt
@@ -152,6 +199,16 @@ query templates($paginationArgs: PaginationArgsInput){
                 updatedAt
             }
             updatedAt
+            variables{
+                createdAt
+                description
+                id
+                name
+                order
+                required
+                type
+                updatedAt
+            }
         }
         paginationInfo{
             count

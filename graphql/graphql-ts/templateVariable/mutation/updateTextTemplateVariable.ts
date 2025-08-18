@@ -12,7 +12,7 @@ mutation updateTextTemplateVariable($input: UpdateTextCreateTemplateVariableInpu
         minLength
         maxLength
         pattern
-        previewValue
+        textPreviewValue
         template{
             id
             name

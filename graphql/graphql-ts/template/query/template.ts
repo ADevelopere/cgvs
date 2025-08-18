@@ -16,6 +16,42 @@ query template($id: Int!){
             id
             name
         }
+        variables {
+            type
+            id
+            name
+            description
+            required
+            order
+
+            # Using inline fragments to get type-specific fields
+            ... on TextTemplateVariable {
+                minLength
+                maxLength
+                pattern
+                textPreviewValue
+            }
+
+            ... on NumberTemplateVariable {
+                minValue
+                maxValue
+                decimalPlaces
+                numberPreviewValue
+            }
+
+            ... on DateTemplateVariable {
+                minDate
+                maxDate
+                format
+                datePreviewValue
+            }
+
+            ... on SelectTemplateVariable {
+                options
+                multiple
+                selectPreviewValue
+            }
+        }
         createdAt
         updatedAt
     }

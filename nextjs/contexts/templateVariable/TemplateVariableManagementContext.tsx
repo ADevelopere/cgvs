@@ -54,7 +54,7 @@ type TemplateVariableManagementContextType = {
     ) => Promise<boolean>;
 
     // Delete mutation (common for all types)
-    deleteTemplateVariable: (id: string) => Promise<boolean>;
+    deleteTemplateVariable: (id: number) => Promise<boolean>;
 };
 
 const TemplateVariableManagementContext = createContext<
@@ -99,22 +99,9 @@ const ManagementProvider: React.FC<{
             console.log("Creating text variable", variables);
             setLoading(true);
             try {
-                const maxCurrentOrderOFVariablesOfTemplate =
-                    template?.variables?.reduce((max, variable) => {
-                        if (variable.order > max) {
-                            return variable.order;
-                        }
-                        return max;
-                    }, 0) ?? 0;
-                const newOrderOfVariable =
-                    maxCurrentOrderOFVariablesOfTemplate + 1;
-
-                console.log("New Order of Variable:", newOrderOfVariable);
-
                 const result = await createTextTemplateVariableMutation({
                     input: {
                         ...variables.input,
-                        order: newOrderOfVariable,
                     },
                 });
 
@@ -189,19 +176,9 @@ const ManagementProvider: React.FC<{
         ): Promise<boolean> => {
             setLoading(true);
             try {
-                const maxCurrentOrderOFVariablesOfTemplate =
-                    template?.variables?.reduce((max, variable) => {
-                        if (variable.order > max) {
-                            return variable.order;
-                        }
-                        return max;
-                    }, 0) ?? 0;
-                const newOrderOfVariable =
-                    maxCurrentOrderOFVariablesOfTemplate + 1;
                 const result = await createNumberTemplateVariableMutation({
                     input: {
                         ...variables.input,
-                        order: newOrderOfVariable,
                     },
                 });
                 if (result.data?.createNumberTemplateVariable) {
@@ -275,19 +252,9 @@ const ManagementProvider: React.FC<{
         ): Promise<boolean> => {
             setLoading(true);
             try {
-                const maxCurrentOrderOFVariablesOfTemplate =
-                    template?.variables?.reduce((max, variable) => {
-                        if (variable.order > max) {
-                            return variable.order;
-                        }
-                        return max;
-                    }, 0) ?? 0;
-                const newOrderOfVariable =
-                    maxCurrentOrderOFVariablesOfTemplate + 1;
                 const result = await createDateTemplateVariableMutation({
                     input: {
                         ...variables.input,
-                        order: newOrderOfVariable,
                     },
                 });
                 if (result.data?.createDateTemplateVariable) {
@@ -361,19 +328,9 @@ const ManagementProvider: React.FC<{
         ): Promise<boolean> => {
             setLoading(true);
             try {
-                const maxCurrentOrderOFVariablesOfTemplate =
-                    template?.variables?.reduce((max, variable) => {
-                        if (variable.order > max) {
-                            return variable.order;
-                        }
-                        return max;
-                    }, 0) ?? 0;
-                const newOrderOfVariable =
-                    maxCurrentOrderOFVariablesOfTemplate + 1;
                 const result = await createSelectTemplateVariableMutation({
                     input: {
                         ...variables.input,
-                        order: newOrderOfVariable,
                     },
                 });
                 if (result.data?.createSelectTemplateVariable) {
@@ -442,7 +399,7 @@ const ManagementProvider: React.FC<{
 
     // Delete template variable handler
     const handleDeleteTemplateVariable = useCallback(
-        async (id: string): Promise<boolean> => {
+        async (id: number): Promise<boolean> => {
             setLoading(true);
             try {
                 const result = await deleteTemplateVariableMutation({ id });
@@ -472,7 +429,7 @@ const ManagementProvider: React.FC<{
         [deleteTemplateVariableMutation],
     );
 
-    const value = useMemo(
+    const value: TemplateVariableManagementContextType = useMemo(
         () => ({
             loading,
             createTextTemplateVariable: handleCreateTextTemplateVariable,

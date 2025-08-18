@@ -6,6 +6,7 @@ import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
+import schema.dataloaders.TemplateVariablesDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
 
@@ -22,18 +23,22 @@ data class Template(
     val createdAt: LocalDateTime = now(),
     val updatedAt: LocalDateTime = now()
 ){
-    @Suppress("unused")
     fun category(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory> {
         return dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, categoryId)
     }
 
-    @Suppress("unused")
     fun preSuspensionCategory(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateCategory?> {
         return if (preSuspensionCategoryId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(TemplateCategoryDataLoader.dataLoaderName, preSuspensionCategoryId)
         } else {
             CompletableFuture.completedFuture(null)
         }
+    }
+
+    fun variables(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateVariable>> {
+        return dataFetchingEnvironment.getValueFromDataLoader(
+            TemplateVariablesDataLoader.dataLoaderName, id
+        )
     }
 }
 
