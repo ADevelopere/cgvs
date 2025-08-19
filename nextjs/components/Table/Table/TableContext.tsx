@@ -13,7 +13,7 @@ export type TableContextType = {
     isLoading?: boolean;
     columns: EditableColumn[];
 
-    paginatorInfo?: PaginationInfo | null;
+    paginationInfo?: PaginationInfo | null;
     pageSize: number;
     setPageSize: (newPageSize: number) => void;
     onPageChange?: (newPage: number) => void;

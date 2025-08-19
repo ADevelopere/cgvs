@@ -1,3 +1,5 @@
+"use client";
+
 import { EditableColumn } from "@/types/table.type";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useStudentManagement } from "./StudentManagementContext";

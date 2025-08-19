@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useMemo, ReactNode } from 'react';
 import { TableLocale, SupportedLocale } from './tableLocale.types';
 import { defaultLocaleResources } from './defaultTableLocales';

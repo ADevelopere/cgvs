@@ -34,7 +34,7 @@ const StudentManagementDashboardTitle: React.FC = () => {
     );
 };
 
-const Self: React.FC = () => {
+const StudentTable: React.FC = () => {
     const { students, paginationInfo, loading } = useStudentManagement();
     const { applySingleFilter, updateSort } = useStudentFilter();
 
@@ -200,14 +200,5 @@ const Self: React.FC = () => {
     );
 };
 
-const StudentTable: React.FC = () => {
-    return (
-        <TableLocaleProvider>
-            <StudentTableManagementProvider>
-                <Self />
-            </StudentTableManagementProvider>
-        </TableLocaleProvider>
-    );
-};
 
 export default StudentTable;
