@@ -18,6 +18,8 @@ import { STUDENT_TABLE_COLUMNS } from "@/views/student/column";
 
 interface StudentTableManagementContextType {
     columns: EditableColumn[];
+    onPageChange: (newPage: number) => void;
+    onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
 const StudentTableManagementContext = createContext<
@@ -37,7 +39,7 @@ export const useStudentTableManagement = () => {
 export const StudentTableManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const { partialUpdateStudent } = useStudentManagement();
+    const { partialUpdateStudent, setQueryParams, queryParams } = useStudentManagement();
     const strings = useAppTranslation("studentTranslations");
     // Validator functions
     const validateFullName = useCallback(
@@ -173,6 +175,31 @@ export const StudentTableManagementProvider: React.FC<{
         [partialUpdateStudent],
     );
 
+    const handlePageChange = useCallback(
+        (newPage: number) => {
+            setQueryParams({
+                paginationArgs: {
+                    ...queryParams.paginationArgs,
+                    page: newPage,
+                },
+            });
+        },
+        [setQueryParams, queryParams],
+    );
+
+    const handleRowsPerPageChange = useCallback(
+        (newRowsPerPage: number) => {
+            setQueryParams({
+                paginationArgs: {
+                    ...queryParams.paginationArgs,
+                    first: newRowsPerPage,
+                    page: 1, // Reset to first page when changing page size
+                },
+            });
+        },
+        [setQueryParams, queryParams],
+    );
+
     const columns = useMemo(
         () =>
             STUDENT_TABLE_COLUMNS.map((column): EditableColumn => {
@@ -227,8 +254,10 @@ export const StudentTableManagementProvider: React.FC<{
     const value = useMemo(
         () => ({
             columns,
+            onPageChange: handlePageChange,
+            onRowsPerPageChange: handleRowsPerPageChange,
         }),
-        [columns],
+        [columns, handlePageChange, handleRowsPerPageChange],
     );
 
     return (

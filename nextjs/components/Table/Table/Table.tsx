@@ -181,6 +181,7 @@ const Table: React.FC<{
                             height={TABLE_HEIGHT}
                             width={totalWidth}
                             isPaginated={!!paginatorInfo}
+                            paginationInfo={paginatorInfo}
                             indexColWidth={indexColWidth}
                         />
                     </tbody>

@@ -10,9 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { TableProvider } from "@/components/Table/Table/TableContext";
 import Table from "@/components/Table/Table/Table";
 import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
-import { TableLocaleProvider } from "@/locale/table/TableLocaleContext";
 import {
-    StudentTableManagementProvider,
     useStudentTableManagement,
 } from "@/contexts/student/StudentTableManagementContext";
 
@@ -47,7 +45,7 @@ const StudentTable: React.FC = () => {
         };
     }, [setDashboardSlot]);
 
-    const { columns } = useStudentTableManagement();
+    const { columns, onPageChange, onRowsPerPageChange } = useStudentTableManagement();
 
     const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
         {},
@@ -147,8 +145,8 @@ const StudentTable: React.FC = () => {
             // onSelectionChange={handleSelectionChange}
             // Pagination props
             paginationInfo={paginationInfo}
-            // onPageChange={handlePageChange}
-            // onRowsPerPageChange={handleRowsPerPageChange}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
             // rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
             // initialPageSize={100}
         >
