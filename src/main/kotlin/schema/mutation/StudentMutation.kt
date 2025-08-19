@@ -5,7 +5,7 @@ import schema.type.CreateStudentInput
 import schema.type.Student
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.type.UpdateStudentOptionalFieldsInput
+import schema.type.PartialUpdateStudentInput
 import services.StudentService
 import kotlin.getValue
 
@@ -16,8 +16,8 @@ class StudentMutation : Mutation, KoinComponent {
         return service.create(input)
     }
 
-    suspend fun updateStudent(input: UpdateStudentOptionalFieldsInput): Student {
-        return service.updateOptionalFields(input)
+    suspend fun partialUpdateStudent(input: PartialUpdateStudentInput): Student {
+        return service.partialUpdate(input)
     }
 
     suspend fun deleteStudent(id: Int): Student {

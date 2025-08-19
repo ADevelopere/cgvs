@@ -8,6 +8,29 @@ import { createTheme, PaletteMode } from "@mui/material";
 import ThemeMode from "./ThemeMode";
 import { arSD } from "@mui/x-data-grid/locales";
 
+declare module "@mui/material" {
+    interface Palette {
+        onPrimary: string;
+        onSecondary: string;
+        onBackground: string;
+        customTable: {
+            oddRow: string;
+            evenRow: string;
+        };
+    }
+
+    interface PaletteOptions {
+        onPrimary?: string;
+        onSecondary?: string;
+        onBackground?: string;
+        customTable: {
+            oddRow: string;
+            evenRow: string;
+        };
+    }
+}
+
+
 const lightPalette: PaletteOptions = {
     mode: "light",
     primary: {
@@ -155,25 +178,3 @@ export const rtlDarkTheme = createAppTheme(ThemeMode.Dark, "rtl");
 export const ltrLightTheme = createAppTheme(ThemeMode.Light, "ltr");
 
 export const ltrDarkTheme = createAppTheme(ThemeMode.Dark, "ltr");
-
-declare module "@mui/material/styles/createPalette" {
-    interface Palette {
-        onPrimary: string;
-        onSecondary: string;
-        onBackground: string;
-        customTable: {
-            oddRow: string;
-            evenRow: string;
-        };
-    }
-
-    interface PaletteOptions {
-        onPrimary?: string;
-        onSecondary?: string;
-        onBackground?: string;
-        customTable: {
-            oddRow: string;
-            evenRow: string;
-        };
-    }
-}

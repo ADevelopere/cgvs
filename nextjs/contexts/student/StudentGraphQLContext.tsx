@@ -33,9 +33,9 @@ type StudentGraphQLContextType = {
      * Mutation to update an existing student
      * @param variables - The update student variables
      */
-    updateStudentMutation: (
-        variables: Graphql.UpdateStudentMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateStudentMutation>>;
+    partialUpdateStudentMutation: (
+        variables: Graphql.PartialUpdateStudentMutationVariables,
+    ) => Promise<FetchResult<Graphql.PartialUpdateStudentMutation>>;
 
     /**
      * Mutation to delete a student
@@ -59,7 +59,6 @@ export const useStudentGraphQL = () => {
     }
     return context;
 };
-
 
 export const StudentGraphQLProvider: React.FC<{
     children: React.ReactNode;
@@ -126,9 +125,9 @@ export const StudentGraphQLProvider: React.FC<{
     });
 
     // Update student mutation
-    const [mutateUpdate] = Graphql.useUpdateStudentMutation({
+    const [mutateUpdate] = Graphql.usePartialUpdateStudentMutation({
         update(cache, { data }) {
-            if (!data?.updateStudent) return;
+            if (!data?.partialUpdateStudent) return;
 
             const existingData = cache.readQuery<Graphql.StudentsQuery>({
                 query: Graphql.StudentsDocument,
@@ -138,8 +137,8 @@ export const StudentGraphQLProvider: React.FC<{
             if (!existingData?.students?.data) return;
 
             const updatedStudents = existingData.students.data.map((student) =>
-                student.id === data.updateStudent.id
-                    ? data.updateStudent
+                student.id === data.partialUpdateStudent.id
+                    ? data.partialUpdateStudent
                     : student,
             );
 
@@ -190,8 +189,8 @@ export const StudentGraphQLProvider: React.FC<{
         [mutateCreate],
     );
 
-    const updateStudentMutation = useCallback(
-        (variables: Graphql.UpdateStudentMutationVariables) => {
+    const partialUpdateStudentMutation = useCallback(
+        (variables: Graphql.PartialUpdateStudentMutationVariables) => {
             return mutateUpdate({ variables });
         },
         [mutateUpdate],
@@ -204,19 +203,19 @@ export const StudentGraphQLProvider: React.FC<{
         [mutateDelete],
     );
 
-    const contextValue = useMemo(
+    const contextValue: StudentGraphQLContextType = useMemo(
         () => ({
             studentQuery,
             studentsQuery,
             createStudentMutation,
-            updateStudentMutation,
+            partialUpdateStudentMutation,
             deleteStudentMutation,
         }),
         [
             studentQuery,
             studentsQuery,
             createStudentMutation,
-            updateStudentMutation,
+            partialUpdateStudentMutation,
             deleteStudentMutation,
         ],
     );

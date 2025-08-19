@@ -19,7 +19,8 @@ import {
 
 const TableHeader: React.FC<{
     width: number;
-}> = ({ width }) => {
+    indexColWidth: number; // Add indexColWidth prop
+}> = ({ width, indexColWidth }) => {
     const theme = useTheme();
     const headerRef = useRef<HTMLTableRowElement>(null);
     const { visibleColumns: columns, pinnedColumns } = useTableColumnContext();
@@ -162,8 +163,6 @@ const TableHeader: React.FC<{
                 return handleNumberFilterIconClick;
             } else if (column.type === "date") {
                 return handleDateFilterIconClick;
-            } else if (column.filterMode === "popover") {
-                return handlePopoverFilterIconClick;
             }
         },
         [
@@ -264,6 +263,15 @@ const TableHeader: React.FC<{
                     borderBottom: `1px solid ${theme.palette.divider}`,
                 }}
             >
+                {/* Empty cell for index column */}
+                <th
+                    style={{
+                        width: indexColWidth,
+                        textAlign: "center",
+                        fontWeight: "bold",
+                    }}
+                ></th>
+
                 {rowSelectionEnabled && (
                     <th>
                         <Box

@@ -7,7 +7,7 @@ import schema.type.OrderStudentsByClause
 import schema.type.PaginatedStudentResponse
 import schema.type.PaginationArgs
 import schema.type.StudentFilterArgs
-import schema.type.UpdateStudentOptionalFieldsInput
+import schema.type.PartialUpdateStudentInput
 
 class StudentService(
     private val repository: StudentRepository
@@ -40,12 +40,12 @@ class StudentService(
      * updates only the fields that are provided in the input.
      * If a field is not provided, it will retain its existing value.
      */
-    suspend fun updateOptionalFields(input: UpdateStudentOptionalFieldsInput): Student {
+    suspend fun partialUpdate(input: PartialUpdateStudentInput): Student {
         val existingStudent = repository.findById(input.id)
             ?: throw IllegalArgumentException("Student with ID ${input.id} does not exist.")
 
         // Validate name length
-        check(input.name?.length in 3..255) {
+        check(input.name == null || input.name.length in 3..255) {
             "Student name must be between 3 and 255 characters long."
         }
 

@@ -4,7 +4,7 @@ import { useStudentManagement } from "./StudentManagementContext";
 import {
     Gender,
     CountryCode,
-    UpdateStudentOptionalFieldsInput,
+    PartialUpdateStudentInput,
 } from "@/graphql/generated/types";
 import validator from "validator";
 import {
@@ -35,7 +35,7 @@ export const useStudentTableManagement = () => {
 export const StudentTableManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const { updateStudent } = useStudentManagement();
+    const { partialUpdateStudent } = useStudentManagement();
     const strings = useAppTranslation("studentTranslations");
     // Validator functions
     const validateFullName = useCallback(
@@ -146,7 +146,7 @@ export const StudentTableManagementProvider: React.FC<{
             value: any,
         ): Promise<void> => {
             console.log("Updating cell", { rowId, columnId, value });
-            const input: UpdateStudentOptionalFieldsInput = {
+            const input: PartialUpdateStudentInput = {
                 id: rowId,
                 [columnId]: value,
             };
@@ -166,9 +166,9 @@ export const StudentTableManagementProvider: React.FC<{
                     break;
             }
 
-            await updateStudent({ input });
+            await partialUpdateStudent({ input });
         },
-        [updateStudent],
+        [partialUpdateStudent],
     );
 
     const columns = useMemo(

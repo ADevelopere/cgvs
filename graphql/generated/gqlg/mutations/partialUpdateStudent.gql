@@ -1,5 +1,5 @@
-mutation updateStudent($input: UpdateStudentOptionalFieldsInput!){
-    updateStudent(input: $input){
+mutation partialUpdateStudent($input: PartialUpdateStudentInput!){
+    partialUpdateStudent(input: $input){
         createdAt
         dateOfBirth
         email
