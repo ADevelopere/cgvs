@@ -18,12 +18,14 @@ import {
 } from "@/constants/tableConstants";
 import { useTableStyles } from "@/theme/styles";
 
-interface DataRowProps {
+export type DataRowProps = {
     rowData: any;
     height: number;
     virtualIndex?: number;
     onRowResize?: (rowId: string | number, newHeight: number) => void;
     width: number;
+    globalIndex: number; // Add globalIndex prop
+    indexColWidth: number; // Add indexColWidth prop
 }
 
 const DataRow: React.FC<DataRowProps> = ({
@@ -32,6 +34,8 @@ const DataRow: React.FC<DataRowProps> = ({
     width,
     virtualIndex = 0,
     onRowResize,
+    globalIndex,
+    indexColWidth,
 }) => {
     const {
         rowSelectionEnabled,
@@ -170,6 +174,17 @@ const DataRow: React.FC<DataRowProps> = ({
                 ...overrideRowStyle,
             }}
         >
+            <td
+                style={{
+                    ...cellStyle,
+                    width: indexColWidth,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                }}
+            >
+                {globalIndex}
+            </td>
+
             {rowSelectionEnabled && (
                 <td>
                     <Box

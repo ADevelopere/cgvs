@@ -52,13 +52,24 @@ const Table: React.FC<{
         // }
     }, [paginatorInfo?.currentPage]);
 
+        // Calculate the index column width dynamically based on the maximum index value
+    const maxIndexValue = paginatorInfo
+        ? paginatorInfo.total
+        : data.length;
+    const indexColWidth = useMemo(() => {
+        const maxDigits = maxIndexValue.toString().length;
+        return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 10px per digit, and 20px padding
+    }, [maxIndexValue]);
+
     // Get the total width of the table
     const totalWidth = useMemo(() => {
         return visibleColumns.reduce(
-            (sum, column) => sum + columnWidths[column.id],
-            20 + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0),
+            (sum, column) => sum + columnWidths[column.id] + indexColWidth,
+            20 + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0) + indexColWidth,
         );
     }, [visibleColumns, columnWidths, rowSelectionEnabled]);
+
+
 
     // Synchronize horizontal scroll between header and body
     useEffect(() => {
@@ -119,7 +130,6 @@ const Table: React.FC<{
                     width: "100%",
                     overflowY: "hidden",
                     position: "relative" as const,
-                    // overflowX: "auto",
                     flexGrow: 1,
                 }}
             >
@@ -129,9 +139,7 @@ const Table: React.FC<{
                         tableLayout: "fixed" as const,
                         backgroundColor: theme.palette.background.paper,
                         height: "100%",
-                        width: totalWidth, // Set table width to total calculated width
-                        // overflowX: "visible", // Table itself doesn't need to manage overflow if parent does
-                        // overflowX: "visible",
+                        width: totalWidth,
                     }}
                 >
                     <colgroup>
@@ -143,6 +151,12 @@ const Table: React.FC<{
                                 }}
                             />
                         )}
+                        <col
+                            style={{
+                                width: indexColWidth,
+                                maxWidth: indexColWidth,
+                            }}
+                        />
                         {visibleColumns.map((column) => (
                             <col
                                 key={column.id}
@@ -155,9 +169,7 @@ const Table: React.FC<{
                         ))}
                     </colgroup>
                     <thead>
-                        {/* Ensure TableHeader component renders an element with id="header-container"
-                            that can have its scrollLeft property manipulated to scroll the header content. */}
-                        <TableHeader width={totalWidth} />
+                        <TableHeader width={totalWidth} indexColWidth={indexColWidth} />
                     </thead>
                     <tbody
                         style={{
@@ -169,6 +181,7 @@ const Table: React.FC<{
                             height={TABLE_HEIGHT}
                             width={totalWidth}
                             isPaginated={!!paginatorInfo}
+                            indexColWidth={indexColWidth}
                         />
                     </tbody>
                     <div style={{ opacity: isLoading ? 0.6 : 1 }}>

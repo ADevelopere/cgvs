@@ -3,14 +3,14 @@ import {
     DeleteStudentMutation,
     StudentQuery,
     StudentsQuery,
-    UpdateStudentMutation,
+    PartialUpdateStudentMutation,
     Student,
-    UpdateStudentOptionalFieldsInput,
+    PartialUpdateStudentInput,
 } from "@/graphql/generated/types";
 
 export type StudentSource =
     | CreateStudentMutation
-    | UpdateStudentMutation
+    | PartialUpdateStudentMutation
     | DeleteStudentMutation
     | StudentQuery
     | StudentsQuery;
@@ -53,11 +53,11 @@ const mapCreateStudent = (source: CreateStudentMutation): Student => {
 /**
  * Maps an update student mutation result to a Student
  */
-const mapUpdateStudent = (
-    source: UpdateStudentMutation,
+const mapPartialUpdateStudent = (
+    source: PartialUpdateStudentMutation,
     previousStudent?: Student,
 ): Student => {
-    return mapStudent(source.updateStudent as PartialStudent, previousStudent);
+    return mapStudent(source.partialUpdateStudent as PartialStudent, previousStudent);
 };
 
 /**
@@ -85,8 +85,8 @@ export const mapSingleStudent = (
     if ("createStudent" in source) {
         return mapCreateStudent(source);
     }
-    if ("updateStudent" in source) {
-        return mapUpdateStudent(source, previousStudent);
+    if ("partialUpdateStudent" in source) {
+        return mapPartialUpdateStudent(source, previousStudent);
     }
     if ("deleteStudent" in source) {
         return mapDeleteStudent(source, previousStudent);
@@ -129,9 +129,9 @@ export const mapStudents = (
 /**
  * Maps a student to update input 
  */
-export const mapStudentToUpdateInput = (
+export const mapStudentToPartialUpdateInput = (
     student: Student,
-): UpdateStudentOptionalFieldsInput => {
+): PartialUpdateStudentInput => {
     return {
         id: student.id,
         name: student.name,

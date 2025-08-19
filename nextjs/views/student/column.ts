@@ -1,17 +1,17 @@
 import { BaseColumn } from "@/types/table.type";
 
 export const STUDENT_TABLE_COLUMNS: BaseColumn[] = [
-    {
-        id: "id",
-        label: "",
-        type: "number",
-        accessor: "id",
-        editable: false,
-        sortable: true,
-        filterable: false,
-        resizable: false,
-        initialWidth: 100,
-    },
+    // {
+    //     id: "id",
+    //     label: "",
+    //     type: "number",
+    //     accessor: "id",
+    //     editable: false,
+    //     sortable: true,
+    //     filterable: false,
+    //     resizable: false,
+    //     initialWidth: 100,
+    // },
     {
         id: "name",
         label: "الاسم",
@@ -56,8 +56,8 @@ export const STUDENT_TABLE_COLUMNS: BaseColumn[] = [
         resizable: true,
         widthStorageKey: "student_table_student_gender_column_width",
         options: [
-            { label: "ذكر", value: "male" },
-            { label: "أنثى", value: "female" },
+            { label: "ذكر", value: "Male" },
+            { label: "أنثى", value: "Female" },
         ],
     },
     {

@@ -12,8 +12,8 @@ data class Student(
     val dateOfBirth: LocalDate? = null,
     val gender: Gender? = null,
     val nationality: CountryCode? = null,
-    val createdAt: LocalDateTime = now(),
-    val updatedAt: LocalDateTime = now()
+    val createdAt: LocalDateTime? = now(),
+    val updatedAt: LocalDateTime? = now()
 )
 
 data class CreateStudentInput(
@@ -32,10 +32,9 @@ data class CreateStudentInput(
         gender = gender,
         nationality = nationality
     )
-
 }
 
-data class UpdateStudentOptionalFieldsInput(
+data class PartialUpdateStudentInput(
     val id: Int,
     val name: String? = null,
     val email: Email? = null,

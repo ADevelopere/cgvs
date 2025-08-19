@@ -1,3 +1,5 @@
+"use client";
+
 import type React from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import { People } from "@mui/icons-material";

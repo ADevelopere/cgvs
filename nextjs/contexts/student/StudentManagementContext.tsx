@@ -26,8 +26,8 @@ type StudentManagementContextType = {
     createStudent: (
         variables: Graphql.CreateStudentMutationVariables,
     ) => Promise<boolean>;
-    updateStudent: (
-        variables: Graphql.UpdateStudentMutationVariables,
+    partialUpdateStudent: (
+        variables: Graphql.PartialUpdateStudentMutationVariables,
     ) => Promise<boolean>;
     deleteStudent: (id: number) => Promise<boolean>;
 
@@ -78,7 +78,7 @@ export const StudentManagementProvider: React.FC<{
     const {
         studentsQuery,
         createStudentMutation,
-        updateStudentMutation,
+        partialUpdateStudentMutation,
         deleteStudentMutation,
     } = useStudentGraphQL();
 
@@ -155,13 +155,13 @@ export const StudentManagementProvider: React.FC<{
         [createStudentMutation],
     );
 
-    const handleUpdateStudent = useCallback(
+    const handlePartialUpdateStudent = useCallback(
         async (
-            variables: Graphql.UpdateStudentMutationVariables,
+            variables: Graphql.PartialUpdateStudentMutationVariables,
         ): Promise<boolean> => {
             try {
-                const result = await updateStudentMutation(variables);
-                if (result.data?.updateStudent) {
+                const result = await partialUpdateStudentMutation(variables);
+                if (result.data?.partialUpdateStudent) {
                     const updatedStudent = mapSingleStudent(result.data);
                     if (updatedStudent) {
                         setStudents((prev) =>
@@ -192,7 +192,7 @@ export const StudentManagementProvider: React.FC<{
                 return false;
             }
         },
-        [updateStudentMutation],
+        [partialUpdateStudentMutation],
     );
 
     const handleDeleteStudent = useCallback(
@@ -253,7 +253,7 @@ export const StudentManagementProvider: React.FC<{
             queryParams,
             loading,
             createStudent: handleCreateStudent,
-            updateStudent: handleUpdateStudent,
+            partialUpdateStudent: handlePartialUpdateStudent,
             deleteStudent: handleDeleteStudent,
             setQueryParams: handleSetQueryParams,
             toggleStudentSelect: handleToggleStudentSelect,
@@ -267,7 +267,7 @@ export const StudentManagementProvider: React.FC<{
             queryParams,
             loading,
             handleCreateStudent,
-            handleUpdateStudent,
+            handlePartialUpdateStudent,
             handleDeleteStudent,
             handleSetQueryParams,
             handleToggleStudentSelect,

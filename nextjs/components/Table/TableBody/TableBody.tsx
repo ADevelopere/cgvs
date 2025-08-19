@@ -2,15 +2,19 @@ import type React from "react";
 import { useCallback } from "react";
 import { CircularProgress, Box, useTheme } from "@mui/material";
 import DataRow from "./DataRow";
+import type { DataRowProps } from "./DataRow";
 import { useTableColumnContext } from "../Table/TableColumnContext";
 import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableContext } from "../Table/TableContext";
+import { PaginationInfo } from "@/graphql/generated/types";
 
 interface NewTableBodyProps {
   data: any[];
   height: number;
   width: number;
   isPaginated?: boolean;
+  paginationInfo?: PaginationInfo | null;
+  indexColWidth: number; // Add indexColWidth prop
 }
 
 const TableBody: React.FC<NewTableBodyProps> = ({
@@ -18,6 +22,8 @@ const TableBody: React.FC<NewTableBodyProps> = ({
   height,
   width,
   isPaginated = false,
+  paginationInfo,
+  indexColWidth,
 }) => {
   const {
     visibleColumns: columns,
@@ -79,18 +85,26 @@ const TableBody: React.FC<NewTableBodyProps> = ({
       }}
       onScroll={handleScroll}
     >
-      {data.map((item, index) => (
-        <DataRow
-          key={item.id}
-          rowData={item}
-          height={rowHeights[item.id] || 50}
-          width={width - 20}
-          onRowResize={(rowId, newHeight) => {
-            resizeRowHeight(rowId, newHeight);
-          }}
-          virtualIndex={index}
-        />
-      ))}
+      {data.map((item, index) => {
+        const globalIndex = paginationInfo
+          ? (paginationInfo.currentPage - 1) * paginationInfo.perPage + index + 1
+          : index + 1;
+
+        return (
+          <DataRow
+            key={item.id}
+            rowData={item}
+            height={rowHeights[item.id] || 50}
+            width={width - 20}
+            onRowResize={(rowId, newHeight) => {
+              resizeRowHeight(rowId, newHeight);
+            }}
+            virtualIndex={index}
+            globalIndex={globalIndex as DataRowProps['globalIndex']} // Ensure type compatibility
+            indexColWidth={indexColWidth} // Pass indexColWidth to DataRow
+          />
+        );
+      })}
 
       {/* Loading indicator for infinite scroll */}
       {isLoading && !isPaginated && (

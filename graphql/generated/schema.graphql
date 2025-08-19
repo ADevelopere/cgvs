@@ -393,6 +393,7 @@ type Mutation {
 
   """Logout current user"""
   logout: LogoutResponse!
+  partialUpdateStudent(input: PartialUpdateStudentInput!): Student!
 
   """Register a new user"""
   register(input: RegisterInput!): AuthPayload
@@ -401,7 +402,6 @@ type Mutation {
   updateDateTemplateVariable(input: UpdateDateTemplateVariableInput!): DateTemplateVariable!
   updateNumberTemplateVariable(input: UpdateNumberTemplateVariableInput!): NumberTemplateVariable!
   updateSelectTemplateVariable(input: UpdateSelectTemplateVariableInput!): SelectTemplateVariable!
-  updateStudent(input: UpdateStudentOptionalFieldsInput!): Student!
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: UpdateTemplateCategoryInput!): TemplateCategory!
   updateTextTemplateVariable(input: UpdateTextTemplateVariableInput!): TextTemplateVariable!
@@ -470,6 +470,16 @@ type PaginationInfo {
   total: Int!
 }
 
+input PartialUpdateStudentInput {
+  dateOfBirth: LocalDate
+  email: Email
+  gender: Gender
+  id: Int!
+  name: String
+  nationality: CountryCode
+  phoneNumber: PhoneNumber
+}
+
 """A type representing a validated phone number"""
 scalar PhoneNumber
 
@@ -523,7 +533,7 @@ enum SortOrder {
 }
 
 type Student {
-  createdAt: LocalDateTime!
+  createdAt: LocalDateTime
   dateOfBirth: LocalDate
   email: Email
   gender: Gender
@@ -531,7 +541,7 @@ type Student {
   name: String!
   nationality: CountryCode
   phoneNumber: PhoneNumber
-  updatedAt: LocalDateTime!
+  updatedAt: LocalDateTime
 }
 
 input StudentFilterArgsInput {
@@ -672,16 +682,6 @@ input UpdateSelectTemplateVariableInput {
   options: [String!]!
   previewValue: String
   required: Boolean!
-}
-
-input UpdateStudentOptionalFieldsInput {
-  dateOfBirth: LocalDate
-  email: Email
-  gender: Gender
-  id: Int!
-  name: String
-  nationality: CountryCode
-  phoneNumber: PhoneNumber
 }
 
 input UpdateTemplateCategoryInput {

@@ -392,6 +392,7 @@ export type Mutation = {
   login?: Maybe<AuthPayload>;
   /** Logout current user */
   logout: LogoutResponse;
+  partialUpdateStudent: Student;
   /** Register a new user */
   register?: Maybe<AuthPayload>;
   suspendTemplate?: Maybe<Template>;
@@ -399,7 +400,6 @@ export type Mutation = {
   updateDateTemplateVariable: DateTemplateVariable;
   updateNumberTemplateVariable: NumberTemplateVariable;
   updateSelectTemplateVariable: SelectTemplateVariable;
-  updateStudent: Student;
   updateTemplate?: Maybe<Template>;
   updateTemplateCategory: TemplateCategory;
   updateTextTemplateVariable: TextTemplateVariable;
@@ -466,6 +466,11 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationPartialUpdateStudentArgs = {
+  input: PartialUpdateStudentInput;
+};
+
+
 export type MutationRegisterArgs = {
   input: RegisterInput;
 };
@@ -493,11 +498,6 @@ export type MutationUpdateNumberTemplateVariableArgs = {
 
 export type MutationUpdateSelectTemplateVariableArgs = {
   input: UpdateSelectTemplateVariableInput;
-};
-
-
-export type MutationUpdateStudentArgs = {
-  input: UpdateStudentOptionalFieldsInput;
 };
 
 
@@ -581,6 +581,16 @@ export type PaginationInfo = {
   total: Scalars['Int']['output'];
 };
 
+export type PartialUpdateStudentInput = {
+  dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
+  email?: InputMaybe<Scalars['Email']['input']>;
+  gender?: InputMaybe<Gender>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  nationality?: InputMaybe<CountryCode>;
+  phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   /** Check if user is authenticated */
@@ -662,7 +672,7 @@ export type SortOrder =
 
 export type Student = {
   __typename?: 'Student';
-  createdAt: Scalars['LocalDateTime']['output'];
+  createdAt?: Maybe<Scalars['LocalDateTime']['output']>;
   dateOfBirth?: Maybe<Scalars['LocalDate']['output']>;
   email?: Maybe<Scalars['Email']['output']>;
   gender?: Maybe<Gender>;
@@ -670,7 +680,7 @@ export type Student = {
   name: Scalars['String']['output'];
   nationality?: Maybe<CountryCode>;
   phoneNumber?: Maybe<Scalars['PhoneNumber']['output']>;
-  updatedAt: Scalars['LocalDateTime']['output'];
+  updatedAt?: Maybe<Scalars['LocalDateTime']['output']>;
 };
 
 export type StudentFilterArgsInput = {
@@ -816,16 +826,6 @@ export type UpdateSelectTemplateVariableInput = {
   required: Scalars['Boolean']['input'];
 };
 
-export type UpdateStudentOptionalFieldsInput = {
-  dateOfBirth?: InputMaybe<Scalars['LocalDate']['input']>;
-  email?: InputMaybe<Scalars['Email']['input']>;
-  gender?: InputMaybe<Gender>;
-  id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  nationality?: InputMaybe<CountryCode>;
-  phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
-};
-
 export type UpdateTemplateCategoryInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
@@ -915,28 +915,28 @@ export type CreateStudentMutationVariables = Exact<{
 }>;
 
 
-export type CreateStudentMutation = { __typename?: 'Mutation', createStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
+export type CreateStudentMutation = { __typename?: 'Mutation', createStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt?: any | null, updatedAt?: any | null } };
 
 export type DeleteStudentMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteStudentMutation = { __typename?: 'Mutation', deleteStudent: { __typename?: 'Student', id: number, name: string, createdAt: any, updatedAt: any } };
+export type DeleteStudentMutation = { __typename?: 'Mutation', deleteStudent: { __typename?: 'Student', id: number, name: string, createdAt?: any | null, updatedAt?: any | null } };
 
-export type UpdateStudentMutationVariables = Exact<{
-  input: UpdateStudentOptionalFieldsInput;
+export type PartialUpdateStudentMutationVariables = Exact<{
+  input: PartialUpdateStudentInput;
 }>;
 
 
-export type UpdateStudentMutation = { __typename?: 'Mutation', updateStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } };
+export type PartialUpdateStudentMutation = { __typename?: 'Mutation', partialUpdateStudent: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt?: any | null, updatedAt?: any | null } };
 
 export type StudentQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any } | null };
+export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt?: any | null, updatedAt?: any | null } | null };
 
 export type StudentsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<OrderStudentsByClauseInput> | OrderStudentsByClauseInput>;
@@ -945,7 +945,7 @@ export type StudentsQueryVariables = Exact<{
 }>;
 
 
-export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'PaginatedStudentResponse', data: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt: any, updatedAt: any }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
+export type StudentsQuery = { __typename?: 'Query', students: { __typename?: 'PaginatedStudentResponse', data: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, email?: any | null, phoneNumber?: any | null, createdAt?: any | null, updatedAt?: any | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
 
 export type CreateTemplateMutationVariables = Exact<{
   input: CreateTemplateInput;
@@ -1540,9 +1540,9 @@ export function useDeleteStudentMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteStudentMutationHookResult = ReturnType<typeof useDeleteStudentMutation>;
 export type DeleteStudentMutationResult = Apollo.MutationResult<DeleteStudentMutation>;
 export type DeleteStudentMutationOptions = Apollo.BaseMutationOptions<DeleteStudentMutation, DeleteStudentMutationVariables>;
-export const UpdateStudentDocument = gql`
-    mutation updateStudent($input: UpdateStudentOptionalFieldsInput!) {
-  updateStudent(input: $input) {
+export const PartialUpdateStudentDocument = gql`
+    mutation partialUpdateStudent($input: PartialUpdateStudentInput!) {
+  partialUpdateStudent(input: $input) {
     id
     name
     gender
@@ -1555,32 +1555,32 @@ export const UpdateStudentDocument = gql`
   }
 }
     `;
-export type UpdateStudentMutationFn = Apollo.MutationFunction<UpdateStudentMutation, UpdateStudentMutationVariables>;
+export type PartialUpdateStudentMutationFn = Apollo.MutationFunction<PartialUpdateStudentMutation, PartialUpdateStudentMutationVariables>;
 
 /**
- * __useUpdateStudentMutation__
+ * __usePartialUpdateStudentMutation__
  *
- * To run a mutation, you first call `useUpdateStudentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateStudentMutation` returns a tuple that includes:
+ * To run a mutation, you first call `usePartialUpdateStudentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePartialUpdateStudentMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateStudentMutation, { data, loading, error }] = useUpdateStudentMutation({
+ * const [partialUpdateStudentMutation, { data, loading, error }] = usePartialUpdateStudentMutation({
  *   variables: {
  *      input: // value for 'input'
  *   },
  * });
  */
-export function useUpdateStudentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateStudentMutation, UpdateStudentMutationVariables>) {
+export function usePartialUpdateStudentMutation(baseOptions?: Apollo.MutationHookOptions<PartialUpdateStudentMutation, PartialUpdateStudentMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateStudentMutation, UpdateStudentMutationVariables>(UpdateStudentDocument, options);
+        return Apollo.useMutation<PartialUpdateStudentMutation, PartialUpdateStudentMutationVariables>(PartialUpdateStudentDocument, options);
       }
-export type UpdateStudentMutationHookResult = ReturnType<typeof useUpdateStudentMutation>;
-export type UpdateStudentMutationResult = Apollo.MutationResult<UpdateStudentMutation>;
-export type UpdateStudentMutationOptions = Apollo.BaseMutationOptions<UpdateStudentMutation, UpdateStudentMutationVariables>;
+export type PartialUpdateStudentMutationHookResult = ReturnType<typeof usePartialUpdateStudentMutation>;
+export type PartialUpdateStudentMutationResult = Apollo.MutationResult<PartialUpdateStudentMutation>;
+export type PartialUpdateStudentMutationOptions = Apollo.BaseMutationOptions<PartialUpdateStudentMutation, PartialUpdateStudentMutationVariables>;
 export const StudentDocument = gql`
     query student($id: Int!) {
   student(id: $id) {
