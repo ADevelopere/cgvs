@@ -86,9 +86,11 @@ const TableBody: React.FC<NewTableBodyProps> = ({
       onScroll={handleScroll}
     >
       {data.map((item, index) => {
-        const globalIndex = paginationInfo
-          ? (paginationInfo.currentPage - 1) * paginationInfo.perPage + index + 1
-          : index + 1;
+        const globalIndex = paginationInfo?.firstItem != null
+          ? paginationInfo.firstItem + index
+          : (paginationInfo?.perPage && paginationInfo?.currentPage
+              ? (paginationInfo.currentPage - 1) * paginationInfo.perPage + index + 1
+              : index + 1);
 
         return (
           <DataRow
