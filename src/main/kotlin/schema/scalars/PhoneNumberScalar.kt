@@ -13,7 +13,7 @@ import graphql.schema.CoercingParseValueException
 import graphql.schema.CoercingSerializeException
 import graphql.schema.GraphQLScalarType
 import java.util.Locale
-import schema.type.PhoneNumber
+import schema.model.PhoneNumber
 
 val graphqlPhoneNumberType: GraphQLScalarType = GraphQLScalarType.newScalar()
     .name("PhoneNumber")

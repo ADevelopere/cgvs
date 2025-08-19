@@ -9,7 +9,7 @@ import graphql.schema.CoercingParseLiteralException
 import graphql.schema.CoercingParseValueException
 import graphql.schema.CoercingSerializeException
 import graphql.schema.GraphQLScalarType
-import schema.type.Email
+import schema.model.Email
 import java.util.Locale
 
 val graphqlEmailType: GraphQLScalarType = GraphQLScalarType.newScalar()

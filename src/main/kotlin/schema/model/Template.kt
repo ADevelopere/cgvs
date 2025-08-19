@@ -1,4 +1,4 @@
-package schema.type
+package schema.model
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader

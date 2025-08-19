@@ -1,6 +1,6 @@
 package repositories
 
-import schema.type.Session
+import schema.model.Session
 import tables.Sessions
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq

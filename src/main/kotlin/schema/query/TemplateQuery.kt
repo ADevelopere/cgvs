@@ -1,11 +1,11 @@
 package schema.query
 
 import com.expediagroup.graphql.server.operations.Query
-import schema.type.PaginatedTemplatesResponse
-import schema.type.Template
+import schema.model.PaginatedTemplatesResponse
+import schema.model.Template
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.type.PaginationArgs
+import schema.model.PaginationArgs
 import services.TemplateService
 import kotlin.getValue
 

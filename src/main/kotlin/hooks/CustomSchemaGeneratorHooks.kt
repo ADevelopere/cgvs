@@ -10,8 +10,8 @@ import schema.scalars.graphqlLocalDateTimeType
 import schema.scalars.graphqlLocalDateType
 import schema.scalars.graphqlEmailType
 import schema.scalars.graphqlPhoneNumberType
-import schema.type.Email
-import schema.type.PhoneNumber
+import schema.model.Email
+import schema.model.PhoneNumber
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty

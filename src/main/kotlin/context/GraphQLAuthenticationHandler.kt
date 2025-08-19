@@ -5,8 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
-import schema.type.User
-import schema.type.UserSession
+import schema.model.User
+import schema.model.UserSession
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.AuthService

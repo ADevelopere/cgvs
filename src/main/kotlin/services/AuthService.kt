@@ -7,11 +7,11 @@ import io.ktor.server.config.ApplicationConfig
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import schema.type.User
-import schema.type.Session
+import schema.model.User
+import schema.model.Session
 import repositories.UserRepository
 import repositories.SessionRepository
-import schema.type.RegisterInput
+import schema.model.RegisterInput
 import java.util.*
 
 class AuthService(

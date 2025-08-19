@@ -9,17 +9,17 @@ import kotlinx.datetime.toLocalDateTime
 import repositories.RepositoryManager
 import config.DatabaseConfig
 import io.ktor.server.config.*
-import schema.type.Email
-import schema.type.Gender
-import schema.type.CountryCode
-import schema.type.Student
-import schema.type.Template
-import schema.type.TemplateCategory
-import schema.type.TextTemplateVariable
-import schema.type.NumberTemplateVariable
-import schema.type.DateTemplateVariable
-import schema.type.SelectTemplateVariable
-import schema.type.User
+import schema.model.Email
+import schema.model.Gender
+import schema.model.CountryCode
+import schema.model.Student
+import schema.model.Template
+import schema.model.TemplateCategory
+import schema.model.TextTemplateVariable
+import schema.model.NumberTemplateVariable
+import schema.model.DateTemplateVariable
+import schema.model.SelectTemplateVariable
+import schema.model.User
 import tables.CategorySpecialType
 import kotlin.random.Random
 
@@ -564,13 +564,13 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         return Email("${firstNameSafe}${lastNameSafe}$randomNum@${domains.random()}")
     }
 
-    private fun generatePhoneNumber(): schema.type.PhoneNumber {
+    private fun generatePhoneNumber(): schema.model.PhoneNumber {
         // Generate a random Saudi mobile number (E.164 format: +9665XXXXXXXX)
         val countryCode = "+966"
         val secondDigit = random.nextInt(0, 10)
         val rest = random.nextInt(1000000, 9999999)
         val number = "${countryCode}5${secondDigit}${rest}"
-        return schema.type.PhoneNumber(number)
+        return schema.model.PhoneNumber(number)
     }
 
     private fun generateDateOfBirth(): LocalDate {

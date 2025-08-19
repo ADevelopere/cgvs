@@ -1,4 +1,4 @@
-package schema.type
+package schema.model
 
 enum class CountryCode {
     SA, PS, YE, SY, EG, KW, QA, OM, BH, LB, JO, IQ, LY, AE, TN, DZ, MA,

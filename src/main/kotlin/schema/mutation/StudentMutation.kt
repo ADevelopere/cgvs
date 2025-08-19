@@ -1,11 +1,11 @@
 package schema.mutation
 
 import com.expediagroup.graphql.server.operations.Mutation
-import schema.type.CreateStudentInput
-import schema.type.Student
+import schema.model.CreateStudentInput
+import schema.model.Student
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.type.PartialUpdateStudentInput
+import schema.model.PartialUpdateStudentInput
 import services.StudentService
 import kotlin.getValue
 

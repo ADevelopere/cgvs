@@ -9,7 +9,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import kotlinx.serialization.Serializable
-import schema.type.UserSession
+import schema.model.UserSession
 import org.koin.ktor.ext.inject
 import services.AuthService
 

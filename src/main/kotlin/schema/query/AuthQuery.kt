@@ -5,7 +5,7 @@ import com.expediagroup.graphql.server.operations.Query
 import context.GraphQLAuthenticationHandler
 import graphql.schema.DataFetchingEnvironment
 import io.ktor.server.application.*
-import schema.type.User
+import schema.model.User
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

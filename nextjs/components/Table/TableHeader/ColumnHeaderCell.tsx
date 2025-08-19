@@ -224,6 +224,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                     overflow: "hidden",
                     background: "blue",
                     minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+                    cursor: isSortable ? "pointer" : "default",
                 }}
             >
                 <div
