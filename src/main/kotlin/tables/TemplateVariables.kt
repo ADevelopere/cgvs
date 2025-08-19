@@ -4,7 +4,7 @@ import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 import org.jetbrains.exposed.v1.datetime.date
-import schema.type.TemplateVariableType
+import schema.model.TemplateVariableType
 
 // Base table for all template variables
 object TemplateVariableBase : Table("template_variable_base") {

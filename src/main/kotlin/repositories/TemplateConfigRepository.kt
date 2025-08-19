@@ -3,8 +3,8 @@ package repositories
 import io.ktor.server.config.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import schema.type.TemplateConfig
-import schema.type.TemplateConfigKey
+import schema.model.TemplateConfig
+import schema.model.TemplateConfigKey
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction

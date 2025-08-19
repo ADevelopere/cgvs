@@ -3,7 +3,7 @@ package schema.mutation
 import com.expediagroup.graphql.server.operations.Mutation
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.type.*
+import schema.model.*
 import services.TemplateVariableService
 
 @Suppress("unused")

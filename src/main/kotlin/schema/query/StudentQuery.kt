@@ -1,13 +1,13 @@
 package schema.query
 
 import com.expediagroup.graphql.server.operations.Query
-import schema.type.PaginatedStudentResponse
+import schema.model.PaginatedStudentResponse
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.type.OrderStudentsByClause
-import schema.type.PaginationArgs
-import schema.type.Student
-import schema.type.StudentFilterArgs
+import schema.model.OrderStudentsByClause
+import schema.model.PaginationArgs
+import schema.model.Student
+import schema.model.StudentFilterArgs
 import services.StudentService
 import kotlin.getValue
 

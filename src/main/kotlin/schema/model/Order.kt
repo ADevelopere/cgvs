@@ -1,4 +1,4 @@
-package schema.type
+package schema.model
 
 enum class SortOrder {
     ASC,

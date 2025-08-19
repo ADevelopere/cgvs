@@ -1,4 +1,4 @@
-package schema.type
+package schema.model
 
 import kotlinx.serialization.Serializable
 import org.apache.commons.validator.routines.EmailValidator

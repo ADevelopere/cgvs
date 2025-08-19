@@ -1,13 +1,13 @@
 package services
 
-import schema.type.CreateStudentInput
-import schema.type.Student
+import schema.model.CreateStudentInput
+import schema.model.Student
 import repositories.StudentRepository
-import schema.type.OrderStudentsByClause
-import schema.type.PaginatedStudentResponse
-import schema.type.PaginationArgs
-import schema.type.StudentFilterArgs
-import schema.type.PartialUpdateStudentInput
+import schema.model.OrderStudentsByClause
+import schema.model.PaginatedStudentResponse
+import schema.model.PaginationArgs
+import schema.model.StudentFilterArgs
+import schema.model.PartialUpdateStudentInput
 
 class StudentService(
     private val repository: StudentRepository

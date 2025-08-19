@@ -58,7 +58,8 @@ fun Application.graphQLModule() {
                 TemplateConfigQuery(),
                 TemplateCategoryQuery(),
 
-                StudentQuery()
+                StudentQuery(),
+                schema.storage.query.StorageQuery()
             )
             mutations = listOf(
                 AuthMutation(),

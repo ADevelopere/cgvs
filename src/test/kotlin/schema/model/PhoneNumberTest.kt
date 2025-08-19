@@ -1,4 +1,4 @@
-package schema.type
+package schema.model
 
 import com.google.i18n.phonenumbers.NumberParseException
 import kotlin.test.*

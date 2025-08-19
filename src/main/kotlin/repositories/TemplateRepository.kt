@@ -1,6 +1,6 @@
 package repositories
 
-import schema.type.Template
+import schema.model.Template
 import tables.Templates
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
@@ -15,7 +15,6 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import services.StorageService
 import util.now
 
 class TemplateRepository(private val database: Database) : PaginatableRepository<Template> {

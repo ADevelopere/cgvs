@@ -2,9 +2,9 @@ package schema.mutation
 
 import com.expediagroup.graphql.server.operations.Mutation
 import graphql.schema.DataFetchingEnvironment
-import schema.type.CreateTemplateInput
-import schema.type.Template
-import schema.type.UpdateTemplateInput
+import schema.model.CreateTemplateInput
+import schema.model.Template
+import schema.model.UpdateTemplateInput
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import services.TemplateService

@@ -10,7 +10,7 @@ import org.dataloader.DataLoaderFactory
 import org.dataloader.DataLoaderOptions
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.type.TemplateVariable
+import schema.model.TemplateVariable
 import services.TemplateVariableService
 import kotlin.coroutines.EmptyCoroutineContext
 

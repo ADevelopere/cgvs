@@ -1,6 +1,6 @@
 package repositories
 
-import schema.type.User
+import schema.model.User
 import tables.Users
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -15,7 +15,7 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
-import schema.type.Email
+import schema.model.Email
 
 class UserRepository(private val database: Database) {
 

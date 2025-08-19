@@ -1,13 +1,13 @@
 package services
 
-import schema.type.CreateTemplateInput
-import schema.type.Template
+import schema.model.CreateTemplateInput
+import schema.model.Template
 import repositories.TemplateCategoryRepository
 import repositories.TemplateRepository
-import schema.type.UpdateTemplateInput
+import schema.model.UpdateTemplateInput
 import schema.pagination.PaginationResult
 import schema.pagination.PaginationUtils
-import schema.type.PaginationArgs
+import schema.model.PaginationArgs
 import tables.CategorySpecialType
 
 class TemplateService(

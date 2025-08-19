@@ -2,22 +2,22 @@ package services
 
 import repositories.TemplateRepository
 import repositories.TemplateVariableRepository
-import schema.type.CreateDateTemplateVariableInput
-import schema.type.CreateNumberTemplateVariableInput
-import schema.type.CreateSelectTemplateVariableInput
-import schema.type.CreateTextTemplateVariableInput
-import schema.type.DateTemplateVariable
-import schema.type.NumberTemplateVariable
-import schema.type.SelectTemplateVariable
-import schema.type.CreateTemplateVariableInput
-import schema.type.TemplateVariable
-import schema.type.TemplateVariableType
-import schema.type.TextTemplateVariable
-import schema.type.UpdateDateTemplateVariableInput
-import schema.type.UpdateNumberTemplateVariableInput
-import schema.type.UpdateSelectTemplateVariableInput
-import schema.type.UpdateTemplateVariableInput
-import schema.type.UpdateTextTemplateVariableInput
+import schema.model.CreateDateTemplateVariableInput
+import schema.model.CreateNumberTemplateVariableInput
+import schema.model.CreateSelectTemplateVariableInput
+import schema.model.CreateTextTemplateVariableInput
+import schema.model.DateTemplateVariable
+import schema.model.NumberTemplateVariable
+import schema.model.SelectTemplateVariable
+import schema.model.CreateTemplateVariableInput
+import schema.model.TemplateVariable
+import schema.model.TemplateVariableType
+import schema.model.TextTemplateVariable
+import schema.model.UpdateDateTemplateVariableInput
+import schema.model.UpdateNumberTemplateVariableInput
+import schema.model.UpdateSelectTemplateVariableInput
+import schema.model.UpdateTemplateVariableInput
+import schema.model.UpdateTextTemplateVariableInput
 
 class TemplateVariableService(
     private val repository: TemplateVariableRepository,

@@ -1,7 +1,7 @@
 package schema.pagination
 
-import schema.type.PaginationArgs
-import schema.type.PaginationInfo
+import schema.model.PaginationArgs
+import schema.model.PaginationInfo
 
 
 /**

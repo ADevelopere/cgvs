@@ -3,8 +3,8 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.datetime.datetime
-import schema.type.Gender
-import schema.type.CountryCode
+import schema.model.Gender
+import schema.model.CountryCode
 
 object Students : Table() {
     val id = integer("id").autoIncrement()
