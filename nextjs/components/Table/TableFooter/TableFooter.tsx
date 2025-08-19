@@ -14,7 +14,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
   const theme = useTheme();
   const { strings } = useTableLocale();
 
-  const { paginatorInfo } = useTableContext();
+  const { paginationInfo: paginatorInfo } = useTableContext();
 
   const {
     totalRows = 0,

@@ -269,6 +269,7 @@ const TableHeader: React.FC<{
                         width: indexColWidth,
                         textAlign: "center",
                         fontWeight: "bold",
+                        borderInlineEnd: `1px solid ${theme.palette.divider}`,
                     }}
                 ></th>
 

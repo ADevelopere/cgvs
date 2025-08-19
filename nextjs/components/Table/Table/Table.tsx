@@ -26,7 +26,7 @@ const Table: React.FC<{
     style?: React.CSSProperties;
 }> = ({ style }) => {
     const { strings } = useTableLocale();
-    const { paginatorInfo, data, isLoading } = useTableContext();
+    const { paginationInfo: paginatorInfo, data, isLoading } = useTableContext();
     const { visibleColumns, columnWidths } = useTableColumnContext();
     const { rowSelectionEnabled } = useTableRowsContext();
 

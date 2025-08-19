@@ -16,6 +16,7 @@ import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { Navigation, Title } from "@/contexts/adminLayout.types";
 import { TemplateCategoryGraphQLProvider } from "@/contexts/template/TemplateCategoryGraphQLContext";
 import { TemplateGraphQLProvider } from "@/contexts/template/TemplateGraphQLContext";
+import StudentProvider from "@/contexts/student/StudentProvider";
 
 const NAVIGATION: Navigation = [
     {
@@ -71,7 +72,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
                 <TemplateCategoryGraphQLProvider>
                     <TemplateGraphQLProvider>
                         <TemplateCategoryManagementProvider>
-                            <DashboardLayout>{children}</DashboardLayout>
+                            <StudentProvider>
+                                <DashboardLayout>{children}</DashboardLayout>
+                            </StudentProvider>
                         </TemplateCategoryManagementProvider>
                     </TemplateGraphQLProvider>
                 </TemplateCategoryGraphQLProvider>
