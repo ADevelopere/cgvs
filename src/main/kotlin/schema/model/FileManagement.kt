@@ -3,6 +3,7 @@ package schema.model
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.Serializable
 
 // Input types for file operations
 @GraphQLDescription("Input for creating a folder")
@@ -44,6 +45,7 @@ data class ListFilesInput(
 }
 
 // Enums
+@Serializable
 enum class FileSortField {
     NAME,
     SIZE,
@@ -51,6 +53,7 @@ enum class FileSortField {
     TYPE
 }
 
+@Serializable
 enum class FileType {
     IMAGE,
     DOCUMENT,
@@ -67,6 +70,7 @@ interface StorageObject {
 
 // Response types
 
+@Serializable
 @GraphQLIgnore
 @GraphQLDescription("Enhanced file information with metadata")
 data class FileInfo(
@@ -94,6 +98,7 @@ data class FileInfo(
     val isPublic: Boolean = false
 ) : StorageObject
 
+@Serializable
 @GraphQLIgnore
 @GraphQLDescription("Folder information")
 data class FolderInfo(
@@ -113,6 +118,7 @@ data class FolderInfo(
     val lastModified: LocalDateTime
 ) : StorageObject
 
+@Serializable
 @GraphQLDescription("Paginated list of storage objects")
 data class StorageObjectList(
     @param:GraphQLDescription("List of files and folders")
@@ -127,6 +133,7 @@ data class StorageObjectList(
     val hasMore: Boolean
 )
 
+@Serializable
 @GraphQLDescription("Result of a file operation")
 data class FileOperationResult(
     @param:GraphQLDescription("Whether the operation was successful")
@@ -137,6 +144,7 @@ data class FileOperationResult(
     val item: StorageObject? = null
 )
 
+@Serializable
 @GraphQLDescription("File upload result")
 data class FileUploadResult(
     @param:GraphQLDescription("Whether the upload was successful")
@@ -144,9 +152,10 @@ data class FileUploadResult(
     @param:GraphQLDescription("Success or error message")
     val message: String,
     @param:GraphQLDescription("The uploaded file information")
-    val file: FileInfo? = null
+    val fileInfo: FileInfo? = null
 )
 
+@Serializable
 @GraphQLDescription("File type and its count")
 data class FileTypeCount(
     @param:GraphQLDescription("File type")
@@ -155,6 +164,7 @@ data class FileTypeCount(
     val count: Int
 )
 
+@Serializable
 @GraphQLDescription("Storage statistics")
 data class StorageStats(
     @param:GraphQLDescription("Total number of files")
@@ -165,4 +175,13 @@ data class StorageStats(
     val totalSize: Long,
     @param:GraphQLDescription("Breakdown by file type")
     val fileTypeBreakdown: List<FileTypeCount>
+)
+
+@Serializable
+@GraphQLDescription("Represents a signed URL for uploading a file")
+data class UploadSignedUrl(
+    @param:GraphQLDescription("The signed URL for the upload")
+    val url: String,
+    @param:GraphQLDescription("The path where the file will be stored")
+    val path: String
 )

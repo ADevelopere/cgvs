@@ -2,13 +2,23 @@ package services
 
 import com.google.cloud.storage.*
 import config.GcsConfig
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.log
+import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.respond
+import io.ktor.utils.io.InternalAPI
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.io.readByteArray
 import schema.model.*
 import services.StorageService.Companion.SIGNED_URL_DURATION
 import util.timestampToLocalDateTime
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
@@ -27,6 +37,10 @@ interface StorageService {
 
         val PATH_PATTERN = Regex("^[a-zA-Z0-9._/-]+$")
     }
+
+    suspend fun handleFileUpload(call: ApplicationCall, folder: String)
+
+    fun fileExists(path: String): Boolean
 
     fun generateUploadSignedUrl(path: String, contentType: String): String
 
@@ -109,10 +123,94 @@ interface StorageService {
     fun getStorageStatistics(path: String? = null): StorageStats
 }
 
+@OptIn(InternalAPI::class)
 fun storageService(
     storage: Storage,
     gcsConfig: GcsConfig
 ) = object : StorageService {
+    override suspend fun handleFileUpload(call: ApplicationCall, folder: String) {
+        try {
+            val parts = call.receiveMultipart()
+            var fileName: String? = null
+            var fileBytes: ByteArray? = null
+            var fileContentType: String? = null
+            var originalFileName: String? = null
+
+            parts.forEachPart { part ->
+                when (part) {
+                    is PartData.FormItem -> {
+                        if (part.name == "fileName") {
+                            fileName = part.value
+                        }
+                    }
+                    is PartData.FileItem -> {
+                        if (fileBytes == null) {
+                            originalFileName = part.originalFileName
+                            fileContentType = part.contentType?.toString()
+                            fileBytes = part.provider().readBuffer.readByteArray()
+                        }
+                    }
+
+                    else -> {}
+                }
+                part.dispose()
+            }
+
+            if (fileBytes == null) {
+                call.respond(HttpStatusCode.BadRequest, FileUploadResult(success = false, message = "No file provided"))
+                return
+            }
+
+            val finalFileName = if (!fileName.isNullOrBlank()) fileName else originalFileName
+
+            if (finalFileName.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, FileUploadResult(success = false, message = "File must have a name"))
+                return
+            }
+
+            val finalPath = if (folder.isNotBlank()) {
+                "${folder.trimEnd('/')}/$finalFileName"
+            } else {
+                finalFileName
+            }
+
+            val result = uploadFile(
+                path = finalPath,
+                inputStream = ByteArrayInputStream(fileBytes),
+                contentType = fileContentType,
+                originalFilename = finalFileName
+            )
+
+            if (result.success) {
+                call.respond(HttpStatusCode.OK, result)
+            } else {
+                call.respond(HttpStatusCode.BadRequest, result)
+            }
+        } catch (e: Exception) {
+            call.application.log.error("Failed to upload file to $folder", e)
+            call.respond(
+                HttpStatusCode.InternalServerError, FileUploadResult(
+                    success = false,
+                    message = "Upload failed: ${e.message}"
+                )
+            )
+        }
+    }
+
+    override fun fileExists(path: String): Boolean {
+        return try {
+            storage.get(gcsConfig.bucketName, path) != null
+        } catch (e: StorageException) {
+            if (e.code == 403) {
+                // This can happen if the service account doesn't have storage.objects.get permission.
+                // In this case, we can't check for existence, so we'll assume it doesn't exist.
+                // This is a security measure to avoid exposing sensitive information.
+                return false
+            }
+            throw e
+        }
+    }
+
     override fun generateUploadSignedUrl(path: String, contentType: String): String {
         validatePath(path)?.let { throw Exception(it) }
         validateFileType(contentType)?.let { throw Exception(it) }
@@ -142,9 +240,17 @@ fun storageService(
         originalFilename: String?
     ): FileUploadResult {
         try {
+            if (!path.startsWith("public/")) {
+                return FileUploadResult(false, "Uploads are restricted to the 'public' directory.")
+            }
+
             // Validate path
             validatePath(path)?.let { error ->
                 return FileUploadResult(false, error)
+            }
+
+            if (fileExists(path)) {
+                return FileUploadResult(false, "File with the same name already exists in this folder.")
             }
 
             // Validate content type
@@ -169,7 +275,7 @@ fun storageService(
             val blob = storage.create(blobInfo, bytes)
 
             val fileInfo = FileInfo(
-                name = blob.name.substringAfterLast('/'),
+                name = originalFilename ?: blob.name.substringAfterLast('/'),
                 path = blob.name,
                 size = blob.size,
                 contentType = blob.contentType,
@@ -183,8 +289,8 @@ fun storageService(
             )
 
             return FileUploadResult(true, "File uploaded successfully", fileInfo)
-        } catch (e: Exception) {
-            return FileUploadResult(false, "Upload failed: ${e.message}")
+        } catch (_: Exception) {
+            return FileUploadResult(false, "An unexpected error occurred during file upload.")
         }
     }
 
@@ -194,7 +300,7 @@ fun storageService(
             Storage.BlobListOption.prefix(prefix),
             Storage.BlobListOption.currentDirectory(),
             Storage.BlobListOption.pageSize(
-                ((input.limit ?: ListFilesInput.Companion.DEFAULT_LIMIT) + (input.offset ?: 0) + 1).toLong()
+                ((input.limit ?: ListFilesInput.DEFAULT_LIMIT) + (input.offset ?: 0) + 1).toLong()
             )
         )
 
@@ -280,14 +386,14 @@ fun storageService(
         // Apply pagination
         val totalCount = sortedItems.size
         val paginatedItems =
-            sortedItems.drop(input.offset ?: 0).take(input.limit ?: ListFilesInput.Companion.DEFAULT_LIMIT)
-        val hasMore = (input.offset ?: 0) + (input.limit ?: ListFilesInput.Companion.DEFAULT_LIMIT) < totalCount
+            sortedItems.drop(input.offset ?: 0).take(input.limit ?: ListFilesInput.DEFAULT_LIMIT)
+        val hasMore = (input.offset ?: 0) + (input.limit ?: ListFilesInput.DEFAULT_LIMIT) < totalCount
 
         return StorageObjectList(
             items = paginatedItems,
             totalCount = totalCount,
             offset = input.offset ?: 0,
-            limit = input.limit ?: ListFilesInput.Companion.DEFAULT_LIMIT,
+            limit = input.limit ?: ListFilesInput.DEFAULT_LIMIT,
             hasMore = hasMore
         )
     }
@@ -455,9 +561,9 @@ fun storageService(
             folderCount = folderCount,
             totalSize = totalSize,
             created = if (created == LocalDateTime(2100, 1, 1, 0, 0, 0)) Clock.System.now()
-                .toLocalDateTime(TimeZone.Companion.currentSystemDefault()) else created,
+                .toLocalDateTime(TimeZone.currentSystemDefault()) else created,
             lastModified = if (latestModified == LocalDateTime(1900, 1, 1, 0, 0, 0)) Clock.System.now()
-                .toLocalDateTime(TimeZone.Companion.currentSystemDefault()) else latestModified
+                .toLocalDateTime(TimeZone.currentSystemDefault()) else latestModified
         )
     }
 

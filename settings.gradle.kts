@@ -1,1 +1,1 @@
-rootProject.name = "kotr"
+rootProject.name = "cgvs"
