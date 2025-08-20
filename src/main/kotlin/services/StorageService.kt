@@ -27,14 +27,6 @@ interface StorageService {
         const val MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
         const val SIGNED_URL_DURATION = 15L // minutes
 
-        val ALLOWED_FILE_TYPES = setOf(
-            "image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml",
-            "application/pdf", "text/plain", "text/csv",
-            "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/zip", "application/x-rar-compressed"
-        )
-
         val PATH_PATTERN = Regex("^[a-zA-Z0-9._/-]+$")
     }
 
@@ -42,7 +34,7 @@ interface StorageService {
 
     fun fileExists(path: String): Boolean
 
-    fun generateUploadSignedUrl(path: String, contentType: String): String
+    fun generateUploadSignedUrl(path: String, contentType: ContentType): String
 
     fun validatePath(path: String): String? {
         if (path.contains("..") || path.contains("//")) {
@@ -57,12 +49,12 @@ interface StorageService {
         return null
     }
 
-    fun validateFileType(contentType: String?): String? {
+    fun validateFileType(contentType: ContentType?, location: UploadLocation): String? {
         if (contentType == null) {
             return "Content type is required"
         }
-        if (!ALLOWED_FILE_TYPES.contains(contentType.lowercase())) {
-            return "File type not allowed: $contentType"
+        if (!location.allowedContentTypes.contains(contentType)) {
+            return "File type not allowed for this location: ${contentType.value}"
         }
         return null
     }
@@ -85,18 +77,10 @@ interface StorageService {
         }
     }
 
-    fun determineFileType(contentType: String?): FileType {
-        return when {
-            contentType?.startsWith("image/") == true -> FileType.IMAGE
-            contentType?.startsWith("video/") == true -> FileType.VIDEO
-            contentType?.startsWith("audio/") == true -> FileType.AUDIO
-            contentType in listOf(
-                "application/pdf", "text/plain", "text/csv",
-                "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            ) -> FileType.DOCUMENT
-
-            contentType in listOf("application/zip", "application/x-rar-compressed") -> FileType.ARCHIVE
+    fun determineFileType(contentType: ContentType?): FileType {
+        return when (contentType) {
+            ContentType.JPEG, ContentType.PNG, ContentType.GIF, ContentType.SVG, ContentType.WEBP -> FileType.IMAGE
+            ContentType.PDF, ContentType.TEXT, ContentType.JSON -> FileType.DOCUMENT
             else -> FileType.OTHER
         }
     }
@@ -104,8 +88,9 @@ interface StorageService {
     fun uploadFile(
         path: String,
         inputStream: InputStream,
-        contentType: String?,
-        originalFilename: String? = null
+        contentType: ContentType?,
+        originalFilename: String? = null,
+        location: UploadLocation
     ): FileUploadResult
 
     fun listFiles(input: ListFilesInput): StorageObjectList
@@ -133,7 +118,7 @@ fun storageService(
             val parts = call.receiveMultipart()
             var fileName: String? = null
             var fileBytes: ByteArray? = null
-            var fileContentType: String? = null
+            var fileContentType: ContentType? = null
             var originalFileName: String? = null
 
             parts.forEachPart { part ->
@@ -146,7 +131,7 @@ fun storageService(
                     is PartData.FileItem -> {
                         if (fileBytes == null) {
                             originalFileName = part.originalFileName
-                            fileContentType = part.contentType?.toString()
+                            fileContentType = ContentType.values().find { it.value == part.contentType?.toString() }
                             fileBytes = part.provider().readBuffer.readByteArray()
                         }
                     }
@@ -178,7 +163,8 @@ fun storageService(
                 path = finalPath,
                 inputStream = ByteArrayInputStream(fileBytes),
                 contentType = fileContentType,
-                originalFilename = finalFileName
+                originalFilename = finalFileName,
+                location = UploadLocation.valueOf(folder.uppercase())
             )
 
             if (result.success) {
@@ -211,12 +197,17 @@ fun storageService(
         }
     }
 
-    override fun generateUploadSignedUrl(path: String, contentType: String): String {
+    override fun generateUploadSignedUrl(path: String, contentType: ContentType): String {
         validatePath(path)?.let { throw Exception(it) }
-        validateFileType(contentType)?.let { throw Exception(it) }
+        val location = UploadLocation.values().find { path.startsWith(it.path) } ?: throw Exception("Invalid upload location")
+        validateFileType(contentType, location)?.let { throw Exception(it) }
+
+        check (path.startsWith("public/")) {
+            "Uploads are restricted to the 'public' directory."
+        }
 
         val blobInfo = BlobInfo.newBuilder(BlobId.of(gcsConfig.bucketName, path))
-            .setContentType(contentType)
+            .setContentType(contentType.value)
             .build()
 
         val options = listOf(
@@ -236,8 +227,9 @@ fun storageService(
     override fun uploadFile(
         path: String,
         inputStream: InputStream,
-        contentType: String?,
-        originalFilename: String?
+        contentType: ContentType?,
+        originalFilename: String?,
+        location: UploadLocation
     ): FileUploadResult {
         try {
             if (!path.startsWith("public/")) {
@@ -254,7 +246,7 @@ fun storageService(
             }
 
             // Validate content type
-            validateFileType(contentType)?.let { error ->
+            validateFileType(contentType, location)?.let { error ->
                 return FileUploadResult(false, error)
             }
 
@@ -266,7 +258,7 @@ fun storageService(
 
             val blobId = BlobId.of(gcsConfig.bucketName, path)
             val blobInfo = BlobInfo.newBuilder(blobId)
-                .setContentType(contentType)
+                .setContentType(contentType?.value)
                 .apply {
                     originalFilename?.let { setMetadata(mapOf("originalFilename" to it)) }
                 }
@@ -283,9 +275,9 @@ fun storageService(
                 created = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli()),
                 url = gcsConfig.baseUrl + blob.name,
                 mediaLink = blob.mediaLink,
-                fileType = determineFileType(blob.contentType),
+                fileType = determineFileType(ContentType.values().find { it.value == blob.contentType }),
                 md5Hash = blob.md5,
-                isPublic = false
+                isPublic = true
             )
 
             return FileUploadResult(true, "File uploaded successfully", fileInfo)
@@ -506,7 +498,7 @@ fun storageService(
                 } else {
                     totalFiles++
                     totalSize += blob.size
-                    val fileType = determineFileType(blob.contentType)
+                    val fileType = determineFileType(ContentType.values().find { it.value == blob.contentType })
                     val existing = fileTypes.find { it.type == fileType }
                     if (existing != null) {
                         fileTypes[fileTypes.indexOf(existing)] = existing.copy(count = existing.count + 1)
@@ -584,7 +576,7 @@ fun storageService(
             created = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli()),
             url = gcsConfig.baseUrl + blob.name,
             mediaLink = blob.mediaLink,
-            fileType = determineFileType(blob.contentType),
+            fileType = determineFileType(ContentType.values().find { it.value == blob.contentType }),
             md5Hash = blob.md5,
             isPublic = blob.name.startsWith("public/")
         )

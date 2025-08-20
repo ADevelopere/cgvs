@@ -31,6 +31,6 @@ image:
 
 gcp:
   project_id: "hardy-mercury-407317"
-  secret_id: "cgvs-service-account-json"
+  secret_id: "csvs-service-account-json"
   secret_version: "latest"
   bucket_name: "cgvs"
