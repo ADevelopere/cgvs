@@ -185,3 +185,42 @@ data class UploadSignedUrl(
     @param:GraphQLDescription("The path where the file will be stored")
     val path: String
 )
+
+@GraphQLDescription("Supported content types for file uploads.")
+enum class ContentType(val value: String) {
+    // Image types
+    JPEG("image/jpeg"),
+    PNG("image/png"),
+    GIF("image/gif"),
+    SVG("image/svg+xml"),
+    WEBP("image/webp"),
+
+    // Document types
+    PDF("application/pdf"),
+    JSON("application/json"),
+
+    // Font types
+    TTF("font/ttf"),
+    OTF("font/otf"),
+    WOFF("font/woff"),
+    WOFF2("font/woff2"),
+
+    // Other
+    TEXT("text/plain"),
+}
+
+@Suppress("unused")
+enum class UploadLocation(val path: String, val allowedContentTypes: List<ContentType>) {
+    PUBLIC("public", ContentType.values().toList()),
+    TEMPLATE_COVER("public/templateCover", listOf(ContentType.JPEG, ContentType.PNG, ContentType.WEBP))
+}
+
+@GraphQLDescription("Input for generating a signed URL for file upload")
+data class GenerateUploadSignedUrlInput(
+    @param:GraphQLDescription("The location where the file will be stored.")
+    val location: UploadLocation,
+    @param:GraphQLDescription("The name of the file.")
+    val fileName: String,
+    @param:GraphQLDescription("The content type of the file to be uploaded (e.g., 'image/jpeg', 'application/pdf').")
+    val contentType: ContentType
+)

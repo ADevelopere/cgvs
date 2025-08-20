@@ -6,6 +6,7 @@ import config.GcsConfig
 import services.StorageService
 import io.ktor.server.application.Application
 import org.koin.dsl.module
+import services.getStorageFromSecretManager
 import services.storageService
 
 fun storageModule(application: Application) = module {
@@ -16,7 +17,12 @@ fun storageModule(application: Application) = module {
     )
     single<GcsConfig> { gcsConfig }
 
-    val storage: Storage = StorageOptions.getDefaultInstance().service
+    val projectId = config.property("gcp.project_id").getString()
+    val secretId = config.property("gcp.secret_id").getString()
+    val versionId = config.propertyOrNull("gcp.secret_version")?.getString() ?: "latest"
+
+    val storage: Storage =getStorageFromSecretManager(projectId, secretId, versionId) ?:
+        StorageOptions.getDefaultInstance().service
     single<Storage> { storage }
 
     single<StorageService> { storageService(get(), gcsConfig) }

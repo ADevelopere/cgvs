@@ -24,4 +24,12 @@ class StorageMutation : Mutation, KoinComponent {
     ): FileOperationResult {
         return storageService.deleteFile(path)
     }
+
+    @GraphQLDescription("Generate a signed URL for file upload")
+    fun generateUploadSignedUrl(
+        input: GenerateUploadSignedUrlInput
+    ): String {
+        val path = "${input.location.path}/${input.fileName}"
+        return storageService.generateUploadSignedUrl(path, input.contentType)
+    }
 }
