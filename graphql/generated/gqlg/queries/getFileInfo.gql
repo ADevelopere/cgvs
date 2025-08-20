@@ -1,0 +1,15 @@
+query getFileInfo($path: String!){
+    getFileInfo(path: $path){
+        contentType
+        created
+        fileType
+        isPublic
+        lastModified
+        md5Hash
+        mediaLink
+        name
+        path
+        size
+        url
+    }
+}

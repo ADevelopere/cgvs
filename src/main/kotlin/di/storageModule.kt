@@ -1,21 +1,23 @@
-
 package di
 
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import config.GcsConfig
-import features.storage.StorageService
+import services.StorageService
+import io.ktor.server.application.Application
 import org.koin.dsl.module
+import services.storageService
 
-fun storageModule() = module {
-    single {
-        val bucketName = getProperty<String>("gcs.bucketName")
-        GcsConfig(bucketName)
-    }
-    single<Storage> {
-        StorageOptions.getDefaultInstance().service
-    }
-    single {
-        StorageService(get(), get())
-    }
+fun storageModule(application: Application) = module {
+    val config = application.environment.config
+
+    val gcsConfig = GcsConfig(
+        bucketName = config.property("gcp.bucket_name").getString()
+    )
+    single<GcsConfig> { gcsConfig }
+
+    val storage: Storage = StorageOptions.getDefaultInstance().service
+    single<Storage> { storage }
+
+    single<StorageService> { storageService(get(), gcsConfig) }
 }

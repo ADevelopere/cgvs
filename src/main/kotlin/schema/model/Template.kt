@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
-import services.StorageService
+import schema.dataloaders.UrlDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
 
@@ -42,10 +42,14 @@ data class Template(
         )
     }
 
-    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String?> {
-        return CompletableFuture.completedFuture(
-            if (imageFileName != null) StorageService.TEMPLATE_BASE_URL + imageFileName else null
-        )
+    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String> {
+        return if (imageFileName.isNullOrBlank()) {
+            CompletableFuture.completedFuture("")
+        } else {
+            dataFetchingEnvironment.getValueFromDataLoader(
+                UrlDataLoader.dataLoaderName, imageFileName
+            )
+        }
     }
 }
 

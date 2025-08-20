@@ -17,6 +17,7 @@ import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import schema.query.AuthQuery
 import schema.query.UserQuery
+import schema.query.StorageQuery
 import schema.mutation.AuthMutation
 import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
@@ -26,10 +27,12 @@ import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateCategoryTemplatesDataLoader
 import schema.dataloaders.TemplateDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
+import schema.dataloaders.UrlDataLoader
 import schema.mutation.StudentMutation
 import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
 import schema.mutation.TemplateVariableMutation
+import schema.mutation.StorageMutation
 import schema.query.StudentQuery
 import schema.query.TemplateCategoryQuery
 import schema.query.TemplateConfigQuery
@@ -53,16 +56,15 @@ fun Application.graphQLModule() {
             queries = listOf(
                 AuthQuery(),
                 UserQuery(),
-//                PaginatedUserQuery(),
+                StorageQuery(),
                 TemplateQuery(),
                 TemplateConfigQuery(),
                 TemplateCategoryQuery(),
-
                 StudentQuery(),
-                schema.storage.query.StorageQuery()
             )
             mutations = listOf(
                 AuthMutation(),
+                StorageMutation(),
                 TemplateCategoryMutation(),
                 TemplateMutation(),
                 TemplateVariableMutation(),
@@ -79,6 +81,7 @@ fun Application.graphQLModule() {
                 TemplateCategoryTemplatesDataLoader,
                 TemplateDataLoader,
                 TemplateVariablesDataLoader,
+                UrlDataLoader
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }

@@ -1,0 +1,11 @@
+query getFolderInfo($path: String!){
+    getFolderInfo(path: $path){
+        created
+        fileCount
+        folderCount
+        lastModified
+        name
+        path
+        totalSize
+    }
+}

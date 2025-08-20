@@ -1,0 +1,11 @@
+query getStorageStats($path: String){
+    getStorageStats(path: $path){
+        fileTypeBreakdown{
+            count
+            type
+        }
+        totalFiles
+        totalFolders
+        totalSize
+    }
+}

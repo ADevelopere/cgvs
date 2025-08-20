@@ -1,6 +1,6 @@
 package schema.model
 
-enum class SortOrder {
+enum class SortDirection {
     ASC,
     DESC
 }
