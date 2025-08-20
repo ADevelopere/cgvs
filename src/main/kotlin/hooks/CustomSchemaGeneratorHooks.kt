@@ -10,6 +10,7 @@ import schema.scalars.graphqlLocalDateTimeType
 import schema.scalars.graphqlLocalDateType
 import schema.scalars.graphqlEmailType
 import schema.scalars.graphqlPhoneNumberType
+import schema.scalars.graphqlLongType
 import schema.model.Email
 import schema.model.PhoneNumber
 import kotlin.reflect.KClass
@@ -23,6 +24,7 @@ val customSchemaGeneratorHooks = object : SchemaGeneratorHooks {
         LocalDate::class -> graphqlLocalDateType
         PhoneNumber::class -> graphqlPhoneNumberType
         Email::class -> graphqlEmailType
+        Long::class -> graphqlLongType
         Koin::class -> null  // Explicitly exclude Koin type
         KoinComponent::class -> null  // Explicitly exclude KoinComponent type
         else -> null

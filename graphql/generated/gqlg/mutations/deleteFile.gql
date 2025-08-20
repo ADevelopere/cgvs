@@ -1,0 +1,10 @@
+mutation deleteFile($path: String!){
+    deleteFile(path: $path){
+        item{
+            name
+            path
+        }
+        message
+        success
+    }
+}

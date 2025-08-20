@@ -1,0 +1,10 @@
+mutation renameFile($input: RenameFileInput!){
+    renameFile(input: $input){
+        item{
+            name
+            path
+        }
+        message
+        success
+    }
+}

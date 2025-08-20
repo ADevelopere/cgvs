@@ -103,7 +103,7 @@ data class StudentFilterArgs(
  */
 data class OrderStudentsByClause(
     val column: OrderStudentsByColumn,
-    val order: SortOrder
+    val order: SortDirection
 )
 
 enum class OrderStudentsByColumn {

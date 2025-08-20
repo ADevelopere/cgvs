@@ -117,19 +117,19 @@ class StudentRepository(private val database: Database) {
 
         // Ordering (OrderStudentsByClause)
         orderBy?.forEach { clause ->
-            val sortOrder = when (clause.order) {
-                SortOrder.ASC -> org.jetbrains.exposed.v1.core.SortOrder.ASC
-                SortOrder.DESC -> org.jetbrains.exposed.v1.core.SortOrder.DESC
+            val sortDirection = when (clause.order) {
+                SortDirection.ASC -> org.jetbrains.exposed.v1.core.SortOrder.ASC
+                SortDirection.DESC -> org.jetbrains.exposed.v1.core.SortOrder.DESC
             }
             query = when (clause.column) {
-                OrderStudentsByColumn.ID -> query.orderBy(Students.id, sortOrder)
-                OrderStudentsByColumn.NAME -> query.orderBy(Students.name, sortOrder)
-                OrderStudentsByColumn.EMAIL -> query.orderBy(Students.email, sortOrder)
-                OrderStudentsByColumn.DATE_OF_BIRTH -> query.orderBy(Students.dateOfBirth, sortOrder)
+                OrderStudentsByColumn.ID -> query.orderBy(Students.id, sortDirection)
+                OrderStudentsByColumn.NAME -> query.orderBy(Students.name, sortDirection)
+                OrderStudentsByColumn.EMAIL -> query.orderBy(Students.email, sortDirection)
+                OrderStudentsByColumn.DATE_OF_BIRTH -> query.orderBy(Students.dateOfBirth, sortDirection)
 
-                OrderStudentsByColumn.GENDER -> query.orderBy(Students.gender, sortOrder)
-                OrderStudentsByColumn.CREATED_AT -> query.orderBy(Students.createdAt, sortOrder)
-                OrderStudentsByColumn.UPDATED_AT -> query.orderBy(Students.updatedAt, sortOrder)
+                OrderStudentsByColumn.GENDER -> query.orderBy(Students.gender, sortDirection)
+                OrderStudentsByColumn.CREATED_AT -> query.orderBy(Students.createdAt, sortDirection)
+                OrderStudentsByColumn.UPDATED_AT -> query.orderBy(Students.updatedAt, sortDirection)
             }
         }
 

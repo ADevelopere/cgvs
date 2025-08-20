@@ -1,9 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
+module.exports.getFileInfo = fs.readFileSync(path.join(__dirname, 'getFileInfo.gql'), 'utf8');
+module.exports.getFolderInfo = fs.readFileSync(path.join(__dirname, 'getFolderInfo.gql'), 'utf8');
+module.exports.getStorageStats = fs.readFileSync(path.join(__dirname, 'getStorageStats.gql'), 'utf8');
 module.exports.isAuthenticated = fs.readFileSync(path.join(__dirname, 'isAuthenticated.gql'), 'utf8');
+module.exports.listFiles = fs.readFileSync(path.join(__dirname, 'listFiles.gql'), 'utf8');
 module.exports.mainTemplateCategory = fs.readFileSync(path.join(__dirname, 'mainTemplateCategory.gql'), 'utf8');
 module.exports.me = fs.readFileSync(path.join(__dirname, 'me.gql'), 'utf8');
+module.exports.searchFiles = fs.readFileSync(path.join(__dirname, 'searchFiles.gql'), 'utf8');
 module.exports.student = fs.readFileSync(path.join(__dirname, 'student.gql'), 'utf8');
 module.exports.students = fs.readFileSync(path.join(__dirname, 'students.gql'), 'utf8');
 module.exports.suspensionTemplateCategory = fs.readFileSync(path.join(__dirname, 'suspensionTemplateCategory.gql'), 'utf8');

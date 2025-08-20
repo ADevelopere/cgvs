@@ -354,10 +354,131 @@ type DateTemplateVariable implements TemplateVariable {
 """A type representing a validated email address"""
 scalar Email
 
+"""Enhanced file information with metadata"""
+type FileInfo implements StorageObject {
+  """MIME content type"""
+  contentType: String
+
+  """Creation timestamp"""
+  created: LocalDateTime!
+
+  """File type category"""
+  fileType: FileType!
+
+  """Whether the file is publicly accessible"""
+  isPublic: Boolean!
+
+  """Last modified timestamp"""
+  lastModified: LocalDateTime!
+
+  """MD5 hash of the file"""
+  md5Hash: String
+
+  """Media link for streaming (if applicable)"""
+  mediaLink: String
+
+  """File name"""
+  name: String!
+
+  """Full path in the bucket"""
+  path: String!
+
+  """File size in bytes"""
+  size: Long!
+
+  """URL for accessing the file"""
+  url: String
+}
+
+"""Result of a file operation"""
+type FileOperationResult {
+  """The affected file/folder (if applicable)"""
+  item: StorageObject
+
+  """Success or error message"""
+  message: String!
+
+  """Whether the operation was successful"""
+  success: Boolean!
+}
+
+enum FileSortField {
+  MODIFIED
+  NAME
+  SIZE
+  TYPE
+}
+
+enum FileType {
+  ARCHIVE
+  AUDIO
+  DOCUMENT
+  IMAGE
+  OTHER
+  VIDEO
+}
+
+"""File type and its count"""
+type FileTypeCount {
+  """Number of files of this type"""
+  count: Int!
+
+  """File type"""
+  type: FileType!
+}
+
+"""Folder information"""
+type FolderInfo implements StorageObject {
+  """Creation timestamp"""
+  created: LocalDateTime!
+
+  """Number of files in the folder"""
+  fileCount: Int!
+
+  """Number of subfolders"""
+  folderCount: Int!
+
+  """Last modified timestamp"""
+  lastModified: LocalDateTime!
+
+  """Folder name"""
+  name: String!
+
+  """Full path in the bucket"""
+  path: String!
+
+  """Total size of all files in the folder"""
+  totalSize: Long!
+}
+
 enum Gender {
   Female
   Male
   Other
+}
+
+"""Input for listing files with pagination and filtering"""
+input ListFilesInput {
+  """Filter by file type (e.g., 'image', 'document')"""
+  fileType: String
+
+  """Number of items per page"""
+  limit: Int
+
+  """Page offset"""
+  offset: Int
+
+  """The folder path to list (empty for root)"""
+  path: String!
+
+  """Search term for file names"""
+  searchTerm: String
+
+  """Sort by field"""
+  sortBy: FileSortField
+
+  """Sort direction"""
+  sortDirection: SortDirection
 }
 
 """A type representing a formatted kotlinx.datetime.LocalDate"""
@@ -375,6 +496,9 @@ type LogoutResponse {
   message: String!
 }
 
+"""A type representing a Kotlin Long value"""
+scalar Long
+
 type Mutation {
   createDateTemplateVariable(input: CreateDateTemplateVariableInput!): DateTemplateVariable!
   createNumberTemplateVariable(input: CreateNumberTemplateVariableInput!): NumberTemplateVariable!
@@ -383,6 +507,9 @@ type Mutation {
   createTemplate(input: CreateTemplateInput!): Template!
   createTemplateCategory(input: CreateTemplateCategoryInput!): TemplateCategory!
   createTextTemplateVariable(input: CreateTextTemplateVariableInput!): TextTemplateVariable!
+
+  """Delete a single file"""
+  deleteFile(path: String!): FileOperationResult!
   deleteStudent(id: Int!): Student!
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory!
@@ -397,6 +524,9 @@ type Mutation {
 
   """Register a new user"""
   register(input: RegisterInput!): AuthPayload
+
+  """Rename a file"""
+  renameFile(input: RenameFileInput!): FileOperationResult!
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
   updateDateTemplateVariable(input: UpdateDateTemplateVariableInput!): DateTemplateVariable!
@@ -425,7 +555,7 @@ type NumberTemplateVariable implements TemplateVariable {
 
 input OrderStudentsByClauseInput {
   column: OrderStudentsByColumn!
-  order: SortOrder!
+  order: SortDirection!
 }
 
 enum OrderStudentsByColumn {
@@ -484,12 +614,39 @@ input PartialUpdateStudentInput {
 scalar PhoneNumber
 
 type Query {
+  getFileInfo(path: String!): FileInfo
+  getFolderInfo(path: String!): FolderInfo
+
+  """Get storage statistics"""
+  getStorageStats(
+    """
+    Folder path to get stats for (optional, gets stats for entire bucket if not specified)
+    """
+    path: String
+  ): StorageStats!
+
   """Check if user is authenticated"""
   isAuthenticated: Boolean!
+
+  """List files and folders with pagination and filtering"""
+  listFiles(input: ListFilesInput!): StorageObjectList!
   mainTemplateCategory: TemplateCategory
 
   """Get current authenticated user"""
   me: User
+  searchFiles(
+    """File type filter (optional)"""
+    fileType: String
+
+    """
+    Folder to search in (optional, searches entire bucket if not specified)
+    """
+    folder: String
+
+    """Maximum number of results"""
+    limit: Int!
+    searchTerm: String!
+  ): StorageObjectList!
   student(id: Int!): Student
   students(filterArgs: StudentFilterArgsInput, orderBy: [OrderStudentsByClauseInput!], paginationArgs: PaginationArgsInput): PaginatedStudentResponse!
   suspensionTemplateCategory: TemplateCategory
@@ -512,6 +669,15 @@ input RegisterInput {
   password: String!
 }
 
+"""Input for renaming a file or folder"""
+input RenameFileInput {
+  """The current path of the file/folder"""
+  currentPath: String!
+
+  """The new name"""
+  newName: String!
+}
+
 type SelectTemplateVariable implements TemplateVariable {
   createdAt: LocalDateTime!
   description: String
@@ -527,9 +693,47 @@ type SelectTemplateVariable implements TemplateVariable {
   updatedAt: LocalDateTime!
 }
 
-enum SortOrder {
+enum SortDirection {
   ASC
   DESC
+}
+
+interface StorageObject {
+  name: String!
+  path: String!
+}
+
+"""Paginated list of storage objects"""
+type StorageObjectList {
+  """Whether there are more items"""
+  hasMore: Boolean!
+
+  """List of files and folders"""
+  items: [StorageObject!]!
+
+  """Items per page"""
+  limit: Int!
+
+  """Current page offset"""
+  offset: Int!
+
+  """Total number of items"""
+  totalCount: Int!
+}
+
+"""Storage statistics"""
+type StorageStats {
+  """Breakdown by file type"""
+  fileTypeBreakdown: [FileTypeCount!]!
+
+  """Total number of files"""
+  totalFiles: Int!
+
+  """Total number of folders"""
+  totalFolders: Int!
+
+  """Total size in bytes"""
+  totalSize: Long!
 }
 
 type Student {
@@ -591,7 +795,7 @@ type Template {
   createdAt: LocalDateTime
   description: String
   id: Int!
-  imageUrl: String
+  imageUrl: String!
   name: String!
   order: Int!
   preSuspensionCategory: TemplateCategory

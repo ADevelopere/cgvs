@@ -18,6 +18,7 @@ export type Scalars = {
   Email: { input: any; output: any; }
   LocalDate: { input: any; output: any; }
   LocalDateTime: { input: any; output: any; }
+  Long: { input: any; output: any; }
   PhoneNumber: { input: any; output: any; }
 };
 
@@ -360,10 +361,108 @@ export type DateTemplateVariable = TemplateVariable & {
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
+/** Enhanced file information with metadata */
+export type FileInfo = StorageObject & {
+  __typename?: 'FileInfo';
+  /** MIME content type */
+  contentType?: Maybe<Scalars['String']['output']>;
+  /** Creation timestamp */
+  created: Scalars['LocalDateTime']['output'];
+  /** File type category */
+  fileType: FileType;
+  /** Whether the file is publicly accessible */
+  isPublic: Scalars['Boolean']['output'];
+  /** Last modified timestamp */
+  lastModified: Scalars['LocalDateTime']['output'];
+  /** MD5 hash of the file */
+  md5Hash?: Maybe<Scalars['String']['output']>;
+  /** Media link for streaming (if applicable) */
+  mediaLink?: Maybe<Scalars['String']['output']>;
+  /** File name */
+  name: Scalars['String']['output'];
+  /** Full path in the bucket */
+  path: Scalars['String']['output'];
+  /** File size in bytes */
+  size: Scalars['Long']['output'];
+  /** URL for accessing the file */
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+/** Result of a file operation */
+export type FileOperationResult = {
+  __typename?: 'FileOperationResult';
+  /** The affected file/folder (if applicable) */
+  item?: Maybe<StorageObject>;
+  /** Success or error message */
+  message: Scalars['String']['output'];
+  /** Whether the operation was successful */
+  success: Scalars['Boolean']['output'];
+};
+
+export type FileSortField =
+  | 'MODIFIED'
+  | 'NAME'
+  | 'SIZE'
+  | 'TYPE';
+
+export type FileType =
+  | 'ARCHIVE'
+  | 'AUDIO'
+  | 'DOCUMENT'
+  | 'IMAGE'
+  | 'OTHER'
+  | 'VIDEO';
+
+/** File type and its count */
+export type FileTypeCount = {
+  __typename?: 'FileTypeCount';
+  /** Number of files of this type */
+  count: Scalars['Int']['output'];
+  /** File type */
+  type: FileType;
+};
+
+/** Folder information */
+export type FolderInfo = StorageObject & {
+  __typename?: 'FolderInfo';
+  /** Creation timestamp */
+  created: Scalars['LocalDateTime']['output'];
+  /** Number of files in the folder */
+  fileCount: Scalars['Int']['output'];
+  /** Number of subfolders */
+  folderCount: Scalars['Int']['output'];
+  /** Last modified timestamp */
+  lastModified: Scalars['LocalDateTime']['output'];
+  /** Folder name */
+  name: Scalars['String']['output'];
+  /** Full path in the bucket */
+  path: Scalars['String']['output'];
+  /** Total size of all files in the folder */
+  totalSize: Scalars['Long']['output'];
+};
+
 export type Gender =
   | 'Female'
   | 'Male'
   | 'Other';
+
+/** Input for listing files with pagination and filtering */
+export type ListFilesInput = {
+  /** Filter by file type (e.g., 'image', 'document') */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  /** Number of items per page */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  /** Page offset */
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  /** The folder path to list (empty for root) */
+  path: Scalars['String']['input'];
+  /** Search term for file names */
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  /** Sort by field */
+  sortBy?: InputMaybe<FileSortField>;
+  /** Sort direction */
+  sortDirection?: InputMaybe<SortDirection>;
+};
 
 export type LoginInput = {
   email: Scalars['String']['input'];
@@ -384,6 +483,8 @@ export type Mutation = {
   createTemplate: Template;
   createTemplateCategory: TemplateCategory;
   createTextTemplateVariable: TextTemplateVariable;
+  /** Delete a single file */
+  deleteFile: FileOperationResult;
   deleteStudent: Student;
   deleteTemplate?: Maybe<Template>;
   deleteTemplateCategory: TemplateCategory;
@@ -395,6 +496,8 @@ export type Mutation = {
   partialUpdateStudent: Student;
   /** Register a new user */
   register?: Maybe<AuthPayload>;
+  /** Rename a file */
+  renameFile: FileOperationResult;
   suspendTemplate?: Maybe<Template>;
   unsuspendTemplate?: Maybe<Template>;
   updateDateTemplateVariable: DateTemplateVariable;
@@ -441,6 +544,11 @@ export type MutationCreateTextTemplateVariableArgs = {
 };
 
 
+export type MutationDeleteFileArgs = {
+  path: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteStudentArgs = {
   id: Scalars['Int']['input'];
 };
@@ -473,6 +581,11 @@ export type MutationPartialUpdateStudentArgs = {
 
 export type MutationRegisterArgs = {
   input: RegisterInput;
+};
+
+
+export type MutationRenameFileArgs = {
+  input: RenameFileInput;
 };
 
 
@@ -534,7 +647,7 @@ export type NumberTemplateVariable = TemplateVariable & {
 
 export type OrderStudentsByClauseInput = {
   column: OrderStudentsByColumn;
-  order: SortOrder;
+  order: SortDirection;
 };
 
 export type OrderStudentsByColumn =
@@ -593,11 +706,18 @@ export type PartialUpdateStudentInput = {
 
 export type Query = {
   __typename?: 'Query';
+  getFileInfo?: Maybe<FileInfo>;
+  getFolderInfo?: Maybe<FolderInfo>;
+  /** Get storage statistics */
+  getStorageStats: StorageStats;
   /** Check if user is authenticated */
   isAuthenticated: Scalars['Boolean']['output'];
+  /** List files and folders with pagination and filtering */
+  listFiles: StorageObjectList;
   mainTemplateCategory?: Maybe<TemplateCategory>;
   /** Get current authenticated user */
   me?: Maybe<User>;
+  searchFiles: StorageObjectList;
   student?: Maybe<Student>;
   students: PaginatedStudentResponse;
   suspensionTemplateCategory?: Maybe<TemplateCategory>;
@@ -610,6 +730,34 @@ export type Query = {
   user?: Maybe<User>;
   /** Get all users (admin only) */
   users?: Maybe<Array<User>>;
+};
+
+
+export type QueryGetFileInfoArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+export type QueryGetFolderInfoArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+export type QueryGetStorageStatsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryListFilesArgs = {
+  input: ListFilesInput;
+};
+
+
+export type QuerySearchFilesArgs = {
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  folder?: InputMaybe<Scalars['String']['input']>;
+  limit: Scalars['Int']['input'];
+  searchTerm: Scalars['String']['input'];
 };
 
 
@@ -650,6 +798,14 @@ export type RegisterInput = {
   password: Scalars['String']['input'];
 };
 
+/** Input for renaming a file or folder */
+export type RenameFileInput = {
+  /** The current path of the file/folder */
+  currentPath: Scalars['String']['input'];
+  /** The new name */
+  newName: Scalars['String']['input'];
+};
+
 export type SelectTemplateVariable = TemplateVariable & {
   __typename?: 'SelectTemplateVariable';
   createdAt: Scalars['LocalDateTime']['output'];
@@ -666,9 +822,42 @@ export type SelectTemplateVariable = TemplateVariable & {
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
-export type SortOrder =
+export type SortDirection =
   | 'ASC'
   | 'DESC';
+
+export type StorageObject = {
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
+/** Paginated list of storage objects */
+export type StorageObjectList = {
+  __typename?: 'StorageObjectList';
+  /** Whether there are more items */
+  hasMore: Scalars['Boolean']['output'];
+  /** List of files and folders */
+  items: Array<StorageObject>;
+  /** Items per page */
+  limit: Scalars['Int']['output'];
+  /** Current page offset */
+  offset: Scalars['Int']['output'];
+  /** Total number of items */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** Storage statistics */
+export type StorageStats = {
+  __typename?: 'StorageStats';
+  /** Breakdown by file type */
+  fileTypeBreakdown: Array<FileTypeCount>;
+  /** Total number of files */
+  totalFiles: Scalars['Int']['output'];
+  /** Total number of folders */
+  totalFolders: Scalars['Int']['output'];
+  /** Total size in bytes */
+  totalSize: Scalars['Long']['output'];
+};
 
 export type Student = {
   __typename?: 'Student';
@@ -731,7 +920,7 @@ export type Template = {
   createdAt?: Maybe<Scalars['LocalDateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
+  imageUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
   order: Scalars['Int']['output'];
   preSuspensionCategory?: Maybe<TemplateCategory>;
@@ -952,7 +1141,7 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -966,28 +1155,28 @@ export type SuspendTemplateMutationVariables = Exact<{
 }>;
 
 
-export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UnsuspendTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UpdateTemplateMutationVariables = Exact<{
   input: UpdateTemplateInput;
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, variables?: Array<{ __typename?: 'DateTemplateVariable', minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'NumberTemplateVariable', minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'SelectTemplateVariable', options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'TextTemplateVariable', minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number }> | null } | null };
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, variables?: Array<{ __typename?: 'DateTemplateVariable', minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'NumberTemplateVariable', minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'SelectTemplateVariable', options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'TextTemplateVariable', minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number }> | null } | null };
 
 export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -999,7 +1188,7 @@ export type TemplatesQueryVariables = Exact<{
 }>;
 
 
-export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
+export type TemplatesQuery = { __typename?: 'Query', templates: { __typename?: 'PaginatedTemplatesResponse', data: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }>, paginationInfo?: { __typename?: 'PaginationInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: CreateTemplateCategoryInput;
@@ -1035,7 +1224,7 @@ export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspension
 export type TemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl?: string | null, order: number, createdAt?: any | null, updatedAt?: any | null }> | null }> };
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null }> | null }> };
 
 export type TemplateCategoryQueryVariables = Exact<{
   id: Scalars['Int']['input'];

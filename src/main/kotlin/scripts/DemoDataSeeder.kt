@@ -228,10 +228,10 @@ class DemoDataSeeder(private val repositoryManager: RepositoryManager) {
         // Create one template per top-level category
         val topLevelCategories = categories.filter { it.parentCategoryId == null }
         val demoImages = listOf(
-            "demo1.jpg",
-            "demo2.jpg",
-            "demo3.jpg",
-            "demo4.jpg",
+            "templateCover/demo1.jpg",
+            "templateCover/demo2.jpg",
+            "templateCover/demo3.jpg",
+            "templateCover/demo4.jpg",
         )
 
         topLevelCategories.forEachIndexed { index, category ->
