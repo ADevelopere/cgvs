@@ -1163,6 +1163,13 @@ export type GetFileInfoQueryVariables = Exact<{
 
 export type GetFileInfoQuery = { __typename?: 'Query', getFileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, fileType: FileType, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url?: string | null } | null };
 
+export type GetFolderInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo?: { __typename?: 'FolderInfo', created: any, fileCount: number, folderCount: number, lastModified: any, name: string, path: string, totalSize: any } | null };
+
 export type GetStorageStatsQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -1899,6 +1906,55 @@ export type GetFileInfoSuspenseQueryHookResult = ReturnType<typeof useGetFileInf
 export type GetFileInfoQueryResult = Apollo.QueryResult<GetFileInfoQuery, GetFileInfoQueryVariables>;
 export function refetchGetFileInfoQuery(variables: GetFileInfoQueryVariables) {
       return { query: GetFileInfoDocument, variables: variables }
+    }
+export const GetFolderInfoDocument = gql`
+    query getFolderInfo($path: String!) {
+  getFolderInfo(path: $path) {
+    created
+    fileCount
+    folderCount
+    lastModified
+    name
+    path
+    totalSize
+  }
+}
+    `;
+
+/**
+ * __useGetFolderInfoQuery__
+ *
+ * To run a query within a React component, call `useGetFolderInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFolderInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFolderInfoQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useGetFolderInfoQuery(baseOptions: Apollo.QueryHookOptions<GetFolderInfoQuery, GetFolderInfoQueryVariables> & ({ variables: GetFolderInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+      }
+export function useGetFolderInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFolderInfoQuery, GetFolderInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+        }
+export function useGetFolderInfoSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFolderInfoQuery, GetFolderInfoQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+        }
+export type GetFolderInfoQueryHookResult = ReturnType<typeof useGetFolderInfoQuery>;
+export type GetFolderInfoLazyQueryHookResult = ReturnType<typeof useGetFolderInfoLazyQuery>;
+export type GetFolderInfoSuspenseQueryHookResult = ReturnType<typeof useGetFolderInfoSuspenseQuery>;
+export type GetFolderInfoQueryResult = Apollo.QueryResult<GetFolderInfoQuery, GetFolderInfoQueryVariables>;
+export function refetchGetFolderInfoQuery(variables: GetFolderInfoQueryVariables) {
+      return { query: GetFolderInfoDocument, variables: variables }
     }
 export const GetStorageStatsDocument = gql`
     query getStorageStats($path: String) {
