@@ -29,6 +29,13 @@ const arStorageTranslations: StorageTranslations = {
 	uploadFailedForFile: "فشل الرفع لملف %{fileName}. الحالة: %{status} %{statusText}. الاستجابة: %{resp}.",
     noResponseText: "لا توجد نصوص استجابة.",
     internalUploadError: "خطأ داخلي أثناء الرفع.",
+    itemsSelected: "تم تحديد %{count} عنصر(عناصر)",
+    download: "تحميل",
+    copyLinks: "نسخ الروابط",
+    delete: "حذف",
+    confirmBulkDelete: "تأكيد الحذف الجماعي",
+    confirmBulkDeleteMessage: "هل أنت متأكد أنك تريد حذف %{count} من العناصر المحددة؟ لا يمكن التراجع عن هذا الإجراء.",
+    cancel: "إلغاء",
 };
 
 export default arStorageTranslations;
