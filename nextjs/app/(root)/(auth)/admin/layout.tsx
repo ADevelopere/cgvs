@@ -6,6 +6,7 @@ import {
     Description as TemplatesIcon,
     Category as CategoryIcon,
     People as StudentsIcon,
+    Storage as StorageIcon,
 } from "@mui/icons-material";
 import { HomeIcon } from "lucide-react";
 import { NavigationProvider } from "@/contexts/NavigationContext";
@@ -37,6 +38,11 @@ const NAVIGATION: Navigation = [
         segment: "admin/templates",
         title: "الشهادات",
         icon: <TemplatesIcon />,
+    },
+    {
+        segment: "admin/storage",
+        title: "الملفات",
+        icon: <StorageIcon />,
     },
     {
         segment: "admin/students",

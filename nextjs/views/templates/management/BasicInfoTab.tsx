@@ -19,8 +19,10 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import {
     Template,
     UpdateTemplateInput,
-    UpdateTemplateWithImageInput,
+    UploadLocation,
 } from "@/graphql/generated/types";
+import { FileSelectorModal } from "@/views/storage/components";
+import { StorageItem } from "@/contexts/storage";
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
@@ -29,41 +31,28 @@ const BasicInfoTab: React.FC = () => {
     const { template, unsavedChanges, setUnsavedChanges } =
         useTemplateManagement();
 
-    const { updateTemplate, updateTemplateWithImage } =
-        useTemplateCategoryManagement();
+    const { updateTemplate } = useTemplateCategoryManagement();
 
     const [formData, setFormData] = useState({
         name: "",
         description: "",
+        imageUrl: "",
     });
 
-    const [preview, setPreview] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
-    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(
-        null,
-    );
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (template) {
             setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
+                imageUrl: template.imageUrl ?? "",
             });
-            // Reset file states when the template context changes
-            setSelectedImageFile(null);
         }
     }, [template]);
 
-    useEffect(() => {
-        if (template?.image_url) {
-            setPreview(template.image_url);
-        } else {
-            setPreview(null); // Ensure preview is cleared if no image_url
-        }
-    }, [template]);
-
-    // Check for changes whenever form data, preview or selected file changes
     useEffect(() => {
         if (!template) {
             setUnsavedChanges(false);
@@ -72,28 +61,22 @@ const BasicInfoTab: React.FC = () => {
         const originalData = {
             name: template.name ?? "",
             description: template.description ?? "",
-            image: template.image_url ?? null,
+            image: template.imageUrl ?? "",
         };
 
         const currentData = {
             name: formData.name,
             description: formData.description,
-            image: preview, // Preview reflects the current visual state
+            image: formData.imageUrl,
         };
-
-        // An image change occurs if a new file is staged,
-        // or if an existing image is marked for removal (preview becomes null when it wasn't).
-        const imageChanged =
-            selectedImageFile !== null || // New file selected
-            (originalData.image !== null && currentData.image === null); // Existing image removed
 
         const hasChanges =
             originalData.name !== currentData.name ||
             originalData.description !== currentData.description ||
-            imageChanged;
+            originalData.image !== currentData.image;
 
         setUnsavedChanges(hasChanges);
-    }, [formData, preview, template, selectedImageFile, setUnsavedChanges]);
+    }, [formData, template, setUnsavedChanges]);
 
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -105,22 +88,19 @@ const BasicInfoTab: React.FC = () => {
         }));
     };
 
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setSelectedImageFile(file);
-            setPreview(URL.createObjectURL(file));
-        } else {
-            // This case might not be typical if a file is selected,
-            // but good for completeness if the input is cleared.
-            setSelectedImageFile(null);
-            setPreview(template?.image_url ?? null); // Revert to original or clear
-        }
+    const handleSelectFile = (file: StorageItem) => {
+        setFormData((prev) => ({
+            ...prev,
+            imageUrl: file.url,
+        }));
+        setIsModalOpen(false);
     };
 
     const handleRemoveBackground = (): void => {
-        setSelectedImageFile(null); // Clear any selected file
-        setPreview(null); // Set preview to null to indicate removal
+        setFormData((prev) => ({
+            ...prev,
+            imageUrl: "",
+        }));
     };
 
     const handleSave = async () => {
@@ -132,50 +112,33 @@ const BasicInfoTab: React.FC = () => {
         setSaving(true);
         setError(null);
 
-        const imageChanged =
-            selectedImageFile !== null || // A new file is selected
-            (preview === null && template.image_url !== null); // An existing image is being removed
+        const input: UpdateTemplateInput = {
+            name: formData.name,
+            description: formData.description || undefined,
+            categoryId: template.category.id,
+            imageUrl: formData.imageUrl,
+        };
 
-        let updatedTemplate: Template | null = null;
-        if (imageChanged) {
-            const input: UpdateTemplateWithImageInput = {
-                name: formData.name,
-                description: formData.description || undefined, // Use undefined if backend treats empty string and null differently
-                categoryId: template.category.id,
-                // order: template.order, // Include if order is managed
-                image: selectedImageFile || null, // Send the file or null if removing
-            };
-            updatedTemplate = await updateTemplateWithImage({
-                id: template.id,
-                input: input,
-            });
-        } else {
-            const input: UpdateTemplateInput = {
-                name: formData.name,
-                description: formData.description || undefined,
-                categoryId: template.category.id,
-                // order: template.order, // Include if order is managed
-            };
-            updatedTemplate = await updateTemplate({
-                id: template.id,
-                input: input,
-            });
-        }
+        const updatedTemplate = await updateTemplate({
+            id: template.id,
+            input: input,
+        });
 
         if (updatedTemplate) {
             setError(null);
             setUnsavedChanges(false);
-            setSelectedImageFile(null); // Clear the staged file after successful save
         }
         setSaving(false);
     };
 
     const handleCancel = () => {
-        setFormData({
-            name: template?.name ?? "",
-            description: template?.description ?? "",
-        });
-        setPreview(template?.image_url ?? null);
+        if (template) {
+            setFormData({
+                name: template.name ?? "",
+                description: template.description ?? "",
+                imageUrl: template.imageUrl ?? "",
+            });
+        }
         setError(null);
     };
 
@@ -188,6 +151,13 @@ const BasicInfoTab: React.FC = () => {
                 overflowY: "hidden",
             }}
         >
+            <FileSelectorModal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSelectFile={handleSelectFile}
+                location={UploadLocation.TemplateCover}
+                selectedUrl={formData.imageUrl}
+            />
             {/* Action Bar */}
             <Box
                 sx={{
@@ -271,7 +241,7 @@ const BasicInfoTab: React.FC = () => {
                     onChange={handleInputChange}
                 />
 
-                {preview ? (
+                {formData.imageUrl ? (
                     <Card
                         sx={{
                             mt: 3,
@@ -289,7 +259,7 @@ const BasicInfoTab: React.FC = () => {
                         >
                             <CardMedia
                                 component="img"
-                                image={preview}
+                                image={formData.imageUrl}
                                 alt="Template background"
                                 sx={{
                                     maxHeight: "400px", // Maximum height
@@ -318,14 +288,9 @@ const BasicInfoTab: React.FC = () => {
                                 variant="outlined"
                                 component="label"
                                 startIcon={<CloudUploadIcon />}
+                                onClick={() => setIsModalOpen(true)}
                             >
                                 {strings.uploadImage}
-                                <input
-                                    type="file"
-                                    hidden
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
                             </Button>
                             <Typography
                                 variant="caption"
