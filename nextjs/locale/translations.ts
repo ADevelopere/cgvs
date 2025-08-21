@@ -18,9 +18,12 @@ import arCourseCategory from "@/locale/ar/templateCategory";
 import arError from "@/locale/ar/error";
 import arStudent from "@/locale/ar/student";
 import arTemplateVariable from "@/locale/ar/templateVariable";
+import arStorageTranslations from "./ar/storage";
+
 
 import AppLanguage from "./AppLanguage";
 import TemplateVariableTranslation from "./components/TemplateVariable";
+import StorageTranslations from "./components/Storage";
 
 export type Translations = {
     headerTranslations: HeaderTranslations;
@@ -31,8 +34,9 @@ export type Translations = {
     languageTranslations: LanguageTranslations;
     templateCategoryTranslations: TemplateCategoryTranslation;
     errorTranslations: ErrorTranslations;
-    studentTranslations?: StudentTranslations;
-    templateVariableTranslations?: TemplateVariableTranslation;
+    studentTranslations: StudentTranslations;
+    templateVariableTranslations: TemplateVariableTranslation;
+    storageTranslations: StorageTranslations;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -47,6 +51,7 @@ const translations: Record<AppLanguage, Translations> = {
         errorTranslations: arError,
         studentTranslations: arStudent,
         templateVariableTranslations: arTemplateVariable,
+        storageTranslations: arStorageTranslations,
     },
     // Add other languages here as needed
 };

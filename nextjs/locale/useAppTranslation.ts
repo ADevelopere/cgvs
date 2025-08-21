@@ -3,6 +3,8 @@ import AppLanguage from "@/locale/AppLanguage";
 import translations, { Translations } from "@/locale/translations";
 import { useMemo } from "react";
 
+
+// const someTranslation = useAppTranslation("key");
 const useAppTranslation = <T extends keyof Translations>(namespace: T) => {
   const { language } = useAppTheme();
   const ts = useMemo(() => {
