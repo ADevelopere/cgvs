@@ -20,6 +20,8 @@ export type UploadFileState = {
   status: "pending" | "uploading" | "success" | "error";
   error?: string;
   signedUrl?: string;
+  // Optional XHR instance used for this upload so the UI/context can abort if needed
+  xhr?: XMLHttpRequest;
 };
 
 export type UploadBatchState = {
@@ -70,7 +72,8 @@ export type StorageManagementContextType = {
 
   // Upload actions
   startUpload: (files: File[], location: Graphql.UploadLocation) => Promise<void>;
-  cancelUpload: () => void;
+  // If fileKey is provided, cancel only that file's upload; otherwise cancel the whole batch
+  cancelUpload: (fileKey?: string) => void;
   retryFailedUploads: () => Promise<void>;
   clearUploadBatch: () => void;
 };
