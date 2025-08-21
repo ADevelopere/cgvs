@@ -191,14 +191,21 @@ export const StorageManagementProvider: React.FC<{
         async (file: File, location: Graphql.UploadLocation): Promise<void> => {
             const fileKey = getFileKey(file);
             const contentType = inferContentType(file);
+            // local refs for cleanup
+            let loadListener: ((ev: Event) => void) | null = null;
+            let errorListener: ((ev: Event) => void) | null = null;
+            let abortListener: ((ev: Event) => void) | null = null;
+            let xhr: XMLHttpRequest | undefined = undefined;
 
             try {
                 // Update file state to uploading
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
                     const updated = new Map(prev.files);
+                    const existing = updated.get(fileKey);
+                    if (!existing) return prev;
                     updated.set(fileKey, {
-                        ...updated.get(fileKey)!,
+                        ...existing,
                         status: "uploading",
                         progress: 0,
                     });
@@ -223,15 +230,18 @@ export const StorageManagementProvider: React.FC<{
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
                     const updated = new Map(prev.files);
+                    const existing = updated.get(fileKey);
+                    if (!existing) return prev;
                     updated.set(fileKey, {
-                        ...updated.get(fileKey)!,
+                        ...existing,
                         signedUrl,
                     });
                     return { ...prev, files: updated };
                 });
 
                 // Step 2: Upload to signed URL
-                const xhr = new XMLHttpRequest();
+                xhr = new XMLHttpRequest();
+                const currentXhr = xhr!;
 
                 // Immediately store XHR in a ref to avoid race where cancelUpload is
                 // called before the XHR is written into React state (setState is async).
@@ -241,7 +251,8 @@ export const StorageManagementProvider: React.FC<{
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
                     const updated = new Map(prev.files);
-                    const existing = updated.get(fileKey)!;
+                    const existing = updated.get(fileKey);
+                    if (!existing) return prev;
                     updated.set(fileKey, {
                         ...existing,
                         status: "uploading",
@@ -252,7 +263,7 @@ export const StorageManagementProvider: React.FC<{
                 });
 
                 // Track progress
-                xhr.upload.onprogress = (event) => {
+                currentXhr.upload.onprogress = (event) => {
                     if (event.lengthComputable) {
                         const progress = Math.round(
                             (event.loaded / event.total) * 100,
@@ -260,7 +271,8 @@ export const StorageManagementProvider: React.FC<{
                         setUploadBatch((prev) => {
                             if (!prev) return prev;
                             const updated = new Map(prev.files);
-                            const existing = updated.get(fileKey)!;
+                            const existing = updated.get(fileKey);
+                            if (!existing) return prev;
                             updated.set(fileKey, { ...existing, progress });
                             return { ...prev, files: updated };
                         });
@@ -272,7 +284,8 @@ export const StorageManagementProvider: React.FC<{
                     setUploadBatch((prev) => {
                         if (!prev) return prev;
                         const updated = new Map(prev.files);
-                        const existing = updated.get(fileKey)!;
+                        const existing = updated.get(fileKey);
+                        if (!existing) return prev;
                         updated.set(fileKey, {
                             ...existing,
                             status: "success",
@@ -291,7 +304,8 @@ export const StorageManagementProvider: React.FC<{
                     setUploadBatch((prev) => {
                         if (!prev) return prev;
                         const updated = new Map(prev.files);
-                        const existing = updated.get(fileKey)!;
+                        const existing = updated.get(fileKey);
+                        if (!existing) return prev;
                         updated.set(fileKey, {
                             ...existing,
                             status: "error",
@@ -302,12 +316,12 @@ export const StorageManagementProvider: React.FC<{
                     });
                 };
 
-                xhr.onload = () => {
+                currentXhr.onload = () => {
                     // Defensive: some environments may fire load with status 0 or before
                     // the request is fully DONE; treat these as abort/failed.
                     if (
-                        xhr.readyState !== XMLHttpRequest.DONE ||
-                        xhr.status === 0
+                        currentXhr.readyState !== XMLHttpRequest.DONE ||
+                        currentXhr.status === 0
                     ) {
                         handleError("Upload aborted");
                         // ensure ref cleaned
@@ -315,82 +329,92 @@ export const StorageManagementProvider: React.FC<{
                         return;
                     }
 
-                    if (xhr.status >= 200 && xhr.status < 300) {
+                    if (currentXhr.status >= 200 && currentXhr.status < 300) {
                         handleSuccess();
                     } else {
-                        handleError(`Upload failed with status ${xhr.status}`);
+                        handleError(`Upload failed with status ${currentXhr.status}`);
                     }
 
                     // cleanup ref on completion
                     uploadXhrsRef.current.delete(fileKey);
                 };
-
-                xhr.onerror = () => {
+                currentXhr.onerror = () => {
                     // network-level error
                     handleError("Network error during upload");
                     uploadXhrsRef.current.delete(fileKey);
                 };
 
-                xhr.onabort = () => {
+                currentXhr.onabort = () => {
                     // mark as error/aborted
                     handleError("Upload aborted");
                     uploadXhrsRef.current.delete(fileKey);
                 };
 
                 // Perform the upload
-                xhr.open("PUT", signedUrl);
-                xhr.setRequestHeader(
+                currentXhr.open("PUT", signedUrl);
+                currentXhr.setRequestHeader(
                     "Content-Type",
                     file.type || "application/octet-stream",
                 );
-                xhr.send(file);
+                currentXhr.send(file);
 
                 // Wait for completion or error
                 await new Promise<void>((resolve, reject) => {
                     const done = () => {
                         // Defensive checks: if aborted or not DONE, treat as aborted
-                        if (
-                            xhr.readyState !== XMLHttpRequest.DONE ||
-                            xhr.status === 0
-                        ) {
+                        if (!currentXhr || currentXhr.readyState !== XMLHttpRequest.DONE || currentXhr.status === 0) {
                             reject(new Error("Upload aborted"));
                             return;
                         }
 
-                        if (xhr.status >= 200 && xhr.status < 300) resolve();
-                        else
-                            reject(
-                                new Error(
-                                    `Upload failed with status ${xhr.status}`,
-                                ),
-                            );
+                            if (currentXhr.status >= 200 && currentXhr.status < 300) resolve();
+                            else reject(new Error(`Upload failed with status ${currentXhr.status}`));
                     };
 
-                    xhr.addEventListener("load", done);
-                    xhr.addEventListener("error", () =>
-                        reject(new Error("Network error during upload")),
-                    );
-                    xhr.addEventListener("abort", () =>
-                        reject(new Error("Upload aborted")),
-                    );
+                    const onErr = () => reject(new Error("Network error during upload"));
+                    const onAbort = () => reject(new Error("Upload aborted"));
+
+                    loadListener = done;
+                    errorListener = onErr;
+                    abortListener = onAbort;
+
+                    if (currentXhr) {
+                        currentXhr.addEventListener("load", done);
+                        currentXhr.addEventListener("error", onErr);
+                        currentXhr.addEventListener("abort", onAbort);
+                    } else {
+                        reject(new Error("Internal upload error"));
+                    }
                 });
             } catch (error) {
                 console.error(`Upload failed for ${file.name}:`, error);
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
                     const updated = new Map(prev.files);
-                    const existing = updated.get(fileKey)!;
+                    const existing = updated.get(fileKey);
+                    if (!existing) return prev;
                     updated.set(fileKey, {
                         ...existing,
                         status: "error",
-                        error:
-                            error instanceof Error
-                                ? error.message
-                                : "Upload failed",
+                        error: error instanceof Error ? error.message : "Upload failed",
                         xhr: undefined,
                     });
                     return { ...prev, files: updated };
                 });
+            } finally {
+                // cleanup listeners and xhr ref to avoid leaks
+                try {
+                    if (xhr && loadListener) xhr.removeEventListener("load", loadListener);
+                    if (xhr && errorListener) xhr.removeEventListener("error", errorListener);
+                    if (xhr && abortListener) xhr.removeEventListener("abort", abortListener);
+                } catch (e) {
+                    /* ignore */
+                }
+                try {
+                    if (uploadXhrsRef.current.has(fileKey)) uploadXhrsRef.current.delete(fileKey);
+                } catch (e) {
+                    /* ignore */
+                }
             }
         },
         [gql, setUploadBatch],
