@@ -1,3 +1,6 @@
+import { gql } from '@apollo/client';
+
+export const GET_FILE_INFO = gql`
 query getFileInfo($path: String!){
     getFileInfo(path: $path){
         contentType
@@ -13,3 +16,4 @@ query getFileInfo($path: String!){
         url
     }
 }
+`;

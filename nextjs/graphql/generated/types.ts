@@ -32,6 +32,21 @@ export type CategorySpecialType =
   | 'Main'
   | 'Suspension';
 
+/** Supported content types for file uploads. */
+export type ContentType =
+  | 'GIF'
+  | 'JPEG'
+  | 'JSON'
+  | 'OTF'
+  | 'PDF'
+  | 'PNG'
+  | 'SVG'
+  | 'TEXT'
+  | 'TTF'
+  | 'WEBP'
+  | 'WOFF'
+  | 'WOFF2';
+
 export type CountryCode =
   | 'AD'
   | 'AE'
@@ -446,6 +461,16 @@ export type Gender =
   | 'Male'
   | 'Other';
 
+/** Input for generating a signed URL for file upload */
+export type GenerateUploadSignedUrlInput = {
+  /** The content type of the file to be uploaded (e.g., 'image/jpeg', 'application/pdf'). */
+  contentType: ContentType;
+  /** The name of the file. */
+  fileName: Scalars['String']['input'];
+  /** The location where the file will be stored. */
+  location: UploadLocation;
+};
+
 /** Input for listing files with pagination and filtering */
 export type ListFilesInput = {
   /** Filter by file type (e.g., 'image', 'document') */
@@ -489,6 +514,8 @@ export type Mutation = {
   deleteTemplate?: Maybe<Template>;
   deleteTemplateCategory: TemplateCategory;
   deleteTemplateVariable: TemplateVariable;
+  /** Generate a signed URL for file upload */
+  generateUploadSignedUrl: Scalars['String']['output'];
   /** Login user with email and password */
   login?: Maybe<AuthPayload>;
   /** Logout current user */
@@ -566,6 +593,11 @@ export type MutationDeleteTemplateCategoryArgs = {
 
 export type MutationDeleteTemplateVariableArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationGenerateUploadSignedUrlArgs = {
+  input: GenerateUploadSignedUrlInput;
 };
 
 
@@ -1040,6 +1072,10 @@ export type UpdateTextTemplateVariableInput = {
   required: Scalars['Boolean']['input'];
 };
 
+export type UploadLocation =
+  | 'PUBLIC'
+  | 'TEMPLATE_COVER';
+
 export type User = {
   __typename?: 'User';
   createdAt: Scalars['LocalDateTime']['output'];
@@ -1098,6 +1134,58 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', createdAt: any, email: any, emailVerifiedAt?: any | null, id: number, isAdmin: boolean, name: string, password: string, rememberToken?: string | null, updatedAt: any }> | null };
+
+export type DeleteFileMutationVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'FileInfo', name: string, path: string } | { __typename?: 'FolderInfo', name: string, path: string } | null } };
+
+export type GenerateUploadSignedUrlMutationVariables = Exact<{
+  input: GenerateUploadSignedUrlInput;
+}>;
+
+
+export type GenerateUploadSignedUrlMutation = { __typename?: 'Mutation', generateUploadSignedUrl: string };
+
+export type RenameFileMutationVariables = Exact<{
+  input: RenameFileInput;
+}>;
+
+
+export type RenameFileMutation = { __typename?: 'Mutation', renameFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'FileInfo', name: string, path: string } | { __typename?: 'FolderInfo', name: string, path: string } | null } };
+
+export type GetFileInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type GetFileInfoQuery = { __typename?: 'Query', getFileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, fileType: FileType, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url?: string | null } | null };
+
+export type GetStorageStatsQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetStorageStatsQuery = { __typename?: 'Query', getStorageStats: { __typename?: 'StorageStats', totalFiles: number, totalFolders: number, totalSize: any, fileTypeBreakdown: Array<{ __typename?: 'FileTypeCount', count: number, type: FileType }> } };
+
+export type ListFilesQueryVariables = Exact<{
+  input: ListFilesInput;
+}>;
+
+
+export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'FileInfo', contentType?: string | null, created: any, fileType: FileType, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url?: string | null } | { __typename?: 'FolderInfo', created: any, fileCount: number, folderCount: number, lastModified: any, name: string, path: string, totalSize: any }> } };
+
+export type SearchFilesQueryVariables = Exact<{
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  folder?: InputMaybe<Scalars['String']['input']>;
+  limit: Scalars['Int']['input'];
+  searchTerm: Scalars['String']['input'];
+}>;
+
+
+export type SearchFilesQuery = { __typename?: 'Query', searchFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'FileInfo', contentType?: string | null, created: any, fileType: FileType, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url?: string | null } | { __typename?: 'FolderInfo', created: any, fileCount: number, folderCount: number, lastModified: any, name: string, path: string, totalSize: any }> } };
 
 export type CreateStudentMutationVariables = Exact<{
   input: CreateStudentInput;
@@ -1651,6 +1739,367 @@ export type UsersSuspenseQueryHookResult = ReturnType<typeof useUsersSuspenseQue
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
 export function refetchUsersQuery(variables?: UsersQueryVariables) {
       return { query: UsersDocument, variables: variables }
+    }
+export const DeleteFileDocument = gql`
+    mutation deleteFile($path: String!) {
+  deleteFile(path: $path) {
+    item {
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+export type DeleteFileMutationFn = Apollo.MutationFunction<DeleteFileMutation, DeleteFileMutationVariables>;
+
+/**
+ * __useDeleteFileMutation__
+ *
+ * To run a mutation, you first call `useDeleteFileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFileMutation, { data, loading, error }] = useDeleteFileMutation({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useDeleteFileMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFileMutation, DeleteFileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteFileMutation, DeleteFileMutationVariables>(DeleteFileDocument, options);
+      }
+export type DeleteFileMutationHookResult = ReturnType<typeof useDeleteFileMutation>;
+export type DeleteFileMutationResult = Apollo.MutationResult<DeleteFileMutation>;
+export type DeleteFileMutationOptions = Apollo.BaseMutationOptions<DeleteFileMutation, DeleteFileMutationVariables>;
+export const GenerateUploadSignedUrlDocument = gql`
+    mutation generateUploadSignedUrl($input: GenerateUploadSignedUrlInput!) {
+  generateUploadSignedUrl(input: $input)
+}
+    `;
+export type GenerateUploadSignedUrlMutationFn = Apollo.MutationFunction<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>;
+
+/**
+ * __useGenerateUploadSignedUrlMutation__
+ *
+ * To run a mutation, you first call `useGenerateUploadSignedUrlMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateUploadSignedUrlMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateUploadSignedUrlMutation, { data, loading, error }] = useGenerateUploadSignedUrlMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGenerateUploadSignedUrlMutation(baseOptions?: Apollo.MutationHookOptions<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>(GenerateUploadSignedUrlDocument, options);
+      }
+export type GenerateUploadSignedUrlMutationHookResult = ReturnType<typeof useGenerateUploadSignedUrlMutation>;
+export type GenerateUploadSignedUrlMutationResult = Apollo.MutationResult<GenerateUploadSignedUrlMutation>;
+export type GenerateUploadSignedUrlMutationOptions = Apollo.BaseMutationOptions<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>;
+export const RenameFileDocument = gql`
+    mutation renameFile($input: RenameFileInput!) {
+  renameFile(input: $input) {
+    item {
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+export type RenameFileMutationFn = Apollo.MutationFunction<RenameFileMutation, RenameFileMutationVariables>;
+
+/**
+ * __useRenameFileMutation__
+ *
+ * To run a mutation, you first call `useRenameFileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRenameFileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [renameFileMutation, { data, loading, error }] = useRenameFileMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRenameFileMutation(baseOptions?: Apollo.MutationHookOptions<RenameFileMutation, RenameFileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RenameFileMutation, RenameFileMutationVariables>(RenameFileDocument, options);
+      }
+export type RenameFileMutationHookResult = ReturnType<typeof useRenameFileMutation>;
+export type RenameFileMutationResult = Apollo.MutationResult<RenameFileMutation>;
+export type RenameFileMutationOptions = Apollo.BaseMutationOptions<RenameFileMutation, RenameFileMutationVariables>;
+export const GetFileInfoDocument = gql`
+    query getFileInfo($path: String!) {
+  getFileInfo(path: $path) {
+    contentType
+    created
+    fileType
+    isPublic
+    lastModified
+    md5Hash
+    mediaLink
+    name
+    path
+    size
+    url
+  }
+}
+    `;
+
+/**
+ * __useGetFileInfoQuery__
+ *
+ * To run a query within a React component, call `useGetFileInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFileInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFileInfoQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useGetFileInfoQuery(baseOptions: Apollo.QueryHookOptions<GetFileInfoQuery, GetFileInfoQueryVariables> & ({ variables: GetFileInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+      }
+export function useGetFileInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFileInfoQuery, GetFileInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+        }
+export function useGetFileInfoSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFileInfoQuery, GetFileInfoQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+        }
+export type GetFileInfoQueryHookResult = ReturnType<typeof useGetFileInfoQuery>;
+export type GetFileInfoLazyQueryHookResult = ReturnType<typeof useGetFileInfoLazyQuery>;
+export type GetFileInfoSuspenseQueryHookResult = ReturnType<typeof useGetFileInfoSuspenseQuery>;
+export type GetFileInfoQueryResult = Apollo.QueryResult<GetFileInfoQuery, GetFileInfoQueryVariables>;
+export function refetchGetFileInfoQuery(variables: GetFileInfoQueryVariables) {
+      return { query: GetFileInfoDocument, variables: variables }
+    }
+export const GetStorageStatsDocument = gql`
+    query getStorageStats($path: String) {
+  getStorageStats(path: $path) {
+    fileTypeBreakdown {
+      count
+      type
+    }
+    totalFiles
+    totalFolders
+    totalSize
+  }
+}
+    `;
+
+/**
+ * __useGetStorageStatsQuery__
+ *
+ * To run a query within a React component, call `useGetStorageStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStorageStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStorageStatsQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useGetStorageStatsQuery(baseOptions?: Apollo.QueryHookOptions<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
+      }
+export function useGetStorageStatsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
+        }
+export function useGetStorageStatsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
+        }
+export type GetStorageStatsQueryHookResult = ReturnType<typeof useGetStorageStatsQuery>;
+export type GetStorageStatsLazyQueryHookResult = ReturnType<typeof useGetStorageStatsLazyQuery>;
+export type GetStorageStatsSuspenseQueryHookResult = ReturnType<typeof useGetStorageStatsSuspenseQuery>;
+export type GetStorageStatsQueryResult = Apollo.QueryResult<GetStorageStatsQuery, GetStorageStatsQueryVariables>;
+export function refetchGetStorageStatsQuery(variables?: GetStorageStatsQueryVariables) {
+      return { query: GetStorageStatsDocument, variables: variables }
+    }
+export const ListFilesDocument = gql`
+    query listFiles($input: ListFilesInput!) {
+  listFiles(input: $input) {
+    hasMore
+    items {
+      name
+      path
+      ... on FileInfo {
+        contentType
+        created
+        fileType
+        isPublic
+        lastModified
+        md5Hash
+        mediaLink
+        name
+        path
+        size
+        url
+      }
+      ... on FolderInfo {
+        created
+        fileCount
+        folderCount
+        lastModified
+        name
+        path
+        totalSize
+      }
+    }
+    limit
+    offset
+    totalCount
+  }
+}
+    `;
+
+/**
+ * __useListFilesQuery__
+ *
+ * To run a query within a React component, call `useListFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListFilesQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useListFilesQuery(baseOptions: Apollo.QueryHookOptions<ListFilesQuery, ListFilesQueryVariables> & ({ variables: ListFilesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, options);
+      }
+export function useListFilesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListFilesQuery, ListFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, options);
+        }
+export function useListFilesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ListFilesQuery, ListFilesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, options);
+        }
+export type ListFilesQueryHookResult = ReturnType<typeof useListFilesQuery>;
+export type ListFilesLazyQueryHookResult = ReturnType<typeof useListFilesLazyQuery>;
+export type ListFilesSuspenseQueryHookResult = ReturnType<typeof useListFilesSuspenseQuery>;
+export type ListFilesQueryResult = Apollo.QueryResult<ListFilesQuery, ListFilesQueryVariables>;
+export function refetchListFilesQuery(variables: ListFilesQueryVariables) {
+      return { query: ListFilesDocument, variables: variables }
+    }
+export const SearchFilesDocument = gql`
+    query searchFiles($fileType: String, $folder: String, $limit: Int!, $searchTerm: String!) {
+  searchFiles(
+    fileType: $fileType
+    folder: $folder
+    limit: $limit
+    searchTerm: $searchTerm
+  ) {
+    hasMore
+    items {
+      name
+      path
+      ... on FileInfo {
+        contentType
+        created
+        fileType
+        isPublic
+        lastModified
+        md5Hash
+        mediaLink
+        name
+        path
+        size
+        url
+      }
+      ... on FolderInfo {
+        created
+        fileCount
+        folderCount
+        lastModified
+        name
+        path
+        totalSize
+      }
+    }
+    limit
+    offset
+    totalCount
+  }
+}
+    `;
+
+/**
+ * __useSearchFilesQuery__
+ *
+ * To run a query within a React component, call `useSearchFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchFilesQuery({
+ *   variables: {
+ *      fileType: // value for 'fileType'
+ *      folder: // value for 'folder'
+ *      limit: // value for 'limit'
+ *      searchTerm: // value for 'searchTerm'
+ *   },
+ * });
+ */
+export function useSearchFilesQuery(baseOptions: Apollo.QueryHookOptions<SearchFilesQuery, SearchFilesQueryVariables> & ({ variables: SearchFilesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchFilesQuery, SearchFilesQueryVariables>(SearchFilesDocument, options);
+      }
+export function useSearchFilesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchFilesQuery, SearchFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchFilesQuery, SearchFilesQueryVariables>(SearchFilesDocument, options);
+        }
+export function useSearchFilesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchFilesQuery, SearchFilesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SearchFilesQuery, SearchFilesQueryVariables>(SearchFilesDocument, options);
+        }
+export type SearchFilesQueryHookResult = ReturnType<typeof useSearchFilesQuery>;
+export type SearchFilesLazyQueryHookResult = ReturnType<typeof useSearchFilesLazyQuery>;
+export type SearchFilesSuspenseQueryHookResult = ReturnType<typeof useSearchFilesSuspenseQuery>;
+export type SearchFilesQueryResult = Apollo.QueryResult<SearchFilesQuery, SearchFilesQueryVariables>;
+export function refetchSearchFilesQuery(variables: SearchFilesQueryVariables) {
+      return { query: SearchFilesDocument, variables: variables }
     }
 export const CreateStudentDocument = gql`
     mutation createStudent($input: CreateStudentInput!) {
