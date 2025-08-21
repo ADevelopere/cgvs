@@ -21,7 +21,7 @@ import {
 import { saveAuthToken, clearAuthToken, getAuthToken } from "@/utils/auth";
 import { Box, CircularProgress, Typography, Button } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
-import { loadFromLocalStorage } from "@/utils/storage";
+import { loadFromLocalStorage } from "@/utils/localStorage";
 import { useRouter } from "next/navigation";
 
 // Loading Component to avoid conditional hook calls

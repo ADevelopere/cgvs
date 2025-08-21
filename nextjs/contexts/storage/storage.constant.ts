@@ -2,7 +2,7 @@ import { StorageQueryParams } from "./storage.type";
 import * as Graphql from "@/graphql/generated/types";
 
 export const STORAGE_DEFAULT_PARAMS: StorageQueryParams = {
-    path: "",
+    path: "", // Start at the root of the public directory (showing predefined locations)
     limit: 50,
     offset: 0,
 };
