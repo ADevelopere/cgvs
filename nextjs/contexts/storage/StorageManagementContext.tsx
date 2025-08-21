@@ -114,7 +114,9 @@ export const StorageManagementProvider: React.FC<{ children: React.ReactNode }>=
   }, [refresh]);
 
 
-  const uploadSingleFile = async (file: File, location: Graphql.UploadLocation): Promise<void> => {
+
+const uploadSingleFile = useCallback(
+  async (file: File, location: Graphql.UploadLocation): Promise<void> => {
     const fileKey = getFileKey(file);
     const contentType = inferContentType(file);
 
@@ -213,7 +215,10 @@ export const StorageManagementProvider: React.FC<{ children: React.ReactNode }>=
         return { ...prev, files: updated };
       });
     }
-  };
+  },
+  [gql, setUploadBatch]
+);
+
 
   // Mutations
   const rename = useCallback(async (path: string, newName: string): Promise<boolean> => {
@@ -316,7 +321,7 @@ export const StorageManagementProvider: React.FC<{ children: React.ReactNode }>=
     } finally {
       setUploadBatch(prev => prev ? { ...prev, isUploading: false } : undefined);
     }
-  }, [notifications, fetchList]);
+  }, [notifications, fetchList, uploadSingleFile]);
 
   const clearUploadBatch = useCallback(() => {
     setUploadBatch(undefined);
@@ -361,7 +366,7 @@ export const StorageManagementProvider: React.FC<{ children: React.ReactNode }>=
     } finally {
       setUploadBatch(prev => prev ? { ...prev, isUploading: false } : undefined);
     }
-  }, [uploadBatch, notifications]);
+  }, [uploadBatch, notifications, uploadSingleFile]);
 
   const value: StorageManagementContextType = useMemo(() => ({
     // data
