@@ -63,4 +63,4 @@ out/
 
 
 .kotlin/
-graphql/graphql-generated/
+/graphql/generated/
