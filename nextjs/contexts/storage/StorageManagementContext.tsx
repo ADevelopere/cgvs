@@ -385,7 +385,32 @@ export const StorageManagementProvider: React.FC<{
                     };
 
                     const onErr = () => {
-                        const errorMsg = currentXhr?.responseText || "Network error during upload";
+                        const status = currentXhr?.status ?? 0;
+                        const statusText = currentXhr?.statusText ?? "";
+                        const resp = currentXhr?.responseText || "";
+
+                        // Base message
+                        let errorMsg = resp || "Network error during upload";
+
+                        // When status is 0 or there is no response body, it's commonly a CORS/preflight
+                        // failure in the browser. Provide a helpful hint for new developers and show
+                        // a notification so the issue is easier to diagnose.
+                        if (status === 0 || !resp) {
+                            const hint = `Possible CORS/preflight failure. Ensure the GCS bucket has a CORS policy allowing PUT from your origin. See /cors/README.md and run: gcloud storage buckets update gs://cgvs --cors-file=./cors/cors-config.json`;
+                            errorMsg = `${errorMsg} — ${hint}`;
+                            try {
+                                notifications.show(
+                                    "Upload blocked by CORS/preflight. See cors/README.md for setup steps.",
+                                    { severity: "error", autoHideDuration: 8000 },
+                                );
+                            } catch (e) {
+                                // notifications may not be available in some contexts; ignore
+                            }
+                        }
+
+                        const detailed = `Upload failed for ${file.name}. Status: ${status} ${statusText}. Response: ${resp || "No response text."}`;
+                        console.error(detailed);
+
                         handleError(errorMsg);
                         uploadXhrsRef.current.delete(fileKey);
                         reject(new Error(errorMsg));
