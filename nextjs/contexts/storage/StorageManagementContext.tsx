@@ -2,25 +2,33 @@
 
 import React, {
     createContext,
-    useCallback,
     useContext,
-    useEffect,
-    useMemo,
-    useRef,
     useState,
+    useCallback,
+    useEffect,
+    useRef,
+    useMemo,
 } from "react";
-import * as Graphql from "@/graphql/generated/types";
 import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     StorageItem,
-    StorageManagementContextType,
     StorageQueryParams,
+    StorageManagementContextType,
     UploadBatchState,
     UploadFileState,
 } from "./storage.type";
 import { STORAGE_DEFAULT_PARAMS } from "./storage.constant";
-import { getFileKey, inferContentType } from "./storage.util";
+import { inferContentType, getFileKey } from "./storage.util";
+import { 
+    getLocationByPath, 
+    getUploadLocationForPath, 
+    isValidUploadLocation,
+    getStoragePath,
+    getDisplayPath,
+    isPublicPath,
+} from "./storage.location";
+import * as Graphql from "@/graphql/generated/types";
 
 const StorageManagementContext = createContext<
     StorageManagementContextType | undefined
@@ -68,6 +76,8 @@ export const StorageManagementProvider: React.FC<{
 
     const navigateTo = useCallback(
         (path: string) => {
+            // Convert display path to storage path for the backend
+            const storagePath = getStoragePath(path);
             setParams({ path, offset: 0 });
             setSelectedPaths([]);
         },
@@ -128,9 +138,12 @@ export const StorageManagementProvider: React.FC<{
         setLoading(true);
         setError(undefined);
         try {
+            // Convert display path to storage path for backend API calls
+            const storagePath = getStoragePath(params.path);
+            
             const listRes = await gql.listFilesQuery({
                 input: {
-                    path: params.path,
+                    path: storagePath,
                     limit: params.limit,
                     offset: params.offset,
                     searchTerm: params.searchTerm,
@@ -139,7 +152,14 @@ export const StorageManagementProvider: React.FC<{
                 },
             });
             const list = listRes.listFiles;
-            setItems(list.items as StorageItem[]);
+            
+            // Convert storage paths back to display paths
+            const processedItems = list.items.map(item => ({
+                ...item,
+                path: getDisplayPath(item.path),
+            }));
+            
+            setItems(processedItems as StorageItem[]);
             setPagination({
                 totalCount: list.totalCount,
                 limit: list.limit,
@@ -169,8 +189,10 @@ export const StorageManagementProvider: React.FC<{
 
     const fetchStats = useCallback(async () => {
         try {
+            // Convert display path to storage path for backend API calls
+            const storagePath = getStoragePath(params.path);
             const statsRes = await gql.getStorageStatsQuery({
-                path: params.path || undefined,
+                path: storagePath || undefined,
             });
             setStats(statsRes.getStorageStats);
         } catch (e) {
@@ -188,7 +210,7 @@ export const StorageManagementProvider: React.FC<{
     }, [refresh]);
 
     const uploadSingleFile = useCallback(
-        async (file: File, location: Graphql.UploadLocation): Promise<void> => {
+        async (file: File, location: Graphql.UploadLocation, targetPath: string): Promise<void> => {
             const fileKey = getFileKey(file);
             const contentType = inferContentType(file);
             // local refs for cleanup
@@ -481,9 +503,21 @@ export const StorageManagementProvider: React.FC<{
     const startUpload = useCallback(
         async (
             files: File[],
-            location: Graphql.UploadLocation,
+            targetPath?: string,
         ): Promise<void> => {
             if (files.length === 0) return;
+
+            // Determine the upload location based on target path or current path
+            const uploadPath = targetPath || params.path;
+            const location = getUploadLocationForPath(uploadPath);
+            
+            if (!location) {
+                notifications.show(
+                    `Upload not allowed in this location. Please navigate to a valid upload location.`,
+                    { severity: "error", autoHideDuration: 5000 }
+                );
+                return;
+            }
 
             // Initialize upload batch
             const fileMap = new Map<string, UploadFileState>();
@@ -501,6 +535,7 @@ export const StorageManagementProvider: React.FC<{
                 isUploading: true,
                 completedCount: 0,
                 totalCount: files.length,
+                targetPath: uploadPath,
             });
 
             try {
@@ -513,7 +548,7 @@ export const StorageManagementProvider: React.FC<{
 
                 for (const chunk of chunks) {
                     await Promise.all(
-                        chunk.map((file) => uploadSingleFile(file, location)),
+                        chunk.map((file) => uploadSingleFile(file, location, uploadPath)),
                     );
                 }
 
@@ -528,26 +563,29 @@ export const StorageManagementProvider: React.FC<{
                         (f) => f.status === "error",
                     ).length;
 
-                    if (successCount > 0) {
-                        notifications.show(
-                            `${successCount} file(s) uploaded successfully`,
-                            {
-                                severity: "success",
-                                autoHideDuration: 3000,
-                            },
-                        );
-                        // Refresh the file list to show new uploads
-                        fetchList();
-                    }
-
-                    if (errorCount > 0) {
-                        notifications.show(
-                            `${errorCount} file(s) failed to upload`,
-                            {
-                                severity: "warning",
-                                autoHideDuration: 5000,
-                            },
-                        );
+                    // Defer side-effects to prevent state updates during render
+                    if (successCount > 0 || errorCount > 0) {
+                        setTimeout(() => {
+                            if (successCount > 0) {
+                                notifications.show(
+                                    `${successCount} file(s) uploaded successfully`,
+                                    {
+                                        severity: "success",
+                                        autoHideDuration: 3000,
+                                    },
+                                );
+                                fetchList(); // Refresh on success
+                            }
+                            if (errorCount > 0) {
+                                notifications.show(
+                                    `${errorCount} file(s) failed to upload`,
+                                    {
+                                        severity: "warning",
+                                        autoHideDuration: 5000,
+                                    },
+                                );
+                            }
+                        }, 0);
                     }
 
                     return { ...prev, isUploading: false };
@@ -564,7 +602,7 @@ export const StorageManagementProvider: React.FC<{
                 );
             }
         },
-        [notifications, fetchList, uploadSingleFile],
+        [notifications, fetchList, uploadSingleFile, params.path],
     );
 
     const clearUploadBatch = useCallback(() => {
@@ -661,7 +699,7 @@ export const StorageManagementProvider: React.FC<{
             });
 
             try {
-                await uploadSingleFile(fileState.file, uploadBatch.location);
+                await uploadSingleFile(fileState.file, uploadBatch.location, uploadBatch.targetPath);
             } catch (e) {
                 // uploadSingleFile handles setting error state; nothing more to do here
             } finally {
@@ -709,7 +747,7 @@ export const StorageManagementProvider: React.FC<{
         try {
             await Promise.all(
                 failedFiles.map((file) =>
-                    uploadSingleFile(file, uploadBatch.location),
+                    uploadSingleFile(file, uploadBatch.location, uploadBatch.targetPath),
                 ),
             );
             notifications.show("Retry completed", {

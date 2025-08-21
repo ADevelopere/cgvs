@@ -5,7 +5,7 @@ import * as Graphql from "@/graphql/generated/types";
 export type StorageItem = Graphql.FileInfo | Graphql.FolderInfo;
 
 export type StorageQueryParams = {
-  path: string;
+  path: string; // This will be relative to 'public/' (e.g., "templateCover" instead of "public/templateCover")
   limit: number;
   offset: number;
   searchTerm?: string;
@@ -30,6 +30,7 @@ export type UploadBatchState = {
   isUploading: boolean;
   completedCount: number;
   totalCount: number;
+  targetPath: string; // The path where files are being uploaded
 };
 
 export type StorageManagementContextType = {
@@ -71,7 +72,7 @@ export type StorageManagementContextType = {
   setLimit: (limit: number) => void;
 
   // Upload actions
-  startUpload: (files: File[], location: Graphql.UploadLocation) => Promise<void>;
+  startUpload: (files: File[], targetPath?: string) => Promise<void>; // targetPath is optional, will auto-detect from current path
   cancelUpload: (fileKey?: string) => void;
   retryFailedUploads: () => Promise<void>;
   retryFile: (fileKey: string) => Promise<void>;

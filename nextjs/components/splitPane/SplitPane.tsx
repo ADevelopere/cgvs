@@ -13,7 +13,7 @@ import React, {
     useMemo,
 } from "react";
 import Resizer from "./Resizer";
-import { getStorageKey, debouncedSaveToLocalStorage, loadFromLocalStorage } from "@/utils/storage";
+import { getStorageKey, debouncedSaveToLocalStorage, loadFromLocalStorage } from "@/utils/localStorage";
 
 // Helper to remove focus so text isn't selected while dragging
 function unFocus(doc: Document, win: Window) {

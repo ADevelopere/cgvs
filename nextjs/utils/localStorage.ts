@@ -37,12 +37,14 @@ export function loadFromLocalStorage<T>(key: string): T | null {
         console.warn('localStorage is not available in this environment.');
         return null;
     }
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : null;
-    } catch (error) {
-        console.warn('Failed to load from localStorage:', error);
+    const item = localStorage.getItem(key);
+    if (item === null) {
         return null;
+    }
+    try {
+        return JSON.parse(item) as T;
+    } catch (error) {
+        return item as T;
     }
 }
 

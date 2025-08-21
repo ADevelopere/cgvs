@@ -211,7 +211,6 @@ enum class ContentType(val value: String) {
 
 @Suppress("unused")
 enum class UploadLocation(val path: String, val allowedContentTypes: List<ContentType>) {
-    PUBLIC("public", ContentType.values().toList()),
     TEMPLATE_COVER("public/templateCover", listOf(ContentType.JPEG, ContentType.PNG, ContentType.WEBP))
 }
 
