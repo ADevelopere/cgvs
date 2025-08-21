@@ -17,25 +17,27 @@ import { useStorageManagement } from "@/contexts/storage/StorageManagementContex
 import { useNotifications } from "@toolpad/core/useNotifications";
 import * as Graphql from "@/graphql/generated/types";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const EmptyState: React.FC = () => {
     const theme = useTheme();
     const notifications = useNotifications();
     const { params, goUp, startUpload } = useStorageManagement();
     const { canUpload, isAtRoot } = useStorageLocation();
+    const translations = useAppTranslation("storageTranslations");
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
         if (files.length > 0) {
             startUpload(files)
                 .then(() => {
-                    notifications.show("Upload started successfully", {
+                    notifications.show(translations.uploadStartedSuccessfully, {
                         severity: "success",
                         autoHideDuration: 3000,
                     });
                 })
                 .catch(() => {
-                    notifications.show("Failed to start upload", {
+                    notifications.show(translations.failedToStartUpload, {
                         severity: "error",
                         autoHideDuration: 3000,
                     });
@@ -69,7 +71,7 @@ const EmptyState: React.FC = () => {
 
             {/* Title */}
             <Typography variant="h5" fontWeight={600} gutterBottom>
-                {isAtRoot ? "No files yet" : "This folder is empty"}
+                {isAtRoot ? translations.noFilesYet : translations.thisFolderIsEmpty}
             </Typography>
 
             {/* Description */}
@@ -79,10 +81,10 @@ const EmptyState: React.FC = () => {
                 sx={{ mb: 4, maxWidth: 400 }}
             >
                 {isAtRoot
-                    ? "Choose a storage location from above to start managing your files."
+                    ? translations.chooseStorageLocation
                     : canUpload
-                    ? "This folder doesn't contain any files yet. Upload some files to get started."
-                    : "This folder doesn't contain any files or subfolders yet."}
+                    ? translations.emptyFolderGetStarted
+                    : translations.emptyFolder}
             </Typography>
 
             {/* Actions */}
@@ -100,7 +102,7 @@ const EmptyState: React.FC = () => {
                             py: 1.5,
                         }}
                     >
-                        Upload Files
+                        {translations.uploadFiles}
                         <input
                             type="file"
                             multiple
@@ -123,7 +125,7 @@ const EmptyState: React.FC = () => {
                             py: 1.5,
                         }}
                     >
-                        Go Up
+                        {translations.goUp}
                     </Button>
                 )}
             </Stack>
@@ -134,8 +136,7 @@ const EmptyState: React.FC = () => {
                 color="text.secondary"
                 sx={{ mt: 3, maxWidth: 500 }}
             >
-                You can also drag and drop files here to upload them.
-                Supported formats include images, documents, videos, and more.
+                {translations.dragAndDropHelpText}
             </Typography>
         </Box>
     );

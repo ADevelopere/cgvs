@@ -12,6 +12,7 @@ import {
     Alert,
 } from "@mui/material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface RenameDialogProps {
     open: boolean;
@@ -30,6 +31,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
     const [newName, setNewName] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const translations = useAppTranslation("storageTranslations");
 
     useEffect(() => {
         if (open) {
@@ -40,24 +42,24 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
 
     const validateName = (name: string): string | null => {
         if (!name.trim()) {
-            return "Name cannot be empty";
+            return translations.nameCannotBeEmpty;
         }
         if (name.trim() === currentName) {
-            return "New name must be different from current name";
+            return translations.nameMustBeDifferent;
         }
         if (name.includes("/")) {
-            return "Name cannot contain forward slashes";
+            return translations.nameCannotContainForwardSlashes;
         }
         if (name.includes("\\")) {
-            return "Name cannot contain backslashes";
+            return translations.nameCannotContainBackslashes;
         }
         if (name.length > 255) {
-            return "Name is too long (maximum 255 characters)";
+            return translations.nameTooLong;
         }
         // Check for illegal characters
         const illegalChars = /[<>:"|?*]/;
         if (illegalChars.test(name)) {
-            return "Name contains illegal characters";
+            return translations.nameContainsIllegalCharacters;
         }
         return null;
     };
@@ -81,10 +83,10 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
             if (success) {
                 onClose();
             } else {
-                setError("Failed to rename item. Please try again.");
+                setError(translations.failedToRenameItem);
             }
         } catch (err) {
-            setError("An unexpected error occurred");
+            setError(translations.unexpectedError);
         } finally {
             setLoading(false);
         }
@@ -108,7 +110,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
         >
             <form onSubmit={handleSubmit}>
                 <DialogTitle id="rename-dialog-title">
-                    Rename Item
+                    {translations.renameItem}
                 </DialogTitle>
                 
                 <DialogContent>
@@ -122,7 +124,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                         <TextField
                             autoFocus
                             fullWidth
-                            label="New name"
+                            label={translations.newName}
                             value={newName}
                             onChange={(e) => {
                                 setNewName(e.target.value);
@@ -131,7 +133,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                             onKeyDown={handleKeyDown}
                             disabled={loading}
                             error={!!error}
-                            helperText={error || "Enter a new name for this item"}
+                            helperText={error || translations.enterNewName}
                             margin="normal"
                             variant="outlined"
                         />
@@ -143,7 +145,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                         onClick={onClose} 
                         disabled={loading}
                     >
-                        Cancel
+                        {translations.cancel}
                     </Button>
                     <Button
                         type="submit"
@@ -151,7 +153,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                         disabled={loading || !isValid || !newName.trim()}
                         color="primary"
                     >
-                        {loading ? "Renaming..." : "Rename"}
+                        {loading ? translations.renaming : translations.rename}
                     </Button>
                 </DialogActions>
             </form>

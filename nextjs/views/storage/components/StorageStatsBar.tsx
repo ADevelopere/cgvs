@@ -16,15 +16,17 @@ import {
     Storage as StorageIcon,
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageStatsBar: React.FC = () => {
     const theme = useTheme();
     const { stats, items } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
 
     const formatFileSize = (bytes: number): string => {
-        if (bytes === 0) return "0 Bytes";
+        if (bytes === 0) return translations.zeroBytes;
         const k = 1024;
-        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
@@ -72,15 +74,16 @@ const StorageStatsBar: React.FC = () => {
                     >
                         <StorageIcon color="primary" fontSize="small" />
                         <Typography variant="subtitle2" fontWeight={600}>
-                            Total Storage
+                            {translations.totalStorage}
                         </Typography>
                     </Stack>
                     <Typography variant="h6" color="primary" fontWeight={600}>
                         {formatFileSize(stats.totalSize)}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Across {formatNumber(stats.totalFiles)} files and{" "}
-                        {formatNumber(stats.totalFolders)} folders
+                        {translations.acrossFilesAndFolders
+                            .replace("{totalFiles}", formatNumber(stats.totalFiles))
+                            .replace("{totalFolders}", formatNumber(stats.totalFolders))}
                     </Typography>
                 </Box>
 
@@ -88,13 +91,13 @@ const StorageStatsBar: React.FC = () => {
                 <Box sx={{ flex: 1 }}>
                     <Stack spacing={1}>
                         <Typography variant="subtitle2" fontWeight={600}>
-                            Current Directory
+                            {translations.currentDirectory}
                         </Typography>
                         <Stack direction="row" spacing={2} flexWrap="wrap">
                             <Chip
                                 icon={<FolderIcon />}
                                 label={`${formatNumber(folderCount)} ${
-                                    folderCount === 1 ? "Folder" : "Folders"
+                                    folderCount === 1 ? translations.folder : translations.folders
                                 }`}
                                 size="small"
                                 variant="outlined"
@@ -103,7 +106,7 @@ const StorageStatsBar: React.FC = () => {
                             <Chip
                                 icon={<FileIcon />}
                                 label={`${formatNumber(fileCount)} ${
-                                    fileCount === 1 ? "File" : "Files"
+                                    fileCount === 1 ? translations.file : translations.files
                                 }`}
                                 size="small"
                                 variant="outlined"
@@ -117,7 +120,7 @@ const StorageStatsBar: React.FC = () => {
                 <Box sx={{ flex: 1 }}>
                     <Stack spacing={1}>
                         <Typography variant="subtitle2" fontWeight={600}>
-                            File Types
+                            {translations.fileTypes}
                         </Typography>
                         <Stack direction="row" spacing={1} flexWrap="wrap">
                             {stats.fileTypeBreakdown
@@ -138,11 +141,9 @@ const StorageStatsBar: React.FC = () => {
                                 (item) => item.count > 0,
                             ).length > 3 && (
                                 <Chip
-                                    label={`+${
-                                        stats.fileTypeBreakdown.filter(
-                                            (item) => item.count > 0,
-                                        ).length - 3
-                                    } more`}
+                                    label={translations.more.replace("{count}", String(stats.fileTypeBreakdown.filter(
+                                        (item) => item.count > 0,
+                                    ).length - 3))}
                                     size="small"
                                     variant="outlined"
                                     color="default"

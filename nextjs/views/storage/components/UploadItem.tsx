@@ -22,6 +22,7 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { UploadFileState } from "@/contexts/storage/storage.type";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface UploadItemProps {
     fileKey: string;
@@ -30,11 +31,12 @@ interface UploadItemProps {
 
 const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
     const { cancelUpload, retryFile } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
 
     const formatFileSize = (bytes: number): string => {
-        if (bytes === 0) return "0 Bytes";
+        if (bytes === 0) return translations.zeroBytes;
         const k = 1024;
-        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
@@ -62,13 +64,13 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
 
         switch (fileState.status) {
             case "pending":
-                return <Chip label="Pending" color="default" {...props} />;
+                return <Chip label={translations.pending} color="default" {...props} />;
             case "uploading":
                 return <Chip label={`${Math.round(fileState.progress)}%`} color="primary" {...props} />;
             case "success":
-                return <Chip label="Success" color="success" {...props} />;
+                return <Chip label={translations.success} color="success" {...props} />;
             case "error":
-                return <Chip label="Failed" color="error" {...props} />;
+                return <Chip label={translations.failed} color="error" {...props} />;
             default:
                 return null;
         }
@@ -89,7 +91,7 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
                 return (
                     <IconButton
                         edge="end"
-                        aria-label="cancel upload"
+                        aria-label={translations.cancelUpload}
                         onClick={handleCancel}
                         size="small"
                         color="error"
@@ -101,7 +103,7 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
                 return (
                     <IconButton
                         edge="end"
-                        aria-label="retry upload"
+                        aria-label={translations.retryUpload}
                         onClick={handleRetry}
                         size="small"
                         color="primary"

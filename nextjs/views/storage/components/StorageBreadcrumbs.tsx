@@ -18,10 +18,12 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageBreadcrumbs: React.FC = () => {
     const { params, navigateTo, goUp } = useStorageManagement();
     const { currentLocationInfo } = useStorageLocation();
+    const translations = useAppTranslation("storageTranslations");
 
     const pathParts = params.path
         ? params.path.split("/").filter(Boolean)
@@ -62,7 +64,7 @@ const StorageBreadcrumbs: React.FC = () => {
                             backgroundColor: "action.selected",
                         },
                     }}
-                    title="Go up one level"
+                    title={translations.goUpOneLevel}
                 >
                     <ArrowUpIcon />
                 </IconButton>
@@ -71,7 +73,7 @@ const StorageBreadcrumbs: React.FC = () => {
             {/* Breadcrumb Navigation */}
             <Breadcrumbs
                 separator={<NavigateNextIcon fontSize="small" />}
-                aria-label="storage breadcrumb navigation"
+                aria-label={translations.breadcrumbNavigation}
                 sx={{ flex: 1 }}
             >
                 {/* Root/Home */}
@@ -95,7 +97,7 @@ const StorageBreadcrumbs: React.FC = () => {
                     }}
                 >
                     <StorageIcon fontSize="small" />
-                    Storage Locations
+                    {translations.storageLocations}
                 </Link>
 
                 {/* Path segments */}
@@ -161,7 +163,7 @@ const StorageBreadcrumbs: React.FC = () => {
             {/* Current Path Info */}
             {pathParts.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
-                    Choose a storage location
+                    {translations.chooseStorageLocationBreadcrumb}
                 </Typography>
             )}
         </Box>

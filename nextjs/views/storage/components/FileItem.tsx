@@ -34,6 +34,7 @@ import { useStorageManagement } from "@/contexts/storage/StorageManagementContex
 import * as Graphql from "@/graphql/generated/types";
 import { StorageItem } from "@/contexts/storage/storage.type";
 import { format } from "date-fns";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface FileItemProps {
     item: StorageItem;
@@ -45,14 +46,15 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
     const { toggleSelect, navigateTo, remove, rename } = useStorageManagement();
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [isRenaming, setIsRenaming] = useState(false);
+    const translations = useAppTranslation("storageTranslations");
 
     const isFolder = item.__typename === "FolderInfo";
     const fileInfo = item as Graphql.FileInfo;
 
     const formatFileSize = (bytes: number): string => {
-        if (bytes === 0) return "0 Bytes";
+        if (bytes === 0) return translations.zeroBytes;
         const k = 1024;
-        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
@@ -140,7 +142,7 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
         try {
             return format(new Date(dateString), "MMM dd, yyyy HH:mm");
         } catch {
-            return "Unknown";
+            return translations.unknown;
         }
     };
 
@@ -151,7 +153,7 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
                 secondaryAction={
                     <IconButton
                         edge="end"
-                        aria-label="more actions"
+                        aria-label={translations.moreActions}
                         onClick={handleMenuOpen}
                         size="small"
                     >
@@ -193,11 +195,11 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
                         secondary={
                             <Box sx={{ display: "flex", gap: 2, mt: 0.5 }}>
                                 <Typography variant="caption" color="text.secondary">
-                                    Modified: {formatDate(item.lastModified)}
+                                    {translations.modified}{formatDate(item.lastModified)}
                                 </Typography>
                                 {!isFolder && (
                                     <Typography variant="caption" color="text.secondary">
-                                        Size: {formatFileSize(fileInfo.size)}
+                                        {translations.size}{formatFileSize(fileInfo.size)}
                                     </Typography>
                                 )}
                             </Box>
@@ -222,22 +224,22 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
                 {!isFolder && (
                     <MenuItem onClick={handleDownload}>
                         <DownloadIcon sx={{ mr: 1 }} fontSize="small" />
-                        Download
+                        {translations.download}
                     </MenuItem>
                 )}
                 {!isFolder && fileInfo.url && (
                     <MenuItem onClick={handleCopyLink}>
                         <LinkIcon sx={{ mr: 1 }} fontSize="small" />
-                        Copy Link
+                        {translations.copyLink}
                     </MenuItem>
                 )}
                 <MenuItem onClick={handleRename}>
                     <EditIcon sx={{ mr: 1 }} fontSize="small" />
-                    Rename
+                    {translations.rename}
                 </MenuItem>
                 <MenuItem onClick={handleDelete} sx={{ color: "error.main" }}>
                     <DeleteIcon sx={{ mr: 1 }} fontSize="small" />
-                    Delete
+                    {translations.delete}
                 </MenuItem>
             </Menu>
         </>

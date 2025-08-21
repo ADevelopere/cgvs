@@ -13,6 +13,7 @@ import {
     Error as ErrorIcon,
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface ErrorBannerProps {
     error?: string;
@@ -24,6 +25,7 @@ const ErrorBanner: React.FC<ErrorBannerProps> = ({
     onRetry: propOnRetry 
 }) => {
     const { error: contextError, refresh } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
     
     const error = propError || contextError;
     const onRetry = propOnRetry || refresh;
@@ -35,22 +37,22 @@ const ErrorBanner: React.FC<ErrorBannerProps> = ({
     const getErrorMessage = (errorMsg: string) => {
         // Parse common error scenarios and provide user-friendly messages
         if (errorMsg.toLowerCase().includes("network")) {
-            return "Network connection error. Please check your internet connection.";
+            return translations.networkError;
         }
         if (errorMsg.toLowerCase().includes("unauthorized") || errorMsg.includes("401")) {
-            return "Authentication error. Please log in again.";
+            return translations.authenticationError;
         }
         if (errorMsg.toLowerCase().includes("forbidden") || errorMsg.includes("403")) {
-            return "Access denied. You don't have permission to view this content.";
+            return translations.accessDenied;
         }
         if (errorMsg.toLowerCase().includes("not found") || errorMsg.includes("404")) {
-            return "The requested content was not found.";
+            return translations.contentNotFound;
         }
         if (errorMsg.toLowerCase().includes("timeout")) {
-            return "Request timed out. Please try again.";
+            return translations.requestTimeout;
         }
         if (errorMsg.toLowerCase().includes("server") || errorMsg.includes("500")) {
-            return "Server error. Please try again later.";
+            return translations.serverError;
         }
         
         // Return the original error if no pattern matches
@@ -82,7 +84,7 @@ const ErrorBanner: React.FC<ErrorBannerProps> = ({
                             },
                         }}
                     >
-                        Retry
+                        {translations.retry}
                     </Button>
                 }
                 sx={{
@@ -91,7 +93,7 @@ const ErrorBanner: React.FC<ErrorBannerProps> = ({
                     },
                 }}
             >
-                <AlertTitle>Failed to load storage content</AlertTitle>
+                <AlertTitle>{translations.failedToLoadStorageContent}</AlertTitle>
                 <Typography variant="body2">
                     {getErrorMessage(error)}
                 </Typography>

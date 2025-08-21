@@ -9,10 +9,12 @@ import {
     useTheme,
 } from "@mui/material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const SelectHeader: React.FC = () => {
     const theme = useTheme();
     const { items, selectedPaths, selectAll, clearSelection } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
 
     const isAllSelected = items.length > 0 && selectedPaths.length === items.length;
     const isIndeterminate = selectedPaths.length > 0 && selectedPaths.length < items.length;
@@ -53,14 +55,16 @@ const SelectHeader: React.FC = () => {
                 }
                 label={
                     <Typography variant="body2" color="text.secondary">
-                        Select all items
+                        {translations.selectAllItems}
                     </Typography>
                 }
             />
 
             {selectedPaths.length > 0 && (
                 <Typography variant="body2" color="primary" fontWeight={500}>
-                    {selectedPaths.length} of {items.length} selected
+                    {translations.selectedOfTotal
+                        .replace("{selected}", String(selectedPaths.length))
+                        .replace("{total}", String(items.length))}
                 </Typography>
             )}
         </Box>
