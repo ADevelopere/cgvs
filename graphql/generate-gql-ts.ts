@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import {fileURLToPath} from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +36,7 @@ function convertToConstName(name: string): string {
     return result;
 }
 
-const storageKeywords = ["file", "upload", "storage"];
+const storageKeywords = ["file", "folder", "upload", "storage"];
 const authKeywords = ["auth", "login", "logout", "register", "me", "user"];
 
 function getSubdirectory(operationName: string): string {
@@ -105,7 +105,7 @@ ${escapedContent}
         .join(outputSubDir, path.basename(filePath))
         .replace(".gql", ".ts");
 
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.mkdirSync(path.dirname(outputPath), {recursive: true});
     fs.writeFileSync(outputPath, tsContent);
 
     console.log(`Generated: ${outputPath}`);
@@ -132,11 +132,11 @@ const outputDir = args[0] || path.join(__dirname, "generated", "gqlg-ts");
 
 // Remove existing output directory
 if (fs.existsSync(outputDir)) {
-    fs.rmSync(outputDir, { recursive: true, force: true });
+    fs.rmSync(outputDir, {recursive: true, force: true});
 }
 
 // Create output directory if it doesn't exist
-fs.mkdirSync(outputDir, { recursive: true });
+fs.mkdirSync(outputDir, {recursive: true});
 
 // Start processing from the gqlg directory
 const inputDir = path.join(__dirname, "generated", "gqlg");

@@ -26,7 +26,7 @@ class StorageQuery : Query, KoinComponent {
 
     fun getFolderInfo(
         path: String
-    ): FolderInfo? {
+    ): FolderInfo {
         return storageService.getFolderInfoByPath(path)
     }
 
