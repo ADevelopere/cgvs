@@ -385,9 +385,10 @@ export const StorageManagementProvider: React.FC<{
                     };
 
                     const onErr = () => {
-                        handleError("Network error during upload");
+                        const errorMsg = currentXhr?.responseText || "Network error during upload";
+                        handleError(errorMsg);
                         uploadXhrsRef.current.delete(fileKey);
-                        reject(new Error("Network error during upload"));
+                        reject(new Error(errorMsg));
                     };
 
                     const onAbort = () => {
