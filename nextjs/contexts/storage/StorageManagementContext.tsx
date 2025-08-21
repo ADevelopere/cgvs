@@ -316,40 +316,10 @@ export const StorageManagementProvider: React.FC<{
                     });
                 };
 
-                currentXhr.onload = () => {
-                    // Defensive: some environments may fire load with status 0 or before
-                    // the request is fully DONE; treat these as abort/failed.
-                    if (
-                        currentXhr.readyState !== XMLHttpRequest.DONE ||
-                        currentXhr.status === 0
-                    ) {
-                        handleError("Upload aborted");
-                        // ensure ref cleaned
-                        uploadXhrsRef.current.delete(fileKey);
-                        return;
-                    }
-
-                    if (currentXhr.status >= 200 && currentXhr.status < 300) {
-                        handleSuccess();
-                    } else {
-                        handleError(`Upload failed with status ${currentXhr.status}`);
-                    }
-
-                    // cleanup ref on completion
-                    uploadXhrsRef.current.delete(fileKey);
-                };
-                currentXhr.onerror = () => {
-                    // network-level error
-                    handleError("Network error during upload");
-                    uploadXhrsRef.current.delete(fileKey);
-                };
-
-                currentXhr.onabort = () => {
-                    // mark as error/aborted
-                    handleError("Upload aborted");
-                    uploadXhrsRef.current.delete(fileKey);
-                };
-
+                // Use addEventListener for load/error/abort and resolve/reject the
+                // promise from those handlers. This keeps a single consistent
+                // approach and allows us to remove exactly the listeners we add
+                // in the finally block.
                 // Perform the upload
                 currentXhr.open("PUT", signedUrl);
                 currentXhr.setRequestHeader(
@@ -358,28 +328,58 @@ export const StorageManagementProvider: React.FC<{
                 );
                 currentXhr.send(file);
 
-                // Wait for completion or error
+                // Wait for completion or error using listeners we can remove
                 await new Promise<void>((resolve, reject) => {
-                    const done = () => {
-                        // Defensive checks: if aborted or not DONE, treat as aborted
-                        if (!currentXhr || currentXhr.readyState !== XMLHttpRequest.DONE || currentXhr.status === 0) {
-                            reject(new Error("Upload aborted"));
-                            return;
-                        }
+                    const onLoad = () => {
+                        try {
+                            // Defensive: some environments may fire load with status 0
+                            // or before the request is fully DONE; treat these as
+                            // abort/failed.
+                            if (
+                                !currentXhr ||
+                                currentXhr.readyState !== XMLHttpRequest.DONE ||
+                                currentXhr.status === 0
+                            ) {
+                                handleError("Upload aborted");
+                                uploadXhrsRef.current.delete(fileKey);
+                                reject(new Error("Upload aborted"));
+                                return;
+                            }
 
-                            if (currentXhr.status >= 200 && currentXhr.status < 300) resolve();
-                            else reject(new Error(`Upload failed with status ${currentXhr.status}`));
+                            if (currentXhr.status >= 200 && currentXhr.status < 300) {
+                                handleSuccess();
+                                resolve();
+                            } else {
+                                handleError(`Upload failed with status ${currentXhr.status}`);
+                                uploadXhrsRef.current.delete(fileKey);
+                                reject(new Error(`Upload failed with status ${currentXhr.status}`));
+                            }
+                        } catch (err) {
+                            // Defensive fallback
+                            handleError("Upload completion handler error");
+                            uploadXhrsRef.current.delete(fileKey);
+                            reject(err instanceof Error ? err : new Error(String(err)));
+                        }
                     };
 
-                    const onErr = () => reject(new Error("Network error during upload"));
-                    const onAbort = () => reject(new Error("Upload aborted"));
+                    const onErr = () => {
+                        handleError("Network error during upload");
+                        uploadXhrsRef.current.delete(fileKey);
+                        reject(new Error("Network error during upload"));
+                    };
 
-                    loadListener = done;
+                    const onAbort = () => {
+                        handleError("Upload aborted");
+                        uploadXhrsRef.current.delete(fileKey);
+                        reject(new Error("Upload aborted"));
+                    };
+
+                    loadListener = onLoad;
                     errorListener = onErr;
                     abortListener = onAbort;
 
                     if (currentXhr) {
-                        currentXhr.addEventListener("load", done);
+                        currentXhr.addEventListener("load", onLoad);
                         currentXhr.addEventListener("error", onErr);
                         currentXhr.addEventListener("abort", onAbort);
                     } else {
