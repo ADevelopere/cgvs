@@ -154,6 +154,15 @@ const uploadSingleFile = useCallback(
       // Step 2: Upload to signed URL
       const xhr = new XMLHttpRequest();
 
+      // Attach XHR instance to upload state so it can be aborted externally
+      setUploadBatch(prev => {
+        if (!prev) return prev;
+        const updated = new Map(prev.files);
+        const existing = updated.get(fileKey)!;
+        updated.set(fileKey, { ...existing, status: "uploading", progress: 0, xhr });
+        return { ...prev, files: updated };
+      });
+
       // Track progress
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -161,28 +170,50 @@ const uploadSingleFile = useCallback(
           setUploadBatch(prev => {
             if (!prev) return prev;
             const updated = new Map(prev.files);
-            updated.set(fileKey, { ...updated.get(fileKey)!, progress });
+            const existing = updated.get(fileKey)!;
+            updated.set(fileKey, { ...existing, progress });
             return { ...prev, files: updated };
           });
         }
       };
 
-      // Handle completion
+      // Common completion handler
+      const handleSuccess = () => {
+        setUploadBatch(prev => {
+          if (!prev) return prev;
+          const updated = new Map(prev.files);
+          const existing = updated.get(fileKey)!;
+          updated.set(fileKey, { ...existing, status: "success", progress: 100, xhr: undefined });
+          return { ...prev, files: updated, completedCount: prev.completedCount + 1 };
+        });
+      };
+
+      const handleError = (errMsg: string) => {
+        setUploadBatch(prev => {
+          if (!prev) return prev;
+          const updated = new Map(prev.files);
+          const existing = updated.get(fileKey)!;
+          updated.set(fileKey, { ...existing, status: "error", error: errMsg, xhr: undefined });
+          return { ...prev, files: updated };
+        });
+      };
+
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          setUploadBatch(prev => {
-            if (!prev) return prev;
-            const updated = new Map(prev.files);
-            updated.set(fileKey, { ...updated.get(fileKey)!, status: "success", progress: 100 });
-            return { ...prev, files: updated, completedCount: prev.completedCount + 1 };
-          });
+          handleSuccess();
         } else {
-          throw new Error(`Upload failed with status ${xhr.status}`);
+          handleError(`Upload failed with status ${xhr.status}`);
         }
       };
 
       xhr.onerror = () => {
-        throw new Error("Network error during upload");
+        // network-level error
+        handleError("Network error during upload");
+      };
+
+      xhr.onabort = () => {
+        // mark as error/aborted
+        handleError("Upload aborted");
       };
 
       // Perform the upload
@@ -190,16 +221,17 @@ const uploadSingleFile = useCallback(
       xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
       xhr.send(file);
 
-      // Wait for completion
+      // Wait for completion or error
       await new Promise<void>((resolve, reject) => {
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve();
-          } else {
-            reject(new Error(`Upload failed with status ${xhr.status}`));
-          }
+        const done = () => {
+          // resolve if status indicates success
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(`Upload failed with status ${xhr.status}`));
         };
-        xhr.onerror = () => reject(new Error("Network error during upload"));
+
+        xhr.addEventListener('load', done);
+        xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+        xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
       });
 
     } catch (error) {
@@ -207,10 +239,12 @@ const uploadSingleFile = useCallback(
       setUploadBatch(prev => {
         if (!prev) return prev;
         const updated = new Map(prev.files);
+        const existing = updated.get(fileKey)!;
         updated.set(fileKey, {
-          ...updated.get(fileKey)!,
+          ...existing,
           status: "error",
-          error: error instanceof Error ? error.message : "Upload failed"
+          error: error instanceof Error ? error.message : "Upload failed",
+          xhr: undefined,
         });
         return { ...prev, files: updated };
       });
@@ -327,10 +361,34 @@ const uploadSingleFile = useCallback(
     setUploadBatch(undefined);
   }, []);
 
-  const cancelUpload = useCallback(() => {
-    clearUploadBatch();
-    notifications.show("Upload cancelled", { severity: "info", autoHideDuration: 2000 });
-  }, [clearUploadBatch, notifications]);
+  const cancelUpload = useCallback((fileKey?: string) => {
+    // If a single file key is provided, abort that XHR; otherwise abort all
+    setUploadBatch(prev => {
+      if (!prev) return prev;
+      const updated = new Map(prev.files);
+
+      if (fileKey) {
+        const fileState = updated.get(fileKey);
+        if (fileState?.xhr) {
+          try { fileState.xhr.abort(); } catch (e) { /* ignore */ }
+        }
+        updated.set(fileKey, { ...fileState!, status: "error", error: "Upload cancelled", xhr: undefined });
+        notifications.show("Upload cancelled", { severity: "info", autoHideDuration: 2000 });
+        return { ...prev, files: updated };
+      }
+
+      // Abort all
+      updated.forEach((f, key) => {
+        if (f?.xhr) {
+          try { f.xhr.abort(); } catch (e) { /* ignore */ }
+        }
+        updated.set(key, { ...f, status: "error", error: "Upload cancelled", xhr: undefined });
+      });
+
+      notifications.show("Upload cancelled", { severity: "info", autoHideDuration: 2000 });
+      return { ...prev, files: updated, isUploading: false };
+    });
+  }, [notifications]);
 
   const retryFailedUploads = useCallback(async (): Promise<void> => {
     if (!uploadBatch) return;
