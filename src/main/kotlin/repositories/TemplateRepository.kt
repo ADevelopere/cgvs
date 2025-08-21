@@ -92,6 +92,7 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
                 it[name] = template.name
                 it[description] = template.description
                 it[categoryId] = template.categoryId
+                it[imageFileName] = template.imageFileName
                 it[order] = template.order
                 it[preSuspensionCategoryId] = template.preSuspensionCategoryId
                 it[updatedAt] = now()

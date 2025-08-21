@@ -739,7 +739,7 @@ export type PartialUpdateStudentInput = {
 export type Query = {
   __typename?: 'Query';
   getFileInfo?: Maybe<FileInfo>;
-  getFolderInfo?: Maybe<FolderInfo>;
+  getFolderInfo: FolderInfo;
   /** Get storage statistics */
   getStorageStats: StorageStats;
   /** Check if user is authenticated */
@@ -1058,6 +1058,7 @@ export type UpdateTemplateInput = {
   categoryId: Scalars['Int']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
+  imageFileName?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1073,7 +1074,6 @@ export type UpdateTextTemplateVariableInput = {
 };
 
 export type UploadLocation =
-  | 'PUBLIC'
   | 'TEMPLATE_COVER';
 
 export type User = {
@@ -1168,7 +1168,7 @@ export type GetFolderInfoQueryVariables = Exact<{
 }>;
 
 
-export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo?: { __typename?: 'FolderInfo', created: any, fileCount: number, folderCount: number, lastModified: any, name: string, path: string, totalSize: any } | null };
+export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo: { __typename?: 'FolderInfo', created: any, fileCount: number, folderCount: number, lastModified: any, name: string, path: string, totalSize: any } };
 
 export type GetStorageStatsQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;

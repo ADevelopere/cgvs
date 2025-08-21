@@ -85,7 +85,8 @@ class TemplateService(
             existingTemplate.copy(
                 name = input.name ?: existingTemplate.name,
                 description = input.description ?: existingTemplate.description,
-                categoryId = newCategoryId
+                categoryId = newCategoryId,
+                imageFileName = input.imageFileName ?: existingTemplate.imageFileName,
             )
         )
     }
