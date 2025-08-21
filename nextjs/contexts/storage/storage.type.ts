@@ -72,8 +72,8 @@ export type StorageManagementContextType = {
 
   // Upload actions
   startUpload: (files: File[], location: Graphql.UploadLocation) => Promise<void>;
-  // If fileKey is provided, cancel only that file's upload; otherwise cancel the whole batch
   cancelUpload: (fileKey?: string) => void;
   retryFailedUploads: () => Promise<void>;
+  retryFile: (fileKey: string) => Promise<void>;
   clearUploadBatch: () => void;
 };
