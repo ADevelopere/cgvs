@@ -23,11 +23,13 @@ import {
     SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const BulkActionsBar: React.FC = () => {
     const theme = useTheme();
     const { selectedPaths, clearSelection, remove } = useStorageManagement();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const translations = useAppTranslation("storageTranslations");
 
     const isVisible = selectedPaths.length > 0;
 
@@ -77,7 +79,7 @@ const BulkActionsBar: React.FC = () => {
                         <Stack direction="row" alignItems="center" spacing={2}>
                             <SelectAllIcon />
                             <Typography variant="subtitle1" fontWeight={600}>
-                                {selectedPaths.length} item{selectedPaths.length === 1 ? "" : "s"} selected
+                                {translations.itemsSelected.replace('%{count}', String(selectedPaths.length))}
                             </Typography>
                         </Stack>
 
@@ -97,7 +99,7 @@ const BulkActionsBar: React.FC = () => {
                                     },
                                 }}
                             >
-                                Download
+                                {translations.download}
                             </Button>
 
                             <Button
@@ -114,7 +116,7 @@ const BulkActionsBar: React.FC = () => {
                                     },
                                 }}
                             >
-                                Copy Links
+                                {translations.copyLinks}
                             </Button>
 
                             <Button
@@ -131,7 +133,7 @@ const BulkActionsBar: React.FC = () => {
                                     },
                                 }}
                             >
-                                Delete
+                                {translations.delete}
                             </Button>
 
                             <IconButton
@@ -159,17 +161,16 @@ const BulkActionsBar: React.FC = () => {
                 aria-describedby="delete-dialog-description"
             >
                 <DialogTitle id="delete-dialog-title">
-                    Confirm Bulk Delete
+                    {translations.confirmBulkDelete}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="delete-dialog-description">
-                        Are you sure you want to delete {selectedPaths.length} selected item{selectedPaths.length === 1 ? "" : "s"}? 
-                        This action cannot be undone.
+                        {translations.confirmBulkDeleteMessage.replace('%{count}', String(selectedPaths.length))}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDeleteDialogOpen(false)}>
-                        Cancel
+                        {translations.cancel}
                     </Button>
                     <Button 
                         onClick={handleBulkDelete} 
@@ -177,7 +178,7 @@ const BulkActionsBar: React.FC = () => {
                         variant="contained"
                         autoFocus
                     >
-                        Delete
+                        {translations.delete}
                     </Button>
                 </DialogActions>
             </Dialog>

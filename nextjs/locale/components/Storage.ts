@@ -28,6 +28,13 @@
     uploadFailedForFile: string;
     noResponseText: string;
     internalUploadError: string;
+    itemsSelected: string;
+    download: string;
+    copyLinks: string;
+    delete: string;
+    confirmBulkDelete: string;
+    confirmBulkDeleteMessage: string;
+    cancel: string;
 
 };
 
