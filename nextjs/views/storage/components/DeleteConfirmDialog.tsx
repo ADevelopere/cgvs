@@ -22,6 +22,7 @@ import {
     InsertDriveFile as FileIcon,
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface DeleteConfirmDialogProps {
     open: boolean;
@@ -38,6 +39,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
 }) => {
     const { remove, items } = useStorageManagement();
     const [loading, setLoading] = useState(false);
+    const translations = useAppTranslation("storageTranslations");
 
     const getItemsToDelete = () => {
         return items.filter(item => paths.includes(item.path));
@@ -65,13 +67,13 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
 
     const getDialogTitle = () => {
         if (isMultiple) {
-            return `Delete ${paths.length} Items`;
+            return translations.deleteItems.replace("%{count}", String(paths.length));
         }
         const item = itemsToDelete[0];
         if (item) {
-            return `Delete ${item.__typename === "FolderInfo" ? "Folder" : "File"}`;
+            return item.__typename === "FolderInfo" ? translations.deleteFolder : translations.deleteFile;
         }
-        return "Delete Item";
+        return translations.deleteItem;
     };
 
     const getWarningMessage = () => {
@@ -83,14 +85,14 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
             if (fileCount > 0) {
                 parts.push(`${fileCount} file${fileCount === 1 ? "" : "s"}`);
             }
-            return `You are about to delete ${parts.join(" and ")}. This action cannot be undone.`;
+            return translations.aboutToDelete.replace("%{parts}", parts.join(" and "));
         } else {
             const item = itemsToDelete[0];
             if (item) {
                 const type = item.__typename === "FolderInfo" ? "folder" : "file";
-                return `You are about to delete the ${type} "${item.name}". This action cannot be undone.`;
+                return translations.aboutToDeleteItem.replace("%{type}", type).replace("%{name}", item.name);
             }
-            return "This action cannot be undone.";
+            return translations.cannotBeUndone;
         }
     };
 
@@ -123,7 +125,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
                 {itemsToDelete.length > 0 && (
                     <Box>
                         <Typography variant="subtitle2" gutterBottom>
-                            Items to be deleted:
+                            {translations.itemsToBeDeleted}
                         </Typography>
                         
                         <List dense sx={{ 
@@ -166,7 +168,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
 
                 {folderCount > 0 && (
                     <Alert severity="info" sx={{ mt: 2 }}>
-                        Deleting folders will also delete all their contents.
+                        {translations.deleteFolderWarning}
                     </Alert>
                 )}
             </DialogContent>
@@ -177,7 +179,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
                     disabled={loading}
                     variant="outlined"
                 >
-                    Cancel
+                    {translations.cancel}
                 </Button>
                 <Button
                     onClick={handleDelete}
@@ -186,7 +188,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
                     color="error"
                     autoFocus
                 >
-                    {loading ? "Deleting..." : "Delete"}
+                    {loading ? translations.deleting : translations.delete}
                 </Button>
             </DialogActions>
         </Dialog>

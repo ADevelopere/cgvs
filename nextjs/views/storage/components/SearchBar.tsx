@@ -11,6 +11,7 @@ import {
     Search as SearchIcon,
     Clear as ClearIcon,
 } from "@mui/icons-material";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface SearchBarProps {
     value: string;
@@ -22,11 +23,12 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({
     value,
     onChange,
-    placeholder = "Search...",
+    placeholder,
     debounceMs = 300,
 }) => {
     const [localValue, setLocalValue] = useState(value);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const translations = useAppTranslation("storageTranslations");
 
     // Debounced callback to trigger the actual search
     const debouncedSearch = useCallback(
@@ -82,7 +84,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 value={localValue}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={placeholder}
+                placeholder={placeholder || translations.search}
                 slotProps={{
                     input: {
                         startAdornment: (
@@ -96,7 +98,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                                     size="small"
                                     onClick={handleClear}
                                     edge="end"
-                                    aria-label="clear search"
+                                    aria-label={translations.clearSearch}
                                 >
                                     <ClearIcon />
                                 </IconButton>

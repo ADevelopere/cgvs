@@ -27,6 +27,7 @@ import * as Graphql from "@/graphql/generated/types";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import SearchBar from "./SearchBar";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageToolbar: React.FC = () => {
     const theme = useTheme();
@@ -39,6 +40,7 @@ const StorageToolbar: React.FC = () => {
         search,
         startUpload,
     } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
     
     const { canUpload } = useStorageLocation();
 
@@ -50,13 +52,13 @@ const StorageToolbar: React.FC = () => {
             if (files.length > 0) {
                 startUpload(files)
                     .then(() => {
-                        notifications.show("Upload started successfully", {
+                        notifications.show(translations.uploadStartedSuccessfully, {
                             severity: "success",
                             autoHideDuration: 3000,
                         });
                     })
                     .catch(() => {
-                        notifications.show("Failed to start upload", {
+                        notifications.show(translations.failedToStartUpload, {
                             severity: "error",
                             autoHideDuration: 3000,
                         });
@@ -65,7 +67,7 @@ const StorageToolbar: React.FC = () => {
             // Reset input
             event.target.value = "";
         },
-        [startUpload, notifications],
+        [startUpload, notifications, translations],
     );
 
     const handleFilterChange = (event: SelectChangeEvent<string>) => {
@@ -81,21 +83,21 @@ const StorageToolbar: React.FC = () => {
     };
 
     const fileTypeOptions = [
-        { value: "", label: "All Files" },
-        { value: "IMAGE", label: "Images" },
-        { value: "DOCUMENT", label: "Documents" },
-        { value: "VIDEO", label: "Videos" },
-        { value: "AUDIO", label: "Audio" },
-        { value: "ARCHIVE", label: "Archives" },
-        { value: "OTHER", label: "Other" },
+        { value: "", label: translations.allFiles },
+        { value: "IMAGE", label: translations.images },
+        { value: "DOCUMENT", label: translations.documents },
+        { value: "VIDEO", label: translations.videos },
+        { value: "AUDIO", label: translations.audio },
+        { value: "ARCHIVE", label: translations.archives },
+        { value: "OTHER", label: translations.other },
     ];
 
     const sortOptions = [
-        { value: "", label: "Default" },
-        { value: "NAME", label: "Name" },
-        { value: "SIZE", label: "Size" },
-        { value: "MODIFIED", label: "Modified Date" },
-        { value: "TYPE", label: "File Type" },
+        { value: "", label: translations.default },
+        { value: "NAME", label: translations.name },
+        { value: "SIZE", label: translations.size },
+        { value: "MODIFIED", label: translations.modifiedDate },
+        { value: "TYPE", label: translations.fileType },
     ];
 
     return (
@@ -114,7 +116,7 @@ const StorageToolbar: React.FC = () => {
                 <SearchBar
                     value={params.searchTerm || ""}
                     onChange={search}
-                    placeholder="Search files and folders..."
+                    placeholder={translations.searchFilesAndFolders}
                 />
             </Box>
 
@@ -123,13 +125,13 @@ const StorageToolbar: React.FC = () => {
                 <FormControl size="small" sx={{ minWidth: 120 }}>
                     <InputLabel id="file-type-filter-label">
                         <FilterIcon sx={{ mr: 1, fontSize: 16 }} />
-                        Filter
+                        {translations.filter}
                     </InputLabel>
                     <Select
                         labelId="file-type-filter-label"
                         value={params.fileType || ""}
                         onChange={handleFilterChange}
-                        label="Filter"
+                        label={translations.filter}
                     >
                         {fileTypeOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -142,13 +144,13 @@ const StorageToolbar: React.FC = () => {
                 <FormControl size="small" sx={{ minWidth: 120 }}>
                     <InputLabel id="sort-field-label">
                         <SortIcon sx={{ mr: 1, fontSize: 16 }} />
-                        Sort
+                        {translations.sort}
                     </InputLabel>
                     <Select
                         labelId="sort-field-label"
                         value={params.sortField || ""}
                         onChange={handleSortChange}
-                        label="Sort"
+                        label={translations.sort}
                     >
                         {sortOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -168,11 +170,11 @@ const StorageToolbar: React.FC = () => {
                     disabled={!canUpload}
                     title={
                         canUpload 
-                            ? "Upload files to this location" 
-                            : "Navigate to a storage location to upload files"
+                            ? translations.uploadToLocation 
+                            : translations.navigateToLocationToUpload
                     }
                 >
-                    Upload Files
+                    {translations.uploadFiles}
                     <input
                         type="file"
                         multiple
@@ -186,7 +188,7 @@ const StorageToolbar: React.FC = () => {
                 {selectedPaths.length > 0 && (
                     <Badge badgeContent={selectedPaths.length} color="primary">
                         <Chip
-                            label={`${selectedPaths.length} selected`}
+                            label={translations.selected.replace("{count}", String(selectedPaths.length))}
                             variant="outlined"
                             color="primary"
                             size="small"
@@ -200,11 +202,11 @@ const StorageToolbar: React.FC = () => {
                 <Box sx={{ width: "100%", mt: 1 }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                         <Typography variant="caption" color="text.secondary">
-                            Active filters:
+                            {translations.activeFilters}
                         </Typography>
                         {params.fileType && (
                             <Chip
-                                label={`Type: ${params.fileType}`}
+                                label={translations.typeFilter.replace("{fileType}", params.fileType)}
                                 size="small"
                                 onDelete={() => setFilterType(undefined)}
                                 color="primary"
@@ -213,7 +215,7 @@ const StorageToolbar: React.FC = () => {
                         )}
                         {params.searchTerm && (
                             <Chip
-                                label={`Search: "${params.searchTerm}"`}
+                                label={translations.searchFilter.replace("{searchTerm}", params.searchTerm)}
                                 size="small"
                                 onDelete={() => search("")}
                                 color="primary"

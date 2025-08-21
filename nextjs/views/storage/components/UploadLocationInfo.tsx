@@ -14,10 +14,12 @@ import {
     Upload as UploadIcon,
 } from "@mui/icons-material";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const UploadLocationInfo: React.FC = () => {
     const theme = useTheme();
     const { currentLocationInfo, canUpload, allowedContentTypes } = useStorageLocation();
+    const translations = useAppTranslation("storageTranslations");
 
     if (!canUpload || !currentLocationInfo) {
         return null;
@@ -37,14 +39,14 @@ const UploadLocationInfo: React.FC = () => {
         >
             <Stack spacing={1}>
                 <Typography variant="body2" fontWeight={600}>
-                    Upload Location: {currentLocationInfo.label}
+                    {translations.uploadLocation.replace("{label}", currentLocationInfo.label)}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     {currentLocationInfo.description}
                 </Typography>
                 <Box>
                     <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
-                        Allowed file types:
+                        {translations.allowedFileTypes}
                     </Typography>
                     <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
                         {allowedContentTypes.map((type) => (

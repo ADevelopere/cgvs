@@ -11,9 +11,11 @@ import {
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import FileItem from "./FileItem";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const FileList: React.FC = () => {
     const { items, loading, selectedPaths, error } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
 
     if (loading) {
         return (
@@ -43,7 +45,7 @@ const FileList: React.FC = () => {
     if (items.length === 0) {
         return (
             <Box sx={{ p: 4 }}>
-                <EmptyStateIllustration message="This folder is empty. Upload some files to get started!" />
+                <EmptyStateIllustration message={translations.emptyFolderUpload} />
             </Box>
         );
     }
@@ -61,7 +63,7 @@ const FileList: React.FC = () => {
                         {folders.length > 0 && files.length > 0 && (
                             <Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: "divider" }}>
                                 <Typography variant="subtitle2" color="text.secondary">
-                                    Folders ({folders.length})
+                                    {translations.foldersCount.replace("{count}", String(folders.length))}
                                 </Typography>
                             </Box>
                         )}
@@ -81,7 +83,7 @@ const FileList: React.FC = () => {
                         {folders.length > 0 && (
                             <Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: "divider" }}>
                                 <Typography variant="subtitle2" color="text.secondary">
-                                    Files ({files.length})
+                                    {translations.filesCount.replace("{count}", String(files.length))}
                                 </Typography>
                             </Box>
                         )}

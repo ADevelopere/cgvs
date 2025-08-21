@@ -18,11 +18,13 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { getUploadLocationOptions } from "@/contexts/storage/storage.location";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const LocationGrid: React.FC = () => {
     const theme = useTheme();
     const { navigateTo } = useStorageManagement();
     const locations = getUploadLocationOptions();
+    const translations = useAppTranslation("storageTranslations");
 
     const getLocationIcon = (iconName?: string) => {
         switch (iconName) {
@@ -51,7 +53,7 @@ const LocationGrid: React.FC = () => {
                 ))}
                 {remaining > 0 && (
                     <Chip
-                        label={`+${remaining} more`}
+                        label={translations.remainingMore.replace("{remaining}", String(remaining))}
                         size="small"
                         variant="outlined"
                         color="primary"
@@ -65,7 +67,7 @@ const LocationGrid: React.FC = () => {
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-                Storage Locations
+                {translations.storageLocations}
             </Typography>
             <Grid container spacing={3}>
                 {locations.map((location) => (
@@ -136,7 +138,7 @@ const LocationGrid: React.FC = () => {
                                     color="text.secondary"
                                     sx={{ fontWeight: 500 }}
                                 >
-                                    Allowed file types:
+                                    {translations.allowedFileTypes}
                                 </Typography>
                                 {getContentTypeChips(location.allowedContentTypes)}
                             </CardContent>

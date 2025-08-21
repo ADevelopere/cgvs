@@ -13,9 +13,11 @@ import {
     SelectChangeEvent,
 } from "@mui/material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const PaginationControls: React.FC = () => {
     const { pagination, params, setPage, setLimit } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
 
     if (!pagination) {
         return null;
@@ -55,19 +57,22 @@ const PaginationControls: React.FC = () => {
         >
             {/* Items info */}
             <Typography variant="body2" color="text.secondary">
-                Showing {startItem}-{endItem} of {pagination.totalCount} items
+                {translations.showingItems
+                    .replace("{startItem}", String(startItem))
+                    .replace("{endItem}", String(endItem))
+                    .replace("{totalCount}", String(pagination.totalCount))}
             </Typography>
 
             {/* Pagination and Page Size Controls */}
             <Stack direction="row" alignItems="center" spacing={2}>
                 {/* Page Size Selector */}
                 <FormControl size="small" sx={{ minWidth: 100 }}>
-                    <InputLabel id="page-size-label">Per page</InputLabel>
+                    <InputLabel id="page-size-label">{translations.perPage}</InputLabel>
                     <Select
                         labelId="page-size-label"
                         value={params.limit}
                         onChange={handleLimitChange}
-                        label="Per page"
+                        label={translations.perPage}
                     >
                         <MenuItem value={10}>10</MenuItem>
                         <MenuItem value={25}>25</MenuItem>

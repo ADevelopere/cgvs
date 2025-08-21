@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import UploadItem from "./UploadItem";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const UploadList: React.FC = () => {
     const {
@@ -31,6 +32,7 @@ const UploadList: React.FC = () => {
         retryFailedUploads,
         clearUploadBatch,
     } = useStorageManagement();
+    const translations = useAppTranslation("storageTranslations");
 
     const [expanded, setExpanded] = React.useState(true);
 
@@ -65,12 +67,14 @@ const UploadList: React.FC = () => {
 
     const getStatusSummary = () => {
         if (isCompleted && !hasFailures) {
-            return `All ${uploadBatch.totalCount} files uploaded successfully`;
+            return translations.allFilesUploaded.replace("{totalCount}", String(uploadBatch.totalCount));
         }
         if (isCompleted && hasFailures) {
-            return `${uploadBatch.completedCount - failedFiles.length} succeeded, ${failedFiles.length} failed`;
+            return translations.uploadStatus
+                .replace("{succeededCount}", String(uploadBatch.completedCount - failedFiles.length))
+                .replace("{failedCount}", String(failedFiles.length));
         }
-        return `Uploading ${inProgressCount} files...`;
+        return translations.uploadingFiles.replace("{inProgressCount}", String(inProgressCount));
     };
 
     return (
@@ -103,7 +107,7 @@ const UploadList: React.FC = () => {
                 <Stack direction="row" alignItems="center" spacing={1}>
                     <UploadIcon />
                     <Typography variant="subtitle1" fontWeight={600}>
-                        File Upload
+                        {translations.fileUpload}
                     </Typography>
                 </Stack>
 
@@ -163,7 +167,7 @@ const UploadList: React.FC = () => {
                                 onClick={handleCancelAll}
                                 color="error"
                             >
-                                Cancel All
+                                {translations.cancelAll}
                             </Button>
                         )}
                         {hasFailures && isCompleted && (
@@ -174,7 +178,7 @@ const UploadList: React.FC = () => {
                                 onClick={handleRetryFailed}
                                 color="primary"
                             >
-                                Retry Failed
+                                {translations.retryFailed}
                             </Button>
                         )}
                     </Stack>
