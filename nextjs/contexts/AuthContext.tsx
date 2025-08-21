@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setToken(null);
             setIsAuthenticated(false);
             clearAuthToken();
-            await apolloClient.resetStore();
+            apolloClient.resetStore();
         }
     }, [logoutMutation, apolloClient]);
 

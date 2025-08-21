@@ -21,14 +21,12 @@ import {
 import { STORAGE_DEFAULT_PARAMS } from "./storage.constant";
 import { inferContentType, getFileKey } from "./storage.util";
 import { 
-    getLocationByPath, 
     getUploadLocationForPath, 
-    isValidUploadLocation,
     getStoragePath,
     getDisplayPath,
-    isPublicPath,
 } from "./storage.location";
 import * as Graphql from "@/graphql/generated/types";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageManagementContext = createContext<
     StorageManagementContextType | undefined
@@ -48,6 +46,8 @@ export const StorageManagementProvider: React.FC<{
 }> = ({ children }) => {
     const gql = useStorageGraphQL();
     const notifications = useNotifications();
+    const translations = useAppTranslation("storageTranslations");
+
 
     const [items, setItems] = useState<StorageItem[]>([]);
     const [stats, setStats] = useState<Graphql.StorageStats | undefined>(
@@ -76,8 +76,6 @@ export const StorageManagementProvider: React.FC<{
 
     const navigateTo = useCallback(
         (path: string) => {
-            // Convert display path to storage path for the backend
-            const storagePath = getStoragePath(path);
             setParams({ path, offset: 0 });
             setSelectedPaths([]);
         },
@@ -167,9 +165,9 @@ export const StorageManagementProvider: React.FC<{
                 hasMore: list.hasMore,
             });
         } catch (e) {
-            console.error("Failed to list files", e);
-            setError("Failed to list files");
-            notifications.show("Failed to list files", {
+            console.error(translations.failedListFiles);
+            setError(translations.failedListFiles);
+            notifications.show(translations.failedListFiles, {
                 severity: "error",
                 autoHideDuration: 3000,
             });
@@ -196,7 +194,7 @@ export const StorageManagementProvider: React.FC<{
             });
             setStats(statsRes.getStorageStats);
         } catch (e) {
-            console.warn("Failed to fetch storage stats", e);
+            console.warn(translations.failedFetchStorageStats, e);
         }
     }, [gql, params.path]);
 
@@ -234,6 +232,68 @@ export const StorageManagementProvider: React.FC<{
                     return { ...prev, files: updated };
                 });
 
+                // Before generating a signed URL, check whether a file with the
+                // same name already exists at the target location. This prevents
+                // unnecessary signed URL generation and provides faster feedback
+                // to the user.
+                try {
+                    const storageTargetParent = getStoragePath(targetPath);
+                    const destinationStoragePath = storageTargetParent
+                        ? `${storageTargetParent}/${file.name}`
+                        : file.name;
+
+                    // Ask the backend for any items matching the file name in
+                    // the target directory. We use `searchTerm` to narrow the
+                    // results and then verify exact path match to avoid
+                    // substring collisions.
+                    const listResForCheck = await gql.listFilesQuery({
+                        input: {
+                            path: storageTargetParent,
+                            limit: 10,
+                            offset: 0,
+                            searchTerm: file.name,
+                        },
+                    });
+
+                    const existingItems = listResForCheck.listFiles?.items || [];
+                    const conflict = existingItems.some((it: any) => it.path === destinationStoragePath || it.name === file.name);
+
+                    if (conflict) {
+                        // Mark this file as errored in the upload batch and
+                        // notify the user. Do not proceed to request a signed
+                        // URL.
+                        setUploadBatch((prev) => {
+                            if (!prev) return prev;
+                            const updated = new Map(prev.files);
+                            const existing = updated.get(fileKey);
+                            if (!existing) return prev;
+                            updated.set(fileKey, {
+                                ...existing,
+                                status: "error",
+                                error: translations.fileAlreadyExists,
+                            });
+                            return { ...prev, files: updated };
+                        });
+
+                            try {
+                                notifications.show(
+                                    `${file.name} — ${translations.fileAlreadyExists}`,
+                                    { severity: "warning", autoHideDuration: 4000 },
+                                );
+                            } catch (e) {
+                                /* ignore */
+                            }
+
+                        // Short-circuit the upload for this file
+                        return;
+                    }
+                } catch (err) {
+                    // If the existence check fails for some reason, log and
+                    // continue to the signed URL step to avoid blocking
+                    // uploads unnecessarily.
+                    console.warn("Failed to verify existing files before upload:", err);
+                }
+
                 // Step 1: Get signed URL
                 const signedUrlRes = await gql.generateUploadSignedUrlMutation({
                     input: {
@@ -245,7 +305,7 @@ export const StorageManagementProvider: React.FC<{
 
                 const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
                 if (!signedUrl) {
-                    throw new Error("Failed to generate signed URL");
+                    throw new Error(translations.failedGenerateSignedUrl);
                 }
 
                 // Update with signed URL
@@ -362,9 +422,9 @@ export const StorageManagementProvider: React.FC<{
                                 currentXhr.readyState !== XMLHttpRequest.DONE ||
                                 currentXhr.status === 0
                             ) {
-                                handleError("Upload aborted");
+                                handleError(translations.uploadCancelled);
                                 uploadXhrsRef.current.delete(fileKey);
-                                reject(new Error("Upload aborted"));
+                                reject(new Error(translations.uploadCancelled));
                                 return;
                             }
 
@@ -372,13 +432,14 @@ export const StorageManagementProvider: React.FC<{
                                 handleSuccess();
                                 resolve();
                             } else {
-                                handleError(`Upload failed with status ${currentXhr.status}`);
+                                const errorMsg = translations.uploadFailedWithStatus.replace("%{status}", String(currentXhr.status));
+                                handleError(errorMsg);
                                 uploadXhrsRef.current.delete(fileKey);
-                                reject(new Error(`Upload failed with status ${currentXhr.status}`));
+                                reject(new Error(errorMsg));
                             }
                         } catch (err) {
                             // Defensive fallback
-                            handleError("Upload completion handler error");
+                            handleError(translations.uploadFailed);
                             uploadXhrsRef.current.delete(fileKey);
                             reject(err instanceof Error ? err : new Error(String(err)));
                         }
@@ -390,17 +451,17 @@ export const StorageManagementProvider: React.FC<{
                         const resp = currentXhr?.responseText || "";
 
                         // Base message
-                        let errorMsg = resp || "Network error during upload";
+                        let errorMsg = resp || translations.networkErrorDuringUpload;
 
                         // When status is 0 or there is no response body, it's commonly a CORS/preflight
                         // failure in the browser. Provide a helpful hint for new developers and show
                         // a notification so the issue is easier to diagnose.
                         if (status === 0 || !resp) {
-                            const hint = `Possible CORS/preflight failure. Ensure the GCS bucket has a CORS policy allowing PUT from your origin. See /cors/README.md and run: gcloud storage buckets update gs://cgvs --cors-file=./cors/cors-config.json`;
+                            const hint = translations.uploadBlockedByCors;
                             errorMsg = `${errorMsg} — ${hint}`;
                             try {
                                 notifications.show(
-                                    "Upload blocked by CORS/preflight. See cors/README.md for setup steps.",
+                                    translations.uploadBlockedByCors,
                                     { severity: "error", autoHideDuration: 8000 },
                                 );
                             } catch (e) {
@@ -408,7 +469,12 @@ export const StorageManagementProvider: React.FC<{
                             }
                         }
 
-                        const detailed = `Upload failed for ${file.name}. Status: ${status} ${statusText}. Response: ${resp || "No response text."}`;
+                        const detailed = translations.uploadFailedForFile
+                            .replace("%{fileName}", file.name)
+                            .replace("%{status}", String(status))
+                            .replace("%{statusText}", statusText)
+                            .replace("%{resp}", resp || translations.noResponseText);
+
                         console.error(detailed);
 
                         handleError(errorMsg);
@@ -417,9 +483,9 @@ export const StorageManagementProvider: React.FC<{
                     };
 
                     const onAbort = () => {
-                        handleError("Upload aborted");
+                        handleError(translations.uploadCancelled);
                         uploadXhrsRef.current.delete(fileKey);
-                        reject(new Error("Upload aborted"));
+                        reject(new Error(translations.uploadCancelled));
                     };
 
                     loadListener = onLoad;
@@ -431,7 +497,7 @@ export const StorageManagementProvider: React.FC<{
                         currentXhr.addEventListener("error", onErr);
                         currentXhr.addEventListener("abort", onAbort);
                     } else {
-                        reject(new Error("Internal upload error"));
+                        reject(new Error(translations.internalUploadError));
                     }
                 });
             } catch (error) {
@@ -444,7 +510,7 @@ export const StorageManagementProvider: React.FC<{
                     updated.set(fileKey, {
                         ...existing,
                         status: "error",
-                        error: error instanceof Error ? error.message : "Upload failed",
+                        error: error instanceof Error ? error.message : translations.uploadFailed,
                         xhr: undefined,
                     });
                     return { ...prev, files: updated };
@@ -477,7 +543,7 @@ export const StorageManagementProvider: React.FC<{
                 });
                 const ok = !!res.data?.renameFile.success;
                 if (ok) {
-                    notifications.show("Renamed successfully", {
+                    notifications.show(translations.renameSuccess, {
                         severity: "success",
                         autoHideDuration: 2000,
                     });
@@ -487,7 +553,7 @@ export const StorageManagementProvider: React.FC<{
             } catch (e) {
                 console.error("Rename failed", e);
             }
-            notifications.show("Failed to rename", {
+            notifications.show(translations.failedRename, {
                 severity: "error",
                 autoHideDuration: 3000,
             });
@@ -505,7 +571,7 @@ export const StorageManagementProvider: React.FC<{
                 );
                 const allOk = results.every((r) => r.data?.deleteFile.success);
                 if (allOk) {
-                    notifications.show("Deleted successfully", {
+                    notifications.show(translations.deleteSuccess, {
                         severity: "success",
                         autoHideDuration: 2000,
                     });
@@ -516,7 +582,7 @@ export const StorageManagementProvider: React.FC<{
             } catch (e) {
                 console.error("Delete failed", e);
             }
-            notifications.show("Failed to delete", {
+            notifications.show(translations.failedDelete, {
                 severity: "error",
                 autoHideDuration: 3000,
             });
@@ -539,7 +605,7 @@ export const StorageManagementProvider: React.FC<{
             
             if (!location) {
                 notifications.show(
-                    `Upload not allowed in this location. Please navigate to a valid upload location.`,
+                    translations.uploadNotAllowed,
                     { severity: "error", autoHideDuration: 5000 }
                 );
                 return;
@@ -594,7 +660,7 @@ export const StorageManagementProvider: React.FC<{
                         setTimeout(() => {
                             if (successCount > 0) {
                                 notifications.show(
-                                    `${successCount} file(s) uploaded successfully`,
+                                     translations.uploadSuccessCount.replace("%{count}", String(successCount)),
                                     {
                                         severity: "success",
                                         autoHideDuration: 3000,
@@ -604,7 +670,7 @@ export const StorageManagementProvider: React.FC<{
                             }
                             if (errorCount > 0) {
                                 notifications.show(
-                                    `${errorCount} file(s) failed to upload`,
+                                    translations.uploadFailedCount.replace("%{count}", String(errorCount)),
                                     {
                                         severity: "warning",
                                         autoHideDuration: 5000,
@@ -618,7 +684,7 @@ export const StorageManagementProvider: React.FC<{
                 });
             } catch (error) {
                 console.error("Upload batch failed:", error);
-                notifications.show("Upload failed", {
+                notifications.show(translations.uploadFailed, {
                     severity: "error",
                     autoHideDuration: 3000,
                 });
@@ -658,10 +724,10 @@ export const StorageManagementProvider: React.FC<{
                     updated.set(fileKey, {
                         ...fileState!,
                         status: "error",
-                        error: "Upload cancelled",
+                        error: translations.uploadCancelled,
                         xhr: undefined,
                     });
-                    notifications.show("Upload cancelled", {
+                    notifications.show(translations.uploadCancelled, {
                         severity: "info",
                         autoHideDuration: 2000,
                     });
@@ -684,16 +750,16 @@ export const StorageManagementProvider: React.FC<{
                 if (!prev) return prev;
                 const updated = new Map(prev.files);
 
-                updated.forEach((f, key) => {
+                    updated.forEach((f, key) => {
                     updated.set(key, {
                         ...f,
                         status: "error",
-                        error: "Upload cancelled",
+                        error: translations.uploadCancelled,
                         xhr: undefined,
                     });
                 });
 
-                notifications.show("Upload cancelled", {
+                notifications.show(translations.uploadCancelled, {
                     severity: "info",
                     autoHideDuration: 2000,
                 });
@@ -745,7 +811,7 @@ export const StorageManagementProvider: React.FC<{
             .map((f) => f.file);
 
         if (failedFiles.length === 0) {
-            notifications.show("No failed uploads to retry", {
+            notifications.show(translations.noFailedUploads, {
                 severity: "info",
                 autoHideDuration: 2000,
             });
@@ -776,13 +842,13 @@ export const StorageManagementProvider: React.FC<{
                     uploadSingleFile(file, uploadBatch.location, uploadBatch.targetPath),
                 ),
             );
-            notifications.show("Retry completed", {
+            notifications.show(translations.retryCompleted, {
                 severity: "success",
                 autoHideDuration: 2000,
             });
         } catch (error) {
             console.error("Retry failed:", error);
-            notifications.show("Retry failed", {
+            notifications.show(translations.retryFailed, {
                 severity: "error",
                 autoHideDuration: 3000,
             });
