@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
   Popover,
+  type SelectChangeEvent,
 } from "@mui/material";
 import {
   type FilterClause,
@@ -61,7 +62,7 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
   }, [activeFilter, open]);
 
   const handleOperationChange = (
-    event: React.ChangeEvent<{ value: unknown }>
+    event: SelectChangeEvent<TextFilterOperation>,
   ) => {
     const newOperation = event.target.value as TextFilterOperation;
     setOperation(newOperation);
@@ -136,7 +137,7 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
           <Select
             labelId={`${columnId}-operation-label`}
             value={operation}
-            onChange={handleOperationChange as any}
+            onChange={handleOperationChange}
             label="Operation"
             size="small"
           >

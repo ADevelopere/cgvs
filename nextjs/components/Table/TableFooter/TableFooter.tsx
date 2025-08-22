@@ -1,10 +1,11 @@
-import type React from "react";
 import { useTheme } from "@mui/material/styles";
 import { CircularProgress, TablePagination } from "@mui/material";
+import type React from "react";
+import { useCallback, useMemo } from "react";
+import { useTableLocale } from "@/locale/table/TableLocaleContext";
+import { useTableColumnContext } from "../Table/TableColumnContext";
 import { useTableContext } from "../Table/TableContext";
 import { useTableRowsContext } from "../Table/TableRowsContext";
-import { useTableColumnContext } from "../Table/TableColumnContext";
-import { useTableLocale } from "@/locale/table/TableLocaleContext";
 
 interface TableFooterProps {
   loadedRows?: number;
@@ -28,27 +29,63 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
     useTableContext();
 
   // Handle page change (MUI uses 0-indexed pages, our API uses 1-indexed)
-  const handlePageChange = (event: unknown, newPage: number) => {
-    if (onPageChange) {
-      onPageChange(newPage + 1);
-    }
-  };
+  const handlePageChange = useCallback(
+    (_event: unknown, newPage: number) => {
+      if (onPageChange) {
+        onPageChange(newPage + 1);
+      }
+    },
+    [onPageChange]
+  );
 
   // Handle rows per page change
-  const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (onRowsPerPageChange) {
-      onRowsPerPageChange(Number.parseInt(event.target.value, 10));
-    }
-  };
-  const tfStyle = {
-    padding: theme.spacing(2),
-    textAlign: "left" as const,
-    borderTop: `2px solid ${theme.palette.divider}`,
-    color: theme.palette.text.primary,
-    backgroundColor: theme.palette.background.paper,
-  };
+  const handleRowsPerPageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (onRowsPerPageChange) {
+        onRowsPerPageChange(Number.parseInt(event.target.value, 10));
+      }
+    },
+    [onRowsPerPageChange]
+  );
+
+  const tfStyle = useMemo(
+    () => ({
+      padding: theme.spacing(2),
+      textAlign: "left" as const,
+      borderTop: `2px solid ${theme.palette.divider}`,
+      color: theme.palette.text.primary,
+      backgroundColor: theme.palette.background.paper,
+    }),
+    [theme]
+  );
+
+  const labelDisplayedRows = useCallback(
+    ({ from, to, count }: { from: number; to: number; count: number }) =>
+      strings.pagination.displayedRows(
+        from,
+        to,
+        typeof count === "number" ? count : to
+      ),
+    [strings]
+  );
+
+  const getItemAriaLabel = useCallback(
+    (type: "first" | "last" | "next" | "previous") => {
+      switch (type) {
+        case "first":
+          return strings.pagination.firstPage;
+        case "last":
+          return strings.pagination.lastPage;
+        case "next":
+          return strings.pagination.nextPage;
+        case "previous":
+          return strings.pagination.previousPage;
+        default:
+          return "";
+      }
+    },
+    [strings]
+  );
 
   return (
     <div style={tfStyle}>
@@ -63,27 +100,8 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
           labelRowsPerPage={strings.pagination.rowsPerPage}
-          labelDisplayedRows={({ from, to, count }) =>
-            strings.pagination.displayedRows(
-              from,
-              to,
-              typeof count === "number" ? count : to
-            )
-          }
-          getItemAriaLabel={(type) => {
-            switch (type) {
-              case "first":
-                return strings.pagination.firstPage;
-              case "last":
-                return strings.pagination.lastPage;
-              case "next":
-                return strings.pagination.nextPage;
-              case "previous":
-                return strings.pagination.previousPage;
-              default:
-                return "";
-            }
-          }}
+          labelDisplayedRows={labelDisplayedRows}
+          getItemAriaLabel={getItemAriaLabel}
         />
       ) : (
         // Render standard footer when not using pagination
@@ -94,16 +112,17 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
             alignItems: "center",
           }}
         >
-          {/* <span>
+          <span>
             {rowSelectionEnabled && selectedRowIds.length > 0 ? (
               <strong style={{ color: theme.palette.primary.main }}>
-                `${selectedRowIds.length} $
-                {selectedRowIds.length === 1 ? "row" : "rows"} selected`
+                {`${selectedRowIds.length} ${
+                  selectedRowIds.length === 1 ? "row" : "rows"
+                } selected`}
               </strong>
             ) : (
-              `${visibleColumns.length} visibleColumns`
+              `${loadedRows} of ${totalRows} rows | ${visibleColumns.length} columns visible`
             )}
-          </span> */}
+          </span>
           <span>
             {isLoading && (
               <>

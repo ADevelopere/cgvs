@@ -32,6 +32,7 @@ export interface ColumnHeaderProps {
 const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     column,
     onOptionsClick,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onPopoverFilterIconClick,
     onTextFilterIconClick,
     isPinned,
@@ -41,7 +42,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         pinnedLeftStyle,
         pinnedRightStyle,
         resizeColumn,
-        setColumnWidth,
         columnWidths,
     } = useTableColumnContext();
     const sortDirection = useMemo(
@@ -49,7 +49,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         [column.id, getSortDirection],
     );
 
-    const columnWidth = useMemo(() => columnWidths[column.id], [columnWidths]);
+    const columnWidth = useMemo(() => columnWidths[column.id], [column.id, columnWidths]);
     if (column.id === "status") {
         console.log(
             "ColumnHeaderCell column: ",
@@ -128,10 +128,11 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
             document.addEventListener("mouseup", handleResizeEnd);
             e.preventDefault();
         },
-        [column.id, resizeColumn, columnWidth],
+        [columnWidth, theme.direction, resizeColumn, column.id],
     );
 
     // Handle filter input change
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleFilterInputChange = useCallback(
         (columnId: string, value: string) => {
             setTempFilterValue(value);
@@ -154,7 +155,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                 columnId,
             );
         },
-        [column.id, filter, tempFilterValue],
+        [filter, tempFilterValue],
     );
 
     // Handle clear filter
@@ -167,14 +168,16 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     );
 
     // Handle key down in filter input
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
             if (e.key === "Enter") {
                 handleApplyFilter(column.id);
             } else if (e.key === "Escape") {
+                handleClearFilter(column.id);
             }
         },
-        [column.id, handleApplyFilter],
+        [column.id, handleApplyFilter, handleClearFilter],
     );
 
     // Initialize filter value from active filter
@@ -202,7 +205,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                 onTextFilterIconClick(e, column.id); // This will be the date filter handler
             }
         },
-        [column, onTextFilterIconClick, onPopoverFilterIconClick],
+        [column, onTextFilterIconClick],
     );
 
     // Get the appropriate filter icon color

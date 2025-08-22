@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
   Popover,
+  SelectChangeEvent,
 } from "@mui/material";
 import {
   type FilterClause,
@@ -78,9 +79,7 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     setError(null);
   }, [activeFilter, open]);
 
-  const handleOperationChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  const handleOperationChange = useCallback((event: SelectChangeEvent) => {
     const newOperation = event.target.value as NumberFilterOperation;
     setOperation(newOperation);
 
@@ -90,14 +89,14 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     }
 
     setError(null);
-  };
+  }, []);
 
-  const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleValueChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     setError(null);
-  };
+  }, []);
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     // Validate input for operations that require a value
     if (operationRequiresValue(operation)) {
       if (!value.trim()) {
@@ -121,22 +120,22 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
 
     applyNumberFilter(filterClause);
     onClose();
-  };
+  }, [applyNumberFilter, columnId, onClose, operation, value]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     clearFilter(columnId);
     onClose();
-  };
+  }, [clearFilter, columnId, onClose]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleApply();
     } else if (e.key === "Escape") {
       onClose();
     }
-  };
+  }, [handleApply, onClose]);
 
-  const valueRequired = operationRequiresValue(operation);
+  const valueRequired = useMemo(() => operationRequiresValue(operation), [operation]);
 
   return (
     <Popover
@@ -164,7 +163,7 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
           <Select
             labelId={`${columnId}-operation-label`}
             value={operation}
-            onChange={handleOperationChange as any}
+            onChange={handleOperationChange}
             label={strings.filter.operation}
             size="small"
           >

@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
   Popover,
+  SelectChangeEvent,
 } from "@mui/material";
 import {
   type FilterClause,
@@ -52,6 +53,15 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
 }) => {
   const { applyDateFilter, clearFilter } =
     useTableDataContext();
+  // Helper function to format date for input field
+  const formatDateForInput = useCallback((date: string | Date | null): string => {
+    if (!date) return "";
+
+    const dateObj = date instanceof Date ? date : new Date(date);
+    if (isNaN(dateObj.getTime())) return "";
+
+    return dateObj.toISOString().split("T")[0];
+  }, []);
   // Initialize state with active filter or defaults
   const [operation, setOperation] = useState<DateFilterOperation>(
     activeFilter?.operation || DateFilterOperation.IS
@@ -64,15 +74,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
   );
   const [error, setError] = useState<string | null>(null);
 
-  // Helper function to format date for input field
-  function formatDateForInput(date: string | Date | null): string {
-    if (!date) return "";
 
-    const dateObj = date instanceof Date ? date : new Date(date);
-    if (isNaN(dateObj.getTime())) return "";
-
-    return dateObj.toISOString().split("T")[0];
-  }
 
   // Update state when active filter changes
   useEffect(() => {
@@ -92,11 +94,9 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
       setToDate("");
     }
     setError(null);
-  }, [activeFilter, open]);
+  }, [activeFilter, open, formatDateForInput]);
 
-  const handleOperationChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  const handleOperationChange = useCallback((event: SelectChangeEvent) => {
     const newOperation = event.target.value as DateFilterOperation;
     setOperation(newOperation);
 
@@ -107,19 +107,19 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     }
 
     setError(null);
-  };
+  }, []);
 
-  const handleFromDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFromDateChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setFromDate(event.target.value);
     setError(null);
-  };
+  }, []);
 
-  const handleToDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleToDateChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setToDate(event.target.value);
     setError(null);
-  };
+  }, []);
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     // Validate input for operations that require values
     if (operationRequiresValue(operation)) {
       if (operation === DateFilterOperation.BETWEEN) {
@@ -147,24 +147,24 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
 
     applyDateFilter(filterClause);
     onClose();
-  };
+  }, [applyDateFilter, columnId, fromDate, onClose, operation, toDate]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     clearFilter(columnId);
     onClose();
-  };
+  }, [clearFilter, columnId, onClose]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleApply();
     } else if (e.key === "Escape") {
       onClose();
     }
-  };
+  }, [handleApply, onClose]);
 
-  const valueRequired = operationRequiresValue(operation);
-  const showBothDates = operation === DateFilterOperation.BETWEEN;
-  const showSingleDate = valueRequired && !showBothDates;
+  const valueRequired = useMemo(() => operationRequiresValue(operation), [operation]);
+  const showBothDates = useMemo(() => operation === DateFilterOperation.BETWEEN, [operation]);
+  const showSingleDate = useMemo(() => valueRequired && !showBothDates, [valueRequired, showBothDates]);
 
   return (
     <Popover
@@ -190,7 +190,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
           <Select
             labelId={`${columnId}-operation-label`}
             value={operation}
-            onChange={handleOperationChange as any}
+            onChange={handleOperationChange}
             label="Operation"
             size="small"
           >
@@ -208,7 +208,9 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
             size="small"
             label="Date"
             type="date"
-            InputLabelProps={{ shrink: true }}
+            slotProps={{
+              inputLabel: { shrink: true },
+            }}
             value={fromDate}
             onChange={handleFromDateChange}
             onKeyDown={handleKeyDown}
@@ -226,8 +228,10 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
               variant="outlined"
               size="small"
               label="From Date"
-              type="date"
-              InputLabelProps={{ shrink: true }}
+              type="date" // Use type="date" for native date picker
+              slotProps={{
+                inputLabel: { shrink: true },
+              }}
               value={fromDate}
               onChange={handleFromDateChange}
               onKeyDown={handleKeyDown}
@@ -241,8 +245,10 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
               variant="outlined"
               size="small"
               label="To Date"
-              type="date"
-              InputLabelProps={{ shrink: true }}
+              type="date" // Use type="date" for native date picker
+              slotProps={{
+                inputLabel: { shrink: true },
+              }}
               value={toDate}
               onChange={handleToDateChange}
               onKeyDown={handleKeyDown}

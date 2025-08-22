@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Search } from "lucide-react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -10,10 +11,12 @@ import Autocomplete from "@mui/material/Autocomplete";
 import IconButton from "@mui/material/IconButton";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import type { AutocompleteChangeReason } from "@mui/material/Autocomplete";
 import { useAppTheme } from "@/contexts/ThemeContext";
 // Base interface for tree items with required id
 export interface BaseTreeItem {
     id: string | number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
 
@@ -33,30 +36,30 @@ export function TreeView<T extends BaseTreeItem>({
     selectedItemId,
     itemHeight,
     itemRenderer,
-    className,
     childrenKey = "children",
     labelKey = "label",
     header,
     noItemsMessage,
     searchText,
     style,
-}: {
+}: Readonly<{
     items: T[];
     onSelectItem?: (item: T) => void;
     selectedItemId?: string;
     itemHeight?: number;
     itemRenderer?: ItemRenderer<T>;
-    className?: string;
     childrenKey?: string;
     labelKey?: string;
     header?: string;
     noItemsMessage: string;
     searchText: string;
     style?: React.CSSProperties;
-}) {
+}>) {
     const { isRtl } = useAppTheme();
 
-    const [expandedItems, setExpandedItems] = useState<Set<string | number>>(new Set());
+    const [expandedItems, setExpandedItems] = useState<Set<string | number>>(
+        new Set(),
+    );
     const [searchTerm, setSearchTerm] = useState("");
 
     // Function to toggle expand/collapse
@@ -172,7 +175,10 @@ export function TreeView<T extends BaseTreeItem>({
 
         const itemsToExpand = new Set<string | number>();
 
-        const findAndExpandParents = (items: T[], parentIds: (string | number)[] = []) => {
+        const findAndExpandParents = (
+            items: T[],
+            parentIds: (string | number)[] = [],
+        ) => {
             items.forEach((item) => {
                 const currentPath = [...parentIds, item.id];
 
@@ -198,45 +204,52 @@ export function TreeView<T extends BaseTreeItem>({
 
     // Update the findParents function to use childrenKey
 
-    const handleAutocompleteChange = (
-        _event: React.SyntheticEvent,
-        value: T | null,
-    ) => {
-        if (value) {
-            const itemLabel = value[labelKey] || "";
-            setSearchTerm(typeof itemLabel === "string" ? itemLabel : "");
+    // Refactored to use useCallback and match Autocomplete onChange signature
+    const handleAutocompleteChange = useCallback(
+        (
+            _event: React.SyntheticEvent,
+            value: T | string | null,
+            _reason: AutocompleteChangeReason,
+        ) => {
+            if (value && typeof value !== "string") {
+                const itemLabel = value[labelKey] || "";
+                setSearchTerm(typeof itemLabel === "string" ? itemLabel : "");
 
-            // Find and expand all parent nodes
-            const findParents = (
-                items: T[],
-                targetId: string | number,
-                path: (string | number)[] = [],
-            ): (string | number)[] | null => {
-                for (const item of items) {
-                    if (item.id === targetId) {
-                        return path;
+                // Find and expand all parent nodes
+                const findParents = (
+                    items: T[],
+                    targetId: string | number,
+                    path: (string | number)[] = [],
+                ): (string | number)[] | null => {
+                    for (const item of items) {
+                        if (item.id === targetId) {
+                            return path;
+                        }
+
+                        const children = item[childrenKey] as T[] | undefined;
+                        if (children) {
+                            const result = findParents(children, targetId, [
+                                ...path,
+                                item.id,
+                            ]);
+                            if (result) return result;
+                        }
                     }
 
-                    const children = item[childrenKey] as T[] | undefined;
-                    if (children) {
-                        const result = findParents(children, targetId, [
-                            ...path,
-                            item.id,
-                        ]);
-                        if (result) return result;
-                    }
+                    return null;
+                };
+
+                const parents = findParents(items, value.id);
+                if (parents) {
+                    setExpandedItems((prev) =>
+                        new Set([...prev, ...parents, value.id]),
+                    );
+                    onSelectItem?.(value);
                 }
-
-                return null;
-            };
-
-            const parents = findParents(items, value.id);
-            if (parents) {
-                setExpandedItems((prev) => new Set([...prev, ...parents]));
-                onSelectItem?.(value);
             }
-        }
-    };
+        },
+        [items, labelKey, childrenKey, onSelectItem],
+    );
 
     // Recursive component to render tree items
     const renderTreeItems = (items: T[], level = 0) => {
@@ -362,7 +375,6 @@ export function TreeView<T extends BaseTreeItem>({
                     onInputChange={(_event, newValue) =>
                         setSearchTerm(newValue)
                     }
-                    // @ts-ignore
                     onChange={handleAutocompleteChange}
                     renderInput={(params) => (
                         <TextField

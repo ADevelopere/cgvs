@@ -2,13 +2,12 @@ import type React from "react";
 import { useCallback } from "react";
 import { CircularProgress, Box, useTheme } from "@mui/material";
 import DataRow from "./DataRow";
-import type { DataRowProps } from "./DataRow";
-import { useTableColumnContext } from "../Table/TableColumnContext";
 import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableContext } from "../Table/TableContext";
 import { PaginationInfo } from "@/graphql/generated/types";
 
 interface NewTableBodyProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any[];
   height: number;
   width: number;
@@ -25,19 +24,9 @@ const TableBody: React.FC<NewTableBodyProps> = ({
   paginationInfo,
   indexColWidth,
 }) => {
-  const {
-    visibleColumns: columns,
-    columnWidths,
-    pinnedLeftStyle,
-    pinnedRightStyle,
-    pinnedColumns,
-  } = useTableColumnContext();
   const { isLoading } = useTableContext();
   const {
-    getRowStyle,
     rowHeights,
-    rowSelectionEnabled,
-    selectedRowIds,
     loadMoreRowsIfNeeded,
     resizeRowHeight,
   } = useTableRowsContext();
@@ -97,12 +86,11 @@ const TableBody: React.FC<NewTableBodyProps> = ({
             key={item.id}
             rowData={item}
             height={rowHeights[item.id] || 50}
-            width={width - 20}
             onRowResize={(rowId, newHeight) => {
               resizeRowHeight(rowId, newHeight);
             }}
             virtualIndex={index}
-            globalIndex={globalIndex as DataRowProps['globalIndex']} // Ensure type compatibility
+            globalIndex={globalIndex} // Ensure type compatibility
             indexColWidth={indexColWidth} // Pass indexColWidth to DataRow
           />
         );
