@@ -16,5 +16,3 @@ export { default as StorageToolbar } from "./StorageToolbar";
 export { default as UploadItem } from "./UploadItem";
 export { default as UploadList } from "./UploadList";
 export { default as UploadLocationInfo } from "./UploadLocationInfo";
-export { default as FileSelector } from "./FileSelector";
-export { default as FileSelectorModal } from "./FileSelectorModal";

@@ -24,10 +24,10 @@ import { useStorageManagement } from "@/contexts/storage/StorageManagementContex
 import { UploadFileState } from "@/contexts/storage/storage.type";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-interface UploadItemProps {
+export type UploadItemProps = {
     fileKey: string;
     fileState: UploadFileState;
-}
+};
 
 const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
     const { cancelUpload, retryFile } = useStorageManagement();
@@ -36,7 +36,13 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return translations.zeroBytes;
         const k = 1024;
-        const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
+        const sizes = [
+            translations.bytes,
+            translations.kb,
+            translations.mb,
+            translations.gb,
+            translations.tb,
+        ];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
@@ -64,13 +70,37 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
 
         switch (fileState.status) {
             case "pending":
-                return <Chip label={translations.pending} color="default" {...props} />;
+                return (
+                    <Chip
+                        label={translations.pending}
+                        color="default"
+                        {...props}
+                    />
+                );
             case "uploading":
-                return <Chip label={`${Math.round(fileState.progress)}%`} color="primary" {...props} />;
+                return (
+                    <Chip
+                        label={`${Math.round(fileState.progress)}%`}
+                        color="primary"
+                        {...props}
+                    />
+                );
             case "success":
-                return <Chip label={translations.success} color="success" {...props} />;
+                return (
+                    <Chip
+                        label={translations.success}
+                        color="success"
+                        {...props}
+                    />
+                );
             case "error":
-                return <Chip label={translations.failed} color="error" {...props} />;
+                return (
+                    <Chip
+                        label={translations.failed}
+                        color="error"
+                        {...props}
+                    />
+                );
             default:
                 return null;
         }
@@ -127,12 +157,10 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
                 },
             }}
         >
-            <ListItemIcon sx={{ minWidth: 40 }}>
-                {getStatusIcon()}
-            </ListItemIcon>
+            <ListItemIcon sx={{ minWidth: 40 }}>{getStatusIcon()}</ListItemIcon>
 
             <ListItemText
-                slotProps={{ secondary: { component: 'div' } }}
+                slotProps={{ secondary: { component: "div" } }}
                 primary={
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Typography variant="body2" noWrap sx={{ flex: 1 }}>
@@ -147,7 +175,11 @@ const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
                             {formatFileSize(fileState.file.size)}
                         </Typography>
                         {fileState.status === "error" && fileState.error && (
-                            <Typography variant="caption" color="error" display="block">
+                            <Typography
+                                variant="caption"
+                                color="error"
+                                display="block"
+                            >
                                 {fileState.error}
                             </Typography>
                         )}
