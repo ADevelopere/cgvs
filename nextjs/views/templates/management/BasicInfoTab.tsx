@@ -10,30 +10,32 @@ import {
     Typography,
     Alert,
     Grid,
+    Stack,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import {
+    Delete as DeleteIcon,
+    Image as ImageIcon,
+} from "@mui/icons-material";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import {
     UpdateTemplateInput,
-    FileInfo,
 } from "@/graphql/generated/types";
-import { useStorageManagement } from "@/contexts/storage";
-import { FileSelector } from "@/views/storage/components";
-import { UPLOAD_LOCATIONS } from "@/contexts/storage/storage.location";
+import type { FileInfo } from "@/graphql/generated/types";
+import { FileSelectorDialog } from "@/views/storage/components";
+import { StorageGraphQLProvider } from "@/contexts/storage";
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
     const strings = useAppTranslation("templateCategoryTranslations");
+    const storageStrings = useAppTranslation("storageTranslations");
 
     const { template, unsavedChanges, setUnsavedChanges } =
         useTemplateManagement();
 
     const { updateTemplate } = useTemplateCategoryManagement();
-    const { items, loading, params, navigateTo, startUpload } =
-        useStorageManagement();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -43,16 +45,7 @@ const BasicInfoTab: React.FC = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
-
-    useEffect(() => {
-        // `UploadLocation` is a GraphQL union type (no runtime enum object),
-        // so reference the upload location by its string key defined in
-        // `UPLOAD_LOCATIONS`.
-        const locationInfo = UPLOAD_LOCATIONS["TEMPLATE_COVER"];
-        if (locationInfo) {
-            navigateTo(locationInfo.path);
-        }
-    }, [navigateTo]);
+    const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
 
     useEffect(() => {
         if (template) {
@@ -99,20 +92,26 @@ const BasicInfoTab: React.FC = () => {
         }));
     };
 
-    const handleSelectFile = (file: FileInfo) => {
-        if (file.url) {
+    const handleSelectFiles = (files: FileInfo[]) => {
+        if (files.length > 0) {
+            // For template cover, we only need one image
             setFormData((prev) => ({
                 ...prev,
-                imageUrl: file.url!,
+                imageUrl: files[0].path,
             }));
         }
+        setSelectorDialogOpen(false);
     };
 
-    const handleRemoveBackground = (): void => {
+    const handleRemoveImage = (): void => {
         setFormData((prev) => ({
             ...prev,
             imageUrl: "",
         }));
+    };
+
+    const handleOpenSelector = () => {
+        setSelectorDialogOpen(true);
     };
 
     const handleSave = async () => {
@@ -154,29 +153,16 @@ const BasicInfoTab: React.FC = () => {
         setError(null);
     };
 
-    const triggerUpload = () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.multiple = true;
-        input.onchange = (event: Event) => {
-            const target = event.target as HTMLInputElement | null;
-            const files = target?.files;
-            if (files && files.length > 0) {
-                startUpload(Array.from(files), params.path);
-            }
-        };
-        input.click();
-    };
-
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                overflowY: "hidden",
-            }}
-        >
+        <StorageGraphQLProvider>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    overflowY: "hidden",
+                }}
+            >
             {/* Action Bar */}
             <Box
                 sx={{
@@ -291,7 +277,7 @@ const BasicInfoTab: React.FC = () => {
                                     variant="contained"
                                     color="error"
                                     startIcon={<DeleteIcon />}
-                                    onClick={handleRemoveBackground}
+                                    onClick={handleRemoveImage}
                                     sx={{
                                         position: "absolute",
                                         top: 8,
@@ -302,23 +288,45 @@ const BasicInfoTab: React.FC = () => {
                                 </Button>
                             </Card>
                         )}
-                        <Card sx={{ p: 2 }}>
-                            <FileSelector
-                                items={
-                                    items.filter(
-                                        (item) => item.__typename === "FileInfo",
-                                    ) as any
-                                }
-                                onSelectItem={handleSelectFile}
-                                onUpload={triggerUpload}
-                                selectedUrl={formData.imageUrl}
-                                loading={loading}
-                            />
-                        </Card>
+                        
+                        <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                            <Button
+                                variant="contained"
+                                startIcon={<ImageIcon />}
+                                onClick={handleOpenSelector}
+                                color="primary"
+                            >
+                                {storageStrings.selectFile}
+                            </Button>
+                            
+                            {formData.imageUrl && (
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={handleRemoveImage}
+                                    color="error"
+                                >
+                                    {strings.delete}
+                                </Button>
+                            )}
+                        </Stack>
                     </Grid>
                 </Grid>
             </Box>
+
+            {/* File Selector Dialog */}
+            <FileSelectorDialog
+                open={selectorDialogOpen}
+                onClose={() => setSelectorDialogOpen(false)}
+                onSelect={handleSelectFiles}
+                location="TEMPLATE_COVER"
+                multiple={false}
+                allowUpload={true}
+                title={storageStrings.selectFile}
+                requireSelection={false}
+            />
         </Box>
+        </StorageGraphQLProvider>
     );
 };
 

@@ -32,8 +32,8 @@ import useAppTranslation from "@/locale/useAppTranslation";
 
 export interface FileSelectorProps {
     location?: Graphql.UploadLocation;
-    value?: string[];
-    onChange?: (files: string[]) => void;
+    value?: Graphql.FileInfo[];
+    onChange?: (files: Graphql.FileInfo[]) => void;
     multiple?: boolean;
     allowUpload?: boolean;
     maxSelection?: number;
@@ -70,14 +70,14 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
 
     // Sync external value with internal state
     useEffect(() => {
-        if (JSON.stringify(value) !== JSON.stringify(selectedFiles)) {
-            setSelectedFiles(value);
+        if (JSON.stringify(value?.map(f => f.path)) !== JSON.stringify(selectedFiles.map(f => f.path))) {
+            setSelectedFiles(value || []);
         }
     }, [value, selectedFiles, setSelectedFiles]);
 
     // Notify parent of selection changes
     useEffect(() => {
-        if (onChange && JSON.stringify(selectedFiles) !== JSON.stringify(value)) {
+        if (onChange && JSON.stringify(selectedFiles.map(f => f.path)) !== JSON.stringify(value?.map(f => f.path))) {
             onChange(selectedFiles);
         }
     }, [selectedFiles, onChange, value]);
@@ -87,17 +87,18 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
         clearSelection();
     };
 
-    const handleFileToggle = (filePath: string) => {
+    const handleFileToggle = (file: Graphql.FileInfo) => {
         if (disabled) return;
 
+        const isSelected = selectedFiles.some(f => f.path === file.path);
         if (multiple) {
-            if (selectedFiles.includes(filePath)) {
-                toggleFileSelection(filePath);
+            if (isSelected) {
+                toggleFileSelection(file);
             } else if (!maxSelection || selectedFiles.length < maxSelection) {
-                toggleFileSelection(filePath);
+                toggleFileSelection(file);
             }
         } else {
-            setSelectedFiles(selectedFiles.includes(filePath) ? [] : [filePath]);
+            setSelectedFiles(isSelected ? [] : [file]);
         }
     };
 
@@ -108,14 +109,12 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
 
     const handleSelectAll = () => {
         if (disabled) return;
-        
-        const allPaths = files.map(file => file.path);
-        const limitedPaths = maxSelection ? allPaths.slice(0, maxSelection) : allPaths;
-        setSelectedFiles(limitedPaths);
+        const limitedFiles = maxSelection ? files.slice(0, maxSelection) : files;
+        setSelectedFiles(limitedFiles);
     };
 
     const canSelectMore = !maxSelection || selectedFiles.length < maxSelection;
-    const selectionLimitReached = maxSelection && selectedFiles.length >= maxSelection;
+    const selectionLimitReached = !!maxSelection && selectedFiles.length >= maxSelection;
 
     return (
         <Box>
@@ -250,30 +249,36 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
                         <Box>
                             {viewMode === "grid" ? (
                                 <Grid container spacing={2}>
-                                    {files.map((file) => (
-                                        <Grid key={file.path} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-                                            <FileSelectItem
-                                                file={file}
-                                                selected={selectedFiles.includes(file.path)}
-                                                onToggleSelect={handleFileToggle}
-                                                viewMode="grid"
-                                                disabled={disabled || (!selectedFiles.includes(file.path) && !canSelectMore)}
-                                            />
-                                        </Grid>
-                                    ))}
+                                    {files.map((file) => {
+                                        const isSelected = selectedFiles.some(f => f.path === file.path);
+                                        return (
+                                            <Grid key={file.path} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                                                <FileSelectItem
+                                                    file={file}
+                                                    selected={isSelected}
+                                                    onToggleSelect={() => handleFileToggle(file)}
+                                                    viewMode="grid"
+                                                    disabled={disabled || (!isSelected && !canSelectMore)}
+                                                />
+                                            </Grid>
+                                        );
+                                    })}
                                 </Grid>
                             ) : (
                                 <List>
-                                    {files.map((file) => (
-                                        <FileSelectItem
-                                            key={file.path}
-                                            file={file}
-                                            selected={selectedFiles.includes(file.path)}
-                                            onToggleSelect={handleFileToggle}
-                                            viewMode="list"
-                                            disabled={disabled || (!selectedFiles.includes(file.path) && !canSelectMore)}
-                                        />
-                                    ))}
+                                    {files.map((file) => {
+                                        const isSelected = selectedFiles.some(f => f.path === file.path);
+                                        return (
+                                            <FileSelectItem
+                                                key={file.path}
+                                                file={file}
+                                                selected={isSelected}
+                                                onToggleSelect={() => handleFileToggle(file)}
+                                                viewMode="list"
+                                                disabled={disabled || (!isSelected && !canSelectMore)}
+                                            />
+                                        );
+                                    })}
                                 </List>
                             )}
                         </Box>
