@@ -11,7 +11,7 @@ import {
 import { HomeIcon } from "lucide-react";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import DashboardLayout from "@/views/dashboard/layout/DashboardLayout";
-import DashboardEndActions from "@/components/common/DashboardEndActions";
+import DashboardEndActions from "@/views/dashboard/layout/DashboardEndActions";
 import { TemplateCategoryManagementProvider } from "@/contexts/template/TemplateCategoryManagementContext";
 import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
 import { Navigation, Title } from "@/contexts/adminLayout.types";
