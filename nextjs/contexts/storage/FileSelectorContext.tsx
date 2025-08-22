@@ -33,9 +33,9 @@ export interface FileSelectorContextType {
     error?: string;
 
     // Selection state
-    selectedFiles: string[];
-    setSelectedFiles: (files: string[]) => void;
-    toggleFileSelection: (filePath: string) => void;
+    selectedFiles: Graphql.FileInfo[];
+    setSelectedFiles: (files: Graphql.FileInfo[]) => void;
+    toggleFileSelection: (file: Graphql.FileInfo) => void;
     clearSelection: () => void;
 
     // Upload state
@@ -76,7 +76,7 @@ export const FileSelectorProvider: React.FC<{
     const [files, setFiles] = useState<Graphql.FileInfo[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>();
-    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<Graphql.FileInfo[]>([]);
     const [uploadFiles, setUploadFiles] = useState<Map<string, UploadFileState>>(
         new Map()
     );
@@ -88,12 +88,13 @@ export const FileSelectorProvider: React.FC<{
         setError(undefined);
     }, []);
 
-    const toggleFileSelection = useCallback((filePath: string) => {
+    const toggleFileSelection = useCallback((file: Graphql.FileInfo) => {
         setSelectedFiles(prev => {
-            if (prev.includes(filePath)) {
-                return prev.filter(path => path !== filePath);
+            const isSelected = prev.some(selected => selected.path === file.path);
+            if (isSelected) {
+                return prev.filter(selected => selected.path !== file.path);
             }
-            return [...prev, filePath];
+            return [...prev, file];
         });
     }, []);
 

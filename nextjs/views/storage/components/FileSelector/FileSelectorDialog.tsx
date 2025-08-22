@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import {
     Dialog,
@@ -19,11 +17,12 @@ import {
 import FileSelector from "./FileSelector";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
+import type { FileInfo } from "@/graphql/generated/types";
 
 export interface FileSelectorDialogProps {
     open: boolean;
     onClose: () => void;
-    onSelect: (files: string[]) => void;
+    onSelect: (files: FileInfo[]) => void;
     location?: Graphql.UploadLocation;
     multiple?: boolean;
     allowUpload?: boolean;
@@ -31,7 +30,7 @@ export interface FileSelectorDialogProps {
     title?: string;
     confirmText?: string;
     cancelText?: string;
-    initialSelection?: string[];
+    initialSelection?: FileInfo[];
     requireSelection?: boolean;
 }
 
@@ -50,7 +49,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     requireSelection = false,
 }) => {
     const translations = useAppTranslation("storageTranslations");
-    const [selectedFiles, setSelectedFiles] = useState<string[]>(initialSelection);
+    const [selectedFiles, setSelectedFiles] = useState<FileInfo[]>(initialSelection);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
     // Reset selection when dialog opens/closes

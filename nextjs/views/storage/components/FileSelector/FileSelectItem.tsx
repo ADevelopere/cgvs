@@ -27,7 +27,7 @@ import useAppTranslation from "@/locale/useAppTranslation";
 interface FileSelectItemProps {
     file: Graphql.FileInfo;
     selected: boolean;
-    onToggleSelect: (filePath: string) => void;
+    onToggleSelect: (file: Graphql.FileInfo) => void;
     viewMode?: "grid" | "list";
     disabled?: boolean;
 }
@@ -76,7 +76,7 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
 
     const handleClick = () => {
         if (!disabled) {
-            onToggleSelect(file.path);
+            onToggleSelect(file);
         }
     };
 
@@ -116,7 +116,7 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
                     disabled={disabled}
                     sx={{ mr: 1 }}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={() => !disabled && onToggleSelect(file.path)}
+                    onChange={() => !disabled && onToggleSelect(file)}
                 />
                 
                 <Box sx={{ minWidth: 40, mr: 2 }}>
@@ -194,7 +194,7 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
                         },
                     }}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={() => !disabled && onToggleSelect(file.path)}
+                    onChange={() => !disabled && onToggleSelect(file)}
                 />
             </Box>
 
