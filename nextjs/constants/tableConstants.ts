@@ -10,10 +10,6 @@ export const TABLE_COLUMNS: EditableColumn[] = [
     editable: false,
     sortable: true,
     filterable: true,
-    filterMode: "popover",
-    // Server operations
-    serverSortable: true,
-    serverFilterable: true,
   },
   {
     id: "name",
@@ -23,10 +19,6 @@ export const TABLE_COLUMNS: EditableColumn[] = [
     editable: true,
     sortable: true,
     filterable: true,
-    filterMode: "popover",
-    // Server operations
-    serverSortable: true,
-    serverFilterable: true,
   },
   {
     id: "date",
@@ -36,10 +28,6 @@ export const TABLE_COLUMNS: EditableColumn[] = [
     editable: true,
     sortable: true,
     filterable: true,
-    filterMode: "popover",
-    // Server operations
-    serverSortable: true,
-    serverFilterable: true,
   },
   {
     id: "email",
@@ -49,10 +37,6 @@ export const TABLE_COLUMNS: EditableColumn[] = [
     editable: true,
     sortable: true,
     filterable: true,
-    filterMode: "popover",
-    // Server operations
-    serverSortable: false,
-    serverFilterable: true,
   },
   {
     id: "status",
@@ -62,10 +46,6 @@ export const TABLE_COLUMNS: EditableColumn[] = [
     editable: true,
     sortable: true,
     filterable: true,
-    filterMode: "inline",
-    // Server operations
-    serverSortable: true,
-    serverFilterable: false,
   },
 ]
 

@@ -1,3 +1,11 @@
+// Utility type for deep partials (recursive partial)
+type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends Array<infer U>
+        ? Array<DeepPartial<U>>
+        : T[P] extends object | undefined | null
+            ? DeepPartial<T[P]>
+            : T[P];
+};
 import type {
     CreateTemplateCategoryMutation,
     DeleteTemplateCategoryMutation,
@@ -20,19 +28,20 @@ export type TemplateCategorySource =
     | TemplateCategoriesQuery
 
 // Base mapper for Template type
-const mapTemplate = (template: any): Template => ({
-    ...template,
-    category: template.category || null,
+const mapTemplate = (template: DeepPartial<Template>): Template => ({
+    ...(template as Template),
+    // Always return a TemplateCategory, never null, fallback to empty object if missing
+    category: template.category ? mapBaseTemplateCategory(template.category) : ({} as TemplateCategory),
 });
 
 // Base mapper for TemplateCategory type
-const mapBaseTemplateCategory = (category: any): TemplateCategory => ({
-    ...category,
-    templates: Array.isArray(category.templates) 
-        ? category.templates.map(mapTemplate)
+const mapBaseTemplateCategory = (category: DeepPartial<TemplateCategory>): TemplateCategory => ({
+    ...(category as TemplateCategory),
+    templates: Array.isArray(category.templates)
+        ? category.templates.filter((t): t is DeepPartial<Template> => t !== undefined).map(mapTemplate)
         : [],
     childCategories: Array.isArray(category.childCategories)
-        ? category.childCategories.map(mapBaseTemplateCategory)
+        ? category.childCategories.filter((c): c is DeepPartial<TemplateCategory> => c !== undefined).map(mapBaseTemplateCategory)
         : [],
     parentCategory: category.parentCategory
         ? mapBaseTemplateCategory(category.parentCategory)
@@ -50,19 +59,16 @@ const mapUpdateTemplateCategoryMutation = (source: UpdateTemplateCategoryMutatio
     mapBaseTemplateCategory(source.updateTemplateCategory);
 
 const mapSuspensionTemplateCategoryQuery = (source: SuspensionTemplateCategoryQuery): TemplateCategory =>
-    mapBaseTemplateCategory(source.suspensionTemplateCategory);
+    source.suspensionTemplateCategory ? mapBaseTemplateCategory(source.suspensionTemplateCategory) : ({} as TemplateCategory);
 
 const mapMainTemplateCategoryQuery = (source: MainTemplateCategoryQuery): TemplateCategory =>
-    mapBaseTemplateCategory(source.mainTemplateCategory);
+    source.mainTemplateCategory ? mapBaseTemplateCategory(source.mainTemplateCategory) : ({} as TemplateCategory);
 
 const mapTemplateCategoryQuery = (source: TemplateCategoryQuery): TemplateCategory | null =>
     source.templateCategory ? mapBaseTemplateCategory(source.templateCategory) : null;
 
 const mapTemplateCategoriesQuery = (source: TemplateCategoriesQuery): TemplateCategory[] =>
-    source.templateCategories.map(mapBaseTemplateCategory);
-
-const mapFlatTemplateCategoriesQuery = (source: TemplateCategoriesQuery): TemplateCategory[] =>
-    source.templateCategories.map(mapBaseTemplateCategory);
+    source.templateCategories.filter(Boolean).map(mapBaseTemplateCategory);
 
 // Helper function to build category hierarchy from flat structure
 export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): TemplateCategory[] => {
@@ -90,7 +96,7 @@ export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): Temp
                 // Set parent reference
                 currentCategory.parentCategory = parentCategory;
                 // Add to parent's children
-                parentCategory.childCategories.push(currentCategory);
+                parentCategory?.childCategories?.push(currentCategory);
             } else {
                 rootCategories.push(currentCategory);
             }
@@ -102,40 +108,33 @@ export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): Temp
     return rootCategories;
 };
 
-export const getSerializableTemplateCategory = (category: TemplateCategory): any => {
+
+export type SerializableTemplate = { id: number; name: string };
+export type SerializableTemplateCategory = {
+    id: number;
+    name: string;
+    special_type?: string | null;
+    templates?: SerializableTemplate[];
+    childCategories: SerializableTemplateCategory[];
+};
+
+export const getSerializableTemplateCategory = (category: TemplateCategory): SerializableTemplateCategory => {
     return {
         id: category.id,
         name: category.name,
-        special_type: category.categorySpecialType,
+        special_type: category.categorySpecialType ?? null,
         templates: category.templates?.map(template => ({
             id: template.id,
             name: template.name,
         })),
-        // map childCategories recursively
         childCategories: category.childCategories ?
             getSerializableCategories(category.childCategories) : 
             [],
-        // parentCategory: category.parentCategory ? {
-        //     id: category.parentCategory.id,
-        //     name: category.parentCategory.name,
-        // } : null,
     };
 };
 
-export const getSerializableCategories = (categories: TemplateCategory[]): any[] => {
-    return categories.map(category => ({
-        id: category.id,
-        name: category.name,
-        special_type: category.categorySpecialType,
-                templates: category.templates?.map(template => ({
-            id: template.id,
-            name: template.name,
-        })),
-        childCategories: category.childCategories ? 
-            getSerializableCategories(category.childCategories) : 
-            [],
-        // Exclude parentCategory to avoid circular reference
-    }));
+export const getSerializableCategories = (categories: TemplateCategory[]): SerializableTemplateCategory[] => {
+    return categories.map(category => getSerializableTemplateCategory(category));
 };
 
 // Main mapper function
@@ -185,9 +184,7 @@ export const mapTemplateCategories = (source: TemplateCategorySource | undefined
             return mapTemplateCategoriesQuery(source);
         }
 
-        // if ('flatTemplateCategories' in source) {
-        //     return mapFlatTemplateCategoriesQuery(source);
-        // }
+
 
         const category = mapTemplateCategory(source);
         return category ? [category] : [];

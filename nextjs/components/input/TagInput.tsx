@@ -83,7 +83,7 @@ export default function TagInput({
   }, [editingIndex])
 
   const handleContainerClick = useCallback(() => {
-    if (inputRef.current) {I
+    if (inputRef.current) {
       inputRef.current.focus()
     }
   }, [])

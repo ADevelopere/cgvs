@@ -71,8 +71,6 @@ export const TemplateManagementProvider: React.FC<{
 
     const {
         data: apolloTemplateData,
-        loading: apolloLoading,
-        error: apolloError,
     } = useTemplateQuery({
         variables: { id: id ? parseInt(id, 10) : 0 },
         skip: !id,
@@ -167,8 +165,14 @@ export const TemplateManagementProvider: React.FC<{
                     setError("Template not found");
                     console.error("Template not found");
                 }
-            } catch (error: any) {
-                setError(error.message ?? "Failed to load template");
+            } catch (error) {
+                let message = "Failed to load template";
+                if (error instanceof Error) {
+                    message = error.message;
+                } else if (typeof error === "object" && error !== null && "message" in error && typeof (error as { message?: unknown }).message === "string") {
+                    message = (error as { message: string }).message;
+                }
+                setError(message);
                 console.error("Error loading template:", error);
             } finally {
                 setLoading(false);
@@ -182,7 +186,7 @@ export const TemplateManagementProvider: React.FC<{
         try {
             const data: TemplateConfigQuery = await templateConfigQuery();
             if (data) {
-                const config = mapTemplateConfig(data);
+                const config = mapTemplateConfig(data) ?? defaultConfig;
                 setConfig(config);
             } else {
                 setError("Failed to fetch template config");
@@ -193,17 +197,25 @@ export const TemplateManagementProvider: React.FC<{
                     },
                 }));
             }
-        } catch (error: any) {
-            setError(
-                error.response?.data?.message ??
-                    "Failed to fetch template config",
-            );
+        } catch (error) {
+            let message = "Failed to fetch template config";
+            if (
+                typeof error === "object" &&
+                error !== null &&
+                "response" in error &&
+                typeof (error as { response?: unknown }).response === "object" &&
+                (error as { response?: { data?: { message?: unknown } } }).response?.data?.message &&
+                typeof (error as { response: { data: { message: unknown } } }).response.data.message === "string"
+            ) {
+                message = (error as { response: { data: { message: string } } }).response.data.message;
+            } else if (error instanceof Error) {
+                message = error.message;
+            }
+            setError(message);
             setTabErrors((prev) => ({
                 ...prev,
                 basic: {
-                    message:
-                        error.response?.data?.message ??
-                        "Failed to fetch template config",
+                    message,
                 },
             }));
         }
@@ -235,6 +247,7 @@ export const TemplateManagementProvider: React.FC<{
             loadedTabs,
             error,
             tabErrors,
+            config,
             template,
             loading,
             handleSetTabLoaded,

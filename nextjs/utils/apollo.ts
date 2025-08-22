@@ -2,7 +2,6 @@ import {
     ApolloClient,
     InMemoryCache,
     from,
-    createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
@@ -30,9 +29,9 @@ const authLink = setContext((_, { headers }) => {
 });
 
 // Error link to handle authentication errors
-const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
+const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
-        for (let err of graphQLErrors) {
+        for (const err of graphQLErrors) {
             switch (err.extensions?.code) {
                 case 'UNAUTHENTICATED':
                 case 'UNAUTHORIZED':

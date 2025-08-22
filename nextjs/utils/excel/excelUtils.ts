@@ -24,8 +24,8 @@ export const generateExcelTemplate = async (
     const sampleData = variables.map(v => {
         if (v.is_key) return 'Unique Identifier';
         switch(v.type) {
-            case 'number': return '0';
-            case 'date': return new Date().toISOString().split('T')[0];
+            case 'NUMBER': return '0';
+            case 'DATE': return new Date().toISOString().split('T')[0];
             default: return 'Sample';
         }
     });
@@ -63,6 +63,7 @@ export const validateExcelInBrowser = async (
     const keyValues = new Set<string>();
     
     // Validate each row
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rows.forEach((row: any, index: number) => {
         const rowErrors: string[] = [];
         
@@ -88,12 +89,12 @@ export const validateExcelInBrowser = async (
             // Type validation
             if (value) {
                 switch (variable.type) {
-                    case 'number':
+                    case 'NUMBER':
                         if (isNaN(Number(value))) {
                             rowErrors.push(`${variable.name} must be a number`);
                         }
                         break;
-                    case 'date':
+                    case 'DATE':
                         if (isNaN(Date.parse(value))) {
                             rowErrors.push(`${variable.name} must be a valid date`);
                         }

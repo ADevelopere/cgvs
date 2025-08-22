@@ -4,7 +4,6 @@ import type {
     DeleteTemplateVariableMutation,
     DateTemplateVariable,
     UpdateDateTemplateVariableInput,
-    Template,
     CreateDateTemplateVariableInput,
 } from "@/graphql/generated/types";
 
@@ -24,43 +23,9 @@ type PartialDateTemplateVariable = Partial<DateTemplateVariable> & {
 const mapDateTemplateVariable = (
     variable: PartialDateTemplateVariable | null | undefined,
     previousVariable?: DateTemplateVariable | null,
-): DateTemplateVariable => {
+): DateTemplateVariable | null => {
     if (!variable) {
-        // Create a minimal valid DateTemplateVariable
-        return {
-            id: 0,
-            name: "",
-            description: null,
-            required: false,
-            order: 0,
-            datePreviewValue: null,
-            template: {
-                id: 0,
-                name: "",
-                order: 0,
-                category: {
-                    id: 0,
-                    name: "",
-                    description: null,
-                    imageUrl: null,
-                    order: 0,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    templates: [],
-                    childCategories: [],
-                    parentCategory: null,
-                },
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                variables: [],
-            } as Template,
-            type: "DATE",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            minDate: null,
-            maxDate: null,
-            format: null,
-        } as DateTemplateVariable;
+        return null;
     }
 
     return {
@@ -71,15 +36,7 @@ const mapDateTemplateVariable = (
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
         // previewValue: variable.preview_value ?? previousVariable?.preview_value ?? null,
-        template:
-            variable.template ??
-            previousVariable?.template ??
-            ({
-                id: 0,
-                name: "",
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            } as Template),
+        template: variable.template ?? previousVariable?.template,
         type: "DATE", // Ensure this matches the expected TemplateVariableType
         createdAt:
             variable.createdAt ?? previousVariable?.createdAt ?? new Date(),
@@ -96,7 +53,7 @@ const mapDateTemplateVariable = (
  */
 const mapCreateDateTemplateVariable = (
     source: CreateDateTemplateVariableMutation,
-): DateTemplateVariable => {
+): DateTemplateVariable | null => {
     return mapDateTemplateVariable(
         source.createDateTemplateVariable as PartialDateTemplateVariable,
     );
@@ -108,7 +65,7 @@ const mapCreateDateTemplateVariable = (
 const mapUpdateDateTemplateVariable = (
     source: UpdateDateTemplateVariableMutation,
     previousVariable?: DateTemplateVariable,
-): DateTemplateVariable => {
+): DateTemplateVariable | null => {
     return mapDateTemplateVariable(
         source.updateDateTemplateVariable as PartialDateTemplateVariable,
         previousVariable,
@@ -121,7 +78,7 @@ const mapUpdateDateTemplateVariable = (
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
     previousVariable?: DateTemplateVariable,
-): DateTemplateVariable => {
+): DateTemplateVariable | null => {
     return mapDateTemplateVariable(
         source.deleteTemplateVariable as PartialDateTemplateVariable,
         previousVariable,

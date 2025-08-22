@@ -24,43 +24,9 @@ type PartialSelectTemplateVariable = Partial<SelectTemplateVariable> & {
 const mapSelectTemplateVariable = (
     variable: PartialSelectTemplateVariable | null | undefined,
     previousVariable?: SelectTemplateVariable | null,
-): SelectTemplateVariable => {
+): SelectTemplateVariable | null => {
     if (!variable) {
-        // Create a minimal valid SelectTemplateVariable
-        return {
-            id: 0,
-            name: "",
-            description: null,
-            required: false,
-            order: 0,
-            previewValue: null,
-            template: {
-                id: 0,
-                name: "",
-                order: 0,
-                category: {
-                    id: 0,
-                    name: "",
-                    description: null,
-                    imageUrl: null,
-                    order: 0,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    templates: [],
-                    childCategories: [],
-                    parentCategory: null,
-                },
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                variables: [],
-            } as Template,
-            type: "SELECT",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            multiple: false,
-            options: [],
-            values: [],
-        } as SelectTemplateVariable;
+        return null;
     }
 
     return {
@@ -71,7 +37,9 @@ const mapSelectTemplateVariable = (
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
         previewValue:
-            variable.selectPreviewValue ?? previousVariable?.selectPreviewValue ?? null,
+            variable.selectPreviewValue ??
+            previousVariable?.selectPreviewValue ??
+            null,
         template:
             variable.template ??
             previousVariable?.template ??
@@ -96,7 +64,7 @@ const mapSelectTemplateVariable = (
  */
 const mapCreateSelectTemplateVariable = (
     source: CreateSelectTemplateVariableMutation,
-): SelectTemplateVariable => {
+): SelectTemplateVariable | null => {
     return mapSelectTemplateVariable(
         source.createSelectTemplateVariable as PartialSelectTemplateVariable,
     );
@@ -108,7 +76,7 @@ const mapCreateSelectTemplateVariable = (
 const mapUpdateSelectTemplateVariable = (
     source: UpdateSelectTemplateVariableMutation,
     previousVariable?: SelectTemplateVariable,
-): SelectTemplateVariable => {
+): SelectTemplateVariable | null => {
     return mapSelectTemplateVariable(
         source.updateSelectTemplateVariable as PartialSelectTemplateVariable,
         previousVariable,
@@ -121,7 +89,7 @@ const mapUpdateSelectTemplateVariable = (
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
     previousVariable?: SelectTemplateVariable,
-): SelectTemplateVariable => {
+): SelectTemplateVariable | null => {
     return mapSelectTemplateVariable(
         source.deleteTemplateVariable as PartialSelectTemplateVariable,
         previousVariable,
@@ -180,6 +148,5 @@ export const mapToCreateSelectTemplateVariableInput = (
         previewValue: source?.selectPreviewValue,
         required: source?.required ?? false,
         templateId: source?.template?.id ?? 0,
-        };
     };
-
+};

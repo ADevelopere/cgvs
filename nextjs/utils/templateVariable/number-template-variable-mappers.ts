@@ -24,43 +24,9 @@ type PartialNumberTemplateVariable = Partial<NumberTemplateVariable> & {
 const mapNumberTemplateVariable = (
     variable: PartialNumberTemplateVariable | null | undefined,
     previousVariable?: NumberTemplateVariable | null,
-): NumberTemplateVariable => {
+): NumberTemplateVariable | null => {
     if (!variable) {
-        // Create a minimal valid NumberTemplateVariable
-        return {
-            id: 0,
-            name: "",
-            description: null,
-            required: false,
-            order: 0,
-            numberPreviewValue: null,
-            template: {
-                id: 0,
-                name: "",
-                order: 0,
-                category: {
-                    id: 0,
-                    name: "",
-                    description: null,
-                    imageUrl: null,
-                    order: 0,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    templates: [],
-                    childCategories: [],
-                    parentCategory: null,
-                },
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                variables: [],
-            } as Template,
-            type: "NUMBER",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            minValue: null,
-            maxValue: null,
-            decimalPlaces: null,
-        } as NumberTemplateVariable;
+        return null;
     }
 
     return {
@@ -71,7 +37,9 @@ const mapNumberTemplateVariable = (
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
         preview_value:
-            variable.numberPreviewValue ?? previousVariable?.numberPreviewValue ?? null,
+            variable.numberPreviewValue ??
+            previousVariable?.numberPreviewValue ??
+            null,
         template:
             variable.template ??
             previousVariable?.template ??
@@ -98,7 +66,7 @@ const mapNumberTemplateVariable = (
  */
 const mapCreateNumberTemplateVariable = (
     source: CreateNumberTemplateVariableMutation,
-): NumberTemplateVariable => {
+): NumberTemplateVariable | null => {
     return mapNumberTemplateVariable(
         source.createNumberTemplateVariable as PartialNumberTemplateVariable,
     );
@@ -110,7 +78,7 @@ const mapCreateNumberTemplateVariable = (
 const mapUpdateNumberTemplateVariable = (
     source: UpdateNumberTemplateVariableMutation,
     previousVariable?: NumberTemplateVariable,
-): NumberTemplateVariable => {
+): NumberTemplateVariable | null => {
     return mapNumberTemplateVariable(
         source.updateNumberTemplateVariable as PartialNumberTemplateVariable,
         previousVariable,
@@ -123,7 +91,7 @@ const mapUpdateNumberTemplateVariable = (
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
     previousVariable?: NumberTemplateVariable,
-): NumberTemplateVariable => {
+): NumberTemplateVariable | null => {
     return mapNumberTemplateVariable(
         source.deleteTemplateVariable as PartialNumberTemplateVariable,
         previousVariable,
