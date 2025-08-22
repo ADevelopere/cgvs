@@ -27,6 +27,13 @@ import type { FileInfo } from "@/graphql/generated/types";
 import { FileSelectorDialog } from "@/views/storage/components";
 import { StorageGraphQLProvider } from "@/contexts/storage";
 
+type FormDataType = {
+    name: string;
+    description: string;
+    imageUrl?: string;
+    imagePath?: string;
+}
+
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
     const strings = useAppTranslation("templateCategoryTranslations");
@@ -37,7 +44,7 @@ const BasicInfoTab: React.FC = () => {
 
     const { updateTemplate } = useTemplateCategoryManagement();
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormDataType>({
         name: "",
         description: "",
         imageUrl: "",
@@ -52,7 +59,7 @@ const BasicInfoTab: React.FC = () => {
             setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                imageUrl: template.imageUrl ?? "",
+                imageUrl: template.imageUrl,
             });
         }
     }, [template]);
@@ -65,7 +72,7 @@ const BasicInfoTab: React.FC = () => {
         const originalData = {
             name: template.name ?? "",
             description: template.description ?? "",
-            image: template.imageUrl ?? "",
+            image: template.imageUrl,
         };
 
         const currentData = {
@@ -97,7 +104,8 @@ const BasicInfoTab: React.FC = () => {
             // For template cover, we only need one image
             setFormData((prev) => ({
                 ...prev,
-                imageUrl: files[0].path,
+                imageUrl: files[0].url ?? "",
+                imagePath: files[0].path,
             }));
         }
         setSelectorDialogOpen(false);
@@ -106,7 +114,7 @@ const BasicInfoTab: React.FC = () => {
     const handleRemoveImage = (): void => {
         setFormData((prev) => ({
             ...prev,
-            imageUrl: "",
+            imagePath: "",
         }));
     };
 
@@ -128,7 +136,7 @@ const BasicInfoTab: React.FC = () => {
             name: formData.name,
             description: formData.description || undefined,
             categoryId: template.category.id,
-            imageFileName: formData.imageUrl,
+            imageFileName: formData.imagePath,
         };
 
         const updatedTemplate = await updateTemplate({
@@ -148,6 +156,7 @@ const BasicInfoTab: React.FC = () => {
                 name: template.name ?? "",
                 description: template.description ?? "",
                 imageUrl: template.imageUrl ?? "",
+                imagePath: undefined,
             });
         }
         setError(null);
@@ -248,68 +257,69 @@ const BasicInfoTab: React.FC = () => {
                         />
                     </Grid>
                     <Grid size={{ xs: 12, md: 12 }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>
-                            Cover Image
-                        </Typography>
-                        {formData.imageUrl && (
-                            <Card
-                                sx={{
-                                    mt: 1,
-                                    mb: 2,
-                                    position: "relative",
-                                    maxWidth: "100%",
-                                }}
-                            >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                mb: 2,
+                            }}
+                        >
+                            <Typography variant="h6">Cover Image</Typography>
+                            <Stack direction="row" spacing={2}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<ImageIcon />}
+                                    onClick={handleOpenSelector}
+                                    color="primary"
+                                >
+                                    {storageStrings.selectFile}
+                                </Button>
+                                {formData.imageUrl && (
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<DeleteIcon />}
+                                        onClick={handleRemoveImage}
+                                        color="error"
+                                    >
+                                        {strings.delete}
+                                    </Button>
+                                )}
+                            </Stack>
+                        </Box>
+                        <Card
+                            sx={{
+                                mt: 1,
+                                mb: 2,
+                                maxWidth: "100%",
+                                height: "200px",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                border: "1px dashed grey",
+                            }}
+                        >
+                            {formData.imageUrl ? (
                                 <CardMedia
                                     component="img"
                                     image={formData.imageUrl}
                                     alt="Template background"
                                     sx={{
-                                        maxHeight: "200px",
+                                        maxHeight: "100%",
                                         width: "auto",
                                         maxWidth: "100%",
                                         objectFit: "contain",
-                                        margin: "0 auto",
-                                        display: "block",
                                     }}
                                 />
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    startIcon={<DeleteIcon />}
-                                    onClick={handleRemoveImage}
+                            ) : (
+                                <ImageIcon
                                     sx={{
-                                        position: "absolute",
-                                        top: 8,
-                                        right: 8,
+                                        fontSize: "4rem",
+                                        color: "text.secondary",
                                     }}
-                                >
-                                    {strings.delete}
-                                </Button>
-                            </Card>
-                        )}
-                        
-                        <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                            <Button
-                                variant="contained"
-                                startIcon={<ImageIcon />}
-                                onClick={handleOpenSelector}
-                                color="primary"
-                            >
-                                {storageStrings.selectFile}
-                            </Button>
-                            
-                            {formData.imageUrl && (
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<DeleteIcon />}
-                                    onClick={handleRemoveImage}
-                                    color="error"
-                                >
-                                    {strings.delete}
-                                </Button>
+                                />
                             )}
-                        </Stack>
+                        </Card>
                     </Grid>
                 </Grid>
             </Box>

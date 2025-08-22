@@ -41,6 +41,7 @@ export interface FileSelectorProps {
     viewMode?: "grid" | "list";
     onViewModeChange?: (mode: "grid" | "list") => void;
     compact?: boolean;
+    showLocationSelector?: boolean;
 }
 
 const FileSelectorContent: React.FC<FileSelectorProps> = ({
@@ -53,6 +54,8 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
     viewMode = "grid",
     onViewModeChange,
     compact = false,
+    location: propLocation,
+    showLocationSelector = true,
 }) => {
     const {
         location,
@@ -67,20 +70,50 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
         refreshFiles,
     } = useFileSelector();
     const translations = useAppTranslation("storageTranslations");
+    const onChangeRef = React.useRef(onChange);
+    onChangeRef.current = onChange;
+
+    // Ref to track previous value for comparison
+    const prevValueRef = React.useRef<Graphql.FileInfo[] | undefined>(undefined);
+
+    // Memoize value paths to prevent unnecessary re-renders
+    const valuePaths = React.useMemo(() => 
+        value?.map(f => f.path).sort() || [], 
+        [value]
+    );
+
+    // Memoize selected paths for comparison
+    const selectedPaths = React.useMemo(() => 
+        selectedFiles.map(f => f.path).sort(), 
+        [selectedFiles]
+    );
+
+    // Sync location from props to context
+    useEffect(() => {
+        if (propLocation && JSON.stringify(propLocation) !== JSON.stringify(location)) {
+            setLocation(propLocation);
+        }
+    }, [propLocation, setLocation, location]);
 
     // Sync external value with internal state
     useEffect(() => {
-        if (JSON.stringify(value?.map(f => f.path)) !== JSON.stringify(selectedFiles.map(f => f.path))) {
-            setSelectedFiles(value || []);
+        // Only update if the value actually changed
+        if (JSON.stringify(valuePaths) !== JSON.stringify(selectedPaths)) {
+            // Extra check to prevent loops
+            const prevPaths = prevValueRef.current?.map(f => f.path).sort() || [];
+            if (JSON.stringify(valuePaths) !== JSON.stringify(prevPaths)) {
+                setSelectedFiles(value || []);
+                prevValueRef.current = value;
+            }
         }
-    }, [value, selectedFiles, setSelectedFiles]);
+    }, [valuePaths, setSelectedFiles, value]); // Include setSelectedFiles for proper dependencies
 
     // Notify parent of selection changes
     useEffect(() => {
-        if (onChange && JSON.stringify(selectedFiles.map(f => f.path)) !== JSON.stringify(value?.map(f => f.path))) {
-            onChange(selectedFiles);
+        if (onChangeRef.current && JSON.stringify(selectedPaths) !== JSON.stringify(valuePaths)) {
+            onChangeRef.current(selectedFiles);
         }
-    }, [selectedFiles, onChange, value]);
+    }, [selectedPaths, selectedFiles]); // Use memoized paths
 
     const handleLocationChange = (newLocation: Graphql.UploadLocation) => {
         setLocation(newLocation);
@@ -91,14 +124,18 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
         if (disabled) return;
 
         const isSelected = selectedFiles.some(f => f.path === file.path);
+        
         if (multiple) {
             if (isSelected) {
-                toggleFileSelection(file);
+                const newSelection = selectedFiles.filter(f => f.path !== file.path);
+                setSelectedFiles(newSelection);
             } else if (!maxSelection || selectedFiles.length < maxSelection) {
-                toggleFileSelection(file);
+                const newSelection = [...selectedFiles, file];
+                setSelectedFiles(newSelection);
             }
         } else {
-            setSelectedFiles(isSelected ? [] : [file]);
+            const newSelection = isSelected ? [] : [file];
+            setSelectedFiles(newSelection);
         }
     };
 
@@ -119,13 +156,15 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
     return (
         <Box>
             {/* Location Selector */}
-            <Box sx={{ mb: 3 }}>
-                <LocationSelector
-                    value={location}
-                    onChange={handleLocationChange}
-                    disabled={disabled}
-                />
-            </Box>
+            {showLocationSelector && (
+                <Box sx={{ mb: 3 }}>
+                    <LocationSelector
+                        value={location}
+                        onChange={handleLocationChange}
+                        disabled={disabled}
+                    />
+                </Box>
+            )}
 
             {/* Upload Area */}
             {allowUpload && location && (

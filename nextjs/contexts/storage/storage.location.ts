@@ -1,4 +1,5 @@
 import * as Graphql from "@/graphql/generated/types";
+import { mimeToContentType } from "./storage.constant";
 
 // Define location metadata for frontend usage
 export type LocationInfo = {
@@ -52,11 +53,32 @@ export const getUploadLocationOptions = (): LocationInfo[] => {
   return Object.values(UPLOAD_LOCATIONS);
 };
 
+/**
+ * Checks if a file type (ContentType or MIME type string) is allowed for a given upload location.
+ * Accepts either a ContentType (e.g., 'JPEG') or a MIME type (e.g., 'image/jpeg').
+ * @param location The upload location
+ * @param fileType ContentType or MIME type string
+ */
 export const isFileTypeAllowed = (
-  location: Graphql.UploadLocation, 
-  contentType: Graphql.ContentType
+  location: Graphql.UploadLocation,
+  fileType: Graphql.ContentType | string
 ): boolean => {
   const locationInfo = getLocationInfo(location);
+  let contentType: Graphql.ContentType | undefined;
+
+  // If fileType is a known ContentType, use it directly
+  if (
+    typeof fileType === "string" &&
+    locationInfo.allowedContentTypes.includes(fileType as Graphql.ContentType)
+  ) {
+    contentType = fileType as Graphql.ContentType;
+  } else if (typeof fileType === "string" && mimeToContentType[fileType]) {
+    // If fileType is a MIME type, map it
+    contentType = mimeToContentType[fileType];
+  }
+
+  // If not recognized, disallow
+  if (!contentType) return false;
   return locationInfo.allowedContentTypes.includes(contentType);
 };
 
