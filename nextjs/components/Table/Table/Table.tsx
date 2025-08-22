@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import { LinearProgress } from "@mui/material";
 import TableHeader from "../TableHeader/TableHeader";
-import TableBody from "../TableBody/TableBody";
 import PaginationFooter from "../TableFooter/TableFooter";
 import ColumnVisibilityPanel from "./ColumnVisibilityPanel";
 import "./Table.css";
@@ -17,8 +16,6 @@ import { useTableLocale } from "@/locale/table/TableLocaleContext";
 import NewTableBody from "../TableBody/TableBody";
 // Define column interface
 
-// Define default row height
-const DEFAULT_ROW_HEIGHT = 50;
 // Define table height for virtualization
 const TABLE_HEIGHT = 500;
 
@@ -67,7 +64,7 @@ const Table: React.FC<{
             (sum, column) => sum + columnWidths[column.id] + indexColWidth,
             20 + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0) + indexColWidth,
         );
-    }, [visibleColumns, columnWidths, rowSelectionEnabled]);
+    }, [visibleColumns, columnWidths, rowSelectionEnabled, indexColWidth]);
 
 
 
@@ -93,11 +90,6 @@ const Table: React.FC<{
             scrollContainer.removeEventListener("scroll", handleScroll);
         };
     }, []);
-
-    // Function to toggle visibility panel
-    const handleToggleVisibilityPanel = () => {
-        setShowVisibilityPanel((prev) => !prev);
-    };
 
     return (
         <div

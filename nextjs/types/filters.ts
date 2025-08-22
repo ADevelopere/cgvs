@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Filter operation types for different column types
 
 export enum TextFilterOperation {
