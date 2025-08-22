@@ -65,7 +65,6 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
         error,
         selectedFiles,
         setSelectedFiles,
-        toggleFileSelection,
         clearSelection,
         refreshFiles,
     } = useFileSelector();

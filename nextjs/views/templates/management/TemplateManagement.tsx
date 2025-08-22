@@ -9,11 +9,11 @@ import {
     TemplateManagementTabType,
 } from "@/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
-import RecipientsTab from "./recipients/RecipientsTab";
-import PreviewTab from "./tabs/PreviewTab";
-import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
+// import RecipientsTab from "../../../../todo/recipients/RecipientsTab";
+// import PreviewTab from "../../../../todo/tabs/PreviewTab";
+// import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
+// import EditorTab from "../../../../todo/editor/EditorTab";
 import { useState, useEffect } from "react";
-import EditorTab from "./editor/EditorTab";
 import ManagementHeader from "./ManagementHeader";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import { TemplateVariableManagementProvider } from "@/contexts/templateVariable/TemplateVariableManagementContext";
@@ -138,9 +138,9 @@ const TemplateManagement: React.FC = () => {
                             </Box>
                             {/* <RecipientsTab /> */}
                         </TabPanel>
-                        <TabPanel value="editor">
+                        {/* <TabPanel value="editor">
                             <EditorTab />
-                        </TabPanel>
+                        </TabPanel> */}
                         <TabPanel value="preview">
                             <Box
                                 sx={{
