@@ -9,20 +9,20 @@ import {
     Button,
     Typography,
     Alert,
+    Grid,
 } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplateManagement } from "@/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import {
-    Template,
     UpdateTemplateInput,
-    UploadLocation,
+    FileInfo,
 } from "@/graphql/generated/types";
-import { FileSelectorModal } from "@/views/storage/components";
-import { StorageItem } from "@/contexts/storage";
+import { useStorageManagement } from "@/contexts/storage";
+import { FileSelector } from "@/views/storage/components";
+import { UPLOAD_LOCATIONS } from "@/contexts/storage/storage.location";
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
@@ -32,6 +32,8 @@ const BasicInfoTab: React.FC = () => {
         useTemplateManagement();
 
     const { updateTemplate } = useTemplateCategoryManagement();
+    const { items, loading, params, navigateTo, startUpload } =
+        useStorageManagement();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -41,7 +43,16 @@ const BasicInfoTab: React.FC = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        // `UploadLocation` is a GraphQL union type (no runtime enum object),
+        // so reference the upload location by its string key defined in
+        // `UPLOAD_LOCATIONS`.
+        const locationInfo = UPLOAD_LOCATIONS["TEMPLATE_COVER"];
+        if (locationInfo) {
+            navigateTo(locationInfo.path);
+        }
+    }, [navigateTo]);
 
     useEffect(() => {
         if (template) {
@@ -88,12 +99,13 @@ const BasicInfoTab: React.FC = () => {
         }));
     };
 
-    const handleSelectFile = (file: StorageItem) => {
-        setFormData((prev) => ({
-            ...prev,
-            imageUrl: file.url,
-        }));
-        setIsModalOpen(false);
+    const handleSelectFile = (file: FileInfo) => {
+        if (file.url) {
+            setFormData((prev) => ({
+                ...prev,
+                imageUrl: file.url!,
+            }));
+        }
     };
 
     const handleRemoveBackground = (): void => {
@@ -113,14 +125,14 @@ const BasicInfoTab: React.FC = () => {
         setError(null);
 
         const input: UpdateTemplateInput = {
+            id: template.id,
             name: formData.name,
             description: formData.description || undefined,
             categoryId: template.category.id,
-            imageUrl: formData.imageUrl,
+            imageFileName: formData.imageUrl,
         };
 
         const updatedTemplate = await updateTemplate({
-            id: template.id,
             input: input,
         });
 
@@ -142,6 +154,20 @@ const BasicInfoTab: React.FC = () => {
         setError(null);
     };
 
+    const triggerUpload = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.multiple = true;
+        input.onchange = (event: Event) => {
+            const target = event.target as HTMLInputElement | null;
+            const files = target?.files;
+            if (files && files.length > 0) {
+                startUpload(Array.from(files), params.path);
+            }
+        };
+        input.click();
+    };
+
     return (
         <Box
             sx={{
@@ -151,13 +177,6 @@ const BasicInfoTab: React.FC = () => {
                 overflowY: "hidden",
             }}
         >
-            <FileSelectorModal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSelectFile={handleSelectFile}
-                location={UploadLocation.TemplateCover}
-                selectedUrl={formData.imageUrl}
-            />
             {/* Action Bar */}
             <Box
                 sx={{
@@ -216,92 +235,88 @@ const BasicInfoTab: React.FC = () => {
                         {error}
                     </Alert>
                 )}
+                <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="templateName"
+                            label={strings.name}
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            autoFocus
+                        />
 
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="templateName"
-                    label={strings.name}
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    autoFocus
-                />
-
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    multiline
-                    rows={4}
-                    id="templateDescription"
-                    label={strings.description}
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                />
-
-                {formData.imageUrl ? (
-                    <Card
-                        sx={{
-                            mt: 3,
-                            position: "relative",
-                            maxWidth: "100%",
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                position: "relative",
-                                width: "100%",
-                                maxWidth: "1200px", // Maximum width for very large screens
-                                mx: "auto", // Center the box
-                            }}
-                        >
-                            <CardMedia
-                                component="img"
-                                image={formData.imageUrl}
-                                alt="Template background"
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            id="templateDescription"
+                            label={strings.description}
+                            name="description"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                            Cover Image
+                        </Typography>
+                        {formData.imageUrl && (
+                            <Card
                                 sx={{
-                                    maxHeight: "400px", // Maximum height
-                                    width: "auto", // Allow width to adjust based on height
-                                    maxWidth: "100%", // Ensure it doesn't overflow container
-                                    objectFit: "contain", // Preserve aspect ratio
-                                    margin: "0 auto", // Center the image
-                                    display: "block", // Remove any extra spacing
+                                    mt: 1,
+                                    mb: 2,
+                                    position: "relative",
+                                    maxWidth: "100%",
                                 }}
+                            >
+                                <CardMedia
+                                    component="img"
+                                    image={formData.imageUrl}
+                                    alt="Template background"
+                                    sx={{
+                                        maxHeight: "200px",
+                                        width: "auto",
+                                        maxWidth: "100%",
+                                        objectFit: "contain",
+                                        margin: "0 auto",
+                                        display: "block",
+                                    }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={handleRemoveBackground}
+                                    sx={{
+                                        position: "absolute",
+                                        top: 8,
+                                        right: 8,
+                                    }}
+                                >
+                                    {strings.delete}
+                                </Button>
+                            </Card>
+                        )}
+                        <Card sx={{ p: 2 }}>
+                            <FileSelector
+                                items={
+                                    items.filter(
+                                        (item) => item.__typename === "FileInfo",
+                                    ) as any
+                                }
+                                onSelectItem={handleSelectFile}
+                                onUpload={triggerUpload}
+                                selectedUrl={formData.imageUrl}
+                                loading={loading}
                             />
-                            <Button
-                                variant="contained"
-                                color="error"
-                                startIcon={<DeleteIcon />}
-                                onClick={handleRemoveBackground}
-                                sx={{ position: "absolute", top: 8, right: 8 }}
-                            >
-                                {strings.delete}
-                            </Button>
-                        </Box>
-                    </Card>
-                ) : (
-                    <Card sx={{ mt: 3, mb: 3 }}>
-                        <Box sx={{ p: 3, textAlign: "center" }}>
-                            <Button
-                                variant="outlined"
-                                component="label"
-                                startIcon={<CloudUploadIcon />}
-                                onClick={() => setIsModalOpen(true)}
-                            >
-                                {strings.uploadImage}
-                            </Button>
-                            <Typography
-                                variant="caption"
-                                display="block"
-                                sx={{ mt: 1 }}
-                            >
-                                {strings.recommendedImageSize}: 1920x1080px
-                            </Typography>
-                        </Box>
-                    </Card>
-                )}
+                        </Card>
+                    </Grid>
+                </Grid>
             </Box>
         </Box>
     );
