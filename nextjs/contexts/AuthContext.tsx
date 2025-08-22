@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             clearError();
 
             try {
-                const response = await loginMutation({
+                const { data, errors } = await loginMutation({
                     variables: {
                         input: {
                             email: credentials.input.email,
@@ -143,51 +143,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     },
                 });
 
-                if (response?.data?.login) {
-                    if (response?.data?.login?.token) {
-                        const { user: graphqlUser, token } = response.data.login;
-                        const fullUser: User = {
-                            ...graphqlUser,
-                            isAdmin: graphqlUser.isAdmin,
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString(),
-                        };
-
-                        setUser(fullUser);
-                        setToken(token);
-                        setIsAuthenticated(true);
-                        saveAuthToken(token);
-
-                        // Redirect after successful login
-                        handlePostLoginRedirect(redirectUrl);
-
-                        return true;
-                    }
-                } else {
-                    setError("Invalid login credentials");
-                    return false;
+                if (errors) {
+                    throw new ApolloError({ graphQLErrors: errors });
                 }
 
-                setError("Invalid response from server");
-                console.log("Invalid response from server", "loginMutation", response);
-
-                return false;
+                if (data?.login?.token && data.login.user) {
+                    const { user: graphqlUser, token } = data.login;
+                    setUser(graphqlUser as User);
+                    setToken(token);
+                    setIsAuthenticated(true);
+                    saveAuthToken(token);
+                    handlePostLoginRedirect(redirectUrl);
+                    return true;
+                } else {
+                    throw new Error("Invalid response from server: token or user missing.");
+                }
             } catch (error) {
                 console.error("Login failed", error);
                 if (error instanceof ApolloError) {
                     const firstError = error.graphQLErrors[0];
-                    setError(
-                        firstError?.message || "An error occurred while trying to sign in."
-                    );
+                    setError(firstError?.message || "An error occurred while trying to sign in.");
+                } else if (error instanceof Error) {
+                    setError(error.message);
                 } else {
-                    setError("An error occurred while trying to sign in. Please try again.");
+                    setError("An unknown error occurred while trying to sign in.");
                 }
                 return false;
             } finally {
                 setIsLoading(false);
             }
         },
-        [loginMutation, clearError]
+        [loginMutation, clearError, handlePostLoginRedirect]
     );
 
     // Modify the checkAuth function to handle redirection
@@ -201,46 +187,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             return;
         }
 
-        let timeoutId: NodeJS.Timeout | undefined;
-        const timeoutPromise = new Promise<never>((_, reject) => {
-            timeoutId = setTimeout(() => {
-                setIsTimedOut(true);
-                reject(new Error("Auth check timed out"));
-            }, 10000); // 10 second timeout
-        });
-
         try {
-            const result = (await Promise.race([
-                apolloClient.query<MeQuery>({
-                    query: MeDocument,
-                }),
-                timeoutPromise,
-            ])) as { data: MeQuery };
+            const { data, errors } = await apolloClient.query<MeQuery>({
+                query: MeDocument,
+            });
 
-            if (timeoutId) {
-                clearTimeout(timeoutId);
+            if (errors) {
+                throw new ApolloError({ graphQLErrors: errors });
             }
 
-            if (result?.data?.me) {
-                const fullUser: User = {
-                    ...result.data.me,
-                    isAdmin: result.data.me.isAdmin,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                };
-                setUser(fullUser);
+            if (data?.me) {
+                setUser(data.me as User);
                 setToken(storedToken);
                 setIsAuthenticated(true);
             } else {
-                throw new Error("Invalid response from server");
+                throw new Error("Invalid response from server: User data is missing.");
             }
         } catch (error) {
             console.error("Auth check failed", error);
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to check authentication",
-            );
+            if (error instanceof ApolloError) {
+                const firstError = error.graphQLErrors[0];
+                setError(firstError?.message || "An error occurred during authentication check.");
+            } else if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("An unknown error occurred during authentication check.");
+            }
             logout();
             router.push("/login"); // Redirect to login on failure
         } finally {

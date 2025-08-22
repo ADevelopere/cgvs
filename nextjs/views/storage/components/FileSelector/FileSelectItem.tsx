@@ -32,7 +32,7 @@ interface FileSelectItemProps {
     disabled?: boolean;
 }
 
-const FileSelectItem: React.FC<FileSelectItemProps> = ({
+const FileSelectItem: React.FC<FileSelectItemProps> = React.memo(({
     file,
     selected,
     onToggleSelect,
@@ -80,6 +80,13 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
         }
     };
 
+    const handleCheckboxChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        event.stopPropagation();
+        if (!disabled) {
+            onToggleSelect(file);
+        }
+    }, [disabled, onToggleSelect, file]);
+
     const handlePreview = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (file.url) {
@@ -116,7 +123,7 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
                     disabled={disabled}
                     sx={{ mr: 1 }}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={() => !disabled && onToggleSelect(file)}
+                    onChange={handleCheckboxChange}
                 />
                 
                 <Box sx={{ minWidth: 40, mr: 2 }}>
@@ -194,7 +201,7 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
                         },
                     }}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={() => !disabled && onToggleSelect(file)}
+                    onChange={handleCheckboxChange}
                 />
             </Box>
 
@@ -287,6 +294,6 @@ const FileSelectItem: React.FC<FileSelectItemProps> = ({
             </CardContent>
         </Card>
     );
-};
+});
 
 export default FileSelectItem;

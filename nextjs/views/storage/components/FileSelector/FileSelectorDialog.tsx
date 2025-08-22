@@ -57,7 +57,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
         if (open) {
             setSelectedFiles(initialSelection);
         }
-    }, [open, initialSelection]);
+    }, [open, JSON.stringify(initialSelection)]);
 
     const handleClose = () => {
         setSelectedFiles([]);
@@ -158,6 +158,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                         viewMode={viewMode}
                         onViewModeChange={setViewMode}
                         compact={true}
+                        showLocationSelector={false}
                     />
                 </Box>
             </DialogContent>

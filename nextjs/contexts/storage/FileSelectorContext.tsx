@@ -10,7 +10,6 @@ import React, {
 import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
-    StorageItem,
     UploadFileState,
 } from "./storage.type";
 import { 
@@ -20,7 +19,6 @@ import {
 } from "./storage.location";
 import { inferContentType, getFileKey } from "./storage.util";
 import * as Graphql from "@/graphql/generated/types";
-import useAppTranslation from "@/locale/useAppTranslation";
 
 export interface FileSelectorContextType {
     // Current location
@@ -69,7 +67,6 @@ export const FileSelectorProvider: React.FC<{
 }> = ({ children }) => {
     const gql = useStorageGraphQL();
     const notifications = useNotifications();
-    const translations = useAppTranslation("storageTranslations");
 
     // State
     const [location, setLocationState] = useState<Graphql.UploadLocation>();
@@ -102,6 +99,10 @@ export const FileSelectorProvider: React.FC<{
         setSelectedFiles([]);
     }, []);
 
+    const setSelectedFilesCallback = useCallback((files: Graphql.FileInfo[]) => {
+        setSelectedFiles(files);
+    }, []);
+
     const refreshFiles = useCallback(async () => {
         if (!location) return;
 
@@ -128,7 +129,7 @@ export const FileSelectorProvider: React.FC<{
                     .filter((item: any): item is Graphql.FileInfo => 
                         item.__typename === "FileInfo" &&
                         item.contentType &&
-                        isFileTypeAllowed(location, item.contentType as Graphql.ContentType)
+                        isFileTypeAllowed(location, item.contentType)
                     );
 
                 setFiles(filteredFiles);
@@ -314,7 +315,7 @@ export const FileSelectorProvider: React.FC<{
         loading,
         error,
         selectedFiles,
-        setSelectedFiles,
+        setSelectedFiles: setSelectedFilesCallback,
         toggleFileSelection,
         clearSelection,
         uploadFiles,
