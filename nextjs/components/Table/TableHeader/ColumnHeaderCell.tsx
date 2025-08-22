@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 
-import type { FunctionComponent } from "react";
+import type { CSSProperties, FunctionComponent } from "react";
 import { useTheme } from "@mui/material/styles";
 import { IconButton, Tooltip, Badge } from "@mui/material";
 import {
@@ -38,18 +38,17 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     isPinned,
 }) => {
     const { filters, getSortDirection, sort, filter } = useTableDataContext();
-    const {
-        pinnedLeftStyle,
-        pinnedRightStyle,
-        resizeColumn,
-        columnWidths,
-    } = useTableColumnContext();
+    const { pinnedLeftStyle, pinnedRightStyle, resizeColumn, columnWidths } =
+        useTableColumnContext();
     const sortDirection = useMemo(
         () => getSortDirection(column.id),
         [column.id, getSortDirection],
     );
 
-    const columnWidth = useMemo(() => columnWidths[column.id], [column.id, columnWidths]);
+    const columnWidth = useMemo(
+        () => columnWidths[column.id],
+        [column.id, columnWidths],
+    );
     if (column.id === "status") {
         console.log(
             "ColumnHeaderCell column: ",
@@ -65,15 +64,21 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     const { thStyle } = useTableStyles();
 
     // Apply appropriate styles based on pin position
-    let thStyleWithPin = { ...thStyle };
-    if (isPinned === "left") {
-        thStyleWithPin = { ...thStyle, ...pinnedLeftStyle };
-    } else if (isPinned === "right") {
-        thStyleWithPin = { ...thStyle, ...pinnedRightStyle };
-    }
+    const thStyleWithPin = useMemo(() => {
+        let style = { ...thStyle };
+        if (isPinned === "left") {
+            style = { ...thStyle, ...pinnedLeftStyle };
+        } else if (isPinned === "right") {
+            style = { ...thStyle, ...pinnedRightStyle };
+        }
+        return style;
+    }, [thStyle, isPinned, pinnedLeftStyle, pinnedRightStyle]);
 
     // Check if column has an active filter
-    const isFiltered = !!filters[column.id];
+    const isFiltered = useMemo(
+        () => !!filters[column.id],
+        [filters, column.id],
+    );
 
     // Determine if the column is sortable in the current mode
     const isSortable = column.sortable;
@@ -99,7 +104,6 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         [column.id, isSortable, sort],
     );
 
-    // Handle resize start
     // Handle resize start
     const handleResizeStart = useCallback(
         (
@@ -134,7 +138,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     // Handle filter input change
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleFilterInputChange = useCallback(
-        (columnId: string, value: string) => {
+        (_columnId: string, value: string) => {
             setTempFilterValue(value);
         },
         [],
@@ -183,10 +187,12 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     // Initialize filter value from active filter
     React.useEffect(() => {
         if (isFiltered) {
-            const filter = filters[column.id];
-            const filterValue =
-                typeof filter === "string" ? filter : filter?.value || "";
-            setTempFilterValue(filterValue as string);
+            const filterValue = filters[column.id];
+            const value =
+                typeof filterValue === "string"
+                    ? filterValue
+                    : filterValue?.value || "";
+            setTempFilterValue(value as string);
         } else {
             setTempFilterValue("");
         }
@@ -197,12 +203,12 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         (e: React.MouseEvent) => {
             e.stopPropagation(); // Prevent triggering sort
 
-            if (column.type === "text") {
+            if (
+                column.type === "text" ||
+                column.type === "number" ||
+                column.type === "date"
+            ) {
                 onTextFilterIconClick(e, column.id);
-            } else if (column.type === "number") {
-                onTextFilterIconClick(e, column.id); // This will be the number filter handler
-            } else if (column.type === "date") {
-                onTextFilterIconClick(e, column.id); // This will be the date filter handler
             }
         },
         [column, onTextFilterIconClick],
@@ -210,54 +216,101 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
 
     // Get the appropriate filter icon color
     const getFilterIconColor = useCallback(() => {
-        if (isFiltered) {
-            return theme.palette.primary.main; // Active client filter
-        }
-        return "inherit"; // No active filter
+        return isFiltered ? theme.palette.primary.main : "inherit";
     }, [isFiltered, theme.palette.primary.main]);
+
+    const handleSortClick = useCallback(() => {
+        sort(column.id);
+    }, [sort, column.id]);
+
+    const handleOptionsClick = useCallback(
+        (e: React.MouseEvent<HTMLElement>) => {
+            e.stopPropagation();
+            onOptionsClick(e, column.id);
+        },
+        [onOptionsClick, column.id],
+    );
+
+    const renderSortIcon = useMemo(() => {
+        if (!sortDirection) {
+            return <UnfoldMore fontSize="small" style={{ opacity: 0.5 }} />;
+        }
+        return sortDirection === "ASC" ? (
+            <ArrowUpward fontSize="small" />
+        ) : (
+            <ArrowDownward fontSize="small" />
+        );
+    }, [sortDirection]);
+
+    const headerStyle: CSSProperties = useMemo(
+        () => ({
+            position: "relative",
+            maxWidth: columnWidth,
+            width: columnWidth,
+            minWidth: columnWidth,
+            overflow: "hidden",
+            background: "blue",
+            minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+            cursor: isSortable ? "pointer" : "default",
+        }),
+        [columnWidth, isSortable],
+    );
+
+    const headerInnerStyle = useMemo(
+        () => ({
+            overflow: "visible",
+            width: "100%",
+            height: "100%",
+        }),
+        [],
+    );
+
+    const headerContentStyle = useMemo(
+        () => ({
+            ...thStyleWithPin,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: columnWidth,
+            overflow: "hidden",
+            height: TABLE_CHECKBOX_CONTAINER_SIZE,
+            minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+        }),
+        [thStyleWithPin, columnWidth],
+    );
+
+    const columnLabelStyle = useMemo(
+        () => ({
+            flexGrow: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+        }),
+        [],
+    );
+
+    const iconsContainerStyle = useMemo(
+        () => ({
+            display: "flex",
+            alignItems: "center",
+            flexShrink: 0,
+        }),
+        [],
+    );
+
+    const filterIconStyle = useMemo(
+        () => ({
+            padding: "4px",
+            color: getFilterIconColor(),
+        }),
+        [getFilterIconColor],
+    );
 
     return (
         <th onClick={handleHeaderClick}>
-            <div
-                style={{
-                    position: "relative",
-                    maxWidth: columnWidth,
-                    width: columnWidth,
-                    minWidth: columnWidth,
-                    overflow: "hidden",
-                    background: "blue",
-                    minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
-                    cursor: isSortable ? "pointer" : "default",
-                }}
-            >
-                <div
-                    style={{
-                        overflow: "visible",
-                        width: "100%",
-                        height: "100%",
-                    }}
-                >
-                    <div
-                        style={{
-                            ...thStyleWithPin,
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            // cursor: isSortable ? "pointer" : "default",
-                            width: columnWidth,
-                            overflow: "hidden",
-                            height: TABLE_CHECKBOX_CONTAINER_SIZE,
-                            minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
-                        }}
-                    >
-                        {/* Column label and icons */}
-                        <span
-                            style={{
-                                flexGrow: 1,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                            }}
-                        >
+            <div style={headerStyle}>
+                <div style={headerInnerStyle}>
+                    <div style={headerContentStyle}>
+                        <span style={columnLabelStyle}>
                             {column.label}
                             {isPinned === "left" && (
                                 <PushPin
@@ -276,15 +329,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                             )}
                         </span>
 
-                        {/* Sort and filter icons */}
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                flexShrink: 0,
-                            }}
-                        >
-                            {/* Sort icon */}
+                        <div style={iconsContainerStyle}>
                             {isSortable && (
                                 <Tooltip title={"Sort"}>
                                     <IconButton
@@ -292,28 +337,13 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                                         className="header-icon-button"
                                         style={{ padding: "4px" }}
                                         disableRipple
-                                        onClick={() => sort(column.id)}
+                                        onClick={handleSortClick}
                                     >
-                                        {(() => {
-                                            if (!sortDirection) {
-                                                return (
-                                                    <UnfoldMore
-                                                        fontSize="small"
-                                                        style={{ opacity: 0.5 }}
-                                                    />
-                                                );
-                                            }
-                                            return sortDirection === "ASC" ? (
-                                                <ArrowUpward fontSize="small" />
-                                            ) : (
-                                                <ArrowDownward fontSize="small" />
-                                            );
-                                        })()}
+                                        {renderSortIcon}
                                     </IconButton>
                                 </Tooltip>
                             )}
 
-                            {/* Filter icon */}
                             {isFilterable && (
                                 <Tooltip title={"Filter"}>
                                     <Badge
@@ -326,10 +356,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                                             size="small"
                                             className="header-icon-button"
                                             onClick={handleFilterIconClick}
-                                            style={{
-                                                padding: "4px",
-                                                color: getFilterIconColor(),
-                                            }}
+                                            style={filterIconStyle}
                                         >
                                             <FilterList fontSize="small" />
                                         </IconButton>
@@ -337,14 +364,10 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                                 </Tooltip>
                             )}
 
-                            {/* Options icon */}
                             <IconButton
                                 size="small"
                                 className="header-icon-button"
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Prevent triggering sort
-                                    onOptionsClick(e, column.id);
-                                }}
+                                onClick={handleOptionsClick}
                                 style={{ padding: "4px" }}
                             >
                                 <MoreVert fontSize="small" />

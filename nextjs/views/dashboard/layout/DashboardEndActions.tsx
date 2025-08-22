@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import ThemeSwitcher from "./ThemeSwitcher";
-import UserMenu from "./UserMenu";
+import ThemeSwitcher from "@/components/common/ThemeSwitcher";
+import UserMenu from "@/components/common/UserMenu";
 
 export default function DashboardEndActions() {
     return (

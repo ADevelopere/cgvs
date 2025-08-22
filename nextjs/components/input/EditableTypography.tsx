@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import Typography, { TypographyProps } from "@mui/material/Typography";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -16,7 +16,7 @@ type EditableTypographyProps = {
     doubleClickToEdit?: boolean;
     startEditing?: boolean;
     value: string;
-    isValid?: (value: string) => string | undefined | null; // Add this prop
+    isValid?: (value: string) => string | undefined | null;
     onCancel?: () => void;
 };
 
@@ -51,31 +51,31 @@ const EditableTypography: React.FC<EditableTypographyProps> = ({
         setInputValue(value);
     }, [value]);
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         if (!doubleClickToEdit) {
             setIsEditing(true);
         }
-    };
+    }, [doubleClickToEdit]);
 
-    const handleDoubleClick = () => {
+    const handleDoubleClick = useCallback(() => {
         if (doubleClickToEdit) {
             setIsEditing(true);
         }
-    };
+    }, [doubleClickToEdit]);
 
-    const handleTouchStart = () => {
+    const handleTouchStart = useCallback(() => {
         touchTimeout.current = setTimeout(() => {
             setIsEditing(true);
         }, 500);
-    };
+    }, []);
 
-    const handleTouchEnd = () => {
+    const handleTouchEnd = useCallback(() => {
         if (touchTimeout.current) {
             clearTimeout(touchTimeout.current);
         }
-    };
+    }, []);
 
-    const handleSave = async () => {
+    const handleSave = useCallback(async () => {
         if (isValid) {
             const validationError = isValid(inputValue);
             if (validationError) {
@@ -90,21 +90,38 @@ const EditableTypography: React.FC<EditableTypographyProps> = ({
         }
         setError(undefined);
         setIsEditing(false);
-    };
+    }, [isValid, inputValue, onSave]);
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         setInputValue(value);
         setIsEditing(false);
         onCancel?.();
-    };
+    }, [value, onCancel]);
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") {
-            handleSave().then((r) => r);
-        } else if (e.key === "Escape") {
-            handleCancel();
-        }
-    };
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent) => {
+            if (e.key === "Enter") {
+                handleSave().then((r) => r);
+            } else if (e.key === "Escape") {
+                handleCancel();
+            }
+        },
+        [handleSave, handleCancel],
+    );
+
+    const endAdornment = useMemo(
+        () => (
+            <InputAdornment position="end">
+                <IconButton onClick={handleSave} color="success" size="small">
+                    <CheckIcon />
+                </IconButton>
+                <IconButton onClick={handleCancel} color="error" size="small">
+                    <CloseIcon />
+                </IconButton>
+            </InputAdornment>
+        ),
+        [handleSave, handleCancel],
+    );
 
     if (isEditing) {
         return (
@@ -124,25 +141,7 @@ const EditableTypography: React.FC<EditableTypographyProps> = ({
                 inputRef={inputRef}
                 slotProps={{
                     input: {
-                        ...textField.slotProps?.input,
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={handleSave}
-                                    color="success"
-                                    size="small"
-                                >
-                                    <CheckIcon />
-                                </IconButton>
-                                <IconButton
-                                    onClick={handleCancel}
-                                    color="error"
-                                    size="small"
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
+                        endAdornment,
                     },
                 }}
             />

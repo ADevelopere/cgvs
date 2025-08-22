@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -40,16 +40,14 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
   activeFilter,
 }) => {
   const { strings } = useTableLocale();
-
   const { applyTextFilter, clearFilter } = useTableDataContext();
-  // Initialize state with active filter or defaults
+
   const [operation, setOperation] = useState<TextFilterOperation>(
-    activeFilter?.operation || TextFilterOperation.CONTAINS
+    activeFilter?.operation || TextFilterOperation.CONTAINS,
   );
   const [value, setValue] = useState<string>(activeFilter?.value || "");
   const [error, setError] = useState<string | null>(null);
 
-  // Update state when active filter changes
   useEffect(() => {
     if (activeFilter) {
       setOperation(activeFilter.operation);
@@ -61,57 +59,67 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
     setError(null);
   }, [activeFilter, open]);
 
-  const handleOperationChange = (
-    event: SelectChangeEvent<TextFilterOperation>,
-  ) => {
-    const newOperation = event.target.value as TextFilterOperation;
-    setOperation(newOperation);
+  const handleOperationChange = useCallback(
+    (event: SelectChangeEvent<TextFilterOperation>) => {
+      const newOperation = event.target.value as TextFilterOperation;
+      setOperation(newOperation);
+      if (!operationRequiresValue(newOperation)) {
+        setValue("");
+      }
+      setError(null);
+    },
+    [],
+  );
 
-    // Clear value if the operation doesn't require one
-    if (!operationRequiresValue(newOperation)) {
-      setValue("");
-    }
+  const handleValueChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(event.target.value);
+      setError(null);
+    },
+    [],
+  );
 
-    setError(null);
-  };
+  const valueRequired = useMemo(
+    () => operationRequiresValue(operation),
+    [operation],
+  );
 
-  const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-    setError(null);
-  };
-
-  const handleApply = () => {
-    // Validate input
-    if (operationRequiresValue(operation) && !value.trim()) {
+  const handleApply = useCallback(() => {
+    if (valueRequired && !value.trim()) {
       setError("Value is required for this operation");
       return;
     }
-
-    // Create filter clause
     const filterClause: FilterClause<string, TextFilterOperation> = {
       columnId,
       operation,
-      ...(operationRequiresValue(operation) ? { value } : {}),
+      ...(valueRequired ? { value } : {}),
     };
-
     applyTextFilter(filterClause);
     onClose();
-  };
+  }, [
+    applyTextFilter,
+    columnId,
+    onClose,
+    operation,
+    value,
+    valueRequired,
+  ]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     clearFilter(columnId);
     onClose();
-  };
+  }, [clearFilter, columnId, onClose]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleApply();
-    } else if (e.key === "Escape") {
-      onClose();
-    }
-  };
-
-  const valueRequired = operationRequiresValue(operation);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleApply();
+      } else if (e.key === "Escape") {
+        onClose();
+      }
+    },
+    [handleApply, onClose],
+  );
 
   return (
     <Popover
@@ -127,7 +135,7 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
         horizontal: "left",
       }}
     >
-      <Box sx={{ p: 2, width: 300 }}>
+      <Box sx={{ p: 2, width: 300 }} onKeyDown={handleKeyDown}>
         <Typography variant="subtitle2" sx={{ mb: 1 }}>
           Filter: {columnLabel}
         </Typography>
@@ -157,7 +165,6 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
             placeholder="Enter filter value..."
             value={value}
             onChange={handleValueChange}
-            onKeyDown={handleKeyDown}
             fullWidth
             autoFocus
             sx={{ mb: 2 }}

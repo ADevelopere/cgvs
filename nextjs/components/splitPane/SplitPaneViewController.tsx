@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, IconButton, Tooltip } from "@mui/material";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import SplitPane from "./SplitPane";
@@ -33,13 +33,13 @@ const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
     const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
     const [secondPaneVisible, setSecondPaneVisible] = useState<boolean>(true);
 
-    const handleFirstPaneVisibility = () => {
+    const handleFirstPaneVisibility = useCallback(() => {
         setFirstPaneVisible(!firstPaneVisible);
-    };
+    }, [firstPaneVisible]);
 
-    const handleSecondPaneVisibility = () => {
+    const handleSecondPaneVisibility = useCallback(() => {
         setSecondPaneVisible(!secondPaneVisible);
-    };
+    }, [secondPaneVisible]);
 
     return (
         <Box

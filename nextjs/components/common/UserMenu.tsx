@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import {
     Avatar,
     IconButton,
@@ -29,15 +29,15 @@ const UserMenu: React.FC = () => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setAnchorEl(null);
-    };
+    }, []);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         handleClose(); // Close the menu first
         logout();
         router.push("/login");
-    };
+    }, [handleClose, logout, router]);
 
     return (
         <>

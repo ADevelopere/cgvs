@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
     IconButton,
     Popover,
@@ -41,23 +41,25 @@ const ThemeSwitcher: React.FC = () => {
         [isMenuOpen],
     );
 
-    const themeOptions = [
-        {
-            value: ThemeMode.Light,
-            label: strings.themeLight,
-            icon: <LightModeIcon fontSize="small" />,
-        },
-        {
-            value: ThemeMode.Dark,
-            label: strings.themeDark,
-            icon: <DarkModeIcon fontSize="small" />,
-        },
-        {
-            value: ThemeMode.System,
-            label: strings.themeSystem,
-            icon: <SystemModeIcon fontSize="small" />,
-        },
-    ];
+    const themeOptions = useMemo(() => {
+        return [
+            {
+                value: ThemeMode.Light,
+                label: strings.themeLight,
+                icon: <LightModeIcon fontSize="small" />,
+            },
+            {
+                value: ThemeMode.Dark,
+                label: strings.themeDark,
+                icon: <DarkModeIcon fontSize="small" />,
+            },
+            {
+                value: ThemeMode.System,
+                label: strings.themeSystem,
+                icon: <SystemModeIcon fontSize="small" />,
+            },
+        ];
+    }, [strings]);
 
     return (
         <React.Fragment>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import EditorPane from "./EditorPane";
@@ -33,13 +33,13 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
     const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
     const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
 
-    const handleFirstPaneVisibility = () => {
+    const handleFirstPaneVisibility = useCallback(() => {
         setFirstPaneVisible(!firstPaneVisible);
-    };
+    }, [firstPaneVisible]);
 
-    const handleThirdPaneVisibility = () => {
+    const handleThirdPaneVisibility = useCallback(() => {
         setThirdPaneVisible(!thirdPaneVisible);
-    };
+    }, [thirdPaneVisible]);
 
     return (
         <Box

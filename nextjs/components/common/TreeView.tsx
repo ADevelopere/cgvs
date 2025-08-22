@@ -63,54 +63,60 @@ export function TreeView<T extends BaseTreeItem>({
     const [searchTerm, setSearchTerm] = useState("");
 
     // Function to toggle expand/collapse
-    const toggleExpand = (itemId: string | number, event: React.MouseEvent) => {
-        event.stopPropagation();
-        setExpandedItems((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(itemId)) {
-                newSet.delete(itemId);
-            } else {
-                newSet.add(itemId);
-            }
-            return newSet;
-        });
-    };
+    const toggleExpand = useCallback(
+        (itemId: string | number, event: React.MouseEvent) => {
+            event.stopPropagation();
+            setExpandedItems((prev) => {
+                const newSet = new Set(prev);
+                if (newSet.has(itemId)) {
+                    newSet.delete(itemId);
+                } else {
+                    newSet.add(itemId);
+                }
+                return newSet;
+            });
+        },
+        [],
+    );
 
     // Helper function to determine if the renderer is simple or full
-    const renderItem = (item: T, isSelected: boolean, isExpanded: boolean) => {
-        if (!itemRenderer) {
-            // Default renderer
-            const itemLabel = item[labelKey] || "";
-            return (
-                <Typography
-                    variant="body2"
-                    noWrap
-                    sx={{
-                        fontWeight: isSelected ? 500 : 400,
-                        minWidth: "max-content", // Set minimum width to content size
-                        textWrap: "balance",
-                    }}
-                >
-                    {typeof itemLabel === "string"
-                        ? itemLabel
-                        : String(itemLabel)}
-                </Typography>
-            );
-        }
+    const renderItem = useCallback(
+        (item: T, isSelected: boolean, isExpanded: boolean) => {
+            if (!itemRenderer) {
+                // Default renderer
+                const itemLabel = item[labelKey] || "";
+                return (
+                    <Typography
+                        variant="body2"
+                        noWrap
+                        sx={{
+                            fontWeight: isSelected ? 500 : 400,
+                            minWidth: "max-content", // Set minimum width to content size
+                            textWrap: "balance",
+                        }}
+                    >
+                        {typeof itemLabel === "string"
+                            ? itemLabel
+                            : String(itemLabel)}
+                    </Typography>
+                );
+            }
 
-        // Check if it's a simple renderer (one parameter) or full renderer (object parameter)
-        if (itemRenderer.length === 1) {
-            // Simple renderer that only takes the item
-            return (itemRenderer as ItemRendererSimple<T>)(item);
-        } else {
-            // Full renderer that takes an object with item, isSelected, and isExpanded
-            return (itemRenderer as ItemRendererFull<T>)({
-                item,
-                isSelected,
-                isExpanded,
-            });
-        }
-    };
+            // Check if it's a simple renderer (one parameter) or full renderer (object parameter)
+            if (itemRenderer.length === 1) {
+                // Simple renderer that only takes the item
+                return (itemRenderer as ItemRendererSimple<T>)(item);
+            } else {
+                // Full renderer that takes an object with item, isSelected, and isExpanded
+                return (itemRenderer as ItemRendererFull<T>)({
+                    item,
+                    isSelected,
+                    isExpanded,
+                });
+            }
+        },
+        [itemRenderer, labelKey],
+    );
 
     // Update the flatten function to use childrenKey
     const flattenedItems = useMemo(() => {
@@ -252,77 +258,94 @@ export function TreeView<T extends BaseTreeItem>({
     );
 
     // Recursive component to render tree items
-    const renderTreeItems = (items: T[], level = 0) => {
-        return items.map((item) => {
-            const children = item[childrenKey] as T[] | undefined;
-            const hasChildren = children && children.length > 0;
-            const isExpanded = expandedItems.has(item.id);
-            const isSelected = item.id === selectedItemId;
+    const renderTreeItems = useCallback(
+        (items: T[], level = 0) => {
+            return items.map((item) => {
+                const children = item[childrenKey] as T[] | undefined;
+                const hasChildren = children && children.length > 0;
+                const isExpanded = expandedItems.has(item.id);
+                const isSelected = item.id === selectedItemId;
 
-            return (
-                <Box key={item.id}>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            cursor: item.disabled ? "default" : "pointer",
-                            opacity: item.disabled ? 0.5 : 1,
-                            pointerEvents: item.disabled ? "none" : "auto",
-                            paddingInlineStart: `${
-                                level * 20 + (!hasChildren ? 10 : 0)
-                            }px`,
-                            height: `${itemHeight}px`,
-                            borderRadius: 2,
-                            backgroundColor: isSelected
-                                ? item.selectedColor ||
-                                  "rgba(25, 118, 210, 0.08)"
-                                : "transparent",
-                            "&:hover": {
-                                backgroundColor: item.disabled
-                                    ? "transparent"
-                                    : isSelected
-                                      ? item.selectedColor ||
-                                        "rgba(25, 118, 210, 0.12)"
-                                      : "rgba(0, 0, 0, 0.04)",
-                            },
-                        }}
-                        onClick={() => !item.disabled && onSelectItem?.(item)}
-                    >
-                        {hasChildren && (
-                            <IconButton
-                                size="small"
-                                onClick={(e) => toggleExpand(item.id, e)}
-                                sx={{
-                                    padding: "4px",
-                                    marginRight: "4px",
-                                    transform: isExpanded
-                                        ? isRtl
-                                            ? "rotate(-90deg)"
-                                            : "rotate(90deg)"
-                                        : "rotate(0deg)",
-                                    transition: "transform 0.15s ease-in-out",
-                                }}
-                            >
-                                {isRtl ? (
-                                    <ChevronLeftIcon fontSize="medium" />
-                                ) : (
-                                    <ChevronRightIcon fontSize="medium" />
-                                )}
-                                {/* <ChevronRight size={18} /> */}
-                            </IconButton>
+                return (
+                    <Box key={item.id}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                cursor: item.disabled ? "default" : "pointer",
+                                opacity: item.disabled ? 0.5 : 1,
+                                pointerEvents: item.disabled
+                                    ? "none"
+                                    : "auto",
+                                paddingInlineStart: `${
+                                    level * 20 + (!hasChildren ? 10 : 0)
+                                }px`,
+                                height: `${itemHeight}px`,
+                                borderRadius: 2,
+                                backgroundColor: isSelected
+                                    ? item.selectedColor ||
+                                      "rgba(25, 118, 210, 0.08)"
+                                    : "transparent",
+                                "&:hover": {
+                                    backgroundColor: item.disabled
+                                        ? "transparent"
+                                        : isSelected
+                                          ? item.selectedColor ||
+                                            "rgba(25, 118, 210, 0.12)"
+                                          : "rgba(0, 0, 0, 0.04)",
+                                },
+                            }}
+                            onClick={() =>
+                                !item.disabled && onSelectItem?.(item)
+                            }
+                        >
+                            {hasChildren && (
+                                <IconButton
+                                    size="small"
+                                    onClick={(e) => toggleExpand(item.id, e)}
+                                    sx={{
+                                        padding: "4px",
+                                        marginRight: "4px",
+                                        transform: isExpanded
+                                            ? isRtl
+                                                ? "rotate(-90deg)"
+                                                : "rotate(90deg)"
+                                            : "rotate(0deg)",
+                                        transition:
+                                            "transform 0.15s ease-in-out",
+                                    }}
+                                >
+                                    {isRtl ? (
+                                        <ChevronLeftIcon fontSize="medium" />
+                                    ) : (
+                                        <ChevronRightIcon fontSize="medium" />
+                                    )}
+                                    {/* <ChevronRight size={18} /> */}
+                                </IconButton>
+                            )}
+                            {!hasChildren && <Box sx={{ width: 26 }} />}
+
+                            {renderItem(item, isSelected, isExpanded)}
+                        </Box>
+
+                        {hasChildren && isExpanded && (
+                            <Box>{renderTreeItems(children, level + 1)}</Box>
                         )}
-                        {!hasChildren && <Box sx={{ width: 26 }} />}
-
-                        {renderItem(item, isSelected, isExpanded)}
                     </Box>
-
-                    {hasChildren && isExpanded && (
-                        <Box>{renderTreeItems(children, level + 1)}</Box>
-                    )}
-                </Box>
-            );
-        });
-    };
+                );
+            });
+        },
+        [
+            childrenKey,
+            expandedItems,
+            selectedItemId,
+            itemHeight,
+            onSelectItem,
+            toggleExpand,
+            isRtl,
+            renderItem,
+        ],
+    );
 
     const treeHeaderRef = useRef<HTMLDivElement>(null);
     const [treeHeaderRefHeight, setTreeHeaderRefHeight] = useState(0);
