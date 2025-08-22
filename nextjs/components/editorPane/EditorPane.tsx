@@ -24,19 +24,17 @@ import React, {
     useState,
 } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
-import { useAppTheme } from "@/contexts/ThemeContext";
 import { Box } from "@mui/material";
-
 
 // Logger utility
 const logger = {
-    enabled: process.env.NODE_ENV === "development" && true,
-    log: (...args: any[]) => {
+    enabled: process.env.NODE_ENV === "development",
+    log: (...args: unknown[]) => {
         if (logger.enabled) {
             console.log(...args);
         }
     },
-    error: (...args: any[]) => {
+    error: (...args: unknown[]) => {
         if (logger.enabled) {
             console.error(...args);
         }
@@ -84,7 +82,6 @@ type EditorPaneProps = {
     middlePane?: PaneProps;
     thirdPane?: PaneProps;
     resizerProps?: ResizerProps;
-    step?: number;
     direction?: "rtl" | "ltr";
     containerRef?: React.RefObject<HTMLElement>;
     width?: number;
@@ -131,6 +128,7 @@ const savePaneState = (key: string | undefined, state: PaneState) => {
 };
 
 // Helper to create a debounced function
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const debounce = <T extends (...args: any[]) => void>(
     func: T,
     wait: number,
@@ -141,7 +139,6 @@ const debounce = <T extends (...args: any[]) => void>(
         timeout = setTimeout(() => func(...args), wait);
     };
 };
-
 
 // Create a stable debounced version of savePaneState
 const debouncedSavePaneState = debounce(savePaneState, STORAGE_DEBOUNCE_MS);
@@ -159,8 +156,6 @@ const loadFromLocalStorage = (key: string): PaneState | null => {
     }
 };
 
-
-
 const EditorPane: FC<EditorPaneProps> = ({
     allowResize = true,
     children,
@@ -176,7 +171,6 @@ const EditorPane: FC<EditorPaneProps> = ({
     middlePane = { ...defaultPaneProps, visible: true }, // Middle pane is always visible
     thirdPane = defaultPaneProps,
     resizerProps,
-    step = 1,
     direction = "rtl",
     containerRef,
     width,
@@ -193,6 +187,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     const [activeResizer, setActiveResizer] = useState<1 | 2 | null>(null);
     const [position, setPosition] = useState(0);
     const [containerWidth, setContainerWidth] = useState<number>(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [containerHeight, setContainerHeight] = useState<number>(0);
     const previousContainerWidthRef = useRef<number>(0);
 
@@ -207,8 +202,8 @@ const EditorPane: FC<EditorPaneProps> = ({
                 },
                 previousSizes: {
                     first: null,
-                    third: null
-                }
+                    third: null,
+                },
             };
         }
         const state = loadFromLocalStorage(storageKey);
@@ -217,15 +212,23 @@ const EditorPane: FC<EditorPaneProps> = ({
             // Only use stored sizes if visibility matches current state
             return {
                 sizes: state.sizes.map((size, index) => {
-                    if (index === 0 && (firstPane.visible !== state.visibility.first)) return 0;
-                    if (index === 2 && (thirdPane.visible !== state.visibility.third)) return 0;
+                    if (
+                        index === 0 &&
+                        firstPane.visible !== state.visibility.first
+                    )
+                        return 0;
+                    if (
+                        index === 2 &&
+                        thirdPane.visible !== state.visibility.third
+                    )
+                        return 0;
                     return size;
                 }),
                 visibility: {
                     first: state.visibility.first,
-                    third: state.visibility.third
+                    third: state.visibility.third,
                 },
-                previousSizes: state.previousSizes
+                previousSizes: state.previousSizes,
             };
         }
         return {
@@ -236,8 +239,8 @@ const EditorPane: FC<EditorPaneProps> = ({
             },
             previousSizes: {
                 first: null,
-                third: null
-            }
+                third: null,
+            },
         };
     }, [storageKey, firstPane.visible, thirdPane.visible]);
 
@@ -279,32 +282,51 @@ const EditorPane: FC<EditorPaneProps> = ({
         const prevVisibility = paneState.visibility;
         const totalWidth = containerWidth;
 
-        const firstPaneHidden = prevVisibility.first && !currentVisibility.first;
-        const thirdPaneHidden = prevVisibility.third && !currentVisibility.third;
+        const firstPaneHidden =
+            prevVisibility.first && !currentVisibility.first;
+        const thirdPaneHidden =
+            prevVisibility.third && !currentVisibility.third;
         const firstPaneShown = !prevVisibility.first && currentVisibility.first;
         const thirdPaneShown = !prevVisibility.third && currentVisibility.third;
-        const visibilityChanged = firstPaneHidden || thirdPaneHidden || firstPaneShown || thirdPaneShown;
+        const visibilityChanged =
+            firstPaneHidden ||
+            thirdPaneHidden ||
+            firstPaneShown ||
+            thirdPaneShown;
         const widthChanged = totalWidth !== previousContainerWidthRef.current;
 
         let nextSizes = [...paneState.sizes];
-        let nextPreviousSizes = { ...paneState.previousSizes };
+        const nextPreviousSizes = { ...paneState.previousSizes };
 
         if (visibilityChanged) {
             if (firstPaneHidden) {
                 nextPreviousSizes.first = nextSizes[0];
-                nextSizes = [0, Math.max(MIN_PANE_SIZE, nextSizes[1] + nextSizes[0]), nextSizes[2]];
+                nextSizes = [
+                    0,
+                    Math.max(MIN_PANE_SIZE, nextSizes[1] + nextSizes[0]),
+                    nextSizes[2],
+                ];
             } else if (thirdPaneHidden) {
                 nextPreviousSizes.third = nextSizes[2];
-                nextSizes = [nextSizes[0], Math.max(MIN_PANE_SIZE, nextSizes[1] + nextSizes[2]), 0];
+                nextSizes = [
+                    nextSizes[0],
+                    Math.max(MIN_PANE_SIZE, nextSizes[1] + nextSizes[2]),
+                    0,
+                ];
             } else if (firstPaneShown) {
                 const sizeToRestore = nextPreviousSizes.first;
                 const firstInitialRatio = firstPane.preferredRatio ?? 0.33;
-                let restoredFirstSize = sizeToRestore ?? Math.max(MIN_PANE_SIZE, totalWidth * firstInitialRatio);
+                let restoredFirstSize =
+                    sizeToRestore ??
+                    Math.max(MIN_PANE_SIZE, totalWidth * firstInitialRatio);
                 restoredFirstSize = Math.max(MIN_PANE_SIZE, restoredFirstSize);
 
                 let newMiddleSize = nextSizes[1] - restoredFirstSize;
                 if (newMiddleSize < MIN_PANE_SIZE) {
-                    restoredFirstSize = Math.max(0, nextSizes[1] - MIN_PANE_SIZE);
+                    restoredFirstSize = Math.max(
+                        0,
+                        nextSizes[1] - MIN_PANE_SIZE,
+                    );
                     newMiddleSize = MIN_PANE_SIZE;
                 }
                 restoredFirstSize = Math.max(MIN_PANE_SIZE, restoredFirstSize);
@@ -314,12 +336,17 @@ const EditorPane: FC<EditorPaneProps> = ({
             } else if (thirdPaneShown) {
                 const sizeToRestore = nextPreviousSizes.third;
                 const thirdInitialRatio = thirdPane.preferredRatio ?? 0.33;
-                let restoredThirdSize = sizeToRestore ?? Math.max(MIN_PANE_SIZE, totalWidth * thirdInitialRatio);
+                let restoredThirdSize =
+                    sizeToRestore ??
+                    Math.max(MIN_PANE_SIZE, totalWidth * thirdInitialRatio);
                 restoredThirdSize = Math.max(MIN_PANE_SIZE, restoredThirdSize);
 
                 let newMiddleSize = nextSizes[1] - restoredThirdSize;
                 if (newMiddleSize < MIN_PANE_SIZE) {
-                    restoredThirdSize = Math.max(0, nextSizes[1] - MIN_PANE_SIZE);
+                    restoredThirdSize = Math.max(
+                        0,
+                        nextSizes[1] - MIN_PANE_SIZE,
+                    );
                     newMiddleSize = MIN_PANE_SIZE;
                 }
                 restoredThirdSize = Math.max(MIN_PANE_SIZE, restoredThirdSize);
@@ -330,16 +357,27 @@ const EditorPane: FC<EditorPaneProps> = ({
         } else if (widthChanged || nextSizes.reduce((a, b) => a + b, 0) === 0) {
             const currentTotalSize = nextSizes.reduce((a, b) => a + b, 0);
 
-            if (currentTotalSize === 0 || (!currentVisibility.first && !currentVisibility.third)) {
-                const visiblePanesCount = [currentVisibility.first, true, currentVisibility.third].filter(Boolean).length;
+            if (
+                currentTotalSize === 0 ||
+                (!currentVisibility.first && !currentVisibility.third)
+            ) {
+                const visiblePanesCount = [
+                    currentVisibility.first,
+                    true,
+                    currentVisibility.third,
+                ].filter(Boolean).length;
                 if (visiblePanesCount === 1) {
                     nextSizes = [0, totalWidth, 0];
                 } else {
                     const sizePerPane = totalWidth / visiblePanesCount;
                     nextSizes = [
-                        currentVisibility.first ? Math.max(MIN_PANE_SIZE, sizePerPane) : 0,
+                        currentVisibility.first
+                            ? Math.max(MIN_PANE_SIZE, sizePerPane)
+                            : 0,
                         Math.max(MIN_PANE_SIZE, sizePerPane),
-                        currentVisibility.third ? Math.max(MIN_PANE_SIZE, sizePerPane) : 0,
+                        currentVisibility.third
+                            ? Math.max(MIN_PANE_SIZE, sizePerPane)
+                            : 0,
                     ];
                 }
             } else if (currentTotalSize > 0) {
@@ -349,7 +387,9 @@ const EditorPane: FC<EditorPaneProps> = ({
                         (index === 0 && currentVisibility.first) ||
                         index === 1 ||
                         (index === 2 && currentVisibility.third);
-                    return isVisible ? Math.max(MIN_PANE_SIZE, size * scale) : 0;
+                    return isVisible
+                        ? Math.max(MIN_PANE_SIZE, size * scale)
+                        : 0;
                 });
             }
         }
@@ -379,11 +419,16 @@ const EditorPane: FC<EditorPaneProps> = ({
             }
 
             if (diff !== 0) {
-                const otherVisibleIndices = visibleIndices.filter((i) => i !== middleIndex);
+                const otherVisibleIndices = visibleIndices.filter(
+                    (i) => i !== middleIndex,
+                );
                 if (otherVisibleIndices.length > 0) {
                     const diffPerPane = diff / otherVisibleIndices.length;
                     otherVisibleIndices.forEach((i) => {
-                        nextSizes[i] = Math.max(MIN_PANE_SIZE, nextSizes[i] + diffPerPane);
+                        nextSizes[i] = Math.max(
+                            MIN_PANE_SIZE,
+                            nextSizes[i] + diffPerPane,
+                        );
                     });
                 }
             }
@@ -414,7 +459,7 @@ const EditorPane: FC<EditorPaneProps> = ({
             const nextState: PaneState = {
                 sizes: nextSizes,
                 visibility: currentVisibility,
-                previousSizes: nextPreviousSizes
+                previousSizes: nextPreviousSizes,
             };
             setPaneState(nextState);
 
@@ -431,6 +476,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         thirdPane.preferredRatio,
         paneState,
         onChange,
+        saveCurrentState,
     ]);
 
     // Effect for attaching resize observer
@@ -469,7 +515,8 @@ const EditorPane: FC<EditorPaneProps> = ({
         (clientX: number) => {
             if (!active || !activeResizer) return;
 
-            const containerRect = editorPaneRef.current?.getBoundingClientRect();
+            const containerRect =
+                editorPaneRef.current?.getBoundingClientRect();
             if (!containerRect) return;
 
             const containerLeft = containerRect.left;
@@ -481,7 +528,10 @@ const EditorPane: FC<EditorPaneProps> = ({
             );
 
             const rawDelta = boundedClientX - position;
-            const deltaX = direction === 'rtl' && orientation === 'vertical' ? rawDelta : -rawDelta;
+            const deltaX =
+                direction === "rtl" && orientation === "vertical"
+                    ? rawDelta
+                    : -rawDelta;
 
             if (deltaX === 0) return;
 
@@ -510,14 +560,23 @@ const EditorPane: FC<EditorPaneProps> = ({
             if (JSON.stringify(newSizes) !== JSON.stringify(paneState.sizes)) {
                 const nextState: PaneState = {
                     ...paneState,
-                    sizes: newSizes
+                    sizes: newSizes,
                 };
                 setPaneState(nextState);
                 if (onChange) onChange(newSizes);
                 saveCurrentState();
             }
         },
-        [active, activeResizer, paneState, position, onChange, direction, orientation],
+        [
+            active,
+            activeResizer,
+            position,
+            direction,
+            orientation,
+            paneState,
+            onChange,
+            saveCurrentState,
+        ],
     );
 
     const handleMouseMove = useCallback(
@@ -569,7 +628,10 @@ const EditorPane: FC<EditorPaneProps> = ({
     // Memoized pane styles
     const getPaneStyle = useCallback(
         (index: number, paneProps?: PaneProps): CSSProperties => ({
-            flexBasis: paneState.sizes[index] > 0 ? `${paneState.sizes[index]}px` : "0px",
+            flexBasis:
+                paneState.sizes[index] > 0
+                    ? `${paneState.sizes[index]}px`
+                    : "0px",
             flexGrow: 0,
             flexShrink: 0,
             display: paneState.sizes[index] > 0 ? "block" : "none",
@@ -586,12 +648,19 @@ const EditorPane: FC<EditorPaneProps> = ({
 
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", onResizeEnd, { capture: true });
+            document.removeEventListener("mouseup", onResizeEnd, {
+                capture: true,
+            });
         };
-    }, [handleMouseMove]);
+    }, [handleMouseMove, onResizeEnd]);
 
     return (
-        <Box ref={editorPaneRef} className={className} style={wrapperStyle} id="editor-pane">
+        <Box
+            ref={editorPaneRef}
+            className={className}
+            style={wrapperStyle}
+            id="editor-pane"
+        >
             {firstPane.visible && paneState.sizes[0] > 0 && (
                 <Box
                     ref={pane1Ref}

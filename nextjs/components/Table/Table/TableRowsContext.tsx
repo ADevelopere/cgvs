@@ -28,6 +28,7 @@ export type TableRowsContextType = {
   // Row height and styling
   rowHeights: Record<string | number, number>;
   resizeRowHeight: (rowId: number | string, newHeight: number) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getRowStyle?: (rowData: any, rowIndex: number) => React.CSSProperties;
 
   // Pagination and loading
@@ -47,6 +48,7 @@ export type TableRowsProviderProps = {
   children: ReactNode;
 
   onLoadMoreRows?: (params: LoadMoreParams) => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getRowStyle?: (rowData: any, rowIndex: number) => React.CSSProperties;
   onRowResize?: (rowId: number | string, newHeight: number) => void;
 
@@ -90,6 +92,7 @@ export const TableRowsProvider = ({
   
   useEffect(() => {
     const initialRowHeights: Record<string | number, number> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data.forEach((item: any) => {
       initialRowHeights[item[rowIdKey]] = 50; // Default row height
     });

@@ -19,19 +19,18 @@ import {
 import { useTableStyles } from "@/theme/styles";
 
 export type DataRowProps = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rowData: any;
     height: number;
     virtualIndex?: number;
     onRowResize?: (rowId: string | number, newHeight: number) => void;
-    width: number;
     globalIndex: number; // Add globalIndex prop
     indexColWidth: number; // Add indexColWidth prop
-}
+};
 
 const DataRow: React.FC<DataRowProps> = ({
     rowData,
     height,
-    width,
     virtualIndex = 0,
     onRowResize,
     globalIndex,
@@ -70,7 +69,7 @@ const DataRow: React.FC<DataRowProps> = ({
             height: height - 2,
             maxHeight: height - 2,
         };
-    }, [theme]);
+    }, [height, theme.palette.divider]);
 
     const cellEditingStyle: CSSProperties = useMemo(() => {
         return {
@@ -81,7 +80,7 @@ const DataRow: React.FC<DataRowProps> = ({
             borderInlineEnd: `2px solid ${theme.palette.primary.main}`,
             backgroundColor: theme.palette.background.paper,
         };
-    }, [theme]);
+    }, [cellStyle, theme.palette.background.paper, theme.palette.primary.main]);
 
     // Check if this row is selected
     const isRowSelected =
@@ -130,10 +129,17 @@ const DataRow: React.FC<DataRowProps> = ({
             document.removeEventListener("mouseup", handleResizeEnd);
             document.body.classList.remove("resizing");
         };
-    }, [resizing, startY, startHeight, resizeRowHeight, rowData.id]);
+    }, [
+        resizing,
+        startY,
+        startHeight,
+        resizeRowHeight,
+        rowData.id,
+        onRowResize,
+    ]);
 
     const handleRowSelectionChange = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
+        () => {
             if (
                 !toggleRowSelection ||
                 !rowData ||

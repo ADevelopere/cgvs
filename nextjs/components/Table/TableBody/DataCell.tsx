@@ -13,12 +13,12 @@ import TableDataContext, {
 import countries, { CountryType } from "@/utils/country";
 import useAppTranslation from "@/locale/useAppTranslation";
 import CountryTranslations from "@/locale/components/Country";
-import { MuiTelInput } from "mui-tel-input";
-import { CountryCode } from "@/graphql/generated/types";
+import { MuiTelInput, MuiTelInputCountry } from "mui-tel-input";
 // import { useTableStyles } from "@/styles"; // Cannot use hooks in class components
 // inputStyle will be expected as a prop
+import Image from "next/image";
 
-const preferredCountries: CountryCode[] = [
+const preferredCountries: MuiTelInputCountry[] = [
     "SA",
     "PS",
     "YE",
@@ -48,6 +48,7 @@ const preferredCountries: CountryCode[] = [
 ];
 
 // Helper functions (getCellValue, formatCellValue, formatInputValue) remain the same
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getCellValue = (column: EditableColumn, rowData: any) => {
     if (typeof column.accessor === "function") {
         return column.accessor(rowData);
@@ -55,6 +56,7 @@ const getCellValue = (column: EditableColumn, rowData: any) => {
     return rowData[column.accessor];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const formatCellValue = (value: any, type: string) => {
     if (value === null || value === undefined) {
         return "";
@@ -66,7 +68,7 @@ const formatCellValue = (value: any, type: string) => {
                 if (!isNaN(date.getTime())) {
                     return date.toLocaleDateString();
                 }
-            } catch (e) {
+            } catch {
                 console.error("Invalid date:", value);
             }
             return value;
@@ -76,6 +78,7 @@ const formatCellValue = (value: any, type: string) => {
     }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const formatInputValue = (value: any, type: string) => {
     if (value === null || value === undefined) {
         return "";
@@ -87,7 +90,7 @@ const formatInputValue = (value: any, type: string) => {
                 if (!isNaN(date.getTime())) {
                     return date.toISOString().split("T")[0];
                 }
-            } catch (e) {
+            } catch {
                 console.error("Invalid date:", value);
             }
             return value;
@@ -109,6 +112,7 @@ function countryNameByCode(strings: CountryTranslations, code: string): string {
 
 type RenderCellProps = {
     column: EditableColumn;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rowData: any;
     cellEditingStyle: CSSProperties;
     cellStyle: CSSProperties;
@@ -118,11 +122,14 @@ type RenderCellProps = {
 
 interface DataCellState {
     isEditing: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     localTmpValue: any;
     localErrorMessage: string | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const withTranslation = (WrappedComponent: React.ComponentType<any>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function WithTranslationComponent(props: any) {
         const countryStrings = useAppTranslation("countryTranslations");
         return <WrappedComponent {...props} countryStrings={countryStrings} />;
@@ -212,6 +219,7 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
         return false;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validateValue = (value: any): string | null => {
         return this.props.column?.getIsValid?.(value) ?? null;
     };
@@ -357,12 +365,13 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
                                 gap: 1,
                             }}
                         >
-                            <img
-                                loading="lazy"
-                                width="20"
-                                height="15"
+                            <Image
                                 src={`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`}
                                 alt=""
+                                width={20}
+                                height={15}
+                                style={{ objectFit: "cover" }}
+                                loading="lazy"
                             />
                             {this.props.countryStrings[country.code]}
                         </Box>
@@ -443,6 +452,7 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
                     }
                     renderOption={(
                         props: React.HTMLAttributes<HTMLLIElement> & {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             key: any;
                         },
                         option: CountryType,
@@ -457,12 +467,13 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
                                 sx={{ "& > img": { mr: 0, flexShrink: 0 } }}
                                 {...optionProps}
                             >
-                                <img
-                                    loading="lazy"
-                                    width="20"
-                                    height="15"
+                                <Image
                                     src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
                                     alt=""
+                                    width={20}
+                                    height={15}
+                                    style={{ objectFit: "cover" }}
+                                    loading="lazy"
                                 />
                                 {countryNameByCode(
                                     this.props.countryStrings,
@@ -506,7 +517,6 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
                     defaultCountry={"EG"}
                     focusOnSelectCountry={true}
                     excludedCountries={["IL"]}
-                    // @ts-ignore
                     preferredCountries={preferredCountries}
                     fullWidth
                     error={localErrorMessage !== null}
