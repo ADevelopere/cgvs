@@ -11,17 +11,13 @@ import type {
     UpdateTemplateInput,
     TemplateQuery,
 } from "@/graphql/generated/types";
-import { mapSingleTextTemplateVariable } from "../templateVariable/text-template-variable-mappers";
-import { mapSingleNumberTemplateVariable } from "../templateVariable/number-template-variable-mappers";
-import { mapSingleSelectTemplateVariable } from "../templateVariable/select-template-variable-mappers";
-import { mapSingleDateTemplateVariable } from "../templateVariable/date-template-variable-mappers";
+
 
 export type TemplateSource =
     | CreateTemplateMutation
     | DeleteTemplateMutation
     | SuspendTemplateMutation
     | UnsuspendTemplateMutation
-    | UpdateTemplateMutation
     | UpdateTemplateMutation
     | TemplateQuery; // not implemented yet
 
@@ -33,9 +29,9 @@ type PartialTemplateCategory = Partial<TemplateCategory> & { id: string };
  */
 const mapCategoryForTemplate = (
     category: PartialTemplateCategory | null | undefined,
-): TemplateCategory => {
+): TemplateCategory | null => {
     if (!category) {
-        return {} as TemplateCategory;
+        return null;
     }
 
     return {
@@ -66,9 +62,9 @@ const mapCategoryForTemplate = (
 const mapTemplate = (
     template: PartialTemplate | null | undefined,
     previousTemplate?: Template | null,
-): Template => {
+): Template | null => {
     if (!template) {
-        return {} as Template;
+        return null;
     }
 
     return {
@@ -87,27 +83,14 @@ const mapTemplate = (
                   template.category as PartialTemplateCategory,
               )
             : (previousTemplate?.category ?? ({} as TemplateCategory)),
-        variables: template.variables?.map((variable: any) => {
-            switch (variable.__typename) {
-                case "TemplateTextVariable":
-                    return mapSingleTextTemplateVariable(variable);
-                case "TemplateNumberVariable":
-                    return mapSingleNumberTemplateVariable(variable);
-                case "TemplateSelectVariable":
-                    return mapSingleSelectTemplateVariable(variable);
-                case "TemplateDateVariable":
-                    return mapSingleDateTemplateVariable(variable);
-                default:
-                    return null;
-            }
-        }) ?? [],
+    variables: template.variables?.map((variable) => variable) ?? [],
     } as Template;
 };
 
 /**
  * Maps a creation template mutation result to a Template
  */
-const mapCreateTemplate = (source: CreateTemplateMutation): Template => {
+const mapCreateTemplate = (source: CreateTemplateMutation): Template | null => {
     return mapTemplate(source.createTemplate as PartialTemplate);
 };
 
@@ -117,7 +100,7 @@ const mapCreateTemplate = (source: CreateTemplateMutation): Template => {
 const mapDeleteTemplate = (
     source: DeleteTemplateMutation,
     previousTemplate?: Template,
-): Template => {
+): Template | null => {
     return mapTemplate(
         source.deleteTemplate as PartialTemplate,
         previousTemplate,
@@ -130,7 +113,7 @@ const mapDeleteTemplate = (
 const mapSuspendTemplate = (
     source: SuspendTemplateMutation,
     previousTemplate?: Template,
-): Template => {
+): Template | null => {
     return mapTemplate(
         source.suspendTemplate as PartialTemplate,
         previousTemplate,
@@ -143,7 +126,7 @@ const mapSuspendTemplate = (
 const mapUnsuspendTemplate = (
     source: UnsuspendTemplateMutation,
     previousTemplate?: Template,
-): Template => {
+): Template | null => {
     return mapTemplate(
         source.unsuspendTemplate as PartialTemplate,
         previousTemplate,
@@ -156,62 +139,11 @@ const mapUnsuspendTemplate = (
 const mapUpdateTemplate = (
     source: UpdateTemplateMutation,
     previousTemplate?: Template,
-): Template => {
+): Template | null => {
     return mapTemplate(
         source.updateTemplate as PartialTemplate,
         previousTemplate,
     );
-};
-
-
-/**
- * Maps a template variable from any source to a consistent TemplateVariable type
- */
-const mapSingleTemplateVariable = (variable: any): any => {
-    if (!variable) {
-        return null;
-    }
-
-    const baseVariable = {
-        id: variable.id,
-        name: variable.name,
-        description: variable.description ?? null,
-        required: variable.required ?? false,
-        order: variable.order ?? 0,
-        type: variable.type,
-    };
-
-    switch (variable.__typename) {
-        case "TemplateTextVariable":
-            return {
-                ...baseVariable,
-                min_length: variable.min_length ?? null,
-                max_length: variable.max_length ?? null,
-                pattern: variable.pattern ?? null,
-            };
-        case "TemplateNumberVariable":
-            return {
-                ...baseVariable,
-                min_value: variable.min_value ?? null,
-                max_value: variable.max_value ?? null,
-                decimal_places: variable.decimal_places ?? null,
-            };
-        case "TemplateDateVariable":
-            return {
-                ...baseVariable,
-                min_date: variable.min_date ?? null,
-                max_date: variable.max_date ?? null,
-                format: variable.format ?? null,
-            };
-        case "TemplateSelectVariable":
-            return {
-                ...baseVariable,
-                options: variable.options ?? [],
-                multiple: variable.multiple ?? false,
-            };
-        default:
-            return baseVariable;
-    }
 };
 
 /**
@@ -235,7 +167,7 @@ const mapTemplateFromQuery = (source: TemplateQuery): Template | null => {
                   template.category as PartialTemplateCategory,
               )
             : ({} as TemplateCategory),
-        variables: template.variables?.map(mapSingleTemplateVariable) ?? [],
+    variables: template.variables?.map((variable) => variable) ?? [],
     } as Template;
 };
 
@@ -295,9 +227,9 @@ export const mapTemplates = (
 
 export const mapTemplateConfig = (
     source: TemplateConfigQuery,
-): TemplateConfig => {
-    if (!source || !source.templateConfig) {
-        return {} as TemplateConfig;
+): TemplateConfig | null => {
+    if (!source.templateConfig) {
+        return null;
     }
 
     return {

@@ -9,20 +9,21 @@ import {
 } from "react";
 import axios from "@/utils/axios";
 import { Alert, Snackbar } from "@mui/material";
-import { useTemplateVariables } from "./TemplateVariablesContext";
 import * as excelUtils from "@/utils/excel/excelUtils";
-import { Recipient, TemplateVariableType } from "./template.types";
+import { Recipient } from "../nextjs/contexts/template/template.types";
 import { ValidationResult } from "@/utils/excel/types";
-import { useTemplateManagement } from "./TemplateManagementContext";
+import { useTemplateManagement } from "../nextjs/contexts/template/TemplateManagementContext";
 
 // Logger utility
 const logger = {
     enabled: process.env.NODE_ENV === "development" && false,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     log: (...args: any[]) => {
         if (logger.enabled) {
             console.log(...args);
         }
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     error: (...args: any[]) => {
         if (logger.enabled) {
             console.error(...args);

@@ -24,42 +24,9 @@ type PartialTextTemplateVariable = Partial<TextTemplateVariable> & {
 const mapTextTemplateVariable = (
     variable: PartialTextTemplateVariable | null | undefined,
     previousVariable?: TextTemplateVariable | null,
-): TextTemplateVariable => {
+): TextTemplateVariable | null => {
     if (!variable) {
-        // Create a minimal valid TextTemplateVariable
-        return {
-            id: 0,
-            name: "",
-            description: null,
-            required: false,
-            order: 0,
-            previewValue: null,
-            template: {
-                id: 0,
-                name: "",
-                order: 0,
-                category: {
-                    id: 0,
-                    name: "",
-                    description: null,
-                    imageUrl: null,
-                    order: 0,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    templates: [],
-                    childCategories: [],
-                    parentCategory: null,
-                },
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                variables: [],
-            } as Template,
-            type: "TEXT",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            minLength: null,
-            maxLength: null,
-        } as TextTemplateVariable;
+        return null;
     }
 
     return {
@@ -70,7 +37,9 @@ const mapTextTemplateVariable = (
         required: variable.required ?? previousVariable?.required ?? false,
         order: variable.order ?? previousVariable?.order ?? 0,
         previewValue:
-            variable.textPreviewValue ?? previousVariable?.textPreviewValue ?? null,
+            variable.textPreviewValue ??
+            previousVariable?.textPreviewValue ??
+            null,
         template:
             variable.template ??
             previousVariable?.template ??
@@ -95,7 +64,7 @@ const mapTextTemplateVariable = (
  */
 const mapCreateTextTemplateVariable = (
     source: CreateTextTemplateVariableMutation,
-): TextTemplateVariable => {
+): TextTemplateVariable | null => {
     return mapTextTemplateVariable(
         source.createTextTemplateVariable as PartialTextTemplateVariable,
     );
@@ -107,7 +76,7 @@ const mapCreateTextTemplateVariable = (
 const mapUpdateTextTemplateVariable = (
     source: UpdateTextTemplateVariableMutation,
     previousVariable?: TextTemplateVariable,
-): TextTemplateVariable => {
+): TextTemplateVariable | null => {
     return mapTextTemplateVariable(
         source.updateTextTemplateVariable as PartialTextTemplateVariable,
         previousVariable,
@@ -120,7 +89,7 @@ const mapUpdateTextTemplateVariable = (
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
     previousVariable?: TextTemplateVariable,
-): TextTemplateVariable => {
+): TextTemplateVariable | null => {
     return mapTextTemplateVariable(
         source.deleteTemplateVariable as PartialTextTemplateVariable,
         previousVariable,
@@ -167,7 +136,6 @@ export const mapTextTemplateVariableToInput = (
         maxLength: variable.maxLength,
     };
 };
-
 
 export const mapToCreateTextTemplateVariableInput = (
     source: TextTemplateVariable | null | undefined,
