@@ -504,12 +504,12 @@ const EditorPane: FC<EditorPaneProps> = ({
         if (onDragStarted) onDragStarted();
     };
 
-    const onResizeEnd = () => {
+    const onResizeEnd = useCallback(() => {
         if (!active) return;
         setActive(false);
         setActiveResizer(null);
         if (onDragFinished) onDragFinished(paneState.sizes);
-    };
+    }, [active, onDragFinished, paneState.sizes]);
 
     const onResize = useCallback(
         (clientX: number) => {

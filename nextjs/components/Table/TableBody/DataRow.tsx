@@ -83,8 +83,11 @@ const DataRow: React.FC<DataRowProps> = ({
     }, [cellStyle, theme.palette.background.paper, theme.palette.primary.main]);
 
     // Check if this row is selected
-    const isRowSelected =
-        rowSelectionEnabled && selectedRowIds.includes(rowData[rowIdKey]);
+    const isRowSelected = useMemo(() => {
+        return (
+            rowSelectionEnabled && selectedRowIds.includes(rowData[rowIdKey])
+        );
+    }, [rowSelectionEnabled, selectedRowIds, rowData, rowIdKey]);
 
     const handleResizeStart = useCallback(
         (e: React.MouseEvent) => {
@@ -138,20 +141,13 @@ const DataRow: React.FC<DataRowProps> = ({
         onRowResize,
     ]);
 
-    const handleRowSelectionChange = useCallback(
-        () => {
-            if (
-                !toggleRowSelection ||
-                !rowData ||
-                rowData[rowIdKey] === undefined
-            )
-                return;
+    const handleRowSelectionChange = useCallback(() => {
+        if (!toggleRowSelection || !rowData || rowData[rowIdKey] === undefined)
+            return;
 
-            const rowId = rowData[rowIdKey];
-            toggleRowSelection(rowId);
-        },
-        [rowData, rowIdKey, toggleRowSelection],
-    );
+        const rowId = rowData[rowIdKey];
+        toggleRowSelection(rowId);
+    }, [rowData, rowIdKey, toggleRowSelection]);
     const backgroundColor = useMemo(() => {
         if (isRowSelected) {
             return theme.palette.action.selected;

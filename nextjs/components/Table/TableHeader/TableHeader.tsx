@@ -1,5 +1,5 @@
 import type React from "react";
-import { useRef, useState, useCallback, use, useMemo } from "react";
+import { useRef, useState, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
 import ColumnHeaderCell from "./ColumnHeaderCell";
 import ColumnOptionsMenu from "./ColumnOptionsMenu";
@@ -165,12 +165,7 @@ const TableHeader: React.FC<{
                 return handleDateFilterIconClick;
             }
         },
-        [
-            handleTextFilterIconClick,
-            handleNumberFilterIconClick,
-            handleDateFilterIconClick,
-            handlePopoverFilterIconClick,
-        ],
+        [handleTextFilterIconClick, handleNumberFilterIconClick, handleDateFilterIconClick],
     );
 
     const handleOptionsClick = useCallback(
@@ -235,13 +230,14 @@ const TableHeader: React.FC<{
         [applyFilter, closeFilterPopover],
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const closeFilterPopovers = useCallback(() => {
         // Close all filter popovers
         closeTextFilterPopover();
         closeNumberFilterPopover();
         closeDateFilterPopover();
         closeFilterPopover();
-    }, []);
+    }, [closeDateFilterPopover, closeFilterPopover, closeNumberFilterPopover, closeTextFilterPopover]);
 
     return (
         <div
@@ -305,10 +301,9 @@ const TableHeader: React.FC<{
 
                 {columns.map((column) => {
                     // Existing column header code...
-                    // Determine if this column is pinned
-                    const pinPosition = useMemo(() => {
-                        return pinnedColumns[column.id];
-                    }, [pinnedColumns, column.id]);
+                    // Determine if this column is pinned (moved outside of render for performance)
+                    const pinPosition = pinnedColumns[column.id];
+
                     return (
                         <ColumnHeaderCell
                             key={column.id}
@@ -318,7 +313,8 @@ const TableHeader: React.FC<{
                                 handlePopoverFilterIconClick
                             }
                             onTextFilterIconClick={
-                                getFilterIconClickHandler(column) as any
+                                getFilterIconClickHandler(column) ??
+                                (() => {})
                             }
                             isPinned={pinPosition}
                         />

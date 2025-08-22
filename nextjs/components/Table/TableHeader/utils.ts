@@ -14,6 +14,7 @@ import {
  */
 export const getActiveTextFilter = (
     columnId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filters: Record<string, any>,
 ): FilterClause<string, TextFilterOperation> | null => {
     // Then check client filters
@@ -42,6 +43,7 @@ export const getActiveTextFilter = (
  */
 export const getActiveNumberFilter = (
     columnId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filters: Record<string, any>,
 ): FilterClause<number, NumberFilterOperation> | null => {
     // Then check client filters
@@ -61,6 +63,7 @@ export const getActiveNumberFilter = (
  */
 export const getActiveDateFilter = (
     columnId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filters: Record<string, any>,
 ): FilterClause<DateFilterValue, DateFilterOperation> | null => {
 
@@ -81,6 +84,7 @@ export const getActiveDateFilter = (
  * Determine the state of the "select all" checkbox
  */
 export const getSelectAllCheckboxState = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any[],
     selectedRowIds: Array<string | number>,
     rowIdKey: string = "id",
