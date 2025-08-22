@@ -148,6 +148,38 @@
     cancelAll: string;
     uploadLocation: string;
 
+    // File Selector translations
+    selectLocation: string;
+    selectLocationFirst: string;
+    invalidFileTypes: string;
+    allowedTypes: string;
+    dropFilesHere: string;
+    dragFilesHere: string;
+    orClickToSelect: string;
+    selectFiles: string;
+    completed: string;
+    uploading: string;
+    clearList: string;
+    preview: string;
+    selectOrUploadFiles: string;
+    selectOrUploadFile: string;
+    selectFile: string;
+    select: string;
+    close: string;
+    filesSelected: string;
+    fileSelected: string;
+    noFileSelected: string;
+    max: string;
+    selectionLimitReached: string;
+    selectAll: string;
+    clearSelection: string;
+    refresh: string;
+    view: string;
+    grid: string;
+    list: string;
+    selectLocationToViewFiles: string;
+    noFilesInLocation: string;
+
 };
 
 export default StorageTranslations;

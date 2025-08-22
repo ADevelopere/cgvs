@@ -5,3 +5,5 @@ export * from "./storage.type";
 export { useStorageLocation } from "./useStorageLocation";
 export { useStorageManagement, StorageManagementProvider } from "./StorageManagementContext";
 export { useStorageGraphQL, StorageGraphQLProvider } from "./StorageGraphQLContext";
+export { useFileSelector, FileSelectorProvider } from "./FileSelectorContext";
+export type { FileSelectorContextType } from "./FileSelectorContext";
