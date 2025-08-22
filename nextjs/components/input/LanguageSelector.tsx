@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -47,7 +48,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             style={style}
             getOptionLabel={(option) => strings[option] || option}
             renderOption={(
-                props: React.HTMLAttributes<HTMLLIElement> & { key: any },
+                props: React.HTMLAttributes<HTMLLIElement> & {
+                    key: string | number;
+                },
                 option: AppLanguage,
             ) => {
                 // key is extracted from props to prevent it from being passed to the DOM
@@ -65,13 +68,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                             },
                         }}
                     >
-                        <img
-                            loading="lazy"
-                            width="20"
-                            height="15"
+                        <Image
+                            width={20}
+                            height={15}
                             src={`https://unpkg.com/language-icons/icons/${option}.svg`}
-                            alt=""
-                            style={{ objectFit: 'contain' }}
+                            alt={option}
+                            style={{ objectFit: "contain" }}
+                            unoptimized
                         />
                         {strings[option] || option}
                     </Box>
@@ -87,13 +90,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                             ...params.InputProps,
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <img
-                                        loading="lazy"
-                                        width="20"
-                                        height="15"
+                                    <Image
+                                        width={20}
+                                        height={15}
                                         src={`https://unpkg.com/language-icons/icons/${language}.svg`}
-                                        alt=""
-                                        style={{ objectFit: 'contain' }}
+                                        alt={language}
+                                        style={{ objectFit: "contain" }}
+                                        unoptimized
                                     />
                                 </InputAdornment>
                             ),

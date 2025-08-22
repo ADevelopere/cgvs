@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -63,7 +64,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
             onBlur={onBlur}
             getOptionLabel={(option) => countryNameByCode(strings, option.code)}
             renderOption={(
-                props: React.HTMLAttributes<HTMLLIElement> & { key: any },
+                props: React.HTMLAttributes<HTMLLIElement> & { key: string | number },
                 option: CountryType,
             ) => {
                 // key is extracted from props to prevent it from being passed to the DOM
@@ -76,12 +77,13 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
                         sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
                         {...optionProps}
                     >
-                        <img
-                            loading="lazy"
-                            width="20"
-                            height="15"
+                        <Image
+                            width={20}
+                            height={15}
                             src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                            alt=""
+                            alt={option.code}
+                            style={{ objectFit: "contain" }}
+                            unoptimized
                         />
                         {countryNameByCode(strings, option.code)}
                     </Box>

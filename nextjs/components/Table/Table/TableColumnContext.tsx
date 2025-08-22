@@ -91,7 +91,7 @@ export const TableColumnsProvider = ({
                 [columnId]: Math.max(newWidth, 50), // Ensure minimum width of 50px
             }));
         },
-        [columns, initialWidths],
+        [columns],
     );
 
     const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
@@ -105,7 +105,7 @@ export const TableColumnsProvider = ({
             setColumnWidth(columnId, newWidth);
             onResizeColumn?.(columnId, newWidth);
         },
-        [setColumnWidths, onResizeColumn],
+        [setColumnWidth, onResizeColumn],
     );
 
     const pinColumn = useCallback((columnId: string, position: PinPosition) => {
@@ -114,22 +114,24 @@ export const TableColumnsProvider = ({
             [columnId]: position,
         }));
         onPinColumn?.(columnId, position);
-    }, []);
+    }, [onPinColumn]);
 
     const hideColumn = useCallback((columnId: string) => {
         setHiddenColumns((prev) => [...prev, columnId]);
         onHideColumn?.(columnId);
-    }, []);
+    }, [onHideColumn]);
 
     const showColumn = useCallback((columnId: string) => {
         setHiddenColumns((prev) => prev.filter((id) => id !== columnId));
         onShowColumn?.(columnId);
-    }, []);
+    }, [onShowColumn]);
 
     // Auto-size column method
     const autosizeColumn = useCallback(
         (columnId: string) => {
-            const column = columns.find((col: EditableColumn) => col.id === columnId);
+            const column = columns.find(
+                (col: EditableColumn) => col.id === columnId,
+            );
             if (!column) return;
 
             // Use requestAnimationFrame to ensure DOM is ready
@@ -149,8 +151,9 @@ export const TableColumnsProvider = ({
                 let maxWidth = tempSpan.offsetWidth + 80; // Add space for icons and padding
 
                 // Check data cells
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 data.forEach((row: any) => {
-                    let cellValue =
+                    const cellValue =
                         typeof column.accessor === "function"
                             ? column.accessor(row)
                             : row[column.accessor];
@@ -167,7 +170,7 @@ export const TableColumnsProvider = ({
                                 formattedValue = !isNaN(date.getTime())
                                     ? date.toLocaleDateString()
                                     : cellValue;
-                            } catch (e) {
+                            } catch {
                                 formattedValue = cellValue;
                             }
                         }
@@ -187,7 +190,7 @@ export const TableColumnsProvider = ({
             });
             onAutosizeColumn?.(columnId);
         },
-        [columns, data],
+        [columns, data, onAutosizeColumn],
     );
 
     // Filter out hidden columns
@@ -208,24 +211,24 @@ export const TableColumnsProvider = ({
         );
     }, [visibleColumns, pinnedColumns]);
 
-    const unpinnedColumns = useMemo(() => {
-        return;
-        visibleColumns.filter((column) => !pinnedColumns[column.id]);
-    }, [visibleColumns, pinnedColumns]);
+    // const unpinnedColumns = useMemo(() => {
+    //     return;
+    //     visibleColumns.filter((column) => !pinnedColumns[column.id]);
+    // }, [visibleColumns, pinnedColumns]);
 
-    const leftPinnedWidth = useMemo(() => {
-        return leftPinnedColumns.reduce(
-            (sum, column) => sum + columnWidths[column.id],
-            0,
-        );
-    }, [leftPinnedColumns, columnWidths]);
+    // const leftPinnedWidth = useMemo(() => {
+    //     return leftPinnedColumns.reduce(
+    //         (sum, column) => sum + columnWidths[column.id],
+    //         0,
+    //     );
+    // }, [leftPinnedColumns, columnWidths]);
 
-    const rightPinnedWidth = useMemo(() => {
-        return rightPinnedColumns.reduce(
-            (sum, column) => sum + columnWidths[column.id],
-            0,
-        );
-    }, [rightPinnedColumns, columnWidths]);
+    // const rightPinnedWidth = useMemo(() => {
+    //     return rightPinnedColumns.reduce(
+    //         (sum, column) => sum + columnWidths[column.id],
+    //         0,
+    //     );
+    // }, [rightPinnedColumns, columnWidths]);
 
     const pinnedLeftStyle = useMemo(() => {
         return {
@@ -276,11 +279,12 @@ export const TableColumnsProvider = ({
             autosizeColumn,
         }),
         [
-            columns,
             columnWidths,
+            columns,
             hiddenColumns,
             pinnedColumns,
-            setColumnWidths,
+            pinnedLeftStyle,
+            pinnedRightStyle,
             resizeColumn,
             setColumnWidth,
             pinColumn,
