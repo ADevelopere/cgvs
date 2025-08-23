@@ -1,28 +1,25 @@
 package services
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.server.config.ApplicationConfig
+import di.JwtConfig
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import schema.model.User
-import schema.model.Session
-import repositories.UserRepository
 import repositories.SessionRepository
+import repositories.UserRepository
 import schema.model.RegisterInput
+import schema.model.Session
+import schema.model.User
 import java.util.*
 
 class AuthService(
     private val userRepository: UserRepository,
     private val sessionRepository: SessionRepository,
-    applicationConfig: ApplicationConfig
+    private val jwtConfig: JwtConfig,
+    private val jwtBuilder: JWTCreator.Builder
 ) {
-    private val jwtSecret: String = applicationConfig.property("postgres.secret").getString()
-    private val jwtDomain: String = applicationConfig.property("postgres.domain").getString()
-    private val jwtAudience: String = applicationConfig.property("postgres.audience").getString()
-
     suspend fun authenticateUser(email: String, password: String): User? {
         val user = userRepository.findByEmail(email)
         return if (user != null && BCrypt.verifyer()
@@ -49,22 +46,29 @@ class AuthService(
             email = input.email,
             password = hashedPassword,
             createdAt = now,
-            updatedAt = now
+            updatedAt = now,
         )
 
         return userRepository.create(newUser)
     }
 
-    fun generateJWT(user: User): String {
-        return JWT.create()
+    fun generateAccessToken(user: User): String {
+        return jwtBuilder
             .withSubject("Authentication")
-            .withIssuer(jwtDomain)
-            .withAudience(jwtAudience)
             .withClaim("userId", user.id)
             .withClaim("email", user.email.value)
             .withClaim("isAdmin", user.isAdmin)
-            .withExpiresAt(Date(System.currentTimeMillis() + 3600000)) // 1 hour
-            .sign(Algorithm.HMAC256(jwtSecret))
+            .withExpiresAt(Date(System.currentTimeMillis() + 900000)) // 15 minutes
+            .sign(Algorithm.HMAC256(jwtConfig.secret))
+    }
+
+    suspend fun refreshAccessToken(refreshToken: String): String? {
+        val user = getUserFromSession(refreshToken)
+        return if (user != null) {
+            generateAccessToken(user)
+        } else {
+            null
+        }
     }
 
     suspend fun createSession(user: User, ipAddress: String?, userAgent: String?): Session {
@@ -77,7 +81,7 @@ class AuthService(
             ipAddress = ipAddress,
             userAgent = userAgent,
             payload = "authenticated",
-            lastActivity = now
+            lastActivity = now,
         )
 
         return sessionRepository.create(session)
@@ -86,7 +90,7 @@ class AuthService(
     suspend fun validateSession(sessionId: String): Session? {
         val session = sessionRepository.findById(sessionId)
         return if (session != null && !isSessionExpired(session)) {
-            // Update last activity
+            // Update last activity to keep the refresh token alive
             val now = (Clock.System.now().epochSeconds).toInt()
             sessionRepository.updateLastActivity(sessionId, now)
             session
@@ -126,12 +130,12 @@ class AuthService(
 
     private fun isSessionExpired(session: Session): Boolean {
         val now = Clock.System.now().epochSeconds.toInt()
-        val sessionTimeout = 3600 // 1 hour in seconds
+        val sessionTimeout = 604800 // 7 days in seconds
         return (now - session.lastActivity) > sessionTimeout
     }
 
     suspend fun cleanupExpiredSessions() {
-        val cutoffTime = (Clock.System.now().epochSeconds - 3600).toInt() // 1 hour ago
+        val cutoffTime = (Clock.System.now().epochSeconds - 604800).toInt() // 7 days ago
         sessionRepository.deleteExpired(cutoffTime)
     }
 }

@@ -15,11 +15,11 @@ function convertToConstName(name: string): string {
         const char = chars[i];
         const prevChar = chars[i - 1];
 
-        // Check if current character is uppercase and not a number
+        // Check if the current character is uppercase and not a number
         if (char === char.toUpperCase() && char !== char.toLowerCase()) {
             // Only add underscore if:
-            // 1. Previous character is lowercase, or
-            // 2. Previous character is uppercase and next character is lowercase
+            // 1. The Previous character is lowercase, or
+            // 2. The Previous character is uppercase and the next character is lowercase
             if (
                 prevChar !== prevChar.toUpperCase() ||
                 (i < chars.length - 1 &&
@@ -37,7 +37,7 @@ function convertToConstName(name: string): string {
 }
 
 const storageKeywords = ["file", "folder", "upload", "storage"];
-const authKeywords = ["auth", "login", "logout", "register", "me", "user"];
+const authKeywords = ["auth", "login", "logout", "register", "me", "user", "token"];
 
 function getSubdirectory(operationName: string): string {
     const lowerCaseOperationName = operationName.toLowerCase();

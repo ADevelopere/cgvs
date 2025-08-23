@@ -15,10 +15,11 @@ postgres:
   url: "jdbc:postgresql://localhost:5432/postgres"
   user: postgres
   password: postgres
-  domain: "https://jwt-provider-domain/"
+jwt:
+  domain: "https://cgvs/"
   audience: "jwt-audience"
-  realm: "ktor sample app"
-  secret: "your-super-secret-jwt-key-change-in-production"
+  realm: "Certificate Generator & Verifier System"
+  secret: "dc591859880e31dfc4faddf732cc7411"
 
 filesystem:
   upload_limit: 10  # in MB

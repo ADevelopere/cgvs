@@ -110,7 +110,7 @@ const StudentTable: React.FC = () => {
         setInitialWidths(newWidths);
         // Save widths to state
         widthsInitialized.current = true;
-    }, [tableContainerRef]);
+    }, [columns, tableContainerRef]);
 
     return (
         <TableProvider
