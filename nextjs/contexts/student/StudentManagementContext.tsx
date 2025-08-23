@@ -109,7 +109,7 @@ export const StudentManagementProvider: React.FC<{
         };
 
         fetchStudents();
-    }, [queryParams, studentsQuery]);
+    }, [notifications, queryParams, studentsQuery]);
 
     const handleSetQueryParams = useCallback(
         (params: Partial<Graphql.StudentsQueryVariables>) => {
@@ -152,7 +152,7 @@ export const StudentManagementProvider: React.FC<{
                 return false;
             }
         },
-        [createStudentMutation],
+        [createStudentMutation, notifications],
     );
 
     const handlePartialUpdateStudent = useCallback(
@@ -192,7 +192,7 @@ export const StudentManagementProvider: React.FC<{
                 return false;
             }
         },
-        [partialUpdateStudentMutation],
+        [notifications, partialUpdateStudentMutation],
     );
 
     const handleDeleteStudent = useCallback(
@@ -223,7 +223,7 @@ export const StudentManagementProvider: React.FC<{
                 return false;
             }
         },
-        [deleteStudentMutation],
+        [deleteStudentMutation, notifications],
     );
 
     const handleToggleStudentSelect = useCallback((studentId: number) => {

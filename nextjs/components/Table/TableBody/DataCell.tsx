@@ -538,17 +538,15 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
             />
         );
 
-        return localErrorMessage ? (
+        return (
             <Tooltip
-                open={true}
-                title={localErrorMessage}
+                open={!!localErrorMessage}
+                title={localErrorMessage ?? ""}
                 arrow
                 placement="bottom-start"
             >
                 {inputElement}
             </Tooltip>
-        ) : (
-            inputElement
         );
     };
 

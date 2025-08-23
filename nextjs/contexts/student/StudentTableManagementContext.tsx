@@ -95,7 +95,6 @@ export const StudentTableManagementProvider: React.FC<{
 
     const validateGender = useCallback(
         (value: string): string | null => {
-            // @ts-ignore keep it for now
             // if (!value) return strings?.genderRequired ?? "Gender is required";
             return ["MALE", "FEMALE"].includes(value.toLocaleUpperCase())
                 ? null
@@ -106,7 +105,6 @@ export const StudentTableManagementProvider: React.FC<{
 
     const validateNationality = useCallback(
         (value: string): string | null | undefined => {
-            // @ts-ignore keep it for now
             // if (!value) return strings?.nationalityRequired ?? "Nationality is required";
             return isValidCountryCode(value)
                 ? null
@@ -117,7 +115,6 @@ export const StudentTableManagementProvider: React.FC<{
 
     const validateDateOfBirth = useCallback(
         (value: string): string | null | undefined => {
-            // @ts-ignore keep it for now
             // if (!value) return strings?.dateOfBirthRequired ?? "Date of birth is required";
             if (!validator.isDate(value))
                 return strings?.dateOfBirthInvalid ?? "Invalid date format";
@@ -133,7 +130,6 @@ export const StudentTableManagementProvider: React.FC<{
 
     const validatePhoneNumber = useCallback(
         (value: string): string | null | undefined => {
-            // @ts-ignore keep it for now
             // if (!value) return strings?.phoneNumberRequired ?? "Phone number is required";
             return isValidPhoneNumber(value)
                 ? null
@@ -147,6 +143,7 @@ export const StudentTableManagementProvider: React.FC<{
         async (
             rowId: number,
             columnId: string,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value: any,
         ): Promise<void> => {
             console.log("Updating cell", { rowId, columnId, value });
@@ -207,6 +204,7 @@ export const StudentTableManagementProvider: React.FC<{
 
                 const enhancedColumn: EditableColumn = {
                     ...column,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onUpdate: (rowId: number, value: any) =>
                         handleUpdateCell(
                             rowId,

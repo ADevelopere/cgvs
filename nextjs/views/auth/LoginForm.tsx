@@ -22,14 +22,13 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import AuthTranslations from "@/locale/components/Auth";
 import { useRouter } from "next/navigation";
 
-type LoginFormProps = {};
 
-const LoginForm: React.FC<LoginFormProps> = () => {
+const LoginForm: React.FC = () => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");
     const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
-    const { login, isAuthenticated, error, clearError, isLoading } = useAuth();
+    const { login, isAuthenticated, error, isLoading } = useAuth();
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState("");
@@ -89,7 +88,6 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             return;
         }
 
-        clearError();
         const success = await login({ input: { email, password } });
         if (success) {
             router.push("/admin/dashboard");

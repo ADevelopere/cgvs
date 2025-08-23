@@ -1,18 +1,18 @@
 package context
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.exceptions.JWTVerificationException
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
-import schema.model.User
-import schema.model.UserSession
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import schema.model.User
+import schema.model.UserSession
 import services.AuthService
 
 class GraphQLAuthenticationHandler : KoinComponent {
     private val authService: AuthService by inject()
+    val jwtVerifier: JWTVerifier by inject()
 
     suspend fun getCurrentUser(call: ApplicationCall): User? {
         // First try JWT authentication
@@ -28,18 +28,7 @@ class GraphQLAuthenticationHandler : KoinComponent {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             val token = authHeader.removePrefix("Bearer ")
             try {
-                // Get JWT configuration from application config
-                val jwtSecret = call.application.environment.config.propertyOrNull("postgres.secret")?.getString() ?: "default-secret-key"
-                val jwtDomain = call.application.environment.config.property("postgres.domain").getString()
-                val jwtAudience = call.application.environment.config.property("postgres.audience").getString()
-
-                val verifier = JWT
-                    .require(Algorithm.HMAC256(jwtSecret))
-                    .withAudience(jwtAudience)
-                    .withIssuer(jwtDomain)
-                    .build()
-
-                val decodedJWT = verifier.verify(token)
+                val decodedJWT = jwtVerifier.verify(token)
                 val userId = decodedJWT.getClaim("userId").asInt()
 
                 if (userId != null) {
@@ -47,6 +36,7 @@ class GraphQLAuthenticationHandler : KoinComponent {
                 }
             } catch (e: JWTVerificationException) {
                 // JWT is invalid, continue to session auth
+                println("Invalid JWT token" + e.message)
             }
         }
         return null
