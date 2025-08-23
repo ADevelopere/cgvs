@@ -245,7 +245,7 @@ const TableHeader: React.FC<{
                 ref={headerRef}
                 style={{
                     width: width,
-                    display: "flex",
+                    display: "table-row",
                     flexDirection: "row",
                     // backgroundColor: theme.palette.background.paper,
                     color: theme.palette.text.secondary,

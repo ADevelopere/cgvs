@@ -16,9 +16,6 @@ import { useTableLocale } from "@/locale/table/TableLocaleContext";
 import TableBody from "../TableBody/TableBody";
 // Define column interface
 
-// Define table height for virtualization
-const TABLE_HEIGHT = 500;
-
 const Table: React.FC<{
     style?: React.CSSProperties;
 }> = ({ style }) => {
@@ -32,6 +29,7 @@ const Table: React.FC<{
     const { rowSelectionEnabled, loadMoreRowsIfNeeded } = useTableRowsContext();
 
     const theme = useTheme();
+    const headerContainerRef = useRef<HTMLDivElement>(null);
     // const tableBodyRef = useRef<HTMLDivElement>(null); // This ref was for the "no data" message div
     const tableScrollContainerRef = useRef<HTMLDivElement>(null); // Ref for the main scrollable div
 
@@ -100,7 +98,7 @@ const Table: React.FC<{
     // Synchronize horizontal scroll between header and body
     useEffect(() => {
         const scrollContainer = tableScrollContainerRef.current;
-        const headerElement = document.getElementById("header-container");
+        const headerElement = headerContainerRef.current;
         // const footerElement = document.getElementById("footer-container"); // If footer also needs sync
 
         if (!scrollContainer || !headerElement) return;
@@ -146,20 +144,15 @@ const Table: React.FC<{
             )}
 
             <div
-                ref={tableScrollContainerRef}
-                style={{
-                    width: "100%",
-                    overflowY: "hidden",
-                    position: "relative" as const,
-                    flexGrow: 1,
-                }}
+                id="header-container"
+                ref={headerContainerRef}
+                style={{ overflow: "hidden", flexShrink: 0 }}
             >
                 <table
                     style={{
                         borderCollapse: "collapse" as const,
                         tableLayout: "fixed" as const,
                         backgroundColor: theme.palette.background.paper,
-                        height: "100%",
                         width: totalWidth,
                     }}
                 >
@@ -195,11 +188,54 @@ const Table: React.FC<{
                             indexColWidth={indexColWidth}
                         />
                     </thead>
+                </table>
+            </div>
+            <div
+                ref={tableScrollContainerRef}
+                style={{
+                    width: "100%",
+                    overflowY: "auto",
+                    position: "relative" as const,
+                    flexGrow: 1,
+                }}
+            >
+                <table
+                    style={{
+                        borderCollapse: "collapse" as const,
+                        tableLayout: "fixed" as const,
+                        backgroundColor: theme.palette.background.paper,
+                        width: totalWidth,
+                    }}
+                >
+                    <colgroup>
+                        {rowSelectionEnabled && (
+                            <col
+                                style={{
+                                    width: TABLE_CHECKBOX_CONTAINER_SIZE,
+                                    maxWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
+                                }}
+                            />
+                        )}
+                        <col
+                            style={{
+                                width: indexColWidth,
+                                maxWidth: indexColWidth,
+                            }}
+                        />
+                        {visibleColumns.map((column) => (
+                            <col
+                                key={column.id}
+                                style={{
+                                    width: `${columnWidths[column.id]}px`,
+                                    minWidth: `${columnWidths[column.id]}px`,
+                                    maxWidth: `${columnWidths[column.id]}px`,
+                                }}
+                            />
+                        ))}
+                    </colgroup>
                     <tbody
                         style={{
-                            height: "100%",
-                            display: "block",
-                            overflowY: "auto",
+                            display: "table-row-group",
                             overflowX: "hidden",
                         }}
                     >

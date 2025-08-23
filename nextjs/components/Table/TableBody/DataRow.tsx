@@ -168,7 +168,7 @@ const DataRow: React.FC<DataRowProps> = ({
         <tr
             ref={rowRef}
             style={{
-                display: "flex",
+                display: "table-row",
                 flexDirection: "row",
                 alignItems: "center",
                 backgroundColor: backgroundColor,
