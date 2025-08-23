@@ -84,10 +84,6 @@ export const StudentManagementProvider: React.FC<{
 
     // Fetch students when query params change
     useEffect(() => {
-        console.log(
-            "Fetching students with params:",
-            JSON.stringify(queryParams),
-        );
         const fetchStudents = async () => {
             setLoading(true);
             try {

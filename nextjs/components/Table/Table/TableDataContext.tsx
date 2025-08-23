@@ -321,11 +321,6 @@ export const TableDataProvider = ({
                         (_, index) => index !== columnIndex,
                     );
                 }
-                console.log(
-                    "New orderByClause:",
-                    JSON.stringify(newOrderByClause),
-                );
-
                 // Call the onSort callback with the updated sort clauses
                 onSort?.(newOrderByClause);
                 return newOrderByClause;

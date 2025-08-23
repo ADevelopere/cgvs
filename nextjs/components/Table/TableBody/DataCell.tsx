@@ -174,7 +174,6 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
     }
 
     componentWillUnmount() {
-        console.log("Cleaning up editing state");
         if (this.dataContextSetEditingState) {
             if (this.state.isEditing) {
                 this.dataContextSetEditingState(
@@ -226,11 +225,6 @@ class DataCell extends React.Component<RenderCellProps, DataCellState> {
 
     handleCellClick = () => {
         const { column, rowData } = this.props;
-        console.log("Cell clicked:", {
-            isEditable: column.editable,
-            currentlyEditing: this.state.isEditing,
-            column,
-        });
         if (column.editable && !this.state.isEditing) {
             const value = getCellValue(column, rowData);
             const validationError = this.validateValue(value);
