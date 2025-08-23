@@ -13,7 +13,7 @@ import {
 import React, { useState } from "react";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { TemplateCategory } from "@/graphql/generated/types";
-import { Folder, X } from "lucide-react";
+import { Folder } from "lucide-react";
 import { TreeView } from "@/components/common/TreeView";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
@@ -90,7 +90,8 @@ const RenderCategoryItem: React.FC<{
                 onClick(category);
             }}
         >
-            {category.childCategories.length > 0 && <Folder />}
+            {category.childCategories &&
+                category.childCategories.length > 0 && <Folder />}
             <Typography
                 sx={{
                     minWidth: "max-content",

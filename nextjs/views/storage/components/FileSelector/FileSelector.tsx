@@ -77,13 +77,13 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
 
     // Memoize value paths to prevent unnecessary re-renders
     const valuePaths = React.useMemo(() => 
-        value?.map(f => f.path).sort() || [], 
+        value?.map(f => f.path).sort((a, b) => a.localeCompare(b)) || [], 
         [value]
     );
 
     // Memoize selected paths for comparison
     const selectedPaths = React.useMemo(() => 
-        selectedFiles.map(f => f.path).sort(), 
+        selectedFiles.map(f => f.path).sort((a, b) => a.localeCompare(b)), 
         [selectedFiles]
     );
 
@@ -105,14 +105,14 @@ const FileSelectorContent: React.FC<FileSelectorProps> = ({
                 prevValueRef.current = value;
             }
         }
-    }, [valuePaths, setSelectedFiles, value]); // Include setSelectedFiles for proper dependencies
+    }, [valuePaths, setSelectedFiles, value, selectedPaths]);
 
     // Notify parent of selection changes
     useEffect(() => {
         if (onChangeRef.current && JSON.stringify(selectedPaths) !== JSON.stringify(valuePaths)) {
             onChangeRef.current(selectedFiles);
         }
-    }, [selectedPaths, selectedFiles]); // Use memoized paths
+    }, [selectedPaths, selectedFiles, valuePaths]);
 
     const handleLocationChange = (newLocation: Graphql.UploadLocation) => {
         setLocation(newLocation);

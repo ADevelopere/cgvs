@@ -32,7 +32,7 @@ const Content: FC<ContentProps> = ({ onOpenModal }) => {
 
     console.log(
         "Template Variables:",
-        JSON.stringify(template?.variables.map((v) => v.name + v.order)),
+        JSON.stringify(template?.variables?.map((v) => v.name + v.order)),
     );
 
     const handleVariableClick = useCallback(
@@ -43,7 +43,7 @@ const Content: FC<ContentProps> = ({ onOpenModal }) => {
     );
 
     const handleDeleteClick = useCallback(
-        async (id: string) => {
+        async (id: number) => {
             if (
                 window.confirm("Are you sure you want to delete this variable?")
             ) {
@@ -169,16 +169,16 @@ const Header: FC<FooterProps> = ({ onOpenModal }) => {
 
             {/* popover menu */}
             <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-                <MenuItem onClick={() => handleVariableTypeSelect("text")}>
+                <MenuItem onClick={() => handleVariableTypeSelect("TEXT")}>
                     Text Variable
                 </MenuItem>
-                <MenuItem onClick={() => handleVariableTypeSelect("number")}>
+                <MenuItem onClick={() => handleVariableTypeSelect("NUMBER")}>
                     Number Variable
                 </MenuItem>
-                <MenuItem onClick={() => handleVariableTypeSelect("date")}>
+                <MenuItem onClick={() => handleVariableTypeSelect("DATE")}>
                     Date Variable
                 </MenuItem>
-                <MenuItem onClick={() => handleVariableTypeSelect("select")}>
+                <MenuItem onClick={() => handleVariableTypeSelect("SELECT")}>
                     Select Variable
                 </MenuItem>
             </Menu>
@@ -189,9 +189,9 @@ const Header: FC<FooterProps> = ({ onOpenModal }) => {
 const TemplateVariableManagement: FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingVariableID, setEditingVariableID] = useState<
-        string | undefined
+        number | undefined
     >(undefined);
-    const [type, setType] = useState<TemplateVariableType>("text");
+    const [type, setType] = useState<TemplateVariableType>("TEXT");
 
     const handleEdit = (variable: TemplateVariable) => {
         setEditingVariableID(variable.id);
