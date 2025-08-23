@@ -106,7 +106,6 @@ const StudentTable: React.FC = () => {
             }
         });
 
-        console.log("Table, initial column widths", JSON.stringify(newWidths));
         setInitialWidths(newWidths);
         // Save widths to state
         widthsInitialized.current = true;

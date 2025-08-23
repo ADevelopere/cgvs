@@ -23,7 +23,7 @@ const TableHeader: React.FC<{
 }> = ({ width, indexColWidth }) => {
     const theme = useTheme();
     const headerRef = useRef<HTMLTableRowElement>(null);
-    const { visibleColumns: columns, pinnedColumns } = useTableColumnContext();
+    const { visibleColumns, pinnedColumns } = useTableColumnContext();
 
     const {
         getActiveTextFilter,
@@ -152,7 +152,7 @@ const TableHeader: React.FC<{
 
     // Helper to determine which filter icon click handler to use based on column type
     const getFilterIconClickHandler = useCallback(
-        (column: (typeof columns)[0]) => {
+        (column: (typeof visibleColumns)[0]) => {
             if (!column.filterable) {
                 return undefined;
             }
@@ -240,15 +240,11 @@ const TableHeader: React.FC<{
     }, [closeDateFilterPopover, closeFilterPopover, closeNumberFilterPopover, closeTextFilterPopover]);
 
     return (
-        <div
-            style={{
-                width: width,
-            }}
-        >
+        < >
             <tr
                 ref={headerRef}
                 style={{
-                    // width: width,
+                    width: width,
                     display: "flex",
                     flexDirection: "row",
                     // backgroundColor: theme.palette.background.paper,
@@ -299,7 +295,7 @@ const TableHeader: React.FC<{
                     </th>
                 )}
 
-                {columns.map((column) => {
+                {visibleColumns.map((column) => {
                     // Existing column header code...
                     // Determine if this column is pinned (moved outside of render for performance)
                     const pinPosition = pinnedColumns[column.id];
@@ -329,7 +325,7 @@ const TableHeader: React.FC<{
                 onClose={handleOptionsClose}
                 columnId={activeOptionsColumn}
                 columnLabel={
-                    columns.find((col) => col.id === activeOptionsColumn)
+                    visibleColumns.find((col) => col.id === activeOptionsColumn)
                         ?.label || ""
                 }
                 isPinnedLeft={
@@ -353,7 +349,7 @@ const TableHeader: React.FC<{
                 onClose={closeFilterPopover}
                 columnId={activeFilterColumn}
                 columnLabel={
-                    columns.find((col) => col.id === activeFilterColumn)
+                    visibleColumns.find((col) => col.id === activeFilterColumn)
                         ?.label ?? ""
                 }
                 value={
@@ -376,7 +372,7 @@ const TableHeader: React.FC<{
                     onClose={closeTextFilterPopover}
                     columnId={activeTextFilterColumn}
                     columnLabel={
-                        columns.find((col) => col.id === activeTextFilterColumn)
+                        visibleColumns.find((col) => col.id === activeTextFilterColumn)
                             ?.label || ""
                     }
                     activeFilter={getActiveTextFilter(activeTextFilterColumn)}
@@ -391,7 +387,7 @@ const TableHeader: React.FC<{
                     onClose={closeNumberFilterPopover}
                     columnId={activeNumberFilterColumn}
                     columnLabel={
-                        columns.find(
+                        visibleColumns.find(
                             (col) => col.id === activeNumberFilterColumn,
                         )?.label || ""
                     }
@@ -409,13 +405,13 @@ const TableHeader: React.FC<{
                     onClose={closeDateFilterPopover}
                     columnId={activeDateFilterColumn}
                     columnLabel={
-                        columns.find((col) => col.id === activeDateFilterColumn)
+                        visibleColumns.find((col) => col.id === activeDateFilterColumn)
                             ?.label || ""
                     }
                     activeFilter={getActiveDateFilter(activeDateFilterColumn)}
                 />
             )}
-        </div>
+        </>
     );
 };
 

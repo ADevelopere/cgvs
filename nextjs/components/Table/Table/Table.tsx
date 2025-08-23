@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
 import { LinearProgress } from "@mui/material";
 import TableHeader from "../TableHeader/TableHeader";
@@ -13,7 +13,7 @@ import { useTableColumnContext } from "./TableColumnContext";
 import { useTableRowsContext } from "./TableRowsContext";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/constants/tableConstants";
 import { useTableLocale } from "@/locale/table/TableLocaleContext";
-import NewTableBody from "../TableBody/TableBody";
+import TableBody from "../TableBody/TableBody";
 // Define column interface
 
 // Define table height for virtualization
@@ -23,9 +23,13 @@ const Table: React.FC<{
     style?: React.CSSProperties;
 }> = ({ style }) => {
     const { strings } = useTableLocale();
-    const { paginationInfo: paginatorInfo, data, isLoading } = useTableContext();
+    const {
+        paginationInfo: paginatorInfo,
+        data,
+        isLoading,
+    } = useTableContext();
     const { visibleColumns, columnWidths } = useTableColumnContext();
-    const { rowSelectionEnabled } = useTableRowsContext();
+    const { rowSelectionEnabled, loadMoreRowsIfNeeded } = useTableRowsContext();
 
     const theme = useTheme();
     // const tableBodyRef = useRef<HTMLDivElement>(null); // This ref was for the "no data" message div
@@ -49,10 +53,28 @@ const Table: React.FC<{
         // }
     }, [paginatorInfo?.currentPage]);
 
-        // Calculate the index column width dynamically based on the maximum index value
-    const maxIndexValue = paginatorInfo
-        ? paginatorInfo.total
-        : data.length;
+    const handleScroll = useCallback(
+        (event: React.UIEvent<HTMLTableSectionElement>) => {
+            const target = event.currentTarget;
+            const scrolledToBottom =
+                Math.abs(
+                    target.scrollHeight -
+                        target.scrollTop -
+                        target.clientHeight,
+                ) < 1;
+
+            if (scrolledToBottom && loadMoreRowsIfNeeded && !paginatorInfo) {
+                loadMoreRowsIfNeeded(data.length - 50, data.length);
+            }
+        },
+        [data.length, loadMoreRowsIfNeeded, paginatorInfo],
+    );
+
+    // Calculate the index column width dynamically based on the maximum index value
+    const maxIndexValue = useMemo(() => {
+        return paginatorInfo ? paginatorInfo.total : data.length;
+    }, [paginatorInfo, data.length]);
+
     const indexColWidth = useMemo(() => {
         const maxDigits = maxIndexValue.toString().length;
         return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 10px per digit, and 20px padding
@@ -60,13 +82,20 @@ const Table: React.FC<{
 
     // Get the total width of the table
     const totalWidth = useMemo(() => {
-        return visibleColumns.reduce(
-            (sum, column) => sum + columnWidths[column.id] + indexColWidth,
-            20 + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0) + indexColWidth,
+        const columnsWidth = visibleColumns.reduce(
+            (sum, column) => sum + (columnWidths[column.id] || 0),
+            0,
+        );
+        return (
+            columnsWidth +
+            indexColWidth +
+            (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0)
         );
     }, [visibleColumns, columnWidths, rowSelectionEnabled, indexColWidth]);
 
-
+    const colSpan = useMemo(() => {
+        return visibleColumns.length + 1 + (rowSelectionEnabled ? 1 : 0);
+    }, [visibleColumns, rowSelectionEnabled]);
 
     // Synchronize horizontal scroll between header and body
     useEffect(() => {
@@ -161,36 +190,44 @@ const Table: React.FC<{
                         ))}
                     </colgroup>
                     <thead>
-                        <TableHeader width={totalWidth} indexColWidth={indexColWidth} />
+                        <TableHeader
+                            width={totalWidth}
+                            indexColWidth={indexColWidth}
+                        />
                     </thead>
                     <tbody
                         style={{
                             height: "100%",
+                            display: "block",
+                            overflowY: "auto",
+                            overflowX: "hidden",
                         }}
                     >
-                        <NewTableBody
+                        <TableBody
                             data={data}
-                            height={TABLE_HEIGHT}
-                            width={totalWidth}
                             isPaginated={!!paginatorInfo}
                             paginationInfo={paginatorInfo}
                             indexColWidth={indexColWidth}
+                            colSpan={colSpan}
                         />
-                    </tbody>
-                    <div style={{ opacity: isLoading ? 0.6 : 1 }}>
                         {data.length === 0 && (
-                            <div
-                                style={{
-                                    textAlign: "center",
-                                    padding: theme.spacing(4),
-                                }}
-                            >
-                                {isLoading
-                                    ? strings.general.loading
-                                    : strings.general.noData}
-                            </div>
+                            <tr>
+                                <td colSpan={colSpan}>
+                                    <div
+                                        style={{
+                                            textAlign: "center",
+                                            padding: theme.spacing(4),
+                                            opacity: isLoading ? 0.6 : 1,
+                                        }}
+                                    >
+                                        {isLoading
+                                            ? strings.general.loading
+                                            : strings.general.noData}
+                                    </div>
+                                </td>
+                            </tr>
                         )}
-                    </div>
+                    </tbody>
                 </table>
             </div>
 

@@ -61,8 +61,6 @@ export const TableProvider = ({
     rowsPerPageOptions = [10, 25, 50, 100],
     initialPageSize = 50,
 }: TableProviderProps) => {
-    console.log("TableProvider", "data length", data.length);
-
     const [pageSize, setPageSize] = useState<number>(initialPageSize);
     const value = useMemo(() => {
         return {
