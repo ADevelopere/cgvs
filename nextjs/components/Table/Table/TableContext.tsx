@@ -41,6 +41,7 @@ type TableProviderProps = {
 
     // Pagination
     paginationInfo?: PaginationInfo | null;
+    enableRowResizing?: boolean;
     onPageChange?: (newPage: number) => void;
     onRowsPerPageChange?: (newRowsPerPage: number) => void;
     rowsPerPageOptions?: number[];

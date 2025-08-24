@@ -43,6 +43,7 @@ const DataRow: React.FC<DataRowProps> = ({
         rowIdKey,
         selectedRowIds,
         toggleRowSelection,
+        enableRowResizing,
     } = useTableRowsContext();
     const { visibleColumns } = useTableColumnContext();
     const theme = useTheme();
@@ -66,8 +67,8 @@ const DataRow: React.FC<DataRowProps> = ({
             overflow: "hidden" as const,
             whiteSpace: "nowrap" as const,
             textOverflow: "ellipsis" as const,
-            height: height - 2,
-            maxHeight: height - 2,
+            height: height + 8,
+            maxHeight: height + 8,
         };
     }, [height, theme.palette.divider]);
 
@@ -227,23 +228,32 @@ const DataRow: React.FC<DataRowProps> = ({
                     inputStyle={inputStyle}
                 />
             ))}
-            <td style={{ flex: "0 0 0", width: 0, padding: 0, border: "none" }}>
-                <Box
+            {enableRowResizing && (
+                <td
                     style={{
-                        position: "absolute" as const,
-                        bottom: "-3px",
-                        left: 0,
-                        right: 0,
-                        cursor: "row-resize",
-                        zIndex: 10,
-                        userSelect: "none" as const,
-                        touchAction: "none" as const,
-                        backgroundColor: theme.palette.divider,
-                        height: 4,
+                        flex: "0 0 0",
+                        width: 0,
+                        padding: 0,
+                        border: "none",
                     }}
-                    onMouseDown={handleResizeStart}
-                />
-            </td>
+                >
+                    <Box
+                        style={{
+                            position: "absolute" as const,
+                            bottom: "-3px",
+                            left: 0,
+                            right: 0,
+                            cursor: "row-resize",
+                            zIndex: 10,
+                            userSelect: "none" as const,
+                            touchAction: "none" as const,
+                            backgroundColor: theme.palette.divider,
+                            height: 4,
+                        }}
+                        onMouseDown={handleResizeStart}
+                    />
+                </td>
+            )}
         </tr>
     );
 };

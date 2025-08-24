@@ -4,6 +4,7 @@ import {
     useState,
     useCallback,
     useMemo,
+    useEffect,
 } from "react";
 import {
     DateFilterOperation,
@@ -106,8 +107,21 @@ export const TableDataProvider = ({
         Record<string, string>
     >({});
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lastFilterApplied, setLastFilterApplied] = useState<{ filterClause: FilterClause<any, any> | null, columnId: string} | null>(null);
+
     // Cell editing state management
     const [editingCells, setEditingCells] = useState<Record<string, EditingState>>({});
+
+    useEffect(() => {
+        onSort?.(orderByClause);
+    }, [onSort, orderByClause]);
+
+    useEffect(() => {
+        if(lastFilterApplied) {
+            onFilter?.(lastFilterApplied.filterClause);
+        }
+    }, [lastFilterApplied, onFilter]);
 
     const getEditingState = useCallback((rowId: string | number, columnId: string): EditingState | null => {
         const cellKey = `${rowId}:${columnId}`;
@@ -145,18 +159,9 @@ export const TableDataProvider = ({
                     };
                 }
             });
-            console.log(
-                "Updated filters:",
-                JSON.stringify({
-                    ...filters,
-                    [columnId]: filterClause,
-                }),
-            );
-
-            // Call the onFilter callback
-            onFilter?.(filterClause);
+            setLastFilterApplied({ filterClause, columnId });
         },
-        [filters, onFilter],
+        [],
     );
 
     // Filter handling
@@ -321,12 +326,10 @@ export const TableDataProvider = ({
                         (_, index) => index !== columnIndex,
                     );
                 }
-                // Call the onSort callback with the updated sort clauses
-                onSort?.(newOrderByClause);
                 return newOrderByClause;
             });
         },
-        [onSort],
+        [],
     );
 
     const getSortDirection = useCallback(

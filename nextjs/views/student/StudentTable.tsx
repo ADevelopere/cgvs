@@ -10,9 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { TableProvider } from "@/components/Table/Table/TableContext";
 import Table from "@/components/Table/Table/Table";
 import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
-import {
-    useStudentTableManagement,
-} from "@/contexts/student/StudentTableManagementContext";
+import { useStudentTableManagement } from "@/contexts/student/StudentTableManagementContext";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");
@@ -45,7 +43,8 @@ const StudentTable: React.FC = () => {
         };
     }, [setDashboardSlot]);
 
-    const { columns, onPageChange, onRowsPerPageChange } = useStudentTableManagement();
+    const { columns, onPageChange, onRowsPerPageChange } =
+        useStudentTableManagement();
 
     const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
         {},
@@ -127,17 +126,16 @@ const StudentTable: React.FC = () => {
             columnProps={{
                 initialWidths: initialWidths,
             }}
-            rowsProps={
-                {
-                    // rowIdKey: rowIdKey,
-                    // onLoadMoreRows: loadMoreRows,
-                    // getRowStyle: getRowStyle,
-                    // rowSelectionEnabled: enableRowSelection,
-                    // selectedRowIds={selectedRowIds}
-                    // totalRows: filteredTotalRows,
-                    // pageSize: 50,
-                }
-            }
+            rowsProps={{
+                // rowIdKey: rowIdKey,
+                // onLoadMoreRows: loadMoreRows,
+                // getRowStyle: getRowStyle,
+                // rowSelectionEnabled: enableRowSelection,
+                // selectedRowIds={selectedRowIds}
+                // totalRows: filteredTotalRows,
+                // pageSize: 50,
+                enableRowResizing: false,
+            }}
             // Server operation props
             // serverFilterUi={serverFilterUi}
             // Selection props
@@ -196,6 +194,5 @@ const StudentTable: React.FC = () => {
         </TableProvider>
     );
 };
-
 
 export default StudentTable;
