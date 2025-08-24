@@ -17,7 +17,8 @@ import TableBody from "../TableBody/TableBody";
 
 const Table: React.FC<{
     style?: React.CSSProperties;
-}> = ({ style }) => {
+    creationRow?: React.ReactNode;
+}> = ({ style, creationRow }) => {
     const { strings } = useTableLocale();
     const {
         paginationInfo: paginatorInfo,
@@ -248,6 +249,8 @@ const Table: React.FC<{
                     </tbody>
                 </table>
             </div>
+
+            {creationRow}
 
             <div
                 style={{

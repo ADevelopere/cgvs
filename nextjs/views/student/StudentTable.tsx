@@ -11,6 +11,7 @@ import { TableProvider } from "@/components/Table/Table/TableContext";
 import Table from "@/components/Table/Table/Table";
 import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
 import { useStudentTableManagement } from "@/contexts/student/StudentTableManagementContext";
+import CreateStudentRow from "./CreateStudentRow";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");
@@ -195,6 +196,7 @@ const StudentTable: React.FC = () => {
                                     overflow: "hidden",
                                     maxWidth: "calc(100vw - 48px)",
                                 }}
+                                creationRow={<CreateStudentRow />}
                             />
                         )}
                 </Box>
