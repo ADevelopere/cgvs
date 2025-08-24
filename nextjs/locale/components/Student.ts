@@ -18,6 +18,7 @@ type StudentTranslations = {
     cancel: string;
     delete: string;
     confirm: string;
+    create: string;
 
     sortAsc: string;
     sortDesc: string;

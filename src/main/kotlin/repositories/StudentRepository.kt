@@ -8,9 +8,13 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import schema.model.*
+import repositories.utils.TsQuery
+import repositories.utils.TsVector
+import repositories.utils.matches
 import tables.Students
 
 class StudentRepository(private val database: Database) {
@@ -61,24 +65,34 @@ class StudentRepository(private val database: Database) {
 
         // Filtering (StudentSortArgs)
         filterArgs?.let { args ->
+            val ftsLang = "simple" // Use "simple" for language-agnostic, or "english", "arabic" etc.
+
             // Name filters
-            args.name?.let { query = query.andWhere { Students.name like "%$it%" } }
+            args.name?.let {
+                if (it.isNotBlank()) {
+                    query = query.andWhere { TsVector(Students.name, ftsLang) matches TsQuery(it, ftsLang) }
+                }
+            }
             args.nameNotContains?.let { query = query.andWhere { Students.name notLike "%$it%" } }
             args.nameEquals?.let { query = query.andWhere { Students.name eq it } }
             args.nameNotEquals?.let { query = query.andWhere { Students.name neq it } }
             args.nameStartsWith?.let { query = query.andWhere { Students.name like "$it%" } }
             args.nameEndsWith?.let { query = query.andWhere { Students.name like "%$it" } }
-            args.nameIsEmpty?.let { if (it) query = query.andWhere { Students.name eq "" } }
+            args.nameIsEmpty?.let { if (it) query = query.andWhere { Students.name eq "" } } // Name is not nullable
             args.nameIsNotEmpty?.let { if (it) query = query.andWhere { Students.name neq "" } }
 
             // Email filters
-            args.email?.let { query = query.andWhere { Students.email like "%$it%" } }
+            args.email?.let {
+                if (it.isNotBlank()) {
+                    query = query.andWhere { TsVector(Students.email, ftsLang) matches TsQuery(it, ftsLang) }
+                }
+            }
             args.emailNotContains?.let { query = query.andWhere { Students.email notLike "%$it%" } }
             args.emailEquals?.let { query = query.andWhere { Students.email eq it.value } }
             args.emailNotEquals?.let { query = query.andWhere { Students.email neq it } }
             args.emailStartsWith?.let { query = query.andWhere { Students.email like "$it%" } }
             args.emailEndsWith?.let { query = query.andWhere { Students.email like "%$it" } }
-            args.emailIsEmpty?.let { if (it) query = query.andWhere { Students.email.isNull() } }
+            args.emailIsEmpty?.let { if (it) query = query.andWhere { Students.email.isNull() or (Students.email eq "") } }
             args.emailIsNotEmpty?.let { if (it) query = query.andWhere { Students.email.isNotNull() } }
 
             // Phone number filter

@@ -18,6 +18,7 @@ const student: StudentTranslations = {
     cancel: "إلغاء",
     delete: "حذف",
     confirm: "تأكيد",
+    create: "إنشاء",
 
     sortAsc: "ترتيب تصاعدي",
     sortDesc: "ترتيب تنازلي",

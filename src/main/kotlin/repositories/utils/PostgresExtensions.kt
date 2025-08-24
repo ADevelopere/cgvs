@@ -2,13 +2,33 @@ package repositories.utils
 
 import org.jetbrains.exposed.v1.core.Expression
 import org.jetbrains.exposed.v1.core.Op
-import org.jetbrains.exposed.v1.jdbc.QueryBuilder
+import org.jetbrains.exposed.v1.core.QueryBuilder
+import org.jetbrains.exposed.v1.core.append
 
 // Represents a full-text search query in PostgreSQL
 class TsQuery(val text: String, val config: String = "simple") : Expression<String>() {
     override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
-        // Use plainto_tsquery to safely handle user input
-        append("plainto_tsquery('", config, "', '", text.replace("'", "''"), "')")
+        // For prefix matching (partial words), we need to use to_tsquery
+        // and append ':*' to the search terms. plainto_tsquery does not support this.
+
+        // 1. Sanitize and split the search text into words.
+        val words = text.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+
+        // 2. For each word, remove FTS special characters and append the prefix operator.
+        val queryParts = words.mapNotNull { word ->
+            // Remove characters that have special meaning in tsquery, but keep apostrophes.
+            val sanitizedWord = word.replace(Regex("[&|!():]"), "")
+            if (sanitizedWord.isNotBlank()) {
+                // Append prefix operator for partial matching
+                "$sanitizedWord:*"
+            } else {
+                null
+            }
+        }
+
+        // 3. Join the parts with the AND operator and escape for SQL.
+        val tsQueryString = queryParts.joinToString(" & ")
+        append("to_tsquery('", config, "', '", tsQueryString.replace("'", "''"), "')")
     }
 }
 
