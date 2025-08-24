@@ -1,17 +1,6 @@
 import { BaseColumn } from "@/types/table.type";
 
 export const STUDENT_TABLE_COLUMNS: BaseColumn[] = [
-    // {
-    //     id: "id",
-    //     label: "",
-    //     type: "number",
-    //     accessor: "id",
-    //     editable: false,
-    //     sortable: true,
-    //     filterable: false,
-    //     resizable: false,
-    //     initialWidth: 100,
-    // },
     {
         id: "name",
         label: "الاسم",
