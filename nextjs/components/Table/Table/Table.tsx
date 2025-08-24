@@ -7,7 +7,6 @@ import { LinearProgress } from "@mui/material";
 import TableHeader from "../TableHeader/TableHeader";
 import PaginationFooter from "../TableFooter/TableFooter";
 import ColumnVisibilityPanel from "./ColumnVisibilityPanel";
-import "./Table.css";
 import { useTableContext } from "./TableContext";
 import { useTableColumnContext } from "./TableColumnContext";
 import { useTableRowsContext } from "./TableRowsContext";
@@ -135,7 +134,7 @@ const Table: React.FC<{
                     style={{
                         borderCollapse: "collapse" as const,
                         tableLayout: "fixed" as const,
-                        backgroundColor: theme.palette.background.paper,
+                        backgroundColor: "transparent",
                         width: totalWidth,
                     }}
                 >

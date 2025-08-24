@@ -119,9 +119,6 @@ const StudentTable: React.FC = () => {
                 onFilter: applySingleFilter,
                 onSort: updateSort,
                 // filters: { filters },
-                // serverOperationMode: serverOperationMode,
-                // onServerSortChange: handleServerSortChange,
-                // onServerFiltersChange: handleServerFiltersChange,
             }}
             columnProps={{
                 initialWidths: initialWidths,

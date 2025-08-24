@@ -306,7 +306,12 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
     );
 
     return (
-        <th onClick={handleHeaderClick}>
+        <th
+            onClick={handleHeaderClick}
+            style={{
+                borderBottom: `1px solid ${theme.palette.divider}`,
+            }}
+        >
             <div style={headerStyle}>
                 <div style={headerInnerStyle}>
                     <div style={headerContentStyle}>
