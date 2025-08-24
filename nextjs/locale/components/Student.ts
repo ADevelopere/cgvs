@@ -17,6 +17,7 @@ type StudentTranslations = {
     actions: string;
     cancel: string;
     delete: string;
+    confirm: string;
 
     sortAsc: string;
     sortDesc: string;
