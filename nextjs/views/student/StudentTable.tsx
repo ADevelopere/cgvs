@@ -6,7 +6,7 @@ import { People } from "@mui/icons-material";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useStudentManagement } from "@/contexts/student/StudentManagementContext";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TableProvider } from "@/components/Table/Table/TableContext";
 import Table from "@/components/Table/Table/Table";
 import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
@@ -51,10 +51,21 @@ const StudentTable: React.FC = () => {
     );
     const tableContainerRef = useRef<HTMLDivElement>(null);
     const widthsInitialized = useRef(false);
+
+    const maxIndexValue = useMemo(() => {
+        return paginationInfo ? paginationInfo.total : students.length;
+    }, [paginationInfo, students.length]);
+
+    const indexColWidth = useMemo(() => {
+        const maxDigits = maxIndexValue.toString().length;
+        return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 10px per digit, and 20px padding
+    }, [maxIndexValue]);
+
     useEffect(() => {
         if (!tableContainerRef.current || widthsInitialized.current) return;
         // minus scroll bar width
-        const totalWidth = tableContainerRef.current.offsetWidth - 20;
+        const totalWidth =
+            tableContainerRef.current.offsetWidth - 20 - indexColWidth;
 
         const newWidths: Record<string, number> = {};
 
@@ -108,7 +119,7 @@ const StudentTable: React.FC = () => {
         setInitialWidths(newWidths);
         // Save widths to state
         widthsInitialized.current = true;
-    }, [columns, tableContainerRef]);
+    }, [columns, indexColWidth, tableContainerRef]);
 
     return (
         <TableProvider
