@@ -165,7 +165,11 @@ const TableHeader: React.FC<{
                 return handleDateFilterIconClick;
             }
         },
-        [handleTextFilterIconClick, handleNumberFilterIconClick, handleDateFilterIconClick],
+        [
+            handleTextFilterIconClick,
+            handleNumberFilterIconClick,
+            handleDateFilterIconClick,
+        ],
     );
 
     const handleOptionsClick = useCallback(
@@ -237,14 +241,19 @@ const TableHeader: React.FC<{
         closeNumberFilterPopover();
         closeDateFilterPopover();
         closeFilterPopover();
-    }, [closeDateFilterPopover, closeFilterPopover, closeNumberFilterPopover, closeTextFilterPopover]);
+    }, [
+        closeDateFilterPopover,
+        closeFilterPopover,
+        closeNumberFilterPopover,
+        closeTextFilterPopover,
+    ]);
 
     return (
-        < >
+        <>
             <tr
                 ref={headerRef}
                 style={{
-                    width: width,
+                    width: width - 20,
                     display: "table-row",
                     flexDirection: "row",
                     // backgroundColor: theme.palette.background.paper,
@@ -309,13 +318,18 @@ const TableHeader: React.FC<{
                                 handlePopoverFilterIconClick
                             }
                             onTextFilterIconClick={
-                                getFilterIconClickHandler(column) ??
-                                (() => {})
+                                getFilterIconClickHandler(column) ?? (() => {})
                             }
                             isPinned={pinPosition}
                         />
                     );
                 })}
+                {/* Spacer cell to account for scrollbar */}
+                <th
+                    style={{
+                        width: 20,
+                    }}
+                ></th>
             </tr>
 
             {/* Column Options Menu */}
@@ -372,8 +386,9 @@ const TableHeader: React.FC<{
                     onClose={closeTextFilterPopover}
                     columnId={activeTextFilterColumn}
                     columnLabel={
-                        visibleColumns.find((col) => col.id === activeTextFilterColumn)
-                            ?.label || ""
+                        visibleColumns.find(
+                            (col) => col.id === activeTextFilterColumn,
+                        )?.label || ""
                     }
                     activeFilter={getActiveTextFilter(activeTextFilterColumn)}
                 />
@@ -405,8 +420,9 @@ const TableHeader: React.FC<{
                     onClose={closeDateFilterPopover}
                     columnId={activeDateFilterColumn}
                     columnLabel={
-                        visibleColumns.find((col) => col.id === activeDateFilterColumn)
-                            ?.label || ""
+                        visibleColumns.find(
+                            (col) => col.id === activeDateFilterColumn,
+                        )?.label || ""
                     }
                     activeFilter={getActiveDateFilter(activeDateFilterColumn)}
                 />
