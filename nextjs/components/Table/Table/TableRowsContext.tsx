@@ -40,6 +40,7 @@ export type TableRowsContextType = {
 
   // Configuration
   rowIdKey: string; // Key to identify unique rows
+  enableRowResizing: boolean;
 };
 
 const TableRowsContext = createContext<TableRowsContextType | null>(null);
@@ -53,13 +54,13 @@ export type TableRowsProviderProps = {
   onRowResize?: (rowId: number | string, newHeight: number) => void;
 
   rowIdKey?: string;
-  //todo getRowIdKey
 
   paginatorInfo?: PaginationInfo | null;
   totalRows?: number;
   pageSize?: number;
 
   rowSelectionEnabled?: boolean;
+  enableRowResizing?: boolean;
 };
 
 export const TableRowsProvider = ({
@@ -74,6 +75,7 @@ export const TableRowsProvider = ({
 
   onRowResize,
   rowSelectionEnabled = false,
+  enableRowResizing = true,
 }: TableRowsProviderProps) => {
   const { data, isLoading } = useTableContext();
   const [rowHeights, setRowHeights] = useState<Record<string | number, number>>(
@@ -254,6 +256,7 @@ export const TableRowsProvider = ({
 
       // Configuration
       rowIdKey,
+      enableRowResizing,
     }),
     [
       // Dependencies for memoization
@@ -268,6 +271,7 @@ export const TableRowsProvider = ({
       totalRows,
       loadMoreRowsIfNeeded,
       rowIdKey,
+      enableRowResizing,
     ]
   );
 

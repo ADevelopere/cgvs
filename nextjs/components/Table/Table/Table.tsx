@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import { LinearProgress } from "@mui/material";
 import TableHeader from "../TableHeader/TableHeader";
@@ -26,7 +26,7 @@ const Table: React.FC<{
         isLoading,
     } = useTableContext();
     const { visibleColumns, columnWidths } = useTableColumnContext();
-    const { rowSelectionEnabled, loadMoreRowsIfNeeded } = useTableRowsContext();
+    const { rowSelectionEnabled } = useTableRowsContext();
 
     const theme = useTheme();
     const headerContainerRef = useRef<HTMLDivElement>(null);
@@ -50,23 +50,6 @@ const Table: React.FC<{
         //     tableScrollContainerRef.current.scrollTop = 0;
         // }
     }, [paginatorInfo?.currentPage]);
-
-    const handleScroll = useCallback(
-        (event: React.UIEvent<HTMLTableSectionElement>) => {
-            const target = event.currentTarget;
-            const scrolledToBottom =
-                Math.abs(
-                    target.scrollHeight -
-                        target.scrollTop -
-                        target.clientHeight,
-                ) < 1;
-
-            if (scrolledToBottom && loadMoreRowsIfNeeded && !paginatorInfo) {
-                loadMoreRowsIfNeeded(data.length - 50, data.length);
-            }
-        },
-        [data.length, loadMoreRowsIfNeeded, paginatorInfo],
-    );
 
     // Calculate the index column width dynamically based on the maximum index value
     const maxIndexValue = useMemo(() => {
