@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { TextField, Box, useTheme, Autocomplete, styled } from "@mui/material";
-import { Error as ErrorIcon } from "@mui/icons-material";
 import Image from "next/image";
 import countries, { CountryType } from "@/utils/country";
 import useAppTranslation from "@/locale/useAppTranslation";
@@ -43,6 +42,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
+    value,
+    errorMessage,
     label,
     helperText,
     placeholder,
@@ -55,28 +56,27 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
 }) => {
     const theme = useTheme();
     const countryStrings = useAppTranslation("countryTranslations");
-    const [value, setValue] = useState<CountryCode | null>(null);
-    const [error, setError] = useState<string | null | undefined>(null);
 
     const selectedCountry = useMemo(
         () => (value ? countries.find((c) => c.code === value) : null),
         [value],
     );
 
-    const handleChange = (_: unknown, newValue: CountryType | null) => {
-        let validationError: string | null | undefined = null;
-        if (newValue) {
-            validationError = getIsValid?.(newValue.code) ?? null;
-        }
-        setError(validationError);
-        setValue(newValue ? newValue.code : null);
-        if (newValue) {
-            onValueChange(newValue.code, !validationError);
-        } else {
-            // If null, always valid
-            onValueChange(null, true);
-        }
-    };
+    const handleChange = useCallback(
+        (_: unknown, newValue: CountryType | null) => {
+            let validationError: string | null | undefined = null;
+            if (newValue !== null && newValue !== undefined) {
+                validationError = getIsValid?.(newValue.code) ?? null;
+            }
+            if (newValue) {
+                onValueChange(newValue.code, validationError);
+            } else {
+                // If null/undefined, always valid
+                onValueChange(undefined, null);
+            }
+        },
+        [getIsValid, onValueChange],
+    );
 
     return (
         <Box sx={{ position: "relative", width }}>
@@ -138,24 +138,12 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
                         variant="outlined"
                         size="small"
                         required={required}
-                        error={!!error}
-                        helperText={error || helperText}
+                        error={!!errorMessage}
+                        helperText={errorMessage || helperText}
                         placeholder={placeholder}
                     />
                 )}
             />
-            {error && (
-                <ErrorIcon
-                    sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: theme.palette.error.main,
-                        fontSize: "1.2rem",
-                    }}
-                />
-            )}
         </Box>
     );
 };

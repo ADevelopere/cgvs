@@ -2,8 +2,6 @@
 
 import { Box, Paper, Alert, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
-import { Add as AddIcon } from "@mui/icons-material";
 
 export const _StyledPaper = styled(Paper, {
     shouldForwardProp: (prop) => prop !== "isMobile",
@@ -11,9 +9,10 @@ export const _StyledPaper = styled(Paper, {
     display: "flex",
     flexDirection: isMobile ? "column" : "row",
     alignItems: isMobile ? "stretch" : "center",
-    padding: theme.spacing(isMobile ? 2 : 3),
-    gap: theme.spacing(isMobile ? 2 : 3),
-    margin: theme.spacing(1),
+    paddingBlock: theme.spacing(0.5),
+    paddingInline: theme.spacing(isMobile ? 2 : 3),
+    gap: theme.spacing(isMobile ? 1 : 2),
+    margin: theme.spacing(0.5),
     borderRadius: Number(theme.shape.borderRadius) * 2,
     background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.action.hover} 100%)`,
     border: `1px solid ${theme.palette.divider}`,
@@ -29,39 +28,16 @@ export const _StyledPaper = styled(Paper, {
     },
 }));
 
-export const _TitleContainer = styled(Box, {
-    shouldForwardProp: (prop) => prop !== "isMobile",
-})<{ isMobile: boolean }>(({ theme, isMobile }) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: theme.spacing(1.5),
-    minWidth: isMobile ? "auto" : "140px",
-    flexShrink: 0,
-    marginBottom: isMobile ? theme.spacing(1) : 0,
-}));
-
-export const _TitleIcon = styled(AddIcon)(({ theme }) => ({
-    color: theme.palette.primary.main,
-    fontSize: "1.5rem",
-}));
-
-export const _TitleTypography = styled(Typography, {
-    shouldForwardProp: (prop) => prop !== "isMobile",
-})<{ isMobile: boolean }>(({ theme, isMobile }) => ({
-    fontWeight: 600,
-    color: theme.palette.primary.main,
-    fontSize: isMobile ? "1.1rem" : "1.25rem",
-}));
-
 export const _FieldsContainer = styled(Box, {
     shouldForwardProp: (prop) => prop !== "isMobile",
 })<{ isMobile: boolean }>(({ theme, isMobile }) => ({
     display: "flex",
     flexDirection: isMobile ? "column" : "row",
+    alignItems: "flex-start",
     gap: theme.spacing(isMobile ? 2 : 3),
     overflowX: isMobile ? "visible" : "auto",
     flexGrow: 1,
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
     position: "relative",
     scrollBehavior: "smooth",

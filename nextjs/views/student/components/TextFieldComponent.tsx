@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
-import { TextField, Box, useTheme, styled } from "@mui/material";
-import { Error as ErrorIcon } from "@mui/icons-material";
+import { TextField, Box, styled, useTheme } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { TextFieldProps } from "./types";
 
@@ -40,6 +39,8 @@ const StyledTextField = styled(TextField, {
 }));
 
 const TextFieldComponent: React.FC<TextFieldProps> = ({
+    value,
+    errorMessage,
     label,
     helperText,
     placeholder,
@@ -53,16 +54,12 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
 }) => {
     const theme = useTheme();
 
-    const [value, setValue] = React.useState<string>("");
-    const [error, setError] = React.useState<string | null>(null);
-
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = e.target.value ?? "";
-            const validationError = getIsValid?.(newValue) ?? null;
-            setValue(newValue);
-            setError(validationError);
-            onValueChange(newValue);
+            const newValue = e.target.value;
+            const valueToPass = newValue === "" ? undefined : newValue;
+            const validationError = getIsValid?.(valueToPass) ?? null;
+            onValueChange(valueToPass, validationError);
         },
         [getIsValid, onValueChange],
     );
@@ -102,7 +99,7 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
                         label
                     )
                 }
-                value={value}
+                value={value ?? ""}
                 onChange={handleChange}
                 onBlur={onBlur}
                 variant="outlined"
@@ -111,10 +108,10 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
                 required={required}
                 disabled={disabled}
                 type={type}
-                error={!!error}
-                helperText={error || helperText}
+                error={!!errorMessage}
+                helperText={errorMessage || helperText}
                 placeholder={placeholder}
-                aria-describedby={error ? `${label}-error` : undefined}
+                aria-describedby={errorMessage ? `${label}-error` : undefined}
                 width={width}
                 // Inline style overrides for dynamic border and label color
                 sx={{
@@ -133,18 +130,6 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
                     },
                 }}
             />
-            {error && (
-                <ErrorIcon
-                    sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: theme.palette.error.main,
-                        fontSize: "1.2rem",
-                    }}
-                />
-            )}
         </Box>
     );
 };
