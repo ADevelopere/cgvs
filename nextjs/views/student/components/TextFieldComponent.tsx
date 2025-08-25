@@ -1,51 +1,8 @@
-import React, { useCallback } from "react";
-import { TextField, Box, styled, useTheme } from "@mui/material";
+import React, { useCallback, useMemo } from "react";
+import { Box, useTheme } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { TextFieldProps } from "./types";
-
-const StyledTextField = styled(TextField, {
-    shouldForwardProp: (prop) => prop !== "width" && prop !== "colorType",
-})<{ width?: string | number; colorType: "text" | "email" }>(({
-    theme,
-    colorType,
-}) => {
-    const focusColor =
-        colorType === "email"
-            ? theme.palette.secondary.main
-            : theme.palette.primary.main;
-
-    return {
-        "& .MuiOutlinedInput-root": {
-            transition: "all 0.3s ease",
-            backgroundColor: theme.palette.background.paper,
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: focusColor,
-                borderWidth: "2px",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: focusColor,
-                borderWidth: "2px",
-            },
-            "&.Mui-focused": {
-                backgroundColor: theme.palette.action.hover,
-                transform: "scale(1.02)",
-            },
-            "&.Mui-error": {
-                "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.palette.error.main,
-                },
-            },
-            "&.Mui-disabled": {
-                backgroundColor: theme.palette.action.disabledBackground,
-            },
-        },
-        "& .MuiInputLabel-root": {
-            "&.Mui-focused": {
-                color: focusColor,
-            },
-        },
-    };
-});
+import { createStyledTextField } from "./StyledBaseField";
 
 const TextFieldComponent: React.FC<TextFieldProps> = ({
     value,
@@ -63,6 +20,14 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
 }) => {
     const theme = useTheme();
 
+    const StyledComponent = useMemo(() => {
+        const focusColor =
+            type === "email"
+                ? theme.palette.secondary.main
+                : theme.palette.primary.main;
+        return createStyledTextField(focusColor);
+    }, [type, theme.palette.primary.main, theme.palette.secondary.main]);
+
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const newValue = e.target.value;
@@ -75,7 +40,7 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
 
     return (
         <Box sx={{ position: "relative", width }}>
-            <StyledTextField
+            <StyledComponent
                 label={
                     required ? (
                         <Box
@@ -114,8 +79,9 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
                 helperText={errorMessage || helperText}
                 placeholder={placeholder}
                 aria-describedby={errorMessage ? `${label}-error` : undefined}
-                width={width}
-                colorType={type}
+                sx={{
+                    width: width || "100%",
+                }}
             />
         </Box>
     );

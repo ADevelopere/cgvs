@@ -1,41 +1,7 @@
-import React, { useCallback } from "react";
-import { TextField, Box, styled } from "@mui/material";
+import React, { useCallback, useMemo } from "react";
+import { Box, useTheme } from "@mui/material";
 import { BaseFieldProps } from "./types";
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-    "& .MuiOutlinedInput-root": {
-        transition: "all 0.3s ease",
-        backgroundColor: theme.palette.background.paper,
-        "&:hover": {
-            backgroundColor: theme.palette.action.hover,
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.info.main,
-                borderWidth: "2px",
-            },
-        },
-        "&.Mui-focused": {
-            backgroundColor: theme.palette.background.paper,
-            transform: "scale(1.02)",
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.info.main,
-                borderWidth: "2px",
-            },
-        },
-        "&.Mui-error": {
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.error.main,
-            },
-        },
-        "&.Mui-disabled": {
-            backgroundColor: theme.palette.action.disabledBackground,
-        },
-    },
-    "& .MuiInputLabel-root": {
-        "&.Mui-focused": {
-            color: theme.palette.info.main,
-        },
-    },
-}));
+import { createStyledTextField } from "./StyledBaseField";
 
 const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
     value,
@@ -50,6 +16,13 @@ const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
     onBlur,
     getIsValid,
 }) => {
+    const theme = useTheme();
+
+    const StyledDateField = useMemo(
+        () => createStyledTextField(theme.palette.info.main),
+        [theme.palette.info.main],
+    );
+
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const newValue = e.target.value ?? "";
@@ -69,7 +42,7 @@ const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
 
     return (
         <Box sx={{ position: "relative", width }}>
-            <StyledTextField
+            <StyledDateField
                 label={label}
                 value={value ?? ""}
                 onChange={handleChange}

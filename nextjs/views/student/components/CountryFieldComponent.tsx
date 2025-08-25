@@ -1,45 +1,11 @@
 import React, { useCallback, useMemo } from "react";
-import { TextField, Box, useTheme, Autocomplete, styled } from "@mui/material";
+import { Box, useTheme, Autocomplete } from "@mui/material";
 import Image from "next/image";
 import countries, { CountryType } from "@/utils/country";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { BaseFieldProps } from "./types";
 import { CountryCode } from "@/graphql/generated/types";
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-    "& .MuiOutlinedInput-root": {
-        transition: "all 0.3s ease",
-        backgroundColor: theme.palette.background.paper,
-        "&:hover": {
-            backgroundColor: theme.palette.action.hover,
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.success.main,
-                borderWidth: "2px",
-            },
-        },
-        "&.Mui-focused": {
-            backgroundColor: theme.palette.background.paper,
-            transform: "scale(1.02)",
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.success.main,
-                borderWidth: "2px",
-            },
-        },
-        "&.Mui-error": {
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.error.main,
-            },
-        },
-        "&.Mui-disabled": {
-            backgroundColor: theme.palette.action.disabledBackground,
-        },
-    },
-    "& .MuiInputLabel-root": {
-        "&.Mui-focused": {
-            color: theme.palette.success.main,
-        },
-    },
-}));
+import { createStyledTextField } from "./StyledBaseField";
 
 const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
     value,
@@ -56,6 +22,11 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
 }) => {
     const theme = useTheme();
     const countryStrings = useAppTranslation("countryTranslations");
+
+    const StyledCountryField = useMemo(
+        () => createStyledTextField(theme.palette.success.main),
+        [theme.palette.success.main],
+    );
 
     const selectedCountry = useMemo(
         () => (value ? countries.find((c) => c.code === value) : null),
@@ -132,7 +103,7 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
                     );
                 }}
                 renderInput={(params) => (
-                    <StyledTextField
+                    <StyledCountryField
                         {...params}
                         label={label}
                         variant="outlined"
