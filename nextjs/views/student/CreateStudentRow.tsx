@@ -46,6 +46,10 @@ const MemoizedGenderField = React.memo(GenderFieldComponent);
 const MemoizedCountryField = React.memo(CountryFieldComponent);
 const MemoizedPhoneField = React.memo(PhoneFieldComponent);
 
+const initialStudentState: CreateStudentInput = {
+    name: "",
+};
+
 const CreateStudentRow = () => {
     const { createStudent } = useStudentManagement();
     const { applySingleFilter } = useStudentFilter();
@@ -56,9 +60,8 @@ const CreateStudentRow = () => {
     const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
     // Form state
-    const [newStudent, setNewStudent] = useState<CreateStudentInput>({
-        name: "",
-    });
+    const [newStudent, setNewStudent] =
+        useState<CreateStudentInput>(initialStudentState);
     // fieldValidity: string (field) -> string | null (error message, null if valid)
     const [fieldValidity, setFieldValidity] = useState<
         Record<string, string | null>
@@ -102,51 +105,48 @@ const CreateStudentRow = () => {
         [isMobile, isTablet],
     );
 
-    const nameValueForFilter = useRef<string | undefined>(undefined);
     const lastFilteredValue = useRef<string | undefined>(undefined);
-    const [lastChangeTime, setLastChangeTime] = useState<number | null>(null);
+    const debounceTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const handleNameChange = useCallback(
         (value: string | undefined, errorMessage: string | null) => {
-            setNewStudent((prev) => ({ ...prev, name: value }));
+            setNewStudent((prev) => ({ ...prev, name: value ?? "" }));
             setIsDirty(true);
             setFieldValidity((prev) => ({ ...prev, name: errorMessage }));
-            nameValueForFilter.current = value;
-            setLastChangeTime(Date.now());
+
+            if (debounceTimer.current) {
+                clearTimeout(debounceTimer.current);
+            }
+
+            debounceTimer.current = setTimeout(() => {
+                if (value === lastFilteredValue.current) {
+                    return;
+                }
+                lastFilteredValue.current = value;
+
+                if (!value || value.trim() === "") {
+                    applySingleFilter(null);
+                } else {
+                    applySingleFilter({
+                        columnId: "name",
+                        operation: TextFilterOperation.STARTS_WITH,
+                        value: value,
+                    });
+                }
+            }, 1500);
+        },
+        [applySingleFilter],
+    );
+
+    // Cleanup the debounce timer on unmount
+    useEffect(
+        () => () => {
+            if (debounceTimer.current) {
+                clearTimeout(debounceTimer.current);
+            }
         },
         [],
     );
-
-    useEffect(() => {
-        // Don't apply filter on initial mount
-        if (lastChangeTime === null) {
-            return;
-        }
-
-        const timer = setTimeout(() => {
-            const value = nameValueForFilter.current;
-
-            // Only apply filter if the value has changed
-            if (value === lastFilteredValue.current) {
-                return;
-            }
-            lastFilteredValue.current = value;
-
-            if (value === null || value?.trim() === "") {
-                applySingleFilter(null);
-            } else {
-                applySingleFilter({
-                    columnId: "name",
-                    operation: TextFilterOperation.STARTS_WITH,
-                    value: value,
-                });
-            }
-        }, 1500);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [lastChangeTime, applySingleFilter]);
 
     const handleChange = useCallback(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -184,6 +184,7 @@ const CreateStudentRow = () => {
 
         setIsLoading(true);
         setShowError(false);
+        setErrorMessage("");
 
         try {
             await createStudent({
@@ -191,12 +192,15 @@ const CreateStudentRow = () => {
             });
 
             // Reset form on success
-            setNewStudent({
-                name: "",
-            });
+            setNewStudent(initialStudentState);
+            setFieldValidity({});
             setIsDirty(false);
             setShowSuccess(true);
             applySingleFilter(null);
+            lastFilteredValue.current = undefined;
+            if (debounceTimer.current) {
+                clearTimeout(debounceTimer.current);
+            }
         } catch (error) {
             setErrorMessage(
                 error instanceof Error
@@ -207,7 +211,13 @@ const CreateStudentRow = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [applySingleFilter, createStudent, isFormValid, newStudent]);
+    }, [
+        applySingleFilter,
+        createStudent,
+        isFormValid,
+        newStudent,
+        initialStudentState,
+    ]);
 
     // Handle keyboard shortcuts
     const handleKeyDown = useCallback(
