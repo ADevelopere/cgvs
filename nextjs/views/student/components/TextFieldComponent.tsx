@@ -4,39 +4,48 @@ import Typography from "@mui/material/Typography";
 import { TextFieldProps } from "./types";
 
 const StyledTextField = styled(TextField, {
-    shouldForwardProp: (prop) => prop !== "width",
-})<{ width?: string | number }>(({ theme }) => ({
-    "& .MuiOutlinedInput-root": {
-        transition: "all 0.3s ease",
-        backgroundColor: theme.palette.background.paper,
-        "&:hover": {
-            backgroundColor: theme.palette.action.hover,
-            "& .MuiOutlinedInput-notchedOutline": {
-                // borderColor and borderWidth will be set inline for dynamic color
-            },
-        },
-        "&.Mui-focused": {
+    shouldForwardProp: (prop) => prop !== "width" && prop !== "colorType",
+})<{ width?: string | number; colorType: "text" | "email" }>(({
+    theme,
+    colorType,
+}) => {
+    const focusColor =
+        colorType === "email"
+            ? theme.palette.secondary.main
+            : theme.palette.primary.main;
+
+    return {
+        "& .MuiOutlinedInput-root": {
+            transition: "all 0.3s ease",
             backgroundColor: theme.palette.background.paper,
-            transform: "scale(1.02)",
-            "& .MuiOutlinedInput-notchedOutline": {
-                // borderColor and borderWidth will be set inline for dynamic color
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: focusColor,
+                borderWidth: "2px",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: focusColor,
+                borderWidth: "2px",
+            },
+            "&.Mui-focused": {
+                backgroundColor: theme.palette.action.hover,
+                transform: "scale(1.02)",
+            },
+            "&.Mui-error": {
+                "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.error.main,
+                },
+            },
+            "&.Mui-disabled": {
+                backgroundColor: theme.palette.action.disabledBackground,
             },
         },
-        "&.Mui-error": {
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.error.main,
+        "& .MuiInputLabel-root": {
+            "&.Mui-focused": {
+                color: focusColor,
             },
         },
-        "&.Mui-disabled": {
-            backgroundColor: theme.palette.action.disabledBackground,
-        },
-    },
-    "& .MuiInputLabel-root": {
-        "&.Mui-focused": {
-            // color will be set inline for dynamic color
-        },
-    },
-}));
+    };
+});
 
 const TextFieldComponent: React.FC<TextFieldProps> = ({
     value,
@@ -63,13 +72,6 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
         },
         [getIsValid, onValueChange],
     );
-
-    const getBorderColor = useCallback(() => {
-        if (type === "email") {
-            return theme.palette.secondary.main;
-        }
-        return theme.palette.primary.main;
-    }, [theme.palette.primary.main, theme.palette.secondary.main, type]);
 
     return (
         <Box sx={{ position: "relative", width }}>
@@ -113,22 +115,7 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
                 placeholder={placeholder}
                 aria-describedby={errorMessage ? `${label}-error` : undefined}
                 width={width}
-                // Inline style overrides for dynamic border and label color
-                sx={{
-                    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
-                        {
-                            borderColor: getBorderColor(),
-                            borderWidth: "2px",
-                        },
-                    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                        {
-                            borderColor: getBorderColor(),
-                            borderWidth: "2px",
-                        },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                        color: getBorderColor(),
-                    },
-                }}
+                colorType={type}
             />
         </Box>
     );
