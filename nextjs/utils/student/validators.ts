@@ -2,6 +2,7 @@ import Calendar from "@/types/Calendar";
 import moment from "moment-hijri";
 import { matchIsValidTel } from "mui-tel-input";
 import countries, { CountryType } from "../country";
+import { CountryCode } from "@/graphql/generated/types";
 
 // Constants
 export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
@@ -65,8 +66,8 @@ export const isValidCountryCode = (countryCode: string): boolean => {
  */
 export const isValidCountry = (country: CountryType): boolean => {
     return country?.code
-        ? // @ts-ignore
-          country.code !== "IL"
+        ? 
+          country.code !== "IL" as CountryCode
         : false;
 };
 
