@@ -1,4 +1,5 @@
 import { CountryCode } from "@/graphql/generated/types";
+import { MuiTelInputCountry } from "mui-tel-input";
 
 interface CountryType {
     code: CountryCode;
@@ -7,6 +8,35 @@ interface CountryType {
 }
 
 export type {CountryType};
+
+export const preferredCountries: MuiTelInputCountry[] = [
+    "SA",
+    "PS",
+    "YE",
+    "SY",
+    "EG",
+    "KW",
+    "QA",
+    "OM",
+    "BH",
+    "LB",
+    "JO",
+    "IQ",
+    "LY",
+    "AE",
+    "TN",
+    "DZ",
+    "MA",
+    "SD",
+    "MR",
+    "SO",
+    "ID",
+    "KM",
+    "DJ",
+    "ER",
+    "SS",
+    "EH",
+];
 
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
 const countries: readonly CountryType[] = [
