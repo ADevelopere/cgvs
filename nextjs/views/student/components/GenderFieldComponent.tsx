@@ -1,50 +1,15 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
-    TextField,
     Box,
     MenuItem,
-    styled,
     InputAdornment,
     IconButton,
+    useTheme,
 } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
 import { GenderFieldProps } from "./types";
 import { Gender } from "@/graphql/generated/types";
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-    "& .MuiOutlinedInput-root": {
-        transition: "all 0.3s ease",
-        backgroundColor: theme.palette.background.paper,
-        "&:hover": {
-            backgroundColor: theme.palette.action.hover,
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.warning.main,
-                borderWidth: "2px",
-            },
-        },
-        "&.Mui-focused": {
-            backgroundColor: theme.palette.background.paper,
-            transform: "scale(1.02)",
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.warning.main,
-                borderWidth: "2px",
-            },
-        },
-        "&.Mui-error": {
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: theme.palette.error.main,
-            },
-        },
-        "&.Mui-disabled": {
-            backgroundColor: theme.palette.action.disabledBackground,
-        },
-    },
-    "& .MuiInputLabel-root": {
-        "&.Mui-focused": {
-            color: theme.palette.warning.main,
-        },
-    },
-}));
+import { createStyledTextField } from "./StyledBaseField";
 
 const GenderFieldComponent: React.FC<GenderFieldProps> = ({
     value,
@@ -60,7 +25,13 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
     onBlur,
     getIsValid,
 }) => {
+    const theme = useTheme();
     const [open, setOpen] = useState<boolean>(false);
+
+    const StyledGenderField = useMemo(
+        () => createStyledTextField(theme.palette.warning.main),
+        [theme.palette.warning.main],
+    );
 
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +47,7 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
 
     return (
         <Box sx={{ position: "relative", width }}>
-            <StyledTextField
+            <StyledGenderField
                 select
                 label={label}
                 value={value ?? ""}
@@ -120,7 +91,7 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
                         {option.label}
                     </MenuItem>
                 ))}
-            </StyledTextField>
+            </StyledGenderField>
         </Box>
     );
 };
