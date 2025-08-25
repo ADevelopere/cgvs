@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+    useState,
+    useMemo,
+    useCallback,
+    useRef,
+    useEffect,
+} from "react";
 import {
     useTheme,
     CircularProgress,
@@ -8,7 +14,6 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import {
-    Add as AddIcon,
     Error as ErrorIcon,
     CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
@@ -32,10 +37,8 @@ import {
     _FieldWrapper,
     _StyledAlert,
     _StyledPaper,
-    _TitleContainer,
-    _TitleIcon,
-    _TitleTypography,
 } from "./components/CreateStudentRow.styles";
+import { HammerIcon } from "lucide-react";
 
 const CreateStudentRow = () => {
     const { createStudent } = useStudentManagement();
@@ -50,9 +53,10 @@ const CreateStudentRow = () => {
     const [newStudent, setNewStudent] = useState<CreateStudentInput>({
         name: "",
     });
-    const [fieldValidity, setFieldValidity] = useState<Record<string, boolean>>(
-        {},
-    );
+    // fieldValidity: string (field) -> string | null (error message, null if valid)
+    const [fieldValidity, setFieldValidity] = useState<
+        Record<string, string | null>
+    >({});
 
     // UI state
     const [isLoading, setIsLoading] = useState(false);
@@ -63,10 +67,11 @@ const CreateStudentRow = () => {
 
     // Form validation: valid if all required fields in fieldValidity are true
     const isFormValid = useMemo(() => {
-        // 'name' field must exist and be valid
-        if (!('name' in fieldValidity) || !fieldValidity['name']) return false;
-        // All fields must be valid (true)
-        return Object.values(fieldValidity).every(Boolean);
+        // 'name' field must exist and have no error
+        if (!("name" in fieldValidity) || fieldValidity["name"] !== null)
+            return false;
+        // All fields must be valid (errorMessage === null)
+        return Object.values(fieldValidity).every((err) => err === null);
     }, [fieldValidity]);
 
     // Get field width based on type and screen size
@@ -75,13 +80,15 @@ const CreateStudentRow = () => {
             if (isMobile) return "100%";
 
             switch (colType) {
+                case "text":
+                    return isTablet ? 250 : 300;
                 case "phone":
                 case "country":
-                    return isTablet ? 250 : 280;
+                    return isTablet ? 190 : 240;
                 case "date":
-                    return isTablet ? 200 : 220;
-                case "select":
                     return isTablet ? 180 : 200;
+                case "select":
+                    return isTablet ? 120 : 160;
                 default:
                     return isTablet ? 200 : 220;
             }
@@ -89,15 +96,37 @@ const CreateStudentRow = () => {
         [isMobile, isTablet],
     );
 
+    const nameValueForFilter = useRef<string | undefined>(undefined);
+    const lastFilteredValue = useRef<string | undefined>(undefined);
+    const [lastChangeTime, setLastChangeTime] = useState<number | null>(null);
+
     const handleNameChange = useCallback(
-        (value: string, valid: boolean) => {
+        (value: string | undefined, errorMessage: string | null) => {
             setNewStudent((prev) => ({ ...prev, name: value }));
             setIsDirty(true);
+            setFieldValidity((prev) => ({ ...prev, name: errorMessage }));
+            nameValueForFilter.current = value;
+            setLastChangeTime(Date.now());
+        },
+        [],
+    );
 
-            setFieldValidity((prev) => ({ ...prev, name: valid }));
+    useEffect(() => {
+        // Don't apply filter on initial mount
+        if (lastChangeTime === null) {
+            return;
+        }
 
-            // Apply filtering when name input changes
-            if (value.trim() === "") {
+        const timer = setTimeout(() => {
+            const value = nameValueForFilter.current;
+
+            // Only apply filter if the value has changed
+            if (value === lastFilteredValue.current) {
+                return;
+            }
+            lastFilteredValue.current = value;
+
+            if (value === null || value?.trim() === "") {
                 applySingleFilter(null);
             } else {
                 applySingleFilter({
@@ -106,16 +135,19 @@ const CreateStudentRow = () => {
                     value: value,
                 });
             }
-        },
-        [applySingleFilter],
-    );
+        }, 1500);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [lastChangeTime, applySingleFilter]);
 
     const handleChange = useCallback(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (value: any, columnId: string, valid: boolean) => {
+        (value: any, columnId: string, errorMessage: string | null) => {
             setNewStudent((prev) => ({ ...prev, [columnId]: value }));
             setIsDirty(true);
-            setFieldValidity((prev) => ({ ...prev, [columnId]: valid }));
+            setFieldValidity((prev) => ({ ...prev, [columnId]: errorMessage }));
         },
         [],
     );
@@ -134,9 +166,6 @@ const CreateStudentRow = () => {
             // Reset form on success
             setNewStudent({
                 name: "",
-                email: "",
-                dateOfBirth: null,
-                gender: undefined,
             });
             setIsDirty(false);
             setShowSuccess(true);
@@ -175,12 +204,6 @@ const CreateStudentRow = () => {
                 isMobile={isMobile}
                 onKeyDown={handleKeyDown}
             >
-                <_TitleContainer isMobile={isMobile}>
-                    <_TitleIcon />
-                    <_TitleTypography variant="h6" isMobile={isMobile}>
-                        {strings.create}
-                    </_TitleTypography>
-                </_TitleContainer>
                 <_FieldsContainer isMobile={isMobile}>
                     {editableColumns.map((col) => (
                         <_FieldWrapper
@@ -190,13 +213,15 @@ const CreateStudentRow = () => {
                         >
                             {col.type === "text" && col.id === "name" && (
                                 <TextFieldComponent
+                                    value={newStudent.name}
+                                    errorMessage={fieldValidity["name"]}
                                     label={strings.name}
                                     helperText={
-                                        newStudent.name.trim() === "" && isDirty
-                                            ? "الاسم مطلوب"
+                                        newStudent?.name?.trim() === "" && isDirty
+                                            ? strings.nameRequired
                                             : ""
                                     }
-                                    placeholder="أدخل اسم الطالب"
+                                    placeholder={strings.namePlaceholder}
                                     required={true}
                                     width="100%"
                                     onValueChange={handleNameChange}
@@ -205,55 +230,85 @@ const CreateStudentRow = () => {
                             )}
                             {col.type === "text" && col.id === "email" && (
                                 <TextFieldComponent
+                                    value={newStudent.email}
+                                    errorMessage={fieldValidity["email"] ?? ""}
                                     label={strings.email}
-                                    placeholder="example@domain.com"
+                                    placeholder={strings.emailPlaceholder}
                                     type="email"
                                     width="100%"
-                                    onValueChange={(value, valid) =>
-                                        handleChange(value, col.id, valid)
+                                    onValueChange={(value, errorMessage) =>
+                                        handleChange(
+                                            value,
+                                            col.id,
+                                            errorMessage,
+                                        )
                                     }
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "date" && (
                                 <DateFieldComponent
+                                    value={newStudent.dateOfBirth}
+                                    errorMessage={fieldValidity[col.id] ?? ""}
                                     label={strings.dateOfBirth}
                                     width="100%"
-                                    onValueChange={(value, valid) =>
-                                        handleChange(value, col.id, valid)
+                                    onValueChange={(value, errorMessage) =>
+                                        handleChange(
+                                            value,
+                                            col.id,
+                                            errorMessage,
+                                        )
                                     }
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "select" && col.id === "gender" && (
                                 <GenderFieldComponent
+                                    value={newStudent.gender}
+                                    errorMessage={fieldValidity["gender"] ?? ""}
                                     label={strings.gender}
-                                    placeholder="اختر الجنس"
+                                    placeholder={strings.genderPlaceholder}
                                     options={col.options || []}
                                     width="100%"
-                                     onValueChange={(value, valid) =>
-                                        handleChange(value, col.id, valid)
+                                    onValueChange={(value, errorMessage) =>
+                                        handleChange(
+                                            value,
+                                            col.id,
+                                            errorMessage,
+                                        )
                                     }
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "country" && (
                                 <CountryFieldComponent
+                                    value={newStudent.nationality ?? undefined}
+                                    errorMessage={fieldValidity[col.id] ?? ""}
                                     label={strings.nationality}
-                                    placeholder="اختر الجنسية"
+                                    placeholder={strings.nationalityPlaceholder}
                                     width="100%"
-                                     onValueChange={(value, valid) =>
-                                        handleChange(value, col.id, valid)
+                                    onValueChange={(value, errorMessage) =>
+                                        handleChange(
+                                            value,
+                                            col.id,
+                                            errorMessage,
+                                        )
                                     }
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "phone" && (
                                 <PhoneFieldComponent
+                                    value={newStudent.phoneNumber}
+                                    errorMessage={fieldValidity[col.id] ?? ""}
                                     label={strings.phoneNumber}
                                     width="100%"
-                                     onValueChange={(value, valid) =>
-                                        handleChange(value, col.id, valid)
+                                    onValueChange={(value, errorMessage) =>
+                                        handleChange(
+                                            value,
+                                            col.id,
+                                            errorMessage,
+                                        )
                                     }
                                     getIsValid={col.getIsValid}
                                 />
@@ -271,18 +326,18 @@ const CreateStudentRow = () => {
                             isLoading ? (
                                 <CircularProgress size={20} color="inherit" />
                             ) : (
-                                <AddIcon />
+                                <HammerIcon />
                             )
                         }
                         isMobile={isMobile}
                         isFormValid={isFormValid}
                         title={
                             !isFormValid
-                                ? "يرجى ملء جميع الحقول المطلوبة"
-                                : "إنشاء طالب جديد (Ctrl+Enter)"
+                                ? strings.fillRequiredFields
+                                : strings.createStudentShortcut
                         }
                     >
-                        {isLoading ? "جاري الإنشاء..." : strings.create}
+                        {isLoading ? strings.creating : strings.create}
                     </_CreateButton>
                 </_ActionsContainer>
             </_StyledPaper>
@@ -300,7 +355,7 @@ const CreateStudentRow = () => {
                     variant="filled"
                     icon={<CheckCircleIcon />}
                 >
-                    تم إنشاء الطالب بنجاح!
+                    {strings.studentCreatedSuccess}
                 </_StyledAlert>
             </Snackbar>
 
@@ -316,7 +371,7 @@ const CreateStudentRow = () => {
                     variant="filled"
                     icon={<ErrorIcon />}
                 >
-                    {errorMessage}
+                    {errorMessage || strings.studentCreateError}
                 </_StyledAlert>
             </Snackbar>
         </>

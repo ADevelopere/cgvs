@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
     TextField,
     Box,
-    useTheme,
     MenuItem,
     styled,
     InputAdornment,
     IconButton,
 } from "@mui/material";
-import { Error as ErrorIcon, Clear as ClearIcon } from "@mui/icons-material";
+import { Clear as ClearIcon } from "@mui/icons-material";
 import { GenderFieldProps } from "./types";
 import { Gender } from "@/graphql/generated/types";
 
@@ -48,6 +47,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const GenderFieldComponent: React.FC<GenderFieldProps> = ({
+    value,
+    errorMessage,
     label,
     helperText,
     placeholder,
@@ -59,22 +60,19 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
     onBlur,
     getIsValid,
 }) => {
-    const theme = useTheme();
-
-    const [value, setValue] = useState<Gender | undefined>(undefined);
-    const [error, setError] = useState<string | null | undefined>(null);
     const [open, setOpen] = useState<boolean>(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value as Gender | undefined;
-        let validationError: string | null | undefined = null;
-        if (value !== null && value !== undefined) {
-            validationError = getIsValid?.(value) ?? null;
-        }
-        setValue(value);
-        setError(validationError);
-        onValueChange(value, !validationError);
-    };
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value as Gender | undefined;
+            let validationError: string | null | undefined = null;
+            if (value !== null && value !== undefined) {
+                validationError = getIsValid?.(value) ?? null;
+            }
+            onValueChange(value, validationError);
+        },
+        [getIsValid, onValueChange],
+    );
 
     return (
         <Box sx={{ position: "relative", width }}>
@@ -89,8 +87,8 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
                 fullWidth
                 required={required}
                 disabled={disabled}
-                error={!!error}
-                helperText={error || helperText}
+                error={!!errorMessage}
+                helperText={errorMessage || helperText}
                 placeholder={placeholder}
                 slotProps={{
                     select: {
@@ -104,9 +102,7 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
                                 <IconButton
                                     aria-label="clear selection"
                                     onClick={() => {
-                                        setValue(undefined);
-                                        setError(null);
-                                        onValueChange(undefined, true);
+                                        onValueChange(undefined, null);
                                     }}
                                     edge="end"
                                     size="small"
@@ -125,18 +121,6 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
                     </MenuItem>
                 ))}
             </StyledTextField>
-            {error && (
-                <ErrorIcon
-                    sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: theme.palette.error.main,
-                        fontSize: "1.2rem",
-                    }}
-                />
-            )}
         </Box>
     );
 };

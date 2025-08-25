@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
-import { TextField, Box, useTheme, styled } from "@mui/material";
-import { Error as ErrorIcon } from "@mui/icons-material";
+import { TextField, Box, styled } from "@mui/material";
 import { BaseFieldProps } from "./types";
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -39,6 +38,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
+    value,
+    errorMessage,
     label,
     helperText,
     placeholder,
@@ -49,18 +50,19 @@ const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
     onBlur,
     getIsValid,
 }) => {
-    const theme = useTheme();
-
-    const [value, setValue] = React.useState<string | undefined>(undefined);
-    const [error, setError] = React.useState<string | null | undefined>(null);
-
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const newValue = e.target.value ?? "";
-            const validationError = getIsValid?.(newValue) ?? null;
-            setValue(newValue);
-            setError(validationError);
-            onValueChange(newValue);
+            let validationError: string | null | undefined = null;
+            // Only validate if newValue is not null/empty string
+            if (
+                newValue !== null &&
+                newValue !== undefined &&
+                newValue !== ""
+            ) {
+                validationError = getIsValid?.(newValue) ?? null;
+            }
+            onValueChange(newValue, validationError);
         },
         [getIsValid, onValueChange],
     );
@@ -78,25 +80,13 @@ const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
                 required={required}
                 disabled={disabled}
                 type="date"
-                error={!!error}
-                helperText={error ?? helperText}
+                error={!!errorMessage}
+                helperText={errorMessage ?? helperText}
                 placeholder={placeholder}
                 slotProps={{
                     inputLabel: { shrink: true },
                 }}
             />
-            {error && (
-                <ErrorIcon
-                    sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: theme.palette.error.main,
-                        fontSize: "1.2rem",
-                    }}
-                />
-            )}
         </Box>
     );
 };

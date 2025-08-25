@@ -45,6 +45,17 @@ type StudentTranslations = {
     dateOfBirthFuture: string;
     phoneNumberRequired: string;
     phoneNumberInvalid: string;
+
+    // UI placeholders and messages
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    genderPlaceholder: string;
+    nationalityPlaceholder: string;
+    fillRequiredFields: string;
+    createStudentShortcut: string;
+    creating: string;
+    studentCreatedSuccess: string;
+    studentCreateError: string;
 };
 
 export default StudentTranslations;

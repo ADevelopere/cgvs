@@ -1,57 +1,63 @@
-import React, { useState } from "react";
-import { Box, useTheme, styled } from "@mui/material";
-import { Error as ErrorIcon } from "@mui/icons-material";
+import React, { useCallback } from "react";
+import { Box,  styled } from "@mui/material";
 import { MuiTelInput } from "mui-tel-input";
 import { BaseFieldProps } from "./types";
 import { preferredCountries } from "@/utils/country";
 
 const StyledMuiTelInput = styled(MuiTelInput)(({ theme }) => ({
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
         margin: 0,
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
         flexGrow: 1,
-        transition: "all 0.3s ease",
+        transition: 'all 0.3s ease',
         backgroundColor: theme.palette.background.paper,
-        "&:hover": {
+        minHeight: 40, // Match MUI Outlined TextField small
+        boxSizing: 'border-box',
+        fontSize: '0.875rem', // 14px, matches MUI small
+        '&:hover': {
             backgroundColor: theme.palette.action.hover,
-            "& .MuiOutlinedInput-notchedOutline": {
+            '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: theme.palette.info.light,
-                borderWidth: "2px",
+                borderWidth: '2px',
             },
         },
-        "&.Mui-focused": {
+        '&.Mui-focused': {
             backgroundColor: theme.palette.background.paper,
-            transform: "scale(1.02)",
-            "& .MuiOutlinedInput-notchedOutline": {
+            transform: 'scale(1.02)',
+            '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: theme.palette.info.light,
-                borderWidth: "2px",
+                borderWidth: '2px',
             },
         },
-        "&.Mui-error": {
+        '&.Mui-errorMessage': {
             backgroundColor: `${theme.palette.error.main}10`,
-            "& .MuiOutlinedInput-notchedOutline": {
+            '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: theme.palette.error.main,
             },
         },
-        "&.Mui-disabled": {
+        '&.Mui-disabled': {
             backgroundColor: theme.palette.action.disabledBackground,
         },
     },
-    "& .MuiInputBase-input": {
-        paddingBlock: 1,
-        paddingInline: 2,
-        width: "100%",
+    '& .MuiInputBase-input': {
+        padding: '8.5px 14px', // Match MUI Outlined TextField small
+        width: '100%',
+        fontSize: '0.875rem',
+        lineHeight: 1.43,
+        boxSizing: 'border-box',
     },
-    "& .MuiInputLabel-root": {
-        "&.Mui-focused": {
+    '& .MuiInputLabel-root': {
+        '&.Mui-focused': {
             color: theme.palette.info.light,
         },
     },
 }));
 
 const PhoneFieldComponent: React.FC<BaseFieldProps<string>> = ({
+    value,
+    errorMessage,
     label,
     helperText,
     placeholder,
@@ -60,20 +66,21 @@ const PhoneFieldComponent: React.FC<BaseFieldProps<string>> = ({
     width,
     onValueChange,
     onBlur,
-    getIsValid
+    getIsValid,
 }) => {
-    const theme = useTheme();
-
-    const [value, setValue] = useState<string | undefined>(undefined);
-    const [error, setError] = useState<string | null | undefined>(null);
-
-        
-    const handleChange = (newValue: string) => {
-        const validationError = getIsValid?.(newValue) ?? null;
-        setError(validationError);
-        setValue(newValue);
-        onValueChange(newValue);
-    };
+    const handleChange = useCallback(
+        (newValue: string) => {
+            let validationError: string | null | undefined = null;
+            if (newValue === "") {
+                // Empty is always valid, pass null to onValueChange
+                onValueChange(undefined, null);
+                return;
+            }
+            validationError = getIsValid?.(newValue) ?? null;
+            onValueChange(newValue, validationError);
+        },
+        [getIsValid, onValueChange],
+    );
 
     return (
         <Box sx={{ position: "relative", width }}>
@@ -90,22 +97,10 @@ const PhoneFieldComponent: React.FC<BaseFieldProps<string>> = ({
                 fullWidth
                 required={required}
                 disabled={disabled}
-                error={!!error}
-                helperText={error || helperText}
+                error={!!errorMessage}
+                helperText={errorMessage || helperText}
                 placeholder={placeholder}
             />
-            {error && (
-                <ErrorIcon
-                    sx={{
-                        position: "absolute",
-                        right: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: theme.palette.error.main,
-                        fontSize: "1.2rem",
-                    }}
-                />
-            )}
         </Box>
     );
 };
