@@ -1,6 +1,14 @@
 import React, { useState } from "react";
-import { TextField, Box, useTheme, MenuItem, styled } from "@mui/material";
-import { Error as ErrorIcon } from "@mui/icons-material";
+import {
+    TextField,
+    Box,
+    useTheme,
+    MenuItem,
+    styled,
+    InputAdornment,
+    IconButton,
+} from "@mui/material";
+import { Error as ErrorIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { GenderFieldProps } from "./types";
 import { Gender } from "@/graphql/generated/types";
 
@@ -53,17 +61,19 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
 }) => {
     const theme = useTheme();
 
-    const [value, setValue] = useState<Gender | undefined>("Male");
+    const [value, setValue] = useState<Gender | undefined>(undefined);
     const [error, setError] = useState<string | null | undefined>(null);
     const [open, setOpen] = useState<boolean>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value as Gender | undefined;
-        const validationError = getIsValid?.(value) ?? null;
-
+        let validationError: string | null | undefined = null;
+        if (value !== null && value !== undefined) {
+            validationError = getIsValid?.(value) ?? null;
+        }
         setValue(value);
         setError(validationError);
-        onValueChange(value);
+        onValueChange(value, !validationError);
     };
 
     return (
@@ -87,6 +97,25 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
                         open: open,
                         onClose: () => setOpen(false),
                         onOpen: () => setOpen(true),
+                    },
+                    input: {
+                        endAdornment: value ? (
+                            <InputAdornment position="start" sx={{ pr: 1 }}>
+                                <IconButton
+                                    aria-label="clear selection"
+                                    onClick={() => {
+                                        setValue(undefined);
+                                        setError(null);
+                                        onValueChange(undefined, true);
+                                    }}
+                                    edge="end"
+                                    size="small"
+                                    disabled={disabled}
+                                >
+                                    <ClearIcon fontSize="small" />
+                                </IconButton>
+                            </InputAdornment>
+                        ) : null,
                     },
                 }}
             >

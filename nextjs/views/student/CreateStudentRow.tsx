@@ -16,11 +16,7 @@ import { useStudentManagement } from "@/contexts/student/StudentManagementContex
 import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
 import { TextFilterOperation } from "@/types/filters";
 import { useStudentTableManagement } from "@/contexts/student/StudentTableManagementContext";
-import {
-    CountryCode,
-    CreateStudentInput,
-    Gender,
-} from "@/graphql/generated/types";
+import { CreateStudentInput } from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import {
     TextFieldComponent,
@@ -54,6 +50,9 @@ const CreateStudentRow = () => {
     const [newStudent, setNewStudent] = useState<CreateStudentInput>({
         name: "",
     });
+    const [fieldValidity, setFieldValidity] = useState<Record<string, boolean>>(
+        {},
+    );
 
     // UI state
     const [isLoading, setIsLoading] = useState(false);
@@ -62,12 +61,13 @@ const CreateStudentRow = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [isDirty, setIsDirty] = useState(false);
 
-    // Form validation
+    // Form validation: valid if all required fields in fieldValidity are true
     const isFormValid = useMemo(() => {
-        const nameColumn = columns.find((c) => c.id === "name");
-        const nameError = nameColumn?.getIsValid?.(newStudent.name);
-        return !nameError && newStudent.name.trim() !== "";
-    }, [newStudent.name, columns]);
+        // 'name' field must exist and be valid
+        if (!('name' in fieldValidity) || !fieldValidity['name']) return false;
+        // All fields must be valid (true)
+        return Object.values(fieldValidity).every(Boolean);
+    }, [fieldValidity]);
 
     // Get field width based on type and screen size
     const getFieldWidth = useCallback(
@@ -90,9 +90,11 @@ const CreateStudentRow = () => {
     );
 
     const handleNameChange = useCallback(
-        (value: string) => {
+        (value: string, valid: boolean) => {
             setNewStudent((prev) => ({ ...prev, name: value }));
             setIsDirty(true);
+
+            setFieldValidity((prev) => ({ ...prev, name: valid }));
 
             // Apply filtering when name input changes
             if (value.trim() === "") {
@@ -108,39 +110,15 @@ const CreateStudentRow = () => {
         [applySingleFilter],
     );
 
-    const handleEmailChange = useCallback((value: string) => {
-        setNewStudent((prev) => ({ ...prev, email: value }));
-        setIsDirty(true);
-    }, []);
-
-    const handleDateOfBirthChange = useCallback((value: string | null) => {
-        setNewStudent((prev) => ({ ...prev, dateOfBirth: value }));
-        setIsDirty(true);
-    }, []);
-
-    const handleGenderChange = useCallback((value: Gender | undefined) => {
-        setNewStudent((prev) => ({
-            ...prev,
-            gender: value,
-        }));
-        setIsDirty(true);
-    }, []);
-
-    const handleNationalityChange = useCallback((value: CountryCode) => {
-        setNewStudent((prev) => ({
-            ...prev,
-            nationality: value,
-        }));
-        setIsDirty(true);
-    }, []);
-
-    const handlePhoneNumberChange = useCallback((value: string) => {
-        setNewStudent((prev) => ({
-            ...prev,
-            phoneNumber: value,
-        }));
-        setIsDirty(true);
-    }, []);
+    const handleChange = useCallback(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (value: any, columnId: string, valid: boolean) => {
+            setNewStudent((prev) => ({ ...prev, [columnId]: value }));
+            setIsDirty(true);
+            setFieldValidity((prev) => ({ ...prev, [columnId]: valid }));
+        },
+        [],
+    );
 
     const handleCreate = useCallback(async () => {
         if (!isFormValid) return;
@@ -231,7 +209,9 @@ const CreateStudentRow = () => {
                                     placeholder="example@domain.com"
                                     type="email"
                                     width="100%"
-                                    onValueChange={handleEmailChange}
+                                    onValueChange={(value, valid) =>
+                                        handleChange(value, col.id, valid)
+                                    }
                                     getIsValid={col.getIsValid}
                                 />
                             )}
@@ -239,7 +219,9 @@ const CreateStudentRow = () => {
                                 <DateFieldComponent
                                     label={strings.dateOfBirth}
                                     width="100%"
-                                    onValueChange={handleDateOfBirthChange}
+                                    onValueChange={(value, valid) =>
+                                        handleChange(value, col.id, valid)
+                                    }
                                     getIsValid={col.getIsValid}
                                 />
                             )}
@@ -249,8 +231,8 @@ const CreateStudentRow = () => {
                                     placeholder="اختر الجنس"
                                     options={col.options || []}
                                     width="100%"
-                                    onValueChange={(value) =>
-                                        handleGenderChange(value)
+                                     onValueChange={(value, valid) =>
+                                        handleChange(value, col.id, valid)
                                     }
                                     getIsValid={col.getIsValid}
                                 />
@@ -260,8 +242,8 @@ const CreateStudentRow = () => {
                                     label={strings.nationality}
                                     placeholder="اختر الجنسية"
                                     width="100%"
-                                    onValueChange={(value) =>
-                                        handleNationalityChange(value)
+                                     onValueChange={(value, valid) =>
+                                        handleChange(value, col.id, valid)
                                     }
                                     getIsValid={col.getIsValid}
                                 />
@@ -270,8 +252,8 @@ const CreateStudentRow = () => {
                                 <PhoneFieldComponent
                                     label={strings.phoneNumber}
                                     width="100%"
-                                    onValueChange={(value) =>
-                                        handlePhoneNumberChange(value)
+                                     onValueChange={(value, valid) =>
+                                        handleChange(value, col.id, valid)
                                     }
                                     getIsValid={col.getIsValid}
                                 />

@@ -55,20 +55,26 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
 }) => {
     const theme = useTheme();
     const countryStrings = useAppTranslation("countryTranslations");
-    const [value, setValue] = useState<CountryCode | undefined>("EG");
+    const [value, setValue] = useState<CountryCode | null>(null);
     const [error, setError] = useState<string | null | undefined>(null);
 
     const selectedCountry = useMemo(
-        () => countries.find((c) => c.code === value) || countries[0],
+        () => (value ? countries.find((c) => c.code === value) : null),
         [value],
     );
 
     const handleChange = (_: unknown, newValue: CountryType | null) => {
-        const validationError = getIsValid?.(newValue) ?? null;
-        setError(validationError);
-        setValue(newValue?.code);
+        let validationError: string | null | undefined = null;
         if (newValue) {
-            onValueChange(newValue.code);
+            validationError = getIsValid?.(newValue.code) ?? null;
+        }
+        setError(validationError);
+        setValue(newValue ? newValue.code : null);
+        if (newValue) {
+            onValueChange(newValue.code, !validationError);
+        } else {
+            // If null, always valid
+            onValueChange(null, true);
         }
     };
 
