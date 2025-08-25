@@ -1,8 +1,8 @@
+import { Gender } from "@/graphql/generated/types";
+
 // Base props for all field components
 export interface BaseFieldProps<T = unknown> {
     label: string;
-    value: T;
-    error?: string | null;
     helperText?: string;
     placeholder?: string;
     required?: boolean;
@@ -10,6 +10,8 @@ export interface BaseFieldProps<T = unknown> {
     width?: string | number;
     onValueChange: (value: T) => void;
     onBlur?: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getIsValid?: (value: any) => string | null | undefined;
 }
 
 // Text field specific props
@@ -18,8 +20,6 @@ export interface TextFieldProps extends BaseFieldProps<string> {
 }
 
 // Select/Gender field specific props
-export interface GenderFieldProps extends BaseFieldProps<string | undefined> {
-    options: Array<{ value: string; label: string }>;
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
+export interface GenderFieldProps extends BaseFieldProps<Gender | undefined> {
+    options: Array<{ value: Gender; label: string }>;
 }
