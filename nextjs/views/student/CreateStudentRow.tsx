@@ -70,8 +70,8 @@ const CreateStudentRow = () => {
     const strings = useAppTranslation("studentTranslations");
     const countryStrings = useAppTranslation("countryTranslations");
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
     // Form state
     const [newStudent, setNewStudent] = useState<CreateStudentInput>({
@@ -116,7 +116,7 @@ const CreateStudentRow = () => {
 
     // Form validation
     const isFormValid = useMemo(() => {
-        const nameColumn = columns.find(c => c.id === "name");
+        const nameColumn = columns.find((c) => c.id === "name");
         const nameError = nameColumn?.getIsValid?.(newStudent.name);
         return !nameError && newStudent.name.trim() !== "";
     }, [newStudent.name, columns]);
@@ -124,7 +124,7 @@ const CreateStudentRow = () => {
     // Get field width based on type and screen size
     const getFieldWidth = (colType: string) => {
         if (isMobile) return "100%";
-        
+
         switch (colType) {
             case "phone":
             case "country":
@@ -161,15 +161,15 @@ const CreateStudentRow = () => {
 
     const handleCreate = async () => {
         if (!isFormValid) return;
-        
+
         setIsLoading(true);
         setShowError(false);
-        
+
         try {
             await createStudent({
                 input: newStudent,
             });
-            
+
             // Reset form on success
             setNewStudent({
                 name: "",
@@ -183,9 +183,12 @@ const CreateStudentRow = () => {
             setIsDirty(false);
             setShowSuccess(true);
             applySingleFilter(null);
-            
         } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب");
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "حدث خطأ أثناء إنشاء الطالب",
+            );
             setShowError(true);
         } finally {
             setIsLoading(false);
@@ -195,11 +198,14 @@ const CreateStudentRow = () => {
     // Handle keyboard shortcuts
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter" && e.ctrlKey && isFormValid) {
-            handleCreate();
+            handleCreate().then(r => r);
         }
     };
 
-    const editableColumns = columns.filter((c) => c.editable);
+    const editableColumns = useMemo(
+        () => columns.filter((c) => c.editable),
+        [columns],
+    );
 
     return (
         <>
@@ -239,15 +245,15 @@ const CreateStudentRow = () => {
                         mb: isMobile ? 1 : 0,
                     }}
                 >
-                    <AddIcon 
-                        sx={{ 
+                    <AddIcon
+                        sx={{
                             color: theme.palette.primary.main,
                             fontSize: "1.5rem",
-                        }} 
+                        }}
                     />
-                    <Typography 
-                        variant="h6" 
-                        sx={{ 
+                    <Typography
+                        variant="h6"
+                        sx={{
                             fontWeight: 600,
                             color: theme.palette.primary.main,
                             fontSize: isMobile ? "1.1rem" : "1.25rem",
@@ -267,7 +273,7 @@ const CreateStudentRow = () => {
                         borderRadius: 1,
                         position: "relative",
                         scrollBehavior: "smooth",
-                        
+
                         // Custom scrollbar styling
                         "&::-webkit-scrollbar": {
                             height: "10px",
@@ -283,7 +289,7 @@ const CreateStudentRow = () => {
                                 backgroundColor: theme.palette.primary.dark,
                             },
                         },
-                        
+
                         // Scroll shadows
                         "&::before, &::after": {
                             content: '""',
@@ -306,496 +312,654 @@ const CreateStudentRow = () => {
                     }}
                 >
                     {editableColumns.map((col) => (
-                        <Box 
-                            key={col.id} 
-                            sx={{ 
+                        <Box
+                            key={col.id}
+                            sx={{
                                 width: getFieldWidth(col.type || "text"),
                                 flexShrink: isMobile ? 1 : 0,
                                 position: "relative",
                                 transition: "all 0.3s ease",
                             }}
                         >
-                        {col.type === "text" && col.id === "name" && (
-                            <Box sx={{ position: "relative" }}>
-                                <TextField
-                                    label={
-                                        <Box component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                            {strings.name}
-                                            <Typography component="span" sx={{ color: theme.palette.error.main, fontWeight: "bold" }}>
-                                                *
-                                            </Typography>
-                                        </Box>
-                                    }
-                                    name={col.id}
-                                    value={newStudent.name}
-                                    onChange={handleInputChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    required
-                                    error={col.getIsValid?.(newStudent.name) !== null}
-                                    helperText={col.getIsValid?.(newStudent.name) || (newStudent.name.trim() === "" && isDirty ? "الاسم مطلوب" : "")}
-                                    placeholder="أدخل اسم الطالب"
-                                    aria-describedby={col.getIsValid?.(newStudent.name) ? `${col.id}-error` : undefined}
-                                    sx={{
-                                        "& .MuiOutlinedInput-root": {
-                                            transition: "all 0.3s ease",
-                                            backgroundColor: theme.palette.background.paper,
-                                            "&:hover": {
-                                                backgroundColor: theme.palette.action.hover,
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.primary.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                            "&.Mui-focused": {
-                                                backgroundColor: theme.palette.background.paper,
-                                                transform: "scale(1.02)",
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.primary.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                            "&.Mui-error": {
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.error.main,
-                                                },
-                                            },
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            "&.Mui-focused": {
-                                                color: theme.palette.primary.main,
-                                            },
-                                        },
-                                    }}
-                                />
-                                {col.getIsValid?.(newStudent.name) && (
-                                    <ErrorIcon
+                            {col.type === "text" && col.id === "name" && (
+                                <Box sx={{ position: "relative" }}>
+                                    <TextField
+                                        label={
+                                            <Box
+                                                component="span"
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                }}
+                                            >
+                                                {strings.name}
+                                                <Typography
+                                                    component="span"
+                                                    sx={{
+                                                        color: theme.palette
+                                                            .error.main,
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    *
+                                                </Typography>
+                                            </Box>
+                                        }
+                                        name={col.id}
+                                        value={newStudent.name}
+                                        onChange={handleInputChange}
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        required
+                                        error={
+                                            col.getIsValid?.(
+                                                newStudent.name,
+                                            ) !== null
+                                        }
+                                        helperText={
+                                            col.getIsValid?.(newStudent.name) ||
+                                            (newStudent.name.trim() === "" &&
+                                            isDirty
+                                                ? "الاسم مطلوب"
+                                                : "")
+                                        }
+                                        placeholder="أدخل اسم الطالب"
+                                        aria-describedby={
+                                            col.getIsValid?.(newStudent.name)
+                                                ? `${col.id}-error`
+                                                : undefined
+                                        }
                                         sx={{
-                                            position: "absolute",
-                                            right: 8,
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: theme.palette.error.main,
-                                            fontSize: "1.2rem",
+                                            "& .MuiOutlinedInput-root": {
+                                                transition: "all 0.3s ease",
+                                                backgroundColor:
+                                                    theme.palette.background
+                                                        .paper,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        theme.palette.action
+                                                            .hover,
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .primary
+                                                                    .main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-focused": {
+                                                    backgroundColor:
+                                                        theme.palette.background
+                                                            .paper,
+                                                    transform: "scale(1.02)",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .primary
+                                                                    .main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-error": {
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .error.main,
+                                                        },
+                                                },
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                                "&.Mui-focused": {
+                                                    color: theme.palette.primary
+                                                        .main,
+                                                },
+                                            },
                                         }}
                                     />
-                                )}
-                            </Box>
-                        )}
-                        {col.type === "text" && col.id === "email" && (
-                            <Box sx={{ position: "relative" }}>
-                                <TextField
-                                    label={strings.email}
-                                    name={col.id}
-                                    value={newStudent.email || ""}
-                                    onChange={handleInputChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    type="email"
-                                    error={col.getIsValid?.(newStudent.email) !== null}
-                                    helperText={col.getIsValid?.(newStudent.email) || ""}
-                                    placeholder="example@domain.com"
-                                    sx={{
-                                        "& .MuiOutlinedInput-root": {
-                                            transition: "all 0.3s ease",
-                                            backgroundColor: theme.palette.background.paper,
-                                            "&:hover": {
-                                                backgroundColor: theme.palette.action.hover,
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.secondary.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                            "&.Mui-focused": {
-                                                backgroundColor: theme.palette.background.paper,
-                                                transform: "scale(1.02)",
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.secondary.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            "&.Mui-focused": {
-                                                color: theme.palette.secondary.main,
-                                            },
-                                        },
-                                    }}
-                                />
-                                {col.getIsValid?.(newStudent.email) && (
-                                    <ErrorIcon
+                                    {col.getIsValid?.(newStudent.name) && (
+                                        <ErrorIcon
+                                            sx={{
+                                                position: "absolute",
+                                                right: 8,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                color: theme.palette.error.main,
+                                                fontSize: "1.2rem",
+                                            }}
+                                        />
+                                    )}
+                                </Box>
+                            )}
+                            {col.type === "text" && col.id === "email" && (
+                                <Box sx={{ position: "relative" }}>
+                                    <TextField
+                                        label={strings.email}
+                                        name={col.id}
+                                        value={newStudent.email || ""}
+                                        onChange={handleInputChange}
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        type="email"
+                                        error={
+                                            col.getIsValid?.(
+                                                newStudent.email,
+                                            ) !== null
+                                        }
+                                        helperText={
+                                            col.getIsValid?.(
+                                                newStudent.email,
+                                            ) || ""
+                                        }
+                                        placeholder="example@domain.com"
                                         sx={{
-                                            position: "absolute",
-                                            right: 8,
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: theme.palette.error.main,
-                                            fontSize: "1.2rem",
+                                            "& .MuiOutlinedInput-root": {
+                                                transition: "all 0.3s ease",
+                                                backgroundColor:
+                                                    theme.palette.background
+                                                        .paper,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        theme.palette.action
+                                                            .hover,
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .secondary
+                                                                    .main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-focused": {
+                                                    backgroundColor:
+                                                        theme.palette.background
+                                                            .paper,
+                                                    transform: "scale(1.02)",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .secondary
+                                                                    .main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                                "&.Mui-focused": {
+                                                    color: theme.palette
+                                                        .secondary.main,
+                                                },
+                                            },
                                         }}
                                     />
-                                )}
-                            </Box>
-                        )}
-                        {col.type === "date" && (
-                            <Box sx={{ position: "relative" }}>
-                                <TextField
-                                    label={strings.dateOfBirth}
-                                    name={col.id}
-                                    type="date"
-                                    value={newStudent.dateOfBirth || ""}
-                                    onChange={handleInputChange}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    error={col.getIsValid?.(newStudent.dateOfBirth) !== null}
-                                    helperText={col.getIsValid?.(newStudent.dateOfBirth) || ""}
-                                    sx={{
-                                        "& .MuiOutlinedInput-root": {
-                                            transition: "all 0.3s ease",
-                                            backgroundColor: theme.palette.background.paper,
-                                            "&:hover": {
-                                                backgroundColor: theme.palette.action.hover,
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.info.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                            "&.Mui-focused": {
-                                                backgroundColor: theme.palette.background.paper,
-                                                transform: "scale(1.02)",
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.info.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            "&.Mui-focused": {
-                                                color: theme.palette.info.main,
-                                            },
-                                        },
-                                    }}
-                                    slotProps={{
-                                        inputLabel: { shrink: true },
-                                    }}
-                                />
-                                {col.getIsValid?.(newStudent.dateOfBirth) && (
-                                    <ErrorIcon
+                                    {col.getIsValid?.(newStudent.email) && (
+                                        <ErrorIcon
+                                            sx={{
+                                                position: "absolute",
+                                                right: 8,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                color: theme.palette.error.main,
+                                                fontSize: "1.2rem",
+                                            }}
+                                        />
+                                    )}
+                                </Box>
+                            )}
+                            {col.type === "date" && (
+                                <Box sx={{ position: "relative" }}>
+                                    <TextField
+                                        label={strings.dateOfBirth}
+                                        name={col.id}
+                                        type="date"
+                                        value={newStudent.dateOfBirth || ""}
+                                        onChange={handleInputChange}
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        error={
+                                            col.getIsValid?.(
+                                                newStudent.dateOfBirth,
+                                            ) !== null
+                                        }
+                                        helperText={
+                                            col.getIsValid?.(
+                                                newStudent.dateOfBirth,
+                                            ) || ""
+                                        }
                                         sx={{
-                                            position: "absolute",
-                                            right: 8,
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: theme.palette.error.main,
-                                            fontSize: "1.2rem",
+                                            "& .MuiOutlinedInput-root": {
+                                                transition: "all 0.3s ease",
+                                                backgroundColor:
+                                                    theme.palette.background
+                                                        .paper,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        theme.palette.action
+                                                            .hover,
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .info.main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-focused": {
+                                                    backgroundColor:
+                                                        theme.palette.background
+                                                            .paper,
+                                                    transform: "scale(1.02)",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .info.main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                                "&.Mui-focused": {
+                                                    color: theme.palette.info
+                                                        .main,
+                                                },
+                                            },
+                                        }}
+                                        slotProps={{
+                                            inputLabel: { shrink: true },
                                         }}
                                     />
-                                )}
-                            </Box>
-                        )}
-                        {col.type === "select" && col.id === "gender" && (
-                            <Box sx={{ position: "relative" }}>
-                                <TextField
-                                    select
-                                    label={strings.gender}
-                                    name={col.id}
-                                    value={genderState.value ?? ""}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        const validationError =
-                                            col.getIsValid?.(value) ?? null;
-                                        setGenderState({
-                                            value: value,
-                                            open: false,
-                                            error: validationError,
-                                        });
-                                        setNewStudent((prev) => ({
-                                            ...prev,
-                                            gender: value as Gender,
-                                        }));
-                                        setIsDirty(true);
-                                    }}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    error={genderState.error !== null}
-                                    helperText={genderState.error || ""}
-                                    placeholder="اختر الجنس"
-                                    sx={{
-                                        "& .MuiOutlinedInput-root": {
-                                            transition: "all 0.3s ease",
-                                            backgroundColor: theme.palette.background.paper,
-                                            "&:hover": {
-                                                backgroundColor: theme.palette.action.hover,
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.warning.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                            "&.Mui-focused": {
-                                                backgroundColor: theme.palette.background.paper,
-                                                transform: "scale(1.02)",
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.warning.main,
-                                                    borderWidth: "2px",
-                                                },
-                                            },
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            "&.Mui-focused": {
-                                                color: theme.palette.warning.main,
-                                            },
-                                        },
-                                    }}
-                                    slotProps={{
-                                        select: {
-                                            open: genderState.open,
-                                            onClose: () =>
-                                                setGenderState((prev) => ({
-                                                    ...prev,
-                                                    open: false,
-                                                })),
-                                        },
-                                    }}
-                                >
-                                    {col.options?.map((option) => (
-                                        <MenuItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                                {genderState.error && (
-                                    <ErrorIcon
-                                        sx={{
-                                            position: "absolute",
-                                            right: 8,
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: theme.palette.error.main,
-                                            fontSize: "1.2rem",
-                                        }}
-                                    />
-                                )}
-                            </Box>
-                        )}
-                        {col.type === "country" && (
-                            <Box sx={{ position: "relative" }}>
-                                <Autocomplete
-                                    fullWidth
-                                    options={countries}
-                                    autoHighlight
-                                    value={
-                                        countries.find(
-                                            (c) =>
-                                                c.code ===
-                                                nationalityState.value,
-                                        ) || countries[0]
-                                    }
-                                    onChange={(_, newValue) => {
-                                        if (newValue) {
+                                    {col.getIsValid?.(
+                                        newStudent.dateOfBirth,
+                                    ) && (
+                                        <ErrorIcon
+                                            sx={{
+                                                position: "absolute",
+                                                right: 8,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                color: theme.palette.error.main,
+                                                fontSize: "1.2rem",
+                                            }}
+                                        />
+                                    )}
+                                </Box>
+                            )}
+                            {col.type === "select" && col.id === "gender" && (
+                                <Box sx={{ position: "relative" }}>
+                                    <TextField
+                                        select
+                                        label={strings.gender}
+                                        name={col.id}
+                                        value={genderState.value ?? ""}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
                                             const validationError =
-                                                col.getIsValid?.(
-                                                    newValue.code,
-                                                ) ?? null;
-                                            setNationalityState({
-                                                value: newValue.code,
+                                                col.getIsValid?.(value) ?? null;
+                                            setGenderState({
+                                                value: value,
+                                                open: false,
                                                 error: validationError,
                                             });
                                             setNewStudent((prev) => ({
                                                 ...prev,
-                                                nationality: newValue.code,
+                                                gender: value as Gender,
                                             }));
                                             setIsDirty(true);
-                                        }
-                                    }}
-                                    getOptionLabel={(option) =>
-                                        countryStrings[option.code] ||
-                                        option.code
-                                    }
-                                    renderOption={(
-                                        props: React.HTMLAttributes<HTMLLIElement> & {
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                            key: any;
-                                        },
-                                        option: CountryType,
-                                    ) => {
-                                        // key is extracted from props to prevent it from being passed to the DOM
-                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                        const { key, ...optionProps } = props;
-                                        return (
-                                            <Box
-                                                key={option.code}
-                                                component="li"
-                                                sx={{
-                                                    "& > img": {
-                                                        mr: 1,
-                                                        flexShrink: 0,
-                                                    },
-                                                    transition: "background-color 0.2s ease",
-                                                    "&:hover": {
-                                                        backgroundColor: theme.palette.action.hover,
-                                                    },
-                                                }}
-                                                {...optionProps}
+                                        }}
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        error={genderState.error !== null}
+                                        helperText={genderState.error || ""}
+                                        placeholder="اختر الجنس"
+                                        sx={{
+                                            "& .MuiOutlinedInput-root": {
+                                                transition: "all 0.3s ease",
+                                                backgroundColor:
+                                                    theme.palette.background
+                                                        .paper,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        theme.palette.action
+                                                            .hover,
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .warning
+                                                                    .main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-focused": {
+                                                    backgroundColor:
+                                                        theme.palette.background
+                                                            .paper,
+                                                    transform: "scale(1.02)",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .warning
+                                                                    .main,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                                "&.Mui-focused": {
+                                                    color: theme.palette.warning
+                                                        .main,
+                                                },
+                                            },
+                                        }}
+                                        slotProps={{
+                                            select: {
+                                                open: genderState.open,
+                                                onClose: () =>
+                                                    setGenderState((prev) => ({
+                                                        ...prev,
+                                                        open: false,
+                                                    })),
+                                            },
+                                        }}
+                                    >
+                                        {col.options?.map((option) => (
+                                            <MenuItem
+                                                key={option.value}
+                                                value={option.value}
                                             >
-                                                <Image
-                                                    src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                                                    alt=""
-                                                    width={20}
-                                                    height={15}
-                                                    style={{
-                                                        objectFit: "cover",
-                                                    }}
-                                                    loading="lazy"
-                                                />
-                                                {countryStrings[option.code] ||
-                                                    option.code}
-                                            </Box>
-                                        );
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label={strings.nationality}
-                                            variant="outlined"
-                                            size="small"
-                                            error={
-                                                nationalityState.error !== null
-                                            }
-                                            helperText={nationalityState.error || ""}
-                                            placeholder="اختر الجنسية"
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                    {genderState.error && (
+                                        <ErrorIcon
                                             sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    transition: "all 0.3s ease",
-                                                    backgroundColor: theme.palette.background.paper,
-                                                    "&:hover": {
-                                                        backgroundColor: theme.palette.action.hover,
-                                                        "& .MuiOutlinedInput-notchedOutline": {
-                                                            borderColor: theme.palette.success.main,
-                                                            borderWidth: "2px",
-                                                        },
-                                                    },
-                                                    "&.Mui-focused": {
-                                                        backgroundColor: theme.palette.background.paper,
-                                                        transform: "scale(1.02)",
-                                                        "& .MuiOutlinedInput-notchedOutline": {
-                                                            borderColor: theme.palette.success.main,
-                                                            borderWidth: "2px",
-                                                        },
-                                                    },
-                                                },
-                                                "& .MuiInputLabel-root": {
-                                                    "&.Mui-focused": {
-                                                        color: theme.palette.success.main,
-                                                    },
-                                                },
+                                                position: "absolute",
+                                                right: 8,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                color: theme.palette.error.main,
+                                                fontSize: "1.2rem",
                                             }}
                                         />
                                     )}
-                                />
-                                {nationalityState.error && (
-                                    <ErrorIcon
-                                        sx={{
-                                            position: "absolute",
-                                            right: 8,
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: theme.palette.error.main,
-                                            fontSize: "1.2rem",
+                                </Box>
+                            )}
+                            {col.type === "country" && (
+                                <Box sx={{ position: "relative" }}>
+                                    <Autocomplete
+                                        fullWidth
+                                        options={countries}
+                                        autoHighlight
+                                        value={
+                                            countries.find(
+                                                (c) =>
+                                                    c.code ===
+                                                    nationalityState.value,
+                                            ) || countries[0]
+                                        }
+                                        onChange={(_, newValue) => {
+                                            if (newValue) {
+                                                const validationError =
+                                                    col.getIsValid?.(
+                                                        newValue.code,
+                                                    ) ?? null;
+                                                setNationalityState({
+                                                    value: newValue.code,
+                                                    error: validationError,
+                                                });
+                                                setNewStudent((prev) => ({
+                                                    ...prev,
+                                                    nationality: newValue.code,
+                                                }));
+                                                setIsDirty(true);
+                                            }
                                         }}
+                                        getOptionLabel={(option) =>
+                                            countryStrings[option.code] ||
+                                            option.code
+                                        }
+                                        renderOption={(
+                                            props: React.HTMLAttributes<HTMLLIElement> & {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                key: any;
+                                            },
+                                            option: CountryType,
+                                        ) => {
+                                            // key is extracted from props to prevent it from being passed to the DOM
+                                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                            const { key, ...optionProps } =
+                                                props;
+                                            return (
+                                                <Box
+                                                    key={option.code}
+                                                    component="li"
+                                                    sx={{
+                                                        "& > img": {
+                                                            mr: 1,
+                                                            flexShrink: 0,
+                                                        },
+                                                        transition:
+                                                            "background-color 0.2s ease",
+                                                        "&:hover": {
+                                                            backgroundColor:
+                                                                theme.palette
+                                                                    .action
+                                                                    .hover,
+                                                        },
+                                                    }}
+                                                    {...optionProps}
+                                                >
+                                                    <Image
+                                                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                                                        alt=""
+                                                        width={20}
+                                                        height={15}
+                                                        style={{
+                                                            objectFit: "cover",
+                                                        }}
+                                                        loading="lazy"
+                                                    />
+                                                    {countryStrings[
+                                                        option.code
+                                                    ] || option.code}
+                                                </Box>
+                                            );
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={strings.nationality}
+                                                variant="outlined"
+                                                size="small"
+                                                error={
+                                                    nationalityState.error !==
+                                                    null
+                                                }
+                                                helperText={
+                                                    nationalityState.error || ""
+                                                }
+                                                placeholder="اختر الجنسية"
+                                                sx={{
+                                                    "& .MuiOutlinedInput-root":
+                                                        {
+                                                            transition:
+                                                                "all 0.3s ease",
+                                                            backgroundColor:
+                                                                theme.palette
+                                                                    .background
+                                                                    .paper,
+                                                            "&:hover": {
+                                                                backgroundColor:
+                                                                    theme
+                                                                        .palette
+                                                                        .action
+                                                                        .hover,
+                                                                "& .MuiOutlinedInput-notchedOutline":
+                                                                    {
+                                                                        borderColor:
+                                                                            theme
+                                                                                .palette
+                                                                                .success
+                                                                                .main,
+                                                                        borderWidth:
+                                                                            "2px",
+                                                                    },
+                                                            },
+                                                            "&.Mui-focused": {
+                                                                backgroundColor:
+                                                                    theme
+                                                                        .palette
+                                                                        .background
+                                                                        .paper,
+                                                                transform:
+                                                                    "scale(1.02)",
+                                                                "& .MuiOutlinedInput-notchedOutline":
+                                                                    {
+                                                                        borderColor:
+                                                                            theme
+                                                                                .palette
+                                                                                .success
+                                                                                .main,
+                                                                        borderWidth:
+                                                                            "2px",
+                                                                    },
+                                                            },
+                                                        },
+                                                    "& .MuiInputLabel-root": {
+                                                        "&.Mui-focused": {
+                                                            color: theme.palette
+                                                                .success.main,
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        )}
                                     />
-                                )}
-                            </Box>
-                        )}
-                        {col.type === "phone" && (
-                            <Box sx={{ position: "relative" }}>
-                                <MuiTelInput
-                                    label={strings.phoneNumber}
-                                    value={phoneNumberState.value}
-                                    onChange={(value: string) => {
-                                        const validationError =
-                                            col.getIsValid?.(value) ?? null;
-                                        setPhoneNumberState({
-                                            value: value,
-                                            error: validationError,
-                                        });
-                                        setNewStudent((prev) => ({
-                                            ...prev,
-                                            phoneNumber: value,
-                                        }));
-                                        setIsDirty(true);
-                                    }}
-                                    langOfCountryName={"ar"}
-                                    defaultCountry={"EG"}
-                                    focusOnSelectCountry={true}
-                                    excludedCountries={["IL"]}
-                                    preferredCountries={preferredCountries}
-                                    fullWidth
-                                    error={phoneNumberState.error !== null}
-                                    helperText={phoneNumberState.error || ""}
-                                    sx={{
-                                        "& .MuiInputBase-root": {
-                                            margin: 0,
-                                            width: "100%",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            flexGrow: 1,
-                                            transition: "all 0.3s ease",
-                                            backgroundColor: theme.palette.background.paper,
-                                            "&:hover": {
-                                                backgroundColor: theme.palette.action.hover,
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.info.light,
-                                                    borderWidth: "2px",
+                                    {nationalityState.error && (
+                                        <ErrorIcon
+                                            sx={{
+                                                position: "absolute",
+                                                right: 8,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                color: theme.palette.error.main,
+                                                fontSize: "1.2rem",
+                                            }}
+                                        />
+                                    )}
+                                </Box>
+                            )}
+                            {col.type === "phone" && (
+                                <Box sx={{ position: "relative" }}>
+                                    <MuiTelInput
+                                        label={strings.phoneNumber}
+                                        value={phoneNumberState.value}
+                                        onChange={(value: string) => {
+                                            const validationError =
+                                                col.getIsValid?.(value) ?? null;
+                                            setPhoneNumberState({
+                                                value: value,
+                                                error: validationError,
+                                            });
+                                            setNewStudent((prev) => ({
+                                                ...prev,
+                                                phoneNumber: value,
+                                            }));
+                                            setIsDirty(true);
+                                        }}
+                                        langOfCountryName={"ar"}
+                                        defaultCountry={"EG"}
+                                        focusOnSelectCountry={true}
+                                        excludedCountries={["IL"]}
+                                        preferredCountries={preferredCountries}
+                                        fullWidth
+                                        error={phoneNumberState.error !== null}
+                                        helperText={
+                                            phoneNumberState.error || ""
+                                        }
+                                        sx={{
+                                            "& .MuiInputBase-root": {
+                                                margin: 0,
+                                                width: "100%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                flexGrow: 1,
+                                                transition: "all 0.3s ease",
+                                                backgroundColor:
+                                                    theme.palette.background
+                                                        .paper,
+                                                "&:hover": {
+                                                    backgroundColor:
+                                                        theme.palette.action
+                                                            .hover,
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .info.light,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-focused": {
+                                                    backgroundColor:
+                                                        theme.palette.background
+                                                            .paper,
+                                                    transform: "scale(1.02)",
+                                                    "& .MuiOutlinedInput-notchedOutline":
+                                                        {
+                                                            borderColor:
+                                                                theme.palette
+                                                                    .info.light,
+                                                            borderWidth: "2px",
+                                                        },
+                                                },
+                                                "&.Mui-error": {
+                                                    backgroundColor: `${theme.palette.error.main}10`,
                                                 },
                                             },
-                                            "&.Mui-focused": {
-                                                backgroundColor: theme.palette.background.paper,
-                                                transform: "scale(1.02)",
-                                                "& .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.info.light,
-                                                    borderWidth: "2px",
+                                            "& .MuiInputBase-input": {
+                                                paddingBlock: 1,
+                                                paddingInline: 2,
+                                                width: "100%",
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                                "&.Mui-focused": {
+                                                    color: theme.palette.info
+                                                        .light,
                                                 },
                                             },
-                                            "&.Mui-error": {
-                                                backgroundColor: `${theme.palette.error.main}10`,
-                                            },
-                                        },
-                                        "& .MuiInputBase-input": {
-                                            paddingBlock: 1,
-                                            paddingInline: 2,
-                                            width: "100%",
-                                        },
-                                        "& .MuiInputLabel-root": {
-                                            "&.Mui-focused": {
-                                                color: theme.palette.info.light,
-                                            },
-                                        },
-                                    }}
-                                />
-                                {phoneNumberState.error && (
-                                    <ErrorIcon
-                                        sx={{
-                                            position: "absolute",
-                                            right: 8,
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: theme.palette.error.main,
-                                            fontSize: "1.2rem",
                                         }}
                                     />
-                                )}
-                            </Box>
-                        )}
+                                    {phoneNumberState.error && (
+                                        <ErrorIcon
+                                            sx={{
+                                                position: "absolute",
+                                                right: 8,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                color: theme.palette.error.main,
+                                                fontSize: "1.2rem",
+                                            }}
+                                        />
+                                    )}
+                                </Box>
+                            )}
                         </Box>
                     ))}
                 </Box>
-                
+
                 <Box
                     sx={{
                         display: "flex",
@@ -824,42 +988,55 @@ const CreateStudentRow = () => {
                             borderRadius: 2,
                             fontWeight: 600,
                             fontSize: "0.95rem",
-                            background: isFormValid 
+                            background: isFormValid
                                 ? `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`
                                 : theme.palette.action.disabledBackground,
                             border: `2px solid ${theme.palette.primary.main}`,
-                            color: isFormValid ? theme.palette.primary.contrastText : theme.palette.text.disabled,
+                            color: isFormValid
+                                ? theme.palette.primary.contrastText
+                                : theme.palette.text.disabled,
                             textTransform: "none",
                             transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                             "&:hover": {
-                                background: isFormValid 
+                                background: isFormValid
                                     ? `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.main} 90%)`
                                     : theme.palette.action.disabledBackground,
-                                transform: isFormValid ? "translateY(-2px) scale(1.05)" : "none",
-                                boxShadow: isFormValid ? theme.shadows[8] : "none",
+                                transform: isFormValid
+                                    ? "translateY(-2px) scale(1.05)"
+                                    : "none",
+                                boxShadow: isFormValid
+                                    ? theme.shadows[8]
+                                    : "none",
                             },
                             "&:active": {
-                                transform: isFormValid ? "translateY(0) scale(1.02)" : "none",
+                                transform: isFormValid
+                                    ? "translateY(0) scale(1.02)"
+                                    : "none",
                             },
                             "&.Mui-disabled": {
                                 color: theme.palette.text.disabled,
-                                background: theme.palette.action.disabledBackground,
+                                background:
+                                    theme.palette.action.disabledBackground,
                                 border: `2px solid ${theme.palette.action.disabled}`,
                             },
                         }}
-                        title={!isFormValid ? "يرجى ملء جميع الحقول المطلوبة" : "إنشاء طالب جديد (Ctrl+Enter)"}
+                        title={
+                            !isFormValid
+                                ? "يرجى ملء جميع الحقول المطلوبة"
+                                : "إنشاء طالب جديد (Ctrl+Enter)"
+                        }
                     >
                         {isLoading ? "جاري الإنشاء..." : strings.create}
                     </Button>
                 </Box>
             </Paper>
-            
+
             {/* Success/Error Snackbars */}
             <Snackbar
                 open={showSuccess}
                 autoHideDuration={4000}
                 onClose={() => setShowSuccess(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
                 <Alert
                     onClose={() => setShowSuccess(false)}
@@ -876,12 +1053,12 @@ const CreateStudentRow = () => {
                     تم إنشاء الطالب بنجاح!
                 </Alert>
             </Snackbar>
-            
+
             <Snackbar
                 open={showError}
                 autoHideDuration={6000}
                 onClose={() => setShowError(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
                 <Alert
                     onClose={() => setShowError(false)}
