@@ -40,6 +40,12 @@ import {
 } from "./components/CreateStudentRow.styles";
 import { HammerIcon } from "lucide-react";
 
+const MemoizedTextField = React.memo(TextFieldComponent);
+const MemoizedDateField = React.memo(DateFieldComponent);
+const MemoizedGenderField = React.memo(GenderFieldComponent);
+const MemoizedCountryField = React.memo(CountryFieldComponent);
+const MemoizedPhoneField = React.memo(PhoneFieldComponent);
+
 const CreateStudentRow = () => {
     const { createStudent } = useStudentManagement();
     const { applySingleFilter } = useStudentFilter();
@@ -152,6 +158,27 @@ const CreateStudentRow = () => {
         [],
     );
 
+    // Create a memoized map of handlers for all fields except 'name'
+    const fieldChangeHandlers = useMemo(() => {
+        const handlers: Record<
+            string,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (value: any, errorMessage: string | null) => void
+        > = {};
+        columns
+            .filter((c) => c.editable && c.id !== "name")
+            .forEach((col) => {
+                handlers[col.id] = (
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    value: any,
+                    errorMessage: string | null,
+                ) => {
+                    handleChange(value, col.id, errorMessage);
+                };
+            });
+        return handlers;
+    }, [columns, handleChange]);
+
     const handleCreate = useCallback(async () => {
         if (!isFormValid) return;
 
@@ -212,12 +239,13 @@ const CreateStudentRow = () => {
                             fieldWidth={getFieldWidth(col.type || "text")}
                         >
                             {col.type === "text" && col.id === "name" && (
-                                <TextFieldComponent
+                                <MemoizedTextField
                                     value={newStudent.name}
                                     errorMessage={fieldValidity["name"]}
                                     label={strings.name}
                                     helperText={
-                                        newStudent?.name?.trim() === "" && isDirty
+                                        newStudent?.name?.trim() === "" &&
+                                        isDirty
                                             ? strings.nameRequired
                                             : ""
                                     }
@@ -229,7 +257,7 @@ const CreateStudentRow = () => {
                                 />
                             )}
                             {col.type === "text" && col.id === "email" && (
-                                <TextFieldComponent
+                                <MemoizedTextField
                                     value={newStudent.email}
                                     errorMessage={fieldValidity["email"] ?? ""}
                                     label={strings.email}
@@ -237,9 +265,8 @@ const CreateStudentRow = () => {
                                     type="email"
                                     width="100%"
                                     onValueChange={(value, errorMessage) =>
-                                        handleChange(
+                                        fieldChangeHandlers[col.id]?.(
                                             value,
-                                            col.id,
                                             errorMessage,
                                         )
                                     }
@@ -247,69 +274,45 @@ const CreateStudentRow = () => {
                                 />
                             )}
                             {col.type === "date" && (
-                                <DateFieldComponent
+                                <MemoizedDateField
                                     value={newStudent.dateOfBirth}
                                     errorMessage={fieldValidity[col.id] ?? ""}
                                     label={strings.dateOfBirth}
                                     width="100%"
-                                    onValueChange={(value, errorMessage) =>
-                                        handleChange(
-                                            value,
-                                            col.id,
-                                            errorMessage,
-                                        )
-                                    }
+                                    onValueChange={fieldChangeHandlers[col.id]}
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "select" && col.id === "gender" && (
-                                <GenderFieldComponent
+                                <MemoizedGenderField
                                     value={newStudent.gender}
                                     errorMessage={fieldValidity["gender"] ?? ""}
                                     label={strings.gender}
                                     placeholder={strings.genderPlaceholder}
                                     options={col.options || []}
                                     width="100%"
-                                    onValueChange={(value, errorMessage) =>
-                                        handleChange(
-                                            value,
-                                            col.id,
-                                            errorMessage,
-                                        )
-                                    }
+                                    onValueChange={fieldChangeHandlers[col.id]}
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "country" && (
-                                <CountryFieldComponent
+                                <MemoizedCountryField
                                     value={newStudent.nationality ?? undefined}
                                     errorMessage={fieldValidity[col.id] ?? ""}
                                     label={strings.nationality}
                                     placeholder={strings.nationalityPlaceholder}
                                     width="100%"
-                                    onValueChange={(value, errorMessage) =>
-                                        handleChange(
-                                            value,
-                                            col.id,
-                                            errorMessage,
-                                        )
-                                    }
+                                    onValueChange={fieldChangeHandlers[col.id]}
                                     getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "phone" && (
-                                <PhoneFieldComponent
+                                <MemoizedPhoneField
                                     value={newStudent.phoneNumber}
                                     errorMessage={fieldValidity[col.id] ?? ""}
                                     label={strings.phoneNumber}
                                     width="100%"
-                                    onValueChange={(value, errorMessage) =>
-                                        handleChange(
-                                            value,
-                                            col.id,
-                                            errorMessage,
-                                        )
-                                    }
+                                    onValueChange={fieldChangeHandlers[col.id]}
                                     getIsValid={col.getIsValid}
                                 />
                             )}
