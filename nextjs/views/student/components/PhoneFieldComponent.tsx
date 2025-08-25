@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, useTheme, styled } from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import { MuiTelInput } from "mui-tel-input";
@@ -53,8 +53,6 @@ const StyledMuiTelInput = styled(MuiTelInput)(({ theme }) => ({
 
 const PhoneFieldComponent: React.FC<BaseFieldProps<string>> = ({
     label,
-    value,
-    error,
     helperText,
     placeholder,
     required = false,
@@ -62,10 +60,18 @@ const PhoneFieldComponent: React.FC<BaseFieldProps<string>> = ({
     width,
     onValueChange,
     onBlur,
+    getIsValid
 }) => {
     const theme = useTheme();
 
+    const [value, setValue] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<string | null | undefined>(null);
+
+        
     const handleChange = (newValue: string) => {
+        const validationError = getIsValid?.(newValue) ?? null;
+        setError(validationError);
+        setValue(newValue);
         onValueChange(newValue);
     };
 

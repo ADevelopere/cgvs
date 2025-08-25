@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { TextField, Box, useTheme, styled } from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import { BaseFieldProps } from "./types";
@@ -40,8 +40,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
     label,
-    value,
-    error,
     helperText,
     placeholder,
     required = false,
@@ -49,12 +47,23 @@ const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
     width,
     onValueChange,
     onBlur,
+    getIsValid,
 }) => {
     const theme = useTheme();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onValueChange(e.target.value ?? "");
-    };
+    const [value, setValue] = React.useState<string | undefined>(undefined);
+    const [error, setError] = React.useState<string | null | undefined>(null);
+
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = e.target.value ?? "";
+            const validationError = getIsValid?.(newValue) ?? null;
+            setValue(newValue);
+            setError(validationError);
+            onValueChange(newValue);
+        },
+        [getIsValid, onValueChange],
+    );
 
     return (
         <Box sx={{ position: "relative", width }}>

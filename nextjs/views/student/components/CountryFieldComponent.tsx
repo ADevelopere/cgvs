@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { TextField, Box, useTheme, Autocomplete, styled } from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import Image from "next/image";
@@ -44,8 +44,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
     label,
-    value,
-    error,
     helperText,
     placeholder,
     required = false,
@@ -53,14 +51,22 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
     width,
     onValueChange,
     onBlur,
+    getIsValid,
 }) => {
     const theme = useTheme();
     const countryStrings = useAppTranslation("countryTranslations");
+    const [value, setValue] = useState<CountryCode | undefined>("EG");
+    const [error, setError] = useState<string | null | undefined>(null);
 
-    const selectedCountry =
-        countries.find((c) => c.code === value) || countries[0];
+    const selectedCountry = useMemo(
+        () => countries.find((c) => c.code === value) || countries[0],
+        [value],
+    );
 
     const handleChange = (_: unknown, newValue: CountryType | null) => {
+        const validationError = getIsValid?.(newValue) ?? null;
+        setError(validationError);
+        setValue(newValue?.code);
         if (newValue) {
             onValueChange(newValue.code);
         }

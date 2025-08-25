@@ -35,7 +35,6 @@ import {
     CountryFieldComponent,
     PhoneFieldComponent,
 } from "./components";
-import { EditableColumn } from "@/types/table.type";
 
 // Styled Components
 const StyledPaper = styled(Paper, {
@@ -213,9 +212,6 @@ const CreateStudentRow = () => {
     // Form state
     const [newStudent, setNewStudent] = useState<CreateStudentInput>({
         name: "",
-        email: "",
-        dateOfBirth: null,
-        gender: undefined,
     });
 
     // UI state
@@ -224,32 +220,6 @@ const CreateStudentRow = () => {
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [isDirty, setIsDirty] = useState(false);
-
-    const [phoneNumberState, setPhoneNumberState] = useState<{
-        value: string;
-        error: string | null | undefined;
-    }>({
-        value: "",
-        error: null,
-    });
-
-    const [nationalityState, setNationalityState] = useState<{
-        value: CountryCode;
-        error: string | null | undefined;
-    }>({
-        value: "EG",
-        error: null,
-    });
-
-    const [genderState, setGenderState] = useState<{
-        value: string | undefined;
-        open: boolean;
-        error: string | null | undefined;
-    }>({
-        value: undefined,
-        open: false,
-        error: null,
-    });
 
     // Form validation
     const isFormValid = useMemo(() => {
@@ -307,54 +277,29 @@ const CreateStudentRow = () => {
         setIsDirty(true);
     }, []);
 
-    const handleGenderChange = useCallback(
-        (value: string | undefined, col: EditableColumn) => {
-            const validationError = col.getIsValid?.(value) ?? null;
-            setGenderState({
-                value: value,
-                open: false,
-                error: validationError,
-            });
-            setNewStudent((prev) => ({
-                ...prev,
-                gender: value as Gender,
-            }));
-            setIsDirty(true);
-        },
-        [],
-    );
+    const handleGenderChange = useCallback((value: Gender | undefined) => {
+        setNewStudent((prev) => ({
+            ...prev,
+            gender: value,
+        }));
+        setIsDirty(true);
+    }, []);
 
-    const handleNationalityChange = useCallback(
-        (value: CountryCode, col: EditableColumn) => {
-            const validationError = col.getIsValid?.(value) ?? null;
-            setNationalityState({
-                value: value,
-                error: validationError,
-            });
-            setNewStudent((prev) => ({
-                ...prev,
-                nationality: value,
-            }));
-            setIsDirty(true);
-        },
-        [],
-    );
+    const handleNationalityChange = useCallback((value: CountryCode) => {
+        setNewStudent((prev) => ({
+            ...prev,
+            nationality: value,
+        }));
+        setIsDirty(true);
+    }, []);
 
-    const handlePhoneNumberChange = useCallback(
-        (value: string, col: EditableColumn) => {
-            const validationError = col.getIsValid?.(value) ?? null;
-            setPhoneNumberState({
-                value: value,
-                error: validationError,
-            });
-            setNewStudent((prev) => ({
-                ...prev,
-                phoneNumber: value,
-            }));
-            setIsDirty(true);
-        },
-        [],
-    );
+    const handlePhoneNumberChange = useCallback((value: string) => {
+        setNewStudent((prev) => ({
+            ...prev,
+            phoneNumber: value,
+        }));
+        setIsDirty(true);
+    }, []);
 
     const handleCreate = useCallback(async () => {
         if (!isFormValid) return;
@@ -374,9 +319,6 @@ const CreateStudentRow = () => {
                 dateOfBirth: null,
                 gender: undefined,
             });
-            setPhoneNumberState({ value: "", error: null });
-            setNationalityState({ value: "EG", error: null });
-            setGenderState({ value: undefined, open: false, error: null });
             setIsDirty(false);
             setShowSuccess(true);
             applySingleFilter(null);
@@ -430,8 +372,6 @@ const CreateStudentRow = () => {
                             {col.type === "text" && col.id === "name" && (
                                 <TextFieldComponent
                                     label={strings.name}
-                                    value={newStudent.name}
-                                    error={col.getIsValid?.(newStudent.name)}
                                     helperText={
                                         newStudent.name.trim() === "" && isDirty
                                             ? "الاسم مطلوب"
@@ -441,71 +381,58 @@ const CreateStudentRow = () => {
                                     required={true}
                                     width="100%"
                                     onValueChange={handleNameChange}
+                                    getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "text" && col.id === "email" && (
                                 <TextFieldComponent
                                     label={strings.email}
-                                    value={newStudent.email || ""}
-                                    error={col.getIsValid?.(newStudent.email)}
                                     placeholder="example@domain.com"
                                     type="email"
                                     width="100%"
                                     onValueChange={handleEmailChange}
+                                    getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "date" && (
                                 <DateFieldComponent
                                     label={strings.dateOfBirth}
-                                    value={newStudent.dateOfBirth}
-                                    error={col.getIsValid?.(
-                                        newStudent.dateOfBirth,
-                                    )}
                                     width="100%"
                                     onValueChange={handleDateOfBirthChange}
+                                    getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "select" && col.id === "gender" && (
                                 <GenderFieldComponent
                                     label={strings.gender}
-                                    value={genderState.value}
-                                    error={genderState.error}
                                     placeholder="اختر الجنس"
                                     options={col.options || []}
-                                    open={genderState.open}
                                     width="100%"
                                     onValueChange={(value) =>
-                                        handleGenderChange(value, col)
+                                        handleGenderChange(value)
                                     }
-                                    onOpenChange={(open) =>
-                                        setGenderState((prev) => ({
-                                            ...prev,
-                                            open: open,
-                                        }))
-                                    }
+                                    getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "country" && (
                                 <CountryFieldComponent
                                     label={strings.nationality}
-                                    value={nationalityState.value}
-                                    error={nationalityState.error}
                                     placeholder="اختر الجنسية"
                                     width="100%"
                                     onValueChange={(value) =>
-                                        handleNationalityChange(value, col)
+                                        handleNationalityChange(value)
                                     }
+                                    getIsValid={col.getIsValid}
                                 />
                             )}
                             {col.type === "phone" && (
                                 <PhoneFieldComponent
                                     label={strings.phoneNumber}
-                                    value={phoneNumberState.value}
-                                    error={phoneNumberState.error}
                                     width="100%"
                                     onValueChange={(value) =>
-                                        handlePhoneNumberChange(value, col)
+                                        handlePhoneNumberChange(value)
                                     }
+                                    getIsValid={col.getIsValid}
                                 />
                             )}
                         </FieldWrapper>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextField, Box, useTheme, MenuItem, styled } from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import { GenderFieldProps } from "./types";
@@ -41,27 +41,29 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const GenderFieldComponent: React.FC<GenderFieldProps> = ({
     label,
-    value,
-    error,
     helperText,
     placeholder,
     required = false,
     disabled = false,
     width,
     options,
-    open = false,
     onValueChange,
-    onOpenChange,
     onBlur,
+    getIsValid,
 }) => {
     const theme = useTheme();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onValueChange(e.target.value as Gender | undefined);
-    };
+    const [value, setValue] = useState<Gender | undefined>("Male");
+    const [error, setError] = useState<string | null | undefined>(null);
+    const [open, setOpen] = useState<boolean>(false);
 
-    const handleClose = () => {
-        onOpenChange?.(false);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value as Gender | undefined;
+        const validationError = getIsValid?.(value) ?? null;
+
+        setValue(value);
+        setError(validationError);
+        onValueChange(value);
     };
 
     return (
@@ -83,7 +85,8 @@ const GenderFieldComponent: React.FC<GenderFieldProps> = ({
                 slotProps={{
                     select: {
                         open: open,
-                        onClose: handleClose,
+                        onClose: () => setOpen(false),
+                        onOpen: () => setOpen(true),
                     },
                 }}
             >

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { TextField, Box, useTheme, styled } from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
@@ -41,8 +41,6 @@ const StyledTextField = styled(TextField, {
 
 const TextFieldComponent: React.FC<TextFieldProps> = ({
     label,
-    value,
-    error,
     helperText,
     placeholder,
     required = false,
@@ -51,19 +49,30 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
     type = "text",
     onValueChange,
     onBlur,
+    getIsValid,
 }) => {
     const theme = useTheme();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onValueChange(e.target.value);
-    };
+    const [value, setValue] = React.useState<string>("");
+    const [error, setError] = React.useState<string | null>(null);
 
-    const getBorderColor = () => {
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = e.target.value ?? "";
+            const validationError = getIsValid?.(newValue) ?? null;
+            setValue(newValue);
+            setError(validationError);
+            onValueChange(newValue);
+        },
+        [getIsValid, onValueChange],
+    );
+
+    const getBorderColor = useCallback(() => {
         if (type === "email") {
             return theme.palette.secondary.main;
         }
         return theme.palette.primary.main;
-    };
+    }, [theme.palette.primary.main, theme.palette.secondary.main, type]);
 
     return (
         <Box sx={{ position: "relative", width }}>
