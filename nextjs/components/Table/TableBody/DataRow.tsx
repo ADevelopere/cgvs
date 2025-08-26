@@ -17,6 +17,7 @@ import {
     TABLE_CHECKBOX_WIDTH,
 } from "@/constants/tableConstants";
 import { useTableStyles } from "@/theme/styles";
+import NewDataCell from "./NewDataCell";
 
 export type DataRowProps = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,7 +220,7 @@ const DataRow: React.FC<DataRowProps> = ({
             )}
 
             {visibleColumns.map((column) => (
-                <DataCell
+                <NewDataCell
                     key={column.id}
                     column={column}
                     rowData={rowData}
