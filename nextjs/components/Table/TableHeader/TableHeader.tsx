@@ -17,6 +17,10 @@ import {
     TABLE_CHECKBOX_WIDTH,
 } from "@/constants/tableConstants";
 
+// use to prevent creating a new function reference on every render,
+// which would break the memoization of ColumnHeaderCell.
+const noop = () => {};
+
 const TableHeader: React.FC<{
     width: number;
     indexColWidth: number; // Add indexColWidth prop
@@ -319,7 +323,7 @@ const TableHeader: React.FC<{
                                 handlePopoverFilterIconClick
                             }
                             onTextFilterIconClick={
-                                getFilterIconClickHandler(column) ?? (() => {})
+                                getFilterIconClickHandler(column) ?? noop
                             }
                             isPinned={pinPosition}
                         />
