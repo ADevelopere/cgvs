@@ -79,6 +79,11 @@ type AuthTranslations = {
     gender: string;
     male: string;
     female: string;
+
+    tryAgain: string;
+    checkingAuthentication: string;
+    invalidLoginResponse: string;
+    signinFailed: string;
 }
 
 export default AuthTranslations;
