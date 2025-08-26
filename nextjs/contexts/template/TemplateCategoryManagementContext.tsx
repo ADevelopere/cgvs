@@ -35,26 +35,7 @@ import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { mapSingleTemplate } from "@/utils/template/template-mappers";
 import { useRouter } from "next/navigation";
-
-// Logger utility
-const logger = {
-    enabled: process.env.NODE_ENV === "development" && false,
-    log: (...args: any[]) => {
-        if (logger.enabled) {
-            logger.log(...args);
-        }
-    },
-    info: (...args: any[]) => {
-        if (logger.enabled) {
-            console.info(...args);
-        }
-    },
-    error: (...args: any[]) => {
-        if (logger.enabled) {
-            console.error(...args);
-        }
-    },
-};
+import logger from "@/utils/logger";
 
 // Helper function to find a category in a hierarchical tree by ID
 const findCategoryInTreeById = (
@@ -241,6 +222,10 @@ export const useTemplateCategoryManagement = () => {
     return context;
 };
 
+const categorySortConfig = { sortBy: "order", order: "asc" };
+
+const templateSortConfig = { sortBy: "order", order: "asc" };
+
 export const TemplateCategoryManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
@@ -273,16 +258,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
         (() => void) | undefined
     >(undefined);
 
-    const [categorySortConfig, setCategorySortConfig] = useState<{
-        sortBy: "name" | "id" | "order";
-        order: "asc" | "desc";
-    }>({ sortBy: "order", order: "asc" });
-
-    const [templateSortConfig, setTemplateSortConfig] = useState<{
-        sortBy: "name" | "id" | "order";
-        order: "asc" | "desc";
-    }>({ sortBy: "order", order: "asc" });
-
     const allCategoriesFromCache = useMemo(() => {
         if (!apolloCategoryData?.templateCategories) {
             return [];
@@ -308,7 +283,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 }));
             }
 
-            console.log(
+            logger.log(
                 "No templates found in category:",
                 JSON.stringify(
                     getSerializableTemplateCategory(category),
@@ -366,7 +341,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             }
             return modifier * (Number(a.id) - Number(b.id));
         });
-    }, [regularCategoriesFromCache, categorySortConfig]);
+    }, [regularCategoriesFromCache]);
 
     // Effect to keep currentCategoryState synchronized with the actual object from the cache
     useEffect(() => {
@@ -403,7 +378,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 setCurrentCategoryState(null);
             }
         }
-    }, [allCategoriesFromCache, currentCategoryState?.id]); // currentCategoryState itself is not in dep array to avoid loops
+    }, [
+        allCategoriesFromCache,
+        currentCategoryState,
+        currentCategoryState?.id,
+    ]); // currentCategoryState itself is not in dep array to avoid loops
 
     const {
         createTemplateCategoryMutation,
@@ -596,7 +575,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             }
             return modifier * (Number(a.id) - Number(b.id));
         });
-    }, [currentCategoryState?.templates, templateSortConfig]);
+    }, [currentCategoryState]);
 
     const {
         createTemplateMutation,
@@ -709,7 +688,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
         [
             updateTemplateMutation,
             templatesForCurrentCategory,
-            currentTemplate,
             setCurrentTemplate,
             notifications,
             messages,
@@ -794,13 +772,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 throw error;
             }
         },
-        [
-            unsuspendTemplateMutation,
-            currentCategoryState?.id,
-            setCurrentTemplate,
-            notifications,
-            messages,
-        ],
+        [unsuspendTemplateMutation, notifications, messages],
     );
 
     const manageTemplate = useCallback(
@@ -809,28 +781,13 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 (t) => t.id === templateId,
             );
             if (!template) {
-                console.error("Template not found");
+                logger.error("Template not found");
                 return;
             }
             setTemplateToManage(template);
             router.push(`/admin/templates/${templateId}/manage`);
         },
         [router, allTemplatesFromCache],
-    );
-
-    // Sorting functions
-    const sortCategories = useCallback(
-        (sortBy: "name" | "id", order: "asc" | "desc") => {
-            setCategorySortConfig({ sortBy, order });
-        },
-        [],
-    );
-
-    const sortTemplates = useCallback(
-        (sortBy: "name" | "id", order: "asc" | "desc") => {
-            setTemplateSortConfig({ sortBy, order });
-        },
-        [],
     );
 
     // Category switching logic
@@ -918,15 +875,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
             deleteCategory,
             suspendTemplate,
             unsuspendTemplate,
-            // sortCategories,
             allTemplatesFromCache,
-            templatesForCurrentCategory,
-            currentTemplate, // setCurrentTemplate is stable
+            currentTemplate,
             createTemplate,
             updateTemplate,
-            // sortTemplates,
-            isAddingTemplate, // setIsAddingTemplate is stable
-            onNewTemplateCancel, // setOnNewTemplateCancel is stable
+            isAddingTemplate,
+            onNewTemplateCancel,
             manageTemplate,
             templateToManage,
         ],

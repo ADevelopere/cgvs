@@ -6,7 +6,7 @@ import { useCallback, useRef } from "react";
  * @param delay The delay in milliseconds
  * @returns A debounced version of the callback
  */
-export const useDebouncedCallback = <T extends (...args: any[]) => any>(
+export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
     callback: T,
     delay: number,
 ): T => {

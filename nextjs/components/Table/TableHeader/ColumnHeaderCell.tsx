@@ -155,20 +155,11 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
         pinnedLeftStyle,
         pinnedRightStyle,
     }) => {
-        console.log("Rendering ColumnHeaderCell for column:", column.id);
         const columnWidthRef = React.useRef(columnWidth);
         React.useEffect(() => {
             columnWidthRef.current = columnWidth;
         }, [columnWidth]);
 
-        if (column.id === "status") {
-            console.log(
-                "ColumnHeaderCell column: ",
-                column.id,
-                "width:",
-                columnWidth,
-            );
-        }
         const theme = useTheme();
         const tempFilterValueRef = React.useRef("");
 

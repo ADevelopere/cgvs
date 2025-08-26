@@ -170,27 +170,21 @@ const TableHeader: React.FC<{
     }, []);
 
     const handlePinLeft = () => {
-        console.log("Pin Left");
     };
 
     const handlePinRight = () => {
-        console.log("Pin Right");
     };
 
     const handleUnpin = () => {
-        console.log("Unpin");
     };
 
     const handleHide = () => {
-        console.log("Hide");
     };
 
     const handleAutosize = () => {
-        console.log("Autosize");
     };
 
     const handleShowColumnManager = () => {
-        console.log("Show Column Manager");
     };
 
     const handleFilterInputChange = useCallback(

@@ -10,7 +10,6 @@ import {
     Chip,
 } from "@mui/material";
 import {
-    Home as HomeIcon,
     ArrowUpward as ArrowUpIcon,
     NavigateNext as NavigateNextIcon,
     Folder as FolderIcon,
@@ -25,9 +24,7 @@ const StorageBreadcrumbs: React.FC = () => {
     const { currentLocationInfo } = useStorageLocation();
     const translations = useAppTranslation("storageTranslations");
 
-    const pathParts = params.path
-        ? params.path.split("/").filter(Boolean)
-        : [];
+    const pathParts = params.path ? params.path.split("/").filter(Boolean) : [];
 
     const handleBreadcrumbClick = (index: number) => {
         if (index === -1) {
@@ -104,12 +101,14 @@ const StorageBreadcrumbs: React.FC = () => {
                 {pathParts.map((part, index) => {
                     const isLast = index === pathParts.length - 1;
                     const isFirstSegment = index === 0;
+                    // Use the path up to this segment as a unique key
+                    const key = pathParts.slice(0, index + 1).join("/") || part;
 
                     if (isLast) {
                         // Current folder - not clickable
                         return (
                             <Chip
-                                key={index}
+                                key={key}
                                 icon={<FolderIcon />}
                                 label={
                                     isFirstSegment && currentLocationInfo
@@ -131,7 +130,7 @@ const StorageBreadcrumbs: React.FC = () => {
                     // Parent folders - clickable
                     return (
                         <Link
-                            key={index}
+                            key={key}
                             component="button"
                             variant="body2"
                             onClick={() => handleBreadcrumbClick(index)}

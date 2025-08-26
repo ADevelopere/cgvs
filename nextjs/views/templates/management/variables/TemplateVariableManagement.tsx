@@ -30,11 +30,6 @@ const Content: FC<ContentProps> = ({ onOpenModal }) => {
     const { deleteTemplateVariable } = useTemplateVariableManagement();
     const { template } = useTemplateManagement();
 
-    console.log(
-        "Template Variables:",
-        JSON.stringify(template?.variables?.map((v) => v.name + v.order)),
-    );
-
     const handleVariableClick = useCallback(
         (variable: TemplateVariable) => {
             onOpenModal(variable);

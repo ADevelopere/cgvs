@@ -1,4 +1,4 @@
-import { TemplateVariable } from '@/contexts/template/template.types';
+import { TemplateVariable } from "@/graphql/generated/types";
 
 export interface ValidationResult {
     valid_rows: number;

@@ -23,6 +23,7 @@ import {
     mapSingleTemplate,
     mapTemplateConfig,
 } from "@/utils/template/template-mappers";
+import logger from "@/utils/logger";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -69,9 +70,7 @@ export const TemplateManagementProvider: React.FC<{
     const { allTemplates, templateToManage } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
 
-    const {
-        data: apolloTemplateData,
-    } = useTemplateQuery({
+    const { data: apolloTemplateData } = useTemplateQuery({
         variables: { id: id ? parseInt(id, 10) : 0 },
         skip: !id,
         fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
@@ -135,7 +134,7 @@ export const TemplateManagementProvider: React.FC<{
     );
 
     useEffect(() => {
-        console.log("Fetching template data...");
+        logger.log("Fetching template data...");
         const fetchTemplate = async () => {
             setLoading(true);
             try {
@@ -148,7 +147,9 @@ export const TemplateManagementProvider: React.FC<{
                 // Then check allTemplates for immediate UI update
                 if (id && !templateToManage) {
                     const templateId = parseInt(id, 10);
-                    const localTemplate = allTemplates.find((t) => t.id === templateId);
+                    const localTemplate = allTemplates.find(
+                        (t) => t.id === templateId,
+                    );
                     template = localTemplate;
                 }
 
@@ -163,17 +164,22 @@ export const TemplateManagementProvider: React.FC<{
                     settemplate(template);
                 } else {
                     setError("Template not found");
-                    console.error("Template not found");
+                    logger.error("Template not found");
                 }
             } catch (error) {
                 let message = "Failed to load template";
                 if (error instanceof Error) {
                     message = error.message;
-                } else if (typeof error === "object" && error !== null && "message" in error && typeof (error as { message?: unknown }).message === "string") {
+                } else if (
+                    typeof error === "object" &&
+                    error !== null &&
+                    "message" in error &&
+                    typeof (error as { message?: unknown }).message === "string"
+                ) {
                     message = (error as { message: string }).message;
                 }
                 setError(message);
-                console.error("Error loading template:", error);
+                logger.error("Error loading template:", error);
             } finally {
                 setLoading(false);
             }
@@ -203,11 +209,15 @@ export const TemplateManagementProvider: React.FC<{
                 typeof error === "object" &&
                 error !== null &&
                 "response" in error &&
-                typeof (error as { response?: unknown }).response === "object" &&
-                (error as { response?: { data?: { message?: unknown } } }).response?.data?.message &&
-                typeof (error as { response: { data: { message: unknown } } }).response.data.message === "string"
+                typeof (error as { response?: unknown }).response ===
+                    "object" &&
+                (error as { response?: { data?: { message?: unknown } } })
+                    .response?.data?.message &&
+                typeof (error as { response: { data: { message: unknown } } })
+                    .response.data.message === "string"
             ) {
-                message = (error as { response: { data: { message: string } } }).response.data.message;
+                message = (error as { response: { data: { message: string } } })
+                    .response.data.message;
             } else if (error instanceof Error) {
                 message = error.message;
             }

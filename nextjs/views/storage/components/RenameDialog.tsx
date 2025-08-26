@@ -66,10 +66,10 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        
+
         const trimmedName = newName.trim();
         const validationError = validateName(trimmedName);
-        
+
         if (validationError) {
             setError(validationError);
             return;
@@ -85,7 +85,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
             } else {
                 setError(translations.failedToRenameItem);
             }
-        } catch (err) {
+        } catch {
             setError(translations.unexpectedError);
         } finally {
             setLoading(false);
@@ -112,7 +112,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                 <DialogTitle id="rename-dialog-title">
                     {translations.renameItem}
                 </DialogTitle>
-                
+
                 <DialogContent>
                     <Box sx={{ pt: 1 }}>
                         {error && (
@@ -120,7 +120,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                                 {error}
                             </Alert>
                         )}
-                        
+
                         <TextField
                             autoFocus
                             fullWidth
@@ -139,12 +139,9 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
                         />
                     </Box>
                 </DialogContent>
-                
+
                 <DialogActions sx={{ px: 3, pb: 2 }}>
-                    <Button 
-                        onClick={onClose} 
-                        disabled={loading}
-                    >
+                    <Button onClick={onClose} disabled={loading}>
                         {translations.cancel}
                     </Button>
                     <Button

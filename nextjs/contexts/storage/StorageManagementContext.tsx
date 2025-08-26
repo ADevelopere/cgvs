@@ -27,6 +27,7 @@ import {
 } from "./storage.location";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
+import logger from "@/utils/logger";
 
 const StorageManagementContext = createContext<
     StorageManagementContextType | undefined
@@ -163,8 +164,8 @@ export const StorageManagementProvider: React.FC<{
                 offset: list.offset,
                 hasMore: list.hasMore,
             });
-        } catch (e) {
-            console.error(translations.failedListFiles);
+        } catch {
+            logger.error(translations.failedListFiles);
             setError(translations.failedListFiles);
             notifications.show(translations.failedListFiles, {
                 severity: "error",
@@ -182,6 +183,7 @@ export const StorageManagementProvider: React.FC<{
         paramsState.path,
         paramsState.searchTerm,
         paramsState.sortField,
+        translations.failedListFiles,
     ]);
 
     const fetchStats = useCallback(async () => {
@@ -193,9 +195,9 @@ export const StorageManagementProvider: React.FC<{
             });
             setStats(statsRes.getStorageStats);
         } catch (e) {
-            console.warn(translations.failedFetchStorageStats, e);
+            logger.warn(translations.failedFetchStorageStats, e);
         }
-    }, [gql, paramsState.path]);
+    }, [gql, paramsState.path, translations.failedFetchStorageStats]);
 
     const refresh = useCallback(async () => {
         await Promise.all([fetchList(), fetchStats()]);
@@ -261,7 +263,7 @@ export const StorageManagementProvider: React.FC<{
                     const existingItems =
                         listResForCheck.listFiles?.items || [];
                     const conflict = existingItems.some(
-                        (it: any) =>
+                        (it: { path: string; name: string }) =>
                             it.path === destinationStoragePath ||
                             it.name === file.name,
                     );
@@ -288,7 +290,7 @@ export const StorageManagementProvider: React.FC<{
                                 `${file.name} — ${translations.fileAlreadyExists}`,
                                 { severity: "warning", autoHideDuration: 4000 },
                             );
-                        } catch (e) {
+                        } catch {
                             /* ignore */
                         }
 
@@ -299,7 +301,7 @@ export const StorageManagementProvider: React.FC<{
                     // If the existence check fails for some reason, log and
                     // continue to the signed URL step to avoid blocking
                     // uploads unnecessarily.
-                    console.warn(
+                    logger.warn(
                         "Failed to verify existing files before upload:",
                         err,
                     );
@@ -490,7 +492,7 @@ export const StorageManagementProvider: React.FC<{
                                         autoHideDuration: 8000,
                                     },
                                 );
-                            } catch (e) {
+                            } catch {
                                 // notifications may not be available in some contexts; ignore
                             }
                         }
@@ -504,7 +506,7 @@ export const StorageManagementProvider: React.FC<{
                                 resp || translations.noResponseText,
                             );
 
-                        console.error(detailed);
+                        logger.error(detailed);
 
                         handleError(errorMsg);
                         uploadXhrsRef.current.delete(fileKey);
@@ -530,7 +532,7 @@ export const StorageManagementProvider: React.FC<{
                     }
                 });
             } catch (error) {
-                console.error(`Upload failed for ${file.name}:`, error);
+                logger.error(`Upload failed for ${file.name}:`, error);
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
                     const updated = new Map(prev.files);
@@ -556,18 +558,31 @@ export const StorageManagementProvider: React.FC<{
                         xhr.removeEventListener("error", errorListener);
                     if (xhr && abortListener)
                         xhr.removeEventListener("abort", abortListener);
-                } catch (e) {
+                } catch {
                     /* ignore */
                 }
                 try {
                     if (uploadXhrsRef.current.has(fileKey))
                         uploadXhrsRef.current.delete(fileKey);
-                } catch (e) {
+                } catch {
                     /* ignore */
                 }
             }
         },
-        [gql, setUploadBatch],
+        [
+            gql,
+            notifications,
+            translations.failedGenerateSignedUrl,
+            translations.fileAlreadyExists,
+            translations.internalUploadError,
+            translations.networkErrorDuringUpload,
+            translations.noResponseText,
+            translations.uploadBlockedByCors,
+            translations.uploadCancelled,
+            translations.uploadFailed,
+            translations.uploadFailedForFile,
+            translations.uploadFailedWithStatus,
+        ],
     );
 
     // Mutations
@@ -587,7 +602,7 @@ export const StorageManagementProvider: React.FC<{
                     return true;
                 }
             } catch (e) {
-                console.error("Rename failed", e);
+                logger.error("Rename failed", e);
             }
             notifications.show(translations.failedRename, {
                 severity: "error",
@@ -595,7 +610,13 @@ export const StorageManagementProvider: React.FC<{
             });
             return false;
         },
-        [gql, notifications, fetchList],
+        [
+            notifications,
+            translations.failedRename,
+            translations.renameSuccess,
+            gql,
+            fetchList,
+        ],
     );
 
     const remove = useCallback(
@@ -616,7 +637,7 @@ export const StorageManagementProvider: React.FC<{
                     return true;
                 }
             } catch (e) {
-                console.error("Delete failed", e);
+                logger.error("Delete failed", e);
             }
             notifications.show(translations.failedDelete, {
                 severity: "error",
@@ -624,7 +645,13 @@ export const StorageManagementProvider: React.FC<{
             });
             return false;
         },
-        [gql, notifications, fetchList],
+        [
+            notifications,
+            translations.failedDelete,
+            translations.deleteSuccess,
+            gql,
+            fetchList,
+        ],
     );
 
     // Upload actions
@@ -724,7 +751,7 @@ export const StorageManagementProvider: React.FC<{
                     return { ...prev, isUploading: false };
                 });
             } catch (error) {
-                console.error("Upload batch failed:", error);
+                logger.error("Upload batch failed:", error);
                 notifications.show(translations.uploadFailed, {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -735,7 +762,16 @@ export const StorageManagementProvider: React.FC<{
                 );
             }
         },
-        [notifications, fetchList, uploadSingleFile, paramsState.path],
+        [
+            paramsState.path,
+            notifications,
+            translations.uploadNotAllowed,
+            translations.uploadSuccessCount,
+            translations.uploadFailedCount,
+            translations.uploadFailed,
+            uploadSingleFile,
+            fetchList,
+        ],
     );
 
     const clearUploadBatch = useCallback(() => {
@@ -752,7 +788,7 @@ export const StorageManagementProvider: React.FC<{
                 if (activeXhr) {
                     try {
                         activeXhr.abort();
-                    } catch (e) {
+                    } catch {
                         /* ignore */
                     }
                     uploadXhrsRef.current.delete(fileKey);
@@ -781,7 +817,7 @@ export const StorageManagementProvider: React.FC<{
             uploadXhrsRef.current.forEach((xhr, key) => {
                 try {
                     xhr.abort();
-                } catch (e) {
+                } catch {
                     /* ignore */
                 }
                 uploadXhrsRef.current.delete(key);
@@ -807,7 +843,7 @@ export const StorageManagementProvider: React.FC<{
                 return { ...prev, files: updated, isUploading: false };
             });
         },
-        [notifications],
+        [notifications, translations.uploadCancelled],
     );
 
     // Retry a single failed file by key
@@ -837,7 +873,7 @@ export const StorageManagementProvider: React.FC<{
                     uploadBatch.location,
                     uploadBatch.targetPath,
                 );
-            } catch (e) {
+            } catch {
                 // uploadSingleFile handles setting error state; nothing more to do here
             } finally {
                 setUploadBatch((prev) =>
@@ -896,7 +932,7 @@ export const StorageManagementProvider: React.FC<{
                 autoHideDuration: 2000,
             });
         } catch (error) {
-            console.error("Retry failed:", error);
+            logger.error("Retry failed:", error);
             notifications.show(translations.retryFailed, {
                 severity: "error",
                 autoHideDuration: 3000,
@@ -906,7 +942,7 @@ export const StorageManagementProvider: React.FC<{
                 prev ? { ...prev, isUploading: false } : undefined,
             );
         }
-    }, [uploadBatch, notifications, uploadSingleFile]);
+    }, [uploadBatch, notifications, translations.noFailedUploads, translations.retryCompleted, translations.retryFailed, uploadSingleFile]);
 
     const value: StorageManagementContextType = useMemo(
         () => ({

@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -14,7 +14,6 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import { useAppTheme } from "@/contexts/ThemeContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { TemplateCategory } from "@/graphql/generated/types";
-import { getSerializableCategories } from "@/utils/template/template-category-mapper";
 import CategoryEditDialog from "./CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
 import { TreeView } from "@/components/common/TreeView";
@@ -31,11 +30,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         updateCategory,
         deleteCategory,
     } = useTemplateCategoryManagement();
-
-    useEffect(() => {
-        const s = getSerializableCategories(regularCategories);
-        console.log("TemplateCategoryManagementCategoryPane categories", s);
-    }, [regularCategories]);
 
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [categoryToEdit, setCategoryToEdit] =
@@ -82,8 +76,8 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             createCategory(name);
             setTempCategory(null);
             return "";
-        } catch (error: any) {
-            return error.message || strings.categoryAddFailed;
+        } catch (error: unknown) {
+            return (error as Error).message || strings.categoryAddFailed;
         }
     };
 
@@ -97,7 +91,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         parentId?: number | null;
     }) => {
         if (categoryToEdit) {
-            // TODO: Update the updateCategory function in the context to handle description and parentId
             updateCategory(
                 {
                     ...categoryToEdit,
@@ -148,7 +141,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                         flexGrow: 1,
                         overflow: "auto",
                         height: "80%",
-                        p: 0
+                        p: 0,
                     }}
                 >
                     {/* {regularCategories.map(renderCategory)} */}

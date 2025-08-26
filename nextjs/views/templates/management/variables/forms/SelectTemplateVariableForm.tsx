@@ -32,7 +32,6 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
     editingVariableID,
 }) => {
     const { template } = useTemplateManagement();
-    // @ts-ignore
     const editingVariable: SelectTemplateVariable | null = useMemo(() => {
         if (!template?.variables || !editingVariableID) return null;
 

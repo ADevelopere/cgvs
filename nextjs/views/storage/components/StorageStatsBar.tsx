@@ -12,7 +12,6 @@ import {
 import {
     Folder as FolderIcon,
     InsertDriveFile as FileIcon,
-    CloudUpload as UploadIcon,
     Storage as StorageIcon,
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";

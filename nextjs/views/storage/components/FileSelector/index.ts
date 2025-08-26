@@ -3,7 +3,6 @@ export { default as FileSelectorDialog } from "./FileSelectorDialog";
 export { default as LocationSelector } from "./LocationSelector";
 export { default as UploadDropzone } from "./UploadDropzone";
 export { default as FileSelectItem } from "./FileSelectItem";
-export { default as UploadItem } from "./UploadItem";
 
 export type { FileSelectorProps } from "./FileSelector";
 export type { FileSelectorDialogProps } from "./FileSelectorDialog";

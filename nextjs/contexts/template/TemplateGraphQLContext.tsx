@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useCallback, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
 import { ApolloLink } from "@apollo/client";
+import logger from "@/utils/logger";
 
 type TemplateGraphQLContextType = {
     /**
@@ -183,7 +184,7 @@ export const TemplateGraphQLProvider: React.FC<{
             if (!existingData?.templateCategories) return;
 
             // Find the template in its original category to preserve all fields
-            let existingTemplate: any = null;
+            let existingTemplate: Partial<Graphql.Template> | null = null;
             let oldCategoryId: number | null = null;
             existingData.templateCategories.forEach((category) => {
                 if (!category.templates) return;
@@ -311,7 +312,7 @@ export const TemplateGraphQLProvider: React.FC<{
             if (!existingData?.templateCategories) return;
 
             // Find the template in its original category to preserve all fields
-            let existingTemplate: any = null;
+            let existingTemplate: Partial<Graphql.Template> | null = null;
             existingData.templateCategories.forEach((category) => {
                 if (!category.templates) return;
                 const found = category.templates.find(
@@ -363,7 +364,7 @@ export const TemplateGraphQLProvider: React.FC<{
 
             const unsuspendedTemplate = data.unsuspendTemplate;
 
-            console.log("Restoring template", unsuspendedTemplate);
+            logger.log("Restoring template", unsuspendedTemplate);
             const existingData =
                 cache.readQuery<Graphql.TemplateCategoriesQuery>({
                     query: Graphql.TemplateCategoriesDocument,
@@ -372,7 +373,8 @@ export const TemplateGraphQLProvider: React.FC<{
             if (!existingData?.templateCategories) return;
 
             // Find the template in deletion category to preserve all fields
-            let existingTemplate: any = null;
+            let existingTemplate: Partial<Graphql.Template> | null | undefined =
+                null;
             const suspensionCategory = existingData.templateCategories.find(
                 (cat) => cat.categorySpecialType === "Suspension",
             );

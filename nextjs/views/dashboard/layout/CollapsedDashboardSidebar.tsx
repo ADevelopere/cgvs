@@ -3,7 +3,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
     List,
     ListItem,
@@ -21,8 +20,7 @@ import { NavigationItem, NavigationPageItem } from "@/contexts/adminLayout.types
 
 const NavItem: React.FC<{
     item: NavigationPageItem;
-    pathname: string;
-}> = ({ item, pathname }) => {
+}> = ({ item }) => {
     const { theme } = useAppTheme();
     const { isPathActive } = useNavigation();
 
@@ -98,8 +96,7 @@ const NavItem: React.FC<{
 // Helper component to render different navigation item types
 const RenderNavItem: React.FC<{
     item: NavigationItem;
-    pathname: string;
-}> = ({ item, pathname }) => {
+}> = ({ item }) => {
     // Only render page items and dividers in collapsed mode
     switch (item.kind) {
         case "divider":
@@ -108,13 +105,12 @@ const RenderNavItem: React.FC<{
         default:
             // Skip rendering if it's not a page item
             if (item.kind === "header") return null;
-            return <NavItem item={item} pathname={pathname} />;
+            return <NavItem item={item} />;
     }
 };
 
 export const CollapsedDashboardSidebar: React.FC = () => {
     const { theme } = useAppTheme();
-    const pathname = usePathname();
     const { navigation, slots } = useDashboardLayout();
 
     if (slots?.collapsedSidebar) {
@@ -136,11 +132,17 @@ export const CollapsedDashboardSidebar: React.FC = () => {
             }}
         >
             <List component="nav" sx={{ width: "100%", p: 0 }}>
-                {navigation.map((item, index) => (
+                {navigation.map((item) => (
                     <RenderNavItem
-                        key={index}
+                        key={
+                            // Prefer unique properties for key
+                            item.kind === "page"
+                                ? (item.segment || item.title || JSON.stringify(item))
+                                : item.kind === "header"
+                                    ? `header-${item.title}`
+                                    : item.kind // "divider"
+                        }
                         item={item}
-                        pathname={pathname}
                     />
                 ))}
             </List>

@@ -79,9 +79,6 @@ const StudentTable: React.FC = () => {
                     totalFixedWidth += column.initialWidth;
                 } else {
                     // Non-resizable columns must have initialWidth
-                    console.warn(
-                        `Column ${column.id} is not resizable but has no initialWidth`,
-                    );
                     newWidths[column.id] = 100; // Fallback width
                     totalFixedWidth += 100;
                 }

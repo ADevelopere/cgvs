@@ -65,11 +65,6 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     // Query for fetching flat categories
     const { refetch: refetchFlat } = Types.useTemplateCategoriesQuery();
 
-    // Query for fetching paginated categories
-    const { refetch: refetchPaginated } = Types.useTemplateCategoriesQuery({
-        skip: true, // Skip initial execution since we'll only use refetch
-    });
-
     // Query for fetching single category
     const { refetch: refetchSingle } = Types.useTemplateCategoryQuery({
         skip: true, // Skip initial execution since we'll only use refetch

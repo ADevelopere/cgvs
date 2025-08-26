@@ -15,6 +15,7 @@ import {
 } from "@/utils/student/validators";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { STUDENT_TABLE_COLUMNS } from "@/views/student/column";
+import logger from "@/utils/logger";
 
 interface StudentTableManagementContextType {
     columns: EditableColumn[];
@@ -39,7 +40,8 @@ export const useStudentTableManagement = () => {
 export const StudentTableManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const { partialUpdateStudent, setQueryParams, queryParams } = useStudentManagement();
+    const { partialUpdateStudent, setQueryParams, queryParams } =
+        useStudentManagement();
     const strings = useAppTranslation("studentTranslations");
     // Validator functions
     const validateFullName = useCallback(
@@ -146,7 +148,7 @@ export const StudentTableManagementProvider: React.FC<{
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value: any,
         ): Promise<void> => {
-            console.log("Updating cell", { rowId, columnId, value });
+            logger.log("Updating cell", { rowId, columnId, value });
             const input: PartialUpdateStudentInput = {
                 id: rowId,
                 [columnId]: value,
