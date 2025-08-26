@@ -9,7 +9,10 @@ import {
     useCallback,
     useMemo,
 } from "react";
-import { Theme, ThemeProvider } from "@mui/material/styles"; // Import CssVarsProvider
+import {
+    Theme,
+    Experimental_CssVarsProvider as CssVarsProvider,
+} from "@mui/material/styles"; // Import CssVarsProvider
 import { CssBaseline } from "@mui/material";
 import {
     ltrLightTheme,
@@ -54,15 +57,9 @@ const updateTheme = (mode: ThemeMode): void => {
 const getStoredLanguage = (): string => {
     // Only access window on the client
     if (typeof window !== "undefined") {
-        let initialLanguage: string | null = null;
-        if (
-            (window as unknown as { __INITIAL_LANGUAGE__: string })
-                .__INITIAL_LANGUAGE__
-        ) {
-            initialLanguage = (
-                window as unknown as { __INITIAL_LANGUAGE__: string }
-            ).__INITIAL_LANGUAGE__;
-        }
+        const initialLanguage = (
+            window as unknown as { __INITIAL_LANGUAGE__: string }
+        ).__INITIAL_LANGUAGE__;
         return (
             initialLanguage ||
             loadFromLocalStorage("language") ||
@@ -252,11 +249,13 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
             <StylesProvider jss={jss}>
                 <CacheProvider value={cacheRtl}>
                     {/* Use CssVarsProvider instead of MuiThemeProvider */}
-                    <ThemeProvider theme={currentTheme}>
-                        <CssBaseline enableColorScheme />{" "}
-                        {/* Add enableColorScheme prop */}
-                        {children}
-                    </ThemeProvider>
+                    <CssVarsProvider theme={currentTheme}>
+                        {/* <ThemeProvider theme={currentTheme}> */}
+                            <CssBaseline enableColorScheme />{" "}
+                            {/* Add enableColorScheme prop */}
+                            {children}
+                        {/* </ThemeProvider> */}
+                    </CssVarsProvider>
                 </CacheProvider>
             </StylesProvider>
         </AppThemeContext.Provider>
