@@ -4,7 +4,8 @@
     "scripts": {
         "codegen": "graphql-codegen --config codegen.ts",
         "codegen:watch": "graphql-codegen --watch",
-        "generate:gql-ts": "node --loader ts-node/esm generate-gql-ts.ts"
+        "generate:gql-ts": "node --loader ts-node/esm generate-gql-ts.ts",
+        "generate:patch": "node --loader ts-node/esm patch-gql-types.ts"
     },
     "devDependencies": {
         "@graphql-cli/introspect": "^2.1.0",
@@ -24,7 +25,7 @@
         "typescript": "^5.8.3"
     },
     "dependencies": {
-        "@0no-co/graphqlsp": "^1.12.16",
+        "@0no-co/graphqlsp": "^1.15.0",
         "@apollo/client": "^3.13.9",
         "@graphql-codegen/gql-tag-operations": "^4.0.17",
         "@graphql-codegen/schema-ast": "^4.1.0",

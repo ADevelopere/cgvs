@@ -8,6 +8,7 @@ const config: CodegenConfig = {
         // "./resources/ts/**/*.tsx",
         "./graphql-ts/**/*.ts",
     ],
+    ignoreNoDocuments: true,
     generates: {
         "../nextjs/graphql/generated/types.ts": {
             plugins: [
@@ -25,8 +26,12 @@ const config: CodegenConfig = {
                 preResolveTypes: true,
                 extractAllFieldsToTypes: false,
                 skipTypeNameForRoot: false,
+                reactApolloVersion: 4,
             },
         },
+        // "../nextjs/graphql/generated/": {
+        //     preset: "client",
+        // },
         "../graphql/generated/graphql.schema.json": {
             plugins: ["introspection"],
         },

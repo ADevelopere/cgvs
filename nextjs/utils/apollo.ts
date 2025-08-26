@@ -1,15 +1,17 @@
+import { RefreshTokenDocument } from "@/graphql/generated/graphql";
 import {
     ApolloClient,
     ApolloLink,
+    CombinedGraphQLErrors,
+    CombinedProtocolErrors,
     from,
     HttpLink,
     InMemoryCache,
-    Observable
+    Observable,
 } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
-import { RefreshTokenDocument } from "@/graphql/generated/types";
 import { print } from "graphql/language/printer";
+import { SetContextLink } from "@apollo/client/link/context";
+import { ErrorLink } from "@apollo/client/link/error";
 
 // --- Internal Token Management ---
 let inMemoryToken: string | null = null;
@@ -42,11 +44,11 @@ const httpLink = new HttpLink({
     },
 });
 
-const authLink = setContext((_, { headers }) => {
+const authLink = new SetContextLink((prevContext, operation) => {
     const token = getAuthToken();
     return {
         headers: {
-            ...headers,
+            ...prevContext.headers,
             authorization: token ? `Bearer ${token}` : "",
         },
     };
@@ -56,19 +58,22 @@ let isRefreshing = false;
 let pendingRequests: ((accessToken: string) => void)[] = [];
 
 const resolvePendingRequests = (accessToken: string) => {
-    pendingRequests.forEach(callback => callback(accessToken));
+    pendingRequests.forEach((callback) => callback(accessToken));
     pendingRequests = [];
 };
 
-const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-    if (graphQLErrors) {
-        for (const err of graphQLErrors) {
+const errorLink = new ErrorLink(({ error, operation, forward }) => {
+    if (CombinedGraphQLErrors.is(error)) {
+        for (const err of error.errors) {
             if (err.extensions?.code === "UNAUTHENTICATED") {
                 if (isRefreshing) {
-                    return new Observable(observer => {
+                    return new Observable((observer) => {
                         pendingRequests.push((accessToken: string) => {
                             operation.setContext(({ headers = {} }) => ({
-                                headers: { ...headers, authorization: `Bearer ${accessToken}` },
+                                headers: {
+                                    ...headers,
+                                    authorization: `Bearer ${accessToken}`,
+                                },
                             }));
                             forward(operation).subscribe(observer);
                         });
@@ -77,44 +82,58 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
                 isRefreshing = true;
 
-                return new Observable(observer => {
-                    // We use a raw fetch here because we don't want the authLink to apply.
+                return new Observable((observer) => {
                     fetch(GRAPHQL_ENDPOINT, {
                         method: "POST",
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: "include", // Must be included to send the refresh token cookie.
-                        body: JSON.stringify({ query: print(RefreshTokenDocument) }),
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            query: print(RefreshTokenDocument),
+                        }),
                     })
-                    .then(res => res.json())
-                    .then(response => {
-                        const newAccessToken = response.data?.refreshToken?.token;
-                        if (newAccessToken) {
-                            updateAuthToken(newAccessToken);
-                            resolvePendingRequests(newAccessToken);
-                            operation.setContext(({ headers = {} }) => ({
-                                headers: { ...headers, authorization: `Bearer ${newAccessToken}` },
-                            }));
-                            forward(operation).subscribe(observer);
-                        } else {
-                            throw new Error("Refresh token failed");
-                        }
-                    })
-                    .catch(() => {
-                        clearAuthToken();
-                        window.location.href = "/login";
-                        observer.error(new Error("Refresh token failed"));
-                    })
-                    .finally(() => {
-                        isRefreshing = false;
-                    });
+                        .then((res) => res.json())
+                        .then((response) => {
+                            const newAccessToken =
+                                response.data?.refreshToken?.token;
+                            if (newAccessToken) {
+                                updateAuthToken(newAccessToken);
+                                resolvePendingRequests(newAccessToken);
+                                operation.setContext(({ headers = {} }) => ({
+                                    headers: {
+                                        ...headers,
+                                        authorization: `Bearer ${newAccessToken}`,
+                                    },
+                                }));
+                                forward(operation).subscribe(observer);
+                            } else {
+                                throw new Error("Refresh token failed");
+                            }
+                        })
+                        .catch(() => {
+                            clearAuthToken();
+                            window.location.href = "/login";
+                            observer.error(new Error("Refresh token failed"));
+                        })
+                        .finally(() => {
+                            isRefreshing = false;
+                        });
                 });
             }
         }
-    }
-
-    if (networkError) {
-        console.error(`[Network error]: ${networkError}`);
-        if ("statusCode" in networkError && (networkError.statusCode === 401 || networkError.statusCode === 403)) {
+    } else if (CombinedProtocolErrors.is(error)) {
+        for (const err of error.errors) {
+            console.error(
+                `[Protocol error]: Message: ${err.message}, Extensions: ${JSON.stringify(err.extensions)}`,
+            );
+        }
+    } else {
+        // Network error
+        console.error(`[Network error]: ${error}`);
+        // Try to extract statusCode if available
+        if (
+            (error as any).statusCode === 401 ||
+            (error as any).statusCode === 403
+        ) {
             clearAuthToken();
             window.location.href = "/login";
         }
