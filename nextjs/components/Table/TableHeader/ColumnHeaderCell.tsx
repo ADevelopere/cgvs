@@ -49,6 +49,11 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         () => columnWidths[column.id],
         [column.id, columnWidths],
     );
+    const columnWidthRef = React.useRef(columnWidth);
+    React.useEffect(() => {
+        columnWidthRef.current = columnWidth;
+    }, [columnWidth]);
+
     if (column.id === "status") {
         console.log(
             "ColumnHeaderCell column: ",
@@ -58,7 +63,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         );
     }
     const theme = useTheme();
-    const [tempFilterValue, setTempFilterValue] = React.useState("");
+    const tempFilterValueRef = React.useRef("");
 
     // Base header cell style
     const { thStyle } = useTableStyles();
@@ -112,15 +117,26 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                 | React.TouchEvent<HTMLButtonElement>,
         ) => {
             const startX = "touches" in e ? e.touches[0].clientX : e.clientX;
-            const startWidth = columnWidth;
+            const startWidth = columnWidthRef.current;
+            let lastClientX = startX;
+            let ticking = false;
 
-            const handleResizeMove = (moveEvent: MouseEvent) => {
+            const update = () => {
                 const deltaX =
                     theme.direction === "rtl"
-                        ? startX - moveEvent.clientX
-                        : moveEvent.clientX - startX;
+                        ? startX - lastClientX
+                        : lastClientX - startX;
                 const newWidth = Math.max(startWidth + deltaX, 50); // Ensure minimum width of 50px
                 resizeColumn(column.id, newWidth);
+                ticking = false;
+            };
+
+            const handleResizeMove = (moveEvent: MouseEvent) => {
+                lastClientX = moveEvent.clientX;
+                if (!ticking) {
+                    window.requestAnimationFrame(update);
+                    ticking = true;
+                }
             };
 
             const handleResizeEnd = () => {
@@ -132,14 +148,14 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
             document.addEventListener("mouseup", handleResizeEnd);
             e.preventDefault();
         },
-        [columnWidth, theme.direction, resizeColumn, column.id],
+        [theme.direction, resizeColumn, column.id],
     );
 
     // Handle filter input change
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleFilterInputChange = useCallback(
         (_columnId: string, value: string) => {
-            setTempFilterValue(value);
+            tempFilterValueRef.current = value;
         },
         [],
     );
@@ -149,24 +165,24 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
         (columnId: string) => {
             // Create a simple filter clause for backward compatibility
             filter(
-                tempFilterValue
+                tempFilterValueRef.current
                     ? {
                           columnId,
                           operation: "contains",
-                          value: tempFilterValue,
+                          value: tempFilterValueRef.current,
                       }
                     : null,
                 columnId,
             );
         },
-        [filter, tempFilterValue],
+        [filter],
     );
 
     // Handle clear filter
     const handleClearFilter = useCallback(
         (columnId: string) => {
             filter(null, columnId);
-            setTempFilterValue("");
+            tempFilterValueRef.current = "";
         },
         [filter],
     );
@@ -192,9 +208,9 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = ({
                 typeof filterValue === "string"
                     ? filterValue
                     : filterValue?.value || "";
-            setTempFilterValue(value as string);
+            tempFilterValueRef.current = value as string;
         } else {
-            setTempFilterValue("");
+            tempFilterValueRef.current = "";
         }
     }, [isFiltered, filters, column.id]);
 
