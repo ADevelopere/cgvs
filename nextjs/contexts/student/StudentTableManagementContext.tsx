@@ -96,8 +96,8 @@ export const StudentTableManagementProvider: React.FC<{
     );
 
     const validateGender = useCallback(
-        (value: string): string | null => {
-            // if (!value) return strings?.genderRequired ?? "Gender is required";
+        (value?: string | null): string | null => {
+            if (!value) return null;
             return ["MALE", "FEMALE"].includes(value.toLocaleUpperCase())
                 ? null
                 : (strings?.genderInvalid ?? "Invalid gender value");
