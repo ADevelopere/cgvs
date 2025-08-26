@@ -3,6 +3,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     List,
     ListItem,
@@ -111,6 +112,7 @@ const RenderNavItem: React.FC<{
 
 export const CollapsedDashboardSidebar: React.FC = () => {
     const { theme } = useAppTheme();
+    const pathname = usePathname();
     const { navigation, slots } = useDashboardLayout();
 
     if (slots?.collapsedSidebar) {
@@ -132,16 +134,9 @@ export const CollapsedDashboardSidebar: React.FC = () => {
             }}
         >
             <List component="nav" sx={{ width: "100%", p: 0 }}>
-                {navigation.map((item) => (
+                {navigation.map((item, index) => (
                     <RenderNavItem
-                        key={
-                            // Prefer unique properties for key
-                            item.kind === "page"
-                                ? (item.segment || item.title || JSON.stringify(item))
-                                : item.kind === "header"
-                                    ? `header-${item.title}`
-                                    : item.kind // "divider"
-                        }
+                        key={`index-${index}-path-${pathname}`}
                         item={item}
                     />
                 ))}
