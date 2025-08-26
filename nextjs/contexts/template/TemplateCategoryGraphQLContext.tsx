@@ -3,14 +3,14 @@
 import React, { createContext, useContext, useCallback } from "react";
 import * as Types from "@/graphql/generated/types";
 import { mapTemplateCategory } from "@/utils/template/template-category-mapper";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type TemplateCategoryGraphQLContextType = {
     /**
      * Query to fetch all template categories in a flat structure
      */
     templateCategoriesQuery: () => Promise<
-        FetchResult<Types.TemplateCategoriesQuery>
+        ApolloLink.Result<Types.TemplateCategoriesQuery>
     >;
 
     /**
@@ -18,7 +18,7 @@ type TemplateCategoryGraphQLContextType = {
      */
     templateCategoryQuery: (
         variables: Types.QueryTemplateCategoryArgs,
-    ) => Promise<FetchResult<Types.TemplateCategoryQuery>>;
+    ) => Promise<ApolloLink.Result<Types.TemplateCategoryQuery>>;
 
     /**
      * Mutation to create a new template category
@@ -26,7 +26,7 @@ type TemplateCategoryGraphQLContextType = {
      */
     createTemplateCategoryMutation: (
         variables: Types.CreateTemplateCategoryMutationVariables,
-    ) => Promise<FetchResult<Types.CreateTemplateCategoryMutation>>;
+    ) => Promise<ApolloLink.Result<Types.CreateTemplateCategoryMutation>>;
 
     /**
      * Mutation to update an existing template category
@@ -34,7 +34,7 @@ type TemplateCategoryGraphQLContextType = {
      */
     updateTemplateCategoryMutation: (
         variables: Types.UpdateTemplateCategoryMutationVariables,
-    ) => Promise<FetchResult<Types.UpdateTemplateCategoryMutation>>;
+    ) => Promise<ApolloLink.Result<Types.UpdateTemplateCategoryMutation>>;
 
     /**
      * Mutation to delete a template category
@@ -42,7 +42,7 @@ type TemplateCategoryGraphQLContextType = {
      */
     deleteTemplateCategoryMutation: (
         variables: Types.DeleteTemplateCategoryMutationVariables,
-    ) => Promise<FetchResult<Types.DeleteTemplateCategoryMutation>>;
+    ) => Promise<ApolloLink.Result<Types.DeleteTemplateCategoryMutation>>;
 };
 
 const TemplateCategoryGraphQLContext = createContext<
@@ -73,6 +73,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     // Query for fetching single category
     const { refetch: refetchSingle } = Types.useTemplateCategoryQuery({
         skip: true, // Skip initial execution since we'll only use refetch
+        variables: { id: 0 }, // Provide a default/dummy value
     });
 
     // Create category mutation
@@ -122,10 +123,10 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
             const updatedData = existingData.templateCategories.map(
                 (category) =>
                     category.id === updatedCategory.id
-                        ? { 
-                            ...data.updateTemplateCategory,
-                            templates: category.templates,
-                        }
+                        ? {
+                              ...data.updateTemplateCategory,
+                              templates: category.templates,
+                          }
                         : category,
             );
 

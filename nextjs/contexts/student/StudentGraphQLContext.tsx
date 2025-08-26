@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type StudentGraphQLContextType = {
     /**
@@ -27,7 +27,7 @@ type StudentGraphQLContextType = {
      */
     createStudentMutation: (
         variables: Graphql.CreateStudentMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateStudentMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateStudentMutation>>;
 
     /**
      * Mutation to update an existing student
@@ -35,7 +35,7 @@ type StudentGraphQLContextType = {
      */
     partialUpdateStudentMutation: (
         variables: Graphql.PartialUpdateStudentMutationVariables,
-    ) => Promise<FetchResult<Graphql.PartialUpdateStudentMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.PartialUpdateStudentMutation>>;
 
     /**
      * Mutation to delete a student
@@ -43,7 +43,7 @@ type StudentGraphQLContextType = {
      */
     deleteStudentMutation: (
         variables: Graphql.DeleteStudentMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteStudentMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteStudentMutation>>;
 };
 
 const StudentGraphQLContext = createContext<
@@ -67,6 +67,7 @@ export const StudentGraphQLProvider: React.FC<{
     // Student queries
     const studentQueryRef = Graphql.useStudentQuery({
         skip: true,
+        variables: { id: 0 }, // Provide a default/dummy value
     });
 
     const studentsQueryRef = Graphql.useStudentsQuery({

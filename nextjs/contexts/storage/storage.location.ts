@@ -61,7 +61,7 @@ export const getUploadLocationOptions = (): LocationInfo[] => {
  */
 export const isFileTypeAllowed = (
   location: Graphql.UploadLocation,
-  fileType: Graphql.ContentType | string
+  fileType: string
 ): boolean => {
   const locationInfo = getLocationInfo(location);
   let contentType: Graphql.ContentType | undefined;

@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
 import {
     TextTemplateVariableGraphQLProvider,
     useTextTemplateVariableGraphQL,
@@ -19,6 +18,7 @@ import {
     SelectTemplateVariableGraphQLProvider,
     useSelectTemplateVariableGraphQL,
 } from "./SelectTemplateVariableGraphQLContext";
+import { ApolloLink } from "@apollo/client";
 
 type TemplateVariableGraphQLContextType = {
     /**
@@ -27,7 +27,7 @@ type TemplateVariableGraphQLContextType = {
      */
     createTextTemplateVariableMutation: (
         variables: Graphql.CreateTextTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateTextTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateTextTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing text template variable
@@ -35,7 +35,7 @@ type TemplateVariableGraphQLContextType = {
      */
     updateTextTemplateVariableMutation: (
         variables: Graphql.UpdateTextTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateTextTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateTextTemplateVariableMutation>>;
 
     /**
      * Mutation to create a new number template variable
@@ -43,7 +43,7 @@ type TemplateVariableGraphQLContextType = {
      */
     createNumberTemplateVariableMutation: (
         variables: Graphql.CreateNumberTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateNumberTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateNumberTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing number template variable
@@ -51,7 +51,7 @@ type TemplateVariableGraphQLContextType = {
      */
     updateNumberTemplateVariableMutation: (
         variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateNumberTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateNumberTemplateVariableMutation>>;
 
     /**
      * Mutation to create a new date template variable
@@ -59,7 +59,7 @@ type TemplateVariableGraphQLContextType = {
      */
     createDateTemplateVariableMutation: (
         variables: Graphql.CreateDateTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateDateTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateDateTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing date template variable
@@ -67,7 +67,7 @@ type TemplateVariableGraphQLContextType = {
      */
     updateDateTemplateVariableMutation: (
         variables: Graphql.UpdateDateTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateDateTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateDateTemplateVariableMutation>>;
 
     /**
      * Mutation to create a new select template variable
@@ -75,7 +75,7 @@ type TemplateVariableGraphQLContextType = {
      */
     createSelectTemplateVariableMutation: (
         variables: Graphql.CreateSelectTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateSelectTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateSelectTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing select template variable
@@ -83,7 +83,7 @@ type TemplateVariableGraphQLContextType = {
      */
     updateSelectTemplateVariableMutation: (
         variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateSelectTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateSelectTemplateVariableMutation>>;
 
     /**
      * Mutation to delete a template variable
@@ -91,7 +91,7 @@ type TemplateVariableGraphQLContextType = {
      */
     deleteTemplateVariableMutation: (
         variables: Graphql.DeleteTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateVariableMutation>>;
 };
 
 const TemplateVariableGraphQLContext = createContext<

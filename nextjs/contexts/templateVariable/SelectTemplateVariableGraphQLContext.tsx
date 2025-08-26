@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type SelectTemplateVariableGraphQLContextType = {
     /**
@@ -11,7 +11,7 @@ type SelectTemplateVariableGraphQLContextType = {
      */
     createSelectTemplateVariableMutation: (
         variables: Graphql.CreateSelectTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateSelectTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateSelectTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing select template variable
@@ -19,7 +19,7 @@ type SelectTemplateVariableGraphQLContextType = {
      */
     updateSelectTemplateVariableMutation: (
         variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateSelectTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateSelectTemplateVariableMutation>>;
 
     /**
      * Mutation to delete a template variable
@@ -27,7 +27,7 @@ type SelectTemplateVariableGraphQLContextType = {
      */
     deleteTemplateVariableMutation: (
         variables: Graphql.DeleteTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateVariableMutation>>;
 };
 
 const SelectTemplateVariableGraphQLContext = createContext<

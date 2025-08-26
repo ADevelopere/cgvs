@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type StorageGraphQLContextType = {
     listFilesQuery: (
@@ -22,13 +22,13 @@ type StorageGraphQLContextType = {
     ) => Promise<Graphql.GetStorageStatsQuery>;
     renameFileMutation: (
         variables: Graphql.RenameFileMutationVariables,
-    ) => Promise<FetchResult<Graphql.RenameFileMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.RenameFileMutation>>;
     deleteFileMutation: (
         variables: Graphql.DeleteFileMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteFileMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteFileMutation>>;
     generateUploadSignedUrlMutation: (
         variables: Graphql.GenerateUploadSignedUrlMutationVariables,
-    ) => Promise<FetchResult<Graphql.GenerateUploadSignedUrlMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.GenerateUploadSignedUrlMutation>>;
 };
 
 const StorageGraphQLContext = createContext<
@@ -47,19 +47,25 @@ export const useStorageGraphQL = () => {
 
 export const StorageGraphQLProvider: React.FC<{
     children: React.ReactNode;
-    queryVariables?: Graphql.ListFilesQueryVariables;
-}> = ({ children, queryVariables }) => {
+}> = ({ children }) => {
     const listFilesQueryRef = Graphql.useListFilesQuery({
         skip: true,
+        variables: { input: {} as Graphql.ListFilesInput }, // Provide a default/dummy value
     });
     const getFileInfoQueryRef = Graphql.useGetFileInfoQuery({
         skip: true,
+        variables: { path: "" },
     });
     const getFolderInfoQueryRef = Graphql.useGetFolderInfoQuery({
         skip: true,
+        variables: { path: "" },
     });
     const searchFilesQueryRef = Graphql.useSearchFilesQuery({
         skip: true,
+        variables: {
+            limit: 0,
+            searchTerm: "",
+        },
     });
     const getStorageStatsQueryRef = Graphql.useGetStorageStatsQuery({
         skip: true,
@@ -122,7 +128,8 @@ export const StorageGraphQLProvider: React.FC<{
 
     const [mutateRenameFile] = Graphql.useRenameFileMutation();
     const [mutateDeleteFile] = Graphql.useDeleteFileMutation();
-    const [mutateGenerateUploadSignedUrl] = Graphql.useGenerateUploadSignedUrlMutation();
+    const [mutateGenerateUploadSignedUrl] =
+        Graphql.useGenerateUploadSignedUrlMutation();
 
     const renameFileMutation = useCallback(
         (variables: Graphql.RenameFileMutationVariables) => {

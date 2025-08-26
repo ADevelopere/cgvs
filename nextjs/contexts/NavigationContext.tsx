@@ -43,8 +43,10 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         return false;
     }, [pathname]);
 
+    const value = React.useMemo(() => ({ isPathActive }), [isPathActive]);
+
     return (
-        <NavigationContext.Provider value={{ isPathActive }}>
+        <NavigationContext.Provider value={value}>
             {children}
         </NavigationContext.Provider>
     );

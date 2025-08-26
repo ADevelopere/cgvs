@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type DateTemplateVariableGraphQLContextType = {
     /**
@@ -11,7 +11,7 @@ type DateTemplateVariableGraphQLContextType = {
      */
     createDateTemplateVariableMutation: (
         variables: Graphql.CreateDateTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateDateTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateDateTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing date template variable
@@ -19,7 +19,7 @@ type DateTemplateVariableGraphQLContextType = {
      */
     updateDateTemplateVariableMutation: (
         variables: Graphql.UpdateDateTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateDateTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateDateTemplateVariableMutation>>;
 
     /**
      * Mutation to delete a template variable
@@ -27,7 +27,7 @@ type DateTemplateVariableGraphQLContextType = {
      */
     deleteTemplateVariableMutation: (
         variables: Graphql.DeleteTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateVariableMutation>>;
 };
 
 const DateTemplateVariableGraphQLContext = createContext<
@@ -62,7 +62,7 @@ export const DateTemplateVariableGraphQLProvider: React.FC<{
 
             // Add the new variable to the template's variables array
             cache.writeQuery({
-                query: Graphql.TemplateDocument,    
+                query: Graphql.TemplateDocument,
                 variables: { id: templateId },
                 data: {
                     template: {
@@ -130,7 +130,8 @@ export const DateTemplateVariableGraphQLProvider: React.FC<{
                     template: {
                         ...existingData.template,
                         variables: existingData.template.variables.filter(
-                            (variable) => variable.id !== data.deleteTemplateVariable.id,
+                            (variable) =>
+                                variable.id !== data.deleteTemplateVariable.id,
                         ),
                     },
                 },
