@@ -27,8 +27,14 @@ const TableHeader: React.FC<{
 }> = ({ width, indexColWidth }) => {
     const theme = useTheme();
     const headerRef = useRef<HTMLTableRowElement>(null);
-    const { visibleColumns, pinnedColumns } = useTableColumnContext();
-
+    const {
+        visibleColumns,
+        pinnedColumns,
+        pinnedLeftStyle,
+        pinnedRightStyle,
+        resizeColumn,
+        columnWidths,
+    } = useTableColumnContext();
     const {
         getActiveTextFilter,
         getActiveNumberFilter,
@@ -37,6 +43,9 @@ const TableHeader: React.FC<{
         tempFilterValues,
         setTempFilterValues,
         applyFilter,
+        sort,
+        filter,
+        getSortDirection,
     } = useTableDataContext();
 
     const { rowSelectionEnabled, isAllRowsSelected, toggleAllRowsSelection } =
@@ -124,35 +133,6 @@ const TableHeader: React.FC<{
         setFilterPopoverAnchor(null);
         setActiveFilterColumn(null);
     }, []);
-
-    // Handle popover filter
-    const handlePopoverFilterIconClick = useCallback(
-        (e: React.MouseEvent, columnId: string) => {
-            e.stopPropagation(); // Prevent triggering sort
-            setFilterPopoverAnchor(e.currentTarget as HTMLElement);
-            setActiveFilterColumn(columnId);
-
-            // Initialize temp filter value if not already set
-            if (tempFilterValues[columnId] === undefined) {
-                const currentFilter = filters[columnId];
-                let filterValue = "";
-
-                // Handle different filter value types
-                if (typeof currentFilter === "string") {
-                    filterValue = currentFilter;
-                } else if (currentFilter && "value" in currentFilter) {
-                    // Handle FilterClause object
-                    filterValue = String(currentFilter.value || "");
-                }
-
-                setTempFilterValues((prev) => ({
-                    ...prev,
-                    [columnId]: filterValue,
-                }));
-            }
-        },
-        [tempFilterValues, filters, setTempFilterValues],
-    );
 
     // Helper to determine which filter icon click handler to use based on column type
     const getFilterIconClickHandler = useCallback(
@@ -313,19 +293,26 @@ const TableHeader: React.FC<{
                     // Existing column header code...
                     // Determine if this column is pinned (moved outside of render for performance)
                     const pinPosition = pinnedColumns[column.id];
-
+                    const sortDirection = getSortDirection(column.id);
+                    const columnWidth = columnWidths[column.id];
+                    const isFiltered = !!filters[column.id];
                     return (
                         <ColumnHeaderCell
                             key={column.id}
                             column={column}
                             onOptionsClick={handleOptionsClick}
-                            onPopoverFilterIconClick={
-                                handlePopoverFilterIconClick
-                            }
                             onTextFilterIconClick={
                                 getFilterIconClickHandler(column) ?? noop
                             }
                             isPinned={pinPosition}
+                            sortDirection={sortDirection}
+                            isFiltered={isFiltered}
+                            columnWidth={columnWidth}
+                            sort={sort}
+                            filter={filter}
+                            resizeColumn={resizeColumn}
+                            pinnedLeftStyle={pinnedLeftStyle}
+                            pinnedRightStyle={pinnedRightStyle}
                         />
                     );
                 })}
