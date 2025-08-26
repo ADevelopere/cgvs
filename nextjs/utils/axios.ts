@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse, AxiosHeaders } from 'axios';
 import logger from './logger';
+import { loadFromLocalStorage } from './localStorage';
 
 const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8000/api',
@@ -38,7 +39,7 @@ instance.interceptors.request.use(
             });
         }
         
-        const token = localStorage.getItem('auth_token');
+        const token = loadFromLocalStorage<string>('auth_token');
         if (token) {
             config.headers.set('Authorization', `Bearer ${token}`);
         }

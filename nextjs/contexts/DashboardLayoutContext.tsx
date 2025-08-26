@@ -18,6 +18,7 @@ import {
     Title,
     Navigation,
 } from "./adminLayout.types";
+import { loadFromLocalStorage } from "@/utils/localStorage";
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
@@ -34,7 +35,7 @@ export const DashboardLayoutProvider: React.FC<
     );
 
     const [sidebarState, setSidebarState] = useState<SidebarState>(() => {
-        const saved = localStorage.getItem(SIDEBAR_STATE_STORAGE_KEY);
+        const saved = loadFromLocalStorage(SIDEBAR_STATE_STORAGE_KEY);
         return (saved as SidebarState) || "expanded";
     });
     const [navigation, setNavigation] = useState<Navigation | undefined>(

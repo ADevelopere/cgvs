@@ -29,6 +29,7 @@ import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
+import { loadFromLocalStorage } from "@/utils/localStorage";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -54,20 +55,39 @@ const updateTheme = (mode: ThemeMode): void => {
 };
 
 const getStoredLanguage = (): string => {
-    // First check for Laravel's initial language
-    const initialLanguage = (
-        window as unknown as { __INITIAL_LANGUAGE__: string }
-    ).__INITIAL_LANGUAGE__;
-    // Then check localStorage, and finally fall back to default
-    return (
-        initialLanguage ||
-        localStorage.getItem("language") ||
-        AppLanguage.default
-    );
+    // Only access window on the client
+    if (typeof window !== "undefined") {
+        let initialLanguage: string | null = null;
+        if (
+            (window as unknown as { __INITIAL_LANGUAGE__: string })
+                .__INITIAL_LANGUAGE__
+        ) {
+            initialLanguage = (
+                window as unknown as { __INITIAL_LANGUAGE__: string }
+            ).__INITIAL_LANGUAGE__;
+        }
+        return (
+            initialLanguage ||
+            loadFromLocalStorage("language") ||
+            AppLanguage.default
+        );
+    }
+    // On server, return default
+    return AppLanguage.default;
 };
 
+export function matchMedia(query: string): MediaQueryList | undefined {
+    if (
+        typeof window !== "undefined" &&
+        typeof window.matchMedia === "function"
+    ) {
+        return window.matchMedia(query);
+    }
+    return undefined;
+}
+
 const getStoredThemeMode = (): ThemeMode => {
-    const savedTheme = localStorage.getItem("themeMode") as ThemeMode | null;
+    const savedTheme = loadFromLocalStorage("themeMode") as ThemeMode | null;
     if (savedTheme && Object.values(ThemeMode).includes(savedTheme)) {
         return savedTheme;
     }
@@ -102,7 +122,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         const isDarkMode =
             storedMode === ThemeMode.Dark ||
             (storedMode === ThemeMode.System &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches);
+                matchMedia("(prefers-color-scheme: dark)")?.matches);
 
         if (isRtl) {
             return isDarkMode ? rtlDarkTheme : rtlLightTheme;
@@ -127,9 +147,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     // Add effect to listen for system theme changes when in system mode
     useEffect(() => {
         if (currentThemeMode === ThemeMode.System) {
-            const mediaQuery = window.matchMedia(
-                "(prefers-color-scheme: dark)",
-            );
+            const mediaQuery = matchMedia("(prefers-color-scheme: dark)");
             const handleChange = (e: MediaQueryListEvent) => {
                 const isRtl = currentLanguage === "ar";
                 setCurrentTheme(
@@ -143,8 +161,9 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
                 );
             };
 
-            mediaQuery.addEventListener("change", handleChange);
-            return () => mediaQuery.removeEventListener("change", handleChange);
+            mediaQuery?.addEventListener("change", handleChange);
+            return () =>
+                mediaQuery?.removeEventListener("change", handleChange);
         }
     }, [currentThemeMode, currentLanguage]); // Removed setColorSchemeMode dependency
 
@@ -158,7 +177,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
             const isDarkMode =
                 currentThemeMode === ThemeMode.Dark ||
                 (currentThemeMode === ThemeMode.System &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches);
+                    matchMedia("(prefers-color-scheme: dark)")?.matches);
 
             setCurrentTheme(
                 isRtl
@@ -180,7 +199,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 
             const effectiveMode =
                 newMode === ThemeMode.System
-                    ? window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? matchMedia("(prefers-color-scheme: dark)")?.matches
                         ? ThemeMode.Dark
                         : ThemeMode.Light
                     : newMode;
@@ -204,7 +223,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     const isRtl = useMemo(() => currentLanguage === "ar", [currentLanguage]);
     const isDark = useMemo(() => {
         if (currentThemeMode === ThemeMode.System) {
-            return window.matchMedia("(prefers-color-scheme: dark)").matches;
+            return matchMedia("(prefers-color-scheme: dark)")?.matches ?? false;
         }
         return currentThemeMode === ThemeMode.Dark;
     }, [currentThemeMode]);
