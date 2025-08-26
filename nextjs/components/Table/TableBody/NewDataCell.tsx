@@ -11,12 +11,12 @@ import { useTableColumnContext } from "../Table/TableColumnContext";
 import { useTableDataContext } from "../Table/TableDataContext";
 import CellContentRenderer from "./CellContentRenderer";
 import useAppTranslation from "@/locale/useAppTranslation";
-import { getCellValue } from "./DataCell.util";
 
 type RenderCellProps = {
     column: EditableColumn;
+    rowId: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rowData: any;
+    cellValue: any;
     cellEditingStyle: CSSProperties;
     cellStyle: CSSProperties;
     inputStyle: CSSProperties; // Expect inputStyle to be passed as a prop
@@ -30,7 +30,7 @@ export type DataCellState = {
 };
 
 const NewDataCell = React.memo<RenderCellProps>(
-    ({ column, rowData, cellEditingStyle, cellStyle, inputStyle }) => {
+    ({ column, rowId, cellValue, cellEditingStyle, cellStyle, inputStyle }) => {
         const countryStrings = useAppTranslation("countryTranslations");
         const { getEditingState, setEditingState } = useTableDataContext();
         const {
@@ -42,19 +42,19 @@ const NewDataCell = React.memo<RenderCellProps>(
 
         const [state, setState] = React.useState<DataCellState>({
             isEditing: false,
-            localTmpValue: getCellValue(column, rowData),
+            localTmpValue: cellValue,
             localErrorMessage: null,
         });
 
-        // update state when rowData or column changes
+        // update state when cellValue or column changes
         React.useEffect(() => {
             setState((prevState) => ({
                 ...prevState,
-                localTmpValue: getCellValue(column, rowData),
+                localTmpValue: cellValue,
                 localErrorMessage: null,
                 isEditing: false,
             }));
-        }, [rowData, column]);
+        }, [cellValue, column]);
 
         // use when possible stale closures in callbacks
         const stateRef = React.useRef(state);
@@ -70,7 +70,7 @@ const NewDataCell = React.memo<RenderCellProps>(
         const handleUpdate = React.useCallback(() => {
             if (stateRef.current.localErrorMessage) return;
             const { localTmpValue } = stateRef.current; // Use ref to get latest value
-            const originalValue = getCellValue(column, rowData);
+            const originalValue = cellValue;
 
             if (
                 localTmpValue !== null &&
@@ -78,9 +78,9 @@ const NewDataCell = React.memo<RenderCellProps>(
                 localTmpValue !== originalValue &&
                 column.onUpdate
             ) {
-                column.onUpdate(rowData.id, localTmpValue);
+                column.onUpdate(rowId, localTmpValue);
             }
-        }, [column, rowData]);
+        }, [cellValue, column, rowId]);
 
         React.useEffect(() => {
             stateRef.current = state;
@@ -101,7 +101,7 @@ const NewDataCell = React.memo<RenderCellProps>(
 
         const handleCellClick = React.useCallback(() => {
             if (column.editable && !state.isEditing) {
-                const value = getCellValue(column, rowData);
+                const value = cellValue;
                 const validationError = validateValue(value);
                 setState({
                     isEditing: true,
@@ -113,7 +113,7 @@ const NewDataCell = React.memo<RenderCellProps>(
                     inputRef.current?.focus();
                 }, 10);
             }
-        }, [column, rowData, state.isEditing, validateValue]);
+        }, [cellValue, column.editable, state.isEditing, validateValue]);
 
         const handleInputChange = React.useCallback(
             (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,7 +159,7 @@ const NewDataCell = React.memo<RenderCellProps>(
                     } else if (e.key === "Escape") {
                         // Revert changes or simply exit editing mode
                         // For now, just exit, mirroring original implicit behavior
-                        const originalValue = getCellValue(column, rowData);
+                        const originalValue = cellValue;
 
                         setState({
                             isEditing: false,
@@ -169,7 +169,7 @@ const NewDataCell = React.memo<RenderCellProps>(
                     }
                 }
             },
-            [column, rowData, validateValue],
+            [cellValue, column.editable, validateValue],
         );
 
         const commonProps = React.useMemo<
@@ -238,7 +238,7 @@ const NewDataCell = React.memo<RenderCellProps>(
 
         React.useEffect(() => {
             // componentDidMount equivalent
-            const editingState = getEditingState(rowData.id, column.id);
+            const editingState = getEditingState(rowId, column.id);
             if (editingState) {
                 setState({
                     isEditing: editingState.isEditing,
@@ -246,22 +246,22 @@ const NewDataCell = React.memo<RenderCellProps>(
                     localErrorMessage: editingState.errorMessage,
                 });
             }
-        }, [getEditingState, rowData.id, column.id]);
+        }, [getEditingState, rowId, column.id]);
 
         React.useEffect(() => {
             // componentWillUnmount equivalent
             return () => {
                 if (stateRef.current.isEditing) {
-                    setEditingState(rowData.id, column.id, {
+                    setEditingState(rowId, column.id, {
                         isEditing: stateRef.current.isEditing,
                         tmpValue: stateRef.current.localTmpValue,
                         errorMessage: stateRef.current.localErrorMessage,
                     });
                 } else {
-                    setEditingState(rowData.id, column.id, null);
+                    setEditingState(rowId, column.id, null);
                 }
             };
-        }, [setEditingState, rowData.id, column.id]);
+        }, [setEditingState, rowId, column.id]);
 
         return (
             <td key={column.id} onDoubleClick={handleCellClick}>
@@ -282,7 +282,7 @@ const NewDataCell = React.memo<RenderCellProps>(
                         <CellContentRenderer
                             ref={inputRef}
                             column={column}
-                            rowData={rowData}
+                            cellValue={cellValue}
                             countryStrings={countryStrings}
                             state={state}
                             setState={setState}
@@ -300,7 +300,8 @@ const NewDataCell = React.memo<RenderCellProps>(
         // Custom comparison function (opposite of shouldComponentUpdate)
         if (
             prevProps.column.id !== nextProps.column.id ||
-            prevProps.rowData.id !== nextProps.rowData.id ||
+            prevProps.cellValue !== nextProps.cellValue ||
+            prevProps.rowId !== nextProps.rowId ||
             prevProps.cellEditingStyle !== nextProps.cellEditingStyle ||
             prevProps.cellStyle !== nextProps.cellStyle ||
             prevProps.inputStyle !== nextProps.inputStyle

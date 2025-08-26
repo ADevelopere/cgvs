@@ -26,19 +26,10 @@ import {
     formatInputValue,
 } from "./DataCell.util";
 
-// Helper functions (getCellValue, formatCellValue, formatInputValue) remain the same
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getCellValue = (column: EditableColumn, rowData: any) => {
-    if (typeof column.accessor === "function") {
-        return column.accessor(rowData);
-    }
-    return rowData[column.accessor];
-};
-
 type CellContentRendererProps = {
     column: EditableColumn;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rowData: any;
+    cellValue: any;
     countryStrings: CountryTranslations; // Add this line
     state: DataCellState;
     setState: React.Dispatch<React.SetStateAction<DataCellState>>;
@@ -59,7 +50,7 @@ const CellContentRenderer = React.forwardRef<
     (
         {
             column,
-            rowData,
+            cellValue,
             countryStrings,
             state,
             setState,
@@ -70,8 +61,6 @@ const CellContentRenderer = React.forwardRef<
         },
         ref,
     ) => {
-        const cellValue = getCellValue(column, rowData);
-
         if (!state.isEditing) {
             if (column.type === "select" && column.options) {
                 const option = column.options.find(
