@@ -11,7 +11,8 @@ import { useTheme } from "@mui/material/styles";
 import { Checkbox, Box } from "@mui/material";
 import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableColumnContext } from "../Table/TableColumnContext";
-import DataCell from "./DataCell";
+import { getCellValue } from "./DataCell.util";
+
 import {
     TABLE_CHECKBOX_CONTAINER_SIZE,
     TABLE_CHECKBOX_WIDTH,
@@ -219,16 +220,21 @@ const DataRow: React.FC<DataRowProps> = ({
                 </td>
             )}
 
-            {visibleColumns.map((column) => (
-                <NewDataCell
-                    key={column.id}
-                    column={column}
-                    rowData={rowData}
-                    cellStyle={cellStyle}
-                    cellEditingStyle={cellEditingStyle}
-                    inputStyle={inputStyle}
-                />
-            ))}
+            {visibleColumns.map((column) => {
+                const cellValue = getCellValue(column, rowData);
+                const rowId = rowData[rowIdKey];
+                return (
+                    <NewDataCell
+                        key={column.id}
+                        column={column}
+                        rowId={rowId}
+                        cellValue={cellValue}
+                        cellStyle={cellStyle}
+                        cellEditingStyle={cellEditingStyle}
+                        inputStyle={inputStyle}
+                    />
+                );
+            })}
             {enableRowResizing && (
                 <td
                     style={{
