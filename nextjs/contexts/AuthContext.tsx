@@ -7,8 +7,9 @@ import {
     LoginMutationVariables,
     User,
 } from "@/graphql/generated/types";
+import AuthTranslations from "@/locale/components/Auth";
+import useAppTranslation from "@/locale/useAppTranslation";
 import { clearClientAuth, updateAuthToken } from "@/utils/apollo";
-import { CombinedGraphQLErrors } from "@apollo/client/errors";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import React, {
@@ -22,10 +23,11 @@ import React, {
 } from "react";
 
 // A simple UI for the initial loading state
-const LoadingUI: React.FC<{ onRetry: () => void; error?: string | null }> = ({
-    onRetry,
-    error,
-}) => (
+const LoadingUI: React.FC<{
+    onRetry: () => void;
+    error?: string | null;
+    strings: AuthTranslations;
+}> = ({ onRetry, error, strings }) => (
     <Box
         sx={{
             display: "flex",
@@ -43,13 +45,13 @@ const LoadingUI: React.FC<{ onRetry: () => void; error?: string | null }> = ({
                     {error}
                 </Typography>
                 <Button variant="contained" onClick={onRetry} sx={{ mt: 2 }}>
-                    Try Again
+                    {strings.tryAgain}
                 </Button>
             </>
         ) : (
             <>
                 <CircularProgress size={48} />
-                <Typography>Checking authentication...</Typography>
+                <Typography>{strings.checkingAuthentication}</Typography>
             </>
         )}
     </Box>
@@ -73,6 +75,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
+    const strings: AuthTranslations = useAppTranslation("authTranslations");
     const [loginMutation] = useLoginMutation();
     const [logoutMutation] = useLogoutMutation();
     const [refreshTokenMutation] = useRefreshTokenMutation();
@@ -120,13 +123,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         ): Promise<boolean> => {
             setError(null);
             try {
-                const { data, errors } = await loginMutation({
+                const { data } = await loginMutation({
                     variables: { input: credentials.input },
                 });
-
-                if (errors && CombinedGraphQLErrors.is(errors)) {
-                    throw errors; // or handle accordingly
-                }
 
                 if (data?.login?.token && data.login.user) {
                     updateAuthToken(data.login.token);
@@ -134,11 +133,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     window.location.href = redirectUrl || "/admin/dashboard";
                     return true;
                 } else {
-                    throw new Error("Invalid server response during login.");
+                    setError(strings.signinFailed);
+                    return false;
                 }
             } catch (err) {
                 console.error("Login failed", err);
-                setError("Failed to sign in. Please check your credentials.");
+                setError(strings.invalidLoginResponse);
                 return false;
             }
         },
@@ -162,7 +162,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     );
 
     if (isFirstRender.current) {
-        return <LoadingUI onRetry={checkAuth} error={error} />;
+        return (
+            <LoadingUI onRetry={checkAuth} error={error} strings={strings} />
+        );
     }
 
     return (

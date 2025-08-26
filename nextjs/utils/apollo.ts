@@ -1,4 +1,3 @@
-import { RefreshTokenDocument } from "@/graphql/generated/graphql";
 import {
     ApolloClient,
     ApolloLink,
@@ -12,6 +11,7 @@ import {
 import { print } from "graphql/language/printer";
 import { SetContextLink } from "@apollo/client/link/context";
 import { ErrorLink } from "@apollo/client/link/error";
+import { RefreshTokenDocument } from "@/graphql/generated/types";
 
 // --- Internal Token Management ---
 let inMemoryToken: string | null = null;

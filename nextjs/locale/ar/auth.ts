@@ -80,6 +80,11 @@ const auth: AuthTranslations = {
   gender: "الجنس",
   male: "ذكر",
   female: "أنثى",
+
+  tryAgain: "حاول مرة أخرى",
+  checkingAuthentication: "جاري التحقق من المصادقة...",
+  invalidLoginResponse: "استجابة الخادم غير صالحة أثناء تسجيل الدخول.",
+  signinFailed: "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
 };
 
 export default auth;
