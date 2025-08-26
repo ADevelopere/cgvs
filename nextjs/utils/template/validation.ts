@@ -1,4 +1,4 @@
-import { TemplateVariable } from '@/contexts/template/template.types';
+import { TemplateVariable } from '@/graphql/generated/types';
 
 export const validateVariableValue = (
     variable: TemplateVariable,
@@ -6,11 +6,14 @@ export const validateVariableValue = (
     existingValues?: Set<string>
 ): { isValid: boolean; error?: string } => {
     // Handle empty values
+
+    const isKey = false;
+
     if (!value || (typeof value === 'string' && value.trim() === '')) {
-        if (variable.is_key || variable.required) {
+        if (isKey || variable.required) {
             return { 
                 isValid: false, 
-                error: variable.is_key 
+                error: isKey 
                     ? `${variable.name} is required as it's a key identifier`
                     : `${variable.name} is required`
             };
@@ -19,7 +22,7 @@ export const validateVariableValue = (
     }
 
     // Key uniqueness check
-    if (variable.is_key && existingValues) {
+    if (isKey && existingValues) {
         let uniqueKey: string;
         if (typeof value === 'object' && value !== null) {
             try {
