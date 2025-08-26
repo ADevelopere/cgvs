@@ -1,4 +1,4 @@
-import { useTheme } from "@mui/system";
+import { useAppTheme } from "@/contexts/ThemeContext";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -27,8 +27,10 @@ const buttonStyle = {
 };
 
 const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
-    const theme = useTheme();
+    const { isRtl, theme } = useAppTheme();
     const [isResizing, setIsResizing] = useState(false);
+
+    // Start resizing on mousedown or touchstart
 
     const startResizing = useCallback(
         (
@@ -80,7 +82,7 @@ const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
             className="resize-handle-wrapper"
             style={{
                 ...buttonStyle,
-                [theme.direction === "rtl" ? "left" : "right"]: "0px",
+                [isRtl ? "left" : "right"]: "0px",
             }}
             onMouseDown={startResizing}
             onTouchStart={startResizing}
