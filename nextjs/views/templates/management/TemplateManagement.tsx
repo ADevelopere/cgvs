@@ -1,7 +1,7 @@
 "use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Box, useTheme,  Fade, IconButton } from "@mui/material";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Box, useTheme, Fade, IconButton } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
@@ -9,46 +9,14 @@ import {
     TemplateManagementTabType,
 } from "@/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
-// import RecipientsTab from "../../../../todo/recipients/RecipientsTab";
-// import PreviewTab from "../../../../todo/tabs/PreviewTab";
+// import RecipientsTab from "./recipients/RecipientsTab";
+// import PreviewTab from "./tabs/PreviewTab";
 // import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
-// import EditorTab from "../../../../todo/editor/EditorTab";
+// import EditorTab from "./editor/EditorTab";
 import { useState, useEffect } from "react";
 import ManagementHeader from "./ManagementHeader";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import { TemplateVariableManagementProvider } from "@/contexts/templateVariable/TemplateVariableManagementContext";
-
-const handleTabError = (
-    error: any,
-    tab: TemplateManagementTabType,
-    setTabError: (
-        tab: TemplateManagementTabType,
-        error: { message: string },
-    ) => void,
-) => {
-    if (error.response?.status === 403) {
-        setTabError(tab, { message: "Access denied to this tab" });
-        return;
-    }
-
-    setTabError(tab, {
-        message:
-            error.response?.data?.message ??
-            "An error occurred loading this tab",
-    });
-};
-
-// Helper function to convert index to tab value
-const indexToTab = (index: number): TemplateManagementTabType => {
-    const tabs: TemplateManagementTabType[] = [
-        "basic",
-        "variables",
-        "recipients",
-        "editor",
-        "preview",
-    ];
-    return tabs[index];
-};
 
 const TemplateManagement: React.FC = () => {
     const theme = useTheme();
@@ -74,10 +42,12 @@ const TemplateManagement: React.FC = () => {
         try {
             setActiveTab(newValue);
             const params = new URLSearchParams(searchParams.toString());
-            params.set('tab', newValue);
+            params.set("tab", newValue);
             router.push(`?${params.toString()}`);
-        } catch (error) {
-            handleTabError(error, newValue, setTabError);
+        } catch {
+            setTabError(newValue, {
+                message: "An error occurred loading this tab",
+            });
         }
     };
 
@@ -89,7 +59,6 @@ const TemplateManagement: React.FC = () => {
     };
 
     if (!template) {
-        console.error("Template not found");
         return null;
     }
 

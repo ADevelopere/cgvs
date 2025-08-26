@@ -29,19 +29,28 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
       return baseStrings;
     }
 
-    const mergeDeep = (target: any, source: any): TableLocale => {
-      const output = { ...target };
-      if (target && typeof target === 'object' && source && typeof source === 'object') {
+    const isObject = (obj: unknown): obj is Record<string, unknown> => {
+      return obj !== null && typeof obj === 'object';
+    };
+
+    const mergeDeep = (target: unknown, source: unknown): TableLocale => {
+      const output: Record<string, unknown> = isObject(target) ? { ...target } : {};
+      if (isObject(target) && isObject(source)) {
         Object.keys(source).forEach(key => {
-          if (source[key] && typeof source[key] === 'object') {
-            if (!(key in target)) Object.assign(output, { [key]: source[key] });
-            else output[key] = mergeDeep(target[key], source[key]);
+          const sourceValue = source[key];
+          const targetValue = target[key];
+          if (isObject(sourceValue)) {
+            if (!(key in target)) {
+              output[key] = sourceValue;
+            } else {
+              output[key] = mergeDeep(targetValue, sourceValue);
+            }
           } else {
-            Object.assign(output, { [key]: source[key] });
+            output[key] = sourceValue;
           }
         });
       }
-      return output as TableLocale;
+  return output as unknown as TableLocale;
     };
 
     return mergeDeep(baseStrings, customStrings);

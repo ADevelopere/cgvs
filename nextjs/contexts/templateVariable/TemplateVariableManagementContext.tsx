@@ -13,7 +13,7 @@ import {
     TemplateVariableGraphQLProvider,
     useTemplateVariableGraphQL,
 } from "./TemplateVariableGraphQLContext";
-import { useTemplateManagement } from "../template/TemplateManagementContext";
+import logger from "@/utils/logger";
 
 type TemplateVariableManagementContextType = {
     // States
@@ -75,7 +75,6 @@ const ManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     const notifications = useNotifications();
-    const { template } = useTemplateManagement();
 
     const [loading, setLoading] = useState(false);
 
@@ -96,7 +95,7 @@ const ManagementProvider: React.FC<{
         async (
             variables: Graphql.CreateTextTemplateVariableMutationVariables,
         ): Promise<boolean> => {
-            console.log("Creating text variable", variables);
+            logger.log("Creating text variable", variables);
             setLoading(true);
             try {
                 const result = await createTextTemplateVariableMutation({
@@ -118,7 +117,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error creating text variable:", error);
+                logger.error("Error creating text variable:", error);
                 notifications.show("Failed to create text variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -128,11 +127,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [
-            createTextTemplateVariableMutation,
-            template?.variables,
-            notifications,
-        ],
+        [createTextTemplateVariableMutation, notifications],
     );
 
     const handleUpdateTextTemplateVariable = useCallback(
@@ -156,7 +151,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error updating text variable:", error);
+                logger.error("Error updating text variable:", error);
                 notifications.show("Failed to update text variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -194,7 +189,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error creating number variable:", error);
+                logger.error("Error creating number variable:", error);
                 notifications.show("Failed to create number variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -204,11 +199,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [
-            createNumberTemplateVariableMutation,
-            notifications,
-            template?.variables,
-        ],
+        [createNumberTemplateVariableMutation, notifications],
     );
 
     const handleUpdateNumberTemplateVariable = useCallback(
@@ -232,7 +223,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error updating number variable:", error);
+                logger.error("Error updating number variable:", error);
                 notifications.show("Failed to update number variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -242,7 +233,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [updateNumberTemplateVariableMutation],
+        [notifications, updateNumberTemplateVariableMutation],
     );
 
     // Date template variable handlers
@@ -270,7 +261,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error creating date variable:", error);
+                logger.error("Error creating date variable:", error);
                 notifications.show("Failed to create date variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -280,11 +271,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [
-            createDateTemplateVariableMutation,
-            template?.variables,
-            notifications,
-        ],
+        [createDateTemplateVariableMutation, notifications],
     );
 
     const handleUpdateDateTemplateVariable = useCallback(
@@ -308,7 +295,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error updating date variable:", error);
+                logger.error("Error updating date variable:", error);
                 notifications.show("Failed to update date variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -318,7 +305,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [updateDateTemplateVariableMutation],
+        [notifications, updateDateTemplateVariableMutation],
     );
 
     // Select template variable handlers
@@ -346,7 +333,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error creating select variable:", error);
+                logger.error("Error creating select variable:", error);
                 notifications.show("Failed to create select variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -356,11 +343,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [
-            createSelectTemplateVariableMutation,
-            template?.variables,
-            notifications,
-        ],
+        [createSelectTemplateVariableMutation, notifications],
     );
 
     const handleUpdateSelectTemplateVariable = useCallback(
@@ -384,7 +367,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error updating select variable:", error);
+                logger.error("Error updating select variable:", error);
                 notifications.show("Failed to update select variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -394,7 +377,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [updateSelectTemplateVariableMutation],
+        [notifications, updateSelectTemplateVariableMutation],
     );
 
     // Delete template variable handler
@@ -416,7 +399,7 @@ const ManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error deleting variable:", error);
+                logger.error("Error deleting variable:", error);
                 notifications.show("Failed to delete variable", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -426,7 +409,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [deleteTemplateVariableMutation],
+        [deleteTemplateVariableMutation, notifications],
     );
 
     const value: TemplateVariableManagementContextType = useMemo(

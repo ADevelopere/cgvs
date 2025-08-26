@@ -2,7 +2,7 @@ import { TemplateVariable } from '@/contexts/template/template.types';
 
 export const validateVariableValue = (
     variable: TemplateVariable,
-    value: any,
+    value: unknown,
     existingValues?: Set<string>
 ): { isValid: boolean; error?: string } => {
     // Handle empty values
@@ -19,11 +19,45 @@ export const validateVariableValue = (
     }
 
     // Key uniqueness check
-    if (variable.is_key && existingValues?.has(value.toString())) {
-        return {
-            isValid: false,
-            error: `${variable.name} must be unique. "${value}" is already used`
-        };
+    if (variable.is_key && existingValues) {
+        let uniqueKey: string;
+        if (typeof value === 'object' && value !== null) {
+            try {
+                uniqueKey = JSON.stringify(value);
+            } catch {
+                uniqueKey = '[Unserializable Object]';
+            }
+        } else if (
+            typeof value === 'string' ||
+            typeof value === 'number' ||
+            typeof value === 'boolean' ||
+            typeof value === 'bigint' ||
+            typeof value === 'symbol' ||
+            typeof value === 'undefined'
+        ) {
+            uniqueKey = String(value);
+        } else {
+            uniqueKey = '[Unknown Type]';
+        }
+        if (existingValues.has(uniqueKey)) {
+            // Use the same stringification for the error message
+            let displayValue: string;
+            if (typeof value === 'object' && value !== null) {
+                try {
+                    displayValue = JSON.stringify(value);
+                } catch {
+                    displayValue = '[Unserializable Object]';
+                }
+            } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint' || typeof value === 'symbol' || typeof value === 'undefined') {
+                displayValue = String(value);
+            } else {
+                displayValue = '[Unknown Type]';
+            }
+            return {
+                isValid: false,
+                error: `${variable.name} must be unique. "${displayValue}" is already used`
+            };
+        }
     }
 
     // Type validation
@@ -37,7 +71,7 @@ export const validateVariableValue = (
             }
             break;
         case 'DATE':
-            if (isNaN(Date.parse(value))) {
+            if (typeof value !== 'string' || isNaN(Date.parse(value))) {
                 return {
                     isValid: false,
                     error: `${variable.name} must be a valid date`

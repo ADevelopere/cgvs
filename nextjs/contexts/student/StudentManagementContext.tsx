@@ -13,6 +13,7 @@ import { useStudentGraphQL } from "./StudentGraphQLContext";
 import { PaginationInfo, Student } from "@/graphql/generated/types";
 import { mapSingleStudent } from "@/utils/student/student-mappers";
 import { useNotifications } from "@toolpad/core/useNotifications";
+import logger from "@/utils/logger";
 
 type StudentManagementContextType = {
     // States
@@ -94,7 +95,7 @@ export const StudentManagementProvider: React.FC<{
                     setPaginationInfo(result.students.paginationInfo);
                 }
             } catch (error) {
-                console.error("Error fetching students:", error);
+                logger.error("Error fetching students:", error);
                 notifications.show("Failed to fetch students", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -140,7 +141,7 @@ export const StudentManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error creating student:", error);
+                logger.error("Error creating student:", error);
                 notifications.show("Failed to create student", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -180,7 +181,7 @@ export const StudentManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error updating student:", error);
+                logger.error("Error updating student:", error);
                 notifications.show("Failed to update student", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -211,7 +212,7 @@ export const StudentManagementProvider: React.FC<{
                 });
                 return false;
             } catch (error) {
-                console.error("Error deleting student:", error);
+                logger.error("Error deleting student:", error);
                 notifications.show("Failed to delete student", {
                     severity: "error",
                     autoHideDuration: 3000,

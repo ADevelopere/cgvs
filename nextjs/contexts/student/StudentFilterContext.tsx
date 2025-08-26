@@ -21,6 +21,7 @@ import {
     mapDateFilter,
     mapTextFilter,
 } from "./utils/filter";
+import logger from "@/utils/logger";
 
 // Helper function to map table column IDs to GraphQL OrderStudentsByColumn enum values
 const mapColumnIdToGraphQLColumn = (columnId: string): Graphql.OrderStudentsByColumn | null => {
@@ -171,7 +172,7 @@ export const StudentFilterAndSortProvider: React.FC<{
             const columnId = filterClause.columnId as keyof Graphql.Student;
             const columnDef = getColumnDef(columnId);
             if (!columnDef) {
-                console.warn(`Column definition not found for ${columnId}`);
+                logger.warn(`Column definition not found for ${columnId}`);
                 return;
             }
 
@@ -195,7 +196,7 @@ export const StudentFilterAndSortProvider: React.FC<{
             if (params) {
                 applyFilters(params);
             } else {
-                console.warn(`Unsupported column type for ${columnId}`);
+                logger.warn(`Unsupported column type for ${columnId}`);
             }
         },
         [applyFilters, clearAllFilters],
@@ -208,7 +209,7 @@ export const StudentFilterAndSortProvider: React.FC<{
                 .map(clause => {
                     const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
                     if (!graphqlColumn) {
-                        console.warn(`Column ${clause.column} is not sortable in GraphQL schema`);
+                        logger.warn(`Column ${clause.column} is not sortable in GraphQL schema`);
                         return null;
                     }
                     return {

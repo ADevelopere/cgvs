@@ -3,8 +3,8 @@ type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends Array<infer U>
         ? Array<DeepPartial<U>>
         : T[P] extends object | undefined | null
-            ? DeepPartial<T[P]>
-            : T[P];
+          ? DeepPartial<T[P]>
+          : T[P];
 };
 import type {
     CreateTemplateCategoryMutation,
@@ -15,33 +15,43 @@ import type {
     TemplateCategoryQuery,
     TemplateCategoriesQuery,
     TemplateCategory,
-    Template
-} from '@/graphql/generated/types';
+    Template,
+} from "@/graphql/generated/types";
 
-export type TemplateCategorySource = 
+export type TemplateCategorySource =
     | CreateTemplateCategoryMutation
     | DeleteTemplateCategoryMutation
     | UpdateTemplateCategoryMutation
     | SuspensionTemplateCategoryQuery
     | MainTemplateCategoryQuery
     | TemplateCategoryQuery
-    | TemplateCategoriesQuery
+    | TemplateCategoriesQuery;
 
 // Base mapper for Template type
 const mapTemplate = (template: DeepPartial<Template>): Template => ({
     ...(template as Template),
     // Always return a TemplateCategory, never null, fallback to empty object if missing
-    category: template.category ? mapBaseTemplateCategory(template.category) : ({} as TemplateCategory),
+    category: template.category
+        ? mapBaseTemplateCategory(template.category)
+        : ({} as TemplateCategory),
 });
 
 // Base mapper for TemplateCategory type
-const mapBaseTemplateCategory = (category: DeepPartial<TemplateCategory>): TemplateCategory => ({
+const mapBaseTemplateCategory = (
+    category: DeepPartial<TemplateCategory>,
+): TemplateCategory => ({
     ...(category as TemplateCategory),
     templates: Array.isArray(category.templates)
-        ? category.templates.filter((t): t is DeepPartial<Template> => t !== undefined).map(mapTemplate)
+        ? category.templates
+              .filter((t): t is DeepPartial<Template> => t !== undefined)
+              .map(mapTemplate)
         : [],
     childCategories: Array.isArray(category.childCategories)
-        ? category.childCategories.filter((c): c is DeepPartial<TemplateCategory> => c !== undefined).map(mapBaseTemplateCategory)
+        ? category.childCategories
+              .filter(
+                  (c): c is DeepPartial<TemplateCategory> => c !== undefined,
+              )
+              .map(mapBaseTemplateCategory)
         : [],
     parentCategory: category.parentCategory
         ? mapBaseTemplateCategory(category.parentCategory)
@@ -49,44 +59,63 @@ const mapBaseTemplateCategory = (category: DeepPartial<TemplateCategory>): Templ
 });
 
 // Specific mappers for each source type
-const mapCreateTemplateCategoryMutation = (source: CreateTemplateCategoryMutation): TemplateCategory => 
-    mapBaseTemplateCategory(source.createTemplateCategory);
+const mapCreateTemplateCategoryMutation = (
+    source: CreateTemplateCategoryMutation,
+): TemplateCategory => mapBaseTemplateCategory(source.createTemplateCategory);
 
-const mapDeleteTemplateCategoryMutation = (source: DeleteTemplateCategoryMutation): TemplateCategory =>
-    mapBaseTemplateCategory(source.deleteTemplateCategory);
+const mapDeleteTemplateCategoryMutation = (
+    source: DeleteTemplateCategoryMutation,
+): TemplateCategory => mapBaseTemplateCategory(source.deleteTemplateCategory);
 
-const mapUpdateTemplateCategoryMutation = (source: UpdateTemplateCategoryMutation): TemplateCategory =>
-    mapBaseTemplateCategory(source.updateTemplateCategory);
+const mapUpdateTemplateCategoryMutation = (
+    source: UpdateTemplateCategoryMutation,
+): TemplateCategory => mapBaseTemplateCategory(source.updateTemplateCategory);
 
-const mapSuspensionTemplateCategoryQuery = (source: SuspensionTemplateCategoryQuery): TemplateCategory =>
-    source.suspensionTemplateCategory ? mapBaseTemplateCategory(source.suspensionTemplateCategory) : ({} as TemplateCategory);
+const mapSuspensionTemplateCategoryQuery = (
+    source: SuspensionTemplateCategoryQuery,
+): TemplateCategory =>
+    source.suspensionTemplateCategory
+        ? mapBaseTemplateCategory(source.suspensionTemplateCategory)
+        : ({} as TemplateCategory);
 
-const mapMainTemplateCategoryQuery = (source: MainTemplateCategoryQuery): TemplateCategory =>
-    source.mainTemplateCategory ? mapBaseTemplateCategory(source.mainTemplateCategory) : ({} as TemplateCategory);
+const mapMainTemplateCategoryQuery = (
+    source: MainTemplateCategoryQuery,
+): TemplateCategory =>
+    source.mainTemplateCategory
+        ? mapBaseTemplateCategory(source.mainTemplateCategory)
+        : ({} as TemplateCategory);
 
-const mapTemplateCategoryQuery = (source: TemplateCategoryQuery): TemplateCategory | null =>
-    source.templateCategory ? mapBaseTemplateCategory(source.templateCategory) : null;
+const mapTemplateCategoryQuery = (
+    source: TemplateCategoryQuery,
+): TemplateCategory | null =>
+    source.templateCategory
+        ? mapBaseTemplateCategory(source.templateCategory)
+        : null;
 
-const mapTemplateCategoriesQuery = (source: TemplateCategoriesQuery): TemplateCategory[] =>
+const mapTemplateCategoriesQuery = (
+    source: TemplateCategoriesQuery,
+): TemplateCategory[] =>
     source.templateCategories.filter(Boolean).map(mapBaseTemplateCategory);
 
 // Helper function to build category hierarchy from flat structure
-export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): TemplateCategory[] => {
+export const buildCategoryHierarchy = (
+    flatCategories: TemplateCategory[],
+): TemplateCategory[] => {
     const categoryMap = new Map<number, TemplateCategory>();
     const rootCategories: TemplateCategory[] = [];
 
     // First pass: create map of all categories
-    flatCategories.forEach(category => {
+    flatCategories.forEach((category) => {
         categoryMap.set(category.id, {
             ...category,
             childCategories: [], // Reset childCategories as we'll build them in second pass
             templates: category.templates || [],
-            parentCategory: null // Reset parentCategory as we'll set it in second pass
+            parentCategory: null, // Reset parentCategory as we'll set it in second pass
         });
     });
 
     // Second pass: build relationships
-    flatCategories.forEach(category => {
+    flatCategories.forEach((category) => {
         const currentCategory = categoryMap.get(category.id);
         if (!currentCategory) return;
 
@@ -108,7 +137,6 @@ export const buildCategoryHierarchy = (flatCategories: TemplateCategory[]): Temp
     return rootCategories;
 };
 
-
 export type SerializableTemplate = { id: number; name: string };
 export type SerializableTemplateCategory = {
     id: number;
@@ -118,55 +146,62 @@ export type SerializableTemplateCategory = {
     childCategories: SerializableTemplateCategory[];
 };
 
-export const getSerializableTemplateCategory = (category: TemplateCategory): SerializableTemplateCategory => {
+export const getSerializableTemplateCategory = (
+    category: TemplateCategory,
+): SerializableTemplateCategory => {
     return {
         id: category.id,
         name: category.name,
         special_type: category.categorySpecialType ?? null,
-        templates: category.templates?.map(template => ({
+        templates: category.templates?.map((template) => ({
             id: template.id,
             name: template.name,
         })),
-        childCategories: category.childCategories ?
-            getSerializableCategories(category.childCategories) : 
-            [],
+        childCategories: category.childCategories
+            ? getSerializableCategories(category.childCategories)
+            : [],
     };
 };
 
-export const getSerializableCategories = (categories: TemplateCategory[]): SerializableTemplateCategory[] => {
-    return categories.map(category => getSerializableTemplateCategory(category));
+export const getSerializableCategories = (
+    categories: TemplateCategory[],
+): SerializableTemplateCategory[] => {
+    return categories.map((category) =>
+        getSerializableTemplateCategory(category),
+    );
 };
 
 // Main mapper function
-export const mapTemplateCategory = (source: TemplateCategorySource | undefined | null): TemplateCategory | null => {
+export const mapTemplateCategory = (
+    source: TemplateCategorySource | undefined | null,
+): TemplateCategory | null => {
     if (!source) {
         return null;
     }
 
     try {
-        if ('createTemplateCategory' in source) {
+        if ("createTemplateCategory" in source) {
             return mapCreateTemplateCategoryMutation(source);
         }
-        if ('deleteTemplateCategory' in source) {
+        if ("deleteTemplateCategory" in source) {
             return mapDeleteTemplateCategoryMutation(source);
         }
-        if ('updateTemplateCategory' in source) {
+        if ("updateTemplateCategory" in source) {
             return mapUpdateTemplateCategoryMutation(source);
         }
-        if ('templateCategory' in source) {
+        if ("templateCategory" in source) {
             return mapTemplateCategoryQuery(source);
         }
-        if ('deletionTemplateCategory' in source) {
+        if ("deletionTemplateCategory" in source) {
             return mapSuspensionTemplateCategoryQuery(source);
         }
-        if ('mainTemplateCategory' in source) {
+        if ("mainTemplateCategory" in source) {
             return mapMainTemplateCategoryQuery(source);
         }
-        if ('templateCategories' in source) {
+        if ("templateCategories" in source) {
             return mapTemplateCategoriesQuery(source)[0] || null;
         }
-    } catch (error) {
-        console.error('Error mapping template category:', error);
+    } catch {
         return null;
     }
 
@@ -174,22 +209,21 @@ export const mapTemplateCategory = (source: TemplateCategorySource | undefined |
 };
 
 // Helper function to map multiple categories
-export const mapTemplateCategories = (source: TemplateCategorySource | undefined | null): TemplateCategory[] => {
+export const mapTemplateCategories = (
+    source: TemplateCategorySource | undefined | null,
+): TemplateCategory[] => {
     if (!source) {
         return [];
     }
 
     try {
-        if ('templateCategories' in source) {
+        if ("templateCategories" in source) {
             return mapTemplateCategoriesQuery(source);
         }
 
-
-
         const category = mapTemplateCategory(source);
         return category ? [category] : [];
-    } catch (error) {
-        console.error('Error mapping template categories:', error);
+    } catch {
         return [];
     }
 };

@@ -69,7 +69,7 @@ const formatCellValue = (value: any, type: string) => {
                     return date.toLocaleDateString();
                 }
             } catch {
-                console.error("Invalid date:", value);
+                throw new Error("Invalid date:", value);
             }
             return value;
         case "text":
@@ -91,7 +91,7 @@ const formatInputValue = (value: any, type: string) => {
                     return date.toISOString().split("T")[0];
                 }
             } catch {
-                console.error("Invalid date:", value);
+                throw new Error("Invalid date:", value);
             }
             return value;
         case "text":

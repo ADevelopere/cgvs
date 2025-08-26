@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
 import useAppTranslation from "@/locale/useAppTranslation";
@@ -11,24 +11,12 @@ import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import SplitPane from "@/components/splitPane/SplitPane";
-import { DeleteIcon, FileStack, PanelLeft, PanelRight } from "lucide-react";
+import { FileStack, PanelLeft, PanelRight } from "lucide-react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
 import { DeleteOutline } from "@mui/icons-material";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
-
-// Helper function to convert tab value to index
-const tabToIndex = (tab: TemplateCategoryManagementTabType): number => {
-    const tabs: TemplateCategoryManagementTabType[] = ["all", "deleted"];
-    return tabs.indexOf(tab);
-};
-
-// Helper function to convert index to tab value
-const indexToTab = (index: number): TemplateCategoryManagementTabType => {
-    const tabs: TemplateCategoryManagementTabType[] = ["all", "deleted"];
-    return tabs[index] as TemplateCategoryManagementTabType;
-};
 
 const This: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
@@ -83,9 +71,7 @@ const This: React.FC = () => {
 
     return (
         <>
-            {fetchErrorView ? (
-                fetchErrorView
-            ) : (
+            {(fetchErrorView ?? (
                 <Box
                     sx={{
                         display: "flex",
@@ -156,10 +142,7 @@ const This: React.FC = () => {
                                                 onClick={
                                                     handleFirstPaneVisibility
                                                 }
-                                                disabled={
-                                                    !currentCategory ||
-                                                    !secondPaneVisible
-                                                }
+                                                disabled={!(currentCategory && secondPaneVisible)}
                                             >
                                                 <PanelRight />
                                             </IconButton>
@@ -221,7 +204,7 @@ const This: React.FC = () => {
                         </TabPanel>
                     </TabContext>
                 </Box>
-            )}
+            ))}
         </>
     );
 };
@@ -229,13 +212,7 @@ const This: React.FC = () => {
 const TemplateCategoryManagement: React.FC = () => {
     const appBarHeight = useAppBarHeight();
 
-    // todo: remove minWidth after fixing the layout
-    useEffect(() => {
-        const appBar = document.getElementById("admin-header-appbar");
-        if (appBar) {
-            appBar.style.minWidth = "1024px";
-        }
-    }, []);
+    // ...existing code...
 
     return (
         <Box

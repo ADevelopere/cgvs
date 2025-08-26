@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import {
     Box,
     Toolbar,
@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import {
     CloudUpload as UploadIcon,
-    Search as SearchIcon,
     FilterList as FilterIcon,
     Sort as SortIcon,
 } from "@mui/icons-material";
@@ -41,10 +40,8 @@ const StorageToolbar: React.FC = () => {
         startUpload,
     } = useStorageManagement();
     const translations = useAppTranslation("storageTranslations");
-    
-    const { canUpload } = useStorageLocation();
 
-    const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+    const { canUpload } = useStorageLocation();
 
     const handleFileUpload = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,10 +49,13 @@ const StorageToolbar: React.FC = () => {
             if (files.length > 0) {
                 startUpload(files)
                     .then(() => {
-                        notifications.show(translations.uploadStartedSuccessfully, {
-                            severity: "success",
-                            autoHideDuration: 3000,
-                        });
+                        notifications.show(
+                            translations.uploadStartedSuccessfully,
+                            {
+                                severity: "success",
+                                autoHideDuration: 3000,
+                            },
+                        );
                     })
                     .catch(() => {
                         notifications.show(translations.failedToStartUpload, {
@@ -169,8 +169,8 @@ const StorageToolbar: React.FC = () => {
                     sx={{ whiteSpace: "nowrap" }}
                     disabled={!canUpload}
                     title={
-                        canUpload 
-                            ? translations.uploadToLocation 
+                        canUpload
+                            ? translations.uploadToLocation
                             : translations.navigateToLocationToUpload
                     }
                 >
@@ -188,7 +188,10 @@ const StorageToolbar: React.FC = () => {
                 {selectedPaths.length > 0 && (
                     <Badge badgeContent={selectedPaths.length} color="primary">
                         <Chip
-                            label={translations.selected.replace("{count}", String(selectedPaths.length))}
+                            label={translations.selected.replace(
+                                "{count}",
+                                String(selectedPaths.length),
+                            )}
                             variant="outlined"
                             color="primary"
                             size="small"
@@ -206,7 +209,10 @@ const StorageToolbar: React.FC = () => {
                         </Typography>
                         {params.fileType && (
                             <Chip
-                                label={translations.typeFilter.replace("{fileType}", params.fileType)}
+                                label={translations.typeFilter.replace(
+                                    "{fileType}",
+                                    params.fileType,
+                                )}
                                 size="small"
                                 onDelete={() => setFilterType(undefined)}
                                 color="primary"
@@ -215,7 +221,10 @@ const StorageToolbar: React.FC = () => {
                         )}
                         {params.searchTerm && (
                             <Chip
-                                label={translations.searchFilter.replace("{searchTerm}", params.searchTerm)}
+                                label={translations.searchFilter.replace(
+                                    "{searchTerm}",
+                                    params.searchTerm,
+                                )}
                                 size="small"
                                 onDelete={() => search("")}
                                 color="primary"

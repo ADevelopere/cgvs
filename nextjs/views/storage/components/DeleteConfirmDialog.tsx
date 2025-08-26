@@ -42,7 +42,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
     const translations = useAppTranslation("storageTranslations");
 
     const getItemsToDelete = () => {
-        return items.filter(item => paths.includes(item.path));
+        return items.filter((item) => paths.includes(item.path));
     };
 
     const handleDelete = async () => {
@@ -53,8 +53,6 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
                 onConfirm?.();
                 onClose();
             }
-        } catch (error) {
-            // Error handling is done in the context
         } finally {
             setLoading(false);
         }
@@ -62,16 +60,25 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
 
     const itemsToDelete = getItemsToDelete();
     const isMultiple = paths.length > 1;
-    const folderCount = itemsToDelete.filter(item => item.__typename === "FolderInfo").length;
-    const fileCount = itemsToDelete.filter(item => item.__typename === "FileInfo").length;
+    const folderCount = itemsToDelete.filter(
+        (item) => item.__typename === "FolderInfo",
+    ).length;
+    const fileCount = itemsToDelete.filter(
+        (item) => item.__typename === "FileInfo",
+    ).length;
 
     const getDialogTitle = () => {
         if (isMultiple) {
-            return translations.deleteItems.replace("%{count}", String(paths.length));
+            return translations.deleteItems.replace(
+                "%{count}",
+                String(paths.length),
+            );
         }
         const item = itemsToDelete[0];
         if (item) {
-            return item.__typename === "FolderInfo" ? translations.deleteFolder : translations.deleteFile;
+            return item.__typename === "FolderInfo"
+                ? translations.deleteFolder
+                : translations.deleteFile;
         }
         return translations.deleteItem;
     };
@@ -80,17 +87,25 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
         if (isMultiple) {
             const parts = [];
             if (folderCount > 0) {
-                parts.push(`${folderCount} folder${folderCount === 1 ? "" : "s"}`);
+                parts.push(
+                    `${folderCount} folder${folderCount === 1 ? "" : "s"}`,
+                );
             }
             if (fileCount > 0) {
                 parts.push(`${fileCount} file${fileCount === 1 ? "" : "s"}`);
             }
-            return translations.aboutToDelete.replace("%{parts}", parts.join(" and "));
+            return translations.aboutToDelete.replace(
+                "%{parts}",
+                parts.join(" and "),
+            );
         } else {
             const item = itemsToDelete[0];
             if (item) {
-                const type = item.__typename === "FolderInfo" ? "folder" : "file";
-                return translations.aboutToDeleteItem.replace("%{type}", type).replace("%{name}", item.name);
+                const type =
+                    item.__typename === "FolderInfo" ? "folder" : "file";
+                return translations.aboutToDeleteItem
+                    .replace("%{type}", type)
+                    .replace("%{name}", item.name);
             }
             return translations.cannotBeUndone;
         }
@@ -104,13 +119,13 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
             fullWidth
             aria-labelledby="delete-dialog-title"
         >
-            <DialogTitle 
+            <DialogTitle
                 id="delete-dialog-title"
-                sx={{ 
-                    display: "flex", 
-                    alignItems: "center", 
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
                     gap: 1,
-                    color: "error.main" 
+                    color: "error.main",
                 }}
             >
                 <WarningIcon />
@@ -127,20 +142,24 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
                         <Typography variant="subtitle2" gutterBottom>
                             {translations.itemsToBeDeleted}
                         </Typography>
-                        
-                        <List dense sx={{ 
-                            maxHeight: 200, 
-                            overflow: "auto",
-                            border: 1,
-                            borderColor: "divider",
-                            borderRadius: 1,
-                            backgroundColor: "background.default"
-                        }}>
+
+                        <List
+                            dense
+                            sx={{
+                                maxHeight: 200,
+                                overflow: "auto",
+                                border: 1,
+                                borderColor: "divider",
+                                borderRadius: 1,
+                                backgroundColor: "background.default",
+                            }}
+                        >
                             {itemsToDelete.map((item, index) => (
                                 <React.Fragment key={item.path}>
                                     <ListItem>
                                         <ListItemIcon sx={{ minWidth: 36 }}>
-                                            {item.__typename === "FolderInfo" ? (
+                                            {item.__typename ===
+                                            "FolderInfo" ? (
                                                 <FolderIcon color="primary" />
                                             ) : (
                                                 <FileIcon color="action" />
@@ -149,17 +168,21 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
                                         <ListItemText
                                             primary={item.name}
                                             secondary={item.path}
-                                            primaryTypographyProps={{
-                                                variant: "body2",
-                                                fontWeight: 500
-                                            }}
-                                            secondaryTypographyProps={{
-                                                variant: "caption",
-                                                color: "text.secondary"
+                                            slotProps={{
+                                                primary: {
+                                                    variant: "body2",
+                                                    fontWeight: 500,
+                                                },
+                                                secondary: {
+                                                    variant: "caption",
+                                                    color: "text.secondary",
+                                                },
                                             }}
                                         />
                                     </ListItem>
-                                    {index < itemsToDelete.length - 1 && <Divider />}
+                                    {index < itemsToDelete.length - 1 && (
+                                        <Divider />
+                                    )}
                                 </React.Fragment>
                             ))}
                         </List>
@@ -174,11 +197,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button 
-                    onClick={onClose} 
-                    disabled={loading}
-                    variant="outlined"
-                >
+                <Button onClick={onClose} disabled={loading} variant="outlined">
                     {translations.cancel}
                 </Button>
                 <Button

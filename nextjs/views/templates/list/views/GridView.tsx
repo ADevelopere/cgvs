@@ -33,8 +33,6 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
         return 2;
     };
 
-    console.log("GridView templates", templates);
-
     return (
         <ImageList
             cols={getCols()}

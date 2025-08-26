@@ -12,7 +12,6 @@ export const FloatingDashboardSidebar: React.FC<
     FloatingDashboardSidebarProps
 > = ({ open, onClose, headerHeight }) => {
     const theme = useTheme();
-    const isRtl = theme.direction === "rtl";
 
     return (
         <Drawer

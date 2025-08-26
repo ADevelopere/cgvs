@@ -22,7 +22,6 @@ import {
     Download as DownloadIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
-    Visibility as PreviewIcon,
     Link as LinkIcon,
     Image as ImageIcon,
     VideoFile as VideoIcon,
@@ -43,9 +42,9 @@ interface FileItemProps {
 
 const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
     const theme = useTheme();
-    const { toggleSelect, navigateTo, remove, rename } = useStorageManagement();
+    const { toggleSelect, navigateTo, remove } = useStorageManagement();
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-    const [isRenaming, setIsRenaming] = useState(false);
+    // const [isRenaming, setIsRenaming] = useState(false);
     const translations = useAppTranslation("storageTranslations");
 
     const isFolder = item.__typename === "FolderInfo";
@@ -54,7 +53,13 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return translations.zeroBytes;
         const k = 1024;
-        const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
+        const sizes = [
+            translations.bytes,
+            translations.kb,
+            translations.mb,
+            translations.gb,
+            translations.tb,
+        ];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
@@ -73,7 +78,11 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
             case "AUDIO":
                 return <AudioIcon color="warning" />;
             case "DOCUMENT":
-                return fileInfo.contentType === "PDF" ? <PdfIcon color="error" /> : <DocumentIcon color="info" />;
+                return fileInfo.contentType === "PDF" ? (
+                    <PdfIcon color="error" />
+                ) : (
+                    <DocumentIcon color="info" />
+                );
             default:
                 return <FileIcon color="action" />;
         }
@@ -115,19 +124,19 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
 
     const handleRename = () => {
         handleMenuClose();
-        setIsRenaming(true);
+        // setIsRenaming(true);
     };
 
     const handleDelete = async () => {
         handleMenuClose();
-        const success = await remove([item.path]);
+        await remove([item.path]);
         // Error handling is done in the context
     };
 
     const handleDownload = () => {
         handleMenuClose();
         if (!isFolder && fileInfo.url) {
-            window.open(fileInfo.url, '_blank');
+            window.open(fileInfo.url, "_blank");
         }
     };
 
@@ -165,7 +174,9 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
                     "&:hover": {
                         backgroundColor: theme.palette.action.hover,
                     },
-                    backgroundColor: isSelected ? theme.palette.action.selected : "transparent",
+                    backgroundColor: isSelected
+                        ? theme.palette.action.selected
+                        : "transparent",
                 }}
             >
                 <ListItemButton onClick={handleItemClick} sx={{ pl: 1 }}>
@@ -183,9 +194,15 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
                     </ListItemIcon>
 
                     <ListItemText
-                        slotProps={{ secondary: { component: 'div' } }}
+                        slotProps={{ secondary: { component: "div" } }}
                         primary={
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                }}
+                            >
                                 <Typography variant="body2" fontWeight={500}>
                                     {item.name}
                                 </Typography>
@@ -194,12 +211,20 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
                         }
                         secondary={
                             <Box sx={{ display: "flex", gap: 2, mt: 0.5 }}>
-                                <Typography variant="caption" color="text.secondary">
-                                    {translations.modified}{formatDate(item.lastModified)}
+                                <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                >
+                                    {translations.modified}
+                                    {formatDate(item.lastModified)}
                                 </Typography>
                                 {!isFolder && (
-                                    <Typography variant="caption" color="text.secondary">
-                                        {translations.size}{formatFileSize(fileInfo.size)}
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        {translations.size}
+                                        {formatFileSize(fileInfo.size)}
                                     </Typography>
                                 )}
                             </Box>

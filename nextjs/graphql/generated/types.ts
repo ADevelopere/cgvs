@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { gql } from '@apollo/client';
 import * as ApolloReact from '@apollo/client/react';
 export type Maybe<T> = T | null;

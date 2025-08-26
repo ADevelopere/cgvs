@@ -31,7 +31,6 @@ type TemplateListProps = {
 const TemplateListContent: React.FC<TemplateListProps> = ({ templates, style }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
     const { currentCategory } = useTemplateCategoryManagement();
-    console.log("currentCategory", currentCategory);
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -93,7 +92,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ templates, style }) 
             default:
                 return <CardView templates={searchTemplates} />;
         }
-    }, [searchTemplates, viewMode]);
+    }, [searchQuery, searchTemplates, strings.noTemplatesFoundCreate, strings.noTemplatesFoundSearch, viewMode]);
 
     return (
         <Box

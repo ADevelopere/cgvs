@@ -17,6 +17,7 @@ if (!fs.existsSync(targetPath)) {
 }
 
 let content = fs.readFileSync(targetPath, 'utf8');
+content = '/* eslint-disable @typescript-eslint/no-explicit-any */\n' + content;
 
 // 1. Replace import
 content = content.replace(

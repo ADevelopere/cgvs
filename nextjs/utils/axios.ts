@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse, AxiosHeaders } from 'axios';
+import logger from './logger';
 
 const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8000/api',
@@ -11,10 +12,10 @@ const instance: AxiosInstance = axios.create({
 });
 
 const isDev: boolean = process.env.NODE_ENV === 'development';
-const logEnbled = true;
+const logEnabled = true;
 const log = (...args: unknown[]): void => {
-  if (isDev && logEnbled) {
-    console.log(...args);
+  if (isDev && logEnabled) {
+    logger.log(...args);
   }
 };
 
@@ -67,7 +68,7 @@ instance.interceptors.response.use(
         return response;
     },
     (error: AxiosError) => {
-        console.error('Response error:', {
+        log('Response error:', {
             url: error.config?.url,
             status: error.response?.status,
             message: error.message

@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-    Box,
-    Typography,
-    Button,
-    Stack,
-    useTheme,
-} from "@mui/material";
+import { Box, Typography, Button, Stack, useTheme } from "@mui/material";
 import {
     CloudUpload as UploadIcon,
     ArrowUpward as ArrowUpIcon,
@@ -15,14 +9,13 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import * as Graphql from "@/graphql/generated/types";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 const EmptyState: React.FC = () => {
     const theme = useTheme();
     const notifications = useNotifications();
-    const { params, goUp, startUpload } = useStorageManagement();
+    const { goUp, startUpload } = useStorageManagement();
     const { canUpload, isAtRoot } = useStorageLocation();
     const translations = useAppTranslation("storageTranslations");
 
@@ -71,7 +64,9 @@ const EmptyState: React.FC = () => {
 
             {/* Title */}
             <Typography variant="h5" fontWeight={600} gutterBottom>
-                {isAtRoot ? translations.noFilesYet : translations.thisFolderIsEmpty}
+                {isAtRoot
+                    ? translations.noFilesYet
+                    : translations.thisFolderIsEmpty}
             </Typography>
 
             {/* Description */}
@@ -83,8 +78,8 @@ const EmptyState: React.FC = () => {
                 {isAtRoot
                     ? translations.chooseStorageLocation
                     : canUpload
-                    ? translations.emptyFolderGetStarted
-                    : translations.emptyFolder}
+                      ? translations.emptyFolderGetStarted
+                      : translations.emptyFolder}
             </Typography>
 
             {/* Actions */}

@@ -25,21 +25,7 @@ import React, {
 } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
-
-// Logger utility
-const logger = {
-    enabled: process.env.NODE_ENV === "development",
-    log: (...args: unknown[]) => {
-        if (logger.enabled) {
-            console.log(...args);
-        }
-    },
-    error: (...args: unknown[]) => {
-        if (logger.enabled) {
-            console.error(...args);
-        }
-    },
-};
+import logger from "@/utils/logger";
 
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {
@@ -120,7 +106,7 @@ const savePaneState = (key: string | undefined, state: PaneState) => {
         );
         localStorage.setItem(getStorageKey(key)!, JSON.stringify(state));
     } catch (error) {
-        console.warn(
+        logger.warn(
             "Failed to save editor pane state to local storage:",
             error,
         );
@@ -148,7 +134,7 @@ const loadFromLocalStorage = (key: string): PaneState | null => {
         const stored = localStorage.getItem(getStorageKey(key)!);
         return stored ? JSON.parse(stored) : null;
     } catch (error) {
-        console.warn(
+        logger.warn(
             "Failed to load editor pane state from local storage:",
             error,
         );

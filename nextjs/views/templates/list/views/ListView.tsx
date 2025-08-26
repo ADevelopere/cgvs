@@ -14,7 +14,6 @@ import {
     Box,
     useTheme,
     useMediaQuery,
-    IconButton,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/utils/dateUtils";

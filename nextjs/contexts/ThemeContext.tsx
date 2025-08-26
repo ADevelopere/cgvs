@@ -27,15 +27,14 @@ import { create } from "jss";
 import AppLanguage from "@/locale/AppLanguage";
 import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
-import createCache from '@emotion/cache';
-import { CacheProvider } from '@emotion/react';
+import createCache from "@emotion/cache";
+import { CacheProvider } from "@emotion/react";
 
 // Create rtl cache
 const cacheRtl = createCache({
-  key: 'rtl-cache',
-  stylisPlugins: [prefixer, rtlPlugin],
+    key: "rtl-cache",
+    stylisPlugins: [prefixer, rtlPlugin],
 });
-
 
 const jss = create({
     plugins: [...jssPreset().plugins, rtl()],
@@ -56,7 +55,9 @@ const updateTheme = (mode: ThemeMode): void => {
 
 const getStoredLanguage = (): string => {
     // First check for Laravel's initial language
-    const initialLanguage = (window as any).__INITIAL_LANGUAGE__;
+    const initialLanguage = (
+        window as unknown as { __INITIAL_LANGUAGE__: string }
+    ).__INITIAL_LANGUAGE__;
     // Then check localStorage, and finally fall back to default
     return (
         initialLanguage ||
@@ -67,10 +68,7 @@ const getStoredLanguage = (): string => {
 
 const getStoredThemeMode = (): ThemeMode => {
     const savedTheme = localStorage.getItem("themeMode") as ThemeMode | null;
-    if (
-        savedTheme &&
-        Object.values(ThemeMode).includes(savedTheme)
-    ) {
+    if (savedTheme && Object.values(ThemeMode).includes(savedTheme)) {
         return savedTheme;
     }
     return ThemeMode.System;

@@ -7,17 +7,14 @@ import {
     Chip,
     Alert,
     Stack,
-    useTheme,
 } from "@mui/material";
 import {
-    Info as InfoIcon,
     Upload as UploadIcon,
 } from "@mui/icons-material";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 const UploadLocationInfo: React.FC = () => {
-    const theme = useTheme();
     const { currentLocationInfo, canUpload, allowedContentTypes } = useStorageLocation();
     const translations = useAppTranslation("storageTranslations");
 

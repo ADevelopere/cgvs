@@ -43,3 +43,5 @@ export const ToggleSideBarButton = forwardRef<
         </Box>
     );
 });
+
+ToggleSideBarButton.displayName = "ToggleSideBarButton";

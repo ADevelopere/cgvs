@@ -10,13 +10,13 @@ import {
     Alert,
     List,
 } from "@mui/material";
-import {
-    CloudUpload as UploadIcon,
-    Add as AddIcon,
-} from "@mui/icons-material";
+import { CloudUpload as UploadIcon, Add as AddIcon } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
 import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
-import { getLocationInfo, isFileTypeAllowed } from "@/contexts/storage/storage.location";
+import {
+    getLocationInfo,
+    isFileTypeAllowed,
+} from "@/contexts/storage/storage.location";
 import { inferContentType } from "@/contexts/storage/storage.util";
 import UploadItem from "../UploadItem";
 import useAppTranslation from "@/locale/useAppTranslation";
@@ -35,8 +35,6 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
         uploadToLocation,
         uploadFiles,
         isUploading,
-        cancelUpload,
-        retryUpload,
         clearUploads,
     } = useFileSelector();
     const translations = useAppTranslation("storageTranslations");
@@ -44,40 +42,46 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
     const [dragActive, setDragActive] = useState(false);
     const [validationError, setValidationError] = useState<string>();
 
-    const validateFiles = useCallback((files: File[]) => {
-        if (!location) {
-            setValidationError(translations.selectLocationFirst);
-            return false;
-        }
-
-        const locationInfo = getLocationInfo(location);
-        const invalidFiles: string[] = [];
-
-        files.forEach(file => {
-            const contentType = inferContentType(file);
-            if (!isFileTypeAllowed(location, contentType)) {
-                invalidFiles.push(`${file.name} (${contentType})`);
+    const validateFiles = useCallback(
+        (files: File[]) => {
+            if (!location) {
+                setValidationError(translations.selectLocationFirst);
+                return false;
             }
-        });
 
-        if (invalidFiles.length > 0) {
-            setValidationError(
-                `${translations.invalidFileTypes}: ${invalidFiles.join(", ")}. ${translations.allowedTypes}: ${locationInfo.allowedContentTypes.join(", ")}`
-            );
-            return false;
-        }
+            const locationInfo = getLocationInfo(location);
+            const invalidFiles: string[] = [];
 
-        setValidationError(undefined);
-        return true;
-    }, [location, translations]);
+            files.forEach((file) => {
+                const contentType = inferContentType(file);
+                if (!isFileTypeAllowed(location, contentType)) {
+                    invalidFiles.push(`${file.name} (${contentType})`);
+                }
+            });
 
-    const handleDrop = useCallback((acceptedFiles: File[]) => {
-        setDragActive(false);
-        
-        if (validateFiles(acceptedFiles)) {
-            uploadToLocation(acceptedFiles);
-        }
-    }, [uploadToLocation, validateFiles]);
+            if (invalidFiles.length > 0) {
+                setValidationError(
+                    `${translations.invalidFileTypes}: ${invalidFiles.join(", ")}. ${translations.allowedTypes}: ${locationInfo.allowedContentTypes.join(", ")}`,
+                );
+                return false;
+            }
+
+            setValidationError(undefined);
+            return true;
+        },
+        [location, translations],
+    );
+
+    const handleDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            setDragActive(false);
+
+            if (validateFiles(acceptedFiles)) {
+                uploadToLocation(acceptedFiles);
+            }
+        },
+        [uploadToLocation, validateFiles],
+    );
 
     const handleDragEnter = useCallback(() => {
         if (!disabled) {
@@ -101,10 +105,14 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
     const locationInfo = location ? getLocationInfo(location) : null;
     const uploadsArray = Array.from(uploadFiles.entries());
     const hasUploads = uploadsArray.length > 0;
-    const completedCount = uploadsArray.filter(([, file]) => file.status === "success").length;
-    const failedCount = uploadsArray.filter(([, file]) => file.status === "error").length;
-    const inProgressCount = uploadsArray.filter(([, file]) => 
-        file.status === "uploading" || file.status === "pending"
+    const completedCount = uploadsArray.filter(
+        ([, file]) => file.status === "success",
+    ).length;
+    const failedCount = uploadsArray.filter(
+        ([, file]) => file.status === "error",
+    ).length;
+    const inProgressCount = uploadsArray.filter(
+        ([, file]) => file.status === "uploading" || file.status === "pending",
     ).length;
 
     if (compact && !hasUploads) {
@@ -139,33 +147,41 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                     p: 3,
                     textAlign: "center",
                     border: `2px dashed ${dragActive ? "primary.main" : "grey.300"}`,
-                    backgroundColor: dragActive ? "primary.50" : "background.paper",
+                    backgroundColor: dragActive
+                        ? "primary.50"
+                        : "background.paper",
                     cursor: disabled || !location ? "not-allowed" : "pointer",
                     transition: "all 0.2s ease-in-out",
                     opacity: disabled || !location ? 0.6 : 1,
-                    "&:hover": !disabled && location ? {
-                        borderColor: "primary.main",
-                        backgroundColor: "primary.50",
-                    } : {},
+                    "&:hover":
+                        !disabled && location
+                            ? {
+                                  borderColor: "primary.main",
+                                  backgroundColor: "primary.50",
+                              }
+                            : {},
                 }}
             >
                 <input {...getInputProps()} />
-                <UploadIcon 
-                    sx={{ 
-                        fontSize: 48, 
+                <UploadIcon
+                    sx={{
+                        fontSize: 48,
                         color: dragActive ? "primary.main" : "grey.400",
                         mb: 2,
-                    }} 
+                    }}
                 />
-                
+
                 <Typography variant="h6" gutterBottom>
-                    {dragActive 
-                        ? translations.dropFilesHere 
-                        : translations.dragFilesHere
-                    }
+                    {dragActive
+                        ? translations.dropFilesHere
+                        : translations.dragFilesHere}
                 </Typography>
-                
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                >
                     {translations.orClickToSelect}
                 </Typography>
 
@@ -179,9 +195,17 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                 </Button>
 
                 {locationInfo && (
-                    <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
+                    <Box
+                        sx={{
+                            mt: 2,
+                            pt: 2,
+                            borderTop: 1,
+                            borderColor: "divider",
+                        }}
+                    >
                         <Typography variant="caption" color="text.secondary">
-                            {translations.allowedFileTypes}: {locationInfo.allowedContentTypes.join(", ")}
+                            {translations.allowedFileTypes}:{" "}
+                            {locationInfo.allowedContentTypes.join(", ")}
                         </Typography>
                     </Box>
                 )}
@@ -197,15 +221,20 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             {/* Upload Progress */}
             {hasUploads && (
                 <Paper elevation={1} sx={{ mt: 2, overflow: "hidden" }}>
-                    <Box sx={{ p: 2, backgroundColor: "primary.main", color: "white" }}>
+                    <Box
+                        sx={{
+                            p: 2,
+                            backgroundColor: "primary.main",
+                            color: "white",
+                        }}
+                    >
                         <Typography variant="subtitle2" fontWeight={600}>
                             {translations.uploadProgress}
                         </Typography>
                         <Typography variant="body2">
-                            {isUploading 
+                            {isUploading
                                 ? `${translations.uploading} ${inProgressCount} ${translations.files}...`
-                                : `${completedCount} ${translations.completed}, ${failedCount} ${translations.failed}`
-                            }
+                                : `${completedCount} ${translations.completed}, ${failedCount} ${translations.failed}`}
                         </Typography>
                         {isUploading && (
                             <LinearProgress
@@ -220,7 +249,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                             />
                         )}
                     </Box>
-                    
+
                     <List dense sx={{ maxHeight: 200, overflow: "auto" }}>
                         {uploadsArray.map(([fileKey, fileState]) => (
                             <UploadItem
@@ -232,7 +261,9 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                     </List>
 
                     {!isUploading && hasUploads && (
-                        <Box sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>
+                        <Box
+                            sx={{ p: 2, borderTop: 1, borderColor: "divider" }}
+                        >
                             <Button
                                 size="small"
                                 onClick={clearUploads}

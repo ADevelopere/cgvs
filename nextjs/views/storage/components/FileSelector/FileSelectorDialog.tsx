@@ -49,7 +49,8 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     requireSelection = false,
 }) => {
     const translations = useAppTranslation("storageTranslations");
-    const [selectedFiles, setSelectedFiles] = useState<FileInfo[]>(initialSelection);
+    const [selectedFiles, setSelectedFiles] =
+        useState<FileInfo[]>(initialSelection);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
     // Reset selection when dialog opens/closes
@@ -57,7 +58,8 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
         if (open) {
             setSelectedFiles(initialSelection);
         }
-    }, [open, JSON.stringify(initialSelection)]);
+        // }, [open, JSON.stringify(initialSelection)]);
+    }, [initialSelection, open]);
 
     const handleClose = () => {
         setSelectedFiles([]);
@@ -71,26 +73,26 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
 
     const getDialogTitle = () => {
         if (title) return title;
-        
+
         if (multiple) {
-            return allowUpload 
-                ? translations.selectOrUploadFiles 
+            return allowUpload
+                ? translations.selectOrUploadFiles
                 : translations.selectFiles;
         } else {
-            return allowUpload 
-                ? translations.selectOrUploadFile 
+            return allowUpload
+                ? translations.selectOrUploadFile
                 : translations.selectFile;
         }
     };
 
     const getConfirmText = () => {
         if (confirmText) return confirmText;
-        
+
         if (selectedFiles.length === 0) {
             return translations.select;
         }
-        
-        return multiple 
+
+        return multiple
             ? `${translations.select} (${selectedFiles.length})`
             : translations.select;
     };
@@ -166,10 +168,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
             <Divider />
 
             <DialogActions sx={{ p: 2, gap: 1 }}>
-                <Button
-                    onClick={handleClose}
-                    color="inherit"
-                >
+                <Button onClick={handleClose} color="inherit">
                     {cancelText || translations.cancel}
                 </Button>
                 <Button

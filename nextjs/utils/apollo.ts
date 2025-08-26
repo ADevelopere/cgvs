@@ -3,7 +3,6 @@ import {
     ApolloLink,
     CombinedGraphQLErrors,
     CombinedProtocolErrors,
-    from,
     HttpLink,
     InMemoryCache,
     Observable,
@@ -12,6 +11,15 @@ import { print } from "graphql/language/printer";
 import { SetContextLink } from "@apollo/client/link/context";
 import { ErrorLink } from "@apollo/client/link/error";
 import { RefreshTokenDocument } from "@/graphql/generated/types";
+import logger from "./logger";
+
+const isDev: boolean = process.env.NODE_ENV === "development";
+const logEnabled = true;
+const logError = (...args: unknown[]): void => {
+    if (isDev && logEnabled) {
+        logger.error(...args);
+    }
+};
 
 // --- Internal Token Management ---
 let inMemoryToken: string | null = null;
@@ -44,7 +52,7 @@ const httpLink = new HttpLink({
     },
 });
 
-const authLink = new SetContextLink((prevContext, operation) => {
+const authLink = new SetContextLink((prevContext) => {
     const token = getAuthToken();
     return {
         headers: {
@@ -122,26 +130,26 @@ const errorLink = new ErrorLink(({ error, operation, forward }) => {
         }
     } else if (CombinedProtocolErrors.is(error)) {
         for (const err of error.errors) {
-            console.error(
+            logError(
                 `[Protocol error]: Message: ${err.message}, Extensions: ${JSON.stringify(err.extensions)}`,
             );
         }
-    } else {
-        // Network error
-        console.error(`[Network error]: ${error}`);
+    } else if (
+        (error as unknown as { statusCode?: number }).statusCode === 401 ||
+        (error as unknown as { statusCode?: number }).statusCode === 403
+    ) {
         // Try to extract statusCode if available
-        if (
-            (error as any).statusCode === 401 ||
-            (error as any).statusCode === 403
-        ) {
-            clearAuthToken();
-            window.location.href = "/login";
-        }
+        clearAuthToken();
+        window.location.href = "/login";
     }
 });
 
 const apolloClient = new ApolloClient({
-    link: from([errorLink, authLink, httpLink as unknown as ApolloLink]),
+    link: ApolloLink.from([
+        errorLink,
+        authLink,
+        httpLink as unknown as ApolloLink,
+    ]),
     cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: {

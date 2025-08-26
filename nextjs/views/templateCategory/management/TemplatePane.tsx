@@ -1,28 +1,19 @@
 "use client";
 
 import type React from "react";
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useState, useRef, useCallback } from "react";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import SortIcon from "@mui/icons-material/Sort";
 import { Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import {
-    GraduationCap,
-    SettingsIcon,
-    SquareArrowOutUpRight,
-    EditIcon,
-} from "lucide-react";
+import { GraduationCap, SquareArrowOutUpRight, EditIcon } from "lucide-react";
 
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
 import EditableTypography from "@/components/input/EditableTypography";
@@ -47,19 +38,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     } = useTemplateCategoryManagement();
 
     const templates = currentCategory?.templates ?? [];
-
-    useEffect(() => {
-        if (currentCategory) {
-            console.log(
-                "TemplateCategoryManagementTemplatePane Current category selected:",
-                currentCategory,
-            );
-        } else {
-            console.log(
-                "TemplateCategoryManagementTemplatePane No category selected",
-            );
-        }
-    }, [currentCategory]);
 
     const { theme } = useAppTheme();
     const [tempTemplate, setTempTemplate] = useState<{
@@ -112,8 +90,8 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             setTempTemplate(null);
             setIsAddingTemplate(false);
             return "";
-        } catch (error: any) {
-            return error.message || strings.templateAddFailed;
+        } catch (error: unknown) {
+            return (error as Error).message || strings.templateAddFailed;
         }
     };
 
@@ -131,8 +109,8 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                 input: mapTemplateToUpdateInput({ ...template, name: newName }),
             });
             return ""; // success
-        } catch (error: any) {
-            return error.message || strings.templateUpdateFailed;
+        } catch (error: unknown) {
+            return (error as Error).message || strings.templateUpdateFailed;
         }
     };
 
@@ -290,9 +268,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                 <Tooltip title={strings.delete}>
                                     <IconButton
                                         onClick={() =>
-                                            suspendTemplate(
-                                                template.id,
-                                            )
+                                            suspendTemplate(template.id)
                                         }
                                         color="error"
                                         disabled={false}

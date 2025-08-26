@@ -211,13 +211,7 @@ const CreateStudentRow = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [
-        applySingleFilter,
-        createStudent,
-        isFormValid,
-        newStudent,
-        initialStudentState,
-    ]);
+    }, [applySingleFilter, createStudent, isFormValid, newStudent]);
 
     // Handle keyboard shortcuts
     const handleKeyDown = useCallback(

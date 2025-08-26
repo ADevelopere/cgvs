@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Link from "next/link";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { Title } from "@/contexts/adminLayout.types";
@@ -12,7 +12,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
     (
         {
             title: {
-                logoIcon: logoIcon,
+                logoIcon,
                 homeUrl,
                 titleText,
                 titleVisible,
@@ -24,7 +24,6 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
         },
         ref,
     ) => {
-        const theme = useTheme();
         if (!titleVisible) return null;
 
         const TitleContent = () => (

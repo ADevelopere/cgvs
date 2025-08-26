@@ -18,6 +18,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Calendar from "@/types/Calendar";
 import CalendarTranslations from "@/locale/components/Calendar";
 import useAppTranslation from "@/locale/useAppTranslation";
+import logger from "@/utils/logger";
 
 export type DateScrollPickerProps = {
     setCalendar: (calendar: Calendar) => void;
@@ -67,7 +68,7 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
     }, [maxDate]);
 
     const minGregorianDate: moment.Moment = useMemo(() => {
-        console.log("calc minGregorianDate");
+        logger.log("calc minGregorianDate");
         return minDate &&
             minDate.isValid() &&
             minDate.isAfter(minPossibleGregorianDate)
@@ -255,13 +256,13 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
                     updateInputFunction = updateInputValuesGregorian;
                 }
 
-                console.log("newDate", newDate.format("YYYY-MM-DD"));
-                console.log(
+                logger.log("newDate", newDate.format("YYYY-MM-DD"));
+                logger.log(
                     "maxGregorianDate",
                     maxGregorianDate.format("YYYY-MM-DD"),
                 );
                 const bool = newDate.isAfter(maxGregorianDate);
-                console.log("bool", bool);
+                logger.log("bool", bool);
                 if (newDate.isAfter(maxGregorianDate)) {
                     newDate = maxGregorianDate.clone();
                 }
@@ -501,12 +502,14 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
                     anchorEl={anchorElDay}
                     open={Boolean(anchorElDay)}
                     onClose={handleCloseDayMenu}
-                    MenuListProps={{
-                        autoFocusItem: true,
-                        sx: {
-                            "& .Mui-selected": {
-                                backgroundColor: "primary.main",
-                                color: "white",
+                    slotProps={{
+                        list: {
+                            autoFocusItem: true,
+                            sx: {
+                                "& .Mui-selected": {
+                                    backgroundColor: "primary.main",
+                                    color: "white",
+                                },
                             },
                         },
                     }}
@@ -565,12 +568,14 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
                     anchorEl={anchorElMonth}
                     open={Boolean(anchorElMonth)}
                     onClose={handleCloseMonthMenu}
-                    MenuListProps={{
-                        autoFocusItem: true,
-                        sx: {
-                            "& .Mui-selected": {
-                                backgroundColor: "primary.main",
-                                color: "white",
+                    slotProps={{
+                        list: {
+                            autoFocusItem: true,
+                            sx: {
+                                "& .Mui-selected": {
+                                    backgroundColor: "primary.main",
+                                    color: "white",
+                                },
                             },
                         },
                     }}
@@ -627,12 +632,14 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
                     anchorEl={anchorElYear}
                     open={Boolean(anchorElYear)}
                     onClose={handleCloseYearMenu}
-                    MenuListProps={{
-                        autoFocusItem: true,
-                        sx: {
-                            "& .Mui-selected": {
-                                backgroundColor: "primary.main",
-                                color: "white",
+                    slotProps={{
+                        list: {
+                            autoFocusItem: true,
+                            sx: {
+                                "& .Mui-selected": {
+                                    backgroundColor: "primary.main",
+                                    color: "white",
+                                },
                             },
                         },
                     }}

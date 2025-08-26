@@ -132,9 +132,9 @@ export const FileSelectorProvider: React.FC<{
             if (result.listFiles?.items) {
                 // Filter only files (not folders) and allowed content types
                 const filteredFiles = result.listFiles.items.filter(
-                    (item: any): item is Graphql.FileInfo =>
+                    (item: Graphql.FileInfo | Graphql.FolderInfo): item is Graphql.FileInfo =>
                         item.__typename === "FileInfo" &&
-                        item.contentType &&
+                        !!item.contentType &&
                         isFileTypeAllowed(locationState, item.contentType),
                 );
 
@@ -156,7 +156,6 @@ export const FileSelectorProvider: React.FC<{
         async (filesToUpload: File[]) => {
             if (!locationState) return;
 
-            const locationInfo = getLocationInfo(locationState);
             setIsUploading(true);
 
             // Initialize upload states

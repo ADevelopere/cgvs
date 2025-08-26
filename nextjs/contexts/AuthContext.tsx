@@ -10,6 +10,7 @@ import {
 import AuthTranslations from "@/locale/components/Auth";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { clearClientAuth, updateAuthToken } from "@/utils/apollo";
+import logger from "@/utils/logger";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import React, {
@@ -98,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 setUser(null);
             }
         } catch (error) {
-            console.error("Auth check failed", error);
+            logger.error("Auth check failed", error);
             setIsAuthenticated(false);
             setUser(null);
         }
@@ -108,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         try {
             await logoutMutation();
         } catch (error) {
-            console.error("Logout mutation failed", error);
+            logger.error("Logout mutation failed", error);
         } finally {
             clearClientAuth();
             // Perform a hard redirect to ensure all state is cleared.
@@ -137,12 +138,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     return false;
                 }
             } catch (err) {
-                console.error("Login failed", err);
+                logger.error("Login failed", err);
                 setError(strings.invalidLoginResponse);
                 return false;
             }
         },
-        [loginMutation],
+        [loginMutation, strings.invalidLoginResponse, strings.signinFailed],
     );
 
     useEffect(() => {

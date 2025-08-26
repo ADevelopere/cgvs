@@ -43,13 +43,11 @@ const BulkActionsBar: React.FC = () => {
 
     const handleBulkDownload = () => {
         // For now, we'll just show a message that this feature would be implemented
-        console.log("Bulk download for:", selectedPaths);
         // In a real implementation, this would create a zip file or trigger individual downloads
     };
 
     const handleCopyLinks = () => {
         // For now, we'll just show a message that this feature would be implemented
-        console.log("Copy links for:", selectedPaths);
         // In a real implementation, this would copy all public URLs to clipboard
     };
 

@@ -3,13 +3,11 @@
 import React, { useEffect } from "react";
 import {
     Tab,
-    Paper,
     useMediaQuery,
     useTheme,
     IconButton,
     Typography,
     Box,
-    Divider,
 } from "@mui/material";
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
 import { TemplateManagementTabType } from "@/contexts/template/TemplateManagementContext";
@@ -196,7 +194,7 @@ const ManagementHeader: React.FC<ManagementHeaderProps> = ({
             setDashboardSlot("middleActions", null);
             setDashboardSlot("titleRenderer", null);
         };
-    }, []);
+    }, [setDashboardSlot, templateName]);
 
     return <ManagementTabList onChange={onChange} activeTab={activeTab} />;
 };
