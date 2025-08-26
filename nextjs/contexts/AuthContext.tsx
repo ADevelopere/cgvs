@@ -8,9 +8,9 @@ import {
     User,
 } from "@/graphql/generated/types";
 import { clearClientAuth, updateAuthToken } from "@/utils/apollo";
+import { CombinedGraphQLErrors } from "@apollo/client/errors";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
-import { ApolloError, useApolloClient } from "@apollo/client";
 import React, {
     createContext,
     useCallback,
@@ -22,7 +22,10 @@ import React, {
 } from "react";
 
 // A simple UI for the initial loading state
-const LoadingUI: React.FC<{ onRetry: () => void; error?: string | null }> = ({ onRetry, error }) => (
+const LoadingUI: React.FC<{ onRetry: () => void; error?: string | null }> = ({
+    onRetry,
+    error,
+}) => (
     <Box
         sx={{
             display: "flex",
@@ -58,14 +61,18 @@ export type AuthContextType = {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
-    login: (credentials: LoginMutationVariables, redirectUrl?: string | null) => Promise<boolean>;
+    login: (
+        credentials: LoginMutationVariables,
+        redirectUrl?: string | null,
+    ) => Promise<boolean>;
     logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const apolloClient = useApolloClient();
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
     const [loginMutation] = useLoginMutation();
     const [logoutMutation] = useLogoutMutation();
     const [refreshTokenMutation] = useRefreshTokenMutation();
@@ -107,12 +114,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [logoutMutation]);
 
     const login = useCallback(
-        async (credentials: LoginMutationVariables, redirectUrl: string | null = null): Promise<boolean> => {
+        async (
+            credentials: LoginMutationVariables,
+            redirectUrl: string | null = null,
+        ): Promise<boolean> => {
             setError(null);
             try {
-                const { data, errors } = await loginMutation({ variables: { input: credentials.input } });
+                const { data, errors } = await loginMutation({
+                    variables: { input: credentials.input },
+                });
 
-                if (errors) throw new ApolloError({ graphQLErrors: errors });
+                if (errors && CombinedGraphQLErrors.is(errors)) {
+                    throw errors; // or handle accordingly
+                }
 
                 if (data?.login?.token && data.login.user) {
                     updateAuthToken(data.login.token);
@@ -128,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return false;
             }
         },
-        [loginMutation]
+        [loginMutation],
     );
 
     useEffect(() => {
@@ -144,14 +158,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const contextValue = useMemo(
         () => ({ user, isAuthenticated, isLoading, error, login, logout }),
-        [user, isAuthenticated, isLoading, error, login, logout]
+        [user, isAuthenticated, isLoading, error, login, logout],
     );
 
     if (isFirstRender.current) {
         return <LoadingUI onRetry={checkAuth} error={error} />;
     }
 
-    return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={contextValue}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = (): AuthContextType => {

@@ -3,7 +3,7 @@
   "workspaces": {
     "": {
       "dependencies": {
-        "@0no-co/graphqlsp": "^1.12.16",
+        "@0no-co/graphqlsp": "^1.15.0",
         "@apollo/client": "^3.13.9",
         "@graphql-codegen/gql-tag-operations": "^4.0.17",
         "@graphql-codegen/schema-ast": "^4.1.0",

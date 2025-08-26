@@ -33,4 +33,8 @@ bun run generate:gql-ts
 echo "🔄 Running second codegen..."
 bun run codegen
 
+# Patch generated gql types (temporary fix for Apollo codegen issues)
+echo "🩹 Patching generated gql types..."
+bun run generate:patch
+
 echo "✅ GraphQL generation completed successfully!"
