@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useCallback, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type TemplateGraphQLContextType = {
     /**
@@ -29,7 +29,7 @@ type TemplateGraphQLContextType = {
      */
     createTemplateMutation: (
         variables: Graphql.CreateTemplateMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateTemplateMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateTemplateMutation>>;
 
     /**
      * Mutation to update an existing template
@@ -37,7 +37,7 @@ type TemplateGraphQLContextType = {
      */
     updateTemplateMutation: (
         variables: Graphql.UpdateTemplateMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateTemplateMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateMutation>>;
 
     /**
      * Mutation to delete a template
@@ -45,7 +45,7 @@ type TemplateGraphQLContextType = {
      */
     deleteTemplateMutation: (
         variables: Graphql.DeleteTemplateMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteTemplateMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateMutation>>;
 
     /**
      * Mutation to move a template to the deletion category
@@ -53,7 +53,7 @@ type TemplateGraphQLContextType = {
      */
     suspendTemplateMutation: (
         variables: Graphql.SuspendTemplateMutationVariables,
-    ) => Promise<FetchResult<Graphql.SuspendTemplateMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.SuspendTemplateMutation>>;
 
     /**
      * Mutation to restore a template from the deletion category
@@ -61,7 +61,7 @@ type TemplateGraphQLContextType = {
      */
     unsuspendTemplateMutation: (
         variables: Graphql.UnsuspendTemplateMutationVariables,
-    ) => Promise<FetchResult<Graphql.UnsuspendTemplateMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UnsuspendTemplateMutation>>;
 };
 
 const TemplateGraphQLContext = createContext<
@@ -84,6 +84,7 @@ export const TemplateGraphQLProvider: React.FC<{
     // Template queries
     const templateQueryRef = Graphql.useTemplateQuery({
         skip: true,
+        variables: { id: 0 }, // Provide a default/dummy value
     });
 
     const templatesQueryRef = Graphql.useTemplatesQuery({
@@ -171,7 +172,7 @@ export const TemplateGraphQLProvider: React.FC<{
     const [mutateUpdate] = Graphql.useUpdateTemplateMutation({
         update(cache, { data }) {
             if (!data?.updateTemplate) return;
-            
+
             const updatedTemplate = data.updateTemplate;
 
             const existingData =
@@ -340,8 +341,7 @@ export const TemplateGraphQLProvider: React.FC<{
                         ...category,
                         templates: category.templates.filter(
                             (template: { id: number }) =>
-                                template.id !==
-                                suspendedTemplate.id,
+                                template.id !== suspendedTemplate.id,
                         ),
                     };
                 },

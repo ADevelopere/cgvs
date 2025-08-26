@@ -69,9 +69,9 @@ const getStoredThemeMode = (): ThemeMode => {
     const savedTheme = localStorage.getItem("themeMode") as ThemeMode | null;
     if (
         savedTheme &&
-        Object.values(ThemeMode).includes(savedTheme as ThemeMode)
+        Object.values(ThemeMode).includes(savedTheme)
     ) {
-        return savedTheme as ThemeMode;
+        return savedTheme;
     }
     return ThemeMode.System;
 };

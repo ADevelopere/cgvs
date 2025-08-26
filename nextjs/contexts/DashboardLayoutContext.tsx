@@ -57,7 +57,7 @@ export const DashboardLayoutProvider: React.FC<
         (slotName: SlotName, component: React.ReactNode | null) => {
             setSlots((prevSlots) => ({
                 ...prevSlots,
-                [slotName]: component ? component : undefined,
+                [slotName]: component || undefined,
             }));
 
             return () => {

@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { FetchResult } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 
 type NumberTemplateVariableGraphQLContextType = {
     /**
@@ -11,7 +11,7 @@ type NumberTemplateVariableGraphQLContextType = {
      */
     createNumberTemplateVariableMutation: (
         variables: Graphql.CreateNumberTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.CreateNumberTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.CreateNumberTemplateVariableMutation>>;
 
     /**
      * Mutation to update an existing number template variable
@@ -19,7 +19,7 @@ type NumberTemplateVariableGraphQLContextType = {
      */
     updateNumberTemplateVariableMutation: (
         variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.UpdateNumberTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.UpdateNumberTemplateVariableMutation>>;
 
     /**
      * Mutation to delete a template variable
@@ -27,7 +27,7 @@ type NumberTemplateVariableGraphQLContextType = {
      */
     deleteTemplateVariableMutation: (
         variables: Graphql.DeleteTemplateVariableMutationVariables,
-    ) => Promise<FetchResult<Graphql.DeleteTemplateVariableMutation>>;
+    ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateVariableMutation>>;
 };
 
 const NumberTemplateVariableGraphQLContext = createContext<

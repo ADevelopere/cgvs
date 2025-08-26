@@ -20,8 +20,8 @@ import {
 } from "./storage.type";
 import { STORAGE_DEFAULT_PARAMS } from "./storage.constant";
 import { inferContentType, getFileKey } from "./storage.util";
-import { 
-    getUploadLocationForPath, 
+import {
+    getUploadLocationForPath,
     getStoragePath,
     getDisplayPath,
 } from "./storage.location";
@@ -48,7 +48,6 @@ export const StorageManagementProvider: React.FC<{
     const notifications = useNotifications();
     const translations = useAppTranslation("storageTranslations");
 
-
     const [items, setItems] = useState<StorageItem[]>([]);
     const [stats, setStats] = useState<Graphql.StorageStats | undefined>(
         undefined,
@@ -56,7 +55,7 @@ export const StorageManagementProvider: React.FC<{
     const [pagination, setPagination] =
         useState<StorageManagementContextType["pagination"]>(null);
     const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
-    const [params, setParamsState] = useState<StorageQueryParams>(
+    const [paramsState, setParamsState] = useState<StorageQueryParams>(
         STORAGE_DEFAULT_PARAMS,
     );
     const [loading, setLoading] = useState(false);
@@ -83,11 +82,11 @@ export const StorageManagementProvider: React.FC<{
     );
 
     const goUp = useCallback(() => {
-        const parts = params.path.split("/").filter(Boolean);
+        const parts = paramsState.path.split("/").filter(Boolean);
         parts.pop();
         const parent = parts.join("/");
         navigateTo(parent);
-    }, [params.path, navigateTo]);
+    }, [paramsState.path, navigateTo]);
 
     const toggleSelect = useCallback((path: string) => {
         setSelectedPaths((prev) =>
@@ -105,10 +104,10 @@ export const StorageManagementProvider: React.FC<{
 
     const setPage = useCallback(
         (page: number) => {
-            const newOffset = Math.max(0, (page - 1) * params.limit);
+            const newOffset = Math.max(0, (page - 1) * paramsState.limit);
             setParams({ offset: newOffset });
         },
-        [params.limit, setParams],
+        [paramsState.limit, setParams],
     );
 
     const setLimit = useCallback(
@@ -137,26 +136,26 @@ export const StorageManagementProvider: React.FC<{
         setError(undefined);
         try {
             // Convert display path to storage path for backend API calls
-            const storagePath = getStoragePath(params.path);
-            
+            const storagePath = getStoragePath(paramsState.path);
+
             const listRes = await gql.listFilesQuery({
                 input: {
                     path: storagePath,
-                    limit: params.limit,
-                    offset: params.offset,
-                    searchTerm: params.searchTerm,
-                    fileType: params.fileType,
-                    sortBy: params.sortField,
+                    limit: paramsState.limit,
+                    offset: paramsState.offset,
+                    searchTerm: paramsState.searchTerm,
+                    fileType: paramsState.fileType,
+                    sortBy: paramsState.sortField,
                 },
             });
             const list = listRes.listFiles;
-            
+
             // Convert storage paths back to display paths
-            const processedItems = list.items.map(item => ({
+            const processedItems = list.items.map((item) => ({
                 ...item,
                 path: getDisplayPath(item.path),
             }));
-            
+
             setItems(processedItems as StorageItem[]);
             setPagination({
                 totalCount: list.totalCount,
@@ -177,18 +176,18 @@ export const StorageManagementProvider: React.FC<{
     }, [
         gql,
         notifications,
-        params.fileType,
-        params.limit,
-        params.offset,
-        params.path,
-        params.searchTerm,
-        params.sortField,
+        paramsState.fileType,
+        paramsState.limit,
+        paramsState.offset,
+        paramsState.path,
+        paramsState.searchTerm,
+        paramsState.sortField,
     ]);
 
     const fetchStats = useCallback(async () => {
         try {
             // Convert display path to storage path for backend API calls
-            const storagePath = getStoragePath(params.path);
+            const storagePath = getStoragePath(paramsState.path);
             const statsRes = await gql.getStorageStatsQuery({
                 path: storagePath || undefined,
             });
@@ -196,7 +195,7 @@ export const StorageManagementProvider: React.FC<{
         } catch (e) {
             console.warn(translations.failedFetchStorageStats, e);
         }
-    }, [gql, params.path]);
+    }, [gql, paramsState.path]);
 
     const refresh = useCallback(async () => {
         await Promise.all([fetchList(), fetchStats()]);
@@ -208,7 +207,11 @@ export const StorageManagementProvider: React.FC<{
     }, [refresh]);
 
     const uploadSingleFile = useCallback(
-        async (file: File, location: Graphql.UploadLocation, targetPath: string): Promise<void> => {
+        async (
+            file: File,
+            location: Graphql.UploadLocation,
+            targetPath: string,
+        ): Promise<void> => {
             const fileKey = getFileKey(file);
             const contentType = inferContentType(file);
             // local refs for cleanup
@@ -255,8 +258,13 @@ export const StorageManagementProvider: React.FC<{
                         },
                     });
 
-                    const existingItems = listResForCheck.listFiles?.items || [];
-                    const conflict = existingItems.some((it: any) => it.path === destinationStoragePath || it.name === file.name);
+                    const existingItems =
+                        listResForCheck.listFiles?.items || [];
+                    const conflict = existingItems.some(
+                        (it: any) =>
+                            it.path === destinationStoragePath ||
+                            it.name === file.name,
+                    );
 
                     if (conflict) {
                         // Mark this file as errored in the upload batch and
@@ -275,14 +283,14 @@ export const StorageManagementProvider: React.FC<{
                             return { ...prev, files: updated };
                         });
 
-                            try {
-                                notifications.show(
-                                    `${file.name} — ${translations.fileAlreadyExists}`,
-                                    { severity: "warning", autoHideDuration: 4000 },
-                                );
-                            } catch (e) {
-                                /* ignore */
-                            }
+                        try {
+                            notifications.show(
+                                `${file.name} — ${translations.fileAlreadyExists}`,
+                                { severity: "warning", autoHideDuration: 4000 },
+                            );
+                        } catch (e) {
+                            /* ignore */
+                        }
 
                         // Short-circuit the upload for this file
                         return;
@@ -291,7 +299,10 @@ export const StorageManagementProvider: React.FC<{
                     // If the existence check fails for some reason, log and
                     // continue to the signed URL step to avoid blocking
                     // uploads unnecessarily.
-                    console.warn("Failed to verify existing files before upload:", err);
+                    console.warn(
+                        "Failed to verify existing files before upload:",
+                        err,
+                    );
                 }
 
                 // Step 1: Get signed URL
@@ -323,7 +334,7 @@ export const StorageManagementProvider: React.FC<{
 
                 // Step 2: Upload to signed URL
                 xhr = new XMLHttpRequest();
-                const currentXhr = xhr!;
+                const currentXhr = xhr;
 
                 // Immediately store XHR in a ref to avoid race where cancelUpload is
                 // called before the XHR is written into React state (setState is async).
@@ -428,11 +439,18 @@ export const StorageManagementProvider: React.FC<{
                                 return;
                             }
 
-                            if (currentXhr.status >= 200 && currentXhr.status < 300) {
+                            if (
+                                currentXhr.status >= 200 &&
+                                currentXhr.status < 300
+                            ) {
                                 handleSuccess();
                                 resolve();
                             } else {
-                                const errorMsg = translations.uploadFailedWithStatus.replace("%{status}", String(currentXhr.status));
+                                const errorMsg =
+                                    translations.uploadFailedWithStatus.replace(
+                                        "%{status}",
+                                        String(currentXhr.status),
+                                    );
                                 handleError(errorMsg);
                                 uploadXhrsRef.current.delete(fileKey);
                                 reject(new Error(errorMsg));
@@ -441,7 +459,11 @@ export const StorageManagementProvider: React.FC<{
                             // Defensive fallback
                             handleError(translations.uploadFailed);
                             uploadXhrsRef.current.delete(fileKey);
-                            reject(err instanceof Error ? err : new Error(String(err)));
+                            reject(
+                                err instanceof Error
+                                    ? err
+                                    : new Error(String(err)),
+                            );
                         }
                     };
 
@@ -451,7 +473,8 @@ export const StorageManagementProvider: React.FC<{
                         const resp = currentXhr?.responseText || "";
 
                         // Base message
-                        let errorMsg = resp || translations.networkErrorDuringUpload;
+                        let errorMsg =
+                            resp || translations.networkErrorDuringUpload;
 
                         // When status is 0 or there is no response body, it's commonly a CORS/preflight
                         // failure in the browser. Provide a helpful hint for new developers and show
@@ -462,7 +485,10 @@ export const StorageManagementProvider: React.FC<{
                             try {
                                 notifications.show(
                                     translations.uploadBlockedByCors,
-                                    { severity: "error", autoHideDuration: 8000 },
+                                    {
+                                        severity: "error",
+                                        autoHideDuration: 8000,
+                                    },
                                 );
                             } catch (e) {
                                 // notifications may not be available in some contexts; ignore
@@ -473,7 +499,10 @@ export const StorageManagementProvider: React.FC<{
                             .replace("%{fileName}", file.name)
                             .replace("%{status}", String(status))
                             .replace("%{statusText}", statusText)
-                            .replace("%{resp}", resp || translations.noResponseText);
+                            .replace(
+                                "%{resp}",
+                                resp || translations.noResponseText,
+                            );
 
                         console.error(detailed);
 
@@ -510,7 +539,10 @@ export const StorageManagementProvider: React.FC<{
                     updated.set(fileKey, {
                         ...existing,
                         status: "error",
-                        error: error instanceof Error ? error.message : translations.uploadFailed,
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : translations.uploadFailed,
                         xhr: undefined,
                     });
                     return { ...prev, files: updated };
@@ -518,14 +550,18 @@ export const StorageManagementProvider: React.FC<{
             } finally {
                 // cleanup listeners and xhr ref to avoid leaks
                 try {
-                    if (xhr && loadListener) xhr.removeEventListener("load", loadListener);
-                    if (xhr && errorListener) xhr.removeEventListener("error", errorListener);
-                    if (xhr && abortListener) xhr.removeEventListener("abort", abortListener);
+                    if (xhr && loadListener)
+                        xhr.removeEventListener("load", loadListener);
+                    if (xhr && errorListener)
+                        xhr.removeEventListener("error", errorListener);
+                    if (xhr && abortListener)
+                        xhr.removeEventListener("abort", abortListener);
                 } catch (e) {
                     /* ignore */
                 }
                 try {
-                    if (uploadXhrsRef.current.has(fileKey)) uploadXhrsRef.current.delete(fileKey);
+                    if (uploadXhrsRef.current.has(fileKey))
+                        uploadXhrsRef.current.delete(fileKey);
                 } catch (e) {
                     /* ignore */
                 }
@@ -593,21 +629,18 @@ export const StorageManagementProvider: React.FC<{
 
     // Upload actions
     const startUpload = useCallback(
-        async (
-            files: File[],
-            targetPath?: string,
-        ): Promise<void> => {
+        async (files: File[], targetPath?: string): Promise<void> => {
             if (files.length === 0) return;
 
             // Determine the upload location based on target path or current path
-            const uploadPath = targetPath || params.path;
+            const uploadPath = targetPath || paramsState.path;
             const location = getUploadLocationForPath(uploadPath);
-            
+
             if (!location) {
-                notifications.show(
-                    translations.uploadNotAllowed,
-                    { severity: "error", autoHideDuration: 5000 }
-                );
+                notifications.show(translations.uploadNotAllowed, {
+                    severity: "error",
+                    autoHideDuration: 5000,
+                });
                 return;
             }
 
@@ -640,7 +673,9 @@ export const StorageManagementProvider: React.FC<{
 
                 for (const chunk of chunks) {
                     await Promise.all(
-                        chunk.map((file) => uploadSingleFile(file, location, uploadPath)),
+                        chunk.map((file) =>
+                            uploadSingleFile(file, location, uploadPath),
+                        ),
                     );
                 }
 
@@ -660,7 +695,10 @@ export const StorageManagementProvider: React.FC<{
                         setTimeout(() => {
                             if (successCount > 0) {
                                 notifications.show(
-                                     translations.uploadSuccessCount.replace("%{count}", String(successCount)),
+                                    translations.uploadSuccessCount.replace(
+                                        "%{count}",
+                                        String(successCount),
+                                    ),
                                     {
                                         severity: "success",
                                         autoHideDuration: 3000,
@@ -670,7 +708,10 @@ export const StorageManagementProvider: React.FC<{
                             }
                             if (errorCount > 0) {
                                 notifications.show(
-                                    translations.uploadFailedCount.replace("%{count}", String(errorCount)),
+                                    translations.uploadFailedCount.replace(
+                                        "%{count}",
+                                        String(errorCount),
+                                    ),
                                     {
                                         severity: "warning",
                                         autoHideDuration: 5000,
@@ -694,7 +735,7 @@ export const StorageManagementProvider: React.FC<{
                 );
             }
         },
-        [notifications, fetchList, uploadSingleFile, params.path],
+        [notifications, fetchList, uploadSingleFile, paramsState.path],
     );
 
     const clearUploadBatch = useCallback(() => {
@@ -750,7 +791,7 @@ export const StorageManagementProvider: React.FC<{
                 if (!prev) return prev;
                 const updated = new Map(prev.files);
 
-                    updated.forEach((f, key) => {
+                updated.forEach((f, key) => {
                     updated.set(key, {
                         ...f,
                         status: "error",
@@ -791,7 +832,11 @@ export const StorageManagementProvider: React.FC<{
             });
 
             try {
-                await uploadSingleFile(fileState.file, uploadBatch.location, uploadBatch.targetPath);
+                await uploadSingleFile(
+                    fileState.file,
+                    uploadBatch.location,
+                    uploadBatch.targetPath,
+                );
             } catch (e) {
                 // uploadSingleFile handles setting error state; nothing more to do here
             } finally {
@@ -839,7 +884,11 @@ export const StorageManagementProvider: React.FC<{
         try {
             await Promise.all(
                 failedFiles.map((file) =>
-                    uploadSingleFile(file, uploadBatch.location, uploadBatch.targetPath),
+                    uploadSingleFile(
+                        file,
+                        uploadBatch.location,
+                        uploadBatch.targetPath,
+                    ),
                 ),
             );
             notifications.show(translations.retryCompleted, {
@@ -870,7 +919,7 @@ export const StorageManagementProvider: React.FC<{
             selectedPaths,
 
             // params
-            params,
+            params: paramsState,
 
             // status
             loading,
@@ -902,7 +951,35 @@ export const StorageManagementProvider: React.FC<{
             retryFile,
             clearUploadBatch,
         }),
-        [clearSelection, error, goUp, items, loading, navigateTo, pagination, params, refresh, remove, rename, search, selectedPaths, setFilterType, setLimit, setPage, setParams, setSortField, stats, uploadBatch, startUpload, cancelUpload, retryFailedUploads, clearUploadBatch, toggleSelect, selectAll, retryFile],
+        [
+            clearSelection,
+            error,
+            goUp,
+            items,
+            loading,
+            navigateTo,
+            pagination,
+            paramsState,
+            refresh,
+            remove,
+            rename,
+            search,
+            selectedPaths,
+            setFilterType,
+            setLimit,
+            setPage,
+            setParams,
+            setSortField,
+            stats,
+            uploadBatch,
+            startUpload,
+            cancelUpload,
+            retryFailedUploads,
+            clearUploadBatch,
+            toggleSelect,
+            selectAll,
+            retryFile,
+        ],
     );
 
     return (
