@@ -9,10 +9,7 @@ import {
     useCallback,
     useMemo,
 } from "react";
-import {
-    Theme,
-    Experimental_CssVarsProvider as CssVarsProvider,
-} from "@mui/material/styles"; // Import CssVarsProvider
+import { Theme, ThemeProvider } from "@mui/material/styles"; // Import CssVarsProvider
 import { CssBaseline } from "@mui/material";
 import {
     ltrLightTheme,
@@ -115,9 +112,23 @@ type AppThemeProviderProps = {
 export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     children,
 }) => {
-    const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
-        const storedMode = getStoredThemeMode();
+    const [currentTheme, setCurrentTheme] = useState<Theme>(ltrLightTheme);
+    const [currentThemeMode, setCurrentThemeMode] = useState<ThemeMode>(
+        ThemeMode.System,
+    );
+    const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
+        AppLanguage.default as AppLanguage,
+    );
+
+    // Effect to set theme and language from client-side storage after mount
+    useEffect(() => {
         const storedLanguage = getStoredLanguage();
+        const storedMode = getStoredThemeMode();
+
+        updateLanguage(storedLanguage);
+        setCurrentLanguage(storedLanguage as AppLanguage);
+        setCurrentThemeMode(storedMode);
+
         const isRtl = storedLanguage === "ar";
         const isDarkMode =
             storedMode === ThemeMode.Dark ||
@@ -125,24 +136,11 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
                 matchMedia("(prefers-color-scheme: dark)")?.matches);
 
         if (isRtl) {
-            return isDarkMode ? rtlDarkTheme : rtlLightTheme;
+            setCurrentTheme(isDarkMode ? rtlDarkTheme : rtlLightTheme);
+        } else {
+            setCurrentTheme(isDarkMode ? ltrDarkTheme : ltrLightTheme);
         }
-        return isDarkMode ? ltrDarkTheme : ltrLightTheme;
-    });
-
-    const [currentThemeMode, setCurrentThemeMode] =
-        useState<ThemeMode>(getStoredThemeMode());
-    const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
-        getStoredLanguage() as AppLanguage,
-    );
-
-    // Ensure initial language and direction are set
-    useEffect(() => {
-        const language = getStoredLanguage();
-        if (language) {
-            updateLanguage(language);
-        }
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
     // Add effect to listen for system theme changes when in system mode
     useEffect(() => {
@@ -254,11 +252,11 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
             <StylesProvider jss={jss}>
                 <CacheProvider value={cacheRtl}>
                     {/* Use CssVarsProvider instead of MuiThemeProvider */}
-                    <CssVarsProvider theme={currentTheme}>
+                    <ThemeProvider theme={currentTheme}>
                         <CssBaseline enableColorScheme />{" "}
                         {/* Add enableColorScheme prop */}
                         {children}
-                    </CssVarsProvider>
+                    </ThemeProvider>
                 </CacheProvider>
             </StylesProvider>
         </AppThemeContext.Provider>
