@@ -26,6 +26,7 @@ import React, {
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
 import logger from "@/utils/logger";
+import { loadFromLocalStorage } from "@/utils/localStorage";
 
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {
@@ -129,19 +130,6 @@ const debounce = <T extends (...args: any[]) => void>(
 // Create a stable debounced version of savePaneState
 const debouncedSavePaneState = debounce(savePaneState, STORAGE_DEBOUNCE_MS);
 
-const loadFromLocalStorage = (key: string): PaneState | null => {
-    try {
-        const stored = localStorage.getItem(getStorageKey(key)!);
-        return stored ? JSON.parse(stored) : null;
-    } catch (error) {
-        logger.warn(
-            "Failed to load editor pane state from local storage:",
-            error,
-        );
-        return null;
-    }
-};
-
 const EditorPane: FC<EditorPaneProps> = ({
     allowResize = true,
     children,
@@ -192,7 +180,7 @@ const EditorPane: FC<EditorPaneProps> = ({
                 },
             };
         }
-        const state = loadFromLocalStorage(storageKey);
+        const state = loadFromLocalStorage<PaneState>(storageKey);
         logger.log("Loading stored state:", JSON.stringify(state));
         if (state) {
             // Only use stored sizes if visibility matches current state

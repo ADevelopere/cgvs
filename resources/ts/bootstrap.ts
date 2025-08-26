@@ -25,7 +25,7 @@ window.axios.defaults.withCredentials = true; // Enable sending cookies with req
 axios.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         // Get token from localStorage if it exists
-        const token = localStorage.getItem('auth_token');
+        const token = loadFromLocalStorage('auth_token');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }

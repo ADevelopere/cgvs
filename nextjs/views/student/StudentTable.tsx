@@ -12,6 +12,7 @@ import Table from "@/components/Table/Table/Table";
 import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
 import { useStudentTableManagement } from "@/contexts/student/StudentTableManagementContext";
 import CreateStudentRow from "./CreateStudentRow";
+import { loadFromLocalStorage } from "@/utils/localStorage";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");
@@ -103,7 +104,7 @@ const StudentTable: React.FC = () => {
 
         columns.forEach((column) => {
             if (column.widthStorageKey) {
-                const savedWidth = localStorage.getItem(column.widthStorageKey);
+                const savedWidth = loadFromLocalStorage<string>(column.widthStorageKey);
                 if (savedWidth) {
                     newWidths[column.id] = Math.max(
                         parseInt(savedWidth, 10),

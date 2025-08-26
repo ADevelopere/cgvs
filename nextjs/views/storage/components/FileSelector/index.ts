@@ -6,7 +6,6 @@ export { default as FileSelectItem } from "./FileSelectItem";
 
 export type { FileSelectorProps } from "./FileSelector";
 export type { FileSelectorDialogProps } from "./FileSelectorDialog";
-export type { UploadItemProps } from "./UploadItem";
 
 // Re-export context
 export { FileSelectorProvider, useFileSelector } from "@/contexts/storage/FileSelectorContext";

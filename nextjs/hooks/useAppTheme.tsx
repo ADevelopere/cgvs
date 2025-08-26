@@ -63,13 +63,13 @@ const getStoredLanguage = (): string => {
     // Then check localStorage, and finally fall back to default
     return (
         initialLanguage ||
-        localStorage.getItem("language") ||
+        loadFromLocalStorage("language") ||
         AppLanguage.default
     );
 };
 
 const getStoredThemeMode = (): ThemeMode => {
-    const savedTheme = localStorage.getItem("themeMode") as ThemeMode | null;
+    const savedTheme = loadFromLocalStorage("themeMode") as ThemeMode | null;
     if (
         savedTheme &&
         Object.values(ThemeMode).includes(savedTheme)

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import logger from "../logger";
+import { loadFromLocalStorage } from "../localStorage";
 
 interface CountryDetectionResult {
     countryCode: string;
@@ -53,7 +54,7 @@ const detectCountry = async (
         setCountryCode(defaultCountryCode);
     } finally {
         if (typeof localStorage !== "undefined") {
-            const storedRequestCount = localStorage.getItem(
+            const storedRequestCount = loadFromLocalStorage<string>(
                 "countryCodeRequestCount",
             );
             const requestCount = storedRequestCount
@@ -81,9 +82,9 @@ const fetchCountryCode = (
 ) => {
     logger.log("Fetching country code");
     if (typeof localStorage !== "undefined") {
-        const storedCountryCode = localStorage.getItem("countryCode");
-        const storedFetchDate = localStorage.getItem("countryCodeFetchDate");
-        const storedRequestCount = localStorage.getItem(
+        const storedCountryCode = loadFromLocalStorage<string>("countryCode");
+        const storedFetchDate = loadFromLocalStorage<string>("countryCodeFetchDate");
+        const storedRequestCount = loadFromLocalStorage<string>(
             "countryCodeRequestCount",
         );
         const fetchDate = storedFetchDate ? new Date(storedFetchDate) : null;
@@ -165,8 +166,8 @@ const useCountryDetection = (
         }, timeout);
 
         if (typeof localStorage !== "undefined") {
-            const storedCountryCode = localStorage.getItem("countryCode");
-            const storedFetchDate = localStorage.getItem(
+            const storedCountryCode = loadFromLocalStorage<string>("countryCode");
+            const storedFetchDate = loadFromLocalStorage<string>(
                 "countryCodeFetchDate",
             );
             const fetchDate = storedFetchDate

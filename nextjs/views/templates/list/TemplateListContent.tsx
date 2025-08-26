@@ -20,6 +20,7 @@ import GridView from "./views/GridView";
 import { Template } from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
+import { loadFromLocalStorage } from "@/utils/localStorage";
 
 type ViewMode = "card" | "grid" | "list";
 
@@ -34,7 +35,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ templates, style }) 
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
-        const savedViewMode = localStorage.getItem("templateListViewMode");
+        const savedViewMode = loadFromLocalStorage("templateListViewMode");
         return (savedViewMode as ViewMode) || "card";
     });
 
