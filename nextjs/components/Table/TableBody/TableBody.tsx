@@ -69,6 +69,60 @@ const TableBody: React.FC<TableBodyProps> = ({
         [columnWidths],
     );
 
+    const [resizingRow, setResizingRow] = React.useState<{
+        rowId: string | number;
+        startY: number;
+        startHeight: number;
+    } | null>(null);
+
+    const handleRowResizeStart = React.useCallback(
+        (
+            e: React.MouseEvent,
+            rowId: string | number,
+            currentHeight: number,
+        ) => {
+            setResizingRow({
+                rowId: rowId,
+                startY: e.clientY,
+                startHeight: currentHeight,
+            });
+        },
+        [],
+    );
+
+    React.useEffect(() => {
+        const handleResizeMove = (e: MouseEvent) => {
+            if (!resizingRow) return;
+
+            const deltaY = e.clientY - resizingRow.startY;
+            const newHeight = resizingRow.startHeight + deltaY;
+
+            requestAnimationFrame(() => {
+                // Assuming resizeRowHeight and onRowResize are available in this component's scope
+                // You might need to adjust how you access them based on your actual code
+                resizeRowHeight(resizingRow.rowId, newHeight);
+            });
+        };
+
+        const handleResizeEnd = () => {
+            setResizingRow(null);
+        };
+
+        if (resizingRow) {
+            document.addEventListener("mousemove", handleResizeMove);
+            document.addEventListener("mouseup", handleResizeEnd);
+            document.body.classList.add("resizing");
+        } else {
+            document.body.classList.remove("resizing");
+        }
+
+        return () => {
+            document.removeEventListener("mousemove", handleResizeMove);
+            document.removeEventListener("mouseup", handleResizeEnd);
+            document.body.classList.remove("resizing");
+        };
+    }, [resizingRow, resizeRowHeight]);
+
     // If there's no data, Table.tsx will render the message.
     if (data.length === 0) {
         return null;
@@ -103,13 +157,10 @@ const TableBody: React.FC<TableBodyProps> = ({
                         getColumnPinPosition={getColumnPinPosition}
                         // row
                         rowIdKey={rowIdKey}
-                        resizeRowHeight={resizeRowHeight}
                         toggleRowSelection={toggleRowSelection}
                         isRowSelected={isRowSelected}
                         getRowStyle={getRowStyle}
-                        onRowResize={(rowId, newHeight) => {
-                            resizeRowHeight(rowId, newHeight);
-                        }}
+                        onRowResizeStart={handleRowResizeStart}
                         rowSelectionEnabled={rowSelectionEnabled}
                         enableRowResizing={enableRowResizing}
                         // styles

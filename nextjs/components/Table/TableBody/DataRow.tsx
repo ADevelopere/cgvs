@@ -33,11 +33,14 @@ export type DataRowProps = {
     getColumnPinPosition: (columnId: string) => "left" | "right" | null;
     // row
     rowIdKey: string;
-    resizeRowHeight: (rowId: number | string, newHeight: number) => void;
     toggleRowSelection: (rowId: string | number) => void;
     isRowSelected: (rowId: string | number) => boolean;
     getRowStyle?: (rowData: unknown, rowIndex: number) => React.CSSProperties;
-    onRowResize?: (rowId: string | number, newHeight: number) => void;
+    onRowResizeStart: (
+        e: React.MouseEvent,
+        rowId: string | number,
+        currentHeight: number,
+    ) => void;
     rowSelectionEnabled: boolean;
     enableRowResizing: boolean;
     // styles
@@ -60,11 +63,10 @@ const DataRow: React.FC<DataRowProps> = React.memo(
         getColumnPinPosition,
         // row
         rowIdKey,
-        resizeRowHeight,
         toggleRowSelection,
         isRowSelected,
         getRowStyle,
-        onRowResize,
+        onRowResizeStart,
         rowSelectionEnabled,
         enableRowResizing,
         // styles
@@ -73,9 +75,6 @@ const DataRow: React.FC<DataRowProps> = React.memo(
     }) => {
         const theme = useTheme();
         const rowRef = React.useRef<HTMLTableRowElement>(null);
-        const [resizing, setResizing] = React.useState(false);
-        const [startY, setStartY] = React.useState(0);
-        const [startHeight, setStartHeight] = React.useState(0);
 
         const { inputStyle } = useTableStyles();
 
@@ -116,55 +115,11 @@ const DataRow: React.FC<DataRowProps> = React.memo(
 
         const handleResizeStart = React.useCallback(
             (e: React.MouseEvent) => {
-                setResizing(true);
-                setStartY(e.clientY);
-                setStartHeight(height);
+                onRowResizeStart(e, rowData[rowIdKey], height);
                 e.preventDefault();
             },
-            [height],
+            [height, onRowResizeStart, rowData, rowIdKey],
         );
-
-        React.useEffect(() => {
-            const handleResizeMove = (e: MouseEvent) => {
-                if (!resizing) return;
-
-                const deltaY = e.clientY - startY;
-                const newHeight = startHeight + deltaY;
-
-                // Use requestAnimationFrame for smoother resizing
-                requestAnimationFrame(() => {
-                    resizeRowHeight(rowData.id, newHeight);
-                    onRowResize?.(rowData.id, newHeight);
-                });
-            };
-
-            const handleResizeEnd = () => {
-                setResizing(false);
-            };
-
-            if (resizing) {
-                document.addEventListener("mousemove", handleResizeMove);
-                document.addEventListener("mouseup", handleResizeEnd);
-
-                // Add a class to the body to prevent text selection during resize
-                document.body.classList.add("resizing");
-            } else {
-                document.body.classList.remove("resizing");
-            }
-
-            return () => {
-                document.removeEventListener("mousemove", handleResizeMove);
-                document.removeEventListener("mouseup", handleResizeEnd);
-                document.body.classList.remove("resizing");
-            };
-        }, [
-            resizing,
-            startY,
-            startHeight,
-            resizeRowHeight,
-            rowData.id,
-            onRowResize,
-        ]);
 
         const handleRowSelectionChange = React.useCallback(() => {
             if (
@@ -304,27 +259,6 @@ const DataRow: React.FC<DataRowProps> = React.memo(
             </tr>
         );
     },
-    (prev, next) =>
-        prev.rowData === next.rowData &&
-        prev.height === next.height &&
-        prev.virtualIndex === next.virtualIndex &&
-        prev.globalIndex === next.globalIndex &&
-        prev.getEditingState === next.getEditingState &&
-        prev.setEditingState === next.setEditingState &&
-        prev.visibleColumns === next.visibleColumns &&
-        prev.getColumnWidth === next.getColumnWidth &&
-        prev.indexColWidth === next.indexColWidth &&
-        prev.getColumnPinPosition === next.getColumnPinPosition &&
-        prev.rowIdKey === next.rowIdKey &&
-        prev.resizeRowHeight === next.resizeRowHeight &&
-        prev.toggleRowSelection === next.toggleRowSelection &&
-        prev.isRowSelected === next.isRowSelected &&
-        prev.getRowStyle === next.getRowStyle &&
-        prev.onRowResize === next.onRowResize &&
-        prev.rowSelectionEnabled === next.rowSelectionEnabled &&
-        prev.enableRowResizing === next.enableRowResizing &&
-        prev.pinnedLeftStyle === next.pinnedLeftStyle &&
-        prev.pinnedRightStyle === next.pinnedRightStyle,
 );
 
 DataRow.displayName = "DataRow";
