@@ -113,8 +113,8 @@ export const TableDataProvider = ({
         Record<string, string>
     >({});
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lastFilterApplied, setLastFilterApplied] = useState<{
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         filterClause: FilterClause<any, any> | null;
         columnId: string;
     } | null>(null);
