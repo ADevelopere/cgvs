@@ -18,7 +18,7 @@ import { MuiTelInput } from "mui-tel-input";
 // import { useTableStyles } from "@/styles"; // Cannot use hooks in class components
 // inputStyle will be expected as a prop
 import Image from "next/image";
-import { DataCellState } from "./NewDataCell";
+import { DataCellState } from "./DataCell";
 import {
     countryNameByCode,
     formatCellValue,

@@ -1,9 +1,11 @@
-import type React from "react";
+import React from "react";
 import { CircularProgress, Box } from "@mui/material";
 import DataRow from "./DataRow";
 import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableContext } from "../Table/TableContext";
 import { PaginationInfo } from "@/graphql/generated/types";
+import { useTableColumnContext } from "../Table/TableColumnContext";
+import { useTableDataContext } from "../Table/TableDataContext";
 
 const loadingRowHeight = 80;
 interface TableBodyProps {
@@ -23,7 +25,49 @@ const TableBody: React.FC<TableBodyProps> = ({
     colSpan,
 }) => {
     const { isLoading } = useTableContext();
-    const { rowHeights, resizeRowHeight } = useTableRowsContext();
+
+    const {
+        rowSelectionEnabled,
+        getRowStyle,
+        rowHeights,
+        resizeRowHeight,
+        rowIdKey,
+        selectedRowIds,
+        toggleRowSelection,
+        enableRowResizing,
+    } = useTableRowsContext();
+    const {
+        visibleColumns,
+        pinnedColumns,
+        columnWidths,
+        pinnedLeftStyle,
+        pinnedRightStyle,
+    } = useTableColumnContext();
+
+    const { getEditingState, setEditingState } = useTableDataContext();
+
+    const isRowSelected = React.useCallback(
+        (rowId: string | number) => {
+            return rowSelectionEnabled && selectedRowIds.includes(rowId);
+        },
+        [rowSelectionEnabled, selectedRowIds],
+    );
+
+    const getColumnPinPosition = React.useCallback(
+        (columnId: string): "left" | "right" | null => {
+            const pin = pinnedColumns[columnId];
+            if (pin === "left" || pin === "right") return pin;
+            return null;
+        },
+        [pinnedColumns],
+    );
+
+    const getColumnWidth = React.useCallback(
+        (columnId: string): number | undefined => {
+            return columnWidths[columnId];
+        },
+        [columnWidths],
+    );
 
     // If there's no data, Table.tsx will render the message.
     if (data.length === 0) {
@@ -48,12 +92,29 @@ const TableBody: React.FC<TableBodyProps> = ({
                         key={item.id}
                         rowData={item}
                         height={rowHeights[item.id] || 50}
+                        virtualIndex={index}
+                        globalIndex={globalIndex}
+                        getEditingState={getEditingState}
+                        setEditingState={setEditingState}
+                        //column
+                        visibleColumns={visibleColumns}
+                        getColumnWidth={getColumnWidth}
+                        indexColWidth={indexColWidth}
+                        getColumnPinPosition={getColumnPinPosition}
+                        // row
+                        rowIdKey={rowIdKey}
+                        resizeRowHeight={resizeRowHeight}
+                        toggleRowSelection={toggleRowSelection}
+                        isRowSelected={isRowSelected}
+                        getRowStyle={getRowStyle}
                         onRowResize={(rowId, newHeight) => {
                             resizeRowHeight(rowId, newHeight);
                         }}
-                        virtualIndex={index}
-                        globalIndex={globalIndex} // Ensure type compatibility
-                        indexColWidth={indexColWidth} // Pass indexColWidth to DataRow
+                        rowSelectionEnabled={rowSelectionEnabled}
+                        enableRowResizing={enableRowResizing}
+                        // styles
+                        pinnedLeftStyle={pinnedLeftStyle}
+                        pinnedRightStyle={pinnedRightStyle}
                     />
                 );
             })}
