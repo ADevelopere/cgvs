@@ -11,12 +11,9 @@ import {
     OutlinedTextFieldProps,
     StandardTextFieldProps,
 } from "@mui/material";
-// Ensure these are the actual exported React.Context objects
 import { EditableColumn } from "@/types/table.type";
-import countries, { CountryType, preferredCountries } from "@/utils/country";
+import countries, {preferredCountries } from "@/utils/country";
 import { MuiTelInput } from "mui-tel-input";
-// import { useTableStyles } from "@/styles"; // Cannot use hooks in class components
-// inputStyle will be expected as a prop
 import Image from "next/image";
 import { DataCellState } from "./DataCell";
 import {
@@ -25,14 +22,15 @@ import {
     formatInputValue,
 } from "./DataCell.util";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { CountryCode } from "@/graphql/generated/types";
 
+// Props for the main component
 type CellContentRendererProps = {
     column: EditableColumn;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cellValue: any;
     state: DataCellState;
     setState: React.Dispatch<React.SetStateAction<DataCellState>>;
-    // Use union type for commonProps
     commonProps:
         | FilledTextFieldProps
         | OutlinedTextFieldProps
@@ -42,205 +40,170 @@ type CellContentRendererProps = {
     handleBlur: () => void;
 };
 
-const CellContentRenderer = React.forwardRef<
-    HTMLInputElement,
-    CellContentRendererProps
->(
-    (
-        {
-            column,
-            cellValue,
-            state,
-            setState,
-            commonProps,
-            validateValue,
-            handleInputKeyDown,
-            handleBlur,
-        },
-        ref,
-    ) => {
+// --- View Mode Renderers ---
+
+const SelectViewRenderer: React.FC<{ column: EditableColumn; cellValue: CountryCode }> = ({ column, cellValue }) => {
+    const option = column.options?.find(opt => opt.value === cellValue);
+    return <span>{option?.label ?? cellValue}</span>;
+};
+
+const CountryViewRenderer: React.FC<{ cellValue: CountryCode }> = ({ cellValue }) => {
+    const countryStrings = useAppTranslation("countryTranslations");
+    const country = cellValue ? countries.find(c => c.code === cellValue) : null;
+
+    if (country) {
+        return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Image
+                    src={`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`}
+                    alt=""
+                    width={20}
+                    height={15}
+                    style={{ objectFit: "cover" }}
+                    loading="lazy"
+                />
+                {countryStrings[country.code]}
+            </Box>
+        );
+    }
+    return <span>{String(cellValue ?? "")}</span>;
+};
+
+const DefaultViewRenderer: React.FC<{ column: EditableColumn; cellValue: string }> = ({ column, cellValue }) => (
+    <span style={{ direction: column.type === "phone" ? "ltr" : "inherit" }}>
+        {formatCellValue(cellValue, column.type)}
+    </span>
+);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const viewRenderers: Record<string, React.FC<any>> = {
+    select: SelectViewRenderer,
+    country: CountryViewRenderer,
+};
+
+// --- Edit Mode Renderers ---
+
+type EditRendererProps = Omit<CellContentRendererProps, "cellValue">;
+
+const SelectEditRenderer = React.forwardRef<HTMLInputElement, EditRendererProps>(
+    ({ column, state, setState, commonProps }, ref) => (
+        <TextField
+            {...commonProps}
+            inputRef={ref}
+            select
+            value={state.editingValue ?? ""}
+            slotProps={{
+                select: {
+                    open: state.isEditing,
+                    onClose: () => setState(prev => ({ ...prev, isEditing: false })),
+                },
+            }}
+        >
+            {column.options?.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                </MenuItem>
+            ))}
+        </TextField>
+    )
+);
+SelectEditRenderer.displayName = "SelectEditRenderer";
+
+
+const CountryEditRenderer = React.forwardRef<HTMLInputElement, EditRendererProps>(
+    ({ state, setState, commonProps, validateValue, handleBlur }, ref) => {
         const countryStrings = useAppTranslation("countryTranslations");
-
-        if (!state.isEditing) {
-            if (column.type === "select" && column.options) {
-                const option = column.options.find(
-                    (opt) => opt.value === cellValue,
-                );
-                return <span>{option?.label ?? cellValue}</span>;
-            }
-
-            if (column.type === "country") {
-                const country = cellValue
-                    ? countries.find((c) => c.code === cellValue)
-                    : null;
-                if (country) {
+        return (
+            <Autocomplete
+                fullWidth
+                options={countries}
+                autoHighlight
+                value={countries.find(c => c.code === state.editingValue) || countries[0]}
+                onChange={(_, newValue) => {
+                    if (newValue) {
+                        // Create a synthetic event to use the existing change handler
+                        const syntheticEvent = {
+                            target: { value: newValue.code },
+                        } as React.ChangeEvent<HTMLInputElement>;
+                        commonProps.onChange?.(syntheticEvent);
+                    }
+                }}
+                onBlur={handleBlur}
+                getOptionLabel={option => countryNameByCode(countryStrings, option.code)}
+                renderOption={(props, option) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { key, ...optionProps } = props;
                     return (
                         <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                            }}
+                            key={option.code}
+                            component="li"
+                            sx={{ "& > img": { mr: 0, flexShrink: 0 } }}
+                            {...optionProps}
                         >
                             <Image
-                                src={`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`}
+                                src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
                                 alt=""
                                 width={20}
                                 height={15}
                                 style={{ objectFit: "cover" }}
                                 loading="lazy"
                             />
-                            {countryStrings[country.code]}
+                            {countryNameByCode(countryStrings, option.code)}
                         </Box>
                     );
-                }
-                return String(cellValue ?? "");
-            }
+                }}
+                renderInput={params => (
+                    <TextField
+                        {...commonProps}
+                        inputRef={ref}
+                        {...params}
+                        onBlur={handleBlur}
+                        slotProps={{ htmlInput: { ...params.inputProps } }}
+                    />
+                )}
+            />
+        );
+    }
+);
+CountryEditRenderer.displayName = "CountryEditRenderer";
 
-            return (
-                <span
-                    style={{
-                        direction: column.type === "phone" ? "ltr" : "inherit",
-                    }}
-                >
-                    {formatCellValue(cellValue, column.type)}
-                </span>
-            );
-        }
 
-        // Handle select type
-        if (column.type === "select" && column.options) {
-            return (
-                <TextField
-                    {...commonProps}
-                    inputRef={ref}
-                    select
-                    value={state.localTmpValue ?? ""}
-                    slotProps={{
-                        select: {
-                            open: state.isEditing,
-                            onClose: () =>
-                                setState((prev) => ({
-                                    ...prev,
-                                    isEditing: false,
-                                })),
-                        },
-                    }}
-                >
-                    {column.options.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-            );
-        }
+const PhoneEditRenderer = React.forwardRef<HTMLInputElement, EditRendererProps>(
+    ({ state, setState, commonProps, validateValue, handleBlur, handleInputKeyDown }, ref) => (
+        <MuiTelInput
+            {...commonProps}
+            inputRef={ref}
+            value={(state.editingValue as string) ?? ""}
+            onChange={(value: string) => {
+                const validationError = validateValue(value);
+                setState(prev => ({
+                    ...prev,
+                    editingValue: value,
+                    errorMessage: validationError,
+                }));
+            }}
+            onBlur={handleBlur}
+            onKeyDown={handleInputKeyDown}
+            langOfCountryName={"ar"}
+            defaultCountry={"EG"}
+            focusOnSelectCountry={true}
+            excludedCountries={["IL"]}
+            preferredCountries={preferredCountries}
+            fullWidth
+            error={state.errorMessage !== null}
+            helperText={state.errorMessage}
+        />
+    )
+);
+PhoneEditRenderer.displayName = "PhoneEditRenderer";
 
-        if (column.type === "country") {
-            return (
-                <Autocomplete
-                    fullWidth
-                    options={countries}
-                    autoHighlight
-                    value={
-                        countries.find((c) => c.code === state.localTmpValue) ||
-                        countries[0]
-                    }
-                    onChange={(_, newValue) => {
-                        if (newValue) {
-                            const validationError = validateValue(
-                                newValue.code,
-                            );
-                            setState({
-                                localTmpValue: newValue.code,
-                                localErrorMessage: validationError,
-                                isEditing: false,
-                            });
-                        }
-                    }}
-                    onBlur={handleBlur}
-                    getOptionLabel={(option) =>
-                        countryNameByCode(countryStrings, option.code)
-                    }
-                    renderOption={(
-                        props: React.HTMLAttributes<HTMLLIElement> & {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            key: any;
-                        },
-                        option: CountryType,
-                    ) => {
-                        // key is extracted from props to prevent it from being passed to the DOM
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        const { key, ...optionProps } = props;
-                        return (
-                            <Box
-                                key={option.code}
-                                component="li"
-                                sx={{ "& > img": { mr: 0, flexShrink: 0 } }}
-                                {...optionProps}
-                            >
-                                <Image
-                                    src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                                    alt=""
-                                    width={20}
-                                    height={15}
-                                    style={{ objectFit: "cover" }}
-                                    loading="lazy"
-                                />
-                                {countryNameByCode(countryStrings, option.code)}
-                            </Box>
-                        );
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...commonProps}
-                            inputRef={ref}
-                            {...params}
-                            onBlur={handleBlur}
-                            slotProps={{
-                                htmlInput: {
-                                    ...params.inputProps,
-                                },
-                            }}
-                        />
-                    )}
-                />
-            );
-        }
 
-        if (column.type === "phone") {
-            return (
-                <MuiTelInput
-                    {...commonProps}
-                    inputRef={ref}
-                    value={(state.localTmpValue as string) ?? ""}
-                    //     onChange?: (value: string, info: MuiTelInputInfo) => void;
-                    onChange={(value: string) => {
-                        const validationError = validateValue(value);
-                        setState((prev) => ({
-                            ...prev,
-                            localTmpValue: value,
-                            localErrorMessage: validationError,
-                        }));
-                    }}
-                    onBlur={handleBlur}
-                    onKeyDown={handleInputKeyDown}
-                    langOfCountryName={"ar"}
-                    defaultCountry={"EG"}
-                    focusOnSelectCountry={true}
-                    excludedCountries={["IL"]}
-                    preferredCountries={preferredCountries}
-                    fullWidth
-                    error={state.localErrorMessage !== null}
-                    helperText={state.localErrorMessage}
-                />
-            );
-        }
-
+const DefaultEditRenderer = React.forwardRef<HTMLInputElement, EditRendererProps>(
+    ({ column, state, commonProps }, ref) => {
         const inputValue =
             column.type === "date"
-                ? formatInputValue(state.localTmpValue, column.type)
-                : (state.localTmpValue ?? "");
+                ? formatInputValue(state.editingValue, column.type)
+                : (state.editingValue ?? "");
 
         const inputElement = (
             <TextField
@@ -253,15 +216,39 @@ const CellContentRenderer = React.forwardRef<
 
         return (
             <Tooltip
-                open={!!state.localErrorMessage}
-                title={state.localErrorMessage ?? ""}
+                open={!!state.errorMessage}
+                title={state.errorMessage ?? ""}
                 arrow
                 placement="bottom-start"
             >
                 {inputElement}
             </Tooltip>
         );
-    },
+    }
+);
+DefaultEditRenderer.displayName = "DefaultEditRenderer";
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const editRenderers: Record<string, React.FC<any>> = {
+    select: SelectEditRenderer,
+    country: CountryEditRenderer,
+    phone: PhoneEditRenderer,
+};
+
+// --- Main Component ---
+
+const CellContentRenderer = React.forwardRef<HTMLInputElement, CellContentRendererProps>(
+    ({ column, cellValue, state, ...rest }, ref) => {
+        if (!state.isEditing) {
+            const ViewRenderer = viewRenderers[column.type] || DefaultViewRenderer;
+            return <ViewRenderer column={column} cellValue={cellValue} />;
+        }
+
+        const EditRenderer = editRenderers[column.type] || DefaultEditRenderer;
+        const editProps = { column, state, ...rest };
+        return <EditRenderer {...editProps} ref={ref} />;
+    }
 );
 
 CellContentRenderer.displayName = "CellContentRenderer";
