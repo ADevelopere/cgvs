@@ -1,9 +1,0 @@
-
-[
-	{
-		"origin": ["http://localhost:3000", "https://your-production-domain.com"],
-		"method": ["PUT", "GET", "OPTIONS"],
-		"responseHeader": ["Content-Type", "x-goog-resumable", "Access-Control-Allow-Origin"],
-		"maxAgeSeconds": 3600
-	}
-]

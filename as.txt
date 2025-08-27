@@ -1,7 +1,0 @@
-implement logic of TemplateCategoryManagementProvider, 
-
-you must use use callback, use memo whenever possibele, 
-
-for errors  use material mui  notifications to report them, 
-also use them to report success too, 
-

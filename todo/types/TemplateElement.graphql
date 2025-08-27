@@ -1,9 +1,0 @@
-"An element in a template"
-type TemplateElement {
-    id: ID!
-    type: String!
-    properties: JSON!
-    template: Template! @belongsTo
-    created_at: DateTime!
-    updated_at: DateTime!
-}
