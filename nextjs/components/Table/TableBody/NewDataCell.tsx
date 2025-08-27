@@ -7,10 +7,9 @@ import {
     StandardTextFieldProps,
 } from "@mui/material";
 import { EditableColumn } from "@/types/table.type";
-import { useTableColumnContext } from "../Table/TableColumnContext";
-import { useTableDataContext } from "../Table/TableDataContext";
+import { TableCellEditingState, useTableDataContext } from "../Table/TableDataContext";
 import CellContentRenderer from "./CellContentRenderer";
-import useAppTranslation from "@/locale/useAppTranslation";
+import logger from "@/utils/logger";
 
 type RenderCellProps = {
     column: EditableColumn;
@@ -20,6 +19,13 @@ type RenderCellProps = {
     cellEditingStyle: CSSProperties;
     cellStyle: CSSProperties;
     inputStyle: CSSProperties; // Expect inputStyle to be passed as a prop
+    getColumnPinPosition: (columnId: string) => "left" | "right" | null;
+    getColumnWidth: (columnId: string) => number | undefined;
+    pinnedLeftStyle: React.CSSProperties;
+    pinnedRightStyle: React.CSSProperties
+
+    getEditingState: (rowId: string | number, columnId: string) => TableCellEditingState | null
+    setEditingState: (rowId: string | number, columnId: string, state: TableCellEditingState | null) => void
 };
 
 export type DataCellState = {
@@ -30,15 +36,22 @@ export type DataCellState = {
 };
 
 const NewDataCell = React.memo<RenderCellProps>(
-    ({ column, rowId, cellValue, cellEditingStyle, cellStyle, inputStyle }) => {
-        const countryStrings = useAppTranslation("countryTranslations");
-        const { getEditingState, setEditingState } = useTableDataContext();
-        const {
-            pinnedColumns,
-            pinnedLeftStyle,
-            pinnedRightStyle,
-            columnWidths,
-        } = useTableColumnContext();
+    ({
+        column,
+        rowId,
+        cellValue,
+        cellEditingStyle,
+        cellStyle,
+        inputStyle,
+        getColumnPinPosition,
+        getColumnWidth,
+        pinnedLeftStyle,
+        pinnedRightStyle,
+
+        getEditingState,
+        setEditingState,
+    }) => {
+        logger.log("Rendering NewDataCell", { rowId, columnId: column.id });
 
         const [state, setState] = React.useState<DataCellState>({
             isEditing: false,
@@ -204,7 +217,7 @@ const NewDataCell = React.memo<RenderCellProps>(
         ]);
 
         const cellStyleWithPin = React.useMemo(() => {
-            const width = columnWidths[column.id];
+            const width = getColumnWidth(column.id) ?? 150; // default width if undefined
             const effectiveCellStyle = state.isEditing
                 ? {
                       ...cellEditingStyle,
@@ -212,7 +225,7 @@ const NewDataCell = React.memo<RenderCellProps>(
                   }
                 : { ...cellStyle, width: `${width}px` };
 
-            const pinPosition = pinnedColumns[column.id];
+            const pinPosition = getColumnPinPosition(column.id);
             if (pinPosition === "left") {
                 return {
                     ...effectiveCellStyle,
@@ -226,12 +239,12 @@ const NewDataCell = React.memo<RenderCellProps>(
             }
             return effectiveCellStyle;
         }, [
-            columnWidths,
+            getColumnWidth,
             column.id,
             state.isEditing,
             cellEditingStyle,
             cellStyle,
-            pinnedColumns,
+            getColumnPinPosition,
             pinnedLeftStyle,
             pinnedRightStyle,
         ]);
@@ -283,7 +296,6 @@ const NewDataCell = React.memo<RenderCellProps>(
                             ref={inputRef}
                             column={column}
                             cellValue={cellValue}
-                            countryStrings={countryStrings}
                             state={state}
                             setState={setState}
                             commonProps={commonProps}
