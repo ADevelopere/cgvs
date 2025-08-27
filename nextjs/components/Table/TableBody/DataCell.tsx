@@ -72,6 +72,11 @@ const DataCell = React.memo<DataCellProps>(
             errorMessage: null,
         });
 
+        const stateRef = useRef(state);
+        useEffect(() => {
+            stateRef.current = state;
+        }, [state]);
+
         const inputRef = useRef<HTMLInputElement | null>(null);
 
         // This effect handles external changes to cellValue, resetting the component state.
@@ -145,15 +150,15 @@ const DataCell = React.memo<DataCellProps>(
         );
 
         const handleBlur = useCallback(() => {
-            if (state.isEditing) {
-                commitChanges(state.editingValue);
+            if (stateRef.current.isEditing) {
+                commitChanges(stateRef.current.editingValue);
             }
-        }, [state.isEditing, state.editingValue, commitChanges]);
+        }, [commitChanges]);
 
         const handleInputKeyDown = useCallback(
             (e: React.KeyboardEvent) => {
-                if (e.key === "Enter" && !state.errorMessage) {
-                    commitChanges(state.editingValue);
+                if (e.key === "Enter" && !stateRef.current.errorMessage) {
+                    commitChanges(stateRef.current.editingValue);
                 } else if (e.key === "Escape") {
                     setState({
                         isEditing: false,
@@ -162,7 +167,7 @@ const DataCell = React.memo<DataCellProps>(
                     });
                 }
             },
-            [cellValue, state.errorMessage, state.editingValue, commitChanges],
+            [cellValue, commitChanges],
         );
 
         const commonProps = useMemo<
@@ -228,11 +233,6 @@ const DataCell = React.memo<DataCellProps>(
                 });
             }
         }, [getEditingState, rowId, column.id]);
-
-        const stateRef = useRef(state);
-        useEffect(() => {
-            stateRef.current = state;
-        }, [state]);
 
         useEffect(() => {
             return () => {
