@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 
 import type { CSSProperties, FunctionComponent } from "react";
 import { useTheme, styled } from "@mui/material/styles";
@@ -162,6 +162,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
 
         const theme = useTheme();
         const tempFilterValueRef = React.useRef("");
+        const isResizingRef = useRef(false);
 
         // Base header cell style
         const { thStyle } = useTableStyles();
@@ -175,6 +176,11 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
         // Handle header click for sorting
         const handleHeaderClick = useCallback(
             (e: React.MouseEvent<HTMLElement>) => {
+                // If resizing, don't sort. The ref is reset on mouseup after the click event.
+                if (isResizingRef.current) {
+                    return;
+                }
+
                 // Don't trigger sort if we're clicking on the resize handle or any icon button
                 if (
                     (e.target as HTMLElement).classList.contains(
@@ -199,6 +205,8 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
                     | React.MouseEvent<HTMLButtonElement>
                     | React.TouchEvent<HTMLButtonElement>,
             ) => {
+                isResizingRef.current = true;
+
                 const startX =
                     "touches" in e ? e.touches[0].clientX : e.clientX;
                 const startWidth = columnWidthRef.current;
@@ -226,6 +234,11 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
                 const handleResizeEnd = () => {
                     document.removeEventListener("mousemove", handleResizeMove);
                     document.removeEventListener("mouseup", handleResizeEnd);
+                    // Use a timeout to ensure the click event is processed before we reset the flag.
+                    // This prevents the sort from firing on resize completion.
+                    setTimeout(() => {
+                        isResizingRef.current = false;
+                    }, 0);
                 };
 
                 document.addEventListener("mousemove", handleResizeMove);
