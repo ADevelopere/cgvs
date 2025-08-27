@@ -53,7 +53,7 @@ export const TABLE_COLUMNS: EditableColumn[] = [
 export const TOTAL_ROWS = 10000
 export const PAGE_SIZE = 200
 export const DEFAULT_ROWS_PER_PAGE = 50
-export const ROWS_PER_PAGE_OPTIONS = [10, 25, 50, 100]
+export const ROWS_PER_PAGE_OPTIONS = [10, 25, 50, 100, 200]
 
 // Status options for demo data
 export const STATUS_OPTIONS = ["Active", "Inactive", "Pending", "Suspended"]

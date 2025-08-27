@@ -13,6 +13,7 @@ import { useStudentFilter } from "@/contexts/student/StudentFilterContext";
 import { useStudentTableManagement } from "@/contexts/student/StudentTableManagementContext";
 import CreateStudentRow from "./CreateStudentRow";
 import { loadFromLocalStorage } from "@/utils/localStorage";
+import { ROWS_PER_PAGE_OPTIONS } from "@/constants/tableConstants";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");
@@ -151,7 +152,7 @@ const StudentTable: React.FC = () => {
             paginationInfo={paginationInfo}
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
-            // rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+            rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
             // initialPageSize={100}
         >
             <Paper

@@ -19,18 +19,17 @@ import {
 import { useTableContext } from "./TableContext";
 import { SortDirection } from "@/graphql/generated/types";
 
-type EditingState = {
+export type TableCellEditingState = {
     isEditing: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tmpValue: any;
     errorMessage: string | null;
 };
 
-
 type OrderByClause = {
     column: string;
     order: SortDirection;
-}
+};
 export type TableDataContextType = {
     // Sorting
     orderByClause: OrderByClause[];
@@ -78,8 +77,15 @@ export type TableDataContextType = {
     clearFilter: (columnId: string) => void;
 
     // Cell Editing
-    getEditingState: (rowId: string | number, columnId: string) => EditingState | null;
-    setEditingState: (rowId: string | number, columnId: string, state: EditingState | null) => void;
+    getEditingState: (
+        rowId: string | number,
+        columnId: string,
+    ) => TableCellEditingState | null;
+    setEditingState: (
+        rowId: string | number,
+        columnId: string,
+        state: TableCellEditingState | null,
+    ) => void;
 };
 
 const TableDataContext = createContext<TableDataContextType | null>(null);
@@ -100,7 +106,7 @@ export const TableDataProvider = ({
 
     const [orderByClause, setOrderByClause] = useState<OrderByClause[]>([]);
     const [filters, setFilters] = useState<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Record<string, FilterClause<any, any>>
     >({});
     const [tempFilterValues, setTempFilterValues] = useState<
@@ -108,41 +114,59 @@ export const TableDataProvider = ({
     >({});
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [lastFilterApplied, setLastFilterApplied] = useState<{ filterClause: FilterClause<any, any> | null, columnId: string} | null>(null);
+    const [lastFilterApplied, setLastFilterApplied] = useState<{
+        filterClause: FilterClause<any, any> | null;
+        columnId: string;
+    } | null>(null);
 
     // Cell editing state management
-    const [editingCells, setEditingCells] = useState<Record<string, EditingState>>({});
+    const [editingCells, setEditingCells] = useState<
+        Record<string, TableCellEditingState>
+    >({});
 
     useEffect(() => {
         onSort?.(orderByClause);
     }, [onSort, orderByClause]);
 
     useEffect(() => {
-        if(lastFilterApplied) {
+        if (lastFilterApplied) {
             onFilter?.(lastFilterApplied.filterClause);
         }
     }, [lastFilterApplied, onFilter]);
 
-    const getEditingState = useCallback((rowId: string | number, columnId: string): EditingState | null => {
-        const cellKey = `${rowId}:${columnId}`;
-        return editingCells[cellKey] ?? null;
-    }, [editingCells]);
+    const getEditingState = useCallback(
+        (
+            rowId: string | number,
+            columnId: string,
+        ): TableCellEditingState | null => {
+            const cellKey = `${rowId}:${columnId}`;
+            return editingCells[cellKey] ?? null;
+        },
+        [editingCells],
+    );
 
-    const setEditingState = useCallback((rowId: string | number, columnId: string, state: EditingState | null) => {
-        const cellKey = `${rowId}:${columnId}`;
-        setEditingCells(prev => {
-            if (state === null) {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { [cellKey]: removed, ...rest } = prev;
-                return rest;
-            }
-            return { ...prev, [cellKey]: state };
-        });
-    }, []);
+    const setEditingState = useCallback(
+        (
+            rowId: string | number,
+            columnId: string,
+            state: TableCellEditingState | null,
+        ) => {
+            const cellKey = `${rowId}:${columnId}`;
+            setEditingCells((prev) => {
+                if (state === null) {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { [cellKey]: removed, ...rest } = prev;
+                    return rest;
+                }
+                return { ...prev, [cellKey]: state };
+            });
+        },
+        [],
+    );
 
     // Internal filter update handler
     const handleFilterUpdate = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (filterClause: FilterClause<any, any> | null, columnId: string) => {
             // Update local filters state
             setFilters((prevFilters) => {
@@ -166,7 +190,7 @@ export const TableDataProvider = ({
 
     // Filter handling
     const filter = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (filterClause: FilterClause<any, any> | null, columnId: string) => {
             handleFilterUpdate(filterClause, columnId);
         },
@@ -299,38 +323,35 @@ export const TableDataProvider = ({
     );
 
     // Sort handling
-    const sort = useCallback(
-        (columnId: string) => {
-            setOrderByClause((prevOrderByClause) => {
-                const columnIndex = prevOrderByClause.findIndex(
-                    (clause) => clause.column === columnId,
+    const sort = useCallback((columnId: string) => {
+        setOrderByClause((prevOrderByClause) => {
+            const columnIndex = prevOrderByClause.findIndex(
+                (clause) => clause.column === columnId,
+            );
+
+            let newOrderByClause = [...prevOrderByClause];
+
+            if (columnIndex === -1) {
+                // Add new sort
+                newOrderByClause.push({
+                    column: columnId,
+                    order: "ASC",
+                });
+            } else if (newOrderByClause[columnIndex].order === "ASC") {
+                // Change to DESC
+                newOrderByClause[columnIndex] = {
+                    ...newOrderByClause[columnIndex],
+                    order: "DESC",
+                };
+            } else {
+                // Remove sort
+                newOrderByClause = newOrderByClause.filter(
+                    (_, index) => index !== columnIndex,
                 );
-
-                let newOrderByClause = [...prevOrderByClause];
-
-                if (columnIndex === -1) {
-                    // Add new sort
-                    newOrderByClause.push({
-                        column: columnId,
-                        order: "ASC",
-                    });
-                } else if (newOrderByClause[columnIndex].order === "ASC") {
-                    // Change to DESC
-                    newOrderByClause[columnIndex] = {
-                        ...newOrderByClause[columnIndex],
-                        order: "DESC",
-                    };
-                } else {
-                    // Remove sort
-                    newOrderByClause = newOrderByClause.filter(
-                        (_, index) => index !== columnIndex,
-                    );
-                }
-                return newOrderByClause;
-            });
-        },
-        [],
-    );
+            }
+            return newOrderByClause;
+        });
+    }, []);
 
     const getSortDirection = useCallback(
         (columnId: string): SortDirection | null => {

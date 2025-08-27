@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import {
     useRef,
     useState,
@@ -19,6 +19,7 @@ import {
 } from "@/constants/tableConstants";
 import { useTableStyles } from "@/theme/styles";
 import NewDataCell from "./NewDataCell";
+import { useTableDataContext } from "../Table/TableDataContext";
 
 export type DataRowProps = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,7 +48,16 @@ const DataRow: React.FC<DataRowProps> = ({
         toggleRowSelection,
         enableRowResizing,
     } = useTableRowsContext();
-    const { visibleColumns } = useTableColumnContext();
+    const {
+        visibleColumns,
+        pinnedColumns,
+        columnWidths,
+        pinnedLeftStyle,
+        pinnedRightStyle,
+    } = useTableColumnContext();
+
+    const { getEditingState, setEditingState } = useTableDataContext();
+
     const theme = useTheme();
     const rowRef = useRef<HTMLTableRowElement>(null);
     const [resizing, setResizing] = useState(false);
@@ -167,6 +177,22 @@ const DataRow: React.FC<DataRowProps> = ({
         return {};
     }, [getRowStyle, rowData, virtualIndex]);
 
+    const getColumnPinPosition = React.useCallback(
+        (columnId: string): "left" | "right" | null => {
+            const pin = pinnedColumns[columnId];
+            if (pin === "left" || pin === "right") return pin;
+            return null;
+        },
+        [pinnedColumns],
+    );
+
+    const getColumnWidth = useCallback(
+        (columnId: string): number | undefined => {
+            return columnWidths[columnId];
+        },
+        [columnWidths],
+    );
+
     return (
         <tr
             ref={rowRef}
@@ -232,6 +258,12 @@ const DataRow: React.FC<DataRowProps> = ({
                         cellStyle={cellStyle}
                         cellEditingStyle={cellEditingStyle}
                         inputStyle={inputStyle}
+                        getColumnPinPosition={getColumnPinPosition}
+                        getColumnWidth={getColumnWidth}
+                        pinnedLeftStyle={pinnedLeftStyle}
+                        pinnedRightStyle={pinnedRightStyle}
+                        getEditingState={getEditingState}
+                        setEditingState={setEditingState}
                     />
                 );
             })}

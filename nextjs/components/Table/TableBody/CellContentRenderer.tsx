@@ -14,7 +14,6 @@ import {
 // Ensure these are the actual exported React.Context objects
 import { EditableColumn } from "@/types/table.type";
 import countries, { CountryType, preferredCountries } from "@/utils/country";
-import CountryTranslations from "@/locale/components/Country";
 import { MuiTelInput } from "mui-tel-input";
 // import { useTableStyles } from "@/styles"; // Cannot use hooks in class components
 // inputStyle will be expected as a prop
@@ -25,12 +24,12 @@ import {
     formatCellValue,
     formatInputValue,
 } from "./DataCell.util";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 type CellContentRendererProps = {
     column: EditableColumn;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cellValue: any;
-    countryStrings: CountryTranslations; // Add this line
     state: DataCellState;
     setState: React.Dispatch<React.SetStateAction<DataCellState>>;
     // Use union type for commonProps
@@ -51,7 +50,6 @@ const CellContentRenderer = React.forwardRef<
         {
             column,
             cellValue,
-            countryStrings,
             state,
             setState,
             commonProps,
@@ -61,6 +59,8 @@ const CellContentRenderer = React.forwardRef<
         },
         ref,
     ) => {
+        const countryStrings = useAppTranslation("countryTranslations");
+
         if (!state.isEditing) {
             if (column.type === "select" && column.options) {
                 const option = column.options.find(
