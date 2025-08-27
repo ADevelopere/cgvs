@@ -58,8 +58,8 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
         if (open) {
             setSelectedFiles(initialSelection);
         }
-        // }, [open, JSON.stringify(initialSelection)]);
-    }, [initialSelection, open]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, JSON.stringify(initialSelection)]);
 
     const handleClose = () => {
         setSelectedFiles([]);
