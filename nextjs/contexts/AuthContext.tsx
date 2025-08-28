@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const isFirstRender = useRef(true);
+    const isFirstRenderRef = useRef(true);
 
     const checkAuth = useCallback(async () => {
         try {
@@ -147,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setIsLoading(true);
             await checkAuth();
             setIsLoading(false);
-            isFirstRender.current = false;
+            isFirstRenderRef.current = false;
         };
 
         performInitialCheck();
@@ -158,7 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         [user, isAuthenticated, isLoading, error, login, logout],
     );
 
-    if (isFirstRender.current) {
+    if (isFirstRenderRef.current) {
         return (
             <LoadingUI onRetry={checkAuth} error={error} strings={strings} />
         );
