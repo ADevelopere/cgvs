@@ -10,15 +10,17 @@ import {
     IconButton,
     Divider,
 } from "@mui/material";
-import {
-    Close as CloseIcon,
-    CheckCircle as SelectIcon,
-} from "@mui/icons-material";
+import { Close as CloseIcon, CheckCircle as SelectIcon, CloudUpload as UploadIcon } from "@mui/icons-material";
 import FileSelector from "./FileSelector";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import type { FileInfo } from "@/graphql/generated/types";
 import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
+import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+import {
+    getLocationInfo,
+    getDisplayPath,
+} from "@/contexts/storage/storage.location";
 
 export interface FileSelectorDialogProps {
     open: boolean;
@@ -47,12 +49,27 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
 }) => {
     const translations = useAppTranslation("storageTranslations");
     const { selectedFiles } = useFileSelector();
+    const { startUpload } = useStorageManagement();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
     const handleConfirm = useCallback(() => {
         onSelect(selectedFiles);
         onClose();
     }, [onClose, onSelect, selectedFiles]);
+
+    const handleFileUpload = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const files = Array.from(event.target.files || []);
+            if (files.length > 0 && location) {
+                const locationInfo = getLocationInfo(location);
+                if (locationInfo?.path) {
+                    startUpload(files, getDisplayPath(locationInfo.path));
+                }
+            }
+            event.target.value = ""; // Reset input to allow re-uploading the same file
+        },
+        [location, startUpload],
+    );
 
     const getDialogTitle = React.useCallback(() => {
         if (title) return title;
@@ -147,6 +164,22 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
             <Divider />
 
             <DialogActions sx={{ p: 2, gap: 1 }}>
+                {allowUpload && location && (
+                    <Button
+                        component="label"
+                        variant="outlined"
+                        startIcon={<UploadIcon />}
+                    >
+                        {translations.upload}
+                        <input
+                            type="file"
+                            hidden
+                            multiple={multiple}
+                            onChange={handleFileUpload}
+                        />
+                    </Button>
+                )}
+                <Box sx={{ flex: 1 }} />
                 <Button onClick={onClose} color="inherit">
                     {cancelText || translations.cancel}
                 </Button>
