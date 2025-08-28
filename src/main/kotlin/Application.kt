@@ -2,6 +2,7 @@ import io.ktor.server.application.*
 import plugins.configureDatabase
 import plugins.configureDI
 import plugins.configureHTTP
+import plugins.configureHealth
 import plugins.configureSecurity
 import plugins.graphQLModule
 
@@ -13,6 +14,7 @@ fun Application.module() {
     configureDI()
     configureDatabase()
     configureHTTP()
+    configureHealth()
     graphQLModule()
     configureSecurity()
 }

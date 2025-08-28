@@ -1,6 +1,7 @@
 package plugins
 
 import com.auth0.jwt.JWTVerifier
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -27,6 +28,7 @@ fun Application.configureSecurity() {
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
         allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Head)
 
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)

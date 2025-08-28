@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 }
 
-group = "com.cgsv"
+group = "com.cgvs"
 version = "0.0.1"
 
 application {
@@ -20,12 +20,12 @@ kotlin {
 repositories {
     mavenCentral()
     maven { url = uri("https://packages.confluent.io/maven/") }
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
     implementation(libs.bundles.koin)
     implementation(libs.bundles.ktorServer)
-    implementation(libs.bundles.ktorClient)
     implementation(libs.postgresql)
     implementation(libs.h2)
     implementation(libs.bundles.exposed)
@@ -37,7 +37,6 @@ dependencies {
     implementation(libs.libphonenumber)
     implementation(libs.commonsValidator)
     implementation(libs.bundles.gcp)
-    implementation("com.google.protobuf:protobuf-java:3.25.3")
     testImplementation(libs.ktor.server.testHost)
     testImplementation(libs.kotlin.test.junit)
 }

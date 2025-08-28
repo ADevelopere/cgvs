@@ -12,13 +12,11 @@ graphql-kotlin = "9.0.0-alpha.8"
 bcrypt = "0.10.2"
 libphonenumber = "9.0.12"
 commonsValidator = "1.10.0"
-kaml = "0.91.0"
 googleCloudStorage = "2.55.0"
 googleCloudSecretmanager = "2.72.0"
 protobuf = "4.32.0"
 
 [libraries]
-kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage", version.ref = "googleCloudStorage" }
 google-cloud-secretmanager = { module = "com.google.cloud:google-cloud-secretmanager", version.ref = "googleCloudSecretmanager" }
 protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
@@ -106,8 +104,10 @@ ktorServer = [
     "ktor-server-configYaml",
     "ktor-server-testHost",
     "ktor-server-double-receive",
-    "ktor-server-call-logging"
+    "ktor-server-call-logging",
+    "logback-classic",
 ]
+
 ktorClient = ["ktor-client-core", "ktor-client-apache"]
 
 gcp = [
