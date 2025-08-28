@@ -6,6 +6,8 @@ import React, {
     useContext,
     useMemo,
     ReactNode,
+    useState,
+    useEffect,
 } from "react";
 import * as Graphql from "@/graphql/generated/types";
 import {
@@ -15,19 +17,16 @@ import {
     FilterClause,
 } from "@/types/filters";
 import { useStudentManagement } from "./StudentManagementContext";
-import {
-    getColumnDef,
-    getFilterKeysForColumn,
-    mapDateFilter,
-    mapTextFilter,
-} from "./utils/filter";
+import { getColumnDef, mapDateFilter, mapTextFilter } from "./utils/filter";
 import logger from "@/utils/logger";
 
 // Helper function to map table column IDs to GraphQL OrderStudentsByColumn enum values
-const mapColumnIdToGraphQLColumn = (columnId: string): Graphql.OrderStudentsByColumn | null => {
+const mapColumnIdToGraphQLColumn = (
+    columnId: string,
+): Graphql.OrderStudentsByColumn | null => {
     const columnMap: Record<string, Graphql.OrderStudentsByColumn> = {
         id: "ID",
-        name: "NAME", 
+        name: "NAME",
         email: "EMAIL",
         dateOfBirth: "DATE_OF_BIRTH",
         gender: "GENDER",
@@ -35,7 +34,7 @@ const mapColumnIdToGraphQLColumn = (columnId: string): Graphql.OrderStudentsByCo
         updatedAt: "UPDATED_AT",
         // phoneNumber and nationality are not sortable in the GraphQL schema
     };
-    
+
     return columnMap[columnId] || null;
 };
 
@@ -56,12 +55,18 @@ type ApplyFiltersParams =
 
 // Type for the context value
 type StudentFilterAndSortContextType = {
+    filters: Record<string, FilterClause<unknown, unknown> | null>;
     applyFilters: (params: ApplyFiltersParams) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    applySingleFilter: (filterClause: FilterClause<any, any> | null) => void;
+    setSearchFilter: (filterClause: FilterClause<unknown, unknown> | null) => void;
+    setColumnFilter: (
+        filterClause: FilterClause<unknown, unknown> | null,
+        columnId: string,
+    ) => void;
     clearFilter: (columnId: keyof Graphql.Student) => void;
     clearAllFilters: () => void;
-    updateSort: (orderByClause: { column: string; order: Graphql.SortDirection }[]) => void;
+    updateSort: (
+        orderByClause: { column: string; order: Graphql.SortDirection }[],
+    ) => void;
 };
 
 // Create the context
@@ -72,86 +77,41 @@ const StudentFilterAndSortContext =
 export const StudentFilterAndSortProvider: React.FC<{
     children: ReactNode;
 }> = ({ children }) => {
-    const { setQueryParams, queryParams } = useStudentManagement();
+    const { setQueryParams } = useStudentManagement();
+    const [activeFilters, setActiveFilters] = useState<
+        Record<string, FilterClause | null>
+    >({});
 
-    const applyFilters = useCallback(
-        (params: ApplyFiltersParams) => {
-            const { columnId, type, filters } = params;
-            
-            // Start with existing filter args or empty object
-            const newFilterArgs: Partial<Graphql.StudentFilterArgsInput> = {
-                ...queryParams.filterArgs,
-            };
+    // This effect syncs the activeFilters state with the query parameters
+    useEffect(() => {
+        const newFilterArgs: Partial<Graphql.StudentFilterArgsInput> = {};
 
-            // Clear existing filters for this column first
-            const filterKeysToRemove = getFilterKeysForColumn(columnId);
-            filterKeysToRemove.forEach((key: keyof Graphql.StudentFilterArgsInput) => {
-                delete (newFilterArgs)[key];
-            });
+        Object.values(activeFilters).forEach((filterClause) => {
+            if (!filterClause) return;
 
-            // Map the new filters based on type
-            if (type === "text") {
-                Object.entries(filters).forEach(([op, value]) => {
-                    const mappedFilter = mapTextFilter(
-                        columnId,
-                        op as TextFilterOperation,
-                        value,
-                    );
-                    Object.assign(newFilterArgs, mappedFilter);
-                });
-            } else if (type === "date") {
-                Object.entries(filters).forEach(([op, value]) => {
-                    const mappedFilter = mapDateFilter(
-                        columnId,
-                        op as DateFilterOperation,
-                        value,
-                    );
-                    Object.assign(newFilterArgs, mappedFilter);
-                });
+            const columnId = filterClause.columnId as keyof Graphql.Student;
+            const columnDef = getColumnDef(columnId);
+            if (!columnDef) return;
+
+            let mappedFilter: Partial<Graphql.StudentFilterArgsInput> = {};
+            if (columnDef.type === "text" || columnDef.type === "phone") {
+                mappedFilter = mapTextFilter(
+                    columnId,
+                    filterClause.operation as TextFilterOperation,
+                    filterClause.value,
+                );
+            } else if (columnDef.type === "date") {
+                mappedFilter = mapDateFilter(
+                    columnId,
+                    filterClause.operation as DateFilterOperation,
+                    filterClause.value,
+                );
             }
+            Object.assign(newFilterArgs, mappedFilter);
+        });
 
-            // Update query with new filter args and reset pagination
-            const queryUpdate: Partial<Graphql.StudentsQueryVariables> = {
-                filterArgs: newFilterArgs,
-                paginationArgs: {
-                    first: 100, // Reset to default page size
-                    page: 1,    // Reset to first page
-                },
-            };
-
-            setQueryParams(queryUpdate);
-        },
-        [setQueryParams, queryParams.filterArgs],
-    );
-
-    const clearFilter = useCallback(
-        (columnId: keyof Graphql.Student) => {
-            // Start with existing filter args
-            const newFilterArgs: Partial<Graphql.StudentFilterArgsInput> = {
-                ...queryParams.filterArgs,
-            };
-
-            // Clear filters for this specific column
-            const filterKeysToRemove = getFilterKeysForColumn(columnId);
-            filterKeysToRemove.forEach((key: keyof Graphql.StudentFilterArgsInput) => {
-                delete (newFilterArgs)[key];
-            });
-
-            const queryUpdate: Partial<Graphql.StudentsQueryVariables> = {
-                filterArgs: newFilterArgs,
-                paginationArgs: {
-                    first: 100,
-                    page: 1,
-                },
-            };
-            setQueryParams(queryUpdate);
-        },
-        [setQueryParams, queryParams.filterArgs],
-    );
-
-    const clearAllFilters = useCallback(() => {
         const queryUpdate: Partial<Graphql.StudentsQueryVariables> = {
-            filterArgs: {}, // Clear all filters
+            filterArgs: newFilterArgs,
             paginationArgs: {
                 first: 100,
                 page: 1,
@@ -159,65 +119,92 @@ export const StudentFilterAndSortProvider: React.FC<{
         };
 
         setQueryParams(queryUpdate);
-    }, [setQueryParams]);
+    }, [activeFilters, setQueryParams]);
 
-    const applySingleFilter = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (filterClause: FilterClause<any, any> | null) => {
-            if (!filterClause) {
-                clearAllFilters();
-                return;
-            }
+    const applyFilters = useCallback((params: ApplyFiltersParams) => {
+        const { columnId, filters: newColumnFilters } = params;
 
-            const columnId = filterClause.columnId as keyof Graphql.Student;
-            const columnDef = getColumnDef(columnId);
-            if (!columnDef) {
-                logger.warn(`Column definition not found for ${columnId}`);
-                return;
-            }
+        setActiveFilters((prev) => {
+            const newFilters = { ...prev };
+            const filterEntries = Object.entries(newColumnFilters);
 
-            // Determine the type and construct the filters map
-            let params: ApplyFiltersParams | null = null;
-            if (columnDef.type === "text" || columnDef.type === "phone") {
-                const filters: TextFilterMap = {
-                    [filterClause.operation as TextFilterOperation]:
-                        filterClause.value,
+            if (filterEntries.length > 0) {
+                // This logic assumes one operation per column from the popovers.
+                const [op, value] = filterEntries[0];
+                newFilters[columnId as string] = {
+                    columnId: columnId as string,
+                    operation: op,
+                    value,
                 };
-                params = { columnId, type: "text", filters };
-            } else if (columnDef.type === "date") {
-                const filters: DateFilterMap = {
-                    [filterClause.operation as DateFilterOperation]:
-                        filterClause.value,
-                };
-                params = { columnId, type: "date", filters };
-            }
-            // Add other types like 'number', 'enum' if needed
-
-            if (params) {
-                applyFilters(params);
             } else {
-                logger.warn(`Unsupported column type for ${columnId}`);
+                delete newFilters[columnId as string];
             }
+            return newFilters;
+        });
+    }, []);
+
+    const clearFilter = useCallback((columnId: keyof Graphql.Student) => {
+        setActiveFilters((prev) => {
+            const newFilters = { ...prev };
+            delete newFilters[columnId as string];
+            return newFilters;
+        });
+    }, []);
+
+    const clearAllFilters = useCallback(() => {
+        setActiveFilters({});
+    }, []);
+
+    const setSearchFilter = useCallback((filterClause: FilterClause | null) => {
+        if (!filterClause) {
+            setActiveFilters({});
+        } else {
+            // This replaces all other filters, which is the desired behavior for the search bar.
+            setActiveFilters({ [filterClause.columnId]: filterClause });
+        }
+    }, []);
+
+    const setColumnFilter = useCallback(
+        (filterClause: FilterClause | null, columnId: string) => {
+            setActiveFilters((prev) => {
+                const newFilters = { ...prev };
+                if (filterClause) {
+                    newFilters[columnId] = filterClause;
+                } else {
+                    delete newFilters[columnId];
+                }
+                return newFilters;
+            });
         },
-        [applyFilters, clearAllFilters],
+        [],
     );
 
     const updateSort = useCallback(
         (orderByClause: { column: string; order: Graphql.SortDirection }[]) => {
             // Convert generic OrderByClause to GraphQL-specific OrderStudentsByClauseInput
-            const graphqlOrderBy: Graphql.OrderStudentsByClauseInput[] = orderByClause
-                .map(clause => {
-                    const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
-                    if (!graphqlColumn) {
-                        logger.warn(`Column ${clause.column} is not sortable in GraphQL schema`);
-                        return null;
-                    }
-                    return {
-                        column: graphqlColumn,
-                        order: clause.order,
-                    };
-                })
-                .filter((clause): clause is Graphql.OrderStudentsByClauseInput => clause !== null);
+            const graphqlOrderBy: Graphql.OrderStudentsByClauseInput[] =
+                orderByClause
+                    .map((clause) => {
+                        const graphqlColumn = mapColumnIdToGraphQLColumn(
+                            clause.column,
+                        );
+                        if (!graphqlColumn) {
+                            logger.warn(
+                                `Column ${clause.column} is not sortable in GraphQL schema`,
+                            );
+                            return null;
+                        }
+                        return {
+                            column: graphqlColumn,
+                            order: clause.order,
+                        };
+                    })
+                    .filter(
+                        (
+                            clause,
+                        ): clause is Graphql.OrderStudentsByClauseInput =>
+                            clause !== null,
+                    );
 
             setQueryParams({
                 orderBy: graphqlOrderBy,
@@ -233,15 +220,19 @@ export const StudentFilterAndSortProvider: React.FC<{
     // Memoize the context value
     const value = useMemo(
         () => ({
+            filters: activeFilters,
             applyFilters,
-            applySingleFilter,
+            setSearchFilter,
+            setColumnFilter,
             clearFilter,
             clearAllFilters,
             updateSort,
         }),
         [
+            activeFilters,
             applyFilters,
-            applySingleFilter,
+            setSearchFilter,
+            setColumnFilter,
             clearFilter,
             clearAllFilters,
             updateSort,

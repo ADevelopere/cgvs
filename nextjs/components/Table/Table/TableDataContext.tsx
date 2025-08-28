@@ -37,12 +37,10 @@ export type TableDataContextType = {
     getSortDirection: (columnId: string) => SortDirection | null;
 
     // Filtering
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filters: Record<string, FilterClause<any, any>>;
+    filters: Record<string, FilterClause<unknown, unknown> | null>;
 
     filter: (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        filterClause: FilterClause<any, any> | null,
+        filterClause: FilterClause<unknown, unknown> | null,
         columnId: string,
     ) => void;
 
@@ -91,33 +89,27 @@ export type TableDataContextType = {
 const TableDataContext = createContext<TableDataContextType | null>(null);
 
 export type TableDataProviderProps = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onFilter?: (filterClause: FilterClause<any, any> | null) => void;
+    onFilterChange?: (
+        filterClause: FilterClause<unknown, unknown> | null,
+        columnId: string,
+    ) => void;
     onSort?: (orderByClause: OrderByClause[]) => void;
     children: React.ReactNode;
+    filters?: Record<string, FilterClause<unknown, unknown> | null>;
 };
 
 export const TableDataProvider = ({
-    onFilter,
+    onFilterChange,
     onSort,
     children,
+    filters = {},
 }: TableDataProviderProps) => {
     const { columns } = useTableContext();
 
     const [orderByClause, setOrderByClause] = useState<OrderByClause[]>([]);
-    const [filters, setFilters] = useState<
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Record<string, FilterClause<any, any>>
-    >({});
     const [tempFilterValues, setTempFilterValues] = useState<
         Record<string, string>
     >({});
-
-    const [lastFilterApplied, setLastFilterApplied] = useState<{
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        filterClause: FilterClause<any, any> | null;
-        columnId: string;
-    } | null>(null);
 
     // Cell editing state management
     const [editingCells, setEditingCells] = useState<
@@ -127,12 +119,6 @@ export const TableDataProvider = ({
     useEffect(() => {
         onSort?.(orderByClause);
     }, [onSort, orderByClause]);
-
-    useEffect(() => {
-        if (lastFilterApplied) {
-            onFilter?.(lastFilterApplied.filterClause);
-        }
-    }, [lastFilterApplied, onFilter]);
 
     const getEditingState = useCallback(
         (
@@ -164,37 +150,12 @@ export const TableDataProvider = ({
         [],
     );
 
-    // Internal filter update handler
-    const handleFilterUpdate = useCallback(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (filterClause: FilterClause<any, any> | null, columnId: string) => {
-            // Update local filters state
-            setFilters((prevFilters) => {
-                if (filterClause === null) {
-                    // If filter is null, remove the filter for this column
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { [columnId]: removed, ...rest } = prevFilters;
-                    return rest;
-                } else {
-                    // Add or update the filter for this column
-                    return {
-                        ...prevFilters,
-                        [columnId]: filterClause,
-                    };
-                }
-            });
-            setLastFilterApplied({ filterClause, columnId });
-        },
-        [],
-    );
-
     // Filter handling
     const filter = useCallback(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (filterClause: FilterClause<any, any> | null, columnId: string) => {
-            handleFilterUpdate(filterClause, columnId);
+        (filterClause: FilterClause | null, columnId: string) => {
+            onFilterChange?.(filterClause, columnId);
         },
-        [handleFilterUpdate],
+        [onFilterChange],
     );
 
     const applyFilter = useCallback(
@@ -220,9 +181,9 @@ export const TableDataProvider = ({
                       value: column.type === "number" ? Number(value) : value,
                   }
                 : null;
-            handleFilterUpdate(filterClause, columnId);
+            onFilterChange?.(filterClause, columnId);
         },
-        [columns, tempFilterValues, handleFilterUpdate],
+        [columns, tempFilterValues, onFilterChange],
     );
 
     // Helper to get the active text filter for a column
@@ -231,7 +192,7 @@ export const TableDataProvider = ({
             columnId: string,
         ): FilterClause<string, TextFilterOperation> | null => {
             // Then check client filters
-            const filter = filters[columnId];
+            const filter = filters?.[columnId];
             if (!filter) return null;
 
             // Handle legacy string filters
@@ -258,7 +219,7 @@ export const TableDataProvider = ({
             columnId: string,
         ): FilterClause<number, NumberFilterOperation> | null => {
             // Then check client filters
-            const filter = filters[columnId];
+            const filter = filters?.[columnId];
             if (!filter) return null;
 
             // Return the filter clause if it's a number filter
@@ -277,7 +238,7 @@ export const TableDataProvider = ({
             columnId: string,
         ): FilterClause<DateFilterValue, DateFilterOperation> | null => {
             // Then check client filters
-            const filter = filters[columnId];
+            const filter = filters?.[columnId];
             if (!filter) return null;
 
             // Return the filter clause if it's a date filter
@@ -295,31 +256,31 @@ export const TableDataProvider = ({
 
     const applyTextFilter = useCallback(
         (filterClause: FilterClause<string, TextFilterOperation>) => {
-            handleFilterUpdate(filterClause, filterClause.columnId);
+            onFilterChange?.(filterClause, filterClause.columnId);
         },
-        [handleFilterUpdate],
+        [onFilterChange],
     );
 
     const applyNumberFilter = useCallback(
         (filterClause: FilterClause<number, NumberFilterOperation>) => {
-            handleFilterUpdate(filterClause, filterClause.columnId);
+            onFilterChange?.(filterClause, filterClause.columnId);
         },
-        [handleFilterUpdate],
+        [onFilterChange],
     );
 
     const applyDateFilter = useCallback(
         (filterClause: FilterClause<DateFilterValue, DateFilterOperation>) => {
-            handleFilterUpdate(filterClause, filterClause.columnId);
+            onFilterChange?.(filterClause, filterClause.columnId);
         },
-        [handleFilterUpdate],
+        [onFilterChange],
     );
 
     // Clear filter for a specific column
     const clearFilter = useCallback(
         (columnId: string) => {
-            handleFilterUpdate(null, columnId);
+            onFilterChange?.(null, columnId);
         },
-        [handleFilterUpdate],
+        [onFilterChange],
     );
 
     // Sort handling
@@ -363,7 +324,7 @@ export const TableDataProvider = ({
         [orderByClause],
     );
 
-    const value = useMemo(
+    const value: TableDataContextType = useMemo(
         () => ({
             orderByClause,
             sort,

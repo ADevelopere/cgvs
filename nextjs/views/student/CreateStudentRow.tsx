@@ -52,7 +52,7 @@ const initialStudentState: CreateStudentInput = {
 
 const CreateStudentRow = () => {
     const { createStudent } = useStudentManagement();
-    const { applySingleFilter } = useStudentFilter();
+    const { setSearchFilter } = useStudentFilter();
     const { columns } = useStudentTableManagement();
     const strings = useAppTranslation("studentTranslations");
     const theme = useTheme();
@@ -125,9 +125,9 @@ const CreateStudentRow = () => {
                 lastFilteredValue.current = value;
 
                 if (!value || value.trim() === "") {
-                    applySingleFilter(null);
+                    setSearchFilter(null);
                 } else {
-                    applySingleFilter({
+                    setSearchFilter({
                         columnId: "name",
                         operation: TextFilterOperation.STARTS_WITH,
                         value: value,
@@ -135,7 +135,7 @@ const CreateStudentRow = () => {
                 }
             }, 1500);
         },
-        [applySingleFilter],
+        [setSearchFilter],
     );
 
     // Cleanup the debounce timer on unmount
@@ -196,7 +196,7 @@ const CreateStudentRow = () => {
             setFieldValidity({});
             setIsDirty(false);
             setShowSuccess(true);
-            applySingleFilter(null);
+            setSearchFilter(null);
             lastFilteredValue.current = undefined;
             if (debounceTimer.current) {
                 clearTimeout(debounceTimer.current);
@@ -211,7 +211,7 @@ const CreateStudentRow = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [applySingleFilter, createStudent, isFormValid, newStudent]);
+    }, [setSearchFilter, createStudent, isFormValid, newStudent]);
 
     // Handle keyboard shortcuts
     const handleKeyDown = useCallback(
