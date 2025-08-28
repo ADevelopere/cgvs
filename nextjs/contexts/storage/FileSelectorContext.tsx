@@ -34,6 +34,10 @@ export interface FileSelectorContextType {
     toggleFileSelection: (file: Graphql.FileInfo) => void;
     clearSelection: () => void;
 
+    // Prohibited URLs (files that cannot be selected/deselected)
+    prohibitedUrls: string[];
+    isFileProhibited: (file: Graphql.FileInfo) => boolean;
+
     // Upload state
     uploadFiles: Map<string, UploadFileState>;
     isUploading: boolean;
@@ -62,7 +66,8 @@ export const useFileSelector = () => {
 
 export const FileSelectorProvider: React.FC<{
     children: React.ReactNode;
-}> = ({ children }) => {
+    prohibitedUrls?: string[];
+}> = ({ children, prohibitedUrls = [] }) => {
     const gql = useStorageGraphQL();
     const notifications = useNotifications();
 
@@ -85,6 +90,11 @@ export const FileSelectorProvider: React.FC<{
     }, []);
 
     const toggleFileSelection = useCallback((file: Graphql.FileInfo) => {
+        // Don't allow toggling prohibited files
+        if (prohibitedUrls.includes(file.url || '')) {
+            return;
+        }
+        
         setSelectedFiles((prev) => {
             const isSelected = prev.some(
                 (selected) => selected.path === file.path,
@@ -94,7 +104,11 @@ export const FileSelectorProvider: React.FC<{
             }
             return [...prev, file];
         });
-    }, []);
+    }, [prohibitedUrls]);
+
+    const isFileProhibited = useCallback((file: Graphql.FileInfo) => {
+        return prohibitedUrls.includes(file.url || '');
+    }, [prohibitedUrls]);
 
     const clearSelection = useCallback(() => {
         setSelectedFiles([]);
@@ -102,10 +116,27 @@ export const FileSelectorProvider: React.FC<{
 
     const setSelectedFilesCallback = useCallback(
         (files: Graphql.FileInfo[]) => {
-            setSelectedFiles(files);
+            // Filter out prohibited files from selection
+            const allowedFiles = files.filter(file => !prohibitedUrls.includes(file.url || ''));
+            setSelectedFiles(allowedFiles);
         },
-        [],
+        [prohibitedUrls],
     );
+
+    // Initialize selection with files matching prohibited URLs when files are loaded
+    useEffect(() => {
+        if (files.length > 0 && prohibitedUrls.length > 0) {
+            const initialSelection = files.filter(file => prohibitedUrls.includes(file.url || ''));
+            if (initialSelection.length > 0) {
+                setSelectedFiles(prev => {
+                    // Merge with existing selection, avoiding duplicates
+                    const existingPaths = prev.map(f => f.path);
+                    const newFiles = initialSelection.filter(f => !existingPaths.includes(f.path));
+                    return [...prev, ...newFiles];
+                });
+            }
+        }
+    }, [files, prohibitedUrls]);
 
     const refreshFiles = useCallback(async () => {
         if (!locationState) return;
@@ -344,6 +375,8 @@ export const FileSelectorProvider: React.FC<{
             setSelectedFiles: setSelectedFilesCallback,
             toggleFileSelection,
             clearSelection,
+            prohibitedUrls,
+            isFileProhibited,
             uploadFiles,
             isUploading,
             refreshFiles,
@@ -362,6 +395,8 @@ export const FileSelectorProvider: React.FC<{
             setSelectedFilesCallback,
             toggleFileSelection,
             clearSelection,
+            prohibitedUrls,
+            isFileProhibited,
             uploadFiles,
             isUploading,
             refreshFiles,
