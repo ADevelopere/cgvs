@@ -26,7 +26,6 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     buildCategoryHierarchy,
-    getSerializableCategories,
     getSerializableTemplateCategory,
     mapTemplateCategories,
     mapTemplateCategory,
@@ -294,21 +293,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
             return [];
         });
 
-        logger.log("All templates from cache:", allTemplates);
         return allTemplates;
     }, [apolloCategoryData]);
 
     const regularCategoriesFromCache = useMemo(() => {
         const regularCategories = allCategoriesFromCache.filter(
             (cat) => cat.categorySpecialType !== "Suspension",
-        );
-        logger.log(
-            "Regular categories from cache:",
-            JSON.stringify(
-                getSerializableCategories(regularCategories),
-                null,
-                2,
-            ),
         );
         return regularCategories;
     }, [allCategoriesFromCache]);
@@ -318,18 +308,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
             allCategoriesFromCache.find(
                 (cat) => cat.categorySpecialType === "Suspension",
             ) || null;
-        if (suspensionCategory) {
-            logger.log(
-                "Deletion category from cache:",
-                JSON.stringify(
-                    getSerializableTemplateCategory(suspensionCategory),
-                    null,
-                    2,
-                ),
-            );
-        } else {
-            logger.log("No deletion category found in cache.");
-        }
         return suspensionCategory;
     }, [allCategoriesFromCache]);
 

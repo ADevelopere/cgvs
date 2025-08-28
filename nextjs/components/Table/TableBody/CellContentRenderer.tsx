@@ -130,6 +130,7 @@ const CountryEditRenderer = React.forwardRef<
         <Autocomplete
             fullWidth
             options={countries}
+            openOnFocus
             autoHighlight
             value={
                 countries.find((c) => c.code === state.editingValue) ||

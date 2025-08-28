@@ -64,8 +64,6 @@ const DataCell = React.memo<DataCellProps>(
         getEditingState,
         setEditingState,
     }) => {
-        logger.log("Rendering NewDataCell", { rowId, columnId: column.id });
-
         const [state, setState] = useState<DataCellState>({
             isEditing: false,
             editingValue: cellValue,

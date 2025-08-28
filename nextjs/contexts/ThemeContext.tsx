@@ -11,7 +11,8 @@ import {
 } from "react";
 import {
     Theme,
-    Experimental_CssVarsProvider as CssVarsProvider,
+    ThemeProvider,
+    // Experimental_CssVarsProvider as CssVarsProvider,
 } from "@mui/material/styles"; // Import CssVarsProvider
 import { CssBaseline } from "@mui/material";
 import {
@@ -249,13 +250,13 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
             <StylesProvider jss={jss}>
                 <CacheProvider value={cacheRtl}>
                     {/* Use CssVarsProvider instead of MuiThemeProvider */}
-                    <CssVarsProvider theme={currentTheme}>
-                        {/* <ThemeProvider theme={currentTheme}> */}
-                            <CssBaseline enableColorScheme />{" "}
-                            {/* Add enableColorScheme prop */}
-                            {children}
-                        {/* </ThemeProvider> */}
-                    </CssVarsProvider>
+                    {/* <CssVarsProvider theme={currentTheme}> */}
+                    <ThemeProvider theme={currentTheme}>
+                        <CssBaseline enableColorScheme />{" "}
+                        {/* Add enableColorScheme prop */}
+                        {children}
+                    </ThemeProvider>
+                    {/* </CssVarsProvider> */}
                 </CacheProvider>
             </StylesProvider>
         </AppThemeContext.Provider>

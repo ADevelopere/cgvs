@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
   images: {
     domains: ["storage.googleapis.com"],
     unoptimized: true, // Disable optimization for external images
