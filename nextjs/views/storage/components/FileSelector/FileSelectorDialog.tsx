@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -18,6 +18,7 @@ import FileSelector from "./FileSelector";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import type { FileInfo } from "@/graphql/generated/types";
+import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 
 export interface FileSelectorDialogProps {
     open: boolean;
@@ -30,8 +31,6 @@ export interface FileSelectorDialogProps {
     title?: string;
     confirmText?: string;
     cancelText?: string;
-    initialSelection?: FileInfo[];
-    requireSelection?: boolean;
 }
 
 const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
@@ -45,33 +44,17 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     title,
     confirmText,
     cancelText,
-    initialSelection = [],
-    requireSelection = false,
 }) => {
     const translations = useAppTranslation("storageTranslations");
-    const [selectedFiles, setSelectedFiles] =
-        useState<FileInfo[]>(initialSelection);
+    const { selectedFiles } = useFileSelector();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-    // Reset selection when dialog opens/closes
-    useEffect(() => {
-        if (open) {
-            setSelectedFiles(initialSelection);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, JSON.stringify(initialSelection)]);
-
-    const handleClose = () => {
-        setSelectedFiles([]);
-        onClose();
-    };
-
-    const handleConfirm = () => {
+    const handleConfirm = useCallback(() => {
         onSelect(selectedFiles);
-        handleClose();
-    };
+        onClose();
+    }, [onClose, onSelect, selectedFiles]);
 
-    const getDialogTitle = () => {
+    const getDialogTitle = React.useCallback(() => {
         if (title) return title;
 
         if (multiple) {
@@ -83,9 +66,9 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                 ? translations.selectOrUploadFile
                 : translations.selectFile;
         }
-    };
+    }, [title, multiple, allowUpload, translations]);
 
-    const getConfirmText = () => {
+    const getConfirmText = React.useCallback(() => {
         if (confirmText) return confirmText;
 
         if (selectedFiles.length === 0) {
@@ -95,14 +78,12 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
         return multiple
             ? `${translations.select} (${selectedFiles.length})`
             : translations.select;
-    };
-
-    const canConfirm = !requireSelection || selectedFiles.length > 0;
+    }, [confirmText, multiple, selectedFiles.length, translations.select]);
 
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
+            onClose={onClose}
             maxWidth="lg"
             fullWidth
             sx={{
@@ -125,7 +106,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                 </Typography>
                 <IconButton
                     aria-label={translations.close}
-                    onClick={handleClose}
+                    onClick={onClose}
                     sx={{ color: "grey.500" }}
                 >
                     <CloseIcon />
@@ -152,8 +133,6 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                 >
                     <FileSelector
                         location={location}
-                        value={selectedFiles}
-                        onChange={setSelectedFiles}
                         multiple={multiple}
                         allowUpload={allowUpload}
                         maxSelection={maxSelection}
@@ -168,13 +147,13 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
             <Divider />
 
             <DialogActions sx={{ p: 2, gap: 1 }}>
-                <Button onClick={handleClose} color="inherit">
+                <Button onClick={onClose} color="inherit">
                     {cancelText || translations.cancel}
                 </Button>
                 <Button
                     onClick={handleConfirm}
                     variant="contained"
-                    disabled={!canConfirm}
+                    disabled={selectedFiles.length === 0}
                     startIcon={<SelectIcon />}
                 >
                     {getConfirmText()}
