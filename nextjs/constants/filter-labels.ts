@@ -7,8 +7,8 @@ import {
 
 // Labels for text filter operations
 export const textFilterOperationLabels: Record<TextFilterOperation, string> = {
-  [TextFilterOperation.CONTAINS]: "Contains",
-  [TextFilterOperation.NOT_CONTAINS]: "Does not contain",
+  [TextFilterOperation.contains]: "Contains",
+  [TextFilterOperation.notContains]: "Does not contain",
   [TextFilterOperation.EQUALS]: "Equals",
   [TextFilterOperation.NOT_EQUALS]: "Does not equal",
   [TextFilterOperation.STARTS_WITH]: "Starts with",

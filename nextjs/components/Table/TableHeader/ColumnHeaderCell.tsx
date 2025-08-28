@@ -16,6 +16,7 @@ import { FilterClause } from "@/types/filters";
 import ResizeHandle from "./ResizeHandle";
 import { useTableStyles } from "@/theme/styles";
 import { EditableColumn, PinPosition } from "@/types/table.type";
+import { useTableLocale } from "@/locale/table/TableLocaleContext";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/constants/tableConstants";
 
 export interface ColumnHeaderProps {
@@ -161,6 +162,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
         }, [columnWidth]);
 
         const theme = useTheme();
+        const { strings } = useTableLocale();
         const tempFilterValueRef = React.useRef("");
         const isResizingRef = useRef(false);
 
@@ -361,7 +363,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
 
                             <IconsContainer>
                                 {isSortable && (
-                                    <Tooltip title={"Sort"}>
+                                    <Tooltip title={strings.sort.title}>
                                         <HeaderIconButton
                                             size="small"
                                             className="header-icon-button"
@@ -374,7 +376,7 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
                                 )}
 
                                 {isFilterable && (
-                                    <Tooltip title={"Filter"}>
+                                    <Tooltip title={strings.filter.title}>
                                         <Badge
                                             color="primary"
                                             variant="dot"

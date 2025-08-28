@@ -25,7 +25,7 @@ export const getActiveTextFilter = (
     if (typeof filter === "string") {
         return {
             columnId,
-            operation: TextFilterOperation.CONTAINS,
+            operation: TextFilterOperation.contains,
             value: filter,
         };
     }

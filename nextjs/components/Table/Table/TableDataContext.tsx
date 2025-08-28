@@ -171,7 +171,7 @@ export const TableDataProvider = ({
             } else if (column.type === "date") {
                 operation = DateFilterOperation.IS;
             } else {
-                operation = TextFilterOperation.CONTAINS;
+                operation = TextFilterOperation.contains;
             }
 
             const filterClause = value
@@ -199,7 +199,7 @@ export const TableDataProvider = ({
             if (typeof filter === "string") {
                 return {
                     columnId,
-                    operation: TextFilterOperation.CONTAINS,
+                    operation: TextFilterOperation.contains,
                     value: filter,
                 };
             }
