@@ -129,7 +129,7 @@ const CreateStudentRow = () => {
                 } else {
                     setSearchFilter({
                         columnId: "name",
-                        operation: TextFilterOperation.STARTS_WITH,
+                        operation: TextFilterOperation.startsWith,
                         value: value,
                     });
                 }

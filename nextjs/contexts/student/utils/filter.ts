@@ -136,7 +136,7 @@ export const textOperationConfig: {
         },
         formatValue: (val) => `%${val}%`,
     },
-    [TextFilterOperation.EQUALS]: {
+    [TextFilterOperation.equals]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -151,7 +151,7 @@ export const textOperationConfig: {
             );
         },
     },
-    [TextFilterOperation.NOT_EQUALS]: {
+    [TextFilterOperation.notEquals]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -166,7 +166,7 @@ export const textOperationConfig: {
             );
         },
     },
-    [TextFilterOperation.STARTS_WITH]: {
+    [TextFilterOperation.startsWith]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -182,7 +182,7 @@ export const textOperationConfig: {
         },
         formatValue: (val) => `${val}%`,
     },
-    [TextFilterOperation.ENDS_WITH]: {
+    [TextFilterOperation.endsWith]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -198,7 +198,7 @@ export const textOperationConfig: {
         },
         formatValue: (val) => `%${val}`,
     },
-    [TextFilterOperation.IS_EMPTY]: {
+    [TextFilterOperation.isEmpty]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -214,7 +214,7 @@ export const textOperationConfig: {
         },
         isBooleanOp: true,
     },
-    [TextFilterOperation.IS_NOT_EMPTY]: {
+    [TextFilterOperation.isNotEmpty]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -315,19 +315,19 @@ export const mapDateFilter = (
 ): Partial<Graphql.StudentFilterArgsInput> => {
     const filterArgs: Partial<Graphql.StudentFilterArgsInput> = {};
 
-    // Handle boolean operations (is_empty, is_not_empty)
+    // Handle boolean operations (isEmpty, isNotEmpty)
     if (
-        op === DateFilterOperation.IS_EMPTY ||
-        op === DateFilterOperation.IS_NOT_EMPTY
+        op === DateFilterOperation.isEmpty ||
+        op === DateFilterOperation.isNotEmpty
     ) {
         // Map columnId to the appropriate boolean field
         const fieldMap: Record<string, keyof Graphql.StudentFilterArgsInput> = {
             dateOfBirth:
-                op === DateFilterOperation.IS_EMPTY
+                op === DateFilterOperation.isEmpty
                     ? "birthDateIsEmpty"
                     : "birthDateIsNotEmpty",
             createdAt:
-                op === DateFilterOperation.IS_EMPTY
+                op === DateFilterOperation.isEmpty
                     ? "createdAtIsEmpty"
                     : "createdAtIsNotEmpty",
         };
@@ -341,7 +341,7 @@ export const mapDateFilter = (
 
     // Handle date range operations (between)
     if (
-        op === DateFilterOperation.BETWEEN &&
+        op === DateFilterOperation.between &&
         typeof value === "object" &&
         value !== null
     ) {
@@ -382,20 +382,20 @@ export const mapDateFilter = (
         Record<DateFilterOperation, keyof Graphql.StudentFilterArgsInput>
     > = {
         dateOfBirth: {
-            [DateFilterOperation.IS]: "birthDate",
-            [DateFilterOperation.IS_NOT]: "birthDateNot",
-            [DateFilterOperation.IS_BEFORE]: "birthDateBefore",
-            [DateFilterOperation.IS_AFTER]: "birthDateAfter",
-            [DateFilterOperation.IS_ON_OR_BEFORE]: "birthDateOnOrBefore",
-            [DateFilterOperation.IS_ON_OR_AFTER]: "birthDateOnOrAfter",
+            [DateFilterOperation.is]: "birthDate",
+            [DateFilterOperation.isNot]: "birthDateNot",
+            [DateFilterOperation.isBefore]: "birthDateBefore",
+            [DateFilterOperation.isAfter]: "birthDateAfter",
+            [DateFilterOperation.isOnOrBefore]: "birthDateOnOrBefore",
+            [DateFilterOperation.isOnOrAfter]: "birthDateOnOrAfter",
         } as any,
         createdAt: {
-            [DateFilterOperation.IS]: "createdAt",
-            [DateFilterOperation.IS_NOT]: "createdAtNot",
-            [DateFilterOperation.IS_BEFORE]: "createdAtBefore",
-            [DateFilterOperation.IS_AFTER]: "createdAtAfter",
-            [DateFilterOperation.IS_ON_OR_BEFORE]: "createdAtOnOrBefore",
-            [DateFilterOperation.IS_ON_OR_AFTER]: "createdAtOnOrAfter",
+            [DateFilterOperation.is]: "createdAt",
+            [DateFilterOperation.isNot]: "createdAtNot",
+            [DateFilterOperation.isBefore]: "createdAtBefore",
+            [DateFilterOperation.isAfter]: "createdAtAfter",
+            [DateFilterOperation.isOnOrBefore]: "createdAtOnOrBefore",
+            [DateFilterOperation.isOnOrAfter]: "createdAtOnOrAfter",
         } as any,
     };
 
