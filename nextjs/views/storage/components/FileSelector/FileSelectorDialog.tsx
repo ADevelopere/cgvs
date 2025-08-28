@@ -10,7 +10,11 @@ import {
     IconButton,
     Divider,
 } from "@mui/material";
-import { Close as CloseIcon, CheckCircle as SelectIcon, CloudUpload as UploadIcon } from "@mui/icons-material";
+import {
+    Close as CloseIcon,
+    CheckCircle as SelectIcon,
+    CloudUpload as UploadIcon,
+} from "@mui/icons-material";
 import FileSelector from "./FileSelector";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
@@ -21,6 +25,7 @@ import {
     getLocationInfo,
     getDisplayPath,
 } from "@/contexts/storage/storage.location";
+import { getAcceptAttribute } from "@/contexts/storage/storage.util";
 
 export interface FileSelectorDialogProps {
     open: boolean;
@@ -175,6 +180,14 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                             type="file"
                             hidden
                             multiple={multiple}
+                            accept={
+                                location
+                                    ? getAcceptAttribute(
+                                          getLocationInfo(location)
+                                              .allowedContentTypes,
+                                      )
+                                    : undefined
+                            }
                             onChange={handleFileUpload}
                         />
                     </Button>

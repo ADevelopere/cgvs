@@ -26,6 +26,11 @@ import * as Graphql from "@/graphql/generated/types";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import SearchBar from "./SearchBar";
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
+import {
+    getUploadLocationForPath,
+    getLocationInfo,
+} from "@/contexts/storage/storage.location";
+import { getAcceptAttribute } from "@/contexts/storage/storage.util";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageToolbar: React.FC = () => {
@@ -42,6 +47,15 @@ const StorageToolbar: React.FC = () => {
     const translations = useAppTranslation("storageTranslations");
 
     const { canUpload } = useStorageLocation();
+
+    // Get current upload location and its allowed file types
+    const currentUploadLocation = getUploadLocationForPath(params.path);
+    const currentLocationInfo = currentUploadLocation
+        ? getLocationInfo(currentUploadLocation)
+        : null;
+    const acceptAttribute = currentLocationInfo
+        ? getAcceptAttribute(currentLocationInfo.allowedContentTypes)
+        : undefined;
 
     const handleFileUpload = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +193,7 @@ const StorageToolbar: React.FC = () => {
                         type="file"
                         multiple
                         hidden
+                        accept={acceptAttribute}
                         onChange={handleFileUpload}
                         disabled={!canUpload}
                     />
