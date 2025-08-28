@@ -16,7 +16,6 @@ import {
 import { EditableColumn } from "@/types/table.type";
 import { TableCellEditingState } from "../Table/TableDataContext";
 import CellContentRenderer from "./CellContentRenderer";
-import logger from "@/utils/logger";
 
 type DataCellProps = {
     column: EditableColumn;

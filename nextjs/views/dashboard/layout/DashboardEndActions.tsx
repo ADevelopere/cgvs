@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import ConnectivityStatus from "@/components/common/ConnectivityStatus";
 import ThemeSwitcher from "@/components/common/ThemeSwitcher";
 import UserMenu from "@/components/common/UserMenu";
 
@@ -13,6 +14,7 @@ export default function DashboardEndActions() {
                 paddingInlineEnd: 2,
             }}
         >
+            <ConnectivityStatus />
             {/* <LanguageSwitcher /> */}
             <ThemeSwitcher />
             <UserMenu />
