@@ -20,7 +20,6 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput } from "@/graphql/generated/types";
 import type { FileInfo } from "@/graphql/generated/types";
 import { FileSelectorProvider } from "@/contexts/storage/FileSelectorContext";
-import { StorageGraphQLProvider } from "@/contexts/storage/StorageGraphQLContext";
 import FileSelectorDialog from "@/views/storage/components/FileSelector/FileSelectorDialog";
 
 type FormDataType = {
@@ -160,183 +159,181 @@ const BasicInfoTab: React.FC = () => {
     };
 
     return (
-        <StorageGraphQLProvider>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                overflowY: "hidden",
+            }}
+        >
+            {/* Action Bar */}
             <Box
                 sx={{
                     display: "flex",
-                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     gap: 2,
-                    overflowY: "hidden",
+                    borderBottom: `1px solid ${theme.palette.divider}`,
+                    pb: 1,
                 }}
             >
-                {/* Action Bar */}
+                <Typography variant="h6" component="h2">
+                    {strings.tabBasicInfo}
+                </Typography>
+
                 <Box
                     sx={{
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        justifyContent: "start",
                         gap: 2,
-                        borderBottom: `1px solid ${theme.palette.divider}`,
-                        pb: 1,
                     }}
                 >
-                    <Typography variant="h6" component="h2">
-                        {strings.tabBasicInfo}
-                    </Typography>
-
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "start",
-                            gap: 2,
-                        }}
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleCancel}
+                        disabled={saving || !unsavedChanges}
                     >
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={handleCancel}
-                            disabled={saving || !unsavedChanges}
-                        >
-                            {strings.cancel}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSave}
-                            disabled={saving || !unsavedChanges}
-                        >
-                            {saving ? strings.saving : strings.save}
-                        </Button>
-                    </Box>
+                        {strings.cancel}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSave}
+                        disabled={saving || !unsavedChanges}
+                    >
+                        {saving ? strings.saving : strings.save}
+                    </Button>
                 </Box>
-
-                {/* form */}
-                <Box
-                    component="form"
-                    noValidate
-                    sx={{
-                        mt: 1,
-                        overflowY: "auto",
-                        maxHeight: `calc(100vh - 230px)`,
-                        minHeight: `calc(100vh - 230px)`,
-                        px: 2,
-                    }}
-                >
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Alert>
-                    )}
-                    <Grid container spacing={2}>
-                        <Grid size={{ xs: 12, md: 12 }}>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="templateName"
-                                label={strings.name}
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                autoFocus
-                            />
-
-                            <TextField
-                                margin="normal"
-                                fullWidth
-                                multiline
-                                rows={4}
-                                id="templateDescription"
-                                label={strings.description}
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 12 }}>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    mb: 2,
-                                }}
-                            >
-                                <Typography variant="h6">
-                                    Cover Image
-                                </Typography>
-                                <Stack direction="row" spacing={2}>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<ImageIcon />}
-                                        onClick={handleOpenSelector}
-                                        color="primary"
-                                    >
-                                        {storageStrings.selectFile}
-                                    </Button>
-                                    {formData.imageUrl && (
-                                        <Button
-                                            variant="outlined"
-                                            startIcon={<DeleteIcon />}
-                                            onClick={handleRemoveImage}
-                                            color="error"
-                                        >
-                                            {strings.delete}
-                                        </Button>
-                                    )}
-                                </Stack>
-                            </Box>
-                            <Card
-                                sx={{
-                                    mt: 1,
-                                    mb: 2,
-                                    maxWidth: "100%",
-                                    height: "200px",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    border: "1px dashed grey",
-                                }}
-                            >
-                                {formData.imageUrl ? (
-                                    <CardMedia
-                                        component="img"
-                                        image={formData.imageUrl}
-                                        alt="Template background"
-                                        sx={{
-                                            maxHeight: "100%",
-                                            width: "auto",
-                                            maxWidth: "100%",
-                                            objectFit: "contain",
-                                        }}
-                                    />
-                                ) : (
-                                    <ImageIcon
-                                        sx={{
-                                            fontSize: "4rem",
-                                            color: "text.secondary",
-                                        }}
-                                    />
-                                )}
-                            </Card>
-                        </Grid>
-                    </Grid>
-                </Box>
-
-                {/* File Selector Dialog */}
-                <FileSelectorProvider prohibitedUrls={formData.imageUrl ? [formData.imageUrl] : []}>
-                    <FileSelectorDialog
-                        open={selectorDialogOpen}
-                        onClose={() => setSelectorDialogOpen(false)}
-                        onSelect={handleSelectFiles}
-                        location="TEMPLATE_COVER"
-                        multiple={false}
-                        allowUpload={true}
-                        title={storageStrings.selectFile}
-                    />
-                </FileSelectorProvider>
             </Box>
-        </StorageGraphQLProvider>
+
+            {/* form */}
+            <Box
+                component="form"
+                noValidate
+                sx={{
+                    mt: 1,
+                    overflowY: "auto",
+                    maxHeight: `calc(100vh - 230px)`,
+                    minHeight: `calc(100vh - 230px)`,
+                    px: 2,
+                }}
+            >
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
+                <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="templateName"
+                            label={strings.name}
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            autoFocus
+                        />
+
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            id="templateDescription"
+                            label={strings.description}
+                            name="description"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                mb: 2,
+                            }}
+                        >
+                            <Typography variant="h6">Cover Image</Typography>
+                            <Stack direction="row" spacing={2}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<ImageIcon />}
+                                    onClick={handleOpenSelector}
+                                    color="primary"
+                                >
+                                    {storageStrings.selectFile}
+                                </Button>
+                                {formData.imageUrl && (
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<DeleteIcon />}
+                                        onClick={handleRemoveImage}
+                                        color="error"
+                                    >
+                                        {strings.delete}
+                                    </Button>
+                                )}
+                            </Stack>
+                        </Box>
+                        <Card
+                            sx={{
+                                mt: 1,
+                                mb: 2,
+                                maxWidth: "100%",
+                                height: "200px",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                border: "1px dashed grey",
+                            }}
+                        >
+                            {formData.imageUrl ? (
+                                <CardMedia
+                                    component="img"
+                                    image={formData.imageUrl}
+                                    alt="Template background"
+                                    sx={{
+                                        maxHeight: "100%",
+                                        width: "auto",
+                                        maxWidth: "100%",
+                                        objectFit: "contain",
+                                    }}
+                                />
+                            ) : (
+                                <ImageIcon
+                                    sx={{
+                                        fontSize: "4rem",
+                                        color: "text.secondary",
+                                    }}
+                                />
+                            )}
+                        </Card>
+                    </Grid>
+                </Grid>
+            </Box>
+
+            {/* File Selector Dialog */}
+            <FileSelectorProvider
+                prohibitedUrls={formData.imageUrl ? [formData.imageUrl] : []}
+            >
+                <FileSelectorDialog
+                    open={selectorDialogOpen}
+                    onClose={() => setSelectorDialogOpen(false)}
+                    onSelect={handleSelectFiles}
+                    location="TEMPLATE_COVER"
+                    multiple={false}
+                    allowUpload={true}
+                    title={storageStrings.selectFile}
+                />
+            </FileSelectorProvider>
+        </Box>
     );
 };
 
