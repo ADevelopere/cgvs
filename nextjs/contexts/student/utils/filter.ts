@@ -102,7 +102,7 @@ export const textOperationConfig: {
         isBooleanOp?: boolean;
     };
 } = {
-    [TextFilterOperation.CONTAINS]: {
+    [TextFilterOperation.contains]: {
         fieldName: (columnId) => {
             // Map to base field name
             const fieldMap: Record<
@@ -120,7 +120,7 @@ export const textOperationConfig: {
         },
         formatValue: (val) => `%${val}%`,
     },
-    [TextFilterOperation.NOT_CONTAINS]: {
+    [TextFilterOperation.notContains]: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
@@ -260,9 +260,9 @@ export const mapTextFilter = (
 
     // Handle special case: phoneNumber might only support CONTAINS
     if (columnId === "phoneNumber") {
-        if (op === TextFilterOperation.CONTAINS && typeof value === "string") {
+        if (op === TextFilterOperation.contains && typeof value === "string") {
             filterArgs.phoneNumber = `%${value}%`;
-        } else if (op !== TextFilterOperation.CONTAINS) {
+        } else if (op !== TextFilterOperation.contains) {
             logger.warn(
                 `Operation ${op} might not be supported for phoneNumber.`,
             );

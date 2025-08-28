@@ -1,6 +1,7 @@
 import { useAppTheme } from "@/contexts/ThemeContext";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
+import { useTableLocale } from "@/locale/table/TableLocaleContext";
 
 type ResizeHandleProps = {
     onResize: (
@@ -28,6 +29,7 @@ const buttonStyle = {
 
 const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
     const { isRtl, theme } = useAppTheme();
+    const { strings } = useTableLocale();
     const [isResizing, setIsResizing] = useState(false);
 
     // Start resizing on mousedown or touchstart
@@ -91,7 +93,7 @@ const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
             onKeyUp={endResizing}
             onBlur={endResizing}
             onFocus={endResizing}
-            aria-label="Resize column"
+            aria-label={strings.column.resize}
         >
             <hr style={hrStyle} />
         </button>
