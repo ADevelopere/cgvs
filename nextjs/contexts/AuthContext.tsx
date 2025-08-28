@@ -9,8 +9,7 @@ import {
 } from "@/graphql/generated/types";
 import AuthTranslations from "@/locale/components/Auth";
 import useAppTranslation from "@/locale/useAppTranslation";
-import { clearClientAuth, updateAuthToken } from "@/utils/apollo";
-import logger from "@/utils/logger";
+import { useAuthToken } from "./AppApolloProvider";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import React, {
@@ -77,6 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");
+    const { updateAuthToken, clearAuthToken } = useAuthToken();
     const [loginMutation] = useLoginMutation();
     const [logoutMutation] = useLogoutMutation();
     const [refreshTokenMutation] = useRefreshTokenMutation();
@@ -98,24 +98,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 setIsAuthenticated(false);
                 setUser(null);
             }
-        } catch (error) {
-            logger.error("Auth check failed", error);
+        } catch {
             setIsAuthenticated(false);
             setUser(null);
         }
-    }, [refreshTokenMutation]);
+    }, [refreshTokenMutation, updateAuthToken]);
 
     const logout = useCallback(async () => {
         try {
             await logoutMutation();
-        } catch (error) {
-            logger.error("Logout mutation failed", error);
         } finally {
-            clearClientAuth();
+            clearAuthToken();
             // Perform a hard redirect to ensure all state is cleared.
             window.location.href = "/login";
         }
-    }, [logoutMutation]);
+    }, [logoutMutation, clearAuthToken]);
 
     const login = useCallback(
         async (
@@ -137,13 +134,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     setError(strings.signinFailed);
                     return false;
                 }
-            } catch (err) {
-                logger.error("Login failed", err);
+            } catch {
                 setError(strings.invalidLoginResponse);
                 return false;
             }
         },
-        [loginMutation, strings.invalidLoginResponse, strings.signinFailed],
+        [loginMutation, strings.invalidLoginResponse, strings.signinFailed, updateAuthToken],
     );
 
     useEffect(() => {
