@@ -9,7 +9,7 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache, HttpLink, ApolloLink, Observable } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
@@ -53,6 +53,7 @@ export const useAuthToken = () => {
 // Configuration
 const CONNECTIVITY_CHECK_URL = "http://localhost:8080/health"; // Adjust this to your backend health endpoint
 const CONNECTIVITY_CHECK_TIMEOUT = 5000; // 5 seconds
+const MIN_CHECK_INTERVAL = 2000; // Minimum 2 seconds between checks
 
 export const AppApolloProvider: React.FC<{
     children: React.ReactNode;
@@ -69,6 +70,7 @@ export const AppApolloProvider: React.FC<{
     const isConnectedRef = useRef(true);
     const isCheckingRef = useRef(false);
     const authTokenRef = useRef<string | null>(null);
+    const initialCheckDoneRef = useRef(false);
 
     const checkConnectivity = useCallback(async (): Promise<boolean> => {
         // Prevent multiple simultaneous checks using ref
@@ -112,6 +114,7 @@ export const AppApolloProvider: React.FC<{
         } finally {
             isCheckingRef.current = false;
             setIsChecking(false);
+            initialCheckDoneRef.current = true;
         }
     }, []); // No dependencies needed
 
@@ -175,6 +178,54 @@ export const AppApolloProvider: React.FC<{
             return forward(operation);
         });
 
+        // Connectivity check link - checks health before each GraphQL request
+        const connectivityCheckLink = new ApolloLink((operation, forward) => {
+            return new Observable((observer) => {
+                // First check current connectivity status
+                checkConnectivity().then((isConnected) => {
+                    if (!isConnected) {
+                        // If disconnected, show notification and return error
+                        notifyIfDisconnected();
+                        
+                        // Return a proper GraphQL error response
+                        observer.next({
+                            data: null,
+                            errors: [{
+                                message: "Server not available",
+                                extensions: { 
+                                    code: "NETWORK_ERROR",
+                                    connectivityError: true 
+                                }
+                            }]
+                        });
+                        observer.complete();
+                        return;
+                    }
+                    
+                    // If connected, proceed with the GraphQL request
+                    const subscription = forward(operation).subscribe({
+                        next: (result) => {
+                            // Successful response means we're still connected
+                            setIsConnected(true);
+                            isConnectedRef.current = true;
+                            observer.next(result);
+                        },
+                        error: (error) => {
+                            observer.error(error);
+                        },
+                        complete: () => {
+                            observer.complete();
+                        },
+                    });
+
+                    return () => subscription.unsubscribe();
+                }).catch((error) => {
+                    // If connectivity check itself fails, treat as disconnected
+                    observer.error(error);
+                });
+            });
+        });
+
         // Error link to catch network errors and show notifications
         const errorLink = new ErrorLink(({ error }) => {
             // Check if this is a network error
@@ -193,9 +244,9 @@ export const AppApolloProvider: React.FC<{
             }
         });
 
-        // Simple client without complex error handling
+        // Simple client with connectivity check
         const client = new ApolloClient({
-            link: ApolloLink.from([errorLink, authLink, httpLink]),
+            link: ApolloLink.from([errorLink, connectivityCheckLink, authLink, httpLink]),
             cache: new InMemoryCache(),
             defaultOptions: {
                 watchQuery: {
@@ -209,7 +260,7 @@ export const AppApolloProvider: React.FC<{
         });
 
         return client;
-    }, [notifyIfDisconnected]); // Include notifyIfDisconnected since it's used in the error link
+    }, [notifyIfDisconnected, checkConnectivity]); // Include both dependencies
 
     // Initial connectivity check on mount
     useEffect(() => {
@@ -263,6 +314,11 @@ export const AppApolloProvider: React.FC<{
             clearAuthToken,
         ]
     );
+
+    // Don't render until initial connectivity check is complete
+    if (!initialCheckDoneRef.current) {
+        return null;
+    }
 
     return (
         <NetworkConnectivityContext.Provider value={contextValue}>
