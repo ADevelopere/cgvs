@@ -7,6 +7,7 @@ import LanguageTranslations from "./components/Language";
 import TemplateCategoryTranslation from "./components/TemplateCategory";
 import ErrorTranslations from "./components/Error";
 import StudentTranslations from "./components/Student";
+import ConnectivityTranslations from "./components/Connectivity";
 
 import arHeader from "@/locale/ar/header";
 import arAuth from "@/locale/ar/auth";
@@ -19,6 +20,7 @@ import arError from "@/locale/ar/error";
 import arStudent from "@/locale/ar/student";
 import arTemplateVariable from "@/locale/ar/templateVariable";
 import arStorageTranslations from "./ar/storage";
+import arConnectivity from "./ar/connectivity";
 
 
 import AppLanguage from "./AppLanguage";
@@ -37,6 +39,7 @@ export type Translations = {
     studentTranslations: StudentTranslations;
     templateVariableTranslations: TemplateVariableTranslation;
     storageTranslations: StorageTranslations;
+    connectivityTranslations: ConnectivityTranslations;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -52,6 +55,7 @@ const translations: Record<AppLanguage, Translations> = {
         studentTranslations: arStudent,
         templateVariableTranslations: arTemplateVariable,
         storageTranslations: arStorageTranslations,
+        connectivityTranslations: arConnectivity,
     },
     // Add other languages here as needed
 };

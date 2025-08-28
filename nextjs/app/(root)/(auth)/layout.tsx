@@ -1,9 +1,15 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { AuthProvider } from "@/contexts/AuthContext";
+import StorageProvider from "@/contexts/storage/StorageProvider";
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return <ProtectedRoute> {children} </ProtectedRoute>;
+    return (
+        <ProtectedRoute>
+            <StorageProvider>{children}</StorageProvider>
+        </ProtectedRoute>
+    );
 }
