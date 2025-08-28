@@ -9,7 +9,13 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink, Observable } from "@apollo/client";
+import {
+    ApolloClient,
+    InMemoryCache,
+    HttpLink,
+    ApolloLink,
+    Observable,
+} from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
@@ -46,7 +52,8 @@ export const useNetworkConnectivity = (): NetworkConnectivityContextType => {
 
 // Convenience functions for global access to auth token management
 export const useAuthToken = () => {
-    const { authToken, updateAuthToken, clearAuthToken } = useNetworkConnectivity();
+    const { authToken, updateAuthToken, clearAuthToken } =
+        useNetworkConnectivity();
     return { authToken, updateAuthToken, clearAuthToken };
 };
 
@@ -59,29 +66,42 @@ export const AppApolloProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     const notifications = useNotifications();
-    const strings: ConnectivityTranslations = useAppTranslation("connectivityTranslations");
-    
+    const strings: ConnectivityTranslations = useAppTranslation(
+        "connectivityTranslations",
+    );
+
     const [isConnected, setIsConnected] = useState(true); // Start optimistically
     const [isChecking, setIsChecking] = useState(false);
     const [lastChecked, setLastChecked] = useState<Date | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
-    
+
     // Use refs to track status to avoid dependency issues
     const isConnectedRef = useRef(true);
     const isCheckingRef = useRef(false);
     const authTokenRef = useRef<string | null>(null);
     const initialCheckDoneRef = useRef(false);
+    const lastCheckTimeRef = useRef(0); // Track last check time to prevent spam
 
     const checkConnectivity = useCallback(async (): Promise<boolean> => {
         // Prevent multiple simultaneous checks using ref
         if (isCheckingRef.current) return isConnectedRef.current;
-        
+
+        // Throttle checks to prevent spam
+        const now = Date.now();
+        if (now - lastCheckTimeRef.current < MIN_CHECK_INTERVAL) {
+            return isConnectedRef.current;
+        }
+        lastCheckTimeRef.current = now;
+
         isCheckingRef.current = true;
         setIsChecking(true);
-        
+
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), CONNECTIVITY_CHECK_TIMEOUT);
+            const timeoutId = setTimeout(
+                () => controller.abort(),
+                CONNECTIVITY_CHECK_TIMEOUT,
+            );
 
             const response = await fetch(CONNECTIVITY_CHECK_URL, {
                 method: "HEAD", // Use HEAD for faster response (no body)
@@ -94,15 +114,15 @@ export const AppApolloProvider: React.FC<{
                 // Catch fetch errors silently - don't log expected connection failures
                 return { ok: false, status: 0 };
             });
-            
+
             clearTimeout(timeoutId);
             const connected = response.ok;
-            
+
             // Update both state and ref
             setIsConnected(connected);
             isConnectedRef.current = connected;
             setLastChecked(new Date());
-            
+
             return connected;
         } catch (error) {
             // Only log unexpected errors, not network connectivity failures
@@ -141,7 +161,7 @@ export const AppApolloProvider: React.FC<{
                             }
                         });
                     },
-                }
+                },
             );
         }
     }, [notifications, checkConnectivity, strings]);
@@ -168,7 +188,7 @@ export const AppApolloProvider: React.FC<{
         const authLink = new ApolloLink((operation, forward) => {
             // Get token from ref to access current value
             const token = authTokenRef.current;
-            
+
             operation.setContext({
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
@@ -178,31 +198,10 @@ export const AppApolloProvider: React.FC<{
             return forward(operation);
         });
 
-        // Connectivity check link - checks health before each GraphQL request
+        // Connectivity check link - only check if we think we're disconnected
         const connectivityCheckLink = new ApolloLink((operation, forward) => {
             return new Observable((observer) => {
-                // First check current connectivity status
-                checkConnectivity().then((isConnected) => {
-                    if (!isConnected) {
-                        // If disconnected, show notification and return error
-                        notifyIfDisconnected();
-                        
-                        // Return a proper GraphQL error response
-                        observer.next({
-                            data: null,
-                            errors: [{
-                                message: "Server not available",
-                                extensions: { 
-                                    code: "NETWORK_ERROR",
-                                    connectivityError: true 
-                                }
-                            }]
-                        });
-                        observer.complete();
-                        return;
-                    }
-                    
-                    // If connected, proceed with the GraphQL request
+                function proceedWithRequest() {
                     const subscription = forward(operation).subscribe({
                         next: (result) => {
                             // Successful response means we're still connected
@@ -219,25 +218,56 @@ export const AppApolloProvider: React.FC<{
                     });
 
                     return () => subscription.unsubscribe();
-                }).catch((error) => {
-                    // If connectivity check itself fails, treat as disconnected
-                    observer.error(error);
-                });
+                }
+                
+                // If we're already marked as disconnected, check connectivity
+                if (!isConnectedRef.current) {
+                    checkConnectivity()
+                        .then((isConnected) => {
+                            if (!isConnected) {
+                                notifyIfDisconnected();
+                                observer.next({
+                                    data: null,
+                                    errors: [
+                                        {
+                                            message: "Server not available",
+                                            extensions: {
+                                                code: "NETWORK_ERROR",
+                                                connectivityError: true,
+                                            },
+                                        },
+                                    ],
+                                });
+                                observer.complete();
+                                return;
+                            }
+
+                            // If connected, proceed with the GraphQL request
+                            proceedWithRequest();
+                        })
+                        .catch((error) => {
+                            observer.error(error);
+                        });
+                } else {
+                    // If we think we're connected, proceed directly
+                    proceedWithRequest();
+                }
             });
         });
 
         // Error link to catch network errors and show notifications
         const errorLink = new ErrorLink(({ error }) => {
             // Check if this is a network error
-            const isNetworkError = error && 
-                (error.message?.includes('fetch') || 
-                 error.message?.includes('NetworkError') ||
-                 error.message?.includes('Failed to fetch') ||
-                 error.message?.includes('Network request failed') ||
-                 error.message?.includes('ERR_CONNECTION_REFUSED'));
-            
+            const isNetworkError =
+                error &&
+                (error.message?.includes("fetch") ||
+                    error.message?.includes("NetworkError") ||
+                    error.message?.includes("Failed to fetch") ||
+                    error.message?.includes("Network request failed") ||
+                    error.message?.includes("ERR_CONNECTION_REFUSED"));
+
             if (isNetworkError) {
-                logger.warn('GraphQL network error detected:', error.message);
+                logger.warn("GraphQL network error detected:", error.message);
                 setIsConnected(false);
                 isConnectedRef.current = false;
                 notifyIfDisconnected();
@@ -246,7 +276,12 @@ export const AppApolloProvider: React.FC<{
 
         // Simple client with connectivity check
         const client = new ApolloClient({
-            link: ApolloLink.from([errorLink, connectivityCheckLink, authLink, httpLink]),
+            link: ApolloLink.from([
+                errorLink,
+                connectivityCheckLink,
+                authLink,
+                httpLink,
+            ]),
             cache: new InMemoryCache(),
             defaultOptions: {
                 watchQuery: {
@@ -262,20 +297,31 @@ export const AppApolloProvider: React.FC<{
         return client;
     }, [notifyIfDisconnected, checkConnectivity]); // Include both dependencies
 
-    // Initial connectivity check on mount
+    // Debounced initial connectivity check on mount
     useEffect(() => {
-        checkConnectivity();
+        const timeoutId = setTimeout(() => {
+            checkConnectivity();
+        }, 100); // Small delay to prevent immediate check on mount
+
+        return () => clearTimeout(timeoutId);
     }, [checkConnectivity]);
 
-    // Listen for online/offline events
+    // Listen for online/offline events with debouncing
     useEffect(() => {
+        let onlineTimeout: NodeJS.Timeout;
+
         const handleOnline = () => {
             logger.info("Browser detected online status");
-            checkConnectivity();
+            // Debounce the connectivity check
+            clearTimeout(onlineTimeout);
+            onlineTimeout = setTimeout(() => {
+                checkConnectivity();
+            }, 500);
         };
 
         const handleOffline = () => {
             logger.warn("Browser detected offline status");
+            clearTimeout(onlineTimeout);
             setIsConnected(false);
             isConnectedRef.current = false;
             notifyIfDisconnected();
@@ -287,6 +333,7 @@ export const AppApolloProvider: React.FC<{
         return () => {
             window.removeEventListener("online", handleOnline);
             window.removeEventListener("offline", handleOffline);
+            clearTimeout(onlineTimeout);
         };
     }, [checkConnectivity, notifyIfDisconnected]);
 
@@ -312,7 +359,7 @@ export const AppApolloProvider: React.FC<{
             authToken,
             updateAuthToken,
             clearAuthToken,
-        ]
+        ],
     );
 
     // Don't render until initial connectivity check is complete
@@ -322,9 +369,7 @@ export const AppApolloProvider: React.FC<{
 
     return (
         <NetworkConnectivityContext.Provider value={contextValue}>
-            <ApolloProvider client={apolloClient}>
-                {children}
-            </ApolloProvider>
+            <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
         </NetworkConnectivityContext.Provider>
     );
 };
