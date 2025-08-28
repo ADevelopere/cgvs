@@ -35,7 +35,7 @@ const StudentManagementDashboardTitle: React.FC = () => {
 
 const StudentTable: React.FC = () => {
     const { students, paginationInfo, loading } = useStudentManagement();
-    const { applySingleFilter, updateSort } = useStudentFilter();
+    const { setColumnFilter, updateSort, filters } = useStudentFilter();
 
     const { setDashboardSlot } = useDashboardLayout();
     useEffect(() => {
@@ -127,9 +127,9 @@ const StudentTable: React.FC = () => {
             isLoading={loading}
             columns={columns}
             dataProps={{
-                onFilter: applySingleFilter,
+                onFilterChange: setColumnFilter,
                 onSort: updateSort,
-                // filters: { filters },
+                filters,
             }}
             columnProps={{
                 initialWidths: initialWidths,
