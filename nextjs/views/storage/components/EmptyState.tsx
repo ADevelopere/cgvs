@@ -7,37 +7,52 @@ import {
     ArrowUpward as ArrowUpIcon,
     FolderOpen as FolderOpenIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-const EmptyState: React.FC = () => {
+export interface EmptyStateProps {
+    canUpload: boolean;
+    isAtRoot: boolean;
+    onGoUp?: () => void;
+    onUpload?: (files: File[]) => Promise<void>;
+}
+
+const EmptyState: React.FC<EmptyStateProps> = ({
+    canUpload,
+    isAtRoot,
+    onGoUp,
+    onUpload,
+}) => {
     const theme = useTheme();
     const notifications = useNotifications();
-    const { goUp, startUpload } = useStorageManagement();
-    const { canUpload, isAtRoot } = useStorageLocation();
     const translations = useAppTranslation("storageTranslations");
 
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         const files = Array.from(event.target.files || []);
-        if (files.length > 0) {
-            startUpload(files)
-                .then(() => {
-                    notifications.show(translations.uploadStartedSuccessfully, {
-                        severity: "success",
-                        autoHideDuration: 3000,
-                    });
-                })
-                .catch(() => {
-                    notifications.show(translations.failedToStartUpload, {
-                        severity: "error",
-                        autoHideDuration: 3000,
-                    });
+        if (files.length > 0 && onUpload) {
+            try {
+                await onUpload(files);
+                notifications.show(translations.uploadStartedSuccessfully, {
+                    severity: "success",
+                    autoHideDuration: 3000,
                 });
+            } catch {
+                notifications.show(translations.failedToStartUpload, {
+                    severity: "error",
+                    autoHideDuration: 3000,
+                });
+            }
         }
         // Reset input
         event.target.value = "";
+    };
+
+    const handleGoUp = () => {
+        if (onGoUp) {
+            onGoUp();
+        }
     };
 
     return (
@@ -113,7 +128,7 @@ const EmptyState: React.FC = () => {
                         variant="outlined"
                         size="large"
                         startIcon={<ArrowUpIcon />}
-                        onClick={goUp}
+                        onClick={handleGoUp}
                         sx={{
                             borderRadius: 2,
                             px: 3,

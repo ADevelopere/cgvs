@@ -6,6 +6,9 @@ const config: StorybookConfig = {
     "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../components/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
+  "addons": [
+    "msw-storybook-addon"
+  ],
   "framework": {
     "name": "@storybook/nextjs",
     "options": {}
