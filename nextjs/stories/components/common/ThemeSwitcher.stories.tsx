@@ -8,21 +8,21 @@ import {
   defaultStoryArgs,
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
-import LanguageSwitcher from "@/components/common/LanguageSwitcher";
-import useStoryTheme from "../useStoryTheme";
+import ThemeSwitcher from "@/components/common/ThemeSwitcher";
+import useStoryTheme from "@/stories/useStoryTheme";
 
 export default {
-  title: "Components/Common/LanguageSwitcher",
-  component: LanguageSwitcher,
+  title: "Components/Common/ThemeSwitcher",
+  component: ThemeSwitcher,
   decorators: [withGlobalStyles],
   argTypes: {
     ...commonStoryArgTypes,
   },
 } as Meta;
 
-type LanguageSwitcherStoryProps = CommonStoryArgTypesProps;
+type ThemeSwitcherStoryProps = CommonStoryArgTypesProps;
 
-const Template: StoryFn<LanguageSwitcherStoryProps> = (args) => {
+const Template: StoryFn<ThemeSwitcherStoryProps> = (args) => {
   useStoryTheme(args);
 
   return (
@@ -45,8 +45,8 @@ const Template: StoryFn<LanguageSwitcherStoryProps> = (args) => {
             gap: 2,
           }}
         >
-          <Box>Language:</Box>
-          <LanguageSwitcher />
+          <Box>Theme:</Box>
+          <ThemeSwitcher />
         </Toolbar>
       </Box>
     </AppRouterCacheProvider>

@@ -1,8 +1,9 @@
-import ClientProviders from "@/components/ClientProviders";
+/* eslint-disable @next/next/no-page-custom-font */
+import { AppThemeProvider } from "@/contexts/ThemeContext";
+import { NotificationsProvider } from "@toolpad/core/useNotifications";
 import React from "react";
 
-// @ts-ignore
-const withGlobalStyles = (Story) => {
+const withGlobalStyles = (Story: React.ComponentType) => {
     return (
         <>
             <link
@@ -34,10 +35,12 @@ const withGlobalStyles = (Story) => {
                 rel="stylesheet"
             />
 
-            <ClientProviders>
-                {" "}
-                <Story />
-            </ClientProviders>
+            <AppThemeProvider>
+                <NotificationsProvider>
+                    {" "}
+                    <Story />
+                </NotificationsProvider>
+            </AppThemeProvider>
         </>
     );
 };

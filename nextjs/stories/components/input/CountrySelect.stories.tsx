@@ -9,32 +9,32 @@ import {
   defaultStoryArgs,
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
-import GenderSelector, { GenderSelectorProps } from "@/components/input/GenderSelector";
-import Gender from "@/types/Gender";
-import useStoryTheme from "../useStoryTheme";
+import CountrySelect, { CountrySelectProps } from "@/components/input/CountrySelect";
+import countries from "@/utils/country";
+import useStoryTheme from "../../useStoryTheme";
 
 export default {
-  title: "Components/Input/GenderSelector",
-  component: GenderSelector,
+  title: "Components/Input/CountrySelect",
+  component: CountrySelect,
   decorators: [withGlobalStyles],
   argTypes: {
     ...commonStoryArgTypes,
-    gender: {
+    country: {
       table: {
         disable: true,
       },
     },
-    setGender: {
+    setCountry: {
       table: {
         disable: true,
       },
     },
-    error: {
+    autoComplete: {
       table: {
         disable: true,
       },
     },
-    setError: {
+    label: {
       table: {
         disable: true,
       },
@@ -42,13 +42,12 @@ export default {
   },
 } as Meta;
 
-type GenderSelectorStoryProps = GenderSelectorProps & CommonStoryArgTypesProps;
+type CountrySelectStoryProps = CountrySelectProps & CommonStoryArgTypesProps;
 
-const Template: StoryFn<GenderSelectorStoryProps> = (
-  args: GenderSelectorStoryProps,
+const Template: StoryFn<CountrySelectStoryProps> = (
+  args: CountrySelectStoryProps,
 ) => {
-  const [gender, setGender] = useState(Gender.Not_Specified);
-  const [error, setError] = useState(false);
+  const [country, setCountry] = useState(countries[0]);
   useStoryTheme(args);
 
   return (
@@ -60,17 +59,11 @@ const Template: StoryFn<GenderSelectorStoryProps> = (
           backgroundColor: "background.default",
           color: "onBackground",
           display: "flex",
-          flexDirection: "row",
           alignItems: "center",
-          justifyContent: "start",
+          justifyContent: "center",
         }}
       >
-        <GenderSelector
-          gender={gender}
-          setGender={setGender}
-          error={error}
-          setError={setError}
-        />
+        <CountrySelect {...args} country={country} setCountry={setCountry} />
       </Box>
     </AppRouterCacheProvider>
   );
@@ -79,5 +72,6 @@ const Template: StoryFn<GenderSelectorStoryProps> = (
 export const Default = Template.bind({});
 Default.args = {
   ...defaultStoryArgs,
-  gender: Gender.Not_Specified,
+  fullWidth: true,
+  required: true,
 };

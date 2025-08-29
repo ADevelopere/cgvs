@@ -11,7 +11,7 @@ import {
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
 import LanguageSelector, { LanguageSelectorProps } from "@/components/input/LanguageSelector";
 import AppLanguage from "@/locale/AppLanguage";
-import useStoryTheme from "../useStoryTheme";
+import useStoryTheme from "../../useStoryTheme";
 
 export default {
   title: "Components/Input/LanguageSelector",

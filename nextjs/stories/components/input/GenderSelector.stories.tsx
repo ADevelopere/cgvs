@@ -3,39 +3,38 @@ import { Meta, StoryFn } from "@storybook/nextjs";
 
 import withGlobalStyles from "@/stories/Decorators";
 import { Box } from "@mui/material";
-import moment from "moment-hijri";
 import {
   commonStoryArgTypes,
   CommonStoryArgTypesProps,
   defaultStoryArgs,
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
-import DateScrollPicker, { DateScrollPickerProps } from "@/components/input/DateScrollPicker";
-import Calendar from "@/types/Calendar";
-import useStoryTheme from "../useStoryTheme";
+import GenderSelector, { GenderSelectorProps } from "@/components/input/GenderSelector";
+import Gender from "@/types/Gender";
+import useStoryTheme from "../../useStoryTheme";
 
 export default {
-  title: "Components/Input/DateScrollPicker",
-  component: DateScrollPicker,
+  title: "Components/Input/GenderSelector",
+  component: GenderSelector,
   decorators: [withGlobalStyles],
   argTypes: {
     ...commonStoryArgTypes,
-    calendar: {
+    gender: {
       table: {
         disable: true,
       },
     },
-    setCalendar: {
+    setGender: {
       table: {
         disable: true,
       },
     },
-    selectedDate: {
+    error: {
       table: {
         disable: true,
       },
     },
-    onChange: {
+    setError: {
       table: {
         disable: true,
       },
@@ -43,14 +42,13 @@ export default {
   },
 } as Meta;
 
-type DateScrollPickerStoryProps = DateScrollPickerProps &
-  CommonStoryArgTypesProps;
+type GenderSelectorStoryProps = GenderSelectorProps & CommonStoryArgTypesProps;
 
-const Template: StoryFn<DateScrollPickerStoryProps> = (
-  args: DateScrollPickerStoryProps,
+const Template: StoryFn<GenderSelectorStoryProps> = (
+  args: GenderSelectorStoryProps,
 ) => {
-  const [calendar, setCalendar] = useState(Calendar.Gregorian);
-  const [selectedDate, setSelectedDate] = useState(moment());
+  const [gender, setGender] = useState(Gender.Not_Specified);
+  const [error, setError] = useState(false);
   useStoryTheme(args);
 
   return (
@@ -67,11 +65,11 @@ const Template: StoryFn<DateScrollPickerStoryProps> = (
           justifyContent: "start",
         }}
       >
-        <DateScrollPicker
-          calendar={calendar}
-          setCalendar={setCalendar}
-          selectedDate={selectedDate}
-          onChange={setSelectedDate}
+        <GenderSelector
+          gender={gender}
+          setGender={setGender}
+          error={error}
+          setError={setError}
         />
       </Box>
     </AppRouterCacheProvider>
@@ -81,5 +79,5 @@ const Template: StoryFn<DateScrollPickerStoryProps> = (
 export const Default = Template.bind({});
 Default.args = {
   ...defaultStoryArgs,
-  calendar: Calendar.Hijri,
+  gender: Gender.Not_Specified,
 };

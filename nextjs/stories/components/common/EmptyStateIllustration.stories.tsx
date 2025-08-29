@@ -9,7 +9,7 @@ import {
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
 import EmptyStateIllustration from "@/components/common/EmptyStateIllustration";
-import useStoryTheme from "../useStoryTheme";
+import useStoryTheme from "@/stories/useStoryTheme";
 
 export default {
   title: "Components/Common/EmptyStateIllustration",
