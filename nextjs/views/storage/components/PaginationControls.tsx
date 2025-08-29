@@ -12,11 +12,26 @@ import {
     Stack,
     SelectChangeEvent,
 } from "@mui/material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-const PaginationControls: React.FC = () => {
-    const { pagination, params, setPage, setLimit } = useStorageManagement();
+export interface PaginationControlsProps {
+    pagination: {
+        totalCount: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+    } | null;
+    currentLimit: number;
+    onPageChange: (page: number) => void;
+    onLimitChange: (limit: number) => void;
+}
+
+const PaginationControls: React.FC<PaginationControlsProps> = ({
+    pagination,
+    currentLimit,
+    onPageChange,
+    onLimitChange,
+}) => {
     const translations = useAppTranslation("storageTranslations");
 
     if (!pagination) {
@@ -27,12 +42,12 @@ const PaginationControls: React.FC = () => {
     const totalPages = Math.ceil(pagination.totalCount / pagination.limit);
 
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
-        setPage(page);
+        onPageChange(page);
     };
 
     const handleLimitChange = (event: SelectChangeEvent<number>) => {
-        const newLimit = event.target.value as number;
-        setLimit(newLimit);
+        const newLimit = event.target.value;
+        onLimitChange(newLimit);
     };
 
     const startItem = pagination.offset + 1;
@@ -70,7 +85,7 @@ const PaginationControls: React.FC = () => {
                     <InputLabel id="page-size-label">{translations.perPage}</InputLabel>
                     <Select
                         labelId="page-size-label"
-                        value={params.limit}
+                        value={currentLimit}
                         onChange={handleLimitChange}
                         label={translations.perPage}
                     >

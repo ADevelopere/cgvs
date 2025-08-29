@@ -21,8 +21,18 @@ import LocationGrid from "../components/LocationGrid";
 import UploadLocationInfo from "../upload/UploadLocationInfo";
 
 const StorageManagementPage: React.FC = () => {
-    const { items, loading, error } = useStorageManagement();
-    const { isAtRoot } = useStorageLocation();
+    const {
+        items,
+        loading,
+        error,
+        selectedPaths,
+        clearSelection,
+        remove,
+        refresh,
+        goUp,
+        startUpload,
+    } = useStorageManagement();
+    const { isAtRoot, canUpload } = useStorageLocation();
 
     return (
         <Box
@@ -56,7 +66,7 @@ const StorageManagementPage: React.FC = () => {
                 </Box>
 
                 {/* Error Banner */}
-                {error && <ErrorBanner />}
+                {error && <ErrorBanner error={error} onRetry={refresh} />}
 
                 {/* Upload Location Info */}
                 <UploadLocationInfo />
@@ -75,7 +85,12 @@ const StorageManagementPage: React.FC = () => {
                     ) : isAtRoot ? (
                         <LocationGrid />
                     ) : items.length === 0 && !error ? (
-                        <EmptyState />
+                        <EmptyState
+                            canUpload={canUpload}
+                            isAtRoot={isAtRoot}
+                            onGoUp={goUp}
+                            onUpload={startUpload}
+                        />
                     ) : (
                         <>
                             {/* Select Header */}
@@ -92,7 +107,11 @@ const StorageManagementPage: React.FC = () => {
             </Container>
 
             {/* Floating Components */}
-            <BulkActionsBar />
+            <BulkActionsBar
+                selectedPaths={selectedPaths}
+                onClearSelection={clearSelection}
+                onDelete={remove}
+            />
             <UploadList />
         </Box>
     );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
 import withGlobalStyles from "@/stories/Decorators";
 import { Box, Toolbar, IconButton, Tooltip, useTheme } from "@mui/material";
@@ -10,27 +10,85 @@ import {
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
 import useStoryTheme from "@/stories/useStoryTheme";
+import { NetworkConnectivityContextType } from "@/contexts/AppApolloProvider";
 import useAppTranslation from "@/locale/useAppTranslation";
 import ConnectivityTranslations from "@/locale/components/Connectivity";
 
-type ConnectivityStatusStoryProps = CommonStoryArgTypesProps & {
+// Mock NetworkConnectivityContext
+const MockNetworkConnectivityContext = createContext<
+  NetworkConnectivityContextType | undefined
+>(undefined);
+
+// Mock Provider Component
+const MockNetworkConnectivityProvider: React.FC<{
+  children: React.ReactNode;
   isConnected: boolean;
   isChecking: boolean;
   lastChecked?: string;
+}> = ({ children, isConnected, isChecking, lastChecked }) => {
+  const contextValue = useMemo(
+    (): NetworkConnectivityContextType => ({
+      isConnected,
+      isChecking,
+      lastChecked: lastChecked ? new Date(lastChecked) : null,
+      checkConnectivity: async () => {
+        // eslint-disable-next-line no-console
+        console.log("Mock connectivity check triggered");
+        return isConnected;
+      },
+      setConnected: (connected: boolean) => {
+        // eslint-disable-next-line no-console
+        console.log("Mock setConnected called with:", connected);
+      },
+      notifyIfDisconnected: () => {
+        // eslint-disable-next-line no-console
+        console.log("Mock notifyIfDisconnected called");
+      },
+      authToken: null,
+      updateAuthToken: (token: string) => {
+        // eslint-disable-next-line no-console
+        console.log("Mock updateAuthToken called with:", token);
+      },
+      clearAuthToken: () => {
+        // eslint-disable-next-line no-console
+        console.log("Mock clearAuthToken called");
+      },
+    }),
+    [isConnected, isChecking, lastChecked],
+  );
+
+  return (
+    <MockNetworkConnectivityContext.Provider value={contextValue}>
+      {children}
+    </MockNetworkConnectivityContext.Provider>
+  );
 };
 
-// Mock ConnectivityStatus component that uses args directly
-const MockConnectivityStatus: React.FC<{ 
-  isConnected: boolean; 
-  isChecking: boolean; 
-  lastChecked?: string;
-}> = ({ isConnected, isChecking, lastChecked }) => {
+// Custom hook that uses our mock context instead of the real one
+const useMockNetworkConnectivity = (): NetworkConnectivityContextType => {
+  const context = useContext(MockNetworkConnectivityContext);
+  if (!context) {
+    throw new Error(
+      "useMockNetworkConnectivity must be used within a MockNetworkConnectivityProvider",
+    );
+  }
+  return context;
+};
+
+// Recreate the ConnectivityStatus component but using our mock hook
+const MockedConnectivityStatus: React.FC = () => {
+  const { isConnected, isChecking, checkConnectivity, lastChecked } =
+    useMockNetworkConnectivity();
   const theme = useTheme();
-  const strings: ConnectivityTranslations = useAppTranslation("connectivityTranslations");
+  const strings: ConnectivityTranslations = useAppTranslation(
+    "connectivityTranslations",
+  );
 
   const getColor = () => {
     if (isChecking) return theme.palette.warning.main;
-    return isConnected ? theme.palette.success.main : theme.palette.error.main;
+    return isConnected
+      ? theme.palette.success.main
+      : theme.palette.error.main;
   };
 
   const getTooltipText = () => {
@@ -38,7 +96,7 @@ const MockConnectivityStatus: React.FC<{
     if (isConnected) {
       const baseText = strings.connected;
       return lastChecked
-        ? `${baseText} (${strings.lastChecked}: ${new Date(lastChecked).toLocaleTimeString()})`
+        ? `${baseText} (${strings.lastChecked}: ${lastChecked.toLocaleTimeString()})`
         : baseText;
     }
     return `${strings.disconnected} - ${strings.clickToRetry}`;
@@ -49,16 +107,10 @@ const MockConnectivityStatus: React.FC<{
     return isConnected ? <Wifi /> : <WifiOff />;
   };
 
-  const handleClick = () => {
-    // Mock connectivity check - in a real scenario this would trigger actual connectivity check
-    // eslint-disable-next-line no-console
-    console.log("Connectivity check triggered");
-  };
-
   return (
     <Tooltip title={getTooltipText()}>
       <IconButton
-        onClick={handleClick}
+        onClick={checkConnectivity}
         disabled={isChecking}
         sx={{
           color: getColor(),
@@ -80,9 +132,15 @@ const MockConnectivityStatus: React.FC<{
   );
 };
 
+type ConnectivityStatusStoryProps = CommonStoryArgTypesProps & {
+  isConnected: boolean;
+  isChecking: boolean;
+  lastChecked?: string;
+};
+
 export default {
-  title: "Components/Common/ConnectivityStatus",
-  component: MockConnectivityStatus,
+  title: "Components/Common/ConnectivityStatus/ConnectivityStatus",
+  component: MockedConnectivityStatus,
   decorators: [withGlobalStyles],
   argTypes: {
     ...commonStoryArgTypes,
@@ -98,7 +156,7 @@ export default {
       control: { type: "boolean" },
       description: "Whether a connectivity check is in progress",
       table: {
-        category: "Connectivity", 
+        category: "Connectivity",
         order: 2,
       },
     },
@@ -118,32 +176,34 @@ const Template: StoryFn<ConnectivityStatusStoryProps> = (args) => {
 
   return (
     <AppRouterCacheProvider>
-      <Box
-        sx={{
-          height: "100vh",
-          backgroundColor: "background.default",
-          color: "onBackground",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+      <MockNetworkConnectivityProvider
+        isConnected={args.isConnected}
+        isChecking={args.isChecking}
+        lastChecked={args.lastChecked}
       >
-        <Toolbar
+        <Box
           sx={{
-            backgroundColor: "primary.main",
-            color: "primary.contrastText",
-            borderRadius: 1,
-            gap: 2,
+            height: "100vh",
+            backgroundColor: "background.default",
+            color: "onBackground",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Box>Connectivity Status:</Box>
-          <MockConnectivityStatus 
-            isConnected={args.isConnected}
-            isChecking={args.isChecking}
-            lastChecked={args.lastChecked}
-          />
-        </Toolbar>
-      </Box>
+          <Toolbar
+            sx={{
+              backgroundColor: "primary.main",
+              color: "primary.contrastText",
+              borderRadius: 1,
+              gap: 2,
+            }}
+          >
+            <Box>Connectivity Status (Approach 1 - Mock Context):</Box>
+            <MockedConnectivityStatus />
+          </Toolbar>
+        </Box>
+      </MockNetworkConnectivityProvider>
     </AppRouterCacheProvider>
   );
 };

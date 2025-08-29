@@ -9,8 +9,9 @@ import {
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
 import useStoryTheme from "@/stories/useStoryTheme";
-import { MockStorageProvider } from "../MockStorageProvider";
-import ErrorBanner from "@/views/storage/components/ErrorBanner";
+import ErrorBanner, {
+    ErrorBannerProps,
+} from "@/views/storage/components/ErrorBanner";
 
 type ErrorBannerStoryProps = CommonStoryArgTypesProps & {
     errorType:
@@ -20,9 +21,10 @@ type ErrorBannerStoryProps = CommonStoryArgTypesProps & {
         | "notfound"
         | "timeout"
         | "server"
-        | "custom";
+        | "custom"
+        | "none";
     customErrorMessage: string;
-    showInContext: boolean;
+    showRetryAction: boolean;
 };
 
 const mockErrorMessages = {
@@ -33,6 +35,7 @@ const mockErrorMessages = {
     timeout: "Request timeout occurred",
     server: "Internal server error - 500",
     custom: "",
+    none: "",
 };
 
 const MockErrorBannerWrapper: React.FC<{
@@ -43,77 +46,76 @@ const MockErrorBannerWrapper: React.FC<{
         | "notfound"
         | "timeout"
         | "server"
-        | "custom";
+        | "custom"
+        | "none";
     customErrorMessage: string;
-    showInContext: boolean;
-}> = ({ errorType, customErrorMessage, showInContext }) => {
+    showRetryAction: boolean;
+}> = ({ errorType, customErrorMessage, showRetryAction }) => {
     const errorMessage =
         errorType === "custom"
             ? customErrorMessage
-            : mockErrorMessages[errorType];
+            : errorType === "none"
+              ? undefined
+              : mockErrorMessages[errorType];
 
-    const mockContextValue = {
-        items: [],
-        loading: false,
-        error: showInContext ? errorMessage : undefined,
-        selectedPaths: [],
-        refresh: async () => {
-            // eslint-disable-next-line no-console
-            console.log("Refresh clicked");
-        },
+    const handleRetry = () => {
+        // eslint-disable-next-line no-console
+        console.log("Retry clicked for error:", errorType);
+    };
+
+    const errorBannerProps: ErrorBannerProps = {
+        error: errorMessage,
+        onRetry: showRetryAction ? handleRetry : undefined,
     };
 
     return (
-        <MockStorageProvider mockValue={mockContextValue}>
-            <Box
-                sx={{
-                    minHeight: "100vh",
-                    backgroundColor: "background.default",
-                    color: "text.primary",
-                }}
-            >
-                <Box sx={{ p: 3 }}>
-                    <Typography variant="h4" gutterBottom>
-                        Error Banner Demo
-                    </Typography>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                backgroundColor: "background.default",
+                color: "text.primary",
+            }}
+        >
+            <Box sx={{ p: 3 }}>
+                <Typography variant="h4" gutterBottom>
+                    Error Banner Demo
+                </Typography>
 
-                    <Typography
-                        variant="body1"
-                        color="text.secondary"
-                        sx={{ mb: 3 }}
-                    >
-                        {showInContext
-                            ? "Error loaded from storage context:"
-                            : "Error passed as prop to component:"}
-                    </Typography>
+                <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mb: 3 }}
+                >
+                    Testing different error types and retry functionality.
+                </Typography>
 
-                    {/* Standalone usage */}
-                    {!showInContext && (
-                        <Box sx={{ mb: 3 }}>
-                            <Typography variant="h6" gutterBottom>
-                                Standalone Error Banner
+                {/* Main Error Banner */}
+                <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Current Error Banner
+                    </Typography>
+                    <ErrorBanner {...errorBannerProps} />
+
+                    {!errorMessage && (
+                        <Box
+                            sx={{
+                                p: 2,
+                                backgroundColor: "success.light",
+                                color: "success.contrastText",
+                                borderRadius: 1,
+                                mt: 2,
+                            }}
+                        >
+                            <Typography variant="body2">
+                                ✅ No error - ErrorBanner is hidden when error
+                                is undefined
                             </Typography>
-                            <ErrorBanner
-                                error={errorMessage}
-                                onRetry={() => {
-                                    // eslint-disable-next-line no-console
-                                    console.log("Standalone retry clicked");
-                                }}
-                            />
                         </Box>
                     )}
+                </Box>
 
-                    {/* Context usage */}
-                    {showInContext && (
-                        <Box sx={{ mb: 3 }}>
-                            <Typography variant="h6" gutterBottom>
-                                Context-driven Error Banner
-                            </Typography>
-                            <ErrorBanner />
-                        </Box>
-                    )}
-
-                    {/* Demo info */}
+                {/* Demo info */}
+                {errorMessage && (
                     <Box
                         sx={{
                             mt: 4,
@@ -134,54 +136,55 @@ const MockErrorBannerWrapper: React.FC<{
                                 &quot;
                             </Typography>
                             <Typography variant="body2">
-                                <strong>Source:</strong>{" "}
-                                {showInContext
-                                    ? "Storage Context"
-                                    : "Component Prop"}
+                                <strong>Retry Action:</strong>{" "}
+                                {showRetryAction ? "Enabled" : "Disabled"}
                             </Typography>
                         </Stack>
                     </Box>
+                )}
 
-                    {/* Error type examples */}
-                    <Box sx={{ mt: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            All Error Types:
-                        </Typography>
-                        <Stack spacing={2}>
-                            {Object.entries(mockErrorMessages).map(
-                                ([type, message]) => (
-                                    <Box key={type}>
-                                        <Typography
-                                            variant="subtitle2"
-                                            gutterBottom
-                                        >
-                                            {type.charAt(0).toUpperCase() +
-                                                type.slice(1)}{" "}
-                                            Error:
-                                        </Typography>
-                                        <ErrorBanner
-                                            error={message}
-                                            onRetry={() => {
-                                                // eslint-disable-next-line no-console
-                                                console.log(
-                                                    `Retry ${type} error`,
-                                                );
-                                            }}
-                                        />
-                                    </Box>
-                                ),
-                            )}
-                        </Stack>
-                    </Box>
+                {/* All Error Types Examples */}
+                <Box sx={{ mt: 4 }}>
+                    <Typography variant="h6" gutterBottom>
+                        All Error Types Examples:
+                    </Typography>
+                    <Stack spacing={2}>
+                        {Object.entries(mockErrorMessages)
+                            .filter(
+                                ([type]) =>
+                                    type !== "custom" && type !== "none",
+                            )
+                            .map(([type, message]) => (
+                                <Box key={type}>
+                                    <Typography
+                                        variant="subtitle2"
+                                        gutterBottom
+                                    >
+                                        {type.charAt(0).toUpperCase() +
+                                            type.slice(1)}{" "}
+                                        Error:
+                                    </Typography>
+                                    <ErrorBanner
+                                        error={message}
+                                        onRetry={() => {
+                                            // eslint-disable-next-line no-console
+                                            console.log(
+                                                `Example retry for ${type} error`,
+                                            );
+                                        }}
+                                    />
+                                </Box>
+                            ))}
+                    </Stack>
                 </Box>
             </Box>
-        </MockStorageProvider>
+        </Box>
     );
 };
 
 export default {
     title: "Storage/Components/ErrorBanner",
-    component: MockErrorBannerWrapper,
+    component: ErrorBanner,
     decorators: [withGlobalStyles],
     argTypes: {
         ...commonStoryArgTypes,
@@ -195,6 +198,7 @@ export default {
                 "timeout",
                 "server",
                 "custom",
+                "none",
             ],
             description: "Type of error to display",
             table: {
@@ -211,12 +215,11 @@ export default {
                 order: 2,
             },
         },
-        showInContext: {
+        showRetryAction: {
             control: { type: "boolean" },
-            description:
-                "Whether to show error from storage context or as component prop",
+            description: "Whether to show the retry button",
             table: {
-                category: "Usage",
+                category: "Actions",
                 order: 1,
             },
         },
@@ -225,7 +228,7 @@ export default {
         docs: {
             description: {
                 component:
-                    "Displays error messages with user-friendly text and retry functionality. Automatically maps common error types to localized messages.",
+                    "Displays error messages with user-friendly text and retry functionality. Automatically maps common error types to localized messages. Now uses props for better testability.",
             },
         },
     },
@@ -239,7 +242,7 @@ const Template: StoryFn<ErrorBannerStoryProps> = (args) => {
             <MockErrorBannerWrapper
                 errorType={args.errorType}
                 customErrorMessage={args.customErrorMessage}
-                showInContext={args.showInContext}
+                showRetryAction={args.showRetryAction}
             />
         </AppRouterCacheProvider>
     );
@@ -250,7 +253,7 @@ NetworkError.args = {
     ...defaultStoryArgs,
     errorType: "network",
     customErrorMessage: "",
-    showInContext: false,
+    showRetryAction: true,
 };
 
 export const AuthenticationError = Template.bind({});
@@ -258,7 +261,7 @@ AuthenticationError.args = {
     ...defaultStoryArgs,
     errorType: "auth",
     customErrorMessage: "",
-    showInContext: false,
+    showRetryAction: true,
 };
 
 export const ForbiddenError = Template.bind({});
@@ -266,7 +269,7 @@ ForbiddenError.args = {
     ...defaultStoryArgs,
     errorType: "forbidden",
     customErrorMessage: "",
-    showInContext: false,
+    showRetryAction: true,
 };
 
 export const NotFoundError = Template.bind({});
@@ -274,7 +277,7 @@ NotFoundError.args = {
     ...defaultStoryArgs,
     errorType: "notfound",
     customErrorMessage: "",
-    showInContext: false,
+    showRetryAction: true,
 };
 
 export const TimeoutError = Template.bind({});
@@ -282,7 +285,7 @@ TimeoutError.args = {
     ...defaultStoryArgs,
     errorType: "timeout",
     customErrorMessage: "",
-    showInContext: false,
+    showRetryAction: true,
 };
 
 export const ServerError = Template.bind({});
@@ -290,7 +293,7 @@ ServerError.args = {
     ...defaultStoryArgs,
     errorType: "server",
     customErrorMessage: "",
-    showInContext: false,
+    showRetryAction: true,
 };
 
 export const CustomError = Template.bind({});
@@ -299,13 +302,21 @@ CustomError.args = {
     errorType: "custom",
     customErrorMessage:
         "Something unexpected happened. Please contact support if this persists.",
-    showInContext: false,
+    showRetryAction: true,
 };
 
-export const FromStorageContext = Template.bind({});
-FromStorageContext.args = {
+export const NoError = Template.bind({});
+NoError.args = {
+    ...defaultStoryArgs,
+    errorType: "none",
+    customErrorMessage: "",
+    showRetryAction: true,
+};
+
+export const WithoutRetryAction = Template.bind({});
+WithoutRetryAction.args = {
     ...defaultStoryArgs,
     errorType: "network",
     customErrorMessage: "",
-    showInContext: true,
+    showRetryAction: false,
 };

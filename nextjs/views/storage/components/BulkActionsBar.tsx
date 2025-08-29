@@ -22,12 +22,24 @@ import {
     Close as CloseIcon,
     SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-const BulkActionsBar: React.FC = () => {
+export type BulkActionsBarProps = {
+    selectedPaths: string[];
+    onClearSelection: () => void;
+    onDelete: (paths: string[]) => Promise<boolean>;
+    onDownload?: (paths: string[]) => void;
+    onCopyLinks?: (paths: string[]) => void;
+};
+
+const BulkActionsBar: React.FC<BulkActionsBarProps> = ({
+    selectedPaths,
+    onClearSelection,
+    onDelete,
+    onDownload,
+    onCopyLinks,
+}) => {
     const theme = useTheme();
-    const { selectedPaths, clearSelection, remove } = useStorageManagement();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const translations = useAppTranslation("storageTranslations");
 
@@ -35,18 +47,24 @@ const BulkActionsBar: React.FC = () => {
 
     const handleBulkDelete = async () => {
         setDeleteDialogOpen(false);
-        const success = await remove(selectedPaths);
+        const success = await onDelete(selectedPaths);
         if (success) {
-            clearSelection();
+            onClearSelection();
         }
     };
 
     const handleBulkDownload = () => {
+        if (onDownload) {
+            onDownload(selectedPaths);
+        }
         // For now, we'll just show a message that this feature would be implemented
         // In a real implementation, this would create a zip file or trigger individual downloads
     };
 
     const handleCopyLinks = () => {
+        if (onCopyLinks) {
+            onCopyLinks(selectedPaths);
+        }
         // For now, we'll just show a message that this feature would be implemented
         // In a real implementation, this would copy all public URLs to clipboard
     };
@@ -77,7 +95,10 @@ const BulkActionsBar: React.FC = () => {
                         <Stack direction="row" alignItems="center" spacing={2}>
                             <SelectAllIcon />
                             <Typography variant="subtitle1" fontWeight={600}>
-                                {translations.itemsSelected.replace('%{count}', String(selectedPaths.length))}
+                                {translations.itemsSelected.replace(
+                                    "%{count}",
+                                    String(selectedPaths.length),
+                                )}
                             </Typography>
                         </Stack>
 
@@ -90,10 +111,13 @@ const BulkActionsBar: React.FC = () => {
                                 onClick={handleBulkDownload}
                                 sx={{
                                     color: theme.palette.primary.contrastText,
-                                    borderColor: theme.palette.primary.contrastText,
+                                    borderColor:
+                                        theme.palette.primary.contrastText,
                                     "&:hover": {
-                                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                        borderColor: theme.palette.primary.contrastText,
+                                        backgroundColor:
+                                            "rgba(255, 255, 255, 0.1)",
+                                        borderColor:
+                                            theme.palette.primary.contrastText,
                                     },
                                 }}
                             >
@@ -107,10 +131,13 @@ const BulkActionsBar: React.FC = () => {
                                 onClick={handleCopyLinks}
                                 sx={{
                                     color: theme.palette.primary.contrastText,
-                                    borderColor: theme.palette.primary.contrastText,
+                                    borderColor:
+                                        theme.palette.primary.contrastText,
                                     "&:hover": {
-                                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                        borderColor: theme.palette.primary.contrastText,
+                                        backgroundColor:
+                                            "rgba(255, 255, 255, 0.1)",
+                                        borderColor:
+                                            theme.palette.primary.contrastText,
                                     },
                                 }}
                             >
@@ -126,7 +153,8 @@ const BulkActionsBar: React.FC = () => {
                                     color: theme.palette.error.light,
                                     borderColor: theme.palette.error.light,
                                     "&:hover": {
-                                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                        backgroundColor:
+                                            "rgba(255, 255, 255, 0.1)",
                                         borderColor: theme.palette.error.light,
                                     },
                                 }}
@@ -135,12 +163,13 @@ const BulkActionsBar: React.FC = () => {
                             </Button>
 
                             <IconButton
-                                onClick={clearSelection}
+                                onClick={onClearSelection}
                                 size="small"
                                 sx={{
                                     color: theme.palette.primary.contrastText,
                                     "&:hover": {
-                                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                        backgroundColor:
+                                            "rgba(255, 255, 255, 0.1)",
                                     },
                                 }}
                             >
@@ -163,16 +192,19 @@ const BulkActionsBar: React.FC = () => {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="delete-dialog-description">
-                        {translations.confirmBulkDeleteMessage.replace('%{count}', String(selectedPaths.length))}
+                        {translations.confirmBulkDeleteMessage.replace(
+                            "%{count}",
+                            String(selectedPaths.length),
+                        )}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDeleteDialogOpen(false)}>
                         {translations.cancel}
                     </Button>
-                    <Button 
-                        onClick={handleBulkDelete} 
-                        color="error" 
+                    <Button
+                        onClick={handleBulkDelete}
+                        color="error"
                         variant="contained"
                         autoFocus
                     >
