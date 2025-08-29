@@ -3,38 +3,39 @@ import { Meta, StoryFn } from "@storybook/nextjs";
 
 import withGlobalStyles from "@/stories/Decorators";
 import { Box } from "@mui/material";
+import moment from "moment-hijri";
 import {
   commonStoryArgTypes,
   CommonStoryArgTypesProps,
   defaultStoryArgs,
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
-import CountrySelect, { CountrySelectProps } from "@/components/input/CountrySelect";
-import countries from "@/utils/country";
-import useStoryTheme from "../useStoryTheme";
+import DateScrollPicker, { DateScrollPickerProps } from "@/components/input/DateScrollPicker";
+import Calendar from "@/types/Calendar";
+import useStoryTheme from "../../useStoryTheme";
 
 export default {
-  title: "Components/Input/CountrySelect",
-  component: CountrySelect,
+  title: "Components/Input/DateScrollPicker",
+  component: DateScrollPicker,
   decorators: [withGlobalStyles],
   argTypes: {
     ...commonStoryArgTypes,
-    country: {
+    calendar: {
       table: {
         disable: true,
       },
     },
-    setCountry: {
+    setCalendar: {
       table: {
         disable: true,
       },
     },
-    autoComplete: {
+    selectedDate: {
       table: {
         disable: true,
       },
     },
-    label: {
+    onChange: {
       table: {
         disable: true,
       },
@@ -42,12 +43,14 @@ export default {
   },
 } as Meta;
 
-type CountrySelectStoryProps = CountrySelectProps & CommonStoryArgTypesProps;
+type DateScrollPickerStoryProps = DateScrollPickerProps &
+  CommonStoryArgTypesProps;
 
-const Template: StoryFn<CountrySelectStoryProps> = (
-  args: CountrySelectStoryProps,
+const Template: StoryFn<DateScrollPickerStoryProps> = (
+  args: DateScrollPickerStoryProps,
 ) => {
-  const [country, setCountry] = useState(countries[0]);
+  const [calendar, setCalendar] = useState(Calendar.Gregorian);
+  const [selectedDate, setSelectedDate] = useState(moment());
   useStoryTheme(args);
 
   return (
@@ -59,11 +62,17 @@ const Template: StoryFn<CountrySelectStoryProps> = (
           backgroundColor: "background.default",
           color: "onBackground",
           display: "flex",
+          flexDirection: "row",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "start",
         }}
       >
-        <CountrySelect {...args} country={country} setCountry={setCountry} />
+        <DateScrollPicker
+          calendar={calendar}
+          setCalendar={setCalendar}
+          selectedDate={selectedDate}
+          onChange={setSelectedDate}
+        />
       </Box>
     </AppRouterCacheProvider>
   );
@@ -72,6 +81,5 @@ const Template: StoryFn<CountrySelectStoryProps> = (
 export const Default = Template.bind({});
 Default.args = {
   ...defaultStoryArgs,
-  fullWidth: true,
-  required: true,
+  calendar: Calendar.Hijri,
 };

@@ -8,21 +8,21 @@ import {
   defaultStoryArgs,
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
-import ConnectivityStatus from "@/components/common/ConnectivityStatus";
-import useStoryTheme from "../useStoryTheme";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
+import useStoryTheme from "@/stories/useStoryTheme";
 
 export default {
-  title: "Components/Common/ConnectivityStatus",
-  component: ConnectivityStatus,
+  title: "Components/Common/LanguageSwitcher",
+  component: LanguageSwitcher,
   decorators: [withGlobalStyles],
   argTypes: {
     ...commonStoryArgTypes,
   },
 } as Meta;
 
-type ConnectivityStatusStoryProps = CommonStoryArgTypesProps;
+type LanguageSwitcherStoryProps = CommonStoryArgTypesProps;
 
-const Template: StoryFn<ConnectivityStatusStoryProps> = (args) => {
+const Template: StoryFn<LanguageSwitcherStoryProps> = (args) => {
   useStoryTheme(args);
 
   return (
@@ -45,8 +45,8 @@ const Template: StoryFn<ConnectivityStatusStoryProps> = (args) => {
             gap: 2,
           }}
         >
-          <Box>Connectivity Status:</Box>
-          <ConnectivityStatus />
+          <Box>Language:</Box>
+          <LanguageSwitcher />
         </Toolbar>
       </Box>
     </AppRouterCacheProvider>
