@@ -11,7 +11,6 @@ import {
     Box,
     Alert,
 } from "@mui/material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 interface RenameDialogProps {
@@ -19,6 +18,7 @@ interface RenameDialogProps {
     onClose: () => void;
     currentPath: string;
     currentName: string;
+    onRename: (path: string, newName: string) => Promise<boolean>;
 }
 
 const RenameDialog: React.FC<RenameDialogProps> = ({
@@ -26,8 +26,8 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
     onClose,
     currentPath,
     currentName,
+    onRename,
 }) => {
-    const { rename } = useStorageManagement();
     const [newName, setNewName] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -79,7 +79,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
         setError(null);
 
         try {
-            const success = await rename(currentPath, trimmedName);
+            const success = await onRename(currentPath, trimmedName);
             if (success) {
                 onClose();
             } else {

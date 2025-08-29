@@ -41,7 +41,10 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
     const currentPage = Math.floor(pagination.offset / pagination.limit) + 1;
     const totalPages = Math.ceil(pagination.totalCount / pagination.limit);
 
-    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePageChange = (
+        _event: React.ChangeEvent<unknown>,
+        page: number,
+    ) => {
         onPageChange(page);
     };
 
@@ -53,7 +56,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
     const startItem = pagination.offset + 1;
     const endItem = Math.min(
         pagination.offset + pagination.limit,
-        pagination.totalCount
+        pagination.totalCount,
     );
 
     return (
@@ -82,7 +85,9 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
             <Stack direction="row" alignItems="center" spacing={2}>
                 {/* Page Size Selector */}
                 <FormControl size="small" sx={{ minWidth: 100 }}>
-                    <InputLabel id="page-size-label">{translations.perPage}</InputLabel>
+                    <InputLabel id="page-size-label">
+                        {translations.perPage}
+                    </InputLabel>
                     <Select
                         labelId="page-size-label"
                         value={currentLimit}

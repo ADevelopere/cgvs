@@ -21,13 +21,15 @@ import {
     Folder as FolderIcon,
     InsertDriveFile as FileIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
+import * as Graphql from "@/graphql/generated/types";
 
-interface DeleteConfirmDialogProps {
+export interface DeleteConfirmDialogProps {
     open: boolean;
     onClose: () => void;
     paths: string[];
+    items: Array<Graphql.FileInfo | Graphql.FolderInfo>;
+    onDelete: (paths: string[]) => Promise<boolean>;
     onConfirm?: () => void;
 }
 
@@ -35,9 +37,10 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
     open,
     onClose,
     paths,
+    items,
+    onDelete,
     onConfirm,
 }) => {
-    const { remove, items } = useStorageManagement();
     const [loading, setLoading] = useState(false);
     const translations = useAppTranslation("storageTranslations");
 
@@ -48,7 +51,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
     const handleDelete = async () => {
         setLoading(true);
         try {
-            const success = await remove(paths);
+            const success = await onDelete(paths);
             if (success) {
                 onConfirm?.();
                 onClose();

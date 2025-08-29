@@ -31,6 +31,14 @@ const StorageManagementPage: React.FC = () => {
         refresh,
         goUp,
         startUpload,
+        pagination,
+        params,
+        setPage,
+        setLimit,
+        stats,
+        toggleSelect,
+        navigateTo,
+        rename,
     } = useStorageManagement();
     const { isAtRoot, canUpload } = useStorageLocation();
 
@@ -62,7 +70,7 @@ const StorageManagementPage: React.FC = () => {
             >
                 {/* Stats Bar */}
                 <Box sx={{ p: 2, pb: 0 }}>
-                    <StorageStatsBar />
+                    <StorageStatsBar stats={stats} items={items} />
                 </Box>
 
                 {/* Error Banner */}
@@ -83,7 +91,7 @@ const StorageManagementPage: React.FC = () => {
                     {loading ? (
                         <LoadingSkeletons count={8} variant="list" />
                     ) : isAtRoot ? (
-                        <LocationGrid />
+                        <LocationGrid onNavigateTo={navigateTo} />
                     ) : items.length === 0 && !error ? (
                         <EmptyState
                             canUpload={canUpload}
@@ -97,10 +105,24 @@ const StorageManagementPage: React.FC = () => {
                             <SelectHeader />
 
                             {/* File List */}
-                            <FileList />
+                            <FileList
+                                items={items}
+                                loading={loading}
+                                selectedPaths={selectedPaths}
+                                error={error}
+                                onToggleSelect={toggleSelect}
+                                onNavigateTo={navigateTo}
+                                onDelete={remove}
+                                onRename={rename}
+                            />
 
                             {/* Pagination */}
-                            <PaginationControls />
+                            <PaginationControls
+                                pagination={pagination}
+                                currentLimit={params.limit}
+                                onPageChange={setPage}
+                                onLimitChange={setLimit}
+                            />
                         </>
                     )}
                 </Box>

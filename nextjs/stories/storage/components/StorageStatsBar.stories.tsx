@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
 import withGlobalStyles from "@/stories/Decorators";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Alert } from "@mui/material";
 import {
     commonStoryArgTypes,
     CommonStoryArgTypesProps,
@@ -11,12 +11,13 @@ import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvide
 import useStoryTheme from "@/stories/useStoryTheme";
 import * as Graphql from "@/graphql/generated/types";
 import {
-    MockStorageProvider,
     createMockStorageStats,
     createMockFileItem,
     createMockFolderItem,
 } from "../MockStorageProvider";
-import StorageStatsBar from "@/views/storage/components/StorageStatsBar";
+import StorageStatsBar, {
+    StorageStatsBarProps,
+} from "@/views/storage/components/StorageStatsBar";
 
 type StorageStatsBarStoryProps = CommonStoryArgTypesProps & {
     totalFiles: number;
@@ -28,8 +29,7 @@ type StorageStatsBarStoryProps = CommonStoryArgTypesProps & {
     documentFiles: number;
     videoFiles: number;
     audioFiles: number;
-    archiveFiles: number;
-    otherFiles: number;
+    showStats: boolean;
 };
 
 const MockStorageStatsBarWrapper: React.FC<{
@@ -42,8 +42,7 @@ const MockStorageStatsBarWrapper: React.FC<{
     documentFiles: number;
     videoFiles: number;
     audioFiles: number;
-    archiveFiles: number;
-    otherFiles: number;
+    showStats: boolean;
 }> = ({
     totalFiles,
     totalFolders,
@@ -54,8 +53,7 @@ const MockStorageStatsBarWrapper: React.FC<{
     documentFiles,
     videoFiles,
     audioFiles,
-    archiveFiles,
-    otherFiles,
+    showStats,
 }) => {
     // Create mock items for current directory
     const mockItems = [
@@ -71,8 +69,6 @@ const MockStorageStatsBarWrapper: React.FC<{
                 ...Array(documentFiles).fill("DOCUMENT"),
                 ...Array(videoFiles).fill("VIDEO"),
                 ...Array(audioFiles).fill("AUDIO"),
-                ...Array(archiveFiles).fill("ARCHIVE"),
-                ...Array(otherFiles).fill("OTHER"),
             ];
             const fileType = fileTypes[i % fileTypes.length] || "OTHER";
             return createMockFileItem({
@@ -83,102 +79,100 @@ const MockStorageStatsBarWrapper: React.FC<{
         }),
     ];
 
-    const mockStats = createMockStorageStats({
-        totalFiles,
-        totalFolders,
-        totalSize,
-        fileTypeBreakdown: [
-            {
-                __typename: "FileTypeCount" as const,
-                type: "IMAGE" as Graphql.FileType,
-                count: imageFiles,
-            },
-            {
-                __typename: "FileTypeCount" as const,
-                type: "DOCUMENT" as Graphql.FileType,
-                count: documentFiles,
-            },
-            {
-                __typename: "FileTypeCount" as const,
-                type: "VIDEO" as Graphql.FileType,
-                count: videoFiles,
-            },
-            {
-                __typename: "FileTypeCount" as const,
-                type: "AUDIO" as Graphql.FileType,
-                count: audioFiles,
-            },
-            {
-                __typename: "FileTypeCount" as const,
-                type: "ARCHIVE" as Graphql.FileType,
-                count: archiveFiles,
-            },
-            {
-                __typename: "FileTypeCount" as const,
-                type: "OTHER" as Graphql.FileType,
-                count: otherFiles,
-            },
-        ].filter((item) => item.count > 0),
-    });
+    const mockStats = showStats
+        ? createMockStorageStats({
+              totalFiles,
+              totalFolders,
+              totalSize,
+              fileTypeBreakdown: [
+                  {
+                      __typename: "FileTypeCount" as const,
+                      type: "IMAGE" as Graphql.FileType,
+                      count: imageFiles,
+                  },
+                  {
+                      __typename: "FileTypeCount" as const,
+                      type: "DOCUMENT" as Graphql.FileType,
+                      count: documentFiles,
+                  },
+                  {
+                      __typename: "FileTypeCount" as const,
+                      type: "VIDEO" as Graphql.FileType,
+                      count: videoFiles,
+                  },
+                  {
+                      __typename: "FileTypeCount" as const,
+                      type: "AUDIO" as Graphql.FileType,
+                      count: audioFiles,
+                  },
+              ].filter((item) => item.count > 0),
+          })
+        : undefined;
 
-    const mockContextValue = {
-        items: mockItems,
+    const storageStatsBarProps: StorageStatsBarProps = {
         stats: mockStats,
-        loading: false,
-        error: undefined,
+        items: mockItems,
     };
 
     return (
-        <MockStorageProvider mockValue={mockContextValue}>
-            <Box
-                sx={{
-                    minHeight: "100vh",
-                    backgroundColor: "background.default",
-                    color: "text.primary",
-                    p: 3,
-                }}
-            >
-                <Typography variant="h4" gutterBottom>
-                    Storage Statistics
+        <Box
+            sx={{
+                minHeight: "100vh",
+                backgroundColor: "background.default",
+                color: "text.primary",
+                p: 3,
+            }}
+        >
+            <Typography variant="h4" gutterBottom>
+                Storage Statistics Demo
+            </Typography>
+
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                Testing storage statistics display with different data
+                scenarios.
+            </Typography>
+
+            {/* Config Info */}
+            <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body2">
+                    <strong>Current Configuration:</strong>
+                    <br />• Total Storage: {totalFiles} files, {totalFolders}{" "}
+                    folders, {(totalSize / (1024 * 1024)).toFixed(1)} MB
+                    <br />• Current Directory: {currentFiles} files,{" "}
+                    {currentFolders} folders
+                    <br />• File Types: Images({imageFiles}), Documents(
+                    {documentFiles}), Videos({videoFiles}), Audio({audioFiles})
+                    <br />• Stats Available:{" "}
+                    {showStats ? "Yes" : "No (undefined stats)"}
                 </Typography>
+            </Alert>
 
-                <StorageStatsBar />
+            {/* The StorageStatsBar component */}
+            <StorageStatsBar {...storageStatsBarProps} />
 
+            {!showStats && (
                 <Box
                     sx={{
                         mt: 3,
                         p: 2,
-                        backgroundColor: "action.hover",
+                        backgroundColor: "success.light",
+                        color: "success.contrastText",
                         borderRadius: 1,
                     }}
                 >
-                    <Typography variant="subtitle2" gutterBottom>
-                        Configuration:
-                    </Typography>
-                    <Typography variant="body2" component="div">
-                        <strong>Total:</strong> {totalFiles} files,{" "}
-                        {totalFolders} folders,{" "}
-                        {(totalSize / (1024 * 1024)).toFixed(1)} MB
-                    </Typography>
-                    <Typography variant="body2" component="div">
-                        <strong>Current Directory:</strong> {currentFiles}{" "}
-                        files, {currentFolders} folders
-                    </Typography>
-                    <Typography variant="body2" component="div">
-                        <strong>File Types:</strong> Images({imageFiles}),
-                        Documents({documentFiles}), Videos({videoFiles}), Audio(
-                        {audioFiles}), Archives({archiveFiles}), Other(
-                        {otherFiles})
+                    <Typography variant="body2">
+                        ✅ No stats available - StorageStatsBar is hidden when
+                        stats is undefined
                     </Typography>
                 </Box>
-            </Box>
-        </MockStorageProvider>
+            )}
+        </Box>
     );
 };
 
 export default {
     title: "Storage/Components/StorageStatsBar",
-    component: MockStorageStatsBarWrapper,
+    component: StorageStatsBar,
     decorators: [withGlobalStyles],
     argTypes: {
         ...commonStoryArgTypes,
@@ -254,20 +248,13 @@ export default {
                 order: 4,
             },
         },
-        archiveFiles: {
-            control: { type: "number", min: 0, max: 1000 },
-            description: "Number of archive files",
+        showStats: {
+            control: { type: "boolean" },
+            description:
+                "Whether to show stats (false simulates undefined stats)",
             table: {
-                category: "File Types",
-                order: 5,
-            },
-        },
-        otherFiles: {
-            control: { type: "number", min: 0, max: 1000 },
-            description: "Number of other type files",
-            table: {
-                category: "File Types",
-                order: 6,
+                category: "State",
+                order: 1,
             },
         },
     },
@@ -275,7 +262,7 @@ export default {
         docs: {
             description: {
                 component:
-                    "Displays storage statistics including total usage, current directory counts, and file type breakdown.",
+                    "Displays storage statistics including total usage, current directory counts, and file type breakdown. Now uses props for better testability.",
             },
         },
     },
@@ -296,8 +283,7 @@ const Template: StoryFn<StorageStatsBarStoryProps> = (args) => {
                 documentFiles={args.documentFiles}
                 videoFiles={args.videoFiles}
                 audioFiles={args.audioFiles}
-                archiveFiles={args.archiveFiles}
-                otherFiles={args.otherFiles}
+                showStats={args.showStats}
             />
         </AppRouterCacheProvider>
     );
@@ -315,24 +301,22 @@ Typical.args = {
     documentFiles: 180,
     videoFiles: 45,
     audioFiles: 32,
-    archiveFiles: 15,
-    otherFiles: 125,
+    showStats: true,
 };
 
-export const Empty = Template.bind({});
-Empty.args = {
+export const NoStats = Template.bind({});
+NoStats.args = {
     ...defaultStoryArgs,
-    totalFiles: 0,
-    totalFolders: 0,
-    totalSize: 0,
-    currentFiles: 0,
-    currentFolders: 0,
-    imageFiles: 0,
-    documentFiles: 0,
-    videoFiles: 0,
-    audioFiles: 0,
-    archiveFiles: 0,
-    otherFiles: 0,
+    totalFiles: 100,
+    totalFolders: 5,
+    totalSize: 100 * 1024 * 1024,
+    currentFiles: 10,
+    currentFolders: 2,
+    imageFiles: 50,
+    documentFiles: 30,
+    videoFiles: 15,
+    audioFiles: 5,
+    showStats: false,
 };
 
 export const ImagesOnly = Template.bind({});
@@ -347,8 +331,7 @@ ImagesOnly.args = {
     documentFiles: 0,
     videoFiles: 0,
     audioFiles: 0,
-    archiveFiles: 0,
-    otherFiles: 0,
+    showStats: true,
 };
 
 export const LargeStorage = Template.bind({});
@@ -363,38 +346,20 @@ LargeStorage.args = {
     documentFiles: 12000,
     videoFiles: 5000,
     audioFiles: 2500,
-    archiveFiles: 300,
-    otherFiles: 200,
+    showStats: true,
 };
 
-export const SingleFileType = Template.bind({});
-SingleFileType.args = {
-    ...defaultStoryArgs,
-    totalFiles: 100,
-    totalFolders: 5,
-    totalSize: 50 * 1024 * 1024, // 50 MB
-    currentFiles: 8,
-    currentFolders: 1,
-    imageFiles: 0,
-    documentFiles: 100,
-    videoFiles: 0,
-    audioFiles: 0,
-    archiveFiles: 0,
-    otherFiles: 0,
-};
-
-export const ManyFileTypes = Template.bind({});
-ManyFileTypes.args = {
+export const EmptyDirectory = Template.bind({});
+EmptyDirectory.args = {
     ...defaultStoryArgs,
     totalFiles: 1000,
     totalFolders: 50,
-    totalSize: 5 * 1024 * 1024 * 1024, // 5 GB
-    currentFiles: 35,
-    currentFolders: 8,
-    imageFiles: 200,
-    documentFiles: 200,
+    totalSize: 2 * 1024 * 1024 * 1024, // 2 GB
+    currentFiles: 0,
+    currentFolders: 0,
+    imageFiles: 400,
+    documentFiles: 300,
     videoFiles: 200,
-    audioFiles: 200,
-    archiveFiles: 100,
-    otherFiles: 100,
+    audioFiles: 100,
+    showStats: true,
 };

@@ -29,20 +29,30 @@ import {
     PictureAsPdf as PdfIcon,
     Description as DocumentIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import * as Graphql from "@/graphql/generated/types";
 import { StorageItem } from "@/contexts/storage/storage.type";
 import { format } from "date-fns";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-interface FileItemProps {
+export interface FileItemProps {
     item: StorageItem;
     isSelected: boolean;
+    onToggleSelect: (path: string) => void;
+    onNavigateTo: (path: string) => void;
+    onDelete: (paths: string[]) => Promise<boolean>;
+    onRename?: (path: string, newName: string) => void;
 }
 
-const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
+const FileItem: React.FC<FileItemProps> = ({
+    item,
+    isSelected,
+    onToggleSelect,
+    onNavigateTo,
+    onDelete,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onRename,
+}) => {
     const theme = useTheme();
-    const { toggleSelect, navigateTo, remove } = useStorageManagement();
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     // const [isRenaming, setIsRenaming] = useState(false);
     const translations = useAppTranslation("storageTranslations");
@@ -103,14 +113,14 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
 
     const handleItemClick = () => {
         if (isFolder) {
-            navigateTo(item.path);
+            onNavigateTo(item.path);
         }
         // For files, we could implement preview here
     };
 
     const handleSelectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.stopPropagation();
-        toggleSelect(item.path);
+        onToggleSelect(item.path);
     };
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -125,12 +135,15 @@ const FileItem: React.FC<FileItemProps> = ({ item, isSelected }) => {
     const handleRename = () => {
         handleMenuClose();
         // setIsRenaming(true);
+        // if (onRename) {
+        //     onRename(item.path, newName);
+        // }
     };
 
     const handleDelete = async () => {
         handleMenuClose();
-        await remove([item.path]);
-        // Error handling is done in the context
+        await onDelete([item.path]);
+        // Error handling is done in the parent component
     };
 
     const handleDownload = () => {

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
 import withGlobalStyles from "@/stories/Decorators";
-import { Box, List, useTheme } from "@mui/material";
+import { Box, Typography, Alert, List } from "@mui/material";
 import {
     commonStoryArgTypes,
     CommonStoryArgTypesProps,
@@ -10,147 +10,239 @@ import {
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
 import useStoryTheme from "@/stories/useStoryTheme";
 import * as Graphql from "@/graphql/generated/types";
-import { StorageItem } from "@/contexts/storage/storage.type";
 import {
-    MockStorageProvider,
     createMockFileItem,
     createMockFolderItem,
 } from "../MockStorageProvider";
-
-// Import the component - need to mock the hook first
-import FileItem from "@/views/storage/components/FileItem";
-import logger from "@/utils/logger";
+import FileItem, { FileItemProps } from "@/views/storage/components/FileItem";
 
 type FileItemStoryProps = CommonStoryArgTypesProps & {
     itemType: "file" | "folder";
-    fileName: string;
     fileType: Graphql.FileType;
-    isSelected: boolean;
+    fileName: string;
     fileSize: number;
-    contentType: string;
+    isSelected: boolean;
     hasUrl: boolean;
+    simulateActions: boolean;
+    contentType: string;
 };
 
 const MockFileItemWrapper: React.FC<{
     itemType: "file" | "folder";
-    fileName: string;
     fileType: Graphql.FileType;
-    isSelected: boolean;
+    fileName: string;
     fileSize: number;
-    contentType: string;
+    isSelected: boolean;
     hasUrl: boolean;
+    simulateActions: boolean;
+    contentType: string;
 }> = ({
     itemType,
-    fileName,
     fileType,
-    isSelected,
+    fileName,
     fileSize,
-    contentType,
+    isSelected,
     hasUrl,
+    simulateActions,
+    contentType,
 }) => {
-    const theme = useTheme();
+    const [selectedState, setSelectedState] = useState(isSelected);
+    const [actionLogs, setActionLogs] = useState<string[]>([]);
 
-    const mockItem: StorageItem =
-        itemType === "file"
-            ? createMockFileItem({
-                  name: fileName,
-                  path: `examples/${fileName}`,
+    const addLog = (action: string) => {
+        setActionLogs((prev) => [
+            ...prev.slice(-4),
+            `${new Date().toLocaleTimeString()}: ${action}`,
+        ]);
+    };
+
+    // Create mock item based on type
+    const mockItem =
+        itemType === "folder"
+            ? createMockFolderItem({
+                  name: fileName || "Sample Folder",
+                  path: "sample-folder",
+              })
+            : createMockFileItem({
+                  name: fileName || "sample-file.txt",
+                  path: "sample-file.txt",
                   fileType,
                   size: fileSize,
-                  contentType,
-                  url: hasUrl ? `https://example.com/files/${fileName}` : null,
-              })
-            : createMockFolderItem({
-                  name: fileName,
-                  path: `examples/${fileName}`,
-                  fileCount: 5,
-                  folderCount: 2,
-                  totalSize: fileSize,
+                  contentType: contentType || "application/octet-stream",
+                  url: hasUrl
+                      ? "https://example.com/download/sample-file.txt"
+                      : undefined,
               });
 
-    const mockContextValue = {
-        items: [mockItem],
-        selectedPaths: isSelected ? [mockItem.path] : [],
-        loading: false,
-        error: undefined,
-        toggleSelect: (path: string) => {
-            logger.log("Toggle select:", path);
-        },
-        navigateTo: (path: string) => {
-            logger.log("Navigate to:", path);
-        },
-        remove: async (paths: string[]) => {
-            logger.log("Remove:", paths);
+    const handleToggleSelect = (path: string) => {
+        setSelectedState(!selectedState);
+        addLog(`Toggle selection for: ${path}`);
+    };
+
+    const handleNavigateTo = (path: string) => {
+        addLog(`Navigate to: ${path}`);
+    };
+
+    const handleDelete = async (paths: string[]) => {
+        addLog(`Delete requested for: ${paths.join(", ")}`);
+        if (simulateActions) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            addLog(`Delete completed for: ${paths.join(", ")}`);
             return true;
-        },
+        }
+        addLog(`Delete failed for: ${paths.join(", ")}`);
+        return false;
+    };
+
+    const handleRename = (path: string, newName: string) => {
+        addLog(`Rename: ${path} → ${newName}`);
+    };
+
+    const fileItemProps: FileItemProps = {
+        item: mockItem,
+        isSelected: selectedState,
+        onToggleSelect: handleToggleSelect,
+        onNavigateTo: handleNavigateTo,
+        onDelete: handleDelete,
+        onRename: handleRename,
     };
 
     return (
-        <MockStorageProvider mockValue={mockContextValue}>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                backgroundColor: "background.default",
+                color: "text.primary",
+                p: 3,
+            }}
+        >
+            <Typography variant="h4" gutterBottom>
+                FileItem Component Demo
+            </Typography>
+
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                Test the FileItem component with different configurations and
+                interactions.
+            </Typography>
+
+            {/* Configuration Info */}
+            <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body2">
+                    <strong>Current Configuration:</strong>
+                    <br />• Type: {itemType}{" "}
+                    {itemType === "file" && `(${fileType})`}
+                    <br />• Name: {mockItem.name}
+                    <br />• Selected: {selectedState ? "Yes" : "No"}
+                    <br />
+                    {itemType === "file" && (
+                        <>
+                            • Size: {(mockItem as Graphql.FileInfo).size} bytes
+                            <br />• Has URL: {hasUrl ? "Yes" : "No"}
+                            <br />• Content Type: {contentType}
+                            <br />
+                        </>
+                    )}
+                    • Actions Simulation:{" "}
+                    {simulateActions ? "Enabled" : "Disabled"}
+                </Typography>
+            </Alert>
+
+            {/* The FileItem component in a List */}
             <Box
                 sx={{
-                    minHeight: "100vh",
-                    backgroundColor: "background.default",
-                    color: "text.primary",
-                    p: 3,
+                    border: 1,
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    mb: 3,
+                    backgroundColor: "background.paper",
                 }}
             >
-                <Box
-                    sx={{
-                        maxWidth: 800,
-                        mx: "auto",
-                        backgroundColor: "background.paper",
-                        borderRadius: 2,
-                        overflow: "hidden",
-                        border: `1px solid ${theme.palette.divider}`,
-                    }}
-                >
-                    <List disablePadding>
-                        <FileItem item={mockItem} isSelected={isSelected} />
-                    </List>
-                </Box>
+                <List sx={{ p: 0 }}>
+                    <FileItem {...fileItemProps} />
+                </List>
             </Box>
-        </MockStorageProvider>
+
+            {/* Action Logs */}
+            <Box
+                sx={{
+                    p: 2,
+                    backgroundColor: "grey.50",
+                    borderRadius: 1,
+                    border: 1,
+                    borderColor: "divider",
+                }}
+            >
+                <Typography variant="subtitle2" gutterBottom>
+                    Action Logs:
+                </Typography>
+                {actionLogs.length === 0 ? (
+                    <Typography variant="body2" color="text.secondary">
+                        No actions performed yet. Try clicking the item,
+                        checkbox, or menu button.
+                    </Typography>
+                ) : (
+                    actionLogs.map((log, idx) => (
+                        <Typography
+                            key={`${log}-${idx}`}
+                            variant="caption"
+                            display="block"
+                            sx={{ fontFamily: "monospace" }}
+                        >
+                            {log}
+                        </Typography>
+                    ))
+                )}
+            </Box>
+        </Box>
     );
 };
 
 export default {
     title: "Storage/Components/FileItem",
-    component: MockFileItemWrapper,
+    component: FileItem,
     decorators: [withGlobalStyles],
     argTypes: {
         ...commonStoryArgTypes,
         itemType: {
-            control: { type: "select" },
+            control: { type: "radio" },
             options: ["file", "folder"],
-            description: "Type of storage item",
+            description: "Type of storage item to display",
             table: {
-                category: "Item",
+                category: "Item Configuration",
                 order: 1,
-            },
-        },
-        fileName: {
-            control: { type: "text" },
-            description: "Name of the file or folder",
-            table: {
-                category: "Item",
-                order: 2,
             },
         },
         fileType: {
             control: { type: "select" },
-            options: [
-                "IMAGE",
-                "VIDEO",
-                "AUDIO",
-                "DOCUMENT",
-                "ARCHIVE",
-                "OTHER",
-            ],
-            description: "File type classification",
+            options: ["DOCUMENT", "IMAGE", "VIDEO", "AUDIO", "OTHER"],
+            description: "File type for file items",
             table: {
-                category: "Item",
+                category: "Item Configuration",
+                order: 2,
+            },
+        },
+        fileName: {
+            control: { type: "text" },
+            description: "Name of the file/folder",
+            table: {
+                category: "Item Configuration",
                 order: 3,
+            },
+        },
+        fileSize: {
+            control: { type: "number", min: 0, max: 100000000 },
+            description: "Size of the file in bytes",
+            table: {
+                category: "Item Configuration",
+                order: 4,
+            },
+        },
+        contentType: {
+            control: { type: "text" },
+            description: "MIME content type",
+            table: {
+                category: "Item Configuration",
+                order: 5,
             },
         },
         isSelected: {
@@ -161,28 +253,28 @@ export default {
                 order: 1,
             },
         },
-        fileSize: {
-            control: { type: "number", min: 0 },
-            description: "File size in bytes",
-            table: {
-                category: "Item",
-                order: 4,
-            },
-        },
-        contentType: {
-            control: { type: "text" },
-            description: "MIME content type",
-            table: {
-                category: "Item",
-                order: 5,
-            },
-        },
         hasUrl: {
             control: { type: "boolean" },
-            description: "Whether the file has a public URL",
+            description: "Whether file has a download URL",
             table: {
-                category: "Item",
-                order: 6,
+                category: "State",
+                order: 2,
+            },
+        },
+        simulateActions: {
+            control: { type: "boolean" },
+            description: "Whether actions should succeed or fail",
+            table: {
+                category: "Behavior",
+                order: 1,
+            },
+        },
+    },
+    parameters: {
+        docs: {
+            description: {
+                component:
+                    "Displays individual storage items (files and folders) in a list format with selection, navigation, and action menu capabilities. Now uses props for better testability.",
             },
         },
     },
@@ -195,99 +287,107 @@ const Template: StoryFn<FileItemStoryProps> = (args) => {
         <AppRouterCacheProvider>
             <MockFileItemWrapper
                 itemType={args.itemType}
-                fileName={args.fileName}
                 fileType={args.fileType}
-                isSelected={args.isSelected}
+                fileName={args.fileName}
                 fileSize={args.fileSize}
-                contentType={args.contentType}
+                isSelected={args.isSelected}
                 hasUrl={args.hasUrl}
+                simulateActions={args.simulateActions}
+                contentType={args.contentType}
             />
         </AppRouterCacheProvider>
     );
 };
 
-export const ImageFile = Template.bind({});
-ImageFile.args = {
+export const FolderItem = Template.bind({});
+FolderItem.args = {
     ...defaultStoryArgs,
-    itemType: "file",
-    fileName: "summer-vacation.jpg",
-    fileType: "IMAGE",
+    itemType: "folder",
+    fileType: "DOCUMENT", // Not used for folders
+    fileName: "Project Documents",
+    fileSize: 0, // Not used for folders
+    contentType: "", // Not used for folders
     isSelected: false,
-    fileSize: 2 * 1024 * 1024, // 2MB
-    contentType: "image/jpeg",
-    hasUrl: true,
-};
-
-export const SelectedImageFile = Template.bind({});
-SelectedImageFile.args = {
-    ...defaultStoryArgs,
-    itemType: "file",
-    fileName: "profile-photo.png",
-    fileType: "IMAGE",
-    isSelected: true,
-    fileSize: 512 * 1024, // 512KB
-    contentType: "image/png",
-    hasUrl: true,
+    hasUrl: false, // Not used for folders
+    simulateActions: true,
 };
 
 export const DocumentFile = Template.bind({});
 DocumentFile.args = {
     ...defaultStoryArgs,
     itemType: "file",
-    fileName: "resume.pdf",
     fileType: "DOCUMENT",
-    isSelected: false,
-    fileSize: 1.5 * 1024 * 1024, // 1.5MB
+    fileName: "Annual Report 2024.pdf",
+    fileSize: 2458624, // ~2.4 MB
     contentType: "application/pdf",
+    isSelected: false,
     hasUrl: true,
+    simulateActions: true,
+};
+
+export const ImageFile = Template.bind({});
+ImageFile.args = {
+    ...defaultStoryArgs,
+    itemType: "file",
+    fileType: "IMAGE",
+    fileName: "vacation-photo.jpg",
+    fileSize: 5242880, // 5 MB
+    contentType: "image/jpeg",
+    isSelected: false,
+    hasUrl: true,
+    simulateActions: true,
+};
+
+export const SelectedImageFile = Template.bind({});
+SelectedImageFile.args = {
+    ...defaultStoryArgs,
+    itemType: "file",
+    fileType: "IMAGE",
+    fileName: "profile-photo.png",
+    fileSize: 512 * 1024, // 512KB
+    contentType: "image/png",
+    isSelected: true,
+    hasUrl: true,
+    simulateActions: true,
 };
 
 export const VideoFile = Template.bind({});
 VideoFile.args = {
     ...defaultStoryArgs,
     itemType: "file",
-    fileName: "presentation.mp4",
     fileType: "VIDEO",
-    isSelected: false,
-    fileSize: 25 * 1024 * 1024, // 25MB
+    fileName: "presentation.mp4",
+    fileSize: 157286400, // ~150 MB
     contentType: "video/mp4",
-    hasUrl: false,
+    isSelected: false,
+    hasUrl: true,
+    simulateActions: true,
 };
 
 export const AudioFile = Template.bind({});
 AudioFile.args = {
     ...defaultStoryArgs,
     itemType: "file",
-    fileName: "podcast.mp3",
     fileType: "AUDIO",
-    isSelected: false,
-    fileSize: 5 * 1024 * 1024, // 5MB
+    fileName: "podcast-episode-01.mp3",
+    fileSize: 52428800, // ~50 MB
     contentType: "audio/mpeg",
-    hasUrl: true,
-};
-
-export const Folder = Template.bind({});
-Folder.args = {
-    ...defaultStoryArgs,
-    itemType: "folder",
-    fileName: "Documents",
-    fileType: "OTHER", // Not used for folders
     isSelected: false,
-    fileSize: 100 * 1024 * 1024, // 100MB total
-    contentType: "", // Not used for folders
-    hasUrl: false,
+    hasUrl: true,
+    simulateActions: true,
 };
 
-export const SelectedFolder = Template.bind({});
-SelectedFolder.args = {
+export const FileWithoutUrl = Template.bind({});
+FileWithoutUrl.args = {
     ...defaultStoryArgs,
-    itemType: "folder",
-    fileName: "Images",
-    fileType: "OTHER", // Not used for folders
-    isSelected: true,
-    fileSize: 50 * 1024 * 1024, // 50MB total
-    contentType: "", // Not used for folders
+    itemType: "file",
+    fileType: "OTHER",
+    fileName: "corrupted-file.bin",
+    fileSize: 1024,
+    contentType: "application/octet-stream",
+    isSelected: false,
     hasUrl: false,
+    simulateActions: true,
 };
 
 export const LargeFile = Template.bind({});
@@ -295,9 +395,23 @@ LargeFile.args = {
     ...defaultStoryArgs,
     itemType: "file",
     fileName: "very-long-filename-that-might-wrap-to-multiple-lines.zip",
-    fileType: "ARCHIVE",
-    isSelected: false,
+    fileType: "OTHER",
     fileSize: 1024 * 1024 * 1024, // 1GB
     contentType: "application/zip",
+    isSelected: false,
     hasUrl: true,
+    simulateActions: true,
+};
+
+export const ActionFailures = Template.bind({});
+ActionFailures.args = {
+    ...defaultStoryArgs,
+    itemType: "file",
+    fileType: "DOCUMENT",
+    fileName: "locked-document.pdf",
+    fileSize: 2097152, // 2 MB
+    contentType: "application/pdf",
+    isSelected: false,
+    hasUrl: true,
+    simulateActions: false, // Actions will fail
 };
