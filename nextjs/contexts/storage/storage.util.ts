@@ -21,7 +21,7 @@ export const inferContentType = (file: File): Graphql.ContentType => {
 export const getFileKey = (file: File): string =>
     `${file.name}-${file.size}-${file.lastModified}`;
 
-// Convert ContentType array to MIME types for file input accept attribute
+// Convert ContentType array to MIME types for file input except attribute
 export const contentTypesToMimeTypes = (
     contentTypes: Graphql.ContentType[],
 ): string[] => {
@@ -39,7 +39,7 @@ export const contentTypesToMimeTypes = (
     return mimeTypes;
 };
 
-// Convert ContentType array to file extensions for file input accept attribute
+// Convert ContentType array to file extensions for file input except attribute
 export const contentTypesToExtensions = (
     contentTypes: Graphql.ContentType[],
 ): string[] => {
@@ -62,7 +62,7 @@ export const getAcceptAttribute = (
     contentTypes: Graphql.ContentType[],
 ): string => {
     const acceptValues: string[] = [];
-    
+
     contentTypes.forEach(contentType => {
         switch (contentType) {
             case 'JPEG':
@@ -110,7 +110,7 @@ export const getAcceptAttribute = (
             }
         }
     });
-    
+
     // Remove duplicates and return
     const uniqueValues = [...new Set(acceptValues)];
     return uniqueValues.join(',');

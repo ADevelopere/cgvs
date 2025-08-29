@@ -20,7 +20,7 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput } from "@/graphql/generated/types";
 import type { FileInfo } from "@/graphql/generated/types";
 import { FileSelectorProvider } from "@/contexts/storage/FileSelectorContext";
-import FileSelectorDialog from "@/views/storage/components/FileSelector/FileSelectorDialog";
+import FileSelectorDialog from "@/views/storage/select/FileSelectorDialog";
 
 type FormDataType = {
     name: string;

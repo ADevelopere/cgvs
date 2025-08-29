@@ -17,7 +17,7 @@ data class PaginationArgs(
 ){
     companion object{
         const val DEFAULT_COUNT = 10
-        const val MAX_COUNT = 100
+        const val MAX_COUNT = 5000
     }
 }
 

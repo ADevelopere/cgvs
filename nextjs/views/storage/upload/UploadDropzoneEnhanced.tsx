@@ -16,22 +16,20 @@ import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 import {
     getLocationInfo,
     isFileTypeAllowed,
+    getDisplayPath,
 } from "@/contexts/storage/storage.location";
-import {
-    inferContentType,
-    getAcceptAttribute,
-    contentTypesToMimeTypes,
-} from "@/contexts/storage/storage.util";
-import UploadItem from "../UploadItem";
+import { inferContentType } from "@/contexts/storage/storage.util";
+import UploadItem from "./UploadItem";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useStorageManagement } from "@/contexts/storage";
 import logger from "@/utils/logger";
 
-interface UploadDropzoneProps {
+interface UploadDropzoneEnhancedProps {
     disabled?: boolean;
     compact?: boolean;
 }
 
-const UploadDropzone: React.FC<UploadDropzoneProps> = ({
+const UploadDropzoneEnhanced: React.FC<UploadDropzoneEnhancedProps> = ({
     disabled = false,
     compact = false,
 }) => {
@@ -42,6 +40,10 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
         isUploading,
         clearUploads,
     } = useFileSelector();
+
+    // Try to use StorageManagementContext if available
+    const storageManagementContext = useStorageManagement();
+
     const translations = useAppTranslation("storageTranslations");
 
     const [dragActive, setDragActive] = useState(false);
@@ -77,15 +79,49 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
         [location, translations],
     );
 
+    const handleUpload = useCallback(
+        async (files: File[]) => {
+            if (!validateFiles(files)) return;
+
+            // Use StorageManagementContext if available for better upload handling
+            if (storageManagementContext?.startUpload && location) {
+                const locationInfo = getLocationInfo(location);
+                if (locationInfo?.path) {
+                    try {
+                        await storageManagementContext.startUpload(
+                            files,
+                            getDisplayPath(locationInfo.path),
+                        );
+                    } catch (error) {
+                        logger.error("Upload failed:", error);
+                        setValidationError("Upload failed. Please try again.");
+                    }
+                }
+            } else {
+                // Fall back to FileSelectorContext upload
+                uploadToLocation(files);
+            }
+        },
+        [storageManagementContext, location, uploadToLocation, validateFiles],
+    );
+
+    const handleFileInputChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const files = Array.from(event.target.files || []);
+            if (files.length > 0) {
+                handleUpload(files);
+            }
+            event.target.value = ""; // Reset input
+        },
+        [handleUpload],
+    );
+
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
             setDragActive(false);
-
-            if (validateFiles(acceptedFiles)) {
-                uploadToLocation(acceptedFiles);
-            }
+            handleUpload(acceptedFiles);
         },
-        [uploadToLocation, validateFiles],
+        [handleUpload],
     );
 
     const handleDragEnter = useCallback(() => {
@@ -98,22 +134,6 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
         setDragActive(false);
     }, []);
 
-    const locationInfo = location ? getLocationInfo(location) : null;
-
-    // Debug logging for file type enforcement
-    React.useEffect(() => {
-        if (locationInfo) {
-            const mimeTypes = contentTypesToMimeTypes(locationInfo.allowedContentTypes);
-            const acceptAttribute = getAcceptAttribute(locationInfo.allowedContentTypes);
-            logger.log('UploadDropzone Debug:', {
-                location,
-                allowedContentTypes: locationInfo.allowedContentTypes,
-                mimeTypes,
-                acceptAttribute,
-            });
-        }
-    }, [location, locationInfo]);
-
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: handleDrop,
         onDragEnter: handleDragEnter,
@@ -121,15 +141,9 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
         disabled: disabled || !location,
         noClick: true,
         noKeyboard: true,
-        accept: locationInfo
-            ? Object.fromEntries(
-                  contentTypesToMimeTypes(locationInfo.allowedContentTypes).map(
-                      (mimeType) => [mimeType, []],
-                  ),
-              )
-            : undefined,
     });
 
+    const locationInfo = location ? getLocationInfo(location) : null;
     const uploadsArray = Array.from(uploadFiles.entries());
     const hasUploads = uploadsArray.length > 0;
     const completedCount = uploadsArray.filter(
@@ -158,20 +172,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                         type="file"
                         hidden
                         multiple
-                        accept={
-                            locationInfo
-                                ? getAcceptAttribute(
-                                      locationInfo.allowedContentTypes,
-                                  )
-                                : undefined
-                        }
-                        onChange={(event) => {
-                            const files = Array.from(event.target.files || []);
-                            if (files.length > 0) {
-                                handleDrop(files);
-                            }
-                            event.target.value = ""; // Reset input
-                        }}
+                        onChange={handleFileInputChange}
                         disabled={disabled || !location}
                     />
                 </Button>
@@ -243,20 +244,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                         type="file"
                         hidden
                         multiple
-                        accept={
-                            locationInfo
-                                ? getAcceptAttribute(
-                                      locationInfo.allowedContentTypes,
-                                  )
-                                : undefined
-                        }
-                        onChange={(event) => {
-                            const files = Array.from(event.target.files || []);
-                            if (files.length > 0) {
-                                handleDrop(files);
-                            }
-                            event.target.value = ""; // Reset input
-                        }}
+                        onChange={handleFileInputChange}
                         disabled={disabled || !location}
                     />
                 </Button>
@@ -273,17 +261,6 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                         <Typography variant="caption" color="text.secondary">
                             {translations.allowedFileTypes}:{" "}
                             {locationInfo.allowedContentTypes.join(", ")}
-                        </Typography>
-                        <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            display="block"
-                            sx={{ mt: 0.5 }}
-                        >
-                            {translations.acceptedFormats}:{" "}
-                            {getAcceptAttribute(
-                                locationInfo.allowedContentTypes,
-                            )}
                         </Typography>
                     </Box>
                 )}
@@ -357,4 +334,4 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
     );
 };
 
-export default UploadDropzone;
+export default UploadDropzoneEnhanced;
