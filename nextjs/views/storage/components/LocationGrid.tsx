@@ -16,23 +16,23 @@ import {
     Image as ImageIcon,
     ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { getUploadLocationOptions } from "@/contexts/storage/storage.location";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-const LocationGrid: React.FC = () => {
+export interface LocationGridProps {
+    onNavigateTo: (path: string) => void;
+}
+
+const LocationGrid: React.FC<LocationGridProps> = ({ onNavigateTo }) => {
     const theme = useTheme();
-    const { navigateTo } = useStorageManagement();
     const locations = getUploadLocationOptions();
     const translations = useAppTranslation("storageTranslations");
 
     const getLocationIcon = (iconName?: string) => {
-        switch (iconName) {
-            case "Image":
-                return <ImageIcon sx={{ fontSize: 48 }} />;
-            default:
-                return <FolderIcon sx={{ fontSize: 48 }} />;
+        if (iconName === "Image") {
+            return <ImageIcon sx={{ fontSize: 48 }} />;
         }
+        return <FolderIcon sx={{ fontSize: 48 }} />;
     };
 
     const getContentTypeChips = (contentTypes: string[]) => {
@@ -53,7 +53,10 @@ const LocationGrid: React.FC = () => {
                 ))}
                 {remaining > 0 && (
                     <Chip
-                        label={translations.remainingMore.replace("{remaining}", String(remaining))}
+                        label={translations.remainingMore.replace(
+                            "{remaining}",
+                            String(remaining),
+                        )}
                         size="small"
                         variant="outlined"
                         color="primary"
@@ -86,10 +89,12 @@ const LocationGrid: React.FC = () => {
                             }}
                             onClick={() => {
                                 // Navigate to the location path (without 'public/' prefix)
-                                const displayPath = location.path.startsWith("public/") 
-                                    ? location.path.substring(7) 
+                                const displayPath = location.path.startsWith(
+                                    "public/",
+                                )
+                                    ? location.path.substring(7)
                                     : location.path;
-                                navigateTo(displayPath);
+                                onNavigateTo(displayPath);
                             }}
                         >
                             <CardContent sx={{ flexGrow: 1 }}>
@@ -113,7 +118,8 @@ const LocationGrid: React.FC = () => {
                                         sx={{
                                             color: theme.palette.grey[500],
                                             "&:hover": {
-                                                color: theme.palette.primary.main,
+                                                color: theme.palette.primary
+                                                    .main,
                                             },
                                         }}
                                     >
@@ -121,7 +127,11 @@ const LocationGrid: React.FC = () => {
                                     </IconButton>
                                 </Box>
 
-                                <Typography variant="h6" fontWeight={600} gutterBottom>
+                                <Typography
+                                    variant="h6"
+                                    fontWeight={600}
+                                    gutterBottom
+                                >
                                     {location.label}
                                 </Typography>
 
@@ -140,7 +150,9 @@ const LocationGrid: React.FC = () => {
                                 >
                                     {translations.allowedFileTypes}
                                 </Typography>
-                                {getContentTypeChips(location.allowedContentTypes)}
+                                {getContentTypeChips(
+                                    location.allowedContentTypes,
+                                )}
                             </CardContent>
                         </Card>
                     </Grid>

@@ -1,31 +1,34 @@
 "use client";
 
 import React from "react";
-import {
-    Box,
-    Typography,
-    Paper,
-    Chip,
-    Stack,
-    useTheme,
-} from "@mui/material";
+import { Box, Typography, Paper, Chip, Stack, useTheme } from "@mui/material";
 import {
     Folder as FolderIcon,
     InsertDriveFile as FileIcon,
     Storage as StorageIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
+import * as Graphql from "@/graphql/generated/types";
 
-const StorageStatsBar: React.FC = () => {
+export interface StorageStatsBarProps {
+    stats: Graphql.StorageStats | undefined;
+    items: Array<Graphql.FileInfo | Graphql.FolderInfo>;
+}
+
+const StorageStatsBar: React.FC<StorageStatsBarProps> = ({ stats, items }) => {
     const theme = useTheme();
-    const { stats, items } = useStorageManagement();
     const translations = useAppTranslation("storageTranslations");
 
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return translations.zeroBytes;
         const k = 1024;
-        const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
+        const sizes = [
+            translations.bytes,
+            translations.kb,
+            translations.mb,
+            translations.gb,
+            translations.tb,
+        ];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
@@ -81,8 +84,14 @@ const StorageStatsBar: React.FC = () => {
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         {translations.acrossFilesAndFolders
-                            .replace("{totalFiles}", formatNumber(stats.totalFiles))
-                            .replace("{totalFolders}", formatNumber(stats.totalFolders))}
+                            .replace(
+                                "{totalFiles}",
+                                formatNumber(stats.totalFiles),
+                            )
+                            .replace(
+                                "{totalFolders}",
+                                formatNumber(stats.totalFolders),
+                            )}
                     </Typography>
                 </Box>
 
@@ -96,7 +105,9 @@ const StorageStatsBar: React.FC = () => {
                             <Chip
                                 icon={<FolderIcon />}
                                 label={`${formatNumber(folderCount)} ${
-                                    folderCount === 1 ? translations.folder : translations.folders
+                                    folderCount === 1
+                                        ? translations.folder
+                                        : translations.folders
                                 }`}
                                 size="small"
                                 variant="outlined"
@@ -105,7 +116,9 @@ const StorageStatsBar: React.FC = () => {
                             <Chip
                                 icon={<FileIcon />}
                                 label={`${formatNumber(fileCount)} ${
-                                    fileCount === 1 ? translations.file : translations.files
+                                    fileCount === 1
+                                        ? translations.file
+                                        : translations.files
                                 }`}
                                 size="small"
                                 variant="outlined"
@@ -140,9 +153,14 @@ const StorageStatsBar: React.FC = () => {
                                 (item) => item.count > 0,
                             ).length > 3 && (
                                 <Chip
-                                    label={translations.more.replace("{count}", String(stats.fileTypeBreakdown.filter(
-                                        (item) => item.count > 0,
-                                    ).length - 3))}
+                                    label={translations.more.replace(
+                                        "{count}",
+                                        String(
+                                            stats.fileTypeBreakdown.filter(
+                                                (item) => item.count > 0,
+                                            ).length - 3,
+                                        ),
+                                    )}
                                     size="small"
                                     variant="outlined"
                                     color="default"
