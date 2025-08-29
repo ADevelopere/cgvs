@@ -59,7 +59,7 @@ export const TableProvider = ({
     paginationInfo,
     onPageChange,
     onRowsPerPageChange,
-    rowsPerPageOptions = [10, 25, 50, 100],
+    rowsPerPageOptions = [10, 25, 50, 100, 200],
     initialPageSize = 50,
 }: TableProviderProps) => {
     const [pageSize, setPageSize] = useState<number>(initialPageSize);

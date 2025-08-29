@@ -25,7 +25,7 @@ import {
 } from "@mui/icons-material";
 import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 import LocationSelector from "./LocationSelector";
-import UploadDropzone from "./UploadDropzone";
+import UploadDropzone from "../upload/UploadDropzone";
 import FileSelectItem from "./FileSelectItem";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";

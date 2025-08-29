@@ -25,7 +25,7 @@ import {
     getLocationInfo,
     getDisplayPath,
 } from "@/contexts/storage/storage.location";
-import { getAcceptAttribute } from "@/contexts/storage/storage.util";
+import {getAcceptAttribute} from "@/contexts/storage";
 
 export interface FileSelectorDialogProps {
     open: boolean;
@@ -68,7 +68,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
             if (files.length > 0 && location) {
                 const locationInfo = getLocationInfo(location);
                 if (locationInfo?.path) {
-                    startUpload(files, getDisplayPath(locationInfo.path));
+                    startUpload(files, getDisplayPath(locationInfo.path)).then(r => r);
                 }
             }
             event.target.value = ""; // Reset input to allow re-uploading the same file
@@ -88,7 +88,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                 ? translations.selectOrUploadFile
                 : translations.selectFile;
         }
-    }, [title, multiple, allowUpload, translations]);
+    }, [title, multiple, allowUpload, translations.selectOrUploadFile, translations.selectFile]);
 
     const getConfirmText = React.useCallback(() => {
         if (confirmText) return confirmText;

@@ -6,19 +6,19 @@ import { useStorageManagement } from "@/contexts/storage/StorageManagementContex
 import { useStorageLocation } from "@/contexts/storage/useStorageLocation";
 
 // Import all the components
-import StorageToolbar from "./components/StorageToolbar";
-import StorageBreadcrumbs from "./components/StorageBreadcrumbs";
-import StorageStatsBar from "./components/StorageStatsBar";
-import SelectHeader from "./components/SelectHeader";
-import FileList from "./components/FileList";
-import BulkActionsBar from "./components/BulkActionsBar";
-import PaginationControls from "./components/PaginationControls";
-import UploadList from "./components/UploadList";
-import ErrorBanner from "./components/ErrorBanner";
-import LoadingSkeletons from "./components/LoadingSkeletons";
-import EmptyState from "./components/EmptyState";
-import LocationGrid from "./components/LocationGrid";
-import UploadLocationInfo from "./components/UploadLocationInfo";
+import StorageToolbar from "../components/StorageToolbar";
+import StorageBreadcrumbs from "../components/StorageBreadcrumbs";
+import StorageStatsBar from "../components/StorageStatsBar";
+import SelectHeader from "../components/SelectHeader";
+import FileList from "../components/FileList";
+import BulkActionsBar from "../components/BulkActionsBar";
+import PaginationControls from "../components/PaginationControls";
+import UploadList from "../upload/UploadList";
+import ErrorBanner from "../components/ErrorBanner";
+import LoadingSkeletons from "../components/LoadingSkeletons";
+import EmptyState from "../components/EmptyState";
+import LocationGrid from "../components/LocationGrid";
+import UploadLocationInfo from "../upload/UploadLocationInfo";
 
 const StorageManagementPage: React.FC = () => {
     const { items, loading, error } = useStorageManagement();
