@@ -8,6 +8,7 @@ import {
     ReactNode,
     useCallback,
     useMemo,
+    useRef,
 } from "react";
 import {
     Theme,
@@ -117,6 +118,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
         AppLanguage.default as AppLanguage,
     );
+    const isInitialized = useRef(false);
 
     // Effect to set theme and language from client-side storage after mount
     useEffect(() => {
@@ -138,6 +140,9 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         } else {
             setCurrentTheme(isDarkMode ? ltrDarkTheme : ltrLightTheme);
         }
+
+        // Mark as initialized after theme setup is complete
+        isInitialized.current = true;
     }, []);
 
     // Add effect to listen for system theme changes when in system mode
@@ -244,6 +249,12 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
             isDark,
         ],
     );
+
+    // Don't render children until theme initialization is complete
+    // This prevents race conditions with useStoryTheme in Storybook
+    if (!isInitialized.current) {
+        return null;
+    }
 
     return (
         <AppThemeContext.Provider value={contextValue}>
