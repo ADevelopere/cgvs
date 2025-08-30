@@ -18,19 +18,18 @@ import {
 import FileSelector from "./FileSelector";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
-import type { FileInfo } from "@/graphql/generated/types";
-import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
+
 import {
     getLocationInfo,
     getDisplayPath,
 } from "@/contexts/storage/storage.location";
-import {getAcceptAttribute} from "@/contexts/storage";
+import { getAcceptAttribute } from "@/contexts/storage";
 
-export interface FileSelectorDialogProps {
+export type FileSelectorDialogProps = {
     open: boolean;
-    onClose: () => void;
-    onSelect: (files: FileInfo[]) => void;
+    onClose?: () => void;
+    selectedFiles: Graphql.FileInfo[];
+    startUpload: (files: File[], targetPath?: string) => Promise<void>;
     location?: Graphql.UploadLocation;
     multiple?: boolean;
     allowUpload?: boolean;
@@ -38,12 +37,13 @@ export interface FileSelectorDialogProps {
     title?: string;
     confirmText?: string;
     cancelText?: string;
-}
+};
 
 const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     open,
     onClose,
-    onSelect,
+    selectedFiles,
+    startUpload,
     location,
     multiple = false,
     allowUpload = true,
@@ -53,14 +53,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     cancelText,
 }) => {
     const translations = useAppTranslation("storageTranslations");
-    const { selectedFiles } = useFileSelector();
-    const { startUpload } = useStorageManagement();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-
-    const handleConfirm = useCallback(() => {
-        onSelect(selectedFiles);
-        onClose();
-    }, [onClose, onSelect, selectedFiles]);
 
     const handleFileUpload = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +61,9 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
             if (files.length > 0 && location) {
                 const locationInfo = getLocationInfo(location);
                 if (locationInfo?.path) {
-                    startUpload(files, getDisplayPath(locationInfo.path)).then(r => r);
+                    startUpload(files, getDisplayPath(locationInfo.path)).then(
+                        (r) => r,
+                    );
                 }
             }
             event.target.value = ""; // Reset input to allow re-uploading the same file
@@ -88,7 +83,15 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                 ? translations.selectOrUploadFile
                 : translations.selectFile;
         }
-    }, [title, multiple, allowUpload, translations.selectOrUploadFile, translations.selectFile]);
+    }, [
+        title,
+        multiple,
+        allowUpload,
+        translations.selectOrUploadFiles,
+        translations.selectFiles,
+        translations.selectOrUploadFile,
+        translations.selectFile,
+    ]);
 
     const getConfirmText = React.useCallback(() => {
         if (confirmText) return confirmText;
@@ -197,7 +200,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                     {cancelText || translations.cancel}
                 </Button>
                 <Button
-                    onClick={handleConfirm}
+                    onClick={onClose}
                     variant="contained"
                     disabled={selectedFiles.length === 0}
                     startIcon={<SelectIcon />}

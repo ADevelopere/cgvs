@@ -21,7 +21,7 @@ import * as Graphql from "@/graphql/generated/types";
 export interface FileSelectorContextType {
     // Current location
     location?: Graphql.UploadLocation;
-    setLocation: (location: Graphql.UploadLocation) => void;
+    changeLocation: (newLocation: Graphql.UploadLocation) => void;
 
     // Files from the location
     files: Graphql.FileInfo[];
@@ -37,6 +37,9 @@ export interface FileSelectorContextType {
     // Prohibited URLs (files that cannot be selected/deselected)
     prohibitedUrls: string[];
     isFileProhibited: (file: Graphql.FileInfo) => boolean;
+
+    // Upload configuration
+    allowUpload: boolean;
 
     // Upload state
     uploadFiles: Map<string, UploadFileState>;
@@ -64,16 +67,31 @@ export const useFileSelector = () => {
     return ctx;
 };
 
-export const FileSelectorProvider: React.FC<{
+export type FileSelectorProviderProps = {
     children: React.ReactNode;
     prohibitedUrls?: string[];
-}> = ({ children, prohibitedUrls = [] }) => {
+    initialLocation: Graphql.UploadLocation;
+    multiple?: boolean;
+    allowUpload?: boolean;
+    maxSelection?: number;
+    onSelectAction?: (files: Graphql.FileInfo[]) => void;
+};
+
+export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
+    prohibitedUrls = [],
+    initialLocation,
+    multiple = false,
+    allowUpload = true,
+    maxSelection,
+    onSelectAction,
+    children,
+}) => {
     const gql = useStorageGraphQL();
     const notifications = useNotifications();
 
     // State
     const [locationState, setLocationState] =
-        useState<Graphql.UploadLocation>();
+        useState<Graphql.UploadLocation>(initialLocation);
     const [files, setFiles] = useState<Graphql.FileInfo[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>();
@@ -83,32 +101,51 @@ export const FileSelectorProvider: React.FC<{
     >(new Map());
     const [isUploading, setIsUploading] = useState(false);
 
-    const setLocation = useCallback((newLocation: Graphql.UploadLocation) => {
-        setLocationState(newLocation);
-        setSelectedFiles([]);
-        setError(undefined);
-    }, []);
-
-    const toggleFileSelection = useCallback((file: Graphql.FileInfo) => {
-        // Don't allow toggling prohibited files
-        if (prohibitedUrls.includes(file.url || '')) {
-            return;
+    // Call onSelectAction whenever selectedFiles changes
+    useEffect(() => {
+        if (onSelectAction) {
+            onSelectAction(selectedFiles);
         }
-        
-        setSelectedFiles((prev) => {
-            const isSelected = prev.some(
-                (selected) => selected.path === file.path,
-            );
-            if (isSelected) {
-                return prev.filter((selected) => selected.path !== file.path);
+    }, [selectedFiles, onSelectAction]);
+    const toggleFileSelection = useCallback(
+        (file: Graphql.FileInfo) => {
+            // Don't allow toggling prohibited files
+            if (prohibitedUrls.includes(file.url || "")) {
+                return;
             }
-            return [...prev, file];
-        });
-    }, [prohibitedUrls]);
 
-    const isFileProhibited = useCallback((file: Graphql.FileInfo) => {
-        return prohibitedUrls.includes(file.url || '');
-    }, [prohibitedUrls]);
+            setSelectedFiles((prev) => {
+                const isSelected = prev.some(
+                    (selected) => selected.path === file.path,
+                );
+                if (isSelected) {
+                    // Deselect the file
+                    return prev.filter(
+                        (selected) => selected.path !== file.path,
+                    );
+                } else if (!multiple) {
+                    // Single selection mode: replace current selection
+                    return [file];
+                    // Select the file, respecting multiple and maxSelection
+                } else { 
+                    // Multiple selection mode: check maxSelection
+                    if (maxSelection && prev.length >= maxSelection) {
+                        // At max, don't add more
+                        return prev;
+                    }
+                    return [...prev, file];
+                }
+            });
+        },
+        [prohibitedUrls, multiple, maxSelection],
+    );
+
+    const isFileProhibited = useCallback(
+        (file: Graphql.FileInfo) => {
+            return prohibitedUrls.includes(file.url || "");
+        },
+        [prohibitedUrls],
+    );
 
     const clearSelection = useCallback(() => {
         setSelectedFiles([]);
@@ -117,7 +154,9 @@ export const FileSelectorProvider: React.FC<{
     const setSelectedFilesCallback = useCallback(
         (files: Graphql.FileInfo[]) => {
             // Filter out prohibited files from selection
-            const allowedFiles = files.filter(file => !prohibitedUrls.includes(file.url || ''));
+            const allowedFiles = files.filter(
+                (file) => !prohibitedUrls.includes(file.url || ""),
+            );
             setSelectedFiles(allowedFiles);
         },
         [prohibitedUrls],
@@ -126,12 +165,16 @@ export const FileSelectorProvider: React.FC<{
     // Initialize selection with files matching prohibited URLs when files are loaded
     useEffect(() => {
         if (files.length > 0 && prohibitedUrls.length > 0) {
-            const initialSelection = files.filter(file => prohibitedUrls.includes(file.url || ''));
+            const initialSelection = files.filter((file) =>
+                prohibitedUrls.includes(file.url || ""),
+            );
             if (initialSelection.length > 0) {
-                setSelectedFiles(prev => {
+                setSelectedFiles((prev) => {
                     // Merge with existing selection, avoiding duplicates
-                    const existingPaths = prev.map(f => f.path);
-                    const newFiles = initialSelection.filter(f => !existingPaths.includes(f.path));
+                    const existingPaths = prev.map((f) => f.path);
+                    const newFiles = initialSelection.filter(
+                        (f) => !existingPaths.includes(f.path),
+                    );
                     return [...prev, ...newFiles];
                 });
             }
@@ -163,7 +206,9 @@ export const FileSelectorProvider: React.FC<{
             if (result.listFiles?.items) {
                 // Filter only files (not folders) and allowed content types
                 const filteredFiles = result.listFiles.items.filter(
-                    (item: Graphql.FileInfo | Graphql.FolderInfo): item is Graphql.FileInfo =>
+                    (
+                        item: Graphql.FileInfo | Graphql.FolderInfo,
+                    ): item is Graphql.FileInfo =>
                         item.__typename === "FileInfo" &&
                         !!item.contentType &&
                         isFileTypeAllowed(locationState, item.contentType),
@@ -186,6 +231,12 @@ export const FileSelectorProvider: React.FC<{
     const uploadToLocation = useCallback(
         async (filesToUpload: File[]) => {
             if (!locationState) return;
+
+            // Check if upload is allowed
+            if (!allowUpload) {
+                notifications.show("Upload is not allowed", { severity: "error" });
+                return;
+            }
 
             setIsUploading(true);
 
@@ -313,7 +364,7 @@ export const FileSelectorProvider: React.FC<{
             // Refresh files to show newly uploaded files
             await refreshFiles();
         },
-        [locationState, uploadFiles, gql, notifications, refreshFiles],
+        [locationState, allowUpload, uploadFiles, gql, notifications, refreshFiles],
     );
 
     const cancelUpload = useCallback(
@@ -344,18 +395,33 @@ export const FileSelectorProvider: React.FC<{
 
     const retryUpload = useCallback(
         async (fileKey: string) => {
+            // Check if upload is allowed
+            if (!allowUpload) {
+                notifications.show("Upload is not allowed", { severity: "error" });
+                return;
+            }
+
             const fileState = uploadFiles.get(fileKey);
             if (!fileState || fileState.status !== "error") return;
 
             await uploadToLocation([fileState.file]);
         },
-        [uploadFiles, uploadToLocation],
+        [allowUpload, uploadFiles, uploadToLocation, notifications],
     );
 
     const clearUploads = useCallback(() => {
         setUploadFiles(new Map());
         setIsUploading(false);
     }, []);
+
+    const changeLocation = useCallback(
+        (newLocation: Graphql.UploadLocation) => {
+            setLocationState(newLocation);
+            setSelectedFiles([]);
+            setError(undefined);
+        },
+        [],
+    );
 
     // Load files when location changes
     useEffect(() => {
@@ -367,7 +433,7 @@ export const FileSelectorProvider: React.FC<{
     const value = React.useMemo<FileSelectorContextType>(
         () => ({
             location: locationState,
-            setLocation,
+            changeLocation,
             files,
             loading,
             error,
@@ -377,6 +443,7 @@ export const FileSelectorProvider: React.FC<{
             clearSelection,
             prohibitedUrls,
             isFileProhibited,
+            allowUpload,
             uploadFiles,
             isUploading,
             refreshFiles,
@@ -387,7 +454,7 @@ export const FileSelectorProvider: React.FC<{
         }),
         [
             locationState,
-            setLocation,
+            changeLocation,
             files,
             loading,
             error,
@@ -397,6 +464,7 @@ export const FileSelectorProvider: React.FC<{
             clearSelection,
             prohibitedUrls,
             isFileProhibited,
+            allowUpload,
             uploadFiles,
             isUploading,
             refreshFiles,
