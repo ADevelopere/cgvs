@@ -19,8 +19,7 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput } from "@/graphql/generated/types";
 import type { FileInfo } from "@/graphql/generated/types";
-import { FileSelectorProvider } from "@/contexts/storage/FileSelectorContext";
-import FileSelectorDialog from "@/views/storage/select/FileSelectorDialog";
+import StorageFilePicker from "@/views/storage/select/StorageFilePicker";
 
 type FormDataType = {
     name: string;
@@ -47,6 +46,7 @@ const BasicInfoTab: React.FC = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
+
     const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
 
     useEffect(() => {
@@ -320,19 +320,14 @@ const BasicInfoTab: React.FC = () => {
             </Box>
 
             {/* File Selector Dialog */}
-            <FileSelectorProvider
+            <StorageFilePicker
+                open={selectorDialogOpen}
+                onClose={() => setSelectorDialogOpen(false)}
                 prohibitedUrls={formData.imageUrl ? [formData.imageUrl] : []}
-            >
-                <FileSelectorDialog
-                    open={selectorDialogOpen}
-                    onClose={() => setSelectorDialogOpen(false)}
-                    onSelect={handleSelectFiles}
-                    location="TEMPLATE_COVER"
-                    multiple={false}
-                    allowUpload={true}
-                    title={storageStrings.selectFile}
-                />
-            </FileSelectorProvider>
+                initialLocation={"TEMPLATE_COVER"}
+                onSelectAction={handleSelectFiles}
+                title={storageStrings.selectFile}
+            />
         </Box>
     );
 };

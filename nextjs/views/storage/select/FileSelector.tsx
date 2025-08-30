@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
     Box,
     Grid,
@@ -26,12 +26,11 @@ import {
 import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 import LocationSelector from "./LocationSelector";
 import UploadDropzone from "../upload/UploadDropzone";
-import FileSelectItem from "./FileSelectItem";
+import FileSelectItemList from "./FileSelectItemList";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-export interface FileSelectorProps {
-    location?: Graphql.UploadLocation;
+export type FileSelectorProps = {
     multiple?: boolean;
     allowUpload?: boolean;
     maxSelection?: number;
@@ -40,7 +39,7 @@ export interface FileSelectorProps {
     onViewModeChange?: (mode: "grid" | "list") => void;
     compact?: boolean;
     showLocationSelector?: boolean;
-}
+};
 
 const FileSelector: React.FC<FileSelectorProps> = ({
     multiple = false,
@@ -50,12 +49,11 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     viewMode = "grid",
     onViewModeChange,
     compact = false,
-    location: propLocation,
     showLocationSelector = true,
 }) => {
     const {
         location,
-        setLocation,
+        changeLocation,
         files,
         loading,
         error,
@@ -67,58 +65,69 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     } = useFileSelector();
     const translations = useAppTranslation("storageTranslations");
 
-    // Sync location from props to context
-    useEffect(() => {
-        if (
-            propLocation &&
-            JSON.stringify(propLocation) !== JSON.stringify(location)
-        ) {
-            setLocation(propLocation);
-        }
-    }, [propLocation, setLocation, location]);
-
     const handleLocationChange = (newLocation: Graphql.UploadLocation) => {
-        setLocation(newLocation);
-        clearSelection();
+        changeLocation(newLocation);
     };
 
-    const handleFileToggle = (file: Graphql.FileInfo) => {
-        if (disabled || isFileProhibited(file)) return;
+    const handleFileToggle = React.useCallback(
+        (file: Graphql.FileInfo) => {
+            if (disabled || isFileProhibited(file)) return;
 
-        const isSelected = selectedFiles.some((f) => f.path === file.path);
+            const isSelected = selectedFiles.some((f) => f.path === file.path);
 
-        if (multiple) {
-            if (isSelected) {
-                const newSelection = selectedFiles.filter(
-                    (f) => f.path !== file.path,
-                );
-                setSelectedFiles(newSelection);
-            } else if (!maxSelection || selectedFiles.length < maxSelection) {
-                const newSelection = [...selectedFiles, file];
+            if (multiple) {
+                if (isSelected) {
+                    const newSelection = selectedFiles.filter(
+                        (f) => f.path !== file.path,
+                    );
+                    setSelectedFiles(newSelection);
+                } else if (
+                    !maxSelection ||
+                    selectedFiles.length < maxSelection
+                ) {
+                    const newSelection = [...selectedFiles, file];
+                    setSelectedFiles(newSelection);
+                }
+            } else {
+                const newSelection = isSelected ? [] : [file];
                 setSelectedFiles(newSelection);
             }
-        } else {
-            const newSelection = isSelected ? [] : [file];
-            setSelectedFiles(newSelection);
-        }
-    };
+        },
+        [
+            disabled,
+            isFileProhibited,
+            maxSelection,
+            multiple,
+            selectedFiles,
+            setSelectedFiles,
+        ],
+    );
 
-    const handleViewModeChange = (event: SelectChangeEvent<string>) => {
-        const newMode = event.target.value as "grid" | "list";
-        onViewModeChange?.(newMode);
-    };
+    const handleViewModeChange = React.useCallback(
+        (event: SelectChangeEvent<string>) => {
+            const newMode = event.target.value as "grid" | "list";
+            onViewModeChange?.(newMode);
+        },
+        [onViewModeChange],
+    );
 
-    const handleSelectAll = () => {
+    const handleSelectAll = React.useCallback(() => {
         if (disabled) return;
         const limitedFiles = maxSelection
             ? files.slice(0, maxSelection)
             : files;
         setSelectedFiles(limitedFiles);
-    };
+    }, [disabled, files, maxSelection, setSelectedFiles]);
 
-    const canSelectMore = !maxSelection || selectedFiles.length < maxSelection;
-    const selectionLimitReached =
-        !!maxSelection && selectedFiles.length >= maxSelection;
+    const canSelectMore = React.useMemo(
+        () => !maxSelection || selectedFiles.length < maxSelection,
+        [maxSelection, selectedFiles.length],
+    );
+
+    const selectionLimitReached = React.useMemo(
+        () => !!maxSelection && selectedFiles.length >= maxSelection,
+        [maxSelection, selectedFiles.length],
+    );
 
     return (
         <Box>
@@ -288,7 +297,8 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                                         const isSelected = selectedFiles.some(
                                             (f) => f.path === file.path,
                                         );
-                                        const isProhibited = isFileProhibited(file);
+                                        const isProhibited =
+                                            isFileProhibited(file);
                                         return (
                                             <Grid
                                                 key={file.path}
@@ -299,7 +309,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                                                     lg: 3,
                                                 }}
                                             >
-                                                <FileSelectItem
+                                                <FileSelectItemList
                                                     file={file}
                                                     selected={isSelected}
                                                     onToggleSelect={() =>
@@ -323,9 +333,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                                         const isSelected = selectedFiles.some(
                                             (f) => f.path === file.path,
                                         );
-                                        const isProhibited = isFileProhibited(file);
+                                        const isProhibited =
+                                            isFileProhibited(file);
                                         return (
-                                            <FileSelectItem
+                                            <FileSelectItemList
                                                 key={file.path}
                                                 file={file}
                                                 selected={isSelected}

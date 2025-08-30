@@ -166,7 +166,6 @@ const MockFileItemWrapper: React.FC<{
             <Box
                 sx={{
                     p: 2,
-                    backgroundColor: "grey.50",
                     borderRadius: 1,
                     border: 1,
                     borderColor: "divider",
