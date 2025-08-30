@@ -167,9 +167,9 @@ export const TableDataProvider = ({
             // Handle client-side filtering
             let operation;
             if (column.type === "number") {
-                operation = NumberFilterOperation.EQUALS;
+                operation = NumberFilterOperation.equals;
             } else if (column.type === "date") {
-                operation = DateFilterOperation.IS;
+                operation = DateFilterOperation.is;
             } else {
                 operation = TextFilterOperation.contains;
             }

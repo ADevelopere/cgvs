@@ -55,7 +55,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     );
     // Initialize state with active filter or defaults
     const [operation, setOperation] = useState<DateFilterOperation>(
-        activeFilter?.operation || DateFilterOperation.IS,
+        activeFilter?.operation || DateFilterOperation.is,
     );
     const [fromDate, setFromDate] = useState<string>(
         activeFilter?.value?.from
@@ -84,7 +84,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
                     : "",
             );
         } else {
-            setOperation(DateFilterOperation.IS);
+            setOperation(DateFilterOperation.is);
             setFromDate("");
             setToDate("");
         }
@@ -123,7 +123,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     const handleApply = useCallback(() => {
         // Validate input for operations that require values
         if (operationRequiresValue(operation)) {
-            if (operation === DateFilterOperation.BETWEEN) {
+            if (operation === DateFilterOperation.between) {
                 if (!fromDate && !toDate) {
                     setError("At least one date is required");
                     return;
@@ -174,7 +174,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
         [operation],
     );
     const showBothDates = useMemo(
-        () => operation === DateFilterOperation.BETWEEN,
+        () => operation === DateFilterOperation.between,
         [operation],
     );
     const showSingleDate = useMemo(

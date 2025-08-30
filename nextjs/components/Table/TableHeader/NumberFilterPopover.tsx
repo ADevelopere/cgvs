@@ -43,7 +43,7 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     const { applyNumberFilter, clearFilter } = useTableDataContext();
     // Initialize state with active filter or defaults
     const [operation, setOperation] = useState<NumberFilterOperation>(
-        activeFilter?.operation ?? NumberFilterOperation.EQUALS,
+        activeFilter?.operation ?? NumberFilterOperation.equals,
     );
     const [value, setValue] = useState<string>(
         activeFilter?.value !== undefined ? String(activeFilter.value) : "",
@@ -60,7 +60,7 @@ const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
                     : "",
             );
         } else {
-            setOperation(NumberFilterOperation.EQUALS);
+            setOperation(NumberFilterOperation.equals);
             setValue("");
         }
         setError(null);
