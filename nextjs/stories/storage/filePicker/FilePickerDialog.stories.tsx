@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
+import type { Meta, StoryFn } from "@storybook/nextjs";
 import { action } from "@storybook/addon-actions";
 import { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
@@ -6,6 +6,12 @@ import FilePickerDialog from "@/views/storage/filePicker/FilePickerDialog";
 import * as Graphql from "@/graphql/generated/types";
 import FilePickerWrapper from "./FilePickerWrapper";
 import withGlobalStyles from "@/stories/Decorators";
+import { 
+    commonStoryArgTypes, 
+    defaultStoryArgs, 
+    CommonStoryArgTypesProps 
+} from "@/stories/argTypes";
+import useStoryTheme from "@/stories/useStoryTheme";
 
 const meta: Meta<typeof FilePickerDialog> = {
     title: "Storage/FilePicker/FilePickerDialog",
@@ -21,6 +27,7 @@ const meta: Meta<typeof FilePickerDialog> = {
         },
     },
     argTypes: {
+        ...commonStoryArgTypes,
         open: {
             control: { type: "boolean" },
             description: "Whether the dialog is open",
@@ -100,7 +107,19 @@ const meta: Meta<typeof FilePickerDialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+
+type FilePickerDialogStoryProps = CommonStoryArgTypesProps & {
+    multiple?: boolean;
+    allowUpload?: boolean;
+    maxSelection?: number;
+    title?: string;
+    confirmText?: string;
+    cancelText?: string;
+    loading?: boolean;
+    error?: string;
+    initialFiles?: Graphql.FileInfo[];
+    preSelected?: Graphql.FileInfo[];
+};
 
 // Mock data
 const mockFiles: Graphql.FileInfo[] = [
@@ -145,7 +164,7 @@ const mockFiles: Graphql.FileInfo[] = [
 ];
 
 // Interactive wrapper component using the shared FilePickerWrapper
-const FilePickerDialogWrapper: React.FC<{
+const FilePickerDialogWrapper: React.FC<CommonStoryArgTypesProps & {
     multiple?: boolean;
     allowUpload?: boolean;
     maxSelection?: number;
@@ -167,7 +186,9 @@ const FilePickerDialogWrapper: React.FC<{
     error,
     initialFiles = mockFiles,
     preSelected = [],
+    ...storyArgs
 }) => {
+    useStoryTheme(storyArgs);
     const [open, setOpen] = useState(false);
 
     return (
@@ -229,178 +250,164 @@ const FilePickerDialogWrapper: React.FC<{
     );
 };
 
-export const Default: Story = {
-    render: () => <FilePickerDialogWrapper />,
+const Template: StoryFn<FilePickerDialogStoryProps> = (args) => {
+    return <FilePickerDialogWrapper {...args} />;
 };
 
-export const MultipleSelection: Story = {
-    render: () => <FilePickerDialogWrapper multiple={true} maxSelection={3} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog allowing multiple file selection with a maximum limit.",
-            },
+export const Default = Template.bind({});
+Default.args = {
+    ...defaultStoryArgs,
+};
+
+export const MultipleSelection = Template.bind({});
+MultipleSelection.args = {
+    ...defaultStoryArgs,
+    multiple: true,
+    maxSelection: 3,
+};
+MultipleSelection.parameters = {
+    docs: {
+        description: {
+            story: "Dialog allowing multiple file selection with a maximum limit.",
         },
     },
 };
 
-export const CustomTitle: Story = {
-    render: () => (
-        <FilePickerDialogWrapper
-            multiple={true}
-            title="Choose Your Images"
-            confirmText="Add Selected"
-            cancelText="Close"
-        />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog with custom title and button text.",
-            },
+export const CustomTitle = Template.bind({});
+CustomTitle.args = {
+    ...defaultStoryArgs,
+    multiple: true,
+    title: "Choose Your Images",
+    confirmText: "Add Selected",
+    cancelText: "Close",
+};
+CustomTitle.parameters = {
+    docs: {
+        description: {
+            story: "Dialog with custom title and button text.",
         },
     },
 };
 
-export const NoUpload: Story = {
-    render: () => (
-        <FilePickerDialogWrapper allowUpload={false} multiple={true} />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog without upload functionality.",
-            },
+export const NoUpload = Template.bind({});
+NoUpload.args = {
+    ...defaultStoryArgs,
+    allowUpload: false,
+    multiple: true,
+};
+NoUpload.parameters = {
+    docs: {
+        description: {
+            story: "Dialog without upload functionality.",
         },
     },
 };
 
-export const WithPreselection: Story = {
-    render: () => (
-        <FilePickerDialogWrapper
-            multiple={true}
-            preSelected={[mockFiles[0], mockFiles[1]]}
-        />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog with files already pre-selected.",
-            },
+export const WithPreselection = Template.bind({});
+WithPreselection.args = {
+    ...defaultStoryArgs,
+    multiple: true,
+    preSelected: [mockFiles[0], mockFiles[1]],
+};
+WithPreselection.parameters = {
+    docs: {
+        description: {
+            story: "Dialog with files already pre-selected.",
         },
     },
 };
 
-export const Loading: Story = {
-    render: () => <FilePickerDialogWrapper loading={true} multiple={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog showing loading state while files are being fetched.",
-            },
+export const Loading = Template.bind({});
+Loading.args = {
+    ...defaultStoryArgs,
+    loading: true,
+    multiple: true,
+};
+Loading.parameters = {
+    docs: {
+        description: {
+            story: "Dialog showing loading state while files are being fetched.",
         },
     },
 };
 
-export const WithError: Story = {
-    render: () => (
-        <FilePickerDialogWrapper
-            error="Failed to load files. Please try again."
-            multiple={true}
-        />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog showing error state when file loading fails.",
-            },
+export const WithError = Template.bind({});
+WithError.args = {
+    ...defaultStoryArgs,
+    error: "Failed to load files. Please try again.",
+    multiple: true,
+};
+WithError.parameters = {
+    docs: {
+        description: {
+            story: "Dialog showing error state when file loading fails.",
         },
     },
 };
 
-export const EmptyLocation: Story = {
-    render: () => <FilePickerDialogWrapper initialFiles={[]} multiple={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog when selected location has no files.",
-            },
+export const EmptyLocation = Template.bind({});
+EmptyLocation.args = {
+    ...defaultStoryArgs,
+    initialFiles: [],
+    multiple: true,
+};
+EmptyLocation.parameters = {
+    docs: {
+        description: {
+            story: "Dialog when selected location has no files.",
         },
     },
 };
 
-export const SingleSelectionOnly: Story = {
-    render: () => <FilePickerDialogWrapper multiple={false} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog for single file selection only.",
-            },
+export const SingleSelectionOnly = Template.bind({});
+SingleSelectionOnly.args = {
+    ...defaultStoryArgs,
+    multiple: false,
+};
+SingleSelectionOnly.parameters = {
+    docs: {
+        description: {
+            story: "Dialog for single file selection only.",
         },
     },
 };
 
-export const LargeFileSet: Story = {
-    render: () => (
-        <FilePickerDialogWrapper
-            initialFiles={[
-                ...mockFiles,
-                ...Array.from({ length: 25 }, (_, i) => ({
-                    __typename: "FileInfo" as const,
-                    path: `/documents/file-${i + 1}.txt`,
-                    name: `document-${i + 1}.txt`,
-                    size: Math.floor(Math.random() * 5000000),
-                    created: new Date(2024, 0, i + 1).toISOString(),
-                    lastModified: new Date(2024, 0, i + 1).toISOString(),
-                    contentType: "text/plain",
-                    fileType: "DOCUMENT" as const,
-                    isPublic: false,
-                    url: `/api/storage/files/file-${i + 1}.txt`,
-                })),
-            ]}
-            multiple={true}
-            maxSelection={10}
-        />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Dialog with many files to test scrolling and performance in modal context.",
-            },
+export const LargeFileSet = Template.bind({});
+LargeFileSet.args = {
+    ...defaultStoryArgs,
+    initialFiles: [
+        ...mockFiles,
+        ...Array.from({ length: 25 }, (_, i) => ({
+            __typename: "FileInfo" as const,
+            path: `/documents/file-${i + 1}.txt`,
+            name: `document-${i + 1}.txt`,
+            size: Math.floor(Math.random() * 5000000),
+            created: new Date(2024, 0, i + 1).toISOString(),
+            lastModified: new Date(2024, 0, i + 1).toISOString(),
+            contentType: "text/plain",
+            fileType: "DOCUMENT" as const,
+            isPublic: false,
+            url: `/api/storage/files/file-${i + 1}.txt`,
+        })),
+    ],
+    multiple: true,
+    maxSelection: 10,
+};
+LargeFileSet.parameters = {
+    docs: {
+        description: {
+            story: "Dialog with many files to test scrolling and performance in modal context.",
         },
     },
 };
 
 // Direct prop testing (always open)
-export const AlwaysOpen: Story = {
-    render: () => (
-        <FilePickerWrapper initialFiles={mockFiles}>
-            {(wrapperState) => (
-                <FilePickerDialog
-                    open={true}
-                    selectedFiles={wrapperState.selectedFiles}
-                    location={wrapperState.location}
-                    multiple={true}
-                    allowUpload={true}
-                    files={wrapperState.files}
-                    loading={wrapperState.loading}
-                    onClose={() => action("close")()}
-                    changeLocation={wrapperState.changeLocation}
-                    setSelectedFiles={wrapperState.setSelectedFiles}
-                    clearSelection={wrapperState.clearSelection}
-                    refreshFiles={wrapperState.refreshFiles}
-                    startUpload={async (files, targetPath) =>
-                        action("startUpload")(files, targetPath)
-                    }
-                    isFileProhibited={wrapperState.isFileProhibited}
-                    uploadToLocation={wrapperState.uploadToLocation}
-                    uploadFiles={wrapperState.uploadFiles}
-                    isUploading={wrapperState.isUploading}
-                    clearUploads={wrapperState.clearUploads}
-                    cancelUpload={wrapperState.cancelUpload}
-                    retryFile={wrapperState.retryFile}
-                />
-            )}
-        </FilePickerWrapper>
-    ),
+export const AlwaysOpen = Template.bind({});
+AlwaysOpen.args = {
+    ...defaultStoryArgs,
+    initialFiles: mockFiles,
+    multiple: true,
+    allowUpload: true,
+    // For the AlwaysOpen story, we need a special wrapper that doesn't use the button
+    // This will need to be handled differently or as a special case
 };

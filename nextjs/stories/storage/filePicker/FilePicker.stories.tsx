@@ -1,9 +1,15 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
+import type { Meta, StoryFn } from "@storybook/nextjs";
 import { action } from "@storybook/addon-actions";
 import FilePicker from "@/views/storage/filePicker/FilePicker";
 import * as Graphql from "@/graphql/generated/types";
 import FilePickerWrapper from "./FilePickerWrapper";
 import withGlobalStyles from "@/stories/Decorators";
+import { 
+    commonStoryArgTypes, 
+    defaultStoryArgs, 
+    CommonStoryArgTypesProps 
+} from "@/stories/argTypes";
+import useStoryTheme from "@/stories/useStoryTheme";
 
 const meta: Meta<typeof FilePicker> = {
     title: "Storage/FilePicker/FilePicker",
@@ -19,6 +25,7 @@ const meta: Meta<typeof FilePicker> = {
         },
     },
     argTypes: {
+        ...commonStoryArgTypes,
         multiple: {
             control: { type: "boolean" },
             description: "Allow multiple file selection",
@@ -94,7 +101,20 @@ const meta: Meta<typeof FilePicker> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+
+type FilePickerStoryProps = CommonStoryArgTypesProps & {
+    initialLocation?: Graphql.UploadLocation;
+    initialFiles?: Graphql.FileInfo[];
+    initialViewMode?: "grid" | "list";
+    multiple?: boolean;
+    allowUpload?: boolean;
+    maxSelection?: number;
+    disabled?: boolean;
+    compact?: boolean;
+    showLocationSelector?: boolean;
+    loading?: boolean;
+    error?: string;
+};
 
 // Mock data
 const mockFiles: Graphql.FileInfo[] = [
@@ -152,7 +172,7 @@ const mockFiles: Graphql.FileInfo[] = [
 ];
 
 // Interactive wrapper component using the shared FilePickerWrapper
-const FilePickerStoryWrapper: React.FC<{
+const FilePickerStoryWrapper: React.FC<CommonStoryArgTypesProps & {
     initialLocation?: Graphql.UploadLocation;
     initialFiles?: Graphql.FileInfo[];
     initialViewMode?: "grid" | "list";
@@ -165,6 +185,8 @@ const FilePickerStoryWrapper: React.FC<{
     loading?: boolean;
     error?: string;
 }> = (props) => {
+    useStoryTheme(props);
+
     return (
         <FilePickerWrapper
             initialLocation={props.initialLocation}
@@ -208,161 +230,188 @@ const FilePickerStoryWrapper: React.FC<{
     );
 };
 
-export const Default: Story = {
-    render: () => <FilePickerStoryWrapper />,
+const Template: StoryFn<FilePickerStoryProps> = (args) => {
+    return <FilePickerStoryWrapper {...args} />;
 };
 
-export const MultipleSelection: Story = {
-    render: () => <FilePickerStoryWrapper multiple={true} maxSelection={3} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Allows multiple file selection with a maximum limit.",
-            },
+export const Default = Template.bind({});
+Default.args = {
+    ...defaultStoryArgs,
+};
+
+export const MultipleSelection = Template.bind({});
+MultipleSelection.args = {
+    ...defaultStoryArgs,
+    multiple: true,
+    maxSelection: 3,
+};
+MultipleSelection.parameters = {
+    docs: {
+        description: {
+            story: "Allows multiple file selection with a maximum limit.",
         },
     },
 };
 
-export const ListView: Story = {
-    render: () => <FilePickerStoryWrapper initialViewMode="list" multiple={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Displays files in list format instead of grid.",
-            },
+export const ListView = Template.bind({});
+ListView.args = {
+    ...defaultStoryArgs,
+    initialViewMode: "list",
+    multiple: true,
+};
+ListView.parameters = {
+    docs: {
+        description: {
+            story: "Displays files in list format instead of grid.",
         },
     },
 };
 
-export const Compact: Story = {
-    render: () => <FilePickerStoryWrapper compact={true} multiple={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Compact mode for use in dialogs or constrained spaces.",
-            },
+export const Compact = Template.bind({});
+Compact.args = {
+    ...defaultStoryArgs,
+    compact: true,
+    multiple: true,
+};
+Compact.parameters = {
+    docs: {
+        description: {
+            story: "Compact mode for use in dialogs or constrained spaces.",
         },
     },
 };
 
-export const NoUpload: Story = {
-    render: () => <FilePickerStoryWrapper allowUpload={false} multiple={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "File picker without upload functionality.",
-            },
+export const NoUpload = Template.bind({});
+NoUpload.args = {
+    ...defaultStoryArgs,
+    allowUpload: false,
+    multiple: true,
+};
+NoUpload.parameters = {
+    docs: {
+        description: {
+            story: "File picker without upload functionality.",
         },
     },
 };
 
-export const NoLocationSelector: Story = {
-    render: () => (
-        <FilePickerStoryWrapper showLocationSelector={false} multiple={true} />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "File picker without location selector (location pre-selected).",
-            },
+export const NoLocationSelector = Template.bind({});
+NoLocationSelector.args = {
+    ...defaultStoryArgs,
+    showLocationSelector: false,
+    multiple: true,
+};
+NoLocationSelector.parameters = {
+    docs: {
+        description: {
+            story: "File picker without location selector (location pre-selected).",
         },
     },
 };
 
-export const Loading: Story = {
-    render: () => <FilePickerStoryWrapper loading={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Loading state while files are being fetched.",
-            },
+export const Loading = Template.bind({});
+Loading.args = {
+    ...defaultStoryArgs,
+    loading: true,
+};
+Loading.parameters = {
+    docs: {
+        description: {
+            story: "Loading state while files are being fetched.",
         },
     },
 };
 
-export const WithError: Story = {
-    render: () => (
-        <FilePickerStoryWrapper error="Failed to load files. Please try again." />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Error state when file loading fails.",
-            },
+export const WithError = Template.bind({});
+WithError.args = {
+    ...defaultStoryArgs,
+    error: "Failed to load files. Please try again.",
+};
+WithError.parameters = {
+    docs: {
+        description: {
+            story: "Error state when file loading fails.",
         },
     },
 };
 
-export const EmptyLocation: Story = {
-    render: () => <FilePickerStoryWrapper initialFiles={[]} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Empty state when no files are available in selected location.",
-            },
+export const EmptyLocation = Template.bind({});
+EmptyLocation.args = {
+    ...defaultStoryArgs,
+    initialFiles: [],
+};
+EmptyLocation.parameters = {
+    docs: {
+        description: {
+            story: "Empty state when no files are available in selected location.",
         },
     },
 };
 
-export const NoLocationSelected: Story = {
-    render: () => <FilePickerStoryWrapper initialLocation={undefined} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Initial state when no location is selected.",
-            },
+export const NoLocationSelected = Template.bind({});
+NoLocationSelected.args = {
+    ...defaultStoryArgs,
+    initialLocation: undefined,
+};
+NoLocationSelected.parameters = {
+    docs: {
+        description: {
+            story: "Initial state when no location is selected.",
         },
     },
 };
 
-export const Disabled: Story = {
-    render: () => <FilePickerStoryWrapper disabled={true} multiple={true} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Disabled state - all interactions are prevented.",
-            },
+export const Disabled = Template.bind({});
+Disabled.args = {
+    ...defaultStoryArgs,
+    disabled: true,
+    multiple: true,
+};
+Disabled.parameters = {
+    docs: {
+        description: {
+            story: "Disabled state - all interactions are prevented.",
         },
     },
 };
 
-export const SingleSelectionOnly: Story = {
-    render: () => <FilePickerStoryWrapper multiple={false} />,
-    parameters: {
-        docs: {
-            description: {
-                story: "Single file selection mode.",
-            },
+export const SingleSelectionOnly = Template.bind({});
+SingleSelectionOnly.args = {
+    ...defaultStoryArgs,
+    multiple: false,
+};
+SingleSelectionOnly.parameters = {
+    docs: {
+        description: {
+            story: "Single file selection mode.",
         },
     },
 };
 
-export const ManyFiles: Story = {
-    render: () => (
-        <FilePickerStoryWrapper
-            initialFiles={[
-                ...mockFiles,
-                ...Array.from({ length: 20 }, (_, i) => ({
-                    __typename: "FileInfo" as const,
-                    path: `/documents/file-${i + 1}.txt`,
-                    name: `file-${i + 1}.txt`,
-                    size: Math.floor(Math.random() * 5000000),
-                    created: new Date(2024, 0, i + 1).toISOString(),
-                    lastModified: new Date(2024, 0, i + 1).toISOString(),
-                    contentType: "text/plain",
-                    fileType: "DOCUMENT" as const,
-                    isPublic: false,
-                    url: `/api/storage/files/file-${i + 1}.txt`,
-                })),
-            ]}
-            multiple={true}
-        />
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "File picker with many files to test scrolling and performance.",
-            },
+export const ManyFiles = Template.bind({});
+ManyFiles.args = {
+    ...defaultStoryArgs,
+    initialFiles: [
+        ...mockFiles,
+        ...Array.from({ length: 20 }, (_, i) => ({
+            __typename: "FileInfo" as const,
+            path: `/documents/file-${i + 1}.txt`,
+            name: `file-${i + 1}.txt`,
+            size: Math.floor(Math.random() * 5000000),
+            created: new Date(2024, 0, i + 1).toISOString(),
+            lastModified: new Date(2024, 0, i + 1).toISOString(),
+            contentType: "text/plain",
+            fileType: "DOCUMENT" as const,
+            isPublic: false,
+            url: `/api/storage/files/file-${i + 1}.txt`,
+        })),
+    ],
+    multiple: true,
+};
+ManyFiles.parameters = {
+    docs: {
+        description: {
+            story: "File picker with many files to test scrolling and performance.",
         },
     },
 };
