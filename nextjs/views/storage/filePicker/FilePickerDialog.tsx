@@ -15,7 +15,7 @@ import {
     CheckCircle as SelectIcon,
     CloudUpload as UploadIcon,
 } from "@mui/icons-material";
-import FileSelector from "./FilePicker";
+import FilePicker from "./FilePicker";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
@@ -37,6 +37,21 @@ export type FileSelectorDialogProps = {
     title?: string;
     confirmText?: string;
     cancelText?: string;
+
+    changeLocation: (newLocation: Graphql.UploadLocation) => void;
+
+    // Files from the location
+    files: Graphql.FileInfo[];
+    loading: boolean;
+    error?: string;
+
+    // Selection state
+    setSelectedFiles: (files: Graphql.FileInfo[]) => void;
+    clearSelection: () => void;
+
+    isFileProhibited: (file: Graphql.FileInfo) => boolean;
+
+    refreshFiles: () => Promise<void>;
 };
 
 const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
@@ -51,6 +66,15 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     title,
     confirmText,
     cancelText,
+
+    changeLocation,
+    files,
+    loading,
+    error,
+    setSelectedFiles,
+    clearSelection,
+    refreshFiles,
+    isFileProhibited,
 }) => {
     const translations = useAppTranslation("storageTranslations");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -156,8 +180,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                         p: 3,
                     }}
                 >
-                    <FileSelector
-                        location={location}
+                    <FilePicker
                         multiple={multiple}
                         allowUpload={allowUpload}
                         maxSelection={maxSelection}
@@ -165,6 +188,16 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                         onViewModeChange={setViewMode}
                         compact={true}
                         showLocationSelector={false}
+                        location={location}
+                        changeLocation={changeLocation}
+                        files={files}
+                        loading={loading}
+                        error={error}
+                        selectedFiles={selectedFiles}
+                        setSelectedFiles={setSelectedFiles}
+                        clearSelection={clearSelection}
+                        isFileProhibited={isFileProhibited}
+                        refreshFiles={refreshFiles}
                     />
                 </Box>
             </DialogContent>

@@ -23,7 +23,6 @@ import {
     ViewList as ListViewIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 import LocationSelector from "./LocationSelector";
 import UploadDropzone from "../upload/UploadDropzone";
 import FileSelectItemList from "./FilePickerItems";
@@ -39,9 +38,26 @@ export type FileSelectorProps = {
     onViewModeChange?: (mode: "grid" | "list") => void;
     compact?: boolean;
     showLocationSelector?: boolean;
+
+    location?: Graphql.UploadLocation;
+    changeLocation: (newLocation: Graphql.UploadLocation) => void;
+
+    // Files from the location
+    files: Graphql.FileInfo[];
+    loading: boolean;
+    error?: string;
+
+    // Selection state
+    selectedFiles: Graphql.FileInfo[];
+    setSelectedFiles: (files: Graphql.FileInfo[]) => void;
+    clearSelection: () => void;
+
+    isFileProhibited: (file: Graphql.FileInfo) => boolean;
+
+    refreshFiles: () => Promise<void>;
 };
 
-const FileSelector: React.FC<FileSelectorProps> = ({
+const FilePicker: React.FC<FileSelectorProps> = ({
     multiple = false,
     allowUpload = true,
     maxSelection,
@@ -50,19 +66,18 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     onViewModeChange,
     compact = false,
     showLocationSelector = true,
+
+    location,
+    changeLocation,
+    files,
+    loading,
+    error,
+    selectedFiles,
+    setSelectedFiles,
+    clearSelection,
+    refreshFiles,
+    isFileProhibited,
 }) => {
-    const {
-        location,
-        changeLocation,
-        files,
-        loading,
-        error,
-        selectedFiles,
-        setSelectedFiles,
-        clearSelection,
-        refreshFiles,
-        isFileProhibited,
-    } = useFileSelector();
     const translations = useAppTranslation("storageTranslations");
 
     const handleLocationChange = (newLocation: Graphql.UploadLocation) => {
@@ -363,4 +378,4 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     );
 };
 
-export default FileSelector;
+export default FilePicker;
