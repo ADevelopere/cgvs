@@ -3,10 +3,12 @@ import { action } from "@storybook/addon-actions";
 import { Box, Typography, Grid, List } from "@mui/material";
 import FilePickerItems from "@/views/storage/filePicker/FilePickerItems";
 import * as Graphql from "@/graphql/generated/types";
+import withGlobalStyles from "@/stories/Decorators";
 
 const meta: Meta<typeof FilePickerItems> = {
     title: "Storage/FilePicker/FilePickerItems",
     component: FilePickerItems,
+    decorators: [withGlobalStyles],
     parameters: {
         layout: "padded",
         docs: {

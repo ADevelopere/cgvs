@@ -35,6 +35,7 @@ const eslintConfig = [{
     },
 }, {
     files: ["**/*.ts", "**/*.tsx"],
+    ignores: [".storybook/**"],
     languageOptions: {
         parser: tsEslintParser,
         parserOptions: {
@@ -47,6 +48,24 @@ const eslintConfig = [{
     },
     rules: {
         ...tsEslintRecommended.rules,
+        "no-console": "error",
+    },
+}, {
+    files: [".storybook/**/*.ts", ".storybook/**/*.tsx"],
+    languageOptions: {
+        parser: tsEslintParser,
+        parserOptions: {
+            // Don't use project-based linting for storybook files
+            // to avoid the tsconfig include issues
+        },
+    },
+    plugins: {
+        "@typescript-eslint": tsEslintPlugin,
+    },
+    rules: {
+        // Use basic rules without type-aware linting
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-explicit-any": "warn",
         "no-console": "error",
     },
 }, ...storybook.configs["flat/recommended"]];

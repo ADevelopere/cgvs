@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Box, Typography, Paper } from "@mui/material";
 import LocationSelector from "@/views/storage/filePicker/LocationSelector";
 import * as Graphql from "@/graphql/generated/types";
+import withGlobalStyles from "@/stories/Decorators";
 
 const meta: Meta<typeof LocationSelector> = {
     title: "Storage/FilePicker/LocationSelector",
     component: LocationSelector,
+    decorators: [withGlobalStyles],
     parameters: {
         layout: "padded",
         docs: {

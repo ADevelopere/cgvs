@@ -1,46 +1,49 @@
 import {
-  TextFilterOperation,
-  NumberFilterOperation,
-  DateFilterOperation,
-  operationRequiresValue,
-} from "@/types/filters"
+    TextFilterOperation,
+    NumberFilterOperation,
+    DateFilterOperation,
+    operationRequiresValue,
+} from "@/types/filters";
 
 // Labels for text filter operations
 export const textFilterOperationLabels: Record<TextFilterOperation, string> = {
-  [TextFilterOperation.contains]: "Contains",
-  [TextFilterOperation.notContains]: "Does not contain",
-  [TextFilterOperation.EQUALS]: "Equals",
-  [TextFilterOperation.NOT_EQUALS]: "Does not equal",
-  [TextFilterOperation.STARTS_WITH]: "Starts with",
-  [TextFilterOperation.ENDS_WITH]: "Ends with",
-  [TextFilterOperation.IS_EMPTY]: "Is empty",
-  [TextFilterOperation.IS_NOT_EMPTY]: "Is not empty",
-}
+    [TextFilterOperation.contains]: "Contains",
+    [TextFilterOperation.notContains]: "Does not contain",
+    [TextFilterOperation.equals]: "Equals",
+    [TextFilterOperation.notEquals]: "Does not equal",
+    [TextFilterOperation.startsWith]: "Starts with",
+    [TextFilterOperation.endsWith]: "Ends with",
+    [TextFilterOperation.isEmpty]: "Is empty",
+    [TextFilterOperation.isNotEmpty]: "Is not empty",
+};
 
 // Labels for number filter operations
-export const numberFilterOperationLabels: Record<NumberFilterOperation, string> = {
-  [NumberFilterOperation.EQUALS]: "Equals",
-  [NumberFilterOperation.NOT_EQUALS]: "Does not equal",
-  [NumberFilterOperation.GREATER_THAN]: "Greater than",
-  [NumberFilterOperation.GREATER_THAN_OR_EQUAL]: "Greater than or equal to",
-  [NumberFilterOperation.LESS_THAN]: "Less than",
-  [NumberFilterOperation.LESS_THAN_OR_EQUAL]: "Less than or equal to",
-  [NumberFilterOperation.IS_NULL]: "Is empty",
-  [NumberFilterOperation.IS_NOT_NULL]: "Is not empty",
-}
+export const numberFilterOperationLabels: Record<
+    NumberFilterOperation,
+    string
+> = {
+    [NumberFilterOperation.equals]: "Equals",
+    [NumberFilterOperation.notEquals]: "Does not equal",
+    [NumberFilterOperation.greaterThan]: "Greater than",
+    [NumberFilterOperation.greaterThanOrEqual]: "Greater than or equal to",
+    [NumberFilterOperation.lessThan]: "Less than",
+    [NumberFilterOperation.lessThanOrEqual]: "Less than or equal to",
+    [NumberFilterOperation.isNull]: "Is empty",
+    [NumberFilterOperation.isNotNull]: "Is not empty",
+};
 
 // Labels for date filter operations
 export const dateFilterOperationLabels: Record<DateFilterOperation, string> = {
-  [DateFilterOperation.BETWEEN]: "Between",
-  [DateFilterOperation.IS]: "Is",
-  [DateFilterOperation.IS_NOT]: "Is not",
-  [DateFilterOperation.IS_AFTER]: "Is after",
-  [DateFilterOperation.IS_BEFORE]: "Is before",
-  [DateFilterOperation.IS_ON_OR_AFTER]: "Is on or after",
-  [DateFilterOperation.IS_ON_OR_BEFORE]: "Is on or before",
-  [DateFilterOperation.IS_EMPTY]: "Is empty",
-  [DateFilterOperation.IS_NOT_EMPTY]: "Is not empty",
-}
+    [DateFilterOperation.between]: "Between",
+    [DateFilterOperation.is]: "Is",
+    [DateFilterOperation.isNot]: "Is not",
+    [DateFilterOperation.isAfter]: "Is after",
+    [DateFilterOperation.isBefore]: "Is before",
+    [DateFilterOperation.isOnOrAfter]: "Is on or after",
+    [DateFilterOperation.isOnOrBefore]: "Is on or before",
+    [DateFilterOperation.isEmpty]: "Is empty",
+    [DateFilterOperation.isNotEmpty]: "Is not empty",
+};
 
 // Re-export operationRequiresValue for convenience
-export { operationRequiresValue }
+export { operationRequiresValue };

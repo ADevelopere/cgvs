@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import FilePickerDialog from "@/views/storage/filePicker/FilePickerDialog";
 import * as Graphql from "@/graphql/generated/types";
+import withGlobalStyles from "@/stories/Decorators";
 
 const meta: Meta<typeof FilePickerDialog> = {
     title: "Storage/FilePicker/FilePickerDialog",
     component: FilePickerDialog,
+    decorators: [withGlobalStyles],
     parameters: {
         layout: "centered",
         docs: {
