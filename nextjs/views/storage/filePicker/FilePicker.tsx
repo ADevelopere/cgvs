@@ -25,7 +25,7 @@ import {
 } from "@mui/icons-material";
 import LocationSelector from "./LocationSelector";
 import UploadDropzone from "../upload/UploadDropzone";
-import FileSelectItemList from "./FilePickerItems";
+import FilePickerItems from "./FilePickerItems";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { UploadFileState } from "@/contexts/storage/storage.type";
@@ -352,7 +352,7 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                                     lg: 3,
                                                 }}
                                             >
-                                                <FileSelectItemList
+                                                <FilePickerItems
                                                     file={file}
                                                     selected={isSelected}
                                                     onToggleSelect={() =>
@@ -379,7 +379,7 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                         const isProhibited =
                                             isFileProhibited(file);
                                         return (
-                                            <FileSelectItemList
+                                            <FilePickerItems
                                                 key={file.path}
                                                 file={file}
                                                 selected={isSelected}

@@ -1,9 +1,25 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
+import React from "react";
+import type { Meta, StoryFn } from "@storybook/nextjs";
 import { action } from "@storybook/addon-actions";
 import { Box, Typography, Grid, List } from "@mui/material";
 import FilePickerItems from "@/views/storage/filePicker/FilePickerItems";
 import * as Graphql from "@/graphql/generated/types";
 import withGlobalStyles from "@/stories/Decorators";
+import { 
+    commonStoryArgTypes, 
+    defaultStoryArgs, 
+    CommonStoryArgTypesProps 
+} from "@/stories/argTypes";
+import useStoryTheme from "@/stories/useStoryTheme";
+
+// Props interface for story controls
+type FilePickerItemsStoryProps = CommonStoryArgTypesProps & {
+    file: Graphql.FileInfo;
+    selected: boolean;
+    disabled?: boolean;
+    viewMode?: "grid" | "list";
+    onToggleSelect: (file: Graphql.FileInfo) => void;
+};
 
 const meta: Meta<typeof FilePickerItems> = {
     title: "Storage/FilePicker/FilePickerItems",
@@ -19,6 +35,7 @@ const meta: Meta<typeof FilePickerItems> = {
         },
     },
     argTypes: {
+        ...commonStoryArgTypes,
         file: {
             control: { type: "object" },
             description: "File information object",
@@ -46,10 +63,35 @@ const meta: Meta<typeof FilePickerItems> = {
             table: { category: "Events" },
         },
     },
+    args: {
+        ...defaultStoryArgs,
+        file: {
+            __typename: "FileInfo",
+            path: "/example/file.txt",
+            name: "example-file.txt",
+            size: 1024,
+            created: "2024-01-16T10:00:00Z",
+            lastModified: "2024-01-16T10:00:00Z",
+            contentType: "text/plain",
+            fileType: "DOCUMENT",
+            isPublic: false,
+            url: "/api/storage/files/example.txt",
+        },
+        selected: false,
+        disabled: false,
+        viewMode: "grid",
+        onToggleSelect: action("toggleSelect"),
+    },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryFn<FilePickerItemsStoryProps>;
+
+const Template: StoryFn<FilePickerItemsStoryProps> = (args) => {
+    useStoryTheme(args);
+    
+    return <FilePickerItems {...args} />;
+};
 
 // Mock files
 const mockImageFile: Graphql.FileInfo = {
@@ -105,110 +147,105 @@ const mockLargeFile: Graphql.FileInfo = {
     url: "/api/storage/files/presentation.mp4",
 };
 
-export const ImageFileGrid: Story = {
-    args: {
-        file: mockImageFile,
-        selected: false,
-        disabled: false,
-        viewMode: "grid",
-        onToggleSelect: action("toggleSelect"),
-    },
+export const ImageFileGrid: Story = Template.bind({});
+ImageFileGrid.args = {
+    file: mockImageFile,
+    selected: false,
+    disabled: false,
+    viewMode: "grid",
+    onToggleSelect: action("toggleSelect"),
 };
 
-export const ImageFileSelected: Story = {
-    args: {
-        file: mockImageFile,
-        selected: true,
-        disabled: false,
-        viewMode: "grid",
-        onToggleSelect: action("toggleSelect"),
-    },
+export const ImageFileSelected: Story = Template.bind({});
+ImageFileSelected.args = {
+    file: mockImageFile,
+    selected: true,
+    disabled: false,
+    viewMode: "grid",
+    onToggleSelect: action("toggleSelect"),
 };
 
-export const DocumentFileGrid: Story = {
-    args: {
-        file: mockDocumentFile,
-        selected: false,
-        disabled: false,
-        viewMode: "grid",
-        onToggleSelect: action("toggleSelect"),
-    },
+export const DocumentFileGrid: Story = Template.bind({});
+DocumentFileGrid.args = {
+    file: mockDocumentFile,
+    selected: false,
+    disabled: false,
+    viewMode: "grid",
+    onToggleSelect: action("toggleSelect"),
 };
 
-export const FileDisabled: Story = {
-    args: {
-        file: mockTextFile,
-        selected: false,
-        disabled: true,
-        viewMode: "grid",
-        onToggleSelect: action("toggleSelect"),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: "Disabled file item (cannot be selected).",
-            },
+export const FileDisabled: Story = Template.bind({});
+FileDisabled.args = {
+    file: mockTextFile,
+    selected: false,
+    disabled: true,
+    viewMode: "grid",
+    onToggleSelect: action("toggleSelect"),
+};
+FileDisabled.parameters = {
+    docs: {
+        description: {
+            story: "Disabled file item (cannot be selected).",
         },
     },
 };
 
-export const ImageFileList: Story = {
-    args: {
-        file: mockImageFile,
-        selected: false,
-        disabled: false,
-        viewMode: "list",
-        onToggleSelect: action("toggleSelect"),
-    },
+export const ImageFileList: Story = Template.bind({});
+ImageFileList.args = {
+    file: mockImageFile,
+    selected: false,
+    disabled: false,
+    viewMode: "list",
+    onToggleSelect: action("toggleSelect"),
 };
 
-export const DocumentFileList: Story = {
-    args: {
-        file: mockDocumentFile,
-        selected: true,
-        disabled: false,
-        viewMode: "list",
-        onToggleSelect: action("toggleSelect"),
-    },
+export const DocumentFileList: Story = Template.bind({});
+DocumentFileList.args = {
+    file: mockDocumentFile,
+    selected: true,
+    disabled: false,
+    viewMode: "list",
+    onToggleSelect: action("toggleSelect"),
 };
 
-export const LongFilenameGrid: Story = {
-    args: {
-        file: mockLargeFile,
-        selected: false,
-        disabled: false,
-        viewMode: "grid",
-        onToggleSelect: action("toggleSelect"),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: "File with a very long filename to test text truncation in grid view.",
-            },
+export const LongFilenameGrid: Story = Template.bind({});
+LongFilenameGrid.args = {
+    file: mockLargeFile,
+    selected: false,
+    disabled: false,
+    viewMode: "grid",
+    onToggleSelect: action("toggleSelect"),
+};
+LongFilenameGrid.parameters = {
+    docs: {
+        description: {
+            story: "File with a very long filename to test text truncation in grid view.",
         },
     },
 };
 
-export const LongFilenameList: Story = {
-    args: {
-        file: mockLargeFile,
-        selected: false,
-        disabled: false,
-        viewMode: "list",
-        onToggleSelect: action("toggleSelect"),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: "File with a very long filename to test text truncation in list view.",
-            },
+export const LongFilenameList: Story = Template.bind({});
+LongFilenameList.args = {
+    file: mockLargeFile,
+    selected: false,
+    disabled: false,
+    viewMode: "list",
+    onToggleSelect: action("toggleSelect"),
+};
+LongFilenameList.parameters = {
+    docs: {
+        description: {
+            story: "File with a very long filename to test text truncation in list view.",
         },
     },
 };
 
-// Comparison views
-export const GridComparison: Story = {
-    render: () => (
+// Comparison views with multiple items
+// Wrapper components for complex stories
+const GridComparisonWrapper: React.FC<FilePickerItemsStoryProps> = (props) => {
+    useStoryTheme(props);
+    
+    return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
                 Grid View Comparison
@@ -240,7 +277,7 @@ export const GridComparison: Story = {
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <FilePickerItems
-                        file={mockTextFile}
+                        file={mockLargeFile}
                         selected={false}
                         disabled={true}
                         viewMode="grid"
@@ -249,18 +286,13 @@ export const GridComparison: Story = {
                 </Grid>
             </Grid>
         </Box>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Comparison of different file types and states in grid view.",
-            },
-        },
-    },
+    );
 };
 
-export const ListComparison: Story = {
-    render: () => (
+const ListComparisonWrapper: React.FC<FilePickerItemsStoryProps> = (props) => {
+    useStoryTheme(props);
+    
+    return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
                 List View Comparison
@@ -273,72 +305,110 @@ export const ListComparison: Story = {
                     onToggleSelect={action("toggleSelect")}
                 />
                 <FilePickerItems
-                    file={mockImageFile}
-                    selected={true}
-                    viewMode="list"
-                    onToggleSelect={action("toggleSelect")}
-                />
-                <FilePickerItems
                     file={mockDocumentFile}
-                    selected={false}
-                    viewMode="list"
-                    onToggleSelect={action("toggleSelect")}
-                />
-                <FilePickerItems
-                    file={mockTextFile}
-                    selected={false}
-                    disabled={true}
+                    selected={true}
                     viewMode="list"
                     onToggleSelect={action("toggleSelect")}
                 />
                 <FilePickerItems
                     file={mockLargeFile}
                     selected={false}
+                    disabled={true}
+                    viewMode="list"
+                    onToggleSelect={action("toggleSelect")}
+                />
+                <FilePickerItems
+                    file={mockTextFile}
+                    selected={false}
                     viewMode="list"
                     onToggleSelect={action("toggleSelect")}
                 />
             </List>
         </Box>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Comparison of different file types and states in list view.",
-            },
+    );
+};
+
+const MixedFileTypesWrapper: React.FC<FilePickerItemsStoryProps> = (props) => {
+    useStoryTheme(props);
+    
+    return (
+        <Box sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+                Mixed File Types
+            </Typography>
+            <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Box sx={{ p: 1 }}>
+                        <FilePickerItems
+                            file={mockImageFile}
+                            selected={false}
+                            viewMode="grid"
+                            onToggleSelect={action("toggleSelect")}
+                        />
+                    </Box>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Box sx={{ p: 1 }}>
+                        <FilePickerItems
+                            file={mockDocumentFile}
+                            selected={true}
+                            viewMode="grid"
+                            onToggleSelect={action("toggleSelect")}
+                        />
+                    </Box>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Box sx={{ p: 1 }}>
+                        <FilePickerItems
+                            file={mockTextFile}
+                            selected={false}
+                            viewMode="grid"
+                            onToggleSelect={action("toggleSelect")}
+                        />
+                    </Box>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Box sx={{ p: 1 }}>
+                        <FilePickerItems
+                            file={mockLargeFile}
+                            selected={false}
+                            disabled={true}
+                            viewMode="grid"
+                            onToggleSelect={action("toggleSelect")}
+                        />
+                    </Box>
+                </Grid>
+            </Grid>
+        </Box>
+    );
+};
+
+export const GridComparison = Template.bind({});
+GridComparison.render = (args) => <GridComparisonWrapper {...args} />;
+GridComparison.parameters = {
+    docs: {
+        description: {
+            story: "Grid view comparison showing different file types and states.",
         },
     },
 };
 
-export const MixedFileTypes: Story = {
-    render: () => (
-        <Box sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-                Mixed File Types (Grid)
-            </Typography>
-            <Grid container spacing={2}>
-                {[
-                    mockImageFile,
-                    mockDocumentFile,
-                    mockTextFile,
-                    mockLargeFile,
-                ].map((file, index) => (
-                    <Grid key={file.path} size={{ xs: 12, sm: 6, md: 3 }}>
-                        <FilePickerItems
-                            file={file}
-                            selected={index % 2 === 0}
-                            viewMode="grid"
-                            onToggleSelect={action("toggleSelect")}
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-        </Box>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: "Showcase of different file types with alternating selection states.",
-            },
+export const ListComparison = Template.bind({});
+ListComparison.render = (args) => <ListComparisonWrapper {...args} />;
+ListComparison.parameters = {
+    docs: {
+        description: {
+            story: "List view comparison showing different file types and states.",
+        },
+    },
+};
+
+export const MixedFileTypes = Template.bind({});
+MixedFileTypes.render = (args) => <MixedFileTypesWrapper {...args} />;
+MixedFileTypes.parameters = {
+    docs: {
+        description: {
+            story: "Mixed file types in grid view with different states and selection.",
         },
     },
 };

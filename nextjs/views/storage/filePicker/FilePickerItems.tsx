@@ -26,7 +26,7 @@ import { format } from "date-fns";
 import useAppTranslation from "@/locale/useAppTranslation";
 import StorageTranslations from "@/locale/components/Storage";
 
-interface FileSelectItemProps {
+interface FilePickerItemsProps {
     file: Graphql.FileInfo;
     selected: boolean;
     onToggleSelect: (file: Graphql.FileInfo) => void;
@@ -298,7 +298,7 @@ const GridView: React.FC<ViewProps> = ({
     );
 };
 
-const FileSelectItemList: React.FC<FileSelectItemProps> = React.memo(
+const FilePickerItems: React.FC<FilePickerItemsProps> = React.memo(
     ({
         file,
         selected,
@@ -445,6 +445,6 @@ const FileSelectItemList: React.FC<FileSelectItemProps> = React.memo(
     },
 );
 
-FileSelectItemList.displayName = "FileSelectItemList";
+FilePickerItems.displayName = "FilePickerItems";
 
-export default FileSelectItemList;
+export default FilePickerItems;
