@@ -26,7 +26,7 @@ import {
 import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 import LocationSelector from "./LocationSelector";
 import UploadDropzone from "../upload/UploadDropzone";
-import FileSelectItemList from "./FileSelectItemList";
+import FileSelectItemList from "./FilePickerItems";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
