@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { action } from "@storybook/addon-actions";
-import { useState } from "react";
 import FilePicker from "@/views/storage/filePicker/FilePicker";
 import * as Graphql from "@/graphql/generated/types";
-import { UploadFileState } from "@/contexts/storage/storage.type";
+import FilePickerWrapper from "./FilePickerWrapper";
 import withGlobalStyles from "@/stories/Decorators";
 
 const meta: Meta<typeof FilePicker> = {
@@ -152,8 +151,8 @@ const mockFiles: Graphql.FileInfo[] = [
     },
 ];
 
-// Interactive wrapper component
-const FilePickerWrapper: React.FC<{
+// Interactive wrapper component using the shared FilePickerWrapper
+const FilePickerStoryWrapper: React.FC<{
     initialLocation?: Graphql.UploadLocation;
     initialFiles?: Graphql.FileInfo[];
     initialViewMode?: "grid" | "list";
@@ -165,185 +164,56 @@ const FilePickerWrapper: React.FC<{
     showLocationSelector?: boolean;
     loading?: boolean;
     error?: string;
-}> = ({
-    initialLocation = "TEMPLATE_COVER",
-    initialFiles = mockFiles,
-    initialViewMode = "grid",
-    multiple = false,
-    allowUpload = true,
-    maxSelection,
-    disabled = false,
-    compact = false,
-    showLocationSelector = true,
-    loading = false,
-    error,
-}) => {
-    const [location, setLocation] = useState<
-        Graphql.UploadLocation | undefined
-    >(initialLocation);
-    const [selectedFiles, setSelectedFiles] = useState<Graphql.FileInfo[]>([]);
-    const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
-    const [uploadFiles, setUploadFiles] = useState<Map<string, UploadFileState>>(new Map());
-    const [isUploading, setIsUploading] = useState(false);
-
-    const uploadToLocation = async (files: File[]) => {
-        action("uploadToLocation")(files);
-        setIsUploading(true);
-        
-        // Mock upload process
-        const newUploads = new Map(uploadFiles);
-        files.forEach((file) => {
-            const key = `${file.name}-${file.size}`;
-            newUploads.set(key, {
-                file,
-                progress: 0,
-                status: "uploading",
-            });
-        });
-        setUploadFiles(newUploads);
-
-        // Simulate upload progress
-        setTimeout(() => {
-            const updatedUploads = new Map(newUploads);
-            files.forEach((file) => {
-                const key = `${file.name}-${file.size}`;
-                const existing = updatedUploads.get(key);
-                if (existing) {
-                    updatedUploads.set(key, {
-                        ...existing,
-                        progress: 100,
-                        status: "success",
-                    });
-                }
-            });
-            setUploadFiles(updatedUploads);
-            setIsUploading(false);
-        }, 2000);
-    };
-
-    const clearUploads = () => {
-        action("clearUploads")();
-        setUploadFiles(new Map());
-    };
-
-    const cancelUpload = (fileKey?: string) => {
-        action("cancelUpload")(fileKey);
-        if (fileKey) {
-            // Cancel specific file
-            const updatedUploads = new Map(uploadFiles);
-            const existing = updatedUploads.get(fileKey);
-            if (existing) {
-                updatedUploads.set(fileKey, {
-                    ...existing,
-                    status: "error",
-                    error: "Upload cancelled by user",
-                });
-                setUploadFiles(updatedUploads);
-            }
-        } else {
-            // Cancel all uploads
-            const updatedUploads = new Map();
-            uploadFiles.forEach((fileState, key) => {
-                if (fileState.status === "uploading" || fileState.status === "pending") {
-                    updatedUploads.set(key, {
-                        ...fileState,
-                        status: "error",
-                        error: "Upload cancelled by user",
-                    });
-                } else {
-                    updatedUploads.set(key, fileState);
-                }
-            });
-            setUploadFiles(updatedUploads);
-            setIsUploading(false);
-        }
-    };
-
-    const retryFile = async (fileKey: string) => {
-        action("retryFile")(fileKey);
-        const updatedUploads = new Map(uploadFiles);
-        const existing = updatedUploads.get(fileKey);
-        if (existing) {
-            // Reset file to uploading state
-            updatedUploads.set(fileKey, {
-                ...existing,
-                status: "uploading",
-                progress: 0,
-                error: undefined,
-            });
-            setUploadFiles(updatedUploads);
-            setIsUploading(true);
-
-            // Simulate retry upload process
-            setTimeout(() => {
-                const finalUploads = new Map(updatedUploads);
-                const retryFile = finalUploads.get(fileKey);
-                if (retryFile) {
-                    finalUploads.set(fileKey, {
-                        ...retryFile,
-                        progress: 100,
-                        status: "success",
-                    });
-                    setUploadFiles(finalUploads);
-                    setIsUploading(false);
-                }
-            }, 2000);
-        }
-    };
-
+}> = (props) => {
     return (
-        <FilePicker
-            multiple={multiple}
-            allowUpload={allowUpload}
-            maxSelection={maxSelection}
-            disabled={disabled}
-            viewMode={viewMode}
-            onViewModeChange={(mode) => {
-                setViewMode(mode);
-                action("viewModeChange")(mode);
-            }}
-            compact={compact}
-            showLocationSelector={showLocationSelector}
-            location={location}
-            changeLocation={(newLocation) => {
-                setLocation(newLocation);
-                action("changeLocation")(newLocation);
-            }}
-            files={initialFiles}
-            loading={loading}
-            error={error}
-            selectedFiles={selectedFiles}
-            setSelectedFiles={(files) => {
-                setSelectedFiles(files);
-                action("setSelectedFiles")(files);
-            }}
-            clearSelection={() => {
-                setSelectedFiles([]);
-                action("clearSelection")();
-            }}
-            isFileProhibited={(file) => {
-                // Simulate some files being prohibited
-                return file.name.includes("prohibited");
-            }}
-            refreshFiles={async () => {
-                action("refreshFiles")();
-            }}
-            uploadToLocation={uploadToLocation}
-            uploadFiles={uploadFiles}
-            isUploading={isUploading}
-            clearUploads={clearUploads}
-            cancelUpload={cancelUpload}
-            retryFile={retryFile}
-        />
+        <FilePickerWrapper
+            initialLocation={props.initialLocation}
+            initialFiles={props.initialFiles || mockFiles}
+            initialViewMode={props.initialViewMode}
+            loading={props.loading}
+            error={props.error}
+        >
+            {(wrapperState) => (
+                <FilePicker
+                    multiple={props.multiple || false}
+                    allowUpload={props.allowUpload ?? true}
+                    maxSelection={props.maxSelection}
+                    disabled={props.disabled || false}
+                    viewMode={wrapperState.viewMode}
+                    onViewModeChange={(mode) => {
+                        wrapperState.setViewMode(mode);
+                        action("viewModeChange")(mode);
+                    }}
+                    compact={props.compact || false}
+                    showLocationSelector={props.showLocationSelector ?? true}
+                    location={wrapperState.location}
+                    changeLocation={wrapperState.changeLocation}
+                    files={wrapperState.files}
+                    loading={wrapperState.loading}
+                    error={wrapperState.error}
+                    selectedFiles={wrapperState.selectedFiles}
+                    setSelectedFiles={wrapperState.setSelectedFiles}
+                    clearSelection={wrapperState.clearSelection}
+                    isFileProhibited={wrapperState.isFileProhibited}
+                    refreshFiles={wrapperState.refreshFiles}
+                    uploadToLocation={wrapperState.uploadToLocation}
+                    uploadFiles={wrapperState.uploadFiles}
+                    isUploading={wrapperState.isUploading}
+                    clearUploads={wrapperState.clearUploads}
+                    cancelUpload={wrapperState.cancelUpload}
+                    retryFile={wrapperState.retryFile}
+                />
+            )}
+        </FilePickerWrapper>
     );
 };
 
 export const Default: Story = {
-    render: () => <FilePickerWrapper />,
+    render: () => <FilePickerStoryWrapper />,
 };
 
 export const MultipleSelection: Story = {
-    render: () => <FilePickerWrapper multiple={true} maxSelection={3} />,
+    render: () => <FilePickerStoryWrapper multiple={true} maxSelection={3} />,
     parameters: {
         docs: {
             description: {
@@ -354,7 +224,7 @@ export const MultipleSelection: Story = {
 };
 
 export const ListView: Story = {
-    render: () => <FilePickerWrapper initialViewMode="list" multiple={true} />,
+    render: () => <FilePickerStoryWrapper initialViewMode="list" multiple={true} />,
     parameters: {
         docs: {
             description: {
@@ -365,7 +235,7 @@ export const ListView: Story = {
 };
 
 export const Compact: Story = {
-    render: () => <FilePickerWrapper compact={true} multiple={true} />,
+    render: () => <FilePickerStoryWrapper compact={true} multiple={true} />,
     parameters: {
         docs: {
             description: {
@@ -376,7 +246,7 @@ export const Compact: Story = {
 };
 
 export const NoUpload: Story = {
-    render: () => <FilePickerWrapper allowUpload={false} multiple={true} />,
+    render: () => <FilePickerStoryWrapper allowUpload={false} multiple={true} />,
     parameters: {
         docs: {
             description: {
@@ -388,7 +258,7 @@ export const NoUpload: Story = {
 
 export const NoLocationSelector: Story = {
     render: () => (
-        <FilePickerWrapper showLocationSelector={false} multiple={true} />
+        <FilePickerStoryWrapper showLocationSelector={false} multiple={true} />
     ),
     parameters: {
         docs: {
@@ -400,7 +270,7 @@ export const NoLocationSelector: Story = {
 };
 
 export const Loading: Story = {
-    render: () => <FilePickerWrapper loading={true} />,
+    render: () => <FilePickerStoryWrapper loading={true} />,
     parameters: {
         docs: {
             description: {
@@ -412,7 +282,7 @@ export const Loading: Story = {
 
 export const WithError: Story = {
     render: () => (
-        <FilePickerWrapper error="Failed to load files. Please try again." />
+        <FilePickerStoryWrapper error="Failed to load files. Please try again." />
     ),
     parameters: {
         docs: {
@@ -424,7 +294,7 @@ export const WithError: Story = {
 };
 
 export const EmptyLocation: Story = {
-    render: () => <FilePickerWrapper initialFiles={[]} />,
+    render: () => <FilePickerStoryWrapper initialFiles={[]} />,
     parameters: {
         docs: {
             description: {
@@ -435,7 +305,7 @@ export const EmptyLocation: Story = {
 };
 
 export const NoLocationSelected: Story = {
-    render: () => <FilePickerWrapper initialLocation={undefined} />,
+    render: () => <FilePickerStoryWrapper initialLocation={undefined} />,
     parameters: {
         docs: {
             description: {
@@ -446,7 +316,7 @@ export const NoLocationSelected: Story = {
 };
 
 export const Disabled: Story = {
-    render: () => <FilePickerWrapper disabled={true} multiple={true} />,
+    render: () => <FilePickerStoryWrapper disabled={true} multiple={true} />,
     parameters: {
         docs: {
             description: {
@@ -457,7 +327,7 @@ export const Disabled: Story = {
 };
 
 export const SingleSelectionOnly: Story = {
-    render: () => <FilePickerWrapper multiple={false} />,
+    render: () => <FilePickerStoryWrapper multiple={false} />,
     parameters: {
         docs: {
             description: {
@@ -469,7 +339,7 @@ export const SingleSelectionOnly: Story = {
 
 export const ManyFiles: Story = {
     render: () => (
-        <FilePickerWrapper
+        <FilePickerStoryWrapper
             initialFiles={[
                 ...mockFiles,
                 ...Array.from({ length: 20 }, (_, i) => ({
