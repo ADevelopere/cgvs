@@ -38,12 +38,10 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     const translations = useAppTranslation("storageTranslations");
 
     const getLocationIcon = (iconName?: string) => {
-        switch (iconName) {
-            case "Image":
-                return <ImageIcon sx={{ fontSize: 20, mr: 1 }} />;
-            default:
-                return <FolderIcon sx={{ fontSize: 20, mr: 1 }} />;
+        if (iconName === "Image") {
+            return <ImageIcon sx={{ fontSize: 20, mr: 1 }} />;
         }
+        return <FolderIcon sx={{ fontSize: 20, mr: 1 }} />;
     };
 
     const handleChange = (event: SelectChangeEvent<string>) => {

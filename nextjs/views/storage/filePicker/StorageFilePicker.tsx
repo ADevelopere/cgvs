@@ -24,8 +24,20 @@ const StorageFilePickerContent: React.FC<StorageFilePickerProps> = ({
     confirmText,
     cancelText,
 }) => {
-    const { selectedFiles, location } = useFileSelector();
+    const {
+        selectedFiles,
+        location,
+        changeLocation,
+        files,
+        loading,
+        error,
+        setSelectedFiles,
+        clearSelection,
+        refreshFiles,
+        isFileProhibited,
+    } = useFileSelector();
     const { startUpload } = useStorageManagement();
+
     return (
         <FileSelectorDialog
             open={open}
@@ -39,6 +51,14 @@ const StorageFilePickerContent: React.FC<StorageFilePickerProps> = ({
             title={title}
             confirmText={confirmText}
             cancelText={cancelText}
+            changeLocation={changeLocation}
+            files={files}
+            loading={loading}
+            error={error}
+            setSelectedFiles={setSelectedFiles}
+            clearSelection={clearSelection}
+            isFileProhibited={isFileProhibited}
+            refreshFiles={refreshFiles}
         />
     );
 };
