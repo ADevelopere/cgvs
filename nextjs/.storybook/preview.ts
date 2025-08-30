@@ -1,6 +1,8 @@
 import type { Preview } from "@storybook/nextjs";
+import withGlobalStyles from "../stories/Decorators";
 
 const preview: Preview = {
+    decorators: [withGlobalStyles],
     parameters: {
         controls: {
             matchers: {
