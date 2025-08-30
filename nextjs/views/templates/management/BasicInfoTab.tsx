@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, {
+    useState,
+    useEffect,
+    ChangeEvent,
+    useCallback,
+    useRef,
+} from "react";
 import {
     Box,
     TextField,
@@ -19,7 +25,7 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput } from "@/graphql/generated/types";
 import type { FileInfo } from "@/graphql/generated/types";
-import StorageFilePicker from "@/views/storage/select/StorageFilePicker";
+import StorageFilePicker from "@/views/storage/filePicker/StorageFilePicker";
 
 type FormDataType = {
     name: string;
@@ -37,6 +43,14 @@ const BasicInfoTab: React.FC = () => {
         useTemplateManagement();
 
     const { updateTemplate } = useTemplateCategoryManagement();
+
+    // Create a ref to store the setUnsavedChanges function to prevent infinite re-renders
+    const setUnsavedChangesRef = useRef(setUnsavedChanges);
+
+    // Update the ref when the function changes
+    useEffect(() => {
+        setUnsavedChangesRef.current = setUnsavedChanges;
+    }, [setUnsavedChanges]);
 
     const [formData, setFormData] = useState<FormDataType>({
         name: "",
@@ -61,7 +75,7 @@ const BasicInfoTab: React.FC = () => {
 
     useEffect(() => {
         if (!template) {
-            setUnsavedChanges(false);
+            setUnsavedChangesRef.current(false);
             return;
         }
         const originalData = {
@@ -81,44 +95,43 @@ const BasicInfoTab: React.FC = () => {
             originalData.description !== currentData.description ||
             originalData.image !== currentData.image;
 
-        setUnsavedChanges(hasChanges);
-    }, [formData, template, setUnsavedChanges]);
+        setUnsavedChangesRef.current(hasChanges);
+    }, [formData, template]);
 
-    const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleSelectFiles = (files: FileInfo[]) => {
-        if (files.length > 0) {
-            // For template cover, we only need one image
+    const handleInputChange = useCallback(
+        (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const { name, value } = e.target;
             setFormData((prev) => ({
                 ...prev,
-                imageUrl: files[0].url ?? "",
-                imagePath: files[0].path,
+                [name]: value,
             }));
-        }
-        setSelectorDialogOpen(false);
-    };
+        },
+        [],
+    );
 
-    const handleRemoveImage = (): void => {
+    const handleSelectFiles = useCallback(
+        (files: FileInfo[]) => {
+            if (files.length > 0) {
+                // For template cover, we only need one image
+                setFormData((prev) => ({
+                    ...prev,
+                    imageUrl: files[0].url ?? "",
+                    imagePath: files[0].path,
+                }));
+            }
+        },
+        []
+    );
+
+    const handleRemoveImage = useCallback((): void => {
         setFormData((prev) => ({
             ...prev,
             imageUrl: "",
             imagePath: undefined,
         }));
-    };
+    }, []);
 
-    const handleOpenSelector = () => {
-        setSelectorDialogOpen(true);
-    };
-
-    const handleSave = async () => {
+    const handleSave = useCallback(async () => {
         if (!template?.id || !template.category?.id) {
             const msg = "Template data is incomplete for saving.";
             setError(msg);
@@ -141,12 +154,19 @@ const BasicInfoTab: React.FC = () => {
 
         if (updatedTemplate) {
             setError(null);
-            setUnsavedChanges(false);
+            setUnsavedChangesRef.current(false);
         }
         setSaving(false);
-    };
+    }, [
+        formData.description,
+        formData.imagePath,
+        formData.name,
+        template?.category.id,
+        template?.id,
+        updateTemplate,
+    ]);
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         if (template) {
             setFormData({
                 name: template.name ?? "",
@@ -156,7 +176,7 @@ const BasicInfoTab: React.FC = () => {
             });
         }
         setError(null);
-    };
+    }, [template]);
 
     return (
         <Box
@@ -265,7 +285,7 @@ const BasicInfoTab: React.FC = () => {
                                 <Button
                                     variant="contained"
                                     startIcon={<ImageIcon />}
-                                    onClick={handleOpenSelector}
+                                    onClick={() => setSelectorDialogOpen(true)}
                                     color="primary"
                                 >
                                     {storageStrings.selectFile}

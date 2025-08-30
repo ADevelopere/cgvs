@@ -3,7 +3,7 @@ import {
     FileSelectorProvider,
     FileSelectorProviderProps,
 } from "@/contexts/storage/FileSelectorContext";
-import FileSelectorDialog from "@/views/storage/select/FileSelectorDialog";
+import FileSelectorDialog from "@/views/storage/filePicker/FilePickerDialog";
 import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 
 type StorageFilePickerProps = Omit<FileSelectorProviderProps, "children"> & {

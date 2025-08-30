@@ -15,7 +15,7 @@ import {
     CheckCircle as SelectIcon,
     CloudUpload as UploadIcon,
 } from "@mui/icons-material";
-import FileSelector from "./FileSelector";
+import FileSelector from "./FilePicker";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
