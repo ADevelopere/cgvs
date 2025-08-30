@@ -20,17 +20,22 @@ import {
     CloudUpload as UploadingIcon,
     Schedule as PendingIcon,
 } from "@mui/icons-material";
-import { useStorageManagement } from "@/contexts/storage/StorageManagementContext";
 import { UploadFileState } from "@/contexts/storage/storage.type";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 export type UploadItemProps = {
     fileKey: string;
     fileState: UploadFileState;
+    cancelUpload: (fileKey?: string) => void;
+    retryFile: (fileKey: string) => Promise<void>;
 };
 
-const UploadItem: React.FC<UploadItemProps> = ({ fileKey, fileState }) => {
-    const { cancelUpload, retryFile } = useStorageManagement();
+const UploadItem: React.FC<UploadItemProps> = ({
+    fileKey,
+    fileState,
+    cancelUpload,
+    retryFile,
+}) => {
     const translations = useAppTranslation("storageTranslations");
 
     const formatFileSize = (bytes: number): string => {

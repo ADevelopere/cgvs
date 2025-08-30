@@ -28,6 +28,7 @@ import UploadDropzone from "../upload/UploadDropzone";
 import FileSelectItemList from "./FilePickerItems";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { UploadFileState } from "@/contexts/storage/storage.type";
 
 export type FileSelectorProps = {
     multiple?: boolean;
@@ -55,6 +56,15 @@ export type FileSelectorProps = {
     isFileProhibited: (file: Graphql.FileInfo) => boolean;
 
     refreshFiles: () => Promise<void>;
+
+    uploadToLocation: (files: File[]) => Promise<void>;
+    uploadFiles: Map<string, UploadFileState>;
+
+    isUploading: boolean;
+    clearUploads: () => void;
+
+    cancelUpload: (fileKey?: string) => void;
+    retryFile: (fileKey: string) => Promise<void>;
 };
 
 const FilePicker: React.FC<FileSelectorProps> = ({
@@ -77,6 +87,14 @@ const FilePicker: React.FC<FileSelectorProps> = ({
     clearSelection,
     refreshFiles,
     isFileProhibited,
+
+    uploadToLocation,
+    uploadFiles,
+    isUploading,
+    clearUploads,
+
+    cancelUpload,
+    retryFile,
 }) => {
     const translations = useAppTranslation("storageTranslations");
 
@@ -159,7 +177,17 @@ const FilePicker: React.FC<FileSelectorProps> = ({
 
             {/* Upload Area */}
             {allowUpload && location && (
-                <UploadDropzone disabled={disabled} compact={compact} />
+                <UploadDropzone
+                    disabled={disabled}
+                    compact={compact}
+                    location={location}
+                    uploadFiles={uploadFiles}
+                    isUploading={isUploading}
+                    uploadToLocation={uploadToLocation}
+                    clearUploads={clearUploads}
+                    cancelUpload={cancelUpload}
+                    retryFile={retryFile}
+                />
             )}
 
             {/* Selection Info & Controls */}

@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { CloudUpload as UploadIcon, Add as AddIcon } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
-import { useFileSelector } from "@/contexts/storage/FileSelectorContext";
 import {
     getLocationInfo,
     isFileTypeAllowed,
@@ -25,23 +24,36 @@ import {
 import UploadItem from "./UploadItem";
 import useAppTranslation from "@/locale/useAppTranslation";
 import logger from "@/utils/logger";
+import { UploadFileState } from "@/contexts/storage";
+import { UploadLocation } from "@/graphql/generated/types";
 
 interface UploadDropzoneProps {
     disabled?: boolean;
     compact?: boolean;
+
+    location?: UploadLocation;
+    uploadToLocation: (files: File[]) => Promise<void>;
+    uploadFiles: Map<string, UploadFileState>;
+
+    isUploading: boolean;
+    clearUploads: () => void;
+
+    cancelUpload: (fileKey?: string) => void;
+    retryFile: (fileKey: string) => Promise<void>;
 }
 
 const UploadDropzone: React.FC<UploadDropzoneProps> = ({
     disabled = false,
     compact = false,
+    location,
+    uploadToLocation,
+    uploadFiles,
+    isUploading,
+    clearUploads,
+
+    cancelUpload,
+    retryFile,
 }) => {
-    const {
-        location,
-        uploadToLocation,
-        uploadFiles,
-        isUploading,
-        clearUploads,
-    } = useFileSelector();
     const translations = useAppTranslation("storageTranslations");
 
     const [dragActive, setDragActive] = useState(false);
@@ -103,9 +115,13 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
     // Debug logging for file type enforcement
     React.useEffect(() => {
         if (locationInfo) {
-            const mimeTypes = contentTypesToMimeTypes(locationInfo.allowedContentTypes);
-            const acceptAttribute = getAcceptAttribute(locationInfo.allowedContentTypes);
-            logger.log('UploadDropzone Debug:', {
+            const mimeTypes = contentTypesToMimeTypes(
+                locationInfo.allowedContentTypes,
+            );
+            const acceptAttribute = getAcceptAttribute(
+                locationInfo.allowedContentTypes,
+            );
+            logger.log("UploadDropzone Debug:", {
                 location,
                 allowedContentTypes: locationInfo.allowedContentTypes,
                 mimeTypes,
@@ -334,6 +350,8 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                                 key={fileKey}
                                 fileKey={fileKey}
                                 fileState={fileState}
+                                cancelUpload={cancelUpload}
+                                retryFile={retryFile}
                             />
                         ))}
                     </List>

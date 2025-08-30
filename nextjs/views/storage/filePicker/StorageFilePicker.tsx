@@ -35,8 +35,13 @@ const StorageFilePickerContent: React.FC<StorageFilePickerProps> = ({
         clearSelection,
         refreshFiles,
         isFileProhibited,
+        uploadToLocation,
+        uploadFiles,
+        isUploading,
+        clearUploads,
     } = useFileSelector();
-    const { startUpload } = useStorageManagement();
+
+    const { startUpload, cancelUpload, retryFile } = useStorageManagement();
 
     return (
         <FileSelectorDialog
@@ -59,6 +64,12 @@ const StorageFilePickerContent: React.FC<StorageFilePickerProps> = ({
             clearSelection={clearSelection}
             isFileProhibited={isFileProhibited}
             refreshFiles={refreshFiles}
+            uploadFiles={uploadFiles}
+            isUploading={isUploading}
+            uploadToLocation={uploadToLocation}
+            clearUploads={clearUploads}
+            cancelUpload={cancelUpload}
+            retryFile={retryFile}
         />
     );
 };
