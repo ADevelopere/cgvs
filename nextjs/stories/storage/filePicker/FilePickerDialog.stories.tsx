@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import FilePickerDialog from "@/views/storage/filePicker/FilePickerDialog";
 import * as Graphql from "@/graphql/generated/types";
-import { UploadFileState } from "@/contexts/storage/storage.type";
+import FilePickerWrapper from "./FilePickerWrapper";
 import withGlobalStyles from "@/stories/Decorators";
 
 const meta: Meta<typeof FilePickerDialog> = {
@@ -144,7 +144,7 @@ const mockFiles: Graphql.FileInfo[] = [
     },
 ];
 
-// Interactive wrapper component
+// Interactive wrapper component using the shared FilePickerWrapper
 const FilePickerDialogWrapper: React.FC<{
     multiple?: boolean;
     allowUpload?: boolean;
@@ -169,117 +169,6 @@ const FilePickerDialogWrapper: React.FC<{
     preSelected = [],
 }) => {
     const [open, setOpen] = useState(false);
-    const [location, setLocation] =
-        useState<Graphql.UploadLocation>("TEMPLATE_COVER");
-    const [selectedFiles, setSelectedFiles] =
-        useState<Graphql.FileInfo[]>(preSelected);
-    const [uploadFiles, setUploadFiles] = useState<Map<string, UploadFileState>>(new Map());
-    const [isUploading, setIsUploading] = useState(false);
-
-    const uploadToLocation = async (files: File[]) => {
-        action("uploadToLocation")(files);
-        setIsUploading(true);
-        
-        // Mock upload process
-        const newUploads = new Map(uploadFiles);
-        files.forEach((file) => {
-            const key = `${file.name}-${file.size}`;
-            newUploads.set(key, {
-                file,
-                progress: 0,
-                status: "uploading",
-            });
-        });
-        setUploadFiles(newUploads);
-
-        // Simulate upload progress
-        setTimeout(() => {
-            const updatedUploads = new Map(newUploads);
-            files.forEach((file) => {
-                const key = `${file.name}-${file.size}`;
-                const existing = updatedUploads.get(key);
-                if (existing) {
-                    updatedUploads.set(key, {
-                        ...existing,
-                        progress: 100,
-                        status: "success",
-                    });
-                }
-            });
-            setUploadFiles(updatedUploads);
-            setIsUploading(false);
-        }, 2000);
-    };
-
-    const clearUploads = () => {
-        action("clearUploads")();
-        setUploadFiles(new Map());
-    };
-
-    const cancelUpload = (fileKey?: string) => {
-        action("cancelUpload")(fileKey);
-        if (fileKey) {
-            // Cancel specific file
-            const updatedUploads = new Map(uploadFiles);
-            const existing = updatedUploads.get(fileKey);
-            if (existing) {
-                updatedUploads.set(fileKey, {
-                    ...existing,
-                    status: "error",
-                    error: "Upload cancelled by user",
-                });
-                setUploadFiles(updatedUploads);
-            }
-        } else {
-            // Cancel all uploads
-            const updatedUploads = new Map();
-            uploadFiles.forEach((fileState, key) => {
-                if (fileState.status === "uploading" || fileState.status === "pending") {
-                    updatedUploads.set(key, {
-                        ...fileState,
-                        status: "error",
-                        error: "Upload cancelled by user",
-                    });
-                } else {
-                    updatedUploads.set(key, fileState);
-                }
-            });
-            setUploadFiles(updatedUploads);
-            setIsUploading(false);
-        }
-    };
-
-    const retryFile = async (fileKey: string) => {
-        action("retryFile")(fileKey);
-        const updatedUploads = new Map(uploadFiles);
-        const existing = updatedUploads.get(fileKey);
-        if (existing) {
-            // Reset file to uploading state
-            updatedUploads.set(fileKey, {
-                ...existing,
-                status: "uploading",
-                progress: 0,
-                error: undefined,
-            });
-            setUploadFiles(updatedUploads);
-            setIsUploading(true);
-
-            // Simulate retry upload process
-            setTimeout(() => {
-                const finalUploads = new Map(updatedUploads);
-                const retryFile = finalUploads.get(fileKey);
-                if (retryFile) {
-                    finalUploads.set(fileKey, {
-                        ...retryFile,
-                        progress: 100,
-                        status: "success",
-                    });
-                    setUploadFiles(finalUploads);
-                    setIsUploading(false);
-                }
-            }, 2000);
-        }
-    };
 
     return (
         <Box sx={{ p: 4, textAlign: "center" }}>
@@ -295,51 +184,47 @@ const FilePickerDialogWrapper: React.FC<{
                 Open File Picker Dialog
             </Button>
 
-            <FilePickerDialog
-                open={open}
-                onClose={() => {
-                    setOpen(false);
-                    action("close")();
-                }}
-                selectedFiles={selectedFiles}
-                startUpload={async (files, targetPath) => {
-                    action("startUpload")(files, targetPath);
-                }}
-                location={location}
-                multiple={multiple}
-                allowUpload={allowUpload}
-                maxSelection={maxSelection}
-                title={title}
-                confirmText={confirmText}
-                cancelText={cancelText}
-                changeLocation={(newLocation) => {
-                    setLocation(newLocation);
-                    action("changeLocation")(newLocation);
-                }}
-                files={initialFiles}
+            <FilePickerWrapper
+                initialFiles={initialFiles}
+                preSelected={preSelected}
                 loading={loading}
                 error={error}
-                setSelectedFiles={(files) => {
-                    setSelectedFiles(files);
-                    action("setSelectedFiles")(files);
-                }}
-                clearSelection={() => {
-                    setSelectedFiles([]);
-                    action("clearSelection")();
-                }}
-                isFileProhibited={(file) => {
-                    return file.name.includes("prohibited");
-                }}
-                refreshFiles={async () => {
-                    action("refreshFiles")();
-                }}
-                uploadToLocation={uploadToLocation}
-                uploadFiles={uploadFiles}
-                isUploading={isUploading}
-                clearUploads={clearUploads}
-                cancelUpload={cancelUpload}
-                retryFile={retryFile}
-            />
+            >
+                {(wrapperState) => (
+                    <FilePickerDialog
+                        open={open}
+                        onClose={() => {
+                            setOpen(false);
+                            action("close")();
+                        }}
+                        selectedFiles={wrapperState.selectedFiles}
+                        startUpload={async (files, targetPath) => {
+                            action("startUpload")(files, targetPath);
+                        }}
+                        location={wrapperState.location}
+                        multiple={multiple}
+                        allowUpload={allowUpload}
+                        maxSelection={maxSelection}
+                        title={title}
+                        confirmText={confirmText}
+                        cancelText={cancelText}
+                        changeLocation={wrapperState.changeLocation}
+                        files={wrapperState.files}
+                        loading={wrapperState.loading}
+                        error={wrapperState.error}
+                        setSelectedFiles={wrapperState.setSelectedFiles}
+                        clearSelection={wrapperState.clearSelection}
+                        isFileProhibited={wrapperState.isFileProhibited}
+                        refreshFiles={wrapperState.refreshFiles}
+                        uploadToLocation={wrapperState.uploadToLocation}
+                        uploadFiles={wrapperState.uploadFiles}
+                        isUploading={wrapperState.isUploading}
+                        clearUploads={wrapperState.clearUploads}
+                        cancelUpload={wrapperState.cancelUpload}
+                        retryFile={wrapperState.retryFile}
+                    />
+                )}
+            </FilePickerWrapper>
         </Box>
     );
 };
@@ -488,27 +373,34 @@ export const LargeFileSet: Story = {
 
 // Direct prop testing (always open)
 export const AlwaysOpen: Story = {
-    args: {
-        open: true,
-        selectedFiles: [],
-        location: "TEMPLATE_COVER",
-        multiple: true,
-        allowUpload: true,
-        files: mockFiles,
-        loading: false,
-        onClose: action("close"),
-        changeLocation: action("changeLocation"),
-        setSelectedFiles: action("setSelectedFiles"),
-        clearSelection: action("clearSelection"),
-        refreshFiles: async () => action("refreshFiles")(),
-        startUpload: async (files, targetPath) =>
-            action("startUpload")(files, targetPath),
-        isFileProhibited: () => false,
-        uploadToLocation: async (files) => action("uploadToLocation")(files),
-        uploadFiles: new Map(),
-        isUploading: false,
-        clearUploads: () => action("clearUploads")(),
-        cancelUpload: (fileKey) => action("cancelUpload")(fileKey),
-        retryFile: async (fileKey) => action("retryFile")(fileKey),
-    },
+    render: () => (
+        <FilePickerWrapper initialFiles={mockFiles}>
+            {(wrapperState) => (
+                <FilePickerDialog
+                    open={true}
+                    selectedFiles={wrapperState.selectedFiles}
+                    location={wrapperState.location}
+                    multiple={true}
+                    allowUpload={true}
+                    files={wrapperState.files}
+                    loading={wrapperState.loading}
+                    onClose={() => action("close")()}
+                    changeLocation={wrapperState.changeLocation}
+                    setSelectedFiles={wrapperState.setSelectedFiles}
+                    clearSelection={wrapperState.clearSelection}
+                    refreshFiles={wrapperState.refreshFiles}
+                    startUpload={async (files, targetPath) =>
+                        action("startUpload")(files, targetPath)
+                    }
+                    isFileProhibited={wrapperState.isFileProhibited}
+                    uploadToLocation={wrapperState.uploadToLocation}
+                    uploadFiles={wrapperState.uploadFiles}
+                    isUploading={wrapperState.isUploading}
+                    clearUploads={wrapperState.clearUploads}
+                    cancelUpload={wrapperState.cancelUpload}
+                    retryFile={wrapperState.retryFile}
+                />
+            )}
+        </FilePickerWrapper>
+    ),
 };
