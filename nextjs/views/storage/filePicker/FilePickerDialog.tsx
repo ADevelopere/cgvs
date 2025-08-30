@@ -23,7 +23,7 @@ import {
     getLocationInfo,
     getDisplayPath,
 } from "@/contexts/storage/storage.location";
-import { getAcceptAttribute } from "@/contexts/storage";
+import { getAcceptAttribute, UploadFileState } from "@/contexts/storage";
 
 export type FileSelectorDialogProps = {
     open: boolean;
@@ -52,6 +52,15 @@ export type FileSelectorDialogProps = {
     isFileProhibited: (file: Graphql.FileInfo) => boolean;
 
     refreshFiles: () => Promise<void>;
+
+    uploadToLocation: (files: File[]) => Promise<void>;
+    uploadFiles: Map<string, UploadFileState>;
+
+    isUploading: boolean;
+    clearUploads: () => void;
+
+    cancelUpload: (fileKey?: string) => void;
+    retryFile: (fileKey: string) => Promise<void>;
 };
 
 const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
@@ -75,6 +84,14 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     clearSelection,
     refreshFiles,
     isFileProhibited,
+
+    uploadToLocation,
+    uploadFiles,
+    isUploading,
+    clearUploads,
+
+    cancelUpload,
+    retryFile,
 }) => {
     const translations = useAppTranslation("storageTranslations");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -198,6 +215,12 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                         clearSelection={clearSelection}
                         isFileProhibited={isFileProhibited}
                         refreshFiles={refreshFiles}
+                        uploadFiles={uploadFiles}
+                        isUploading={isUploading}
+                        uploadToLocation={uploadToLocation}
+                        clearUploads={clearUploads}
+                        cancelUpload={cancelUpload}
+                        retryFile={retryFile}
                     />
                 </Box>
             </DialogContent>
