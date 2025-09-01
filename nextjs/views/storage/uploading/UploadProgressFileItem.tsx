@@ -44,7 +44,9 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
     onCancel,
 }) => {
     const theme = useTheme();
-    const { uploading: translations } = useAppTranslation("storageTranslations");
+    const { uploading: translations } = useAppTranslation(
+        "storageTranslations",
+    );
 
     const getFileIcon = () => {
         const iconProps = {
@@ -126,7 +128,10 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
                         <IconButton
                             size="small"
                             onClick={() => onCancel(fileKey)}
-                            aria-label={translations.cancelUploadOf.replace("%{fileName}", fileName)}
+                            aria-label={translations.cancelUploadOf.replace(
+                                "%{fileName}",
+                                fileName,
+                            )}
                             sx={{
                                 padding: 0,
                                 color: theme.palette.text.secondary,
@@ -216,6 +221,5 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
         </Box>
     );
 };
-
 
 export default React.memo(UploadProgressFileItem);

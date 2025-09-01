@@ -12,26 +12,6 @@ export type StorageQueryParams = {
     sortField?: Graphql.FileSortField;
 };
 
-// Upload-related types
-export type UploadFileState = {
-    file: File;
-    progress: number;
-    status: "pending" | "uploading" | "success" | "error";
-    error?: string;
-    signedUrl?: string;
-    // Optional XHR instance used for this upload so the UI/context can abort if needed
-    xhr?: XMLHttpRequest;
-};
-
-export type UploadBatchState = {
-    files: Map<string, UploadFileState>; // key is file name + size for uniqueness
-    location: Graphql.UploadLocation;
-    isUploading: boolean;
-    completedCount: number;
-    totalCount: number;
-    targetPath: string; // The path where files are being uploaded
-};
-
 export type StorageManagementContextType = {
     // Data
     items: StorageItem[];
@@ -73,11 +53,35 @@ export type StorageManagementContextType = {
     setLimit: (limit: number) => void;
 };
 
-export type StorageUploadContextType = {
-    // Upload state
-    uploadBatch?: UploadBatchState;
+export type UploadFileState = {
+    file: File;
+    status: "pending" | "uploading" | "success" | "error";
+    progress: number;
+    error?: string;
+    signedUrl?: string;
+    xhr?: XMLHttpRequest;
+};
 
-    startUpload: (files: File[], targetPath?: string) => Promise<void>; // targetPath is optional, will auto-detect from current path
+export type UploadBatchState = {
+    files: Map<string, UploadFileState>;
+    location: Graphql.UploadLocation;
+    targetPath: string;
+    isUploading: boolean;
+    completedCount: number;
+    totalCount: number;
+    totalProgress: number;
+    timeRemaining: number | null; // in seconds
+    totalSize: number;
+    bytesUploaded: number;
+};
+
+export type StorageUploadContextType = {
+    uploadBatch: UploadBatchState | undefined;
+    startUpload: (
+        files: File[],
+        targetPath: string,
+        callbacks?: { onComplete?: () => void },
+    ) => Promise<void>;
     cancelUpload: (fileKey?: string) => void;
     retryFailedUploads: () => Promise<void>;
     retryFile: (fileKey: string) => Promise<void>;

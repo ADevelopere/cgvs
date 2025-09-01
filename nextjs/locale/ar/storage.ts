@@ -1,32 +1,35 @@
 import StorageTranslations from "../components/Storage";
 
 const arStorageTranslations: StorageTranslations = {
-	failedListFiles: "فشل في جلب قائمة الملفات",
-	failedFetchStorageStats: "فشل في جلب إحصائيات التخزين",
-	uploadNotAllowed: "لا يسمح بالرفع في هذا الموقع. الرجاء التوجه إلى موقع آخر.",
-	uploadCancelled: "تم إلغاء الرفع",
-	uploadFailed: "فشل الرفع",
-	failedRename: "فشل إعادة التسمية",
-	failedDelete: "فشل الحذف",
-	noFailedUploads: "لا توجد تحميلات فاشلة لإعادة المحاولة",
-	fileAlreadyExists: "ملف بنفس الاسم موجود بالفعل",
-	failedGenerateSignedUrl: "فشل في إنشاء رابط التحميل الموقَّع",
-	uploadStarted: "بدأ الرفع",
-	uploadCompleted: "اكتمل الرفع",
-	uploadProgress: "تقدّم الرفع: %{progress}%",
+    failedListFiles: "فشل في جلب قائمة الملفات",
+    failedFetchStorageStats: "فشل في جلب إحصائيات التخزين",
+    uploadNotAllowed:
+        "لا يسمح بالرفع في هذا الموقع. الرجاء التوجه إلى موقع آخر.",
+    uploadCancelled: "تم إلغاء الرفع",
+    uploadFailed: "فشل الرفع",
+    failedRename: "فشل إعادة التسمية",
+    failedDelete: "فشل الحذف",
+    noFailedUploads: "لا توجد تحميلات فاشلة لإعادة المحاولة",
+    fileAlreadyExists: "ملف بنفس الاسم موجود بالفعل",
+    failedGenerateSignedUrl: "فشل في إنشاء رابط التحميل الموقَّع",
+    uploadStarted: "بدأ الرفع",
+    uploadCompleted: "اكتمل الرفع",
+    uploadProgress: "تقدّم الرفع: %{progress}%",
 
-	// Additional keys used by the context
-	renameSuccess: "تمت إعادة التسمية بنجاح",
-	deleteSuccess: "تم الحذف بنجاح",
-	uploadBlockedByCors: "تم حظر الرفع بسبب سياسات CORS. تحقق من إعدادات cors/README.md.",
-	retryCompleted: "اكتملت إعادة المحاولة",
-	retryFailed: "فشلّت إعادة المحاولة",
-	uploadSuccessCount: "%{count} ملف(ملفات) تم رفعها بنجاح",
-	uploadFailedCount: "%{count} ملف(ملفات) فشل رفعها",
+    // Additional keys used by the context
+    renameSuccess: "تمت إعادة التسمية بنجاح",
+    deleteSuccess: "تم الحذف بنجاح",
+    uploadBlockedByCors:
+        "تم حظر الرفع بسبب سياسات CORS. تحقق من إعدادات cors/README.md.",
+    retryCompleted: "اكتملت إعادة المحاولة",
+    retryFailed: "فشلّت إعادة المحاولة",
+    uploadSuccessCount: "%{count} ملف(ملفات) تم رفعها بنجاح",
+    uploadFailedCount: "%{count} ملف(ملفات) فشل رفعها",
     uploadFailedWithStatus: "فشل الرفع مع الحالة %{status}",
     networkErrorDuringUpload: "خطأ في الشبكة أثناء الرفع",
-// `Upload failed for ${file.name}. Status: ${status} ${statusText}. Response: ${resp || "No response text."}`;
-	uploadFailedForFile: "فشل الرفع لملف %{fileName}. الحالة: %{status} %{statusText}. الاستجابة: %{resp}.",
+    // `Upload failed for ${file.name}. Status: ${status} ${statusText}. Response: ${resp || "No response text."}`;
+    uploadFailedForFile:
+        "فشل الرفع لملف %{fileName}. الحالة: %{status} %{statusText}. الاستجابة: %{resp}.",
     noResponseText: "لا توجد نصوص استجابة.",
     internalUploadError: "خطأ داخلي أثناء الرفع.",
     itemsSelected: "تم تحديد %{count} عنصر(عناصر)",
@@ -34,14 +37,16 @@ const arStorageTranslations: StorageTranslations = {
     copyLinks: "نسخ الروابط",
     delete: "حذف",
     confirmBulkDelete: "تأكيد الحذف الجماعي",
-    confirmBulkDeleteMessage: "هل أنت متأكد أنك تريد حذف %{count} من العناصر المحددة؟ لا يمكن التراجع عن هذا الإجراء.",
+    confirmBulkDeleteMessage:
+        "هل أنت متأكد أنك تريد حذف %{count} من العناصر المحددة؟ لا يمكن التراجع عن هذا الإجراء.",
     cancel: "إلغاء",
     deleteItems: "حذف %{count} عناصر",
     deleteFolder: "حذف المجلد",
     deleteFile: "حذف الملف",
     deleteItem: "حذف العنصر",
     aboutToDelete: "أنت على وشك حذف %{parts}. لا يمكن التراجع عن هذا الإجراء.",
-    aboutToDeleteItem: "أنت على وشك حذف %{type} \"%{name}\". لا يمكن التراجع عن هذا الإجراء.",
+    aboutToDeleteItem:
+        'أنت على وشك حذف %{type} "%{name}". لا يمكن التراجع عن هذا الإجراء.',
     cannotBeUndone: "لا يمكن التراجع عن هذا الإجراء.",
     itemsToBeDeleted: "العناصر التي سيتم حذفها:",
     deleteFolderWarning: "سيؤدي حذف المجلدات أيضًا إلى حذف كافة محتوياتها.",
@@ -51,11 +56,13 @@ const arStorageTranslations: StorageTranslations = {
     noFilesYet: "لا توجد ملفات بعد",
     thisFolderIsEmpty: "هذا المجلد فارغ",
     chooseStorageLocation: "اختر موقع تخزين من الأعلى لبدء إدارة ملفاتك.",
-    emptyFolderGetStarted: "لا يحتوي هذا المجلد على أي ملفات بعد. قم برفع بعض الملفات للبدء.",
+    emptyFolderGetStarted:
+        "لا يحتوي هذا المجلد على أي ملفات بعد. قم برفع بعض الملفات للبدء.",
     emptyFolder: "لا يحتوي هذا المجلد على أي ملفات أو مجلدات فرعية بعد.",
     uploadFiles: "رفع الملفات",
     goUp: "الذهاب للأعلى",
-    dragAndDropHelpText: "يمكنك أيضًا سحب وإفلات الملفات هنا لرفعها. تشمل التنسيقات المدعومة الصور والمستندات ومقاطع الفيديو والمزيد.",
+    dragAndDropHelpText:
+        "يمكنك أيضًا سحب وإفلات الملفات هنا لرفعها. تشمل التنسيقات المدعومة الصور والمستندات ومقاطع الفيديو والمزيد.",
     networkError: "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت.",
     authenticationError: "خطأ في المصادقة. يرجى تسجيل الدخول مرة أخرى.",
     accessDenied: "الوصول مرفوض. ليس لديك إذن لعرض هذا المحتوى.",
@@ -90,8 +97,10 @@ const arStorageTranslations: StorageTranslations = {
     // RenameDialog
     nameCannotBeEmpty: "لا يمكن أن يكون الاسم فارغًا",
     nameMustBeDifferent: "يجب أن يكون الاسم الجديد مختلفًا عن الاسم الحالي",
-    nameCannotContainForwardSlashes: "لا يمكن أن يحتوي الاسم على شرطات مائلة للأمام",
-    nameCannotContainBackslashes: "لا يمكن أن يحتوي الاسم على شرطات مائلة للخلف",
+    nameCannotContainForwardSlashes:
+        "لا يمكن أن يحتوي الاسم على شرطات مائلة للأمام",
+    nameCannotContainBackslashes:
+        "لا يمكن أن يحتوي الاسم على شرطات مائلة للخلف",
     nameTooLong: "الاسم طويل جدًا (الحد الأقصى 255 حرفًا)",
     nameContainsIllegalCharacters: "يحتوي الاسم على أحرف غير قانونية",
     failedToRenameItem: "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
@@ -140,7 +149,7 @@ const arStorageTranslations: StorageTranslations = {
     selected: "%{count} محدد",
     activeFilters: "عوامل التصفية النشطة:",
     typeFilter: "النوع: %{fileType}",
-    searchFilter: "بحث: \"%{searchTerm}\",",
+    searchFilter: 'بحث: "%{searchTerm}",',
     pending: "قيد الانتظار",
     success: "نجاح",
     failed: "فشل",
@@ -186,9 +195,11 @@ const arStorageTranslations: StorageTranslations = {
     noFilesInLocation: "لا توجد ملفات في هذا الموقع",
     uploading: {
         cancelAllUploads: "إلغاء جميع التحميلات",
-        cancelAllUploadsMessage: "هل أنت متأكد أنك تريد إلغاء جميع التحميلات؟ لا يمكن التراجع عن هذا الإجراء.",
+        cancelAllUploadsMessage:
+            "هل أنت متأكد أنك تريد إلغاء جميع التحميلات؟ لا يمكن التراجع عن هذا الإجراء.",
         cancelFileUpload: "إلغاء تحميل الملف",
-        cancelFileUploadMessage: "هل أنت متأكد أنك تريد إلغاء تحميل \"%{fileName}\"? لا يمكن التراجع عن هذا الإجراء.",
+        cancelFileUploadMessage:
+            'هل أنت متأكد أنك تريد إلغاء تحميل "%{fileName}"? لا يمكن التراجع عن هذا الإجراء.',
         keepUploading: "متابعة التحميل",
         cancelUpload: "إلغاء التحميل",
         cancelUploadOf: "إلغاء تحميل %{fileName}",
