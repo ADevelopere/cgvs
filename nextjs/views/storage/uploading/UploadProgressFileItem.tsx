@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import useAppTranslation from "@/locale/useAppTranslation";
 import {
     Box,
     Typography,
@@ -43,6 +44,7 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
     onCancel,
 }) => {
     const theme = useTheme();
+    const { uploading: translations } = useAppTranslation("storageTranslations");
 
     const getFileIcon = () => {
         const iconProps = {
@@ -124,7 +126,7 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
                         <IconButton
                             size="small"
                             onClick={() => onCancel(fileKey)}
-                            aria-label={`Cancel upload of ${fileName}`}
+                            aria-label={translations.cancelUploadOf.replace("%{fileName}", fileName)}
                             sx={{
                                 padding: 0,
                                 color: theme.palette.text.secondary,
@@ -214,5 +216,6 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
         </Box>
     );
 };
+
 
 export default React.memo(UploadProgressFileItem);

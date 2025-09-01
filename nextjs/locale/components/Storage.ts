@@ -1,5 +1,26 @@
+type StorageUploadingTranslations = {
+    cancelAllUploads: string;
+    cancelAllUploadsMessage: string;
+    cancelFileUpload: string;
+    cancelFileUploadMessage: string; // %{fileName}
+    keepUploading: string;
+    cancelUpload: string;
+    cancelUploadOf: string; // %{fileName}
+    noUploads: string;
+    uploading1Item: string;
+    uploadingNItems: string; // %{count}
+    expandUploadDetails: string;
+    collapseUploadDetails: string;
+    closeUploadProgress: string;
+    secondsLeft: string; // %{seconds}
+    minutesLeft: string; // %{minutes}
+    hoursLeft: string; // %{hours}
+    minutesLeftShort: string; // %{minutes}
+    cancel: string;
+};
+
  type StorageTranslations = {
-    [key: string]: string | undefined;
+    [key: string]: string | undefined | StorageUploadingTranslations;
 
     failedListFiles: string;
     failedFetchStorageStats: string;
@@ -158,7 +179,7 @@
     orClickToSelect: string;
     selectFiles: string;
     completed: string;
-    uploading: string;
+    uploadingString: string;
     clearList: string;
     preview: string;
     selectOrUploadFiles: string;
@@ -179,7 +200,7 @@
     list: string;
     selectLocationToViewFiles: string;
     noFilesInLocation: string;
-
+    uploading: StorageUploadingTranslations;
 };
 
 export default StorageTranslations;

@@ -1,12 +1,11 @@
-"use client";
-
-import React from "react";
+import useAppTranslation from "@/locale/useAppTranslation";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
 import {
     ExpandMore as ExpandMoreIcon,
     ExpandLess as ExpandLessIcon,
     Close as CloseIcon,
 } from "@mui/icons-material";
+import React from "react";
 
 export interface UploadProgressHeaderProps {
     totalCount: number;
@@ -22,11 +21,17 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
     onClose,
 }) => {
     const theme = useTheme();
+    const { uploading: translations } = useAppTranslation(
+        "storageTranslations",
+    );
 
     const getTitle = () => {
-        if (totalCount === 0) return "No uploads";
-        if (totalCount === 1) return "Uploading 1 item";
-        return `Uploading ${totalCount} items`;
+        if (totalCount === 0) return translations.noUploads;
+        if (totalCount === 1) return translations.uploading1Item;
+        return translations.uploadingNItems.replace(
+            "%{count}",
+            totalCount.toString(),
+        );
     };
 
     return (
@@ -58,8 +63,8 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
                     size="small"
                     aria-label={
                         isCollapsed
-                            ? "Expand upload details"
-                            : "Collapse upload details"
+                            ? translations.expandUploadDetails
+                            : translations.collapseUploadDetails
                     }
                     sx={{
                         color: theme.palette.text.secondary,
@@ -75,7 +80,7 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
                 <IconButton
                     onClick={onClose}
                     size="small"
-                    aria-label="Close upload progress"
+                    aria-label={translations.closeUploadProgress}
                     sx={{
                         color: theme.palette.text.secondary,
                         marginLeft: theme.spacing(0.5),

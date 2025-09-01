@@ -327,7 +327,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                         </Typography>
                         <Typography variant="body2">
                             {isUploading
-                                ? `${translations.uploading} ${inProgressCount} ${translations.files}...`
+                                ? `${translations.uploadingString} ${inProgressCount} ${translations.files}...`
                                 : `${completedCount} ${translations.completed}, ${failedCount} ${translations.failed}`}
                         </Typography>
                         {isUploading && (
