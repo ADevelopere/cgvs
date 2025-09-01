@@ -24,6 +24,7 @@ This context is the single source of truth for the file list and the bridge to t
     -   `move(sourcePaths: string[], destinationPath: string): Promise<boolean>`
     -   `copy(sourcePaths: string[], destinationPath: string): Promise<boolean>`
     -   `createFolder(path: string, name: string): Promise<boolean>`
+    -   `search(query: string, path?: string): Promise<StorageItem[]>` - Search for files and folders
 
 ---
 
@@ -35,6 +36,9 @@ This new context will manage the complex interactive state of the file browser.
 -   `selectedItems`: An array of the paths of all currently selected items.
 -   `lastSelectedItem`: The path of the item that was last clicked, crucial for Shift-click range selections.
 -   `clipboard`: An object `{ operation: 'copy' | 'cut', items: StorageItem[] }` to track clipboard state.
+-   `viewMode`: Current view mode (`'grid'` or `'list'`).
+-   `searchMode`: Boolean indicating if currently in search mode.
+-   `searchResults`: Array of search results when in search mode.
 
 ### Interaction Logic to Implement:
 
@@ -136,14 +140,53 @@ This section defines the content of each menu.
 
 This section details the components responsible for rendering the file browser, now driven by the new `StorageUIManagerContext`. The implementation will use standard HTML elements (`div`, `table`, etc.) and will not rely on a UI library like MUI for its core structure.
 
+### `StorageBrowserView.tsx` (New)
+-   **Responsibilities:**
+    -   Acts as the main container for the file browser UI.
+    -   Will be wrapped by all necessary contexts (`StorageManagementProvider`, `StorageUIManagerProvider`, etc.).
+    -   Consumes `StorageManagementContext` to get the current path.
+    -   Renders the `StorageSearch` component at the top.
+    -   Renders the `StorageBreadcrumb` component below the search.
+    -   Renders the `StorageItemsView` component below the breadcrumb.
+
+### `StorageSearch.tsx` (New)
+-   **Props:** None (consumes context directly).
+-   **State to Manage:**
+    -   `searchQuery`: Current search input value.
+    -   `searchHistory`: Array of previous search queries (persisted in localStorage).
+    -   `showHistory`: Boolean to control the visibility of the search history dropdown.
+    -   `isSearching`: Boolean to show loading state during search.
+-   **Logic:**
+    -   Renders a search input field with a search icon.
+    -   Maintains search history in localStorage (key: `storage-search-history`).
+    -   Shows a dropdown with search history when the input is focused and has history.
+    -   Clicking on a history item populates the search field and triggers the search.
+    -   On search submission (Enter key or search button):
+        - Calls `search()` from `StorageManagementContext`.
+        - Adds the query to search history (avoiding duplicates).
+        - Updates the UI to show search results instead of current directory listing.
+    -   Provides a "Clear" or "X" button to exit search mode and return to directory browsing.
+    -   Search history management:
+        - Stores up to 10 recent searches.
+        - Removes duplicates by moving existing queries to the top.
+        - Provides option to clear individual history items or entire history.
+
 ### `StorageItemsView.tsx`
 -   **Responsibilities:**
-    -   Will be wrapped by `StorageUIManagerProvider`.
-    -   Consumes `StorageManagementContext` to get the list of items.
+    -   Consumes `StorageManagementContext` to get the list of items (either directory listing or search results).
+    -   Detects whether the current view is showing search results or directory contents.
     -   Contains the logic for switching between grid and list views.
-    -   Displays a toolbar with view-switcher controls (grid/list).
+    -   Displays a toolbar with a segmented control for switching between grid and list views, as seen in the design.
+    -   For search results: Shows the number of results found and the search query.
     -   Renders the appropriate container (`div` for grid, `table` for list) and maps over the items, rendering a `StorageItem` for each.
-    -   Displays headers for the list view (Name, Size, Last Modified).
+    -   Displays headers for the list view (Name, Size, Last Modified, Path - for search results).
+
+### `StorageBreadcrumb.tsx` (New)
+-   **Props:** `path` (string), `onNavigateToPath` (function).
+-   **Logic:**
+    -   Renders the breadcrumb navigation based on the current path, as seen in the design.
+    -   Each part of the path should be a clickable link to navigate to that directory.
+    -   For paths that are too long to fit the container, it should intelligently truncate the path, showing the beginning and the end, with an ellipsis in the middle (e.g., `My Drive > ... > very > long > path`).
 
 ### `StorageItem.tsx`
 -   **Responsibilities:**
@@ -197,7 +240,10 @@ This section details the components responsible for rendering the file browser, 
     -   `nextjs/components/storage/dropzone/...`
     -   `nextjs/components/storage/menu/...`
 -   **Views:**
+    -   `nextjs/views/storage/browser/StorageBrowserView.tsx` (New)
+    -   `nextjs/views/storage/browser/StorageSearch.tsx` (New)
     -   `nextjs/views/storage/browser/StorageItemsView.tsx`
+    -   `nextjs/views/storage/browser/StorageBreadcrumb.tsx` (New)
     -   `nextjs/views/storage/browser/StorageItem.tsx`
     -   `nextjs/views/storage/browser/StorageItemGrid.tsx`
     -   `nextjs/views/storage/browser/StorageItemListRow.tsx`
