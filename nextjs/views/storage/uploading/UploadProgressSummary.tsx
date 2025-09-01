@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import useAppTranslation from "@/locale/useAppTranslation";
 import { Box, Typography, Button, useTheme, Collapse } from "@mui/material";
 
 export interface UploadProgressSummaryProps {
@@ -15,19 +16,20 @@ const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({
     onCancelAll,
 }) => {
     const theme = useTheme();
+    const { uploading: translations } = useAppTranslation("storageTranslations");
 
     const formatTimeRemaining = (seconds: number | null): string => {
         if (!seconds || seconds <= 0) return "";
 
         if (seconds < 60) {
-            return `${Math.ceil(seconds)} sec left...`;
+            return translations.secondsLeft.replace("%{seconds}", Math.ceil(seconds).toString());
         } else if (seconds < 3600) {
             const minutes = Math.ceil(seconds / 60);
-            return `${minutes} min left...`;
+            return translations.minutesLeft.replace("%{minutes}", minutes.toString());
         } else {
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.ceil((seconds % 3600) / 60);
-            return `${hours}h ${minutes}m left...`;
+            return `${translations.hoursLeft.replace("%{hours}", hours.toString())} ${translations.minutesLeftShort.replace("%{minutes}", minutes.toString())}`;
         }
     };
 
@@ -68,7 +70,7 @@ const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({
                         },
                     }}
                 >
-                    Cancel
+                    {translations.cancel}
                 </Button>
             </Box>
         </Collapse>

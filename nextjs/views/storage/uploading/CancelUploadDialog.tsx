@@ -10,6 +10,7 @@ import {
     Button,
     useTheme,
 } from "@mui/material";
+import useAppTranslation from "@/locale/useAppTranslation";
 import { CancelTarget } from "./UploadProgressUIContext";
 
 export interface CancelUploadDialogProps {
@@ -26,20 +27,25 @@ const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
     onCancel,
 }) => {
     const theme = useTheme();
+    const { uploading: translations } = useAppTranslation(
+        "storageTranslations",
+    );
 
     const getDialogContent = () => {
         if (!cancelTarget) return { title: "", message: "" };
 
         if (cancelTarget.type === "all") {
             return {
-                title: "Cancel All Uploads",
-                message:
-                    "Are you sure you want to cancel all uploads? This action cannot be undone.",
+                title: translations.cancelAllUploads,
+                message: translations.cancelAllUploadsMessage,
             };
         } else {
             return {
-                title: "Cancel File Upload",
-                message: `Are you sure you want to cancel uploading "${cancelTarget.fileName}"? This action cannot be undone.`,
+                title: translations.cancelFileUpload,
+                message: translations.cancelFileUploadMessage.replace(
+                    "%{fileName}",
+                    cancelTarget.fileName ?? "unknown target",
+                ),
             };
         }
     };
@@ -85,7 +91,7 @@ const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
                         },
                     }}
                 >
-                    Keep Uploading
+                    {translations.keepUploading}
                 </Button>
                 <Button
                     onClick={onConfirm}
@@ -99,7 +105,7 @@ const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
                     }}
                     autoFocus
                 >
-                    Cancel Upload
+                    {translations.cancelUpload}
                 </Button>
             </DialogActions>
         </Dialog>
