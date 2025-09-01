@@ -63,7 +63,13 @@ export const useStorageUpload = () => {
 
 export const StorageUploadProvider: React.FC<{
     children: React.ReactNode;
-}> = ({ children }) => {
+    maxConcurrentUploads?: number;
+    maxAllowedFileSize?: number;
+}> = ({
+    children,
+    maxConcurrentUploads = 5,
+    maxAllowedFileSize = 10 * 1024 * 1024,
+}) => {
     const gql = useStorageGraphQL();
     const notifications = useNotifications();
     const translations = useAppTranslation("storageTranslations");
@@ -315,8 +321,32 @@ export const StorageUploadProvider: React.FC<{
     );
 
     const startUpload = useCallback(
-        async (files: File[], targetPath: string, callbacks?: { onComplete?: () => void }) => {
-            if (files.length === 0) return;
+        async (
+            files: File[],
+            targetPath: string,
+            callbacks?: { onComplete?: () => void },
+        ) => {
+            const validFiles: File[] = [];
+            const oversizedFiles: File[] = [];
+
+            files.forEach((file) => {
+                if (file.size > maxAllowedFileSize) {
+                    oversizedFiles.push(file);
+                } else {
+                    validFiles.push(file);
+                }
+            });
+
+            if (oversizedFiles.length > 0) {
+                const maxMb = (maxAllowedFileSize / 1024 / 1024).toFixed(2);
+                const message = `${oversizedFiles.length} file(s) exceed the size limit of ${maxMb}MB and will not be uploaded.`;
+                notifications.show(message, {
+                    severity: "warning",
+                    autoHideDuration: 5000,
+                });
+            }
+
+            if (validFiles.length === 0) return;
 
             const location = getUploadLocationForPath(targetPath);
             if (!location) {
@@ -328,7 +358,7 @@ export const StorageUploadProvider: React.FC<{
             }
 
             const fileMap = new Map<string, UploadFileState>();
-            files.forEach((file) => {
+            validFiles.forEach((file) => {
                 fileMap.set(getFileKey(file), {
                     file,
                     progress: 0,
@@ -341,20 +371,27 @@ export const StorageUploadProvider: React.FC<{
                 location,
                 isUploading: true,
                 completedCount: 0,
-                totalCount: files.length,
+                totalCount: validFiles.length,
                 targetPath,
             });
 
             try {
-                const concurrencyLimit = 3;
                 const chunks: File[][] = [];
-                for (let i = 0; i < files.length; i += concurrencyLimit) {
-                    chunks.push(files.slice(i, i + concurrencyLimit));
+                for (
+                    let i = 0;
+                    i < validFiles.length;
+                    i += maxConcurrentUploads
+                ) {
+                    chunks.push(
+                        validFiles.slice(i, i + maxConcurrentUploads),
+                    );
                 }
 
                 for (const chunk of chunks) {
                     await Promise.all(
-                        chunk.map((file) => uploadSingleFile(file, location, targetPath)),
+                        chunk.map((file) =>
+                            uploadSingleFile(file, location, targetPath),
+                        ),
                     );
                 }
 
@@ -382,7 +419,13 @@ export const StorageUploadProvider: React.FC<{
                 setUploadBatch((prev) => (prev ? { ...prev, isUploading: false } : undefined));
             }
         },
-        [notifications, translations, uploadSingleFile],
+        [
+            notifications,
+            translations,
+            uploadSingleFile,
+            maxAllowedFileSize,
+            maxConcurrentUploads,
+        ],
     );
 
     const clearUploadBatch = useCallback(() => setUploadBatch(undefined), []);
@@ -527,15 +570,26 @@ export const StorageUploadProvider: React.FC<{
 
         // Retry failed uploads
         try {
-            await Promise.all(
-                failedFiles.map((file) =>
-                    uploadSingleFile(
-                        file,
-                        uploadBatch.location,
-                        uploadBatch.targetPath,
+            const chunks: File[][] = [];
+            for (
+                let i = 0;
+                i < failedFiles.length;
+                i += maxConcurrentUploads
+            ) {
+                chunks.push(failedFiles.slice(i, i + maxConcurrentUploads));
+            }
+
+            for (const chunk of chunks) {
+                await Promise.all(
+                    chunk.map((file) =>
+                        uploadSingleFile(
+                            file,
+                            uploadBatch.location,
+                            uploadBatch.targetPath,
+                        ),
                     ),
-                ),
-            );
+                );
+            }
             notifications.show(translations.retryCompleted, {
                 severity: "success",
                 autoHideDuration: 2000,
@@ -558,6 +612,7 @@ export const StorageUploadProvider: React.FC<{
         translations.retryCompleted,
         translations.retryFailed,
         uploadSingleFile,
+        maxConcurrentUploads,
     ]);
 
     
