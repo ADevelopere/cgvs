@@ -27,7 +27,7 @@ import logger from "@/utils/logger";
 import { UploadFileState } from "@/contexts/storage";
 import { UploadLocation } from "@/graphql/generated/types";
 
-interface UploadDropzoneProps {
+export type UploadDropzoneProps = {
     disabled?: boolean;
     compact?: boolean;
 
@@ -40,7 +40,7 @@ interface UploadDropzoneProps {
 
     cancelUpload: (fileKey?: string) => void;
     retryFile: (fileKey: string) => Promise<void>;
-}
+};
 
 const UploadDropzone: React.FC<UploadDropzoneProps> = ({
     disabled = false,
@@ -146,7 +146,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             : undefined,
     });
 
-    const uploadsArray = Array.from(uploadFiles.entries());
+    const uploadsArray = Array.from(uploadFiles?.entries() ?? []); 
     const hasUploads = uploadsArray.length > 0;
     const completedCount = uploadsArray.filter(
         ([, file]) => file.status === "success",

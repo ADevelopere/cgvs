@@ -11,23 +11,23 @@ import {
     Chip,
     SelectChangeEvent,
 } from "@mui/material";
+import { Image as ImageIcon, Folder as FolderIcon } from "@mui/icons-material";
 import {
-    Image as ImageIcon,
-    Folder as FolderIcon,
-} from "@mui/icons-material";
-import { getUploadLocationOptions, getLocationInfo } from "@/contexts/storage/storage.location";
+    getUploadLocationOptions,
+    getLocationInfo,
+} from "@/contexts/storage/storage.location";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-interface LocationSelectorProps {
+export type FilePickerLocationSelectorProps = {
     value?: Graphql.UploadLocation;
     onChange: (location: Graphql.UploadLocation) => void;
     disabled?: boolean;
     label?: string;
     fullWidth?: boolean;
-}
+};
 
-const LocationSelector: React.FC<LocationSelectorProps> = ({
+const FilePickerLocationSelector: React.FC<FilePickerLocationSelectorProps> = ({
     value,
     onChange,
     disabled = false,
@@ -51,14 +51,14 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 
     const renderSelectedValue = (selected: string) => {
         if (!selected) return "";
-        
-        const locationInfo = getLocationInfo(selected as Graphql.UploadLocation);
+
+        const locationInfo = getLocationInfo(
+            selected as Graphql.UploadLocation,
+        );
         return (
             <Box sx={{ display: "flex", alignItems: "center" }}>
                 {getLocationIcon(locationInfo.icon)}
-                <Typography variant="inherit">
-                    {locationInfo.label}
-                </Typography>
+                <Typography variant="inherit">{locationInfo.label}</Typography>
             </Box>
         );
     };
@@ -105,32 +105,40 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
                 renderValue={renderSelectedValue}
                 MenuProps={{
                     PaperProps: {
-                        sx: { maxHeight: 300 }
-                    }
+                        sx: { maxHeight: 300 },
+                    },
                 }}
             >
                 {locations.map((location) => (
-                    <MenuItem 
-                        key={location.key} 
+                    <MenuItem
+                        key={location.key}
                         value={location.key}
                         sx={{ py: 1.5 }}
                     >
                         <Box sx={{ width: "100%" }}>
-                            <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 0.5,
+                                }}
+                            >
                                 {getLocationIcon(location.icon)}
                                 <Typography variant="body2" fontWeight={500}>
                                     {location.label}
                                 </Typography>
                             </Box>
-                            <Typography 
-                                variant="caption" 
+                            <Typography
+                                variant="caption"
                                 color="text.secondary"
                                 display="block"
                                 sx={{ mb: 0.5 }}
                             >
                                 {location.description}
                             </Typography>
-                            {renderContentTypeChips(location.allowedContentTypes)}
+                            {renderContentTypeChips(
+                                location.allowedContentTypes,
+                            )}
                         </Box>
                     </MenuItem>
                 ))}
@@ -139,4 +147,4 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     );
 };
 
-export default LocationSelector;
+export default FilePickerLocationSelector;

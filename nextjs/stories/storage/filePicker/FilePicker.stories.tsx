@@ -1,13 +1,12 @@
 import type { Meta, StoryFn } from "@storybook/nextjs";
-import { action } from "@storybook/addon-actions";
 import FilePicker from "@/views/storage/filePicker/FilePicker";
 import * as Graphql from "@/graphql/generated/types";
 import FilePickerWrapper from "./FilePickerWrapper";
 import withGlobalStyles from "@/stories/Decorators";
-import { 
-    commonStoryArgTypes, 
-    defaultStoryArgs, 
-    CommonStoryArgTypesProps 
+import {
+    commonStoryArgTypes,
+    defaultStoryArgs,
+    CommonStoryArgTypesProps,
 } from "@/stories/argTypes";
 import useStoryTheme from "@/stories/useStoryTheme";
 
@@ -31,36 +30,10 @@ const meta: Meta<typeof FilePicker> = {
             description: "Allow multiple file selection",
             table: { category: "Selection" },
         },
-        allowUpload: {
-            control: { type: "boolean" },
-            description: "Show upload functionality",
-            table: { category: "Features" },
-        },
         maxSelection: {
             control: { type: "number", min: 1, max: 20 },
             description: "Maximum number of files that can be selected",
             table: { category: "Selection" },
-        },
-        disabled: {
-            control: { type: "boolean" },
-            description: "Disable all interactions",
-            table: { category: "State" },
-        },
-        viewMode: {
-            control: { type: "select" },
-            options: ["grid", "list"],
-            description: "Display mode for files",
-            table: { category: "Display" },
-        },
-        compact: {
-            control: { type: "boolean" },
-            description: "Use compact layout",
-            table: { category: "Display" },
-        },
-        showLocationSelector: {
-            control: { type: "boolean" },
-            description: "Show location selector component",
-            table: { category: "Features" },
         },
         loading: {
             control: { type: "boolean" },
@@ -71,11 +44,6 @@ const meta: Meta<typeof FilePicker> = {
             control: { type: "text" },
             description: "Error message to display",
             table: { category: "State" },
-        },
-        changeLocation: {
-            action: "changeLocation",
-            description: "Callback when location changes",
-            table: { category: "Events" },
         },
         setSelectedFiles: {
             action: "setSelectedFiles",
@@ -90,11 +58,6 @@ const meta: Meta<typeof FilePicker> = {
         refreshFiles: {
             action: "refreshFiles",
             description: "Callback to refresh file list",
-            table: { category: "Events" },
-        },
-        onViewModeChange: {
-            action: "viewModeChange",
-            description: "Callback when view mode changes",
             table: { category: "Events" },
         },
     },
@@ -172,44 +135,31 @@ const mockFiles: Graphql.FileInfo[] = [
 ];
 
 // Interactive wrapper component using the shared FilePickerWrapper
-const FilePickerStoryWrapper: React.FC<CommonStoryArgTypesProps & {
-    initialLocation?: Graphql.UploadLocation;
-    initialFiles?: Graphql.FileInfo[];
-    initialViewMode?: "grid" | "list";
-    multiple?: boolean;
-    allowUpload?: boolean;
-    maxSelection?: number;
-    disabled?: boolean;
-    compact?: boolean;
-    showLocationSelector?: boolean;
-    loading?: boolean;
-    error?: string;
-}> = (props) => {
+const FilePickerStoryWrapper: React.FC<
+    CommonStoryArgTypesProps & {
+        initialLocation?: Graphql.UploadLocation;
+        initialFiles?: Graphql.FileInfo[];
+        initialViewMode?: "grid" | "list";
+        multiple?: boolean;
+        maxSelection?: number;
+        loading?: boolean;
+        error?: string;
+    }
+> = (props) => {
     useStoryTheme(props);
 
     return (
         <FilePickerWrapper
             initialLocation={props.initialLocation}
             initialFiles={props.initialFiles || mockFiles}
-            initialViewMode={props.initialViewMode}
             loading={props.loading}
             error={props.error}
         >
             {(wrapperState) => (
                 <FilePicker
                     multiple={props.multiple || false}
-                    allowUpload={props.allowUpload ?? true}
                     maxSelection={props.maxSelection}
-                    disabled={props.disabled || false}
-                    viewMode={wrapperState.viewMode}
-                    onViewModeChange={(mode) => {
-                        wrapperState.setViewMode(mode);
-                        action("viewModeChange")(mode);
-                    }}
-                    compact={props.compact || false}
-                    showLocationSelector={props.showLocationSelector ?? true}
                     location={wrapperState.location}
-                    changeLocation={wrapperState.changeLocation}
                     files={wrapperState.files}
                     loading={wrapperState.loading}
                     error={wrapperState.error}
@@ -218,12 +168,6 @@ const FilePickerStoryWrapper: React.FC<CommonStoryArgTypesProps & {
                     clearSelection={wrapperState.clearSelection}
                     isFileProhibited={wrapperState.isFileProhibited}
                     refreshFiles={wrapperState.refreshFiles}
-                    uploadToLocation={wrapperState.uploadToLocation}
-                    uploadFiles={wrapperState.uploadFiles}
-                    isUploading={wrapperState.isUploading}
-                    clearUploads={wrapperState.clearUploads}
-                    cancelUpload={wrapperState.cancelUpload}
-                    retryFile={wrapperState.retryFile}
                 />
             )}
         </FilePickerWrapper>

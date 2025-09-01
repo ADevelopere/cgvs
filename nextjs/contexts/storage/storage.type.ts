@@ -1,80 +1,85 @@
-
 import * as Graphql from "@/graphql/generated/types";
 
 // Types for local state
 export type StorageItem = Graphql.FileInfo | Graphql.FolderInfo;
 
 export type StorageQueryParams = {
-  path: string; // This will be relative to 'public/' (e.g., "templateCover" instead of "public/templateCover")
-  limit: number;
-  offset: number;
-  searchTerm?: string;
-  fileType?: Graphql.FileType;
-  sortField?: Graphql.FileSortField;
+    path: string; // This will be relative to 'public/' (e.g., "templateCover" instead of "public/templateCover")
+    limit: number;
+    offset: number;
+    searchTerm?: string;
+    fileType?: Graphql.FileType;
+    sortField?: Graphql.FileSortField;
 };
 
 // Upload-related types
 export type UploadFileState = {
-  file: File;
-  progress: number;
-  status: "pending" | "uploading" | "success" | "error";
-  error?: string;
-  signedUrl?: string;
-  // Optional XHR instance used for this upload so the UI/context can abort if needed
-  xhr?: XMLHttpRequest;
+    file: File;
+    progress: number;
+    status: "pending" | "uploading" | "success" | "error";
+    error?: string;
+    signedUrl?: string;
+    // Optional XHR instance used for this upload so the UI/context can abort if needed
+    xhr?: XMLHttpRequest;
 };
 
 export type UploadBatchState = {
-  files: Map<string, UploadFileState>; // key is file name + size for uniqueness
-  location: Graphql.UploadLocation;
-  isUploading: boolean;
-  completedCount: number;
-  totalCount: number;
-  targetPath: string; // The path where files are being uploaded
+    files: Map<string, UploadFileState>; // key is file name + size for uniqueness
+    location: Graphql.UploadLocation;
+    isUploading: boolean;
+    completedCount: number;
+    totalCount: number;
+    targetPath: string; // The path where files are being uploaded
 };
 
 export type StorageManagementContextType = {
-  // Data
-  items: StorageItem[];
-  stats?: Graphql.StorageStats;
-  pagination: { totalCount: number; limit: number; offset: number; hasMore: boolean } | null;
+    // Data
+    items: StorageItem[];
+    stats?: Graphql.StorageStats;
+    pagination: {
+        totalCount: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+    } | null;
 
-  // Selection
-  selectedPaths: string[];
+    // Selection
+    selectedPaths: string[];
 
-  // Query params
-  params: StorageQueryParams;
+    // Query params
+    params: StorageQueryParams;
 
-  // Loading/error
-  loading: boolean;
-  error?: string;
+    // Loading/error
+    loading: boolean;
+    error?: string;
 
-  // Upload state
-  uploadBatch?: UploadBatchState;
+    // Actions
+    setParams: (partial: Partial<StorageQueryParams>) => void;
+    navigateTo: (path: string) => void;
+    goUp: () => void;
+    refresh: () => Promise<void>;
 
-  // Actions
-  setParams: (partial: Partial<StorageQueryParams>) => void;
-  navigateTo: (path: string) => void;
-  goUp: () => void;
-  refresh: () => Promise<void>;
+    toggleSelect: (path: string) => void;
+    selectAll: () => void;
+    clearSelection: () => void;
 
-  toggleSelect: (path: string) => void;
-  selectAll: () => void;
-  clearSelection: () => void;
+    rename: (path: string, newName: string) => Promise<boolean>;
+    remove: (paths: string[]) => Promise<boolean>;
 
-  rename: (path: string, newName: string) => Promise<boolean>;
-  remove: (paths: string[]) => Promise<boolean>;
+    search: (term: string) => void;
+    setFilterType: (type?: Graphql.FileType) => void;
+    setSortField: (field?: Graphql.FileSortField) => void;
+    setPage: (page: number) => void; // converts to offset
+    setLimit: (limit: number) => void;
+};
 
-  search: (term: string) => void;
-  setFilterType: (type?: Graphql.FileType) => void;
-  setSortField: (field?: Graphql.FileSortField) => void;
-  setPage: (page: number) => void; // converts to offset
-  setLimit: (limit: number) => void;
+export type StorageUploadContextType = {
+    // Upload state
+    uploadBatch?: UploadBatchState;
 
-  // Upload actions
-  startUpload: (files: File[], targetPath?: string) => Promise<void>; // targetPath is optional, will auto-detect from current path
-  cancelUpload: (fileKey?: string) => void;
-  retryFailedUploads: () => Promise<void>;
-  retryFile: (fileKey: string) => Promise<void>;
-  clearUploadBatch: () => void;
+    startUpload: (files: File[], targetPath?: string) => Promise<void>; // targetPath is optional, will auto-detect from current path
+    cancelUpload: (fileKey?: string) => void;
+    retryFailedUploads: () => Promise<void>;
+    retryFile: (fileKey: string) => Promise<void>;
+    clearUploadBatch: () => void;
 };
