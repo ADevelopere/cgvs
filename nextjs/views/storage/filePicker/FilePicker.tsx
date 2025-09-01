@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Grid,
@@ -23,25 +23,15 @@ import {
     ViewList as ListViewIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import LocationSelector from "./LocationSelector";
-import UploadDropzone from "../upload/UploadDropzone";
-import FilePickerItems from "./FilePickerItems";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
-import { UploadFileState } from "@/contexts/storage/storage.type";
+import FilePickerItems from "./FilePickerItems";
 
-export type FileSelectorProps = {
+export type FilePickerProps = {
     multiple?: boolean;
-    allowUpload?: boolean;
     maxSelection?: number;
-    disabled?: boolean;
-    viewMode?: "grid" | "list";
-    onViewModeChange?: (mode: "grid" | "list") => void;
-    compact?: boolean;
-    showLocationSelector?: boolean;
 
     location?: Graphql.UploadLocation;
-    changeLocation: (newLocation: Graphql.UploadLocation) => void;
 
     // Files from the location
     files: Graphql.FileInfo[];
@@ -56,29 +46,13 @@ export type FileSelectorProps = {
     isFileProhibited: (file: Graphql.FileInfo) => boolean;
 
     refreshFiles: () => Promise<void>;
-
-    uploadToLocation: (files: File[]) => Promise<void>;
-    uploadFiles: Map<string, UploadFileState>;
-
-    isUploading: boolean;
-    clearUploads: () => void;
-
-    cancelUpload: (fileKey?: string) => void;
-    retryFile: (fileKey: string) => Promise<void>;
 };
 
-const FilePicker: React.FC<FileSelectorProps> = ({
+const FilePicker: React.FC<FilePickerProps> = ({
     multiple = false,
-    allowUpload = true,
     maxSelection,
-    disabled = false,
-    viewMode = "grid",
-    onViewModeChange,
-    compact = false,
-    showLocationSelector = true,
 
     location,
-    changeLocation,
     files,
     loading,
     error,
@@ -87,24 +61,13 @@ const FilePicker: React.FC<FileSelectorProps> = ({
     clearSelection,
     refreshFiles,
     isFileProhibited,
-
-    uploadToLocation,
-    uploadFiles,
-    isUploading,
-    clearUploads,
-
-    cancelUpload,
-    retryFile,
 }) => {
     const translations = useAppTranslation("storageTranslations");
-
-    const handleLocationChange = (newLocation: Graphql.UploadLocation) => {
-        changeLocation(newLocation);
-    };
+    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
     const handleFileToggle = React.useCallback(
         (file: Graphql.FileInfo) => {
-            if (disabled || isFileProhibited(file)) return;
+            if (isFileProhibited(file)) return;
 
             const isSelected = selectedFiles.some((f) => f.path === file.path);
 
@@ -127,7 +90,6 @@ const FilePicker: React.FC<FileSelectorProps> = ({
             }
         },
         [
-            disabled,
             isFileProhibited,
             maxSelection,
             multiple,
@@ -139,18 +101,17 @@ const FilePicker: React.FC<FileSelectorProps> = ({
     const handleViewModeChange = React.useCallback(
         (event: SelectChangeEvent<string>) => {
             const newMode = event.target.value as "grid" | "list";
-            onViewModeChange?.(newMode);
+            setViewMode?.(newMode);
         },
-        [onViewModeChange],
+        [setViewMode],
     );
 
     const handleSelectAll = React.useCallback(() => {
-        if (disabled) return;
         const limitedFiles = maxSelection
             ? files.slice(0, maxSelection)
             : files;
         setSelectedFiles(limitedFiles);
-    }, [disabled, files, maxSelection, setSelectedFiles]);
+    }, [files, maxSelection, setSelectedFiles]);
 
     const canSelectMore = React.useMemo(
         () => !maxSelection || selectedFiles.length < maxSelection,
@@ -164,32 +125,6 @@ const FilePicker: React.FC<FileSelectorProps> = ({
 
     return (
         <Box>
-            {/* Location Selector */}
-            {showLocationSelector && (
-                <Box sx={{ mb: 3 }}>
-                    <LocationSelector
-                        value={location}
-                        onChange={handleLocationChange}
-                        disabled={disabled}
-                    />
-                </Box>
-            )}
-
-            {/* Upload Area */}
-            {allowUpload && location && (
-                <UploadDropzone
-                    disabled={disabled}
-                    compact={compact}
-                    location={location}
-                    uploadFiles={uploadFiles}
-                    isUploading={isUploading}
-                    uploadToLocation={uploadToLocation}
-                    clearUploads={clearUploads}
-                    cancelUpload={cancelUpload}
-                    retryFile={retryFile}
-                />
-            )}
-
             {/* Selection Info & Controls */}
             {location && (
                 <Box sx={{ mb: 2 }}>
@@ -233,9 +168,7 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                         <Button
                                             size="small"
                                             onClick={handleSelectAll}
-                                            disabled={
-                                                disabled || !canSelectMore
-                                            }
+                                            disabled={!canSelectMore}
                                         >
                                             {translations.selectAll}
                                         </Button>
@@ -243,7 +176,6 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                             size="small"
                                             onClick={clearSelection}
                                             disabled={
-                                                disabled ||
                                                 selectedFiles.length === 0
                                             }
                                         >
@@ -260,40 +192,35 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                     size="small"
                                     startIcon={<RefreshIcon />}
                                     onClick={refreshFiles}
-                                    disabled={disabled || loading}
+                                    disabled={loading}
                                 >
                                     {translations.refresh}
                                 </Button>
 
-                                {onViewModeChange && (
-                                    <FormControl
-                                        size="small"
-                                        sx={{ minWidth: 100 }}
+                                <FormControl
+                                    size="small"
+                                    sx={{ minWidth: 100 }}
+                                >
+                                    <InputLabel>{translations.view}</InputLabel>
+                                    <Select
+                                        value={viewMode}
+                                        label={translations.view}
+                                        onChange={handleViewModeChange}
                                     >
-                                        <InputLabel>
-                                            {translations.view}
-                                        </InputLabel>
-                                        <Select
-                                            value={viewMode}
-                                            label={translations.view}
-                                            onChange={handleViewModeChange}
-                                            disabled={disabled}
-                                        >
-                                            <MenuItem value="grid">
-                                                <GridViewIcon
-                                                    sx={{ mr: 1, fontSize: 16 }}
-                                                />
-                                                {translations.grid}
-                                            </MenuItem>
-                                            <MenuItem value="list">
-                                                <ListViewIcon
-                                                    sx={{ mr: 1, fontSize: 16 }}
-                                                />
-                                                {translations.list}
-                                            </MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                )}
+                                        <MenuItem value="grid">
+                                            <GridViewIcon
+                                                sx={{ mr: 1, fontSize: 16 }}
+                                            />
+                                            {translations.grid}
+                                        </MenuItem>
+                                        <MenuItem value="list">
+                                            <ListViewIcon
+                                                sx={{ mr: 1, fontSize: 16 }}
+                                            />
+                                            {translations.list}
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
                             </Stack>
                         </Stack>
                     </Paper>
@@ -360,7 +287,6 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                                     }
                                                     viewMode="grid"
                                                     disabled={
-                                                        disabled ||
                                                         isProhibited ||
                                                         (!isSelected &&
                                                             !canSelectMore)
@@ -388,7 +314,6 @@ const FilePicker: React.FC<FileSelectorProps> = ({
                                                 }
                                                 viewMode="list"
                                                 disabled={
-                                                    disabled ||
                                                     isProhibited ||
                                                     (!isSelected &&
                                                         !canSelectMore)

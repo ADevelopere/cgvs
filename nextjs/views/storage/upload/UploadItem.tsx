@@ -38,21 +38,31 @@ const UploadItem: React.FC<UploadItemProps> = ({
 }) => {
     const translations = useAppTranslation("storageTranslations");
 
-    const formatFileSize = (bytes: number): string => {
-        if (bytes === 0) return translations.zeroBytes;
-        const k = 1024;
-        const sizes = [
+    const formatFileSize = React.useCallback(
+        (bytes: number): string => {
+            if (bytes === 0) return translations.zeroBytes;
+            const k = 1024;
+            const sizes = [
+                translations.bytes,
+                translations.kb,
+                translations.mb,
+                translations.gb,
+                translations.tb,
+            ];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+        },
+        [
             translations.bytes,
+            translations.gb,
             translations.kb,
             translations.mb,
-            translations.gb,
             translations.tb,
-        ];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
-    };
+            translations.zeroBytes,
+        ],
+    );
 
-    const getStatusIcon = () => {
+    const getStatusIcon = React.useCallback(() => {
         switch (fileState.status) {
             case "pending":
                 return <PendingIcon color="action" />;
@@ -65,9 +75,9 @@ const UploadItem: React.FC<UploadItemProps> = ({
             default:
                 return <FileIcon color="action" />;
         }
-    };
+    }, [fileState.status]);
 
-    const getStatusChip = () => {
+    const getStatusChip = React.useCallback(() => {
         const props = {
             size: "small" as const,
             variant: "filled" as const,
@@ -109,15 +119,21 @@ const UploadItem: React.FC<UploadItemProps> = ({
             default:
                 return null;
         }
-    };
+    }, [
+        fileState.progress,
+        fileState.status,
+        translations.failed,
+        translations.pending,
+        translations.success,
+    ]);
 
-    const handleCancel = () => {
+    const handleCancel = React.useCallback(() => {
         cancelUpload(fileKey);
-    };
+    }, [cancelUpload, fileKey]);
 
-    const handleRetry = () => {
+    const handleRetry = React.useCallback(() => {
         retryFile(fileKey);
-    };
+    }, [retryFile, fileKey]);
 
     const getSecondaryAction = () => {
         switch (fileState.status) {

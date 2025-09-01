@@ -26,13 +26,13 @@ import { format } from "date-fns";
 import useAppTranslation from "@/locale/useAppTranslation";
 import StorageTranslations from "@/locale/components/Storage";
 
-interface FilePickerItemsProps {
+export type FilePickerItemsProps = {
     file: Graphql.FileInfo;
     selected: boolean;
     onToggleSelect: (file: Graphql.FileInfo) => void;
     viewMode?: "grid" | "list";
     disabled?: boolean;
-}
+};
 
 type ViewProps = {
     file: Graphql.FileInfo;

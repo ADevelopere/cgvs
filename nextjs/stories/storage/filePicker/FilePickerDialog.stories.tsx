@@ -43,11 +43,6 @@ const meta: Meta<typeof FilePickerDialog> = {
             description: "Show upload functionality",
             table: { category: "Features" },
         },
-        maxSelection: {
-            control: { type: "number", min: 1, max: 20 },
-            description: "Maximum number of files that can be selected",
-            table: { category: "Selection" },
-        },
         title: {
             control: { type: "text" },
             description: "Custom dialog title",
@@ -63,29 +58,9 @@ const meta: Meta<typeof FilePickerDialog> = {
             description: "Custom cancel button text",
             table: { category: "Content" },
         },
-        loading: {
-            control: { type: "boolean" },
-            description: "Show loading state",
-            table: { category: "State" },
-        },
-        error: {
-            control: { type: "text" },
-            description: "Error message to display",
-            table: { category: "State" },
-        },
         onClose: {
             action: "close",
             description: "Callback when dialog is closed",
-            table: { category: "Events" },
-        },
-        changeLocation: {
-            action: "changeLocation",
-            description: "Callback when location changes",
-            table: { category: "Events" },
-        },
-        setSelectedFiles: {
-            action: "setSelectedFiles",
-            description: "Callback when selected files change",
             table: { category: "Events" },
         },
         clearSelection: {

@@ -9,15 +9,13 @@ import React, {
     useRef,
 } from "react";
 import { useStorageGraphQL } from "./StorageGraphQLContext";
-import { useNotifications } from "@toolpad/core/useNotifications";
-import { UploadFileState } from "./storage.type";
 import {
     getLocationInfo,
     isFileTypeAllowed,
     getStoragePath,
 } from "./storage.location";
-import { inferContentType, getFileKey } from "./storage.util";
 import * as Graphql from "@/graphql/generated/types";
+import { useNotifications } from "@toolpad/core/useNotifications";
 
 export interface FileSelectorContextType {
     // Current location
@@ -39,19 +37,8 @@ export interface FileSelectorContextType {
     prohibitedUrls: string[];
     isFileProhibited: (file: Graphql.FileInfo) => boolean;
 
-    // Upload configuration
-    allowUpload: boolean;
-
-    // Upload state
-    uploadFiles: Map<string, UploadFileState>;
-    isUploading: boolean;
-
     // Actions
     refreshFiles: () => Promise<void>;
-    uploadToLocation: (files: File[]) => Promise<void>;
-    cancelUpload: (fileKey?: string) => void;
-    retryUpload: (fileKey: string) => Promise<void>;
-    clearUploads: () => void;
 }
 
 const FileSelectorContext = createContext<FileSelectorContextType | undefined>(
@@ -73,7 +60,6 @@ export type FileSelectorProviderProps = {
     prohibitedUrls?: string[];
     initialLocation: Graphql.UploadLocation;
     multiple?: boolean;
-    allowUpload?: boolean;
     maxSelection?: number;
     onSelectAction?: (files: Graphql.FileInfo[]) => void;
 };
@@ -82,7 +68,6 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
     prohibitedUrls = [],
     initialLocation,
     multiple = false,
-    allowUpload = true,
     maxSelection,
     onSelectAction,
     children,
@@ -105,10 +90,6 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>();
     const [selectedFiles, setSelectedFiles] = useState<Graphql.FileInfo[]>([]);
-    const [uploadFiles, setUploadFiles] = useState<
-        Map<string, UploadFileState>
-    >(new Map());
-    const [isUploading, setIsUploading] = useState(false);
 
     // Call onSelectAction whenever selectedFiles changes
     useEffect(() => {
@@ -147,15 +128,12 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
                 }
             });
         },
-        [multiple, maxSelection], // Remove prohibitedUrls from dependencies
+        [multiple, maxSelection],
     );
 
-    const isFileProhibited = useCallback(
-        (file: Graphql.FileInfo) => {
-            return prohibitedUrlsRef.current.includes(file.url || "");
-        },
-        [], // Remove prohibitedUrls from dependencies
-    );
+    const isFileProhibited = useCallback((file: Graphql.FileInfo) => {
+        return prohibitedUrlsRef.current.includes(file.url || "");
+    }, []);
 
     const clearSelection = useCallback(() => {
         setSelectedFiles([]);
@@ -169,7 +147,7 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
             );
             setSelectedFiles(allowedFiles);
         },
-        [], // Remove prohibitedUrls from dependencies
+        [],
     );
 
     // Initialize selection with files matching prohibited URLs when files are loaded
@@ -189,7 +167,7 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
                 });
             }
         }
-    }, [files]); // Remove prohibitedUrls from dependencies
+    }, [files]);
 
     const refreshFiles = useCallback(async () => {
         if (!locationState) return;
@@ -238,203 +216,6 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
         }
     }, [locationState, gql, notifications]);
 
-    const uploadToLocation = useCallback(
-        async (filesToUpload: File[]) => {
-            if (!locationState) return;
-
-            // Check if upload is allowed
-            if (!allowUpload) {
-                notifications.show("Upload is not allowed", {
-                    severity: "error",
-                });
-                return;
-            }
-
-            setIsUploading(true);
-
-            // Initialize upload states
-            const newUploadFiles = new Map(uploadFiles);
-            filesToUpload.forEach((file) => {
-                const fileKey = getFileKey(file);
-                newUploadFiles.set(fileKey, {
-                    file,
-                    progress: 0,
-                    status: "pending",
-                });
-            });
-            setUploadFiles(newUploadFiles);
-
-            for (const file of filesToUpload) {
-                const fileKey = getFileKey(file);
-                const contentType = inferContentType(file);
-
-                // Check if file type is allowed
-                if (!isFileTypeAllowed(locationState, contentType)) {
-                    newUploadFiles.set(fileKey, {
-                        ...newUploadFiles.get(fileKey)!,
-                        status: "error",
-                        error: `File type ${contentType} not allowed for this location`,
-                    });
-                    setUploadFiles(new Map(newUploadFiles));
-                    continue;
-                }
-
-                try {
-                    // Update status to uploading
-                    newUploadFiles.set(fileKey, {
-                        ...newUploadFiles.get(fileKey)!,
-                        status: "uploading",
-                    });
-                    setUploadFiles(new Map(newUploadFiles));
-
-                    // Get signed URL
-                    const signedUrlResult =
-                        await gql.generateUploadSignedUrlMutation({
-                            input: {
-                                fileName: file.name,
-                                contentType,
-                                location: locationState,
-                            },
-                        });
-
-                    if (!signedUrlResult.data?.generateUploadSignedUrl) {
-                        throw new Error("Failed to get upload URL");
-                    }
-
-                    const signedUrl =
-                        signedUrlResult.data.generateUploadSignedUrl;
-
-                    // Upload file with progress tracking
-                    const xhr = new XMLHttpRequest();
-
-                    await new Promise<void>((resolve, reject) => {
-                        xhr.upload.addEventListener("progress", (event) => {
-                            if (event.lengthComputable) {
-                                const progress =
-                                    (event.loaded / event.total) * 100;
-                                newUploadFiles.set(fileKey, {
-                                    ...newUploadFiles.get(fileKey)!,
-                                    progress,
-                                });
-                                setUploadFiles(new Map(newUploadFiles));
-                            }
-                        });
-
-                        xhr.addEventListener("load", () => {
-                            if (xhr.status >= 200 && xhr.status < 300) {
-                                newUploadFiles.set(fileKey, {
-                                    ...newUploadFiles.get(fileKey)!,
-                                    status: "success",
-                                    progress: 100,
-                                });
-                                setUploadFiles(new Map(newUploadFiles));
-                                resolve();
-                            } else {
-                                reject(
-                                    new Error(
-                                        `Upload failed with status ${xhr.status}`,
-                                    ),
-                                );
-                            }
-                        });
-
-                        xhr.addEventListener("error", () => {
-                            reject(new Error("Upload failed"));
-                        });
-
-                        xhr.open("PUT", signedUrl);
-                        xhr.setRequestHeader("Content-Type", file.type);
-                        xhr.send(file);
-
-                        // Store xhr for potential cancellation
-                        newUploadFiles.set(fileKey, {
-                            ...newUploadFiles.get(fileKey)!,
-                            xhr,
-                        });
-                        setUploadFiles(new Map(newUploadFiles));
-                    });
-                } catch (err) {
-                    const message =
-                        err instanceof Error ? err.message : "Upload failed";
-                    newUploadFiles.set(fileKey, {
-                        ...newUploadFiles.get(fileKey)!,
-                        status: "error",
-                        error: message,
-                    });
-                    setUploadFiles(new Map(newUploadFiles));
-                    notifications.show(
-                        `Failed to upload ${file.name}: ${message}`,
-                        {
-                            severity: "error",
-                        },
-                    );
-                }
-            }
-
-            setIsUploading(false);
-
-            // Refresh files to show newly uploaded files
-            await refreshFiles();
-        },
-        [
-            locationState,
-            allowUpload,
-            uploadFiles,
-            gql,
-            notifications,
-            refreshFiles,
-        ],
-    );
-
-    const cancelUpload = useCallback(
-        (fileKey?: string) => {
-            const newUploadFiles = new Map(uploadFiles);
-
-            if (fileKey) {
-                const fileState = newUploadFiles.get(fileKey);
-                if (fileState?.xhr) {
-                    fileState.xhr.abort();
-                }
-                newUploadFiles.delete(fileKey);
-            } else {
-                // Cancel all uploads
-                newUploadFiles.forEach((fileState) => {
-                    if (fileState.xhr) {
-                        fileState.xhr.abort();
-                    }
-                });
-                newUploadFiles.clear();
-            }
-
-            setUploadFiles(newUploadFiles);
-            setIsUploading(false);
-        },
-        [uploadFiles],
-    );
-
-    const retryUpload = useCallback(
-        async (fileKey: string) => {
-            // Check if upload is allowed
-            if (!allowUpload) {
-                notifications.show("Upload is not allowed", {
-                    severity: "error",
-                });
-                return;
-            }
-
-            const fileState = uploadFiles.get(fileKey);
-            if (!fileState || fileState.status !== "error") return;
-
-            await uploadToLocation([fileState.file]);
-        },
-        [allowUpload, uploadFiles, uploadToLocation, notifications],
-    );
-
-    const clearUploads = useCallback(() => {
-        setUploadFiles(new Map());
-        setIsUploading(false);
-    }, []);
-
     const changeLocation = useCallback(
         (newLocation: Graphql.UploadLocation) => {
             setLocationState(newLocation);
@@ -451,49 +232,44 @@ export const FileSelectorProvider: React.FC<FileSelectorProviderProps> = ({
         }
     }, [locationState, refreshFiles]);
 
-    const value = React.useMemo<FileSelectorContextType>(
-        () => ({
-            location: locationState,
-            changeLocation,
-            files,
-            loading,
-            error,
-            selectedFiles,
-            setSelectedFiles: setSelectedFilesCallback,
-            toggleFileSelection,
-            clearSelection,
-            prohibitedUrls: prohibitedUrlsRef.current,
-            isFileProhibited,
-            allowUpload,
-            uploadFiles,
-            isUploading,
-            refreshFiles,
-            uploadToLocation,
-            cancelUpload,
-            retryUpload,
-            clearUploads,
-        }),
-        [
-            locationState,
-            changeLocation,
-            files,
-            loading,
-            error,
-            selectedFiles,
-            setSelectedFilesCallback,
-            toggleFileSelection,
-            clearSelection,
-            isFileProhibited,
-            allowUpload,
-            uploadFiles,
-            isUploading,
-            refreshFiles,
-            uploadToLocation,
-            cancelUpload,
-            retryUpload,
-            clearUploads,
-        ],
-    );
+    const value: FileSelectorContextType =
+        React.useMemo<FileSelectorContextType>(
+            () => ({
+                location: locationState,
+                changeLocation,
+                files,
+                loading,
+                error,
+                selectedFiles,
+                setSelectedFiles: setSelectedFilesCallback,
+                toggleFileSelection,
+                clearSelection,
+                prohibitedUrls: prohibitedUrlsRef.current,
+                isFileProhibited,
+                refreshFiles,
+                // uploadToLocation,
+                // cancelUpload,
+                // retryUpload,
+                // clearUploads,
+            }),
+            [
+                locationState,
+                changeLocation,
+                files,
+                loading,
+                error,
+                selectedFiles,
+                setSelectedFilesCallback,
+                toggleFileSelection,
+                clearSelection,
+                isFileProhibited,
+                refreshFiles,
+                // uploadToLocation,
+                // cancelUpload,
+                // retryUpload,
+                // clearUploads,
+            ],
+        );
 
     return (
         <FileSelectorContext.Provider value={value}>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -15,7 +15,6 @@ import {
     CheckCircle as SelectIcon,
     CloudUpload as UploadIcon,
 } from "@mui/icons-material";
-import FilePicker from "./FilePicker";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
@@ -23,9 +22,9 @@ import {
     getLocationInfo,
     getDisplayPath,
 } from "@/contexts/storage/storage.location";
-import { getAcceptAttribute, UploadFileState } from "@/contexts/storage";
+import { getAcceptAttribute } from "@/contexts/storage";
 
-export type FileSelectorDialogProps = {
+export type FilePickerDialogProps = {
     open: boolean;
     onClose?: () => void;
     selectedFiles: Graphql.FileInfo[];
@@ -33,37 +32,14 @@ export type FileSelectorDialogProps = {
     location?: Graphql.UploadLocation;
     multiple?: boolean;
     allowUpload?: boolean;
-    maxSelection?: number;
     title?: string;
     confirmText?: string;
     cancelText?: string;
 
-    changeLocation: (newLocation: Graphql.UploadLocation) => void;
-
-    // Files from the location
-    files: Graphql.FileInfo[];
-    loading: boolean;
-    error?: string;
-
-    // Selection state
-    setSelectedFiles: (files: Graphql.FileInfo[]) => void;
-    clearSelection: () => void;
-
-    isFileProhibited: (file: Graphql.FileInfo) => boolean;
-
-    refreshFiles: () => Promise<void>;
-
-    uploadToLocation: (files: File[]) => Promise<void>;
-    uploadFiles: Map<string, UploadFileState>;
-
-    isUploading: boolean;
-    clearUploads: () => void;
-
-    cancelUpload: (fileKey?: string) => void;
-    retryFile: (fileKey: string) => Promise<void>;
+    children: React.ReactNode;
 };
 
-const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
+const FilePickerDialog: React.FC<FilePickerDialogProps> = ({
     open,
     onClose,
     selectedFiles,
@@ -71,30 +47,13 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     location,
     multiple = false,
     allowUpload = true,
-    maxSelection,
     title,
     confirmText,
     cancelText,
 
-    changeLocation,
-    files,
-    loading,
-    error,
-    setSelectedFiles,
-    clearSelection,
-    refreshFiles,
-    isFileProhibited,
-
-    uploadToLocation,
-    uploadFiles,
-    isUploading,
-    clearUploads,
-
-    cancelUpload,
-    retryFile,
+    children,
 }) => {
     const translations = useAppTranslation("storageTranslations");
-    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
     const handleFileUpload = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,31 +156,7 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
                         p: 3,
                     }}
                 >
-                    <FilePicker
-                        multiple={multiple}
-                        allowUpload={allowUpload}
-                        maxSelection={maxSelection}
-                        viewMode={viewMode}
-                        onViewModeChange={setViewMode}
-                        compact={true}
-                        showLocationSelector={false}
-                        location={location}
-                        changeLocation={changeLocation}
-                        files={files}
-                        loading={loading}
-                        error={error}
-                        selectedFiles={selectedFiles}
-                        setSelectedFiles={setSelectedFiles}
-                        clearSelection={clearSelection}
-                        isFileProhibited={isFileProhibited}
-                        refreshFiles={refreshFiles}
-                        uploadFiles={uploadFiles}
-                        isUploading={isUploading}
-                        uploadToLocation={uploadToLocation}
-                        clearUploads={clearUploads}
-                        cancelUpload={cancelUpload}
-                        retryFile={retryFile}
-                    />
+                    {children}
                 </Box>
             </DialogContent>
 
@@ -268,4 +203,4 @@ const FileSelectorDialog: React.FC<FileSelectorDialogProps> = ({
     );
 };
 
-export default FileSelectorDialog;
+export default FilePickerDialog;

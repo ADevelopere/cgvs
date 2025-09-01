@@ -64,3 +64,5 @@ out/
 
 .kotlin/
 /graphql/generated/
+
+.ai/
