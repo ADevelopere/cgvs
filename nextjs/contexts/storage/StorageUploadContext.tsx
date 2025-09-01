@@ -32,6 +32,10 @@ export interface UploadBatchState {
     isUploading: boolean;
     completedCount: number;
     totalCount: number;
+    totalProgress: number;
+    timeRemaining: number | null; // in seconds
+    totalSize: number;
+    bytesUploaded: number;
 }
 
 export interface StorageUploadContextType {
@@ -78,6 +82,7 @@ export const StorageUploadProvider: React.FC<{
         UploadBatchState | undefined
     >(undefined);
     const uploadXhrsRef = useRef<Map<string, XMLHttpRequest>>(new Map());
+    const uploadStartTimeRef = useRef<number | null>(null);
 
     const uploadSingleFile = useCallback(
         async (
@@ -202,11 +207,47 @@ export const StorageUploadProvider: React.FC<{
                         );
                         setUploadBatch((prev) => {
                             if (!prev) return prev;
-                            const updated = new Map(prev.files);
-                            const existing = updated.get(fileKey);
+
+                            const updatedFiles = new Map(prev.files);
+                            const existing = updatedFiles.get(fileKey);
                             if (!existing) return prev;
-                            updated.set(fileKey, { ...existing, progress });
-                            return { ...prev, files: updated };
+
+                            const oldBytesLoaded =
+                                (existing.progress / 100) * existing.file.size;
+                            const newBytesLoaded = (progress / 100) * file.size;
+                            const deltaBytes = newBytesLoaded - oldBytesLoaded;
+
+                            updatedFiles.set(fileKey, { ...existing, progress });
+
+                            const bytesUploaded = prev.bytesUploaded + deltaBytes;
+                            const totalProgress =
+                                prev.totalSize > 0
+                                    ? Math.round(
+                                          (bytesUploaded / prev.totalSize) *
+                                              100,
+                                      )
+                                    : 0;
+
+                            const elapsedTime =
+                                (Date.now() - (uploadStartTimeRef.current ?? Date.now())) /
+                                1000;
+                            const uploadSpeed =
+                                elapsedTime > 0 ? bytesUploaded / elapsedTime : 0;
+                            const timeRemaining =
+                                uploadSpeed > 0
+                                    ? Math.round(
+                                          (prev.totalSize - bytesUploaded) /
+                                              uploadSpeed,
+                                      )
+                                    : null;
+
+                            return {
+                                ...prev,
+                                files: updatedFiles,
+                                bytesUploaded,
+                                totalProgress,
+                                timeRemaining,
+                            };
                         });
                     }
                 };
@@ -358,13 +399,17 @@ export const StorageUploadProvider: React.FC<{
             }
 
             const fileMap = new Map<string, UploadFileState>();
+            let totalSize = 0;
             validFiles.forEach((file) => {
                 fileMap.set(getFileKey(file), {
                     file,
                     progress: 0,
                     status: "pending",
                 });
+                totalSize += file.size;
             });
+
+            uploadStartTimeRef.current = Date.now();
 
             setUploadBatch({
                 files: fileMap,
@@ -373,6 +418,10 @@ export const StorageUploadProvider: React.FC<{
                 completedCount: 0,
                 totalCount: validFiles.length,
                 targetPath,
+                totalProgress: 0,
+                timeRemaining: null,
+                totalSize,
+                bytesUploaded: 0,
             });
 
             try {
