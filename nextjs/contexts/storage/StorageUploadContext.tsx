@@ -51,9 +51,9 @@ export interface StorageUploadContextType {
     clearUploadBatch: () => void;
 }
 
-const StorageUploadContext = createContext<StorageUploadContextType | undefined>(
-    undefined,
-);
+const StorageUploadContext = createContext<
+    StorageUploadContextType | undefined
+>(undefined);
 
 export const useStorageUpload = () => {
     const ctx = useContext(StorageUploadContext);
@@ -217,9 +217,13 @@ export const StorageUploadProvider: React.FC<{
                             const newBytesLoaded = (progress / 100) * file.size;
                             const deltaBytes = newBytesLoaded - oldBytesLoaded;
 
-                            updatedFiles.set(fileKey, { ...existing, progress });
+                            updatedFiles.set(fileKey, {
+                                ...existing,
+                                progress,
+                            });
 
-                            const bytesUploaded = prev.bytesUploaded + deltaBytes;
+                            const bytesUploaded =
+                                prev.bytesUploaded + deltaBytes;
                             const totalProgress =
                                 prev.totalSize > 0
                                     ? Math.round(
@@ -229,10 +233,14 @@ export const StorageUploadProvider: React.FC<{
                                     : 0;
 
                             const elapsedTime =
-                                (Date.now() - (uploadStartTimeRef.current ?? Date.now())) /
+                                (Date.now() -
+                                    (uploadStartTimeRef.current ??
+                                        Date.now())) /
                                 1000;
                             const uploadSpeed =
-                                elapsedTime > 0 ? bytesUploaded / elapsedTime : 0;
+                                elapsedTime > 0
+                                    ? bytesUploaded / elapsedTime
+                                    : 0;
                             const timeRemaining =
                                 uploadSpeed > 0
                                     ? Math.round(
@@ -324,8 +332,10 @@ export const StorageUploadProvider: React.FC<{
                             reject(new Error(errorMsg));
                         }
                     };
-                    errorListener = () => handleError(translations.uploadFailed);
-                    abortListener = () => handleError(translations.uploadCancelled);
+                    errorListener = () =>
+                        handleError(translations.uploadFailed);
+                    abortListener = () =>
+                        handleError(translations.uploadCancelled);
 
                     currentXhr.addEventListener("load", loadListener);
                     currentXhr.addEventListener("error", errorListener);
@@ -351,10 +361,15 @@ export const StorageUploadProvider: React.FC<{
                 });
             } finally {
                 try {
-                    if (xhr && loadListener) xhr.removeEventListener("load", loadListener);
-                    if (xhr && errorListener) xhr.removeEventListener("error", errorListener);
-                    if (xhr && abortListener) xhr.removeEventListener("abort", abortListener);
-                } catch { /* ignore */ }
+                    if (xhr && loadListener)
+                        xhr.removeEventListener("load", loadListener);
+                    if (xhr && errorListener)
+                        xhr.removeEventListener("error", errorListener);
+                    if (xhr && abortListener)
+                        xhr.removeEventListener("abort", abortListener);
+                } catch {
+                    /* ignore */
+                }
                 uploadXhrsRef.current.delete(fileKey);
             }
         },
@@ -431,9 +446,7 @@ export const StorageUploadProvider: React.FC<{
                     i < validFiles.length;
                     i += maxConcurrentUploads
                 ) {
-                    chunks.push(
-                        validFiles.slice(i, i + maxConcurrentUploads),
-                    );
+                    chunks.push(validFiles.slice(i, i + maxConcurrentUploads));
                 }
 
                 for (const chunk of chunks) {
@@ -446,16 +459,32 @@ export const StorageUploadProvider: React.FC<{
 
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
-                    const successCount = Array.from(prev.files.values()).filter((f) => f.status === "success").length;
-                    const errorCount = Array.from(prev.files.values()).filter((f) => f.status === "error").length;
+                    const successCount = Array.from(prev.files.values()).filter(
+                        (f) => f.status === "success",
+                    ).length;
+                    const errorCount = Array.from(prev.files.values()).filter(
+                        (f) => f.status === "error",
+                    ).length;
 
                     setTimeout(() => {
                         if (successCount > 0) {
-                            notifications.show(translations.uploadSuccessCount.replace("%{count}", String(successCount)), { severity: "success", autoHideDuration: 3000 });
+                            notifications.show(
+                                translations.uploadSuccessCount.replace(
+                                    "%{count}",
+                                    String(successCount),
+                                ),
+                                { severity: "success", autoHideDuration: 3000 },
+                            );
                             callbacks?.onComplete?.();
                         }
                         if (errorCount > 0) {
-                            notifications.show(translations.uploadFailedCount.replace("%{count}", String(errorCount)), { severity: "warning", autoHideDuration: 5000 });
+                            notifications.show(
+                                translations.uploadFailedCount.replace(
+                                    "%{count}",
+                                    String(errorCount),
+                                ),
+                                { severity: "warning", autoHideDuration: 5000 },
+                            );
                         }
                     }, 0);
 
@@ -463,9 +492,14 @@ export const StorageUploadProvider: React.FC<{
                 });
             } catch (error) {
                 logger.error("Upload batch failed:", error);
-                notifications.show(translations.uploadFailed, { severity: "error", autoHideDuration: 3000 });
+                notifications.show(translations.uploadFailed, {
+                    severity: "error",
+                    autoHideDuration: 3000,
+                });
             } finally {
-                setUploadBatch((prev) => (prev ? { ...prev, isUploading: false } : undefined));
+                setUploadBatch((prev) =>
+                    prev ? { ...prev, isUploading: false } : undefined,
+                );
             }
         },
         [
@@ -584,7 +618,6 @@ export const StorageUploadProvider: React.FC<{
         [uploadBatch, uploadSingleFile],
     );
 
-
     const retryFailedUploads = useCallback(async (): Promise<void> => {
         if (!uploadBatch) return;
 
@@ -620,11 +653,7 @@ export const StorageUploadProvider: React.FC<{
         // Retry failed uploads
         try {
             const chunks: File[][] = [];
-            for (
-                let i = 0;
-                i < failedFiles.length;
-                i += maxConcurrentUploads
-            ) {
+            for (let i = 0; i < failedFiles.length; i += maxConcurrentUploads) {
                 chunks.push(failedFiles.slice(i, i + maxConcurrentUploads));
             }
 
@@ -664,15 +693,24 @@ export const StorageUploadProvider: React.FC<{
         maxConcurrentUploads,
     ]);
 
-    
-    const value: StorageUploadContextType = useMemo(() => ({
-        uploadBatch,
-        startUpload,
-        cancelUpload,
-        retryFailedUploads,
-        retryFile,
-        clearUploadBatch,
-    }), [uploadBatch, startUpload, cancelUpload, retryFailedUploads, retryFile, clearUploadBatch]);
+    const value: StorageUploadContextType = useMemo(
+        () => ({
+            uploadBatch,
+            startUpload,
+            cancelUpload,
+            retryFailedUploads,
+            retryFile,
+            clearUploadBatch,
+        }),
+        [
+            uploadBatch,
+            startUpload,
+            cancelUpload,
+            retryFailedUploads,
+            retryFile,
+            clearUploadBatch,
+        ],
+    );
 
     return (
         <StorageUploadContext.Provider value={value}>
