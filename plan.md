@@ -172,14 +172,20 @@ This section details the components responsible for rendering the file browser, 
         - Provides option to clear individual history items or entire history.
 
 ### `StorageItemsView.tsx`
+-   **State to Manage:**
+    -   `sortBy`: The field to sort by (e.g., 'name', 'size', 'lastModified').
+    -   `sortDirection`: The sorting direction ('asc' or 'desc').
 -   **Responsibilities:**
     -   Consumes `StorageManagementContext` to get the list of items (either directory listing or search results).
+    -   **Performs local (client-side) sorting** on the currently fetched list of files based on `sortBy` and `sortDirection`. This does not require a new API call.
     -   Detects whether the current view is showing search results or directory contents.
     -   Contains the logic for switching between grid and list views.
-    -   Displays a toolbar with a segmented control for switching between grid and list views, as seen in the design.
+    -   Displays a toolbar with view switching controls.
     -   For search results: Shows the number of results found and the search query.
-    -   Renders the appropriate container (`div` for grid, `table` for list) and maps over the items, rendering a `StorageItem` for each.
-    -   Displays headers for the list view (Name, Size, Last Modified, Path - for search results).
+    -   Renders the appropriate container (`div` for grid, `table` for list) and maps over the sorted items, rendering a `StorageItem` for each.
+-   **Sorting Logic:**
+    -   **List View:** Renders a `<table>` with a `<thead>`. Each column header (Name, Size, Last Modified) will be clickable to update the `sortBy` and `sortDirection` state, providing interactive column sorting.
+    -   **Grid View:** Does not have visible column headers. A separate sort menu/button in the toolbar will be displayed to allow the user to select the `sortBy` field and `sortDirection`.
 
 ### `StorageBreadcrumb.tsx` (New)
 -   **Props:** `path` (string), `onNavigateToPath` (function).
