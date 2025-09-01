@@ -53,7 +53,3 @@ each section cant be on same file (component) of another section, (and cant be i
 
 the parent will sturcture all of these components (one level child for each section which are 4 sections here, )
 the parent will use the upload context
-
-now give me the parent component text tree sturcture (no mermaid) (no code at all)
-
-now under "nextjs/views/storage/uploading" create these componets, (using mui theme, no hardcoded colors) 
