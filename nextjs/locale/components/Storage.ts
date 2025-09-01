@@ -19,7 +19,7 @@ type StorageUploadingTranslations = {
     cancel: string;
 };
 
- type StorageTranslations = {
+type StorageTranslations = {
     [key: string]: string | undefined | StorageUploadingTranslations;
 
     failedListFiles: string;

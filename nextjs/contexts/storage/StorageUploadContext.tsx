@@ -15,41 +15,11 @@ import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import logger from "@/utils/logger";
-
-export interface UploadFileState {
-    file: File;
-    status: "pending" | "uploading" | "success" | "error";
-    progress: number;
-    error?: string;
-    signedUrl?: string;
-    xhr?: XMLHttpRequest;
-}
-
-export interface UploadBatchState {
-    files: Map<string, UploadFileState>;
-    location: Graphql.UploadLocation;
-    targetPath: string;
-    isUploading: boolean;
-    completedCount: number;
-    totalCount: number;
-    totalProgress: number;
-    timeRemaining: number | null; // in seconds
-    totalSize: number;
-    bytesUploaded: number;
-}
-
-export interface StorageUploadContextType {
-    uploadBatch: UploadBatchState | undefined;
-    startUpload: (
-        files: File[],
-        targetPath: string,
-        callbacks?: { onComplete?: () => void },
-    ) => Promise<void>;
-    cancelUpload: (fileKey?: string) => void;
-    retryFailedUploads: () => Promise<void>;
-    retryFile: (fileKey: string) => Promise<void>;
-    clearUploadBatch: () => void;
-}
+import {
+    StorageUploadContextType,
+    UploadBatchState,
+    UploadFileState,
+} from "./storage.type";
 
 const StorageUploadContext = createContext<
     StorageUploadContextType | undefined
