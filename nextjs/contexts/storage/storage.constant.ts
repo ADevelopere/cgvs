@@ -10,7 +10,7 @@ export const STORAGE_DEFAULT_PARAMS: StorageQueryParams = {
 export const mimeToContentType: Record<string, Graphql.ContentType> = {
     "image/jpeg": "JPEG",
     "image/png": "PNG",
-    "image/gif": "GIF", 
+    "image/gif": "GIF",
     "image/webp": "WEBP",
     "image/svg+xml": "SVG",
     "application/pdf": "PDF",
@@ -25,7 +25,7 @@ export const mimeToContentType: Record<string, Graphql.ContentType> = {
 export const extToContentType: Record<string, Graphql.ContentType> = {
     jpg: "JPEG",
     jpeg: "JPEG",
-    jpe: "JPEG",  // Additional JPEG extension
+    jpe: "JPEG", // Additional JPEG extension
     png: "PNG",
     gif: "GIF",
     webp: "WEBP",
@@ -33,7 +33,7 @@ export const extToContentType: Record<string, Graphql.ContentType> = {
     pdf: "PDF",
     json: "JSON",
     txt: "TEXT",
-    text: "TEXT",  // Additional text extension
+    text: "TEXT", // Additional text extension
     otf: "OTF",
     ttf: "TTF",
     woff: "WOFF",

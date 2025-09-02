@@ -15,11 +15,41 @@ import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 import logger from "@/utils/logger";
-import {
-    StorageUploadContextType,
-    UploadBatchState,
-    UploadFileState,
-} from "./storage.type";
+
+export type UploadFileState = {
+    file: File;
+    status: "pending" | "uploading" | "success" | "error";
+    progress: number;
+    error?: string;
+    signedUrl?: string;
+    xhr?: XMLHttpRequest;
+};
+
+export type UploadBatchState = {
+    files: Map<string, UploadFileState>;
+    location: Graphql.UploadLocation;
+    targetPath: string;
+    isUploading: boolean;
+    completedCount: number;
+    totalCount: number;
+    totalProgress: number;
+    timeRemaining: number | null; // in seconds
+    totalSize: number;
+    bytesUploaded: number;
+};
+
+export type StorageUploadContextType = {
+    uploadBatch: UploadBatchState | undefined;
+    startUpload: (
+        files: File[],
+        targetPath: string,
+        callbacks?: { onComplete?: () => void },
+    ) => Promise<void>;
+    cancelUpload: (fileKey?: string) => void;
+    retryFailedUploads: () => Promise<void>;
+    retryFile: (fileKey: string) => Promise<void>;
+    clearUploadBatch: () => void;
+};
 
 const StorageUploadContext = createContext<
     StorageUploadContextType | undefined
@@ -87,7 +117,7 @@ export const StorageUploadProvider: React.FC<{
                         ? `${storageTargetParent}/${file.name}`
                         : file.name;
 
-                    const listResForCheck = await gql.listFilesQuery({
+                    const listResForCheck = await gql.listFiles({
                         input: {
                             path: storageTargetParent,
                             limit: 10,
@@ -130,7 +160,7 @@ export const StorageUploadProvider: React.FC<{
                     );
                 }
 
-                const signedUrlRes = await gql.generateUploadSignedUrlMutation({
+                const signedUrlRes = await gql.generateUploadSignedUrl({
                     input: {
                         fileName: file.name,
                         contentType,
@@ -138,7 +168,7 @@ export const StorageUploadProvider: React.FC<{
                     },
                 });
 
-                const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
+                const signedUrl = signedUrlRes.generateUploadSignedUrl;
                 if (!signedUrl) {
                     throw new Error(translations.failedGenerateSignedUrl);
                 }

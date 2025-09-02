@@ -63,43 +63,43 @@ export const getAcceptAttribute = (
 ): string => {
     const acceptValues: string[] = [];
 
-    contentTypes.forEach(contentType => {
+    contentTypes.forEach((contentType) => {
         switch (contentType) {
-            case 'JPEG':
-                acceptValues.push('image/jpeg', '.jpg', '.jpeg', '.jpe');
+            case "JPEG":
+                acceptValues.push("image/jpeg", ".jpg", ".jpeg", ".jpe");
                 break;
-            case 'PNG':
-                acceptValues.push('image/png', '.png');
+            case "PNG":
+                acceptValues.push("image/png", ".png");
                 break;
-            case 'WEBP':
-                acceptValues.push('image/webp', '.webp');
+            case "WEBP":
+                acceptValues.push("image/webp", ".webp");
                 break;
-            case 'GIF':
-                acceptValues.push('image/gif', '.gif');
+            case "GIF":
+                acceptValues.push("image/gif", ".gif");
                 break;
-            case 'SVG':
-                acceptValues.push('image/svg+xml', '.svg');
+            case "SVG":
+                acceptValues.push("image/svg+xml", ".svg");
                 break;
-            case 'PDF':
-                acceptValues.push('application/pdf', '.pdf');
+            case "PDF":
+                acceptValues.push("application/pdf", ".pdf");
                 break;
-            case 'JSON':
-                acceptValues.push('application/json', '.json');
+            case "JSON":
+                acceptValues.push("application/json", ".json");
                 break;
-            case 'TEXT':
-                acceptValues.push('text/plain', '.txt', '.text');
+            case "TEXT":
+                acceptValues.push("text/plain", ".txt", ".text");
                 break;
-            case 'OTF':
-                acceptValues.push('font/otf', '.otf');
+            case "OTF":
+                acceptValues.push("font/otf", ".otf");
                 break;
-            case 'TTF':
-                acceptValues.push('font/ttf', '.ttf');
+            case "TTF":
+                acceptValues.push("font/ttf", ".ttf");
                 break;
-            case 'WOFF':
-                acceptValues.push('font/woff', '.woff');
+            case "WOFF":
+                acceptValues.push("font/woff", ".woff");
                 break;
-            case 'WOFF2':
-                acceptValues.push('font/woff2', '.woff2');
+            case "WOFF2":
+                acceptValues.push("font/woff2", ".woff2");
                 break;
             default: {
                 // Fallback to generic mapping
@@ -113,5 +113,5 @@ export const getAcceptAttribute = (
 
     // Remove duplicates and return
     const uniqueValues = [...new Set(acceptValues)];
-    return uniqueValues.join(',');
+    return uniqueValues.join(",");
 };
