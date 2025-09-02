@@ -1,4 +1,4 @@
-# File Manager UI Implementation Plan (Revision 4)
+# File Manager UI Implementation Plan
 
 This document outlines a comprehensive plan for the file manager UI. The architecture is centered around a clear separation of concerns between core data operations, UI interaction state, and presentational components.
 
@@ -29,6 +29,42 @@ This document outlines a comprehensive plan for the file manager UI. The archite
 - ⏳ **File Operations Dialogs** (MoveToDialog, etc.) - **Must implement translations**
 
 **Foundation Complete:** ✅ The core architecture is now ready for UI component development with full i18n support.
+
+---
+
+## Recommended Implementation Order
+
+To ensure a smooth development process, components should be built in an order that respects their dependencies. Follow this checklist, starting with the most independent components first. 
+
+It's not allowed to implement next component unleass the current implemented reviewed by a human user, asking them to review it, 
+
+### Phase 1: Foundational Item Components (Bottom-Up)
+- [ ] **`FileTypeIcon.tsx`**: A simple, reusable component to show an icon based on file type. (No dependencies)
+- [ ] **`FilePreview.tsx`**: Renders a preview inside a grid item, uses `FileTypeIcon`.
+- [ ] **`StorageItemListRow.tsx`**: Renders the list view row for an item, uses `FileTypeIcon`.
+- [ ] **`StorageItemGrid.tsx`**: Renders the grid view card for an item, uses `FilePreview`.
+- [ ] **`StorageItem.tsx`**: The main router for an item. It handles selection logic and renders either the Grid or List Row component.
+
+### Phase 2: Main View Assembly
+- [ ] **`StorageBreadcrumb.tsx`**: The breadcrumb navigation bar.
+- [ ] **`StorageFilters.tsx`**: The filter controls shown when no items are selected.
+- [ ] **`StorageSelectionActions.tsx`**: The action buttons shown when items are selected.
+- [ ] **`StorageToolbar.tsx`**: The container that switches between `StorageFilters` and `StorageSelectionActions`.
+- [ ] **`StorageItemsView.tsx`**: The main area that displays the list of `StorageItem` components and handles local sorting.
+- [ ] **`StorageMainView.tsx`**: Assembles the `StorageBreadcrumb`, `StorageToolbar`, and `StorageItemsView` into the main content pane.
+
+### Phase 3: Side Pane & Search
+- [ ] **`StorageDirectoryTree.tsx`**: The lazy-loading directory tree for the side pane. (Complex but can be developed independently of the main view).
+- [ ] **`StorageSearch.tsx`**: The search bar component.
+
+### Phase 4: Top-Level Integration
+- [ ] **`StorageBrowserView.tsx`**: The final top-level component that integrates the `StorageDirectoryTree`, `StorageMainView`, and `StorageSearch` into the split-pane layout.
+
+### Phase 5: Interaction Components (Menus & Dialogs)
+These can be implemented after their trigger points are available (e.g., after `StorageItem` and `StorageSelectionActions` are built).
+- [ ] **`FileMenu.tsx`**, **`FolderMenu.tsx`**, **`ViewAreaMenu.tsx`**: Context menus.
+- [ ] **`RenameDialog.tsx`**: The dialog for renaming an item.
+- [ ] **`MoveToDialog.tsx`**: The dialog for moving items to a new location.
 
 ---
 
