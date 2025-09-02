@@ -38,12 +38,12 @@ To ensure a smooth development process, components should be built in an order t
 
 It's not allowed to implement next component unleass the current implemented reviewed by a human user, asking them to review it, 
 
-### Phase 1: Foundational Item Components (Bottom-Up)
-- [ ] **`FileTypeIcon.tsx`**: A simple, reusable component to show an icon based on file type. (No dependencies)
-- [ ] **`FilePreview.tsx`**: Renders a preview inside a grid item, uses `FileTypeIcon`.
-- [ ] **`StorageItemListRow.tsx`**: Renders the list view row for an item, uses `FileTypeIcon`.
-- [ ] **`StorageItemGrid.tsx`**: Renders the grid view card for an item, uses `FilePreview`.
-- [ ] **`StorageItem.tsx`**: The main router for an item. It handles selection logic and renders either the Grid or List Row component.
+### Phase 1: Foundational Item Components (Bottom-Up) ✅ COMPLETED
+- ✅ **`FileTypeIcon.tsx`**: A simple, reusable component to show an icon based on file type. (No dependencies)
+- ✅ **`FilePreview.tsx`**: Renders a preview inside a grid item, uses `FileTypeIcon`.
+- ✅ **`StorageItemListRow.tsx`**: Renders the list view row for an item, uses `FileTypeIcon`.
+- ✅ **`StorageItemGrid.tsx`**: Renders the grid view card for an item, uses `FilePreview`.
+- ✅ **`StorageItem.tsx`**: The main router for an item. It handles selection logic and renders either the Grid or List Row component.
 
 ### Phase 2: Main View Assembly
 - [ ] **`StorageBreadcrumb.tsx`**: The breadcrumb navigation bar.
