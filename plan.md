@@ -11,7 +11,7 @@ The system will be governed by four distinct contexts working together:
 1.  **`StorageManagementContext` (Core):** The headless, core context responsible for all backend data operations. It fetches the file list and provides the core API for mutations (`rename`, `delete`, etc.). It contains no UI state.
 2.  **`StorageUIManagerContext` (UI State):** A new UI-centric context that manages all user interaction state, including item selection, clipboard (cut/copy), and drag-and-drop states. It consumes the Core context to execute actions.
 3.  **`MenuManagerContext` (Menus):** A specialized context for managing the visibility, position, and content of all context menus.
-4.  **`StorageUploadContext` (Uploads):** A specialized context for handling file uploads from the user's computer.
+4.  **`StorageUploadContext` (Uploads):** A specialized context for handling file uploads from the user's computer. **Note: Upload progress UI is already implemented** via `UploadProgress.tsx` and related components in `nextjs/views/storage/uploading/` - this floating component manages upload states and should wrap the entire application.
 
 ---
 
@@ -212,7 +212,17 @@ A flexible system for displaying context menus, decoupled from the trigger mecha
 
 ### Upload Architecture
 
--   **`UploadDropzone` Component:** A specialized component to handle file uploads via drag-and-drop. It will use the `StorageUploadContext` to access the `uploadFiles` function.
+**⚠️ IMPORTANT: Upload progress UI is already implemented and should NOT be recreated.**
+
+The existing upload system consists of:
+- `nextjs/views/storage/uploading/UploadProgress.tsx` - Main floating upload progress component
+- `nextjs/views/storage/uploading/UploadProgressUIContext.tsx` - Context for upload UI state
+- Related components in `nextjs/views/storage/uploading/` directory
+
+This floating upload progress component should wrap the entire application and is already fully functional.
+
+**New components to implement:**
+-   **`UploadDropzone` Component:** A specialized component to handle file uploads via drag-and-drop. It will use the existing `StorageUploadContext` to access the `uploadFiles` function.
 -   **`uploadPath` Prop:** The component will be configured with an `uploadPath` prop to specify the destination directory, making it adaptable for dropping files on the main view or directly onto folders.
 
 ---
@@ -419,9 +429,11 @@ This section details the components responsible for rendering the file browser, 
     -   `nextjs/contexts/storage/StorageManagementCoreContext.tsx` (New)
     -   `nextjs/contexts/storage/StorageManagementUIContext.tsx` (New)
     -   `nextjs/contexts/MenuManagerContext.tsx`
+    -   **Note:** `StorageUploadContext` and upload progress UI already exist in `nextjs/views/storage/uploading/`
 -   **Components:**
-    -   `nextjs/components/storage/dropzone/...`
+    -   `nextjs/components/storage/dropzone/...` (New - for drag-and-drop upload zones)
     -   `nextjs/components/storage/menu/...`
+    -   **Note:** Upload progress components already exist in `nextjs/views/storage/uploading/`
 -   **Views:**
     -   `nextjs/views/storage/browser/StorageBrowserView.tsx` (New)
     -   `nextjs/views/storage/browser/StorageDirectoryTree.tsx` (New)
@@ -509,11 +521,12 @@ This section details the components responsible for rendering the file browser, 
 
 Context Providers (Wrapping the entire view):
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ StorageManagementCoreContext (Data Operations)                               │
-│  └─ StorageUIManagerContext (UI State & Interactions)                       │
-│     └─ MenuManagerContext (Context Menus)                                   │
-│        └─ StorageUploadContext (File Uploads)                               │
-│           └─ [All Components Above]                                         │
+│ UploadProgress.tsx (Floating Component - Already Implemented)                │
+│  └─ StorageManagementCoreContext (Data Operations)                          │
+│     └─ StorageUIManagerContext (UI State & Interactions)                    │
+│        └─ MenuManagerContext (Context Menus)                                │
+│           └─ StorageUploadContext (File Uploads - Already Implemented)      │
+│              └─ [All Components Above]                                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 Legend:
