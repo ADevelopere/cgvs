@@ -3,13 +3,26 @@ package services
 import config.GcsConfig
 import schema.model.*
 import util.determineFileType
+import kotlinx.datetime.toLocalDateTime
 
 interface StorageDbService {
     suspend fun getFileInfoById(id: Long): FileInfo?
     suspend fun getFileInfosByIds(ids: List<Long>): List<FileInfo>
+    suspend fun getFileEntityById(id: Long): FileEntity?
+    suspend fun getFileEntityByPath(path: String): FileEntity?
     suspend fun checkFileUsage(input: CheckFileUsageInput): FileUsageResult
     suspend fun updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): FileOperationResult
     suspend fun setProtection(input: SetProtectionInput): FileOperationResult
+    suspend fun registerFileUsage(input: RegisterFileUsageInput): FileOperationResult
+    suspend fun unregisterFileUsage(input: UnregisterFileUsageInput): FileOperationResult
+    suspend fun addFileFromBucket(
+        path: String,
+        name: String,
+        directoryPath: String,
+        size: Long,
+        contentType: String?,
+        md5Hash: String?
+    ): FileEntity
 }
 
 fun storageDbService(
@@ -23,6 +36,14 @@ fun storageDbService(
 
     override suspend fun getFileInfosByIds(ids: List<Long>): List<FileInfo> {
         return storageRepository.getFilesByIds(ids).map { fileEntityToFileInfo(it) }
+    }
+
+    override suspend fun getFileEntityById(id: Long): FileEntity? {
+        return storageRepository.getFileById(id)
+    }
+
+    override suspend fun getFileEntityByPath(path: String): FileEntity? {
+        return storageRepository.getFileByPath(path)
     }
 
     override suspend fun checkFileUsage(input: CheckFileUsageInput): FileUsageResult {
@@ -108,6 +129,65 @@ fun storageDbService(
         } catch (e: Exception) {
             FileOperationResult(false, "Failed to set protection: ${e.message}", null)
         }
+    }
+
+    override suspend fun registerFileUsage(input: RegisterFileUsageInput): FileOperationResult {
+        return try {
+            // Check if file exists
+            val dbFile = storageRepository.getFileByPath(input.filePath)
+            if (dbFile == null) {
+                return FileOperationResult(false, "File not found: ${input.filePath}", null)
+            }
+
+            // Create file usage
+            val usage = FileUsage(
+                filePath = input.filePath,
+                usageType = input.usageType,
+                referenceId = input.referenceId,
+                referenceTable = input.referenceTable,
+                created = kotlinx.datetime.Clock.System.now().toLocalDateTime(kotlinx.datetime.TimeZone.UTC)
+            )
+
+            val registeredUsage = storageRepository.registerFileUsage(usage)
+            val fileInfo = fileEntityToFileInfo(dbFile)
+            
+            FileOperationResult(true, "File usage registered successfully", fileInfo)
+        } catch (e: Exception) {
+            FileOperationResult(false, "Failed to register file usage: ${e.message}", null)
+        }
+    }
+
+    override suspend fun unregisterFileUsage(input: UnregisterFileUsageInput): FileOperationResult {
+        return try {
+            val success = storageRepository.unregisterFileUsage(input.filePath, input.usageType, input.referenceId)
+            if (success) {
+                val dbFile = storageRepository.getFileByPath(input.filePath)
+                val fileInfo = dbFile?.let { fileEntityToFileInfo(it) }
+                FileOperationResult(true, "File usage unregistered successfully", fileInfo)
+            } else {
+                FileOperationResult(false, "File usage not found or could not be removed", null)
+            }
+        } catch (e: Exception) {
+            FileOperationResult(false, "Failed to unregister file usage: ${e.message}", null)
+        }
+    }
+
+    override suspend fun addFileFromBucket(
+        path: String,
+        name: String,
+        directoryPath: String,
+        size: Long,
+        contentType: String?,
+        md5Hash: String?
+    ): FileEntity {
+        return storageRepository.addFileFromBucket(
+            path = path,
+            name = name,
+            directoryPath = directoryPath,
+            size = size,
+            contentType = contentType,
+            md5Hash = md5Hash
+        )
     }
 
     // Helper functions

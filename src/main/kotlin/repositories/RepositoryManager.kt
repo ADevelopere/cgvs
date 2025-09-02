@@ -1,6 +1,7 @@
 package repositories
 
 import org.jetbrains.exposed.v1.jdbc.Database
+import repositories.impl.StorageRepositoryImpl
 
 /**
  * Repository manager that provides access to all repositories
@@ -27,6 +28,9 @@ class RepositoryManager(private val database: Database) {
     val templateRecipientGroupRepository: TemplateRecipientGroupRepository by lazy { TemplateRecipientGroupRepository(database) }
     val templateRecipientGroupItemRepository: TemplateRecipientGroupItemRepository by lazy { TemplateRecipientGroupItemRepository(database) }
     val recipientGroupItemVariableValueRepository: RecipientGroupItemVariableValueRepository by lazy { RecipientGroupItemVariableValueRepository(database) }
+
+
+    val storageRepository : StorageRepository by lazy { StorageRepositoryImpl(database) }
 
     companion object {
         @Volatile
