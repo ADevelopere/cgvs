@@ -115,6 +115,7 @@ const arStorageTranslations: StorageTranslations = {
         expandFolder: "توسيع المجلد",
         collapseFolder: "طي المجلد",
         noFoldersFound: "لم يتم العثور على مجلدات",
+        searchFolders: "البحث في المجلدات...",
 
         // Filter and view controls
         filters: "المرشحات",

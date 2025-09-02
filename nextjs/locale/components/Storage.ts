@@ -107,6 +107,7 @@ type StorageManagementUITranslations = {
     expandFolder: string;
     collapseFolder: string;
     noFoldersFound: string;
+    searchFolders: string;
     
     // Filter and view controls
     filters: string;

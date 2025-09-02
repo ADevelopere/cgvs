@@ -48,7 +48,7 @@ This document outlines a comprehensive plan for the file manager UI. The archite
 
 To ensure a smooth development process, components should be built in an order that respects their dependencies. Follow this checklist, starting with the most independent components first. 
 
-It's not allowed to implement next component unleass the current implemented reviewed by a human user, asking them to review it, 
+It's not allowed to implement next file (one file at most per generation) unleass the current implemented file reviewed by a human user, asking them to review it, 
 
 ### Phase 1: Foundational Item Components (Bottom-Up) ✅ COMPLETED
 - ✅ **`FileTypeIcon.tsx`**: A simple, reusable component to show an icon based on file type. (No dependencies)
@@ -66,8 +66,8 @@ It's not allowed to implement next component unleass the current implemented rev
 - ✅ **`StorageMainView.tsx`**: Assembles the `StorageBreadcrumb`, `StorageToolbar`, and `StorageItemsView` into the main content pane.
 
 ### Phase 3: Side Pane & Search
-- [ ] **`StorageDirectoryTree.tsx`**: The lazy-loading directory tree for the side pane. (Complex but can be developed independently of the main view).
-- [ ] **`StorageSearch.tsx`**: The search bar component.
+- ✅ **`StorageDirectoryTree.tsx`**: The lazy-loading directory tree for the side pane. (Complex but can be developed independently of the main view).
+- ✅ **`StorageSearch.tsx`**: The search bar component.
 
 ### Phase 4: Top-Level Integration
 - [ ] **`StorageBrowserView.tsx`**: The final top-level component that integrates the `StorageDirectoryTree`, `StorageMainView`, and `StorageSearch` into the split-pane layout.
