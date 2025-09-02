@@ -21,6 +21,7 @@ This context is the single source of truth for the file list and the bridge to t
 
 -   **Existing Responsibilities:** `fetchList`, `rename`, `remove`, `navigateTo`.
 -   **New Functions to be Added:**
+    -   `fetchDirectoryTree(): Promise<DirectoryTreeNode[]>` - Fetch the complete directory tree structure for the sidebar navigation
     -   `move(sourcePaths: string[], destinationPath: string): Promise<boolean>`
     -   `copy(sourcePaths: string[], destinationPath: string): Promise<boolean>`
     -   `createFolder(path: string, name: string): Promise<boolean>`
@@ -144,10 +145,58 @@ This section details the components responsible for rendering the file browser, 
 -   **Responsibilities:**
     -   Acts as the main container for the file browser UI.
     -   Will be wrapped by all necessary contexts (`StorageManagementProvider`, `StorageUIManagerProvider`, etc.).
-    -   Consumes `StorageManagementContext` to get the current path.
-    -   Renders the `StorageSearch` component at the top.
-    -   Renders the `StorageBreadcrumb` component below the search.
-    -   Renders the `StorageItemsView` component below the breadcrumb.
+    -   Uses the `SplitPaneViewController` component to create a two-pane layout:
+        - **First Pane:** Directory tree navigation (`StorageDirectoryTree`)
+        - **Second Pane:** Main file browser view (`StorageMainView`)
+        - **Title:** The `StorageSearch` component is passed as the title prop to the split pane controller
+
+### `StorageDirectoryTree.tsx` (New)
+-   **Responsibilities:**
+    -   Renders the folder tree navigation in the first pane of the split layout.
+    -   Uses the `TreeView` component from `nextjs/components/common/TreeView.tsx`.
+    -   Consumes `StorageManagementContext` to get the directory structure.
+    -   Handles navigation by calling `navigateTo` from the context when folders are selected.
+-   **TreeView Configuration:**
+    -   `items`: Directory tree structure fetched from the backend
+    -   `selectedItemId`: Current directory path from `StorageManagementContext`
+    -   `onSelectItem`: Calls `navigateTo` to navigate to the selected folder
+    -   `childrenKey`: "children" (for nested folder structure)
+    -   `labelKey`: "name" (folder name display)
+    -   `itemRenderer`: Custom renderer to show folder icons and names
+    -   `searchText`: "Search folders..."
+    -   `noItemsMessage`: "No folders found"
+
+### `StorageMainView.tsx` (New)
+-   **Responsibilities:**
+    -   Acts as the container for the main file browser content in the second pane.
+    -   Renders the `StorageBreadcrumb` component at the top.
+    -   Renders the `StorageToolbar.tsx` component below the breadcrumb.
+    -   Renders the `StorageItemsView` component at the bottom.
+
+### `StorageToolbar.tsx` (New)
+-   **Responsibilities:**
+    -   Acts as a conditional container that sits between the breadcrumb and the items view.
+    -   Consumes `StorageUIManagerContext` to check if any items are selected.
+    -   If `selectedItems` is empty, it renders the `StorageFilters` component.
+    -   If `selectedItems` has one or more items, it renders the `StorageSelectionActions` component.
+
+### `StorageFilters.tsx` (New)
+-   **Responsibilities:**
+    -   Displays a set of filter dropdowns to refine the list of files. This component is only visible when no items are selected.
+    -   The filtering will be achieved by updating the URL query parameters, which will trigger a data re-fetch from the `StorageManagementContext`.
+-   **Filters to Implement:**
+    -   **Type Filter:** A dropdown menu that allows users to filter by file type (e.g., Folders, Documents, Spreadsheets, Presentations, Videos, Forms, Photos & images, PDFs, Videos, Archives, Audio, Drawings, Sites, Shortcuts), as seen in the type filtering menu design.
+    -   **Modified Filter:** A dropdown menu that allows users to filter by a date range (e.g., Today, Last 7 days, Last 30 days, This year, Last year, Custom date range), as seen in the modified filtering menu design.
+
+### `StorageSelectionActions.tsx` (New)
+-   **Responsibilities:**
+    -   Displays a toolbar with actions for the currently selected items. This component is only visible when one or more items are selected.
+    -   Consumes `StorageUIManagerContext` to get the list of `selectedItems`.
+-   **Actions to Implement:**
+    -   **Download:** Available for any selection.
+    -   **Move To:** Available for any selection. Will trigger a dialog in the future.
+    -   **Delete:** Available for any selection. Will trigger a confirmation dialog.
+    -   **Rename:** Conditionally rendered. It will only be visible if `selectedItems.length === 1`.
 
 ### `StorageSearch.tsx` (New)
 -   **Props:** None (consumes context directly).
@@ -247,6 +296,11 @@ This section details the components responsible for rendering the file browser, 
     -   `nextjs/components/storage/menu/...`
 -   **Views:**
     -   `nextjs/views/storage/browser/StorageBrowserView.tsx` (New)
+    -   `nextjs/views/storage/browser/StorageDirectoryTree.tsx` (New)
+    -   `nextjs/views/storage/browser/StorageMainView.tsx` (New)
+    -   `nextjs/views/storage/browser/StorageToolbar.tsx` (New)
+    -   `nextjs/views/storage/browser/StorageFilters.tsx` (New)
+    -   `nextjs/views/storage/browser/StorageSelectionActions.tsx` (New)
     -   `nextjs/views/storage/browser/StorageSearch.tsx` (New)
     -   `nextjs/views/storage/browser/StorageItemsView.tsx`
     -   `nextjs/views/storage/browser/StorageBreadcrumb.tsx` (New)
