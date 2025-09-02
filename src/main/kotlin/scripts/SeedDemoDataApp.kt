@@ -4,17 +4,22 @@ import kotlinx.coroutines.runBlocking
 import repositories.RepositoryManager
 import config.DatabaseConfig
 import io.ktor.server.config.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import services.FileInitializationService
+import kotlin.getValue
 import kotlin.system.exitProcess
 
 /**
  * The Main application to run demo data seeding
  * This can be run as a standalone application to populate the database with demo data
  */
-object SeedDemoDataApp {
+object SeedDemoDataApp : KoinComponent {
+    val fileInitService by inject<FileInitializationService>()
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println("🚀 CGSV Demo Data Seeder")
+        println("🚀 CGVS Demo Data Seeder")
         println("=".repeat(50))
 
         try {
@@ -30,7 +35,7 @@ object SeedDemoDataApp {
 
             // Run the seeder
             runBlocking {
-                val seeder = DemoDataSeeder(repositoryManager)
+                val seeder = DemoDataSeeder(repositoryManager, fileInitService)
                 seeder.seedAllData()
             }
 

@@ -4,16 +4,12 @@ import config.GcsConfig
 import com.google.cloud.storage.Storage
 import schema.model.*
 import repositories.StorageRepository
-import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import java.io.InputStream
-import kotlinx.io.readByteArray
 import java.security.MessageDigest
 
 class FileInitializationService(
-    private val storageService: StorageService,
     private val storageRepository: StorageRepository,
     private val storage: Storage,
     private val gcsConfig: GcsConfig
@@ -26,13 +22,13 @@ class FileInitializationService(
      */
     suspend fun initializeFileSystem() {
         println("🗂️  Initializing file system...")
-        
+
         // Create required directories
         createRequiredDirectories()
-        
+
         // Upload demo template files
         uploadDemoTemplateFiles()
-        
+
         println("✅ File system initialization completed")
     }
 
@@ -113,7 +109,7 @@ class FileInitializationService(
     private suspend fun uploadDemoTemplateFiles() {
         val demoFiles = listOf(
             "demo1.jpg",
-            "demo2.jpg", 
+            "demo2.jpg",
             "demo3.jpg",
             "demo4.jpg"
         )
@@ -128,7 +124,7 @@ class FileInitializationService(
      */
     private suspend fun uploadDemoFileIfNotExists(fileName: String) {
         val bucketPath = "public/templates/covers/$fileName"
-        
+
         // Check if file exists in database
         val existingFile = storageRepository.getFileByPath(bucketPath)
         if (existingFile != null) {
@@ -136,7 +132,7 @@ class FileInitializationService(
             return
         }
 
-        // Check if file exists in bucket
+        // Check if file exists in the bucket
         try {
             val blob = storage.get(gcsConfig.bucketName, bucketPath)
             if (blob != null && blob.size > 0) {
@@ -153,7 +149,7 @@ class FileInitializationService(
         try {
             val resourcePath = "/img/$fileName"
             val inputStream = this::class.java.getResourceAsStream(resourcePath)
-            
+
             if (inputStream == null) {
                 println("   ❌ Resource not found: $resourcePath")
                 return
@@ -162,18 +158,18 @@ class FileInitializationService(
             inputStream.use { stream ->
                 val fileBytes = stream.readBytes()
                 val contentType = getContentTypeFromFileName(fileName)
-                
+
                 // Upload to bucket
                 val blobInfo = com.google.cloud.storage.BlobInfo.newBuilder(gcsConfig.bucketName, bucketPath)
                     .setContentType(contentType.value)
                     .build()
-                
+
                 storage.create(blobInfo, fileBytes)
-                
+
                 // Register in database
                 val md5Hash = calculateMD5(fileBytes)
                 registerUploadedFile(bucketPath, fileName, fileBytes.size.toLong(), contentType, md5Hash)
-                
+
                 println("   🖼️  Uploaded demo file: $fileName (${fileBytes.size} bytes)")
             }
         } catch (e: Exception) {
@@ -199,14 +195,20 @@ class FileInitializationService(
             createdBy = null,
             isFromBucket = true
         )
-        
+
         storageRepository.createFile(fileEntity)
     }
 
     /**
      * Register a newly uploaded file in the database
      */
-    private suspend fun registerUploadedFile(path: String, name: String, size: Long, contentType: ContentType, md5Hash: String) {
+    private suspend fun registerUploadedFile(
+        path: String,
+        name: String,
+        size: Long,
+        contentType: ContentType,
+        md5Hash: String
+    ) {
         val directoryPath = path.substringBeforeLast("/")
         val fileEntity = FileEntity(
             path = path,
@@ -221,7 +223,7 @@ class FileInitializationService(
             createdBy = null,
             isFromBucket = false
         )
-        
+
         storageRepository.createFile(fileEntity)
     }
 

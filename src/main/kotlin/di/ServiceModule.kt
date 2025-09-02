@@ -43,7 +43,6 @@ val serviceModule = module {
 
     single<FileInitializationService> {
         FileInitializationService(
-            storageService = get(),
             storageRepository = get(),
             storage = get(),
             gcsConfig = get()
