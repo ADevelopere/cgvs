@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const RENAME_FILE = gql`
-mutation renameFile($input: RenameFileInput!){
-    renameFile(input: $input){
+export const REGISTER_FILE_USAGE = gql`
+mutation registerFileUsage($input: RegisterFileUsageInput!){
+    registerFileUsage(input: $input){
         item{
             id
             name

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const RENAME_FILE = gql`
-mutation renameFile($input: RenameFileInput!){
-    renameFile(input: $input){
+export const CREATE_FOLDER = gql`
+mutation createFolder($input: CreateFolderInput!){
+    createFolder(input: $input){
         item{
             id
             name

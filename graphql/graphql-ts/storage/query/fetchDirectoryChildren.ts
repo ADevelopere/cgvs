@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const GET_FOLDER_INFO = gql`
-query getFolderInfo($path: String!){
-    getFolderInfo(path: $path){
+export const FETCH_DIRECTORY_CHILDREN = gql`
+query fetchDirectoryChildren($path: String){
+    fetchDirectoryChildren(path: $path){
         created
         createdBy
         id
