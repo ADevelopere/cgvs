@@ -154,6 +154,24 @@ const arStorageTranslations: StorageTranslations = {
         refresh: "تحديث",
         moveTo: "نقل إلى",
 
+        // Dialog messages
+        deleteConfirmation: 'حذف "%{fileName}"',
+        deleteConfirmationMessage:
+            'هل أنت متأكد أنك تريد حذف "%{fileName}"؟ لا يمكن التراجع عن هذا الإجراء.',
+        contentType: "نوع المحتوى",
+        path: "المسار",
+        md5Hash: "تشفير MD5",
+        protected: "محمي",
+        yes: "نعم",
+        parentPath: "المسار الأصلي",
+        protectChildren: "حماية العناصر الفرعية",
+        permissions: "الصلاحيات",
+        allowUploads: "السماح برفع الملفات",
+        allowCreateFolders: "السماح بإنشاء مجلدات",
+        allowDeleteFiles: "السماح بحذف الملفات",
+        allowMoveFiles: "السماح بنقل الملفات",
+        no: "لا",
+
         // File types for filtering
         allTypes: "جميع الأنواع",
         folders: "مجلدات",
