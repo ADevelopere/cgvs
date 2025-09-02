@@ -125,7 +125,7 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
             id = row[Templates.id],
             name = row[Templates.name],
             description = row[Templates.description],
-            imageFileId = row[Templates.imageFileId]?.value,
+            imageFileId = row[Templates.imageFileId],
             categoryId = row[Templates.categoryId],
             order = row[Templates.order],
             preSuspensionCategoryId = row[Templates.preSuspensionCategoryId],

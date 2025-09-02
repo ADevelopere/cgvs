@@ -40,6 +40,10 @@ object DatabaseConfig {
                 PasswordResetTokens,
                 Sessions,
                 TemplateCategories,
+                // Create storage tables first (they are referenced by templates)
+                StorageDirectories,
+                StorageFiles,
+                FileUsages,
                 Templates,
                 TemplateConfigs,
                 Students,

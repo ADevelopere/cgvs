@@ -25,7 +25,7 @@ import tables.CategorySpecialType
 import kotlin.random.Random
 
 /**
- * Demo Data Seeder for Ktor CGSV Application
+ * Demo Data Seeder for Ktor CGVS Application
  * This script creates sample data for testing and demonstration purposes
  */
 class DemoDataSeeder(
@@ -234,7 +234,7 @@ class DemoDataSeeder(
 
         // Get demo file IDs from the file initialization service
         val demoFileIds = fileInitializationService.getDemoFileIds()
-        
+
         if (demoFileIds.isEmpty()) {
             println("   ⚠️  No demo files available for templates")
         }

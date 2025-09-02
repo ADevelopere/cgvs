@@ -4,18 +4,14 @@ import kotlinx.coroutines.runBlocking
 import repositories.RepositoryManager
 import config.DatabaseConfig
 import io.ktor.server.config.*
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import services.FileInitializationService
-import kotlin.getValue
+import org.jetbrains.exposed.v1.jdbc.Database
 import kotlin.system.exitProcess
 
 /**
  * The Main application to run demo data seeding
  * This can be run as a standalone application to populate the database with demo data
  */
-object SeedDemoDataApp : KoinComponent {
-    val fileInitService by inject<FileInitializationService>()
+object SeedDemoDataApp {
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -28,14 +24,14 @@ object SeedDemoDataApp : KoinComponent {
             DatabaseConfig.init(config)
 
             // Get database connection
-            val database = org.jetbrains.exposed.v1.jdbc.Database.connect(DatabaseConfig.dataSource)
+            val database = Database.connect(DatabaseConfig.dataSource)
 
             // Initialize repository manager
             val repositoryManager = RepositoryManager.getInstance(database)
 
             // Run the seeder
             runBlocking {
-                val seeder = DemoDataSeeder(repositoryManager, fileInitService)
+                val seeder = MinimalDemoDataSeeder(repositoryManager)
                 seeder.seedAllData()
             }
 

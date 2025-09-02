@@ -7,7 +7,7 @@ object Templates : Table() {
     val id = integer("id").autoIncrement()
     val name = varchar("name", 255)
     val description = text("description").nullable()
-    val imageFileId = reference("image_file_id", StorageFiles.id).nullable()
+    val imageFileId = long("image_file_id").references(StorageFiles.id).nullable()
     val categoryId = integer("category_id").references(TemplateCategories.id)
     val order = integer("order")
     val preSuspensionCategoryId = integer("pre_suspension_category_id").references(TemplateCategories.id).nullable()
