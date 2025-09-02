@@ -5,15 +5,16 @@ query getFileInfo($path: String!){
     getFileInfo(path: $path){
         contentType
         created
-        fileType
-        isPublic
+        createdBy
+        directoryPath
+        id
+        isFromBucket
+        isProtected
         lastModified
         md5Hash
-        mediaLink
         name
         path
         size
-        url
     }
 }
 `;
