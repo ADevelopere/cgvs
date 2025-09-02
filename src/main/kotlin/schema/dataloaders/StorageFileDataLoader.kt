@@ -11,13 +11,13 @@ import org.dataloader.DataLoaderFactory
 import org.dataloader.DataLoaderOptions
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import services.StorageService
+import services.StorageDbService
 import kotlin.coroutines.EmptyCoroutineContext
 
 val StorageFileDataLoader: KotlinDataLoader<Long, FileInfo> =
     object : KotlinDataLoader<Long, FileInfo>, KoinComponent {
         override val dataLoaderName = "StorageFileDataLoader"
-        private val storageService: StorageService by inject()
+        private val storageDbService: StorageDbService by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Long, FileInfo> =
             DataLoaderFactory.newDataLoader(
                 { ids, batchLoaderEnvironment ->
@@ -26,7 +26,7 @@ val StorageFileDataLoader: KotlinDataLoader<Long, FileInfo> =
                             ?: CoroutineScope(EmptyCoroutineContext)
 
                     coroutineScope.future {
-                        storageService.getFileInfosByIds(ids)
+                        storageDbService.getFileInfosByIds(ids)
                     }
                 },
                 DataLoaderOptions.newOptions()

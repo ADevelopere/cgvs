@@ -3,6 +3,7 @@ package schema.query
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.server.operations.Query
 import services.StorageService
+import services.StorageDbService
 import schema.model.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -10,6 +11,7 @@ import org.koin.core.component.inject
 @Suppress("unused")
 class StorageQuery : Query, KoinComponent {
     private val storageService: StorageService by inject()
+    private val storageDbService: StorageDbService by inject()
 
     @GraphQLDescription("List files and folders with pagination and filtering")
     fun listFiles(
@@ -68,6 +70,6 @@ class StorageQuery : Query, KoinComponent {
     suspend fun checkFileUsage(
         input: CheckFileUsageInput
     ): FileUsageResult {
-        return storageService.checkFileUsage(input)
+        return storageDbService.checkFileUsage(input)
     }
 }
