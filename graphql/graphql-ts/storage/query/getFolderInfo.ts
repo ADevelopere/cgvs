@@ -13,7 +13,7 @@ query getFolderInfo($path: String!){
         parentPath
         path
         permissions{
-            allowCreateSubdirs
+            allowCreateSubDirs
             allowDelete
             allowDeleteFiles
             allowMove

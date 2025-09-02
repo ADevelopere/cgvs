@@ -33,7 +33,7 @@ class StorageRepositoryImpl(
             it[allowUploads] = directory.permissions.allowUploads
             it[allowDelete] = directory.permissions.allowDelete
             it[allowMove] = directory.permissions.allowMove
-            it[allowCreateSubDirs] = directory.permissions.allowCreateSubdirs
+            it[allowCreateSubDirs] = directory.permissions.allowCreateSubDirs
             it[allowDeleteFiles] = directory.permissions.allowDeleteFiles
             it[allowMoveFiles] = directory.permissions.allowMoveFiles
             it[isProtected] = directory.isProtected
@@ -54,7 +54,7 @@ class StorageRepositoryImpl(
             it[allowUploads] = directory.permissions.allowUploads
             it[allowDelete] = directory.permissions.allowDelete
             it[allowMove] = directory.permissions.allowMove
-            it[allowCreateSubDirs] = directory.permissions.allowCreateSubdirs
+            it[allowCreateSubDirs] = directory.permissions.allowCreateSubDirs
             it[allowDeleteFiles] = directory.permissions.allowDeleteFiles
             it[allowMoveFiles] = directory.permissions.allowMoveFiles
             it[isProtected] = directory.isProtected
@@ -83,7 +83,7 @@ class StorageRepositoryImpl(
                 it[allowUploads] = permissions.allowUploads
                 it[allowDelete] = permissions.allowDelete
                 it[allowMove] = permissions.allowMove
-                it[allowCreateSubDirs] = permissions.allowCreateSubdirs
+                it[allowCreateSubDirs] = permissions.allowCreateSubDirs
                 it[allowDeleteFiles] = permissions.allowDeleteFiles
                 it[allowMoveFiles] = permissions.allowMoveFiles
                 it[lastModified] = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -279,7 +279,7 @@ class StorageRepositoryImpl(
             allowUploads = row[StorageDirectories.allowUploads],
             allowDelete = row[StorageDirectories.allowDelete],
             allowMove = row[StorageDirectories.allowMove],
-            allowCreateSubdirs = row[StorageDirectories.allowCreateSubDirs],
+            allowCreateSubDirs = row[StorageDirectories.allowCreateSubDirs],
             allowDeleteFiles = row[StorageDirectories.allowDeleteFiles],
             allowMoveFiles = row[StorageDirectories.allowMoveFiles]
         ),

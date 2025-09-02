@@ -103,7 +103,7 @@ Each directory has configurable permissions:
 - `allowUploads`: Whether files can be uploaded to this directory
 - `allowDelete`: Whether the directory can be deleted
 - `allowMove`: Whether the directory can be moved
-- `allowCreateSubdirs`: Whether subdirectories can be created
+- `allowCreateSubDirs`: Whether subdirectories can be created
 - `allowDeleteFiles`: Whether files in this directory can be deleted
 - `allowMoveFiles`: Whether files in this directory can be moved
 
