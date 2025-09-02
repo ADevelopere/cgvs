@@ -28,7 +28,7 @@ This context is the single source of truth for backend operations and provides a
 -   **Data Fetching:**
 
     -   `fetchList(params: StorageQueryParams): Promise<{ items: StorageItem[], pagination: PaginationInfo } | null>` - Fetch files/folders with given parameters, returns null on error
-    -   `fetchDirectoryTree(): Promise<DirectoryTreeNode[] | null>` - Fetch complete directory tree for sidebar navigation, returns null on error
+    -   `fetchDirectoryChildren(path?: string): Promise<DirectoryTreeNode[] | null>` - Fetch children of a specific directory for lazy loading (if path is undefined/empty, fetches root level), returns null on error
     -   `fetchStats(path?: string): Promise<StorageStats | null>` - Fetch storage statistics, returns null on error
 
 -   **File Operations:**
@@ -50,6 +50,8 @@ This context is the single source of truth for backend operations and provides a
 -   Provide pure data operations without UI concerns
 -   Return simple success/failure results or null for errors
 -   All functions are async and return promises, eliminating need for global loading states
+-   **Implement lazy directory tree loading:** Uses only `fetchDirectoryChildren()` - starts with root level (empty/undefined path), then loads specific directory children on-demand
+-   **Cache directory children:** Store fetched directory children to avoid redundant API calls and enable instant expansion
 
 ---
 
@@ -63,7 +65,9 @@ This context manages all user interface state and interactions, consuming the Co
 
     -   `items`: Current list of files/folders being displayed
     -   `pagination`: Pagination information for current view
-    -   `directoryTree`: Directory tree structure for sidebar navigation
+    -   `directoryTree`: Directory tree structure for sidebar navigation (initially only top-level directories)
+    -   `expandedNodes`: Set of directory paths that have been expanded and their children loaded
+    -   `prefetchedNodes`: Set of directory paths that have been pre-fetched on hover but not yet expanded
 
 -   **Query Parameters:**
 
@@ -88,7 +92,7 @@ This context manages all user interface state and interactions, consuming the Co
     -   `sortDirection`: Local sorting direction ('asc' or 'desc')
 
 -   **Operation States:**
-    -   `loading`: Object tracking loading states for different operations (e.g., `{ fetchList: boolean, rename: boolean, delete: boolean }`)
+    -   `loading`: Object tracking loading states for different operations (e.g., `{ fetchList: boolean, rename: boolean, delete: boolean, expandingNode: string | null, prefetchingNode: string | null }`)
     -   `operationErrors`: Object tracking operation-specific errors that need UI handling beyond notifications
 
 ### UI Functions:
@@ -98,6 +102,9 @@ This context manages all user interface state and interactions, consuming the Co
     -   `navigateTo(path: string): void` - Navigate to a directory and fetch its contents
     -   `goUp(): void` - Navigate to parent directory
     -   `refresh(): void` - Refresh current directory contents
+    -   `expandDirectoryNode(path: string): Promise<void>` - Expand a directory node in the tree, loading its children if not already loaded
+    -   `collapseDirectoryNode(path: string): void` - Collapse a directory node in the tree
+    -   `prefetchDirectoryChildren(path: string): Promise<void>` - Pre-fetch directory children on hover for faster expansion
 
 -   **Selection Management:**
 
@@ -140,6 +147,127 @@ This context manages all user interface state and interactions, consuming the Co
 -   Handle complex UI interactions (drag-and-drop, keyboard navigation, clipboard)
 -   Coordinate between user actions and backend operations
 -   Maintain local state consistency after backend operations
+
+---
+
+## 4. Lazy Loading Directory Tree Implementation
+
+This section details the implementation strategy for lazy loading the directory tree with hover pre-fetching optimization.
+
+### Core Lazy Loading Strategy
+
+The directory tree will implement a two-tier loading approach:
+
+1. **Initial Load:** Fetch only root-level directories when the component mounts (using `fetchDirectoryChildren()` with empty/undefined path)
+2. **On-Demand Loading:** Load subdirectories when users explicitly expand nodes (click/double-click)
+3. **Hover Pre-fetching:** Silently pre-fetch subdirectories when users hover over parent nodes
+
+### Implementation Details
+
+#### 1. Data Structure Changes
+
+The `DirectoryTreeNode` interface should support lazy loading:
+
+```typescript
+interface DirectoryTreeNode {
+  id: string;
+  name: string;
+  path: string;
+  children?: DirectoryTreeNode[]; // undefined = not loaded, [] = loaded but empty, [...] = loaded with content
+  hasChildren: boolean; // server indicates if this node has subdirectories
+  isExpanded: boolean; // client-side expansion state
+  isLoading: boolean; // loading state for this specific node
+  isPrefetched: boolean; // whether children have been pre-fetched
+}
+```
+
+#### 2. Loading States
+
+Track different loading operations separately:
+
+- `expandingNode: string | null` - Path of node being expanded (shows loading spinner)
+- `prefetchingNode: string | null` - Path of node being pre-fetched (silent, no UI indication)
+- `expandedNodes: Set<string>` - Paths of currently expanded nodes
+- `prefetchedNodes: Set<string>` - Paths of nodes with pre-fetched children
+
+#### 3. API Strategy
+
+Use only the single `fetchDirectoryChildren()` function:
+
+- `fetchDirectoryChildren(path?: string)` - Returns immediate children of specified path
+  - When `path` is undefined/empty/null: Returns root-level directories
+  - When `path` is specified: Returns children of that specific directory
+- Each response includes `hasChildren` flag to show expand/collapse icons
+
+#### 4. UX Behavior
+
+**Initial State:**
+- Tree shows only root-level directories (fetched via `fetchDirectoryChildren()` with undefined path)
+- Folders with children show expand icon (►)
+- Folders without children show no expand icon
+
+**User Expansion:**
+- Click expand icon → Show loading spinner → Fetch children → Update tree → Hide spinner
+- If already pre-fetched → Instant expansion (no loading spinner)
+
+**Hover Pre-fetching:**
+- Hover on folder (300ms debounce) → Silent background fetch → Cache results
+- No visual loading indicators for hover pre-fetching
+- Pre-fetched data enables instant expansion when user clicks
+
+**Cache Management:**
+- Keep fetched children in memory for session duration
+- Clear cache on page refresh or navigation away
+- Implement LRU cache if memory becomes concern
+
+#### 5. Performance Optimizations
+
+**Debouncing:**
+- Hover events debounced to 300ms to prevent rapid API calls
+- Cancel pending pre-fetch requests if user hovers away quickly
+
+**Request Deduplication:**
+- Track in-flight requests to prevent duplicate API calls
+- If user hovers then immediately clicks, use single request for both
+
+**Smart Pre-fetching:**
+- Only pre-fetch first-level children (not recursive)
+- Skip pre-fetching if node already expanded or pre-fetched
+- Consider user behavior patterns (commonly accessed paths)
+
+#### 6. Error Handling
+
+**Expansion Errors:**
+- Show error notification and retry option
+- Keep node in collapsed state on error
+
+**Pre-fetch Errors:**
+- Fail silently for hover pre-fetching
+- Log errors for debugging but don't interrupt user experience
+- Fallback to regular loading when user explicitly expands
+
+#### 7. Accessibility
+
+**Screen Reader Support:**
+- Announce loading states: "Loading folder contents"
+- Announce expansion: "Folder expanded, 5 items"
+- Use proper ARIA labels for loading states
+
+**Keyboard Navigation:**
+- Space/Enter to expand/collapse maintains loading behavior
+- Focus management during loading states
+- Skip pre-fetching for keyboard navigation (only on explicit actions)
+
+### Benefits of This Approach
+
+1. **Fast Initial Load:** Only root-level directories loaded initially via single API call
+2. **Responsive Expansion:** Hover pre-fetching makes expansion feel instant
+3. **Reduced Server Load:** Only fetch what's needed + strategic pre-fetching
+4. **Better UX:** No loading delays for commonly accessed paths
+5. **Progressive Enhancement:** Works without JavaScript (graceful degradation)
+6. **Scalable Architecture:** No exhaustive tree fetching - handles any directory depth efficiently
+
+---
 
 ### Interaction Logic to Implement:
 
@@ -198,7 +326,7 @@ To ensure accessibility and provide power-user capabilities, the file manager wi
 
 ---
 
-## 4. Menu System & Uploads Architecture
+## 5. Menu System & Uploads Architecture
 
 This section details the architecture for handling context menus and file uploads.
 
@@ -227,7 +355,7 @@ This floating upload progress component should wrap the entire application and i
 
 ---
 
-## 5. Menu Actions & Content (Updated)
+## 6. Menu Actions & Content (Updated)
 
 This section defines the content of each menu.
 
@@ -260,7 +388,7 @@ This section defines the content of each menu.
 
 ---
 
-## 6. Views: Grid and List Rendering (Updated & Merged)
+## 7. Views: Grid and List Rendering (Updated & Merged)
 
 This section details the components responsible for rendering the file browser, now driven by the new `StorageUIManagerContext`. The implementation will use standard HTML elements (`div`, `table`, etc.) and will not rely on a UI library like MUI for its core structure.
 
@@ -277,19 +405,42 @@ This section details the components responsible for rendering the file browser, 
 ### `StorageDirectoryTree.tsx` (New)
 
 -   **Responsibilities:**
-    -   Renders the folder tree navigation in the first pane of the split layout.
+    -   Renders the folder tree navigation in the first pane of the split layout with lazy loading.
     -   Uses the `TreeView` component from `nextjs/components/common/TreeView.tsx`.
     -   Consumes `StorageManagementContext` to get the directory structure.
     -   Handles navigation by calling `navigateTo` from the context when folders are selected.
+    -   **Implements lazy loading strategy:**
+        -   Initially loads only top-level directories
+        -   Loads subdirectories on-demand when parent nodes are expanded
+        -   Pre-fetches subdirectories on hover for improved UX performance
 -   **TreeView Configuration:**
-    -   `items`: Directory tree structure fetched from the backend
+    -   `items`: Directory tree structure fetched from the backend (initially top-level only)
     -   `selectedItemId`: Current directory path from `StorageManagementContext`
     -   `onSelectItem`: Calls `navigateTo` to navigate to the selected folder
+    -   `onExpandItem`: Calls `expandDirectoryNode` to load children if not already loaded
+    -   `onCollapseItem`: Calls `collapseDirectoryNode` to collapse node
+    -   `onHoverItem`: Calls `prefetchDirectoryChildren` for performance optimization
+    -   `expandedItems`: Set of expanded node paths from UI context
     -   `childrenKey`: "children" (for nested folder structure)
     -   `labelKey`: "name" (folder name display)
-    -   `itemRenderer`: Custom renderer to show folder icons and names
+    -   `itemRenderer`: Custom renderer to show folder icons, names, and loading states
     -   `searchText`: "Search folders..."
     -   `noItemsMessage`: "No folders found"
+-   **Lazy Loading Behavior:**
+    -   **Initial Load:** Fetch only root-level directories when component mounts (using `fetchDirectoryChildren()` with undefined path)
+    -   **Expansion:** When user clicks to expand a folder:
+        -   Check if children are already loaded in `expandedNodes`
+        -   If not loaded, show loading indicator and fetch children using `fetchDirectoryChildren(path)`
+        -   Update tree structure with new children and mark node as expanded
+    -   **Hover Pre-fetching:** When user hovers over a folder (with debounce of ~300ms):
+        -   Check if children are already prefetched in `prefetchedNodes`
+        -   If not, silently fetch children in background using `fetchDirectoryChildren(path)`
+        -   Store in cache for instant expansion when user actually clicks
+        -   Don't show loading indicators for hover pre-fetching
+    -   **Performance Optimizations:**
+        -   Debounce hover events to avoid excessive API calls
+        -   Cache fetched directory children to avoid re-fetching
+        -   Use loading states only for explicit user actions (clicks), not hover pre-fetching
 
 ### `StorageMainView.tsx` (New)
 
@@ -423,7 +574,59 @@ This section details the components responsible for rendering the file browser, 
 
 ---
 
-## 7. Final File List
+## 8. Dialogs and Modals
+
+This section outlines the design and functionality of modal dialogs used for specific file operations.
+
+### `MoveToDialog.tsx` (New)
+
+This component will be a modal dialog responsible for handling the moving of files and folders. It will be triggered by the "Move To" action in file/folder context menus.
+
+-   **State to Manage:**
+    -   `isOpen`: Boolean to control the visibility of the dialog.
+    -   `itemsToMove`: The items (files/folders) that are being moved.
+    -   `currentPathInDialog`: The path of the directory currently being viewed *inside the dialog*.
+    -   `itemsInView`: The list of files and folders for the `currentPathInDialog`.
+    -   `isLoading`: Boolean to indicate when the dialog is fetching directory contents.
+    -   `hoveredItemPath`: The path of the item currently being hovered over in the list.
+
+-   **UI Design & Behavior:**
+    -   **Header:**
+        -   Dynamic dialog title, e.g., "Move 'Untitled folder'" or "Move 3 items".
+        -   A "Current location" section showing a folder icon followed by the current directory name (clickable button to navigate to that path).
+        -   **No tabs** (Suggested, Starred, All locations) - only show the current directory contents by default.
+    
+    -   **Navigation:**
+        -   When in a subdirectory, show a navigation header with:
+            -   A "navigate up" (back arrow) icon to go to parent directory.
+            -   Current directory name.
+        -   The view lists items for the `currentPathInDialog` (not the entire directory tree).
+    
+    -   **Item Listing:**
+        -   Display both files and folders for the current directory.
+        -   Files are shown but non-interactive (for context).
+        -   Folders are interactive and can be navigated into or used as move destinations.
+        -   **Visual fade/blur effect** at the bottom of the scrollable list to indicate more content.
+    
+    -   **Item Interaction (on Hover):**
+        -   When hovering over a directory, show two action buttons at the end of the row:
+            1.  **Move Button:** Executes the move operation to move selected items to this directory.
+            2.  **Navigate Into Button (`>`):** Updates the dialog view to show contents of this directory.
+    
+    -   **Footer Actions:**
+        -   Primary "Move" button to move items to the `currentPathInDialog`.
+        -   "Cancel" button to close dialog without action.
+        -   Optional "New Folder" button to create a new folder in current directory.
+
+-   **Responsibilities:**
+    -   Fetch directory contents when navigating between folders.
+    -   Handle move operations by calling the Core context's move function.
+    -   Maintain navigation state within the dialog independently from the main file browser.
+    -   Validate move operations (prevent moving folders into themselves or their children).
+
+---
+
+## 9. Final File List
 
 -   **Contexts:**
     -   `nextjs/contexts/storage/StorageManagementCoreContext.tsx` (New)
@@ -431,6 +634,7 @@ This section details the components responsible for rendering the file browser, 
     -   `nextjs/contexts/MenuManagerContext.tsx`
     -   **Note:** `StorageUploadContext` and upload progress UI already exist in `nextjs/views/storage/uploading/`
 -   **Components:**
+    -   `nextjs/components/storage/dialogs/MoveToDialog.tsx` (New)
     -   `nextjs/components/storage/dropzone/...` (New - for drag-and-drop upload zones)
     -   `nextjs/components/storage/menu/...`
     -   **Note:** Upload progress components already exist in `nextjs/views/storage/uploading/`
@@ -452,7 +656,7 @@ This section details the components responsible for rendering the file browser, 
 
 ---
 
-## 8. ASCII Component Architecture Chart
+## 10. ASCII Component Architecture Chart
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
