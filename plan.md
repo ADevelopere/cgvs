@@ -6,11 +6,12 @@ This document outlines a comprehensive plan for the file manager UI. The archite
 
 **Major Contexts Completed (2/4):**
 
-- ✅ **StorageManagementCoreContext** - Completed (2025-09-02)
+- ✅ **StorageManagementCoreContext** - Completed (2025-09-02), **Internationalized (2025-09-03)**
   - Headless core context for all backend data operations
   - Depends on StorageGraphQLContext as required
   - Handles all file operations, data fetching, and search
   - Provides proper error handling and notifications
+  - **✅ Fully internationalized** with Arabic translations following the established pattern
   - Exports all required types for UI components
 
 - ✅ **StorageManagementUIContext** - Completed (2025-09-02)
@@ -20,13 +21,14 @@ This document outlines a comprehensive plan for the file manager UI. The archite
   - Implements lazy loading directory tree with hover pre-fetching
   - Provides all UI functions for file browser components
   - Full TypeScript support with proper error handling
+  - **✅ Fully internationalized** with Arabic translations following the established pattern
 
 **Ready for Implementation:**
-- ⏳ **File Browser Components** (Views & UI Components with Material-UI)
-- ⏳ **Directory Tree Component** with TreeView integration
-- ⏳ **File Operations Dialogs** (MoveToDialog, etc.)
+- ⏳ **File Browser Components** (Views & UI Components with Material-UI) - **Must implement translations**
+- ⏳ **Directory Tree Component** with TreeView integration - **Must implement translations**
+- ⏳ **File Operations Dialogs** (MoveToDialog, etc.) - **Must implement translations**
 
-**Foundation Complete:** ✅ The core architecture is now ready for UI component development.
+**Foundation Complete:** ✅ The core architecture is now ready for UI component development with full i18n support.
 
 ---
 
@@ -832,3 +834,90 @@ Legend:
 ─   = Relationship/Connection
 [X] = UI Element/Action
 ```
+
+---
+
+## 11. Storage Components Internationalization Standard
+
+**All storage components must implement internationalization following this established pattern:**
+
+### Implementation Pattern Established (2025-09-03)
+
+We have successfully internationalized `StorageManagementCoreContext` and established the standard pattern that all future storage components must follow.
+
+#### Files Modified:
+1. **`nextjs/locale/components/Storage.ts`** - Added `StorageManagementTranslations` type
+2. **`nextjs/locale/ar/storage.ts`** - Added Arabic translations for all management messages  
+3. **`nextjs/contexts/storage/StorageManagementCoreContext.tsx`** - Implemented translation usage
+
+### Standard Implementation Steps:
+
+#### 1. Define Translation Types in `Storage.ts`
+All new storage component translations must be added to `nextjs/locale/components/Storage.ts`:
+
+```typescript
+// Example: Adding translations for dialogs
+type StorageDialogsTranslations = {
+    renameDialog: {
+        title: string;
+        okButton: string;
+        cancelButton: string;
+    };
+    moveDialog: {
+        title: string; // "Move %{count} item(s)"
+        selectDestination: string;
+    };
+};
+
+type StorageTranslations = {
+    uploading: StorageUploadingTranslations;
+    management: StorageManagementTranslations; // ✅ Already implemented
+    dialogs: StorageDialogsTranslations; // ⏳ Example for future components
+};
+```
+
+#### 2. Add Arabic Translations
+Update `nextjs/locale/ar/storage.ts` with corresponding Arabic translations:
+
+```typescript
+const arStorageTranslations: StorageTranslations = {
+    uploading: { /* existing */ },
+    management: { /* ✅ already implemented */ },
+    dialogs: {
+        renameDialog: {
+            title: "إعادة تسمية",
+            okButton: "موافق", 
+            cancelButton: "إلغاء",
+        },
+        moveDialog: {
+            title: "نقل %{count} عنصر",
+            selectDestination: "اختر المجلد الوجهة",
+        },
+    },
+};
+```
+
+#### 3. Use Translations in Components
+Follow the pattern established in `StorageManagementCoreContext.tsx`:
+
+```tsx
+// Import the hook
+import useAppTranslation from "@/locale/useAppTranslation";
+
+// Inside component/context
+const { dialogs: translations } = useAppTranslation("storageTranslations");
+
+// Use translations with parameter replacement
+showNotification(translations.moveDialog.title.replace('%{count}', count.toString()));
+```
+
+### Reference Implementation
+- **Context Example:** `nextjs/contexts/storage/StorageManagementCoreContext.tsx` 
+- **Component Example:** `nextjs/views/storage/uploading/UploadProgressFileItem.tsx`
+
+### Key Principles:
+1. **Single Source of Truth:** All storage translations in one place (`Storage.ts`)
+2. **Consistent Hook Usage:** Always use `useAppTranslation("storageTranslations")`
+3. **Parameter Support:** Use `%{paramName}` for dynamic values
+4. **Type Safety:** Strong TypeScript typing prevents translation errors
+5. **Dependency Management:** Include `translations` in useCallback dependencies

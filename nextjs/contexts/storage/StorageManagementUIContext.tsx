@@ -22,6 +22,7 @@ import {
     OperationErrors,
 } from "./storage.type";
 import logger from "@/utils/logger";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageManagementUIContext = createContext<
     StorageManagementUIContextType | undefined
@@ -41,6 +42,7 @@ export const StorageManagementUIProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     const coreContext = useStorageManagementCore();
+    const { ui: translations } = useAppTranslation("storageTranslations");
 
     // State Management
     const [items, setItems] = useState<StorageItem[]>([]);
@@ -141,12 +143,12 @@ export const StorageManagementUIProvider: React.FC<{
                     }
                 }
             } catch {
-                updateError("fetchList", "Failed to navigate to directory");
+                updateError("fetchList", translations.failedToNavigateToDirectory);
             } finally {
                 updateLoading("fetchList", false);
             }
         },
-        [queryParams, coreContext, searchMode, updateError, updateLoading],
+        [queryParams, coreContext, searchMode, updateError, updateLoading, translations],
     );
 
     const goUp = useCallback(async () => {
@@ -165,11 +167,11 @@ export const StorageManagementUIProvider: React.FC<{
                 setPagination(result.pagination);
             }
         } catch {
-            updateError("fetchList", "Failed to refresh directory");
+            updateError("fetchList", translations.failedToRefreshDirectory);
         } finally {
             updateLoading("fetchList", false);
         }
-    }, [queryParams, coreContext, updateError, updateLoading]);
+    }, [queryParams, coreContext, updateError, updateLoading, translations]);
 
     const expandDirectoryNode = useCallback(
         async (path: string) => {
@@ -357,12 +359,12 @@ export const StorageManagementUIProvider: React.FC<{
                     setLastSelectedItem(null);
                 }
             } catch {
-                updateError("search", "Search failed");
+                updateError("search", translations.searchFailed);
             } finally {
                 updateLoading("search", false);
             }
         },
-        [coreContext, queryParams.path, updateError, updateLoading],
+        [coreContext, queryParams.path, updateError, updateLoading, translations],
     );
 
     const setFilterType = useCallback(
