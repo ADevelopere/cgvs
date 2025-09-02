@@ -24,7 +24,7 @@ type StorageManagementCoreTranslations = {
     failedToFetchFileList: string;
     failedToFetchDirectoryContents: string;
     failedToFetchStorageStatistics: string;
-    
+
     // File operation success messages
     successfullyRenamedTo: string; // %{newName}
     successfullyCreatedFolder: string; // %{name}
@@ -33,7 +33,7 @@ type StorageManagementCoreTranslations = {
     successfullyMovedPartial: string; // %{successCount}, %{failureCount}, %{errors}
     successfullyCopied: string; // %{count}
     successfullyCopiedPartial: string; // %{successCount}, %{failureCount}, %{errors}
-    
+
     // File operation error messages
     failedToRenameFile: string;
     failedToCreateFolder: string;
@@ -44,7 +44,7 @@ type StorageManagementCoreTranslations = {
     failedToCopyItems: string;
     copiedPartial: string; // %{successCount}, %{failureCount}, %{errors}
     failedToSearchFiles: string;
-    
+
     // Generic terms
     items: string;
     item: string;
@@ -56,11 +56,11 @@ type StorageManagementUITranslations = {
     failedToNavigateToDirectory: string;
     failedToRefreshDirectory: string;
     searchFailed: string;
-    
+
     // Loading states
     loadingFolderContents: string;
     folderExpanded: string; // %{count}
-    
+
     // View mode and sorting
     gridView: string;
     listView: string;
@@ -76,13 +76,13 @@ type StorageManagementUITranslations = {
     size: string;
     lastModified: string;
     created: string;
-    
+
     // Empty states and messages
     emptyFolder: string;
     tryDifferentSearch: string;
     uploadOrCreate: string;
     searching: string;
-    
+
     // Selection and clipboard
     selectAll: string;
     clearSelection: string;
@@ -93,7 +93,7 @@ type StorageManagementUITranslations = {
     noItemsInClipboard: string;
     itemsCopied: string; // %{count}
     itemsCut: string; // %{count}
-    
+
     // Search
     searchPlaceholder: string;
     searchResults: string; // %{count}
@@ -102,13 +102,13 @@ type StorageManagementUITranslations = {
     searchInFolder: string; // %{folderName}
     item: string;
     items: string;
-    
+
     // Tree navigation
     expandFolder: string;
     collapseFolder: string;
     noFoldersFound: string;
     searchFolders: string;
-    
+
     // Filter and view controls
     filters: string;
     activeFilters: string;
@@ -125,12 +125,12 @@ type StorageManagementUITranslations = {
     clearFilters: string;
     showFilters: string;
     hideFilters: string;
-    
+
     // Accessibility
     focusedItem: string; // %{itemName}
     navigationInstructions: string;
     keyboardShortcuts: string;
-    
+
     // Context menu actions
     open: string;
     rename: string;
@@ -144,7 +144,24 @@ type StorageManagementUITranslations = {
     uploadFiles: string;
     refresh: string;
     moveTo: string;
-    
+
+    // Dialog messages
+    deleteConfirmation: string; // %{fileName}
+    deleteConfirmationMessage: string; // %{fileName}
+    contentType: string;
+    path: string;
+    md5Hash: string;
+    protected: string;
+    yes: string;
+    parentPath: string;
+    protectChildren: string;
+    permissions: string;
+    allowUploads: string;
+    allowCreateFolders: string;
+    allowDeleteFiles: string;
+    allowMoveFiles: string;
+    no: string;
+
     // File types for filtering
     allTypes: string;
     folders: string;
@@ -161,16 +178,16 @@ type StorageManagementUITranslations = {
     sites: string;
     shortcuts: string;
     otherTypes: string;
-    
+
     // Pagination
     itemsPerPage: string;
     page: string; // %{current} of %{total}
     showingItems: string; // %{start}-{end} of %{total}
-    
+
     // Navigation and breadcrumb
     myDrive: string;
     breadcrumbNavigation: string;
-    
+
     // Generic UI terms
     loading: string;
     error: string;
@@ -183,7 +200,12 @@ type StorageManagementUITranslations = {
 };
 
 type StorageTranslations = {
-    [key: string]: string | undefined | StorageUploadingTranslations | StorageManagementCoreTranslations | StorageManagementUITranslations;
+    [key: string]:
+        | string
+        | undefined
+        | StorageUploadingTranslations
+        | StorageManagementCoreTranslations
+        | StorageManagementUITranslations;
 
     uploading: StorageUploadingTranslations;
     management: StorageManagementCoreTranslations;
