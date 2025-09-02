@@ -24,7 +24,7 @@ class StorageRepositoryImpl : StorageRepository {
     }
 
     override suspend fun createDirectory(directory: DirectoryEntity): DirectoryEntity = dbQuery {
-        val id = StorageDirectories.insertAndGetId {
+        val insertStatement = StorageDirectories.insert {
             it[path] = directory.path
             it[name] = directory.name
             it[parentPath] = directory.parentPath
@@ -41,7 +41,8 @@ class StorageRepositoryImpl : StorageRepository {
             it[createdBy] = directory.createdBy?.toInt()
             it[isFromBucket] = directory.isFromBucket
         }
-        directory.copy(id = id.value)
+        val id = insertStatement[StorageDirectories.id]
+        directory.copy(id = id)
     }
 
     override suspend fun updateDirectory(directory: DirectoryEntity): DirectoryEntity? = dbQuery {
@@ -110,7 +111,7 @@ class StorageRepositoryImpl : StorageRepository {
     }
 
     override suspend fun createFile(file: FileEntity): FileEntity = transaction {
-        val id = StorageFiles.insertAndGetId {
+        val insertStatement = StorageFiles.insert {
             it[path] = file.path
             it[name] = file.name
             it[directoryPath] = file.directoryPath
@@ -123,7 +124,8 @@ class StorageRepositoryImpl : StorageRepository {
             it[createdBy] = file.createdBy?.toInt()
             it[isFromBucket] = file.isFromBucket
         }
-        file.copy(id = id.value)
+        val id = insertStatement[StorageFiles.id]
+        file.copy(id = id)
     }
 
     override suspend fun updateFile(file: FileEntity): FileEntity? = transaction {
@@ -157,14 +159,15 @@ class StorageRepositoryImpl : StorageRepository {
 
     // File usage operations
     override suspend fun registerFileUsage(usage: FileUsage): FileUsage = transaction {
-        val id = FileUsages.insertAndGetId {
+        val insertStatement = FileUsages.insert {
             it[filePath] = usage.filePath
             it[usageType] = usage.usageType
             it[referenceId] = usage.referenceId
             it[referenceTable] = usage.referenceTable
             it[created] = usage.created
         }
-        usage.copy(id = id.value)
+        val id = insertStatement[FileUsages.id]
+        usage.copy(id = id)
     }
 
     override suspend fun unregisterFileUsage(filePath: String, usageType: String, referenceId: Long): Boolean =
@@ -266,7 +269,7 @@ class StorageRepositoryImpl : StorageRepository {
 
     // Mapping functions
     private fun mapDirectoryRow(row: ResultRow): DirectoryEntity = DirectoryEntity(
-        id = row[StorageDirectories.id].value,
+        id = row[StorageDirectories.id],
         path = row[StorageDirectories.path],
         name = row[StorageDirectories.name],
         parentPath = row[StorageDirectories.parentPath],
@@ -287,7 +290,7 @@ class StorageRepositoryImpl : StorageRepository {
     )
 
     private fun mapFileRow(row: ResultRow): FileEntity = FileEntity(
-        id = row[StorageFiles.id].value,
+        id = row[StorageFiles.id],
         path = row[StorageFiles.path],
         name = row[StorageFiles.name],
         directoryPath = row[StorageFiles.directoryPath],
@@ -302,7 +305,7 @@ class StorageRepositoryImpl : StorageRepository {
     )
 
     private fun mapFileUsageRow(row: ResultRow): FileUsage = FileUsage(
-        id = row[FileUsages.id].value,
+        id = row[FileUsages.id],
         filePath = row[FileUsages.filePath],
         usageType = row[FileUsages.usageType],
         referenceId = row[FileUsages.referenceId],

@@ -42,8 +42,7 @@ class FileInitializationService(
             DirectoryInfo("public/templates/covers", "Template cover images", "public/templates"),
             DirectoryInfo("public/certificates", "Generated certificate files", "public"),
             DirectoryInfo("public/uploads", "User uploaded files", "public"),
-            DirectoryInfo("private", "Private files directory", null),
-            DirectoryInfo("private/temp", "Temporary files", "private")
+            DirectoryInfo("public/temp", "Temporary files", "public")
         )
 
         for (dirInfo in requiredDirectories) {
@@ -85,13 +84,13 @@ class FileInitializationService(
             parentPath = dirInfo.parentPath,
             permissions = DirectoryPermissions(
                 allowUploads = true,
-                allowDelete = dirInfo.path != "public" && dirInfo.path != "private", // Protect root dirs
-                allowMove = dirInfo.path != "public" && dirInfo.path != "private",
+                allowDelete = dirInfo.path != "public", // Protect root public dir
+                allowMove = dirInfo.path != "public",
                 allowCreateSubdirs = true,
                 allowDeleteFiles = true,
                 allowMoveFiles = true
             ),
-            isProtected = dirInfo.path == "public" || dirInfo.path == "private",
+            isProtected = dirInfo.path == "public",
             protectChildren = false,
             created = currentTime,
             lastModified = currentTime,

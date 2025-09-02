@@ -93,9 +93,8 @@ bucket/
 │   ├── templates/
 │   │   └── covers/          # Template cover images
 │   ├── certificates/        # Generated certificates
-│   └── uploads/            # User uploaded files
-└── private/
-    └── temp/               # Temporary files
+│   ├── uploads/            # User uploaded files
+│   └── temp/               # Temporary files
 ```
 
 ## Directory Permissions
@@ -108,7 +107,7 @@ Each directory has configurable permissions:
 - `allowDeleteFiles`: Whether files in this directory can be deleted
 - `allowMoveFiles`: Whether files in this directory can be moved
 
-Root directories (`public/`, `private/`) are protected by default.
+Root directory (`public/`) is protected by default.
 
 ## File Usage Tracking
 

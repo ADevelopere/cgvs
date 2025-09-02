@@ -1,10 +1,10 @@
 package tables
 
-import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object StorageDirectories : IdTable<Long>("storage_directories") {
-    override val id = long("id").autoIncrement().entityId()
+object StorageDirectories : Table("storage_directories") {
+    val id = long("id").autoIncrement()
     val path = varchar("path", 1024).uniqueIndex()
     val name = varchar("name", 255)
     val parentPath = varchar("parent_path", 1024).nullable()
@@ -28,10 +28,12 @@ object StorageDirectories : IdTable<Long>("storage_directories") {
 
     // Fallback flag
     val isFromBucket = bool("is_from_bucket").default(false)
+
+    override val primaryKey = PrimaryKey(id)
 }
 
-object StorageFiles : IdTable<Long>("storage_files") {
-    override val id = long("id").autoIncrement().entityId()
+object StorageFiles : Table("storage_files") {
+    val id = long("id").autoIncrement()
     val path = varchar("path", 1024).uniqueIndex()
     val name = varchar("name", 255)
     val directoryPath = varchar("directory_path", 1024)
@@ -49,13 +51,17 @@ object StorageFiles : IdTable<Long>("storage_files") {
 
     // Fallback flag
     val isFromBucket = bool("is_from_bucket").default(false)
+
+    override val primaryKey = PrimaryKey(id)
 }
 
-object FileUsages : IdTable<Long>("file_usages") {
-    override val id = long("id").autoIncrement().entityId()
+object FileUsages : Table("file_usages") {
+    val id = long("id").autoIncrement()
     val filePath = varchar("file_path", 1024)
     val usageType = varchar("usage_type", 100) // e.g., 'template_cover', 'certificate_image'
     val referenceId = long("reference_id") // ID of the entity using this file
     val referenceTable = varchar("reference_table", 100) // Table name of the entity
     val created = datetime("created")
+
+    override val primaryKey = PrimaryKey(id)
 }
