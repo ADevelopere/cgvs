@@ -113,7 +113,7 @@ data class UpdateDirectoryPermissionsInput(
 )
 
 @GraphQLDescription("Input for setting file/directory protection")
-data class SetProtectionInput(
+data class SetStorageItemProtectionInput(
     @param:GraphQLDescription("The file or directory path")
     val path: String,
     @param:GraphQLDescription("Whether to protect from deletion")
@@ -123,7 +123,7 @@ data class SetProtectionInput(
 )
 
 @GraphQLDescription("Input for moving files or directories")
-data class MoveItemsInput(
+data class MoveStorageItemsInput(
     @param:GraphQLDescription("Source paths to move")
     val sourcePaths: List<String>,
     @param:GraphQLDescription("Destination directory path")
@@ -131,7 +131,7 @@ data class MoveItemsInput(
 )
 
 @GraphQLDescription("Input for copying files or directories")
-data class CopyItemsInput(
+data class CopyStorageItemsInput(
     @param:GraphQLDescription("Source paths to copy")
     val sourcePaths: List<String>,
     @param:GraphQLDescription("Destination directory path")

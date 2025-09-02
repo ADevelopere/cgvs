@@ -46,21 +46,21 @@ class StorageMutation : Mutation, KoinComponent {
     }
 
     @GraphQLDescription("Move multiple files/folders to a new location")
-    suspend fun moveItems(
-        input: MoveItemsInput
+    suspend fun moveStorageItems(
+        input: MoveStorageItemsInput
     ): BulkOperationResult {
         return storageService.moveItems(input)
     }
 
     @GraphQLDescription("Copy multiple files/folders to a new location")
-    suspend fun copyItems(
-        input: CopyItemsInput
+    suspend fun copyStorageItems(
+        input: CopyStorageItemsInput
     ): BulkOperationResult {
         return storageService.copyItems(input)
     }
 
     @GraphQLDescription("Delete multiple files/folders")
-    suspend fun deleteItems(
+    suspend fun deleteStorageItems(
         input: DeleteItemsInput
     ): BulkOperationResult {
         return storageService.deleteItems(input)
@@ -74,8 +74,8 @@ class StorageMutation : Mutation, KoinComponent {
     }
 
     @GraphQLDescription("Set protection for files or directories")
-    suspend fun setProtection(
-        input: SetProtectionInput
+    suspend fun setStorageItemProtection(
+        input: SetStorageItemProtectionInput
     ): FileOperationResult {
         return storageDbService.setProtection(input)
     }

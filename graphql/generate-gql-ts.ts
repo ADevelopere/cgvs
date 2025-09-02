@@ -36,7 +36,7 @@ function convertToConstName(name: string): string {
     return result;
 }
 
-const storageKeywords = ["file", "folder", "upload", "storage"];
+const storageKeywords = ["file", "folder", "upload", "storage", "directory"];
 const authKeywords = ["auth", "login", "logout", "register", "me", "user", "token"];
 
 function getSubdirectory(operationName: string): string {
