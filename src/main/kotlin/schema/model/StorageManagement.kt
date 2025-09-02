@@ -5,13 +5,173 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
+// Database entities for storage management
+@Serializable
+@GraphQLIgnore
+data class DirectoryEntity(
+    val id: Long? = null,
+    val path: String,
+    val name: String,
+    val parentPath: String?,
+    val permissions: DirectoryPermissions = DirectoryPermissions(),
+    val isProtected: Boolean = false,
+    val protectChildren: Boolean = false,
+    val created: LocalDateTime,
+    val lastModified: LocalDateTime,
+    val createdBy: Long? = null,
+    val isFromBucket: Boolean = false // true if discovered from bucket and added to DB
+)
+
+@Serializable
+@GraphQLIgnore
+data class FileEntity(
+    val id: Long? = null,
+    val path: String,
+    val name: String,
+    val directoryPath: String,
+    val size: Long,
+    val contentType: String?,
+    val md5Hash: String?,
+    val isProtected: Boolean = false,
+    val created: LocalDateTime,
+    val lastModified: LocalDateTime,
+    val createdBy: Long? = null,
+    val isFromBucket: Boolean = false // true if discovered from bucket and added to DB
+)
+
+@Serializable
+@GraphQLDescription("Directory permissions configuration")
+data class DirectoryPermissions(
+    @param:GraphQLDescription("Whether uploads are allowed to this directory")
+    val allowUploads: Boolean = true,
+    @param:GraphQLDescription("Whether this directory can be deleted")
+    val allowDelete: Boolean = true,
+    @param:GraphQLDescription("Whether this directory can be moved")
+    val allowMove: Boolean = true,
+    @param:GraphQLDescription("Whether subdirectories can be created")
+    val allowCreateSubdirs: Boolean = true,
+    @param:GraphQLDescription("Whether files in this directory can be deleted")
+    val allowDeleteFiles: Boolean = true,
+    @param:GraphQLDescription("Whether files in this directory can be moved")
+    val allowMoveFiles: Boolean = true
+)
+
+@Serializable
+@GraphQLIgnore
+data class FileUsage(
+    val id: Long? = null,
+    val filePath: String,
+    val usageType: String, // e.g., "template_cover", "certificate_image", etc.
+    val referenceId: Long, // ID of the entity using this file
+    val referenceTable: String, // Table name of the entity
+    val created: LocalDateTime
+)
+
+@Serializable
+@GraphQLDescription("File usage information")
+data class FileUsageInfo(
+    @param:GraphQLDescription("Type of usage")
+    val usageType: String,
+    @param:GraphQLDescription("ID of the entity using this file")
+    val referenceId: Long,
+    @param:GraphQLDescription("Table/entity type using this file")
+    val referenceTable: String,
+    @param:GraphQLDescription("When this usage was created")
+    val created: LocalDateTime
+)
+
+@Serializable
+@GraphQLDescription("Protection levels for files and directories")
+enum class ProtectionLevel {
+    @GraphQLDescription("No protection - can be deleted/modified")
+    NONE,
+    @GraphQLDescription("Protected from deletion but can be modified")
+    PROTECTED,
+    @GraphQLDescription("Protected from deletion and modification")
+    LOCKED,
+    @GraphQLDescription("System-level protection - cannot be changed by users")
+    SYSTEM
+}
+
 // Input types for file operations
-@GraphQLDescription("Input for creating a folder")
+@GraphQLDescription("Input for creating a folder with permissions")
 data class CreateFolderInput(
     @param:GraphQLDescription("The path where to create the folder")
     val path: String,
     @param:GraphQLDescription("The name of the folder")
-    val name: String
+    val name: String,
+    @param:GraphQLDescription("Initial permissions for the folder")
+    val permissions: DirectoryPermissions? = null
+)
+
+@GraphQLDescription("Input for updating directory permissions")
+data class UpdateDirectoryPermissionsInput(
+    @param:GraphQLDescription("The directory path")
+    val path: String,
+    @param:GraphQLDescription("New permissions configuration")
+    val permissions: DirectoryPermissions
+)
+
+@GraphQLDescription("Input for setting file/directory protection")
+data class SetProtectionInput(
+    @param:GraphQLDescription("The file or directory path")
+    val path: String,
+    @param:GraphQLDescription("Whether to protect from deletion")
+    val isProtected: Boolean,
+    @param:GraphQLDescription("For directories: whether to protect all children (recursive)")
+    val protectChildren: Boolean = false
+)
+
+@GraphQLDescription("Input for moving files or directories")
+data class MoveItemsInput(
+    @param:GraphQLDescription("Source paths to move")
+    val sourcePaths: List<String>,
+    @param:GraphQLDescription("Destination directory path")
+    val destinationPath: String
+)
+
+@GraphQLDescription("Input for copying files or directories")
+data class CopyItemsInput(
+    @param:GraphQLDescription("Source paths to copy")
+    val sourcePaths: List<String>,
+    @param:GraphQLDescription("Destination directory path")
+    val destinationPath: String
+)
+
+@GraphQLDescription("Input for bulk deletion")
+data class DeleteItemsInput(
+    @param:GraphQLDescription("Paths to delete")
+    val paths: List<String>,
+    @param:GraphQLDescription("Force deletion even if files are in use (requires admin)")
+    val force: Boolean = false
+)
+
+@GraphQLDescription("Input for checking file usage")
+data class CheckFileUsageInput(
+    @param:GraphQLDescription("File path to check")
+    val filePath: String
+)
+
+@GraphQLDescription("Input for registering file usage")
+data class RegisterFileUsageInput(
+    @param:GraphQLDescription("File path being used")
+    val filePath: String,
+    @param:GraphQLDescription("Type of usage (e.g., 'template_cover', 'certificate_image')")
+    val usageType: String,
+    @param:GraphQLDescription("ID of the entity using this file")
+    val referenceId: Long,
+    @param:GraphQLDescription("Table/entity type using this file")
+    val referenceTable: String
+)
+
+@GraphQLDescription("Input for unregistering file usage")
+data class UnregisterFileUsageInput(
+    @param:GraphQLDescription("File path")
+    val filePath: String,
+    @param:GraphQLDescription("Usage type to remove")
+    val usageType: String,
+    @param:GraphQLDescription("Reference ID to remove")
+    val referenceId: Long
 )
 
 @GraphQLDescription("Input for renaming a file or folder")
@@ -95,7 +255,15 @@ data class FileInfo(
     @param:GraphQLDescription("MD5 hash of the file")
     val md5Hash: String?,
     @param:GraphQLDescription("Whether the file is publicly accessible")
-    val isPublic: Boolean = false
+    val isPublic: Boolean = false,
+    @param:GraphQLDescription("Whether the file is protected from deletion")
+    val isProtected: Boolean = false,
+    @param:GraphQLDescription("Whether the file is currently being used")
+    val isInUse: Boolean = false,
+    @param:GraphQLDescription("List of current usages")
+    val usages: List<FileUsageInfo> = emptyList(),
+    @param:GraphQLDescription("Whether this file exists only in bucket (not in DB)")
+    val isFromBucketOnly: Boolean = false
 ) : StorageObject
 
 @Serializable
@@ -115,7 +283,15 @@ data class FolderInfo(
     @param:GraphQLDescription("Creation timestamp")
     val created: LocalDateTime,
     @param:GraphQLDescription("Last modified timestamp")
-    val lastModified: LocalDateTime
+    val lastModified: LocalDateTime,
+    @param:GraphQLDescription("Directory permissions")
+    val permissions: DirectoryPermissions = DirectoryPermissions(),
+    @param:GraphQLDescription("Whether this directory is protected from deletion")
+    val isProtected: Boolean = false,
+    @param:GraphQLDescription("Whether children are protected from deletion")
+    val protectChildren: Boolean = false,
+    @param:GraphQLDescription("Whether this directory exists only in bucket (not in DB)")
+    val isFromBucketOnly: Boolean = false
 ) : StorageObject
 
 @Serializable
@@ -142,6 +318,45 @@ data class FileOperationResult(
     val message: String,
     @param:GraphQLDescription("The affected file/folder (if applicable)")
     val item: StorageObject? = null
+)
+
+@Serializable
+@GraphQLDescription("Result of checking file usage")
+data class FileUsageResult(
+    @param:GraphQLDescription("Whether the file is currently in use")
+    val isInUse: Boolean,
+    @param:GraphQLDescription("List of current usages")
+    val usages: List<FileUsageInfo>,
+    @param:GraphQLDescription("Whether the file can be safely deleted")
+    val canDelete: Boolean,
+    @param:GraphQLDescription("Reason why file cannot be deleted (if applicable)")
+    val deleteBlockReason: String? = null
+)
+
+@Serializable
+@GraphQLDescription("Result of bulk operations")
+data class BulkOperationResult(
+    @param:GraphQLDescription("Number of items successfully processed")
+    val successCount: Int,
+    @param:GraphQLDescription("Number of items that failed")
+    val failureCount: Int,
+    @param:GraphQLDescription("List of error messages for failed items")
+    val errors: List<String>,
+    @param:GraphQLDescription("List of successfully processed items")
+    val successfulItems: List<StorageObject> = emptyList()
+)
+
+@Serializable
+@GraphQLDescription("Directory validation result")
+data class DirectoryValidationResult(
+    @param:GraphQLDescription("Whether the directory exists in database")
+    val existsInDb: Boolean,
+    @param:GraphQLDescription("Whether the directory exists in bucket")
+    val existsInBucket: Boolean,
+    @param:GraphQLDescription("Whether the directory was automatically added to database")
+    val wasAddedToDb: Boolean = false,
+    @param:GraphQLDescription("Directory information after validation")
+    val directoryInfo: FolderInfo? = null
 )
 
 @Serializable
