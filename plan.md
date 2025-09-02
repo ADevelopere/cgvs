@@ -15,31 +15,113 @@ The system will be governed by four distinct contexts working together:
 
 ---
 
-## 2. Core Data (`StorageManagementContext`)
+## 2. Core Data (`StorageManagementCoreContext`)
 
-This context is the single source of truth for the file list and the bridge to the backend.
+This context is the single source of truth for backend operations and provides a headless API for data manipulation. It contains no UI state and focuses purely on data operations.
 
--   **Existing Responsibilities:** `fetchList`, `rename`, `remove`, `navigateTo`.
--   **New Functions to be Added:**
-    -   `fetchDirectoryTree(): Promise<DirectoryTreeNode[]>` - Fetch the complete directory tree structure for the sidebar navigation
-    -   `move(sourcePaths: string[], destinationPath: string): Promise<boolean>`
-    -   `copy(sourcePaths: string[], destinationPath: string): Promise<boolean>`
-    -   `createFolder(path: string, name: string): Promise<boolean>`
-    -   `search(query: string, path?: string): Promise<StorageItem[]>` - Search for files and folders
+### State to Manage:
+-   `stats`: Storage statistics from the backend
+
+### Core Functions:
+-   **Data Fetching:**
+    -   `fetchList(params: StorageQueryParams): Promise<{ items: StorageItem[], pagination: PaginationInfo } | null>` - Fetch files/folders with given parameters, returns null on error
+    -   `fetchDirectoryTree(): Promise<DirectoryTreeNode[] | null>` - Fetch complete directory tree for sidebar navigation, returns null on error
+    -   `fetchStats(path?: string): Promise<StorageStats | null>` - Fetch storage statistics, returns null on error
+
+-   **File Operations:**
+    -   `rename(path: string, newName: string): Promise<boolean>` - Rename file/folder, returns false on error
+    -   `remove(paths: string[]): Promise<boolean>` - Delete files/folders, returns false on error
+    -   `move(sourcePaths: string[], destinationPath: string): Promise<boolean>` - Move files/folders, returns false on error
+    -   `copy(sourcePaths: string[], destinationPath: string): Promise<boolean>` - Copy files/folders, returns false on error
+    -   `createFolder(path: string, name: string): Promise<boolean>` - Create new folder, returns false on error
+
+-   **Search:**
+    -   `search(query: string, path?: string): Promise<{ items: StorageItem[], totalCount: number } | null>` - Search for files and folders, returns null on error
+
+### Responsibilities:
+-   Handle all GraphQL API calls
+-   Transform data between backend and frontend formats (storage paths vs display paths)
+-   Handle notifications for operation success/failure
+-   Provide pure data operations without UI concerns
+-   Return simple success/failure results or null for errors
+-   All functions are async and return promises, eliminating need for global loading states
 
 ---
 
-## 3. UI State & Interaction (`StorageUIManagerContext`)
+## 3. UI State & Interaction (`StorageManagementUIContext`)
 
-This new context will manage the complex interactive state of the file browser.
+This context manages all user interface state and interactions, consuming the Core context to perform data operations.
 
 ### State to Manage:
--   `selectedItems`: An array of the paths of all currently selected items.
--   `lastSelectedItem`: The path of the item that was last clicked, crucial for Shift-click range selections.
--   `clipboard`: An object `{ operation: 'copy' | 'cut', items: StorageItem[] }` to track clipboard state.
--   `viewMode`: Current view mode (`'grid'` or `'list'`).
--   `searchMode`: Boolean indicating if currently in search mode.
--   `searchResults`: Array of search results when in search mode.
+-   **Data State:**
+    -   `items`: Current list of files/folders being displayed
+    -   `pagination`: Pagination information for current view
+    -   `directoryTree`: Directory tree structure for sidebar navigation
+
+-   **Query Parameters:**
+    -   `params`: Current query parameters (path, limit, offset, searchTerm, fileType, sortField)
+
+-   **Selection State:**
+    -   `selectedItems`: Array of paths of currently selected items
+    -   `lastSelectedItem`: Path of last clicked item (for Shift-click range selection)
+    -   `focusedItem`: Path of item with keyboard focus
+
+-   **UI Interaction State:**
+    -   `viewMode`: Current view mode ('grid' or 'list')
+    -   `searchMode`: Boolean indicating if in search mode
+    -   `searchResults`: Array of search results when in search mode
+    -   `clipboard`: Object `{ operation: 'copy' | 'cut', items: StorageItem[] }`
+
+-   **Local UI State:**
+    -   `sortBy`: Local sorting field for client-side sorting
+    -   `sortDirection`: Local sorting direction ('asc' or 'desc')
+
+-   **Operation States:**
+    -   `loading`: Object tracking loading states for different operations (e.g., `{ fetchList: boolean, rename: boolean, delete: boolean }`)
+    -   `operationErrors`: Object tracking operation-specific errors that need UI handling beyond notifications
+
+### UI Functions:
+-   **Navigation:**
+    -   `navigateTo(path: string): void` - Navigate to a directory and fetch its contents
+    -   `goUp(): void` - Navigate to parent directory
+    -   `refresh(): void` - Refresh current directory contents
+
+-   **Selection Management:**
+    -   `toggleSelect(path: string): void` - Toggle selection of an item
+    -   `selectAll(): void` - Select all items in current view
+    -   `clearSelection(): void` - Clear all selections
+    -   `selectRange(fromPath: string, toPath: string): void` - Select range of items (Shift+click)
+
+-   **Parameter Management:**
+    -   `setParams(partial: Partial<StorageQueryParams>): void` - Update query parameters
+    -   `search(term: string): void` - Perform search and update UI state
+    -   `setFilterType(type?: FileType): void` - Set file type filter
+    -   `setSortField(field?: FileSortField): void` - Set backend sort field
+    -   `setPage(page: number): void` - Set pagination page
+    -   `setLimit(limit: number): void` - Set items per page limit
+
+-   **Local Sorting:**
+    -   `setSortBy(field: string): void` - Set local sort field
+    -   `setSortDirection(direction: 'asc' | 'desc'): void` - Set local sort direction
+    -   `getSortedItems(): StorageItem[]` - Get locally sorted items
+
+-   **Clipboard Operations:**
+    -   `copyItems(items: StorageItem[]): void` - Copy items to clipboard
+    -   `cutItems(items: StorageItem[]): void` - Cut items to clipboard
+    -   `pasteItems(): Promise<boolean>` - Paste items from clipboard
+
+-   **File Operations (UI Layer):**
+    -   `renameItem(path: string, newName: string): Promise<boolean>` - Rename with UI updates
+    -   `deleteItems(paths: string[]): Promise<boolean>` - Delete with UI updates
+    -   `moveItems(sourcePaths: string[], destinationPath: string): Promise<boolean>` - Move with UI updates
+    -   `copyItemsTo(sourcePaths: string[], destinationPath: string): Promise<boolean>` - Copy with UI updates
+
+### Responsibilities:
+-   Manage all UI-specific state (selection, view mode, local sorting)
+-   Consume Core context for backend operations
+-   Handle complex UI interactions (drag-and-drop, keyboard navigation, clipboard)
+-   Coordinate between user actions and backend operations
+-   Maintain local state consistency after backend operations
 
 ### Interaction Logic to Implement:
 
@@ -53,16 +135,16 @@ This new context will manage the complex interactive state of the file browser.
 2.  **Drag-to-Move:**
     -   All `StorageItem` components will be draggable.
     -   `FolderItem` components will be drop targets.
-    -   The `onDrop` handler will call the `move()` function from the Core context.
+    -   The `onDrop` handler will call the `moveItems()` function from the UI context, which internally uses the Core context.
     -   **Validation:** The UI will prevent dropping a folder onto itself, one of its own children, or a non-folder item.
 
 3.  **Copy/Cut/Paste:**
     -   **Copy:** Copies the `selectedItems` to the internal `clipboard` with `operation: 'copy'`.
     -   **Cut:** Copies the `selectedItems` to the `clipboard` with `operation: 'cut'`. The UI will visually change the cut items (e.g., make them semi-transparent).
-    -   **Paste:** When in a folder, this action will read the `clipboard`. If the operation was `cut`, it calls the Core `move()` function. If it was `copy`, it calls the Core `copy()` function. The clipboard is cleared after a successful paste.
+    -   **Paste:** When in a folder, this action will read the `clipboard`. The UI context will call the appropriate Core function (`move()` for cut, `copy()` for copy operations). The clipboard is cleared after a successful paste.
 
-### 3.4 Keyboard Navigation
-To ensure accessibility and provide power-user capabilities, the file manager will be fully navigable via the keyboard. The `StorageUIManagerContext` will manage the focused state.
+### Keyboard Navigation
+To ensure accessibility and provide power-user capabilities, the file manager will be fully navigable via the keyboard. The `StorageManagementUIContext` will manage the focused state.
 
 -   **State to Manage:**
     -   `focusedItem`: The path of the item that currently has keyboard focus, distinct from selection.
@@ -289,7 +371,8 @@ This section details the components responsible for rendering the file browser, 
 ## 7. Final File List
 
 -   **Contexts:**
-    -   `nextjs/contexts/StorageUIManagerContext.tsx` (New)
+    -   `nextjs/contexts/storage/StorageManagementCoreContext.tsx` (New)
+    -   `nextjs/contexts/storage/StorageManagementUIContext.tsx` (New)
     -   `nextjs/contexts/MenuManagerContext.tsx`
 -   **Components:**
     -   `nextjs/components/storage/dropzone/...`
