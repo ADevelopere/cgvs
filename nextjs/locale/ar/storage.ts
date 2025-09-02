@@ -28,27 +28,32 @@ const arStorageTranslations: StorageTranslations = {
         failedToFetchFileList: "فشل في جلب قائمة الملفات",
         failedToFetchDirectoryContents: "فشل في جلب محتويات المجلد",
         failedToFetchStorageStatistics: "فشل في جلب إحصائيات التخزين",
-        
+
         // File operation success messages
         successfullyRenamedTo: 'تم إعادة تسمية الملف بنجاح إلى "%{newName}"',
         successfullyCreatedFolder: 'تم إنشاء المجلد "%{name}" بنجاح',
         successfullyDeleted: "تم حذف %{count} عنصر بنجاح",
         successfullyMoved: "تم نقل %{count} عنصر بنجاح",
-        successfullyMovedPartial: "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
+        successfullyMovedPartial:
+            "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
         successfullyCopied: "تم نسخ %{count} عنصر بنجاح",
-        successfullyCopiedPartial: "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
-        
+        successfullyCopiedPartial:
+            "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
+
         // File operation error messages
         failedToRenameFile: "فشل في إعادة تسمية الملف",
         failedToCreateFolder: "فشل في إنشاء المجلد",
         failedToDeleteItems: "فشل في حذف العناصر",
-        deletedPartial: "تم حذف %{successCount} عنصر، فشل في حذف %{failureCount}. الأخطاء: %{errors}",
+        deletedPartial:
+            "تم حذف %{successCount} عنصر، فشل في حذف %{failureCount}. الأخطاء: %{errors}",
         failedToMoveItems: "فشل في نقل العناصر",
-        movedPartial: "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
+        movedPartial:
+            "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
         failedToCopyItems: "فشل في نسخ العناصر",
-        copiedPartial: "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
+        copiedPartial:
+            "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
         failedToSearchFiles: "فشل في البحث عن الملفات",
-        
+
         // Generic terms
         items: "عناصر",
         item: "عنصر",
@@ -59,14 +64,15 @@ const arStorageTranslations: StorageTranslations = {
         failedToNavigateToDirectory: "فشل في التنقل إلى المجلد",
         failedToRefreshDirectory: "فشل في تحديث المجلد",
         searchFailed: "فشل البحث",
-        
+
         // Loading states
         loadingFolderContents: "جاري تحميل محتويات المجلد",
         folderExpanded: "تم توسيع المجلد، %{count} عنصر",
-        
+
         // View mode and sorting
         gridView: "عرض الشبكة",
         listView: "عرض القائمة",
+        sortBy: "ترتيب حسب",
         sortByName: "ترتيب حسب الاسم",
         sortBySize: "ترتيب حسب الحجم",
         sortByLastModified: "ترتيب حسب آخر تعديل",
@@ -74,7 +80,17 @@ const arStorageTranslations: StorageTranslations = {
         sortByType: "ترتيب حسب النوع",
         ascending: "تصاعدي",
         descending: "تنازلي",
-        
+        name: "الاسم",
+        size: "الحجم",
+        lastModified: "آخر تعديل",
+        created: "تاريخ الإنشاء",
+
+        // Empty states and messages
+        emptyFolder: "هذا المجلد فارغ",
+        tryDifferentSearch: "جرب مصطلح بحث مختلف",
+        uploadOrCreate: "ارفع ملفات أو أنشئ مجلد جديد",
+        searching: "جاري البحث...",
+
         // Selection and clipboard
         selectAll: "تحديد الكل",
         clearSelection: "إلغاء التحديد",
@@ -85,31 +101,44 @@ const arStorageTranslations: StorageTranslations = {
         noItemsInClipboard: "لا توجد عناصر في الحافظة",
         itemsCopied: "تم نسخ %{count} عنصر",
         itemsCut: "تم قص %{count} عنصر",
-        
+
         // Search
         searchPlaceholder: "البحث في الملفات والمجلدات...",
         searchResults: "%{count} نتيجة بحث",
         noSearchResults: "لا توجد نتائج بحث",
         exitSearchMode: "إنهاء وضع البحث",
         searchInFolder: "البحث في %{folderName}",
-        
+        item: "عنصر",
+        items: "عناصر",
+
         // Tree navigation
         expandFolder: "توسيع المجلد",
         collapseFolder: "طي المجلد",
         noFoldersFound: "لم يتم العثور على مجلدات",
-        
+
         // Filter and view controls
+        filters: "المرشحات",
+        activeFilters: "المرشحات النشطة",
+        allDates: "جميع التواريخ",
+        today: "اليوم",
+        last7Days: "آخر 7 أيام",
+        last30Days: "آخر 30 يوم",
+        thisYear: "هذا العام",
+        lastYear: "العام الماضي",
+        customDateRange: "نطاق تاريخ مخصص",
+        searchTerm: "مصطلح البحث",
         filterByType: "تصفية حسب النوع",
         filterByDate: "تصفية حسب التاريخ",
         clearFilters: "مسح المرشحات",
         showFilters: "إظهار المرشحات",
         hideFilters: "إخفاء المرشحات",
-        
+
         // Accessibility
         focusedItem: "العنصر المحدد: %{itemName}",
-        navigationInstructions: "استخدم مفاتيح الأسهم للتنقل، مسافة للتحديد، Enter للفتح",
+        navigationInstructions:
+            "استخدم مفاتيح الأسهم للتنقل، مسافة للتحديد، Enter للفتح",
         keyboardShortcuts: "اختصارات لوحة المفاتيح",
-        
+
         // Context menu actions
         open: "فتح",
         rename: "إعادة تسمية",
@@ -122,7 +151,8 @@ const arStorageTranslations: StorageTranslations = {
         newFolder: "مجلد جديد",
         uploadFiles: "رفع ملفات",
         refresh: "تحديث",
-        
+        moveTo: "نقل إلى",
+
         // File types for filtering
         allTypes: "جميع الأنواع",
         folders: "مجلدات",
@@ -138,12 +168,17 @@ const arStorageTranslations: StorageTranslations = {
         drawings: "رسوم",
         sites: "مواقع",
         shortcuts: "اختصارات",
-        
+        otherTypes: "أخرى",
+
         // Pagination
         itemsPerPage: "عناصر في الصفحة",
         page: "صفحة %{current} من %{total}",
         showingItems: "عرض %{start}-%{end} من %{total}",
-        
+
+        // Navigation and breadcrumb
+        myDrive: "مساحتي",
+        breadcrumbNavigation: "شريط التنقل",
+
         // Generic UI terms
         loading: "جاري التحميل",
         error: "خطأ",
