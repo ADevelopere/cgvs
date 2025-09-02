@@ -43,7 +43,7 @@ interface StorageService {
         location: UploadLocation
     ): FileUploadResult
 
-    fun listFiles(input: ListFilesInput): StorageObjectList
+    fun listFiles(input: ListFilesInput): StorageEntityList
 
     fun createFolder(input: CreateFolderInput): FileOperationResult
 
@@ -51,14 +51,14 @@ interface StorageService {
 
     fun deleteFile(path: String): FileOperationResult
 
-    fun getFolderInfoByPath(path: String): FolderInfo
+    fun getFolderEntityByPath(path: String): DirectoryEntity
 
-    fun getFileInfoByPath(path: String): FileInfo?
+    fun getFileEntityByPath(path: String): FileEntity?
 
     fun getStorageStatistics(path: String? = null): StorageStats
 
     // New methods for directory tree and bulk operations
-    suspend fun fetchDirectoryChildren(path: String? = null): List<FolderInfo>
+    suspend fun fetchDirectoryChildren(path: String? = null): List<DirectoryEntity>
     suspend fun moveItems(input: MoveStorageItemsInput): BulkOperationResult
     suspend fun copyItems(input: CopyStorageItemsInput): BulkOperationResult
     suspend fun deleteItems(input: DeleteItemsInput): BulkOperationResult
@@ -94,9 +94,7 @@ fun storageService(
                         }
                     }
 
-                    else -> {
-                        println("Unknown part: $part")
-                    }
+                    else -> {}
                 }
                 part.dispose()
             }
@@ -253,7 +251,7 @@ fun storageService(
             val fileInfo = blobToFileInfo(blob)
 
             // Add file to DB
-            runBlocking {
+            val createdFileEntity = runBlocking {
                 try {
                     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                     val fileEntity = FileEntity(
@@ -271,16 +269,28 @@ fun storageService(
                 } catch (e: Exception) {
                     // Log but don't fail the upload since the file is already in bucket
                     println("Failed to add file to DB: ${e.message}")
+                    // Return a fallback entity
+                    FileEntity(
+                        path = path,
+                        name = fileInfo.name,
+                        directoryPath = directoryPath,
+                        size = fileInfo.size,
+                        contentType = contentType?.value,
+                        md5Hash = blob.md5ToHexString,
+                        created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                        lastModified = fileInfo.lastModified,
+                        isFromBucket = true
+                    )
                 }
             }
 
-            return FileUploadResult(true, "File uploaded successfully", fileInfo)
+            return FileUploadResult(true, "File uploaded successfully", createdFileEntity)
         } catch (e: Exception) {
             return FileUploadResult(false, "Upload failed: ${e.message}", null)
         }
     }
 
-    override fun listFiles(input: ListFilesInput): StorageObjectList {
+    override fun listFiles(input: ListFilesInput): StorageEntityList {
         val prefix = if (input.path.isEmpty()) "" else "${input.path.trimEnd('/')}/"
         val options = listOf(
             Storage.BlobListOption.prefix(prefix),
@@ -291,7 +301,7 @@ fun storageService(
         )
 
         val blobs = storage.list(gcsConfig.bucketName, *options.toTypedArray()).values.toList()
-        val items = mutableListOf<StorageObject>()
+        val items = mutableListOf<StorageEntity>()
 
         // Process blobs
         for (blob in blobs) {
@@ -301,22 +311,26 @@ fun storageService(
                 // It's a folder
                 val folderName = blob.name.removeSuffix("/").substringAfterLast('/')
                 if (folderName.isNotEmpty()) {
-                    val folderInfo = getFolderInfoByPath(blob.name.removeSuffix("/"))
-                    items.add(folderInfo)
+                    val folderEntity = getFolderEntityByPath(blob.name.removeSuffix("/"))
+                    items.add(folderEntity)
                 }
             } else {
                 // It's a file
-                val fileInfo = blobToFileInfo(blob)
+                val fileEntity = getFileEntityByPath(blob.name)
+                if (fileEntity != null) {
+                    // Apply filters
+                    if (input.fileType != null) {
+                        val fileType = determineFileType(ContentType.entries.find { it.value == fileEntity.contentType })
+                        if (!matchesFileType(fileType, input.fileType)) {
+                            continue
+                        }
+                    }
+                    if (input.searchTerm != null && !fileEntity.name.contains(input.searchTerm, ignoreCase = true)) {
+                        continue
+                    }
 
-                // Apply filters
-                if (input.fileType != null && !matchesFileType(fileInfo.fileType, input.fileType)) {
-                    continue
+                    items.add(fileEntity)
                 }
-                if (input.searchTerm != null && !fileInfo.name.contains(input.searchTerm, ignoreCase = true)) {
-                    continue
-                }
-
-                items.add(fileInfo)
             }
         }
 
@@ -330,15 +344,15 @@ fun storageService(
             FileSortField.SIZE -> {
                 if (input.sortDirection == SortDirection.ASC) items.sortedBy {
                     when (it) {
-                        is FileInfo -> it.size
-                        is FolderInfo -> it.totalSize
+                        is FileEntity -> it.size
+                        is DirectoryEntity -> 0L // Directories don't have size
                         else -> 0L
                     }
                 }
                 else items.sortedByDescending {
                     when (it) {
-                        is FileInfo -> it.size
-                        is FolderInfo -> it.totalSize
+                        is FileEntity -> it.size
+                        is DirectoryEntity -> 0L // Directories don't have size
                         else -> 0L
                     }
                 }
@@ -347,15 +361,15 @@ fun storageService(
             FileSortField.MODIFIED -> {
                 if (input.sortDirection == SortDirection.ASC) items.sortedBy {
                     when (it) {
-                        is FileInfo -> it.lastModified
-                        is FolderInfo -> it.lastModified
+                        is FileEntity -> it.lastModified
+                        is DirectoryEntity -> it.lastModified
                         else -> LocalDateTime(1900, 1, 1, 0, 0, 0)
                     }
                 }
                 else items.sortedByDescending {
                     when (it) {
-                        is FileInfo -> it.lastModified
-                        is FolderInfo -> it.lastModified
+                        is FileEntity -> it.lastModified
+                        is DirectoryEntity -> it.lastModified
                         else -> LocalDateTime(1900, 1, 1, 0, 0, 0)
                     }
                 }
@@ -375,7 +389,7 @@ fun storageService(
             sortedItems.drop(input.offset ?: 0).take(input.limit ?: ListFilesInput.DEFAULT_LIMIT)
         val hasMore = (input.offset ?: 0) + (input.limit ?: ListFilesInput.DEFAULT_LIMIT) < totalCount
 
-        return StorageObjectList(
+        return StorageEntityList(
             items = paginatedItems,
             totalCount = totalCount,
             offset = input.offset ?: 0,
@@ -398,7 +412,7 @@ fun storageService(
             // Check parent directory permissions
             runBlocking {
                 val parentDir = storageRepository.getDirectoryByPath(input.path)
-                if (parentDir != null && !parentDir.permissions.allowCreateSubdirs) {
+                if (parentDir != null && !parentDir.permissions.allowCreateSubDirs) {
                     return@runBlocking FileOperationResult(false, "Creating subdirectories not allowed in parent directory")
                 }
             }
@@ -409,7 +423,7 @@ fun storageService(
             storage.create(blobInfo)
 
             // Create folder in DB
-            val folderInfo = runBlocking {
+            val createdEntity = runBlocking {
                 try {
                     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                     val directoryEntity = DirectoryEntity(
@@ -421,15 +435,14 @@ fun storageService(
                         lastModified = now,
                         isFromBucket = false
                     )
-                    val created = storageRepository.createDirectory(directoryEntity)
-                    directoryEntityToFolderInfo(created)
+                    storageRepository.createDirectory(directoryEntity)
                 } catch (_: Exception) {
                     // If DB operation fails, still return success since folder was created in bucket
-                    getFolderInfoByPath(fullPath)
+                    getFolderEntityByPath(fullPath)
                 }
             }
 
-            return FileOperationResult(true, "Folder created successfully", folderInfo)
+            return FileOperationResult(true, "Folder created successfully", createdEntity)
         } catch (e: Exception) {
             return FileOperationResult(false, "Failed to create folder: ${e.message}")
         }
@@ -465,9 +478,31 @@ fun storageService(
             sourceBlob.delete()
 
             val newBlob = storage.get(gcsConfig.bucketName, newPath)!!
-            val fileInfo = blobToFileInfo(newBlob)
 
-            return FileOperationResult(true, "File renamed successfully", fileInfo)
+            // Update file in database and get the entity
+            val fileEntity = runBlocking {
+                try {
+                    // Delete old file record and create new one
+                    storageRepository.deleteFile(input.currentPath)
+
+                    // Add the file with new path
+                    val fileName = input.newName
+                    val directoryPath = newPath.substringBeforeLast('/')
+                    storageRepository.addFileFromBucket(
+                        path = newPath,
+                        name = fileName,
+                        directoryPath = directoryPath,
+                        size = newBlob.size,
+                        contentType = newBlob.contentType,
+                        md5Hash = newBlob.md5
+                    )
+                } catch (_: Exception) {
+                    // Fallback to creating a new entity
+                    getFileEntityByPath(newPath)
+                }
+            }
+
+            return FileOperationResult(true, "File renamed successfully", fileEntity)
         } catch (e: Exception) {
             return FileOperationResult(false, "Failed to rename file: ${e.message}")
         }
@@ -523,10 +558,30 @@ fun storageService(
         }
     }
 
-    override fun getFileInfoByPath(path: String): FileInfo? {
+    override fun getFileEntityByPath(path: String): FileEntity? {
         return try {
+            // First check if file exists in database
+            val dbFile = runBlocking { storageRepository.getFileByPath(path) }
+            if (dbFile != null) {
+                return dbFile
+            }
+
+            // If not in DB, check bucket and add to DB if it exists
             val blob = storage.get(gcsConfig.bucketName, path) ?: return null
-            blobToFileInfo(blob)
+
+            // Add file to database
+            val fileName = path.substringAfterLast('/')
+            val directoryPath = path.substringBeforeLast('/')
+            return runBlocking {
+                storageRepository.addFileFromBucket(
+                    path = path,
+                    name = fileName,
+                    directoryPath = directoryPath,
+                    size = blob.size,
+                    contentType = blob.contentType,
+                    md5Hash = blob.md5
+                )
+            }
         } catch (_: Exception) {
             null
         }
@@ -574,43 +629,54 @@ fun storageService(
         }
     }
 
-    override fun getFolderInfoByPath(path: String): FolderInfo {
+    override fun getFolderEntityByPath(path: String): DirectoryEntity {
+        // First check if directory exists in database
+        val dbDirectory = runBlocking { storageRepository.getDirectoryByPath(path) }
+        if (dbDirectory != null) {
+            return dbDirectory
+        }
+
+        // If not in DB, check bucket and add to DB if it exists
         val folderPath = "$path/"
         val blobs = storage.list(gcsConfig.bucketName, Storage.BlobListOption.prefix(folderPath)).values.toList()
 
-        var fileCount = 0
-        var folderCount = 0
-        var totalSize = 0L
-        var latestModified = LocalDateTime(1900, 1, 1, 0, 0, 0)
-        var created = LocalDateTime(2100, 1, 1, 0, 0, 0)
+        // Check if folder exists in bucket (has files or subfolder marker)
+        val folderExists = blobs.isNotEmpty() || storage.get(gcsConfig.bucketName, folderPath) != null
 
-        for (blob in blobs) {
-            if (blob.name == folderPath) continue
+        if (folderExists) {
+            // Add directory to database
+            val folderName = path.substringAfterLast('/')
+            val parentPath = path.substringBeforeLast('/').takeIf { it.isNotEmpty() }
 
-            val blobTime = timestampToLocalDateTime(blob.updateTimeOffsetDateTime.toInstant().toEpochMilli())
-            val blobCreated = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli())
-
-            if (blobTime > latestModified) latestModified = blobTime
-            if (blobCreated < created) created = blobCreated
-
-            if (blob.name.endsWith("/")) {
-                folderCount++
-            } else {
-                fileCount++
-                totalSize += blob.size
+            return runBlocking {
+                try {
+                    storageRepository.addDirectoryFromBucket(path, folderName, parentPath)
+                } catch (_: Exception) {
+                    // If DB operation fails, return a temporary entity
+                    DirectoryEntity(
+                        name = folderName,
+                        path = path,
+                        parentPath = parentPath,
+                        permissions = DirectoryPermissions(),
+                        isProtected = false,
+                        created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                        lastModified = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+                        isFromBucket = true
+                    )
+                }
             }
         }
 
-        return FolderInfo(
+        // Return a default entity if folder doesn't exist
+        return DirectoryEntity(
             name = path.substringAfterLast('/'),
             path = path,
-            fileCount = fileCount,
-            folderCount = folderCount,
-            totalSize = totalSize,
-            created = if (created == LocalDateTime(2100, 1, 1, 0, 0, 0)) Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()) else created,
-            lastModified = if (latestModified == LocalDateTime(1900, 1, 1, 0, 0, 0)) Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()) else latestModified
+            parentPath = path.substringBeforeLast('/').takeIf { it.isNotEmpty() },
+            permissions = DirectoryPermissions(),
+            isProtected = false,
+            created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            lastModified = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            isFromBucket = false
         )
     }
 
@@ -638,7 +704,7 @@ fun storageService(
     }
 
     // New implementations for missing methods
-    override suspend fun fetchDirectoryChildren(path: String?): List<FolderInfo> {
+    override suspend fun fetchDirectoryChildren(path: String?): List<DirectoryEntity> {
         val searchPath = if (path.isNullOrEmpty()) "" else path.trimEnd('/')
 
         // Get directories from DB first
@@ -654,7 +720,7 @@ fun storageService(
         )
 
         val page = storage.list(gcsConfig.bucketName, *options.toTypedArray())
-        val bucketFolders = mutableListOf<FolderInfo>()
+        val bucketFolders = mutableListOf<DirectoryEntity>()
 
         // Process prefixes (folders) from bucket
         page.iterateAll().forEach { blob ->
@@ -667,34 +733,31 @@ fun storageService(
 
                     try {
                         val addedDir = storageRepository.addDirectoryFromBucket(folderPath, folderName, parentPath)
-                        bucketFolders.add(directoryEntityToFolderInfo(addedDir))
+                        bucketFolders.add(addedDir)
                     } catch (_: Exception) {
                         // If DB operation fails, still show the folder but mark it as bucket-only
-                        bucketFolders.add(FolderInfo(
+                        bucketFolders.add(DirectoryEntity(
                             name = folderName,
                             path = folderPath,
+                            parentPath = parentPath,
                             permissions = DirectoryPermissions(), // Default permissions
                             isProtected = false,
-                            fileCount = 0,
-                            folderCount = 0,
-                            totalSize = 0,
                             created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
                             lastModified = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                            isFromBucketOnly = true
+                            isFromBucket = true
                         ))
                     }
                 }
             }
         }
 
-        // Convert DB directories to FolderInfo and combine with bucket folders
-        val dbFolders = dbDirectories.map { directoryEntityToFolderInfo(it) }
-        return (dbFolders + bucketFolders).sortedBy { it.name }
+        // Convert DB directories and combine with bucket folders
+        return (dbDirectories + bucketFolders).sortedBy { it.name }
     }
 
     override suspend fun moveItems(input: MoveStorageItemsInput): BulkOperationResult {
         val errors = mutableListOf<String>()
-        val successfulItems = mutableListOf<StorageObject>()
+        val successfulItems = mutableListOf<StorageEntity>()
 
         for (sourcePath in input.sourcePaths) {
             try {
@@ -746,9 +809,11 @@ fun storageService(
                         lastModified = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                     )
                     storageRepository.createFile(updatedFile)
+                    successfulItems.add(updatedFile)
+                } else {
+                    // File not in DB, get entity from bucket
+                    getFileEntityByPath(newPath)?.let { successfulItems.add(it) }
                 }
-
-                successfulItems.add(blobToFileInfo(copiedBlob))
 
             } catch (e: Exception) {
                 errors.add("Move failed for $sourcePath: ${e.message}")
@@ -765,7 +830,7 @@ fun storageService(
 
     override suspend fun copyItems(input: CopyStorageItemsInput): BulkOperationResult {
         val errors = mutableListOf<String>()
-        val successfulItems = mutableListOf<StorageObject>()
+        val successfulItems = mutableListOf<StorageEntity>()
 
         for (sourcePath in input.sourcePaths) {
             try {
@@ -807,10 +872,12 @@ fun storageService(
                         created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
                         lastModified = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                     )
-                    storageRepository.createFile(copiedFile)
+                    val createdFile = storageRepository.createFile(copiedFile)
+                    successfulItems.add(createdFile)
+                } else {
+                    // File not in DB, get entity from bucket
+                    getFileEntityByPath(newPath)?.let { successfulItems.add(it) }
                 }
-
-                successfulItems.add(blobToFileInfo(copiedBlob))
 
             } catch (e: Exception) {
                 errors.add("Copy failed for $sourcePath: ${e.message}")
@@ -827,7 +894,7 @@ fun storageService(
 
     override suspend fun deleteItems(input: DeleteItemsInput): BulkOperationResult {
         val errors = mutableListOf<String>()
-        val successfulItems = mutableListOf<StorageObject>()
+        val successfulItems = mutableListOf<StorageEntity>()
 
         for (path in input.paths) {
             try {
@@ -861,9 +928,9 @@ fun storageService(
                     }
                 }
 
-                // Get info before deleting for the result
-                val fileInfo = getFileInfoByPath(path)
-                val folderInfo = if (fileInfo == null) getFolderInfoByPath(path) else null
+                // Get entity before deleting for the result
+                val fileEntity = getFileEntityByPath(path)
+                val folderEntity = if (fileEntity == null) getFolderEntityByPath(path) else null
 
                 // Delete from bucket
                 val deleted = storage.delete(gcsConfig.bucketName, path)
@@ -875,10 +942,10 @@ fun storageService(
                 // Delete from DB
                 if (dbFile != null) {
                     storageRepository.deleteFile(path)
-                    fileInfo?.let { successfulItems.add(it) }
+                    fileEntity?.let { successfulItems.add(it) }
                 } else if (dbDir != null) {
                     storageRepository.deleteDirectory(path)
-                    folderInfo?.let { successfulItems.add(it) }
+                    folderEntity?.let { successfulItems.add(it) }
                 }
 
             } catch (e: Exception) {

@@ -16,20 +16,20 @@ class StorageQuery : Query, KoinComponent {
     @GraphQLDescription("List files and folders with pagination and filtering")
     fun listFiles(
         input: ListFilesInput
-    ): StorageObjectList {
+    ): StorageEntityList {
         return storageService.listFiles(input)
     }
 
     fun getFileInfo(
         path: String
-    ): FileInfo? {
-        return storageService.getFileInfoByPath(path)
+    ): FileEntity? {
+        return storageService.getFileEntityByPath(path)
     }
 
     fun getFolderInfo(
         path: String
-    ): FolderInfo {
-        return storageService.getFolderInfoByPath(path)
+    ): DirectoryEntity {
+        return storageService.getFolderEntityByPath(path)
     }
 
     fun searchFiles(
@@ -40,7 +40,7 @@ class StorageQuery : Query, KoinComponent {
         folder: String? = null,
         @GraphQLDescription("Maximum number of results")
         limit: Int = 50
-    ): StorageObjectList {
+    ): StorageEntityList {
         val input = ListFilesInput(
             path = folder ?: "",
             limit = limit,
@@ -62,7 +62,7 @@ class StorageQuery : Query, KoinComponent {
     suspend fun fetchDirectoryChildren(
         @GraphQLDescription("Parent directory path (empty or null for root level)")
         path: String? = null
-    ): List<FolderInfo> {
+    ): List<DirectoryEntity> {
         return storageService.fetchDirectoryChildren(path)
     }
 

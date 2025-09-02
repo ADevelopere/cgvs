@@ -83,8 +83,7 @@ fun storageDbService(
             val updated = storageRepository.updateDirectoryPermissions(input.path, input.permissions)
             if (updated) {
                 val updatedDir = storageRepository.getDirectoryByPath(input.path)
-                val folderInfo = updatedDir?.let { directoryEntityToFolderInfo(it) }
-                FileOperationResult(true, "Directory permissions updated successfully", folderInfo)
+                FileOperationResult(true, "Directory permissions updated successfully", updatedDir)
             } else {
                 FileOperationResult(false, "Directory not found or permissions not updated", null)
             }
@@ -105,8 +104,7 @@ fun storageDbService(
                     val updated = storageRepository.setFileProtection(input.path, input.isProtected)
                     if (updated) {
                         val updatedFile = storageRepository.getFileByPath(input.path)
-                        val fileInfo = updatedFile?.let { fileEntityToFileInfo(it) }
-                        FileOperationResult(true, "File protection updated successfully", fileInfo)
+                        FileOperationResult(true, "File protection updated successfully", updatedFile)
                     } else {
                         FileOperationResult(false, "Failed to update file protection", null)
                     }
@@ -116,8 +114,7 @@ fun storageDbService(
                     val updated = storageRepository.setDirectoryProtection(input.path, input.isProtected, input.protectChildren)
                     if (updated) {
                         val updatedDir = storageRepository.getDirectoryByPath(input.path)
-                        val folderInfo = updatedDir?.let { directoryEntityToFolderInfo(it) }
-                        FileOperationResult(true, "Directory protection updated successfully", folderInfo)
+                        FileOperationResult(true, "Directory protection updated successfully", updatedDir)
                     } else {
                         FileOperationResult(false, "Failed to update directory protection", null)
                     }
@@ -149,9 +146,8 @@ fun storageDbService(
             )
 
             val registeredUsage = storageRepository.registerFileUsage(usage)
-            val fileInfo = fileEntityToFileInfo(dbFile)
 
-            FileOperationResult(true, "File usage registered successfully", fileInfo)
+            FileOperationResult(true, "File usage registered successfully", dbFile)
         } catch (e: Exception) {
             FileOperationResult(false, "Failed to register file usage: ${e.message}", null)
         }
@@ -162,8 +158,7 @@ fun storageDbService(
             val success = storageRepository.unregisterFileUsage(input.filePath, input.usageType, input.referenceId)
             if (success) {
                 val dbFile = storageRepository.getFileByPath(input.filePath)
-                val fileInfo = dbFile?.let { fileEntityToFileInfo(it) }
-                FileOperationResult(true, "File usage unregistered successfully", fileInfo)
+                FileOperationResult(true, "File usage unregistered successfully", dbFile)
             } else {
                 FileOperationResult(false, "File usage not found or could not be removed", null)
             }

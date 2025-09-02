@@ -1,11 +1,8 @@
 package services
 
-import config.GcsConfig
 import com.google.cloud.storage.Storage
+import config.GcsConfig
 import schema.model.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 class FileInitializationService(
     private val storageService: StorageService,
@@ -31,7 +28,7 @@ class FileInitializationService(
     /**
      * Create required directories in the storage system
      */
-    private suspend fun createRequiredDirectories() {
+    private fun createRequiredDirectories() {
         val requiredDirectories = listOf(
             DirectoryInfo("public", "Public files directory", null),
             DirectoryInfo("public/templates", "Template files directory", "public"),
@@ -50,9 +47,9 @@ class FileInitializationService(
      * Create a directory if it doesn't exist
      */
     private fun createDirectoryIfNotExists(dirInfo: DirectoryInfo) {
-        // Check if directory exists by trying to get folder info
+        // Check if directory exists by trying to get folder entity
         val existingFolder = try {
-            storageService.getFolderInfoByPath(dirInfo.path)
+            storageService.getFolderEntityByPath(dirInfo.path)
         } catch (_: Exception) {
             null
         }
@@ -86,7 +83,7 @@ class FileInitializationService(
                 allowUploads = true,
                 allowDelete = dirInfo.path != "public", // Protect root public dir
                 allowMove = dirInfo.path != "public",
-                allowCreateSubdirs = true,
+                allowCreateSubDirs = true,
                 allowDeleteFiles = true,
                 allowMoveFiles = true
             )
@@ -114,7 +111,7 @@ class FileInitializationService(
         for (fileName in demoFiles) {
             uploadDemoFileIfNotExists(fileName)
         }
-        
+
         // After processing all files, verify they are in the database
         println("   🔍 Verifying demo files are registered in database...")
         verifyDemoFilesInDatabase()
@@ -134,9 +131,9 @@ class FileInitializationService(
         }
 
         // Check if file exists using StorageService (this might find files in bucket but not in DB)
-        val existingFile = storageService.getFileInfoByPath(bucketPath)
+        val existingFile = storageService.getFileEntityByPath(bucketPath)
         if (existingFile != null) {
-            if (existingFile.isFromBucketOnly == true) {
+            if (existingFile.isFromBucket == true) {
                 // File exists in bucket but not properly in database - this shouldn't happen normally
                 // but let's register it properly in the database
                 println("   🖼️  Demo file exists in bucket only, registering in database: $fileName")
@@ -153,11 +150,11 @@ class FileInitializationService(
             if (blob != null && blob.size > 0) {
                 // File exists in bucket but not in database - register it in the database
                 println("   🖼️  Demo file exists in bucket, registering in database: $fileName")
-                
+
                 try {
                     val contentType = getContentTypeFromFileName(fileName)
                     val directoryPath = "public/templates/covers"
-                    
+
                     // Register the existing file in the database using storageDbService
                     val fileEntity = storageDbService.addFileFromBucket(
                         path = bucketPath,
@@ -167,7 +164,7 @@ class FileInitializationService(
                         contentType = contentType.value,
                         md5Hash = blob.md5ToHexString
                     )
-                    
+
                     println("   ✅ Registered existing demo file in database: $fileName (ID: ${fileEntity.id})")
                 } catch (e: Exception) {
                     println("   ⚠️  Error registering existing demo file: ${e.message}")
@@ -216,7 +213,7 @@ class FileInitializationService(
     private suspend fun verifyDemoFilesInDatabase() {
         val demoFiles = listOf(
             "demo1.jpg" to "public/templates/covers/demo1.jpg",
-            "demo2.jpg" to "public/templates/covers/demo2.jpg", 
+            "demo2.jpg" to "public/templates/covers/demo2.jpg",
             "demo3.jpg" to "public/templates/covers/demo3.jpg",
             "demo4.jpg" to "public/templates/covers/demo4.jpg"
         )
@@ -225,14 +222,14 @@ class FileInitializationService(
             val existingFileInDb = storageDbService.getFileEntityByPath(bucketPath)
             if (existingFileInDb == null) {
                 println("   ⚠️  Demo file $fileName not found in database, attempting to register...")
-                
+
                 // Check if it exists in bucket and register it
                 try {
                     val blob = storage.get(gcsConfig.bucketName, bucketPath)
                     if (blob != null && blob.size > 0) {
                         val contentType = getContentTypeFromFileName(fileName)
                         val directoryPath = "public/templates/covers"
-                        
+
                         val fileEntity = storageDbService.addFileFromBucket(
                             path = bucketPath,
                             name = fileName,
@@ -241,7 +238,7 @@ class FileInitializationService(
                             contentType = contentType.value,
                             md5Hash = blob.md5ToHexString
                         )
-                        
+
                         println("   ✅ Registered demo file in database: $fileName (ID: ${fileEntity.id})")
                     } else {
                         println("   ❌ Demo file $fileName not found in bucket either")
@@ -277,7 +274,7 @@ class FileInitializationService(
                 null
             }
         }
-        
+
         println("   📊 Total demo files found: ${fileIds.size} out of ${demoFiles.size}")
         return fileIds
     }
@@ -310,7 +307,7 @@ class FileInitializationService(
                 referenceId = templateId.toLong(),
                 referenceTable = "templates"
             )
-            
+
             val result = storageDbService.registerFileUsage(input)
             if (result.success) {
                 println("   📎 Registered file usage for template $templateId with file $fileId at path: ${fileEntity.path}")
