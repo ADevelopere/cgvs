@@ -19,16 +19,14 @@ import kotlinx.coroutines.runBlocking
 import schema.model.*
 import services.StorageService.Companion.SIGNED_URL_DURATION
 import util.timestampToLocalDateTime
+import util.*
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 interface StorageService {
     companion object {
-        const val MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
         const val SIGNED_URL_DURATION = 15L // minutes
-
-        val PATH_PATTERN = Regex("^[a-zA-Z0-9._/-]+$")
     }
 
     suspend fun handleFileUpload(call: ApplicationCall, folder: String)
@@ -36,55 +34,6 @@ interface StorageService {
     fun fileExists(path: String): Boolean
 
     fun generateUploadSignedUrl(path: String, contentType: ContentType): String
-
-    fun validatePath(path: String): String? {
-        if (path.contains("..") || path.contains("//")) {
-            return "Path contains invalid directory traversal patterns"
-        }
-        if (!PATH_PATTERN.matches(path)) {
-            return "Path contains invalid characters"
-        }
-        if (path.length > 1024) {
-            return "Path is too long (max 1024 characters)"
-        }
-        return null
-    }
-
-    fun validateFileType(contentType: ContentType?, location: UploadLocation): String? {
-        if (contentType == null) {
-            return "Content type is required"
-        }
-        if (!location.allowedContentTypes.contains(contentType)) {
-            return "File type not allowed for this location: ${contentType.value}"
-        }
-        return null
-    }
-
-    fun validateFileSize(size: Long): String? {
-        if (size > MAX_FILE_SIZE) {
-            return "File size exceeds maximum allowed size (${MAX_FILE_SIZE / 1024 / 1024}MB)"
-        }
-        return null
-    }
-
-    fun matchesFileType(fileType: FileType, filter: String): Boolean {
-        return when (filter.lowercase()) {
-            "image" -> fileType == FileType.IMAGE
-            "document" -> fileType == FileType.DOCUMENT
-            "video" -> fileType == FileType.VIDEO
-            "audio" -> fileType == FileType.AUDIO
-            "archive" -> fileType == FileType.ARCHIVE
-            else -> true
-        }
-    }
-
-    fun determineFileType(contentType: ContentType?): FileType {
-        return when (contentType) {
-            ContentType.JPEG, ContentType.PNG, ContentType.GIF, ContentType.SVG, ContentType.WEBP -> FileType.IMAGE
-            ContentType.PDF, ContentType.TEXT, ContentType.JSON -> FileType.DOCUMENT
-            else -> FileType.OTHER
-        }
-    }
 
     fun uploadFile(
         path: String,
