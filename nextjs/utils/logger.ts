@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 
+import { debug } from "console";
+
 const enabled = process.env.NODE_ENV === "development";
 const logger = {
     log: (...args: unknown[]) => {
@@ -22,6 +24,11 @@ const logger = {
             console.warn(...args);
         }
     },
+    debug: (...args: unknown[]) => {
+        if (enabled) {
+            console.debug(...args);
+        }
+    }
 };
 
 export default logger;
