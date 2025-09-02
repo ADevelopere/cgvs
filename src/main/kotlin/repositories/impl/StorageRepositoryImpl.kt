@@ -101,6 +101,14 @@ class StorageRepositoryImpl : StorageRepository {
         StorageFiles.selectAll().where { StorageFiles.path eq path }.singleOrNull()?.let(::mapFileRow)
     }
 
+    override suspend fun getFileById(id: Long): FileEntity? = dbQuery {
+        StorageFiles.selectAll().where { StorageFiles.id eq id }.singleOrNull()?.let(::mapFileRow)
+    }
+
+    override suspend fun getFilesByIds(ids: List<Long>): List<FileEntity> = dbQuery {
+        StorageFiles.selectAll().where { StorageFiles.id inList ids }.map(::mapFileRow)
+    }
+
     override suspend fun createFile(file: FileEntity): FileEntity = transaction {
         val id = StorageFiles.insertAndGetId {
             it[path] = file.path

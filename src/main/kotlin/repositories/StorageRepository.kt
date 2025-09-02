@@ -16,6 +16,8 @@ interface StorageRepository {
     
     // File operations
     suspend fun getFileByPath(path: String): FileEntity?
+    suspend fun getFileById(id: Long): FileEntity?
+    suspend fun getFilesByIds(ids: List<Long>): List<FileEntity>
     suspend fun createFile(file: FileEntity): FileEntity
     suspend fun updateFile(file: FileEntity): FileEntity?
     suspend fun deleteFile(path: String): Boolean

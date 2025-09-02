@@ -55,4 +55,19 @@ class StorageQuery : Query, KoinComponent {
     ): StorageStats {
         return storageService.getStorageStatistics(path)
     }
+
+    @GraphQLDescription("Fetch immediate children directories for lazy loading directory tree")
+    suspend fun fetchDirectoryChildren(
+        @GraphQLDescription("Parent directory path (empty or null for root level)")
+        path: String? = null
+    ): List<FolderInfo> {
+        return storageService.fetchDirectoryChildren(path)
+    }
+
+    @GraphQLDescription("Check if a file is currently in use")
+    suspend fun checkFileUsage(
+        input: CheckFileUsageInput
+    ): FileUsageResult {
+        return storageService.checkFileUsage(input)
+    }
 }

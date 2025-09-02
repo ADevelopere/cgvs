@@ -1,7 +1,0 @@
-extend type Query {
-    "Get all recipients for a template"
-    templateRecipients(templateId: ID! @eq): [TemplateRecipient!]! @paginate @guard @can(ability: "viewRecipients")
-    
-    "Get a specific template recipient by ID"
-    templateRecipient(id: ID! @eq): TemplateRecipient! @find @guard @can(ability: "viewRecipient", find: "id")
-}

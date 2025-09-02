@@ -86,7 +86,7 @@ class TemplateService(
                 name = input.name ?: existingTemplate.name,
                 description = input.description ?: existingTemplate.description,
                 categoryId = newCategoryId,
-                imageFileName = input.imageFileName ?: existingTemplate.imageFileName,
+                imageFileId = input.imageFileId ?: existingTemplate.imageFileId,
             )
         )
     }
