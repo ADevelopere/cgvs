@@ -1,183 +1,146 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo } from "react";
+import {createContext, useCallback, useContext, useMemo} from "react";
 import * as Graphql from "@/graphql/generated/types";
-import { ApolloLink } from "@apollo/client";
+import {ApolloClient, ErrorLike, OperationVariables} from "@apollo/client";
+import * as ApolloReact from '@apollo/client/react';
 
 type StorageGraphQLContextType = {
-    listFilesQuery: (
-        variables: Graphql.ListFilesQueryVariables,
-    ) => Promise<Graphql.ListFilesQuery>;
-    getFileInfoQuery: (
-        variables: Graphql.GetFileInfoQueryVariables,
-    ) => Promise<Graphql.GetFileInfoQuery>;
-    getFolderInfoQuery: (
-        variables: Graphql.GetFolderInfoQueryVariables,
-    ) => Promise<Graphql.GetFolderInfoQuery>;
-    searchFilesQuery: (
-        variables: Graphql.SearchFilesQueryVariables,
-    ) => Promise<Graphql.SearchFilesQuery>;
-    getStorageStatsQuery: (
-        variables: Graphql.GetStorageStatsQueryVariables,
-    ) => Promise<Graphql.GetStorageStatsQuery>;
-    renameFileMutation: (
-        variables: Graphql.RenameFileMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.RenameFileMutation>>;
-    deleteFileMutation: (
-        variables: Graphql.DeleteFileMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.DeleteFileMutation>>;
-    generateUploadSignedUrlMutation: (
-        variables: Graphql.GenerateUploadSignedUrlMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.GenerateUploadSignedUrlMutation>>;
+    // Queries
+    checkFileUsage: (variables: Graphql.CheckFileUsageQueryVariables) => Promise<Graphql.CheckFileUsageQuery>;
+    fetchDirectoryChildren: (variables: Graphql.FetchDirectoryChildrenQueryVariables) => Promise<Graphql.FetchDirectoryChildrenQuery>;
+    getFileInfo: (variables: Graphql.GetFileInfoQueryVariables) => Promise<Graphql.GetFileInfoQuery>;
+    getFolderInfo: (variables: Graphql.GetFolderInfoQueryVariables) => Promise<Graphql.GetFolderInfoQuery>;
+    getStorageStats: (variables: Graphql.GetStorageStatsQueryVariables) => Promise<Graphql.GetStorageStatsQuery>;
+    listFiles: (variables: Graphql.ListFilesQueryVariables) => Promise<Graphql.ListFilesQuery>;
+    searchFiles: (variables: Graphql.SearchFilesQueryVariables) => Promise<Graphql.SearchFilesQuery>;
+
+    // Mutations
+    copyStorageItems: (variables: Graphql.CopyStorageItemsMutationVariables) => Promise<Graphql.CopyStorageItemsMutation>;
+    createFolder: (variables: Graphql.CreateFolderMutationVariables) => Promise<Graphql.CreateFolderMutation>;
+    deleteFile: (variables: Graphql.DeleteFileMutationVariables) => Promise<Graphql.DeleteFileMutation>;
+    deleteStorageItems: (variables: Graphql.DeleteStorageItemsMutationVariables) => Promise<Graphql.DeleteStorageItemsMutation>;
+    generateUploadSignedUrl: (variables: Graphql.GenerateUploadSignedUrlMutationVariables) => Promise<Graphql.GenerateUploadSignedUrlMutation>;
+    moveStorageItems: (variables: Graphql.MoveStorageItemsMutationVariables) => Promise<Graphql.MoveStorageItemsMutation>;
+    registerFileUsage: (variables: Graphql.RegisterFileUsageMutationVariables) => Promise<Graphql.RegisterFileUsageMutation>;
+    renameFile: (variables: Graphql.RenameFileMutationVariables) => Promise<Graphql.RenameFileMutation>;
+    setStorageItemProtection: (variables: Graphql.SetStorageItemProtectionMutationVariables) => Promise<Graphql.SetStorageItemProtectionMutation>;
+    unregisterFileUsage: (variables: Graphql.UnregisterFileUsageMutationVariables) => Promise<Graphql.UnregisterFileUsageMutation>;
+    updateDirectoryPermissions: (variables: Graphql.UpdateDirectoryPermissionsMutationVariables) => Promise<Graphql.UpdateDirectoryPermissionsMutation>;
 };
 
-const StorageGraphQLContext = createContext<
-    StorageGraphQLContextType | undefined
->(undefined);
+const StorageGraphQLContext = createContext<StorageGraphQLContextType | undefined>(undefined);
 
 export const useStorageGraphQL = () => {
     const context = useContext(StorageGraphQLContext);
     if (!context) {
-        throw new Error(
-            "useStorageGraphQL must be used within a StorageGraphQLProvider",
-        );
+        throw new Error("useStorageGraphQL must be used within a StorageGraphQLProvider");
     }
     return context;
 };
 
-export const StorageGraphQLProvider: React.FC<{
-    children: React.ReactNode;
-}> = ({ children }) => {
-    const listFilesQueryRef = Graphql.useListFilesQuery({
-        skip: true,
-        variables: { input: {} as Graphql.ListFilesInput }, // Provide a default/dummy value
-    });
-    const getFileInfoQueryRef = Graphql.useGetFileInfoQuery({
-        skip: true,
-        variables: { path: "" },
-    });
-    const getFolderInfoQueryRef = Graphql.useGetFolderInfoQuery({
-        skip: true,
-        variables: { path: "" },
-    });
-    const searchFilesQueryRef = Graphql.useSearchFilesQuery({
-        skip: true,
-        variables: {
-            limit: 0,
-            searchTerm: "",
-        },
-    });
-    const getStorageStatsQueryRef = Graphql.useGetStorageStatsQuery({
-        skip: true,
-    });
-
-    const listFilesQuery = useCallback(
-        async (variables: Graphql.ListFilesQueryVariables) => {
-            const result = await listFilesQueryRef.refetch(variables);
+function useQueryWrapper<T, V extends OperationVariables>(
+    useLazyQueryHook: (baseOptions?: ApolloReact.useLazyQuery.Options<T, V>) => ApolloReact.useLazyQuery.ResultTuple<T, V>,
+) {
+    const [execute] = useLazyQueryHook();
+    return useCallback(
+        async (variables: V) => {
+            const result = await execute({variables});
+            if (result.error) {
+                throw result.error;
+            }
             if (!result.data) {
-                throw new Error("No data returned from listFiles query");
+                throw new Error("No data returned from query");
             }
             return result.data;
         },
-        [listFilesQueryRef],
+        [execute]
     );
+}
 
-    const getFileInfoQuery = useCallback(
-        async (variables: Graphql.GetFileInfoQueryVariables) => {
-            const result = await getFileInfoQueryRef.refetch(variables);
+function useMutationWrapper<T, V extends OperationVariables>(
+    useMutationHook: (baseOptions?: ApolloReact.useMutation.Options<T, V>) => ApolloReact.useMutation.ResultTuple<T, V>,
+) {
+    const [mutate] = useMutationHook();
+    return useCallback(
+        async (variables: V) => {
+            const result: ApolloClient.MutateResult<T> = await mutate({variables});
+            const error: ErrorLike | undefined = result.error;
+            if (error) {
+                throw new Error(error.message);
+            }
             if (!result.data) {
-                throw new Error("No data returned from getFileInfo query");
+                throw new Error("No data returned from mutation");
             }
             return result.data;
         },
-        [getFileInfoQueryRef],
+        [mutate]
     );
+}
 
-    const getFolderInfoQuery = useCallback(
-        async (variables: Graphql.GetFolderInfoQueryVariables) => {
-            const result = await getFolderInfoQueryRef.refetch(variables);
-            if (!result.data) {
-                throw new Error("No data returned from getFolderInfo query");
-            }
-            return result.data;
-        },
-        [getFolderInfoQueryRef],
-    );
+export const StorageGraphQLProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
+    const checkFileUsage = useQueryWrapper(Graphql.useCheckFileUsageLazyQuery);
+    const fetchDirectoryChildren = useQueryWrapper(Graphql.useFetchDirectoryChildrenLazyQuery);
+    const getFileInfo = useQueryWrapper(Graphql.useGetFileInfoLazyQuery);
+    const getFolderInfo = useQueryWrapper(Graphql.useGetFolderInfoLazyQuery);
+    const getStorageStats = useQueryWrapper(Graphql.useGetStorageStatsLazyQuery);
+    const listFiles = useQueryWrapper(Graphql.useListFilesLazyQuery);
+    const searchFiles = useQueryWrapper(Graphql.useSearchFilesLazyQuery);
 
-    const searchFilesQuery = useCallback(
-        async (variables: Graphql.SearchFilesQueryVariables) => {
-            const result = await searchFilesQueryRef.refetch(variables);
-            if (!result.data) {
-                throw new Error("No data returned from searchFiles query");
-            }
-            return result.data;
-        },
-        [searchFilesQueryRef],
-    );
-
-    const getStorageStatsQuery = useCallback(
-        async (variables: Graphql.GetStorageStatsQueryVariables) => {
-            const result = await getStorageStatsQueryRef.refetch(variables);
-            if (!result.data) {
-                throw new Error("No data returned from getStorageStats query");
-            }
-            return result.data;
-        },
-        [getStorageStatsQueryRef],
-    );
-
-    const [mutateRenameFile] = Graphql.useRenameFileMutation();
-    const [mutateDeleteFile] = Graphql.useDeleteFileMutation();
-    const [mutateGenerateUploadSignedUrl] =
-        Graphql.useGenerateUploadSignedUrlMutation();
-
-    const renameFileMutation = useCallback(
-        (variables: Graphql.RenameFileMutationVariables) => {
-            return mutateRenameFile({ variables });
-        },
-        [mutateRenameFile],
-    );
-
-    const deleteFileMutation = useCallback(
-        (variables: Graphql.DeleteFileMutationVariables) => {
-            return mutateDeleteFile({ variables });
-        },
-        [mutateDeleteFile],
-    );
-
-    const generateUploadSignedUrlMutation = useCallback(
-        (variables: Graphql.GenerateUploadSignedUrlMutationVariables) => {
-            return mutateGenerateUploadSignedUrl({ variables });
-        },
-        [mutateGenerateUploadSignedUrl],
-    );
+    const copyStorageItems = useMutationWrapper(Graphql.useCopyStorageItemsMutation);
+    const createFolder = useMutationWrapper(Graphql.useCreateFolderMutation);
+    const deleteFile = useMutationWrapper(Graphql.useDeleteFileMutation);
+    const deleteStorageItems = useMutationWrapper(Graphql.useDeleteStorageItemsMutation);
+    const generateUploadSignedUrl = useMutationWrapper(Graphql.useGenerateUploadSignedUrlMutation);
+    const moveStorageItems = useMutationWrapper(Graphql.useMoveStorageItemsMutation);
+    const registerFileUsage = useMutationWrapper(Graphql.useRegisterFileUsageMutation);
+    const renameFile = useMutationWrapper(Graphql.useRenameFileMutation);
+    const setStorageItemProtection = useMutationWrapper(Graphql.useSetStorageItemProtectionMutation);
+    const unregisterFileUsage = useMutationWrapper(Graphql.useUnregisterFileUsageMutation);
+    const updateDirectoryPermissions = useMutationWrapper(Graphql.useUpdateDirectoryPermissionsMutation);
 
     const contextValue: StorageGraphQLContextType = useMemo(
         () => ({
-            listFilesQuery,
-            getFileInfoQuery,
-            getFolderInfoQuery,
-            searchFilesQuery,
-            getStorageStatsQuery,
-            renameFileMutation,
-            deleteFileMutation,
-            generateUploadSignedUrlMutation,
+            checkFileUsage,
+            fetchDirectoryChildren,
+            getFileInfo,
+            getFolderInfo,
+            getStorageStats,
+            listFiles,
+            searchFiles,
+            copyStorageItems,
+            createFolder,
+            deleteFile,
+            deleteStorageItems,
+            generateUploadSignedUrl,
+            moveStorageItems,
+            registerFileUsage,
+            renameFile,
+            setStorageItemProtection,
+            unregisterFileUsage,
+            updateDirectoryPermissions,
         }),
         [
-            listFilesQuery,
-            getFileInfoQuery,
-            getFolderInfoQuery,
-            searchFilesQuery,
-            getStorageStatsQuery,
-            renameFileMutation,
-            deleteFileMutation,
-            generateUploadSignedUrlMutation,
+            checkFileUsage,
+            fetchDirectoryChildren,
+            getFileInfo,
+            getFolderInfo,
+            getStorageStats,
+            listFiles,
+            searchFiles,
+            copyStorageItems,
+            createFolder,
+            deleteFile,
+            deleteStorageItems,
+            generateUploadSignedUrl,
+            moveStorageItems,
+            registerFileUsage,
+            renameFile,
+            setStorageItemProtection,
+            unregisterFileUsage,
+            updateDirectoryPermissions,
         ],
     );
 
-    return (
-        <StorageGraphQLContext.Provider value={contextValue}>
-            {children}
-        </StorageGraphQLContext.Provider>
-    );
+    return <StorageGraphQLContext.Provider value={contextValue}>{children}</StorageGraphQLContext.Provider>;
 };

@@ -1412,6 +1412,135 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', createdAt: any, email: any, emailVerifiedAt?: any | null, id: number, isAdmin: boolean, name: string, password: string, rememberToken?: string | null, updatedAt: any }> | null };
 
+export type CopyStorageItemsMutationVariables = Exact<{
+  input: CopyStorageItemsInput;
+}>;
+
+
+export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+
+export type CreateFolderMutationVariables = Exact<{
+  input: CreateFolderInput;
+}>;
+
+
+export type CreateFolderMutation = { __typename?: 'Mutation', createFolder: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type DeleteFileMutationVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type DeleteStorageItemsMutationVariables = Exact<{
+  input: DeleteItemsInput;
+}>;
+
+
+export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+
+export type GenerateUploadSignedUrlMutationVariables = Exact<{
+  input: GenerateUploadSignedUrlInput;
+}>;
+
+
+export type GenerateUploadSignedUrlMutation = { __typename?: 'Mutation', generateUploadSignedUrl: string };
+
+export type MoveStorageItemsMutationVariables = Exact<{
+  input: MoveStorageItemsInput;
+}>;
+
+
+export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+
+export type RegisterFileUsageMutationVariables = Exact<{
+  input: RegisterFileUsageInput;
+}>;
+
+
+export type RegisterFileUsageMutation = { __typename?: 'Mutation', registerFileUsage: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type RenameFileMutationVariables = Exact<{
+  input: RenameFileInput;
+}>;
+
+
+export type RenameFileMutation = { __typename?: 'Mutation', renameFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type SetStorageItemProtectionMutationVariables = Exact<{
+  input: SetStorageItemProtectionInput;
+}>;
+
+
+export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type UnregisterFileUsageMutationVariables = Exact<{
+  input: UnregisterFileUsageInput;
+}>;
+
+
+export type UnregisterFileUsageMutation = { __typename?: 'Mutation', unregisterFileUsage: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type UpdateDirectoryPermissionsMutationVariables = Exact<{
+  input: UpdateDirectoryPermissionsInput;
+}>;
+
+
+export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+
+export type CheckFileUsageQueryVariables = Exact<{
+  input: CheckFileUsageInput;
+}>;
+
+
+export type CheckFileUsageQuery = { __typename?: 'Query', checkFileUsage: { __typename?: 'FileUsageResult', canDelete: boolean, deleteBlockReason?: string | null, isInUse: boolean, usages: Array<{ __typename?: 'FileUsageInfo', created: any, referenceId: any, referenceTable: string, usageType: string }> } };
+
+export type FetchDirectoryChildrenQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type FetchDirectoryChildrenQuery = { __typename?: 'Query', fetchDirectoryChildren: Array<{ __typename?: 'DirectoryEntity', created: any, createdBy?: any | null, id?: any | null, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, parentPath?: string | null, path: string, protectChildren: boolean, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
+
+export type GetFileInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type GetFileInfoQuery = { __typename?: 'Query', getFileInfo?: { __typename?: 'FileEntity', contentType?: string | null, created: any, createdBy?: any | null, directoryPath: string, id?: any | null, isFromBucket: boolean, isProtected: boolean, lastModified: any, md5Hash?: string | null, name: string, path: string, size: any } | null };
+
+export type GetFolderInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo: { __typename?: 'DirectoryEntity', created: any, createdBy?: any | null, id?: any | null, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, parentPath?: string | null, path: string, protectChildren: boolean, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
+
+export type GetStorageStatsQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetStorageStatsQuery = { __typename?: 'Query', getStorageStats: { __typename?: 'StorageStats', totalFiles: number, totalFolders: number, totalSize: any, fileTypeBreakdown: Array<{ __typename?: 'FileTypeCount', count: number, type: FileType }> } };
+
+export type ListFilesQueryVariables = Exact<{
+  input: ListFilesInput;
+}>;
+
+
+export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageEntityList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+
+export type SearchFilesQueryVariables = Exact<{
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  folder?: InputMaybe<Scalars['String']['input']>;
+  limit: Scalars['Int']['input'];
+  searchTerm: Scalars['String']['input'];
+}>;
+
+
+export type SearchFilesQuery = { __typename?: 'Query', searchFiles: { __typename?: 'StorageEntityList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+
 export type CreateStudentMutationVariables = Exact<{
   input: CreateStudentInput;
 }>;
@@ -1955,6 +2084,792 @@ export type UsersSuspenseQueryHookResult = ReturnType<typeof useUsersSuspenseQue
 export type UsersQueryResult = ApolloReact.useQuery.Result<UsersQuery, UsersQueryVariables>;
 export function refetchUsersQuery(variables?: UsersQueryVariables) {
       return { query: UsersDocument, variables: variables }
+    }
+export const CopyStorageItemsDocument = gql`
+    mutation copyStorageItems($input: CopyStorageItemsInput!) {
+  copyStorageItems(input: $input) {
+    errors
+    failureCount
+    successCount
+    successfulItems {
+      id
+      name
+      path
+    }
+  }
+}
+    `;
+
+/**
+ * __useCopyStorageItemsMutation__
+ *
+ * To run a mutation, you first call `useCopyStorageItemsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCopyStorageItemsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [copyStorageItemsMutation, { data, loading, error }] = useCopyStorageItemsMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCopyStorageItemsMutation(baseOptions?: ApolloReact.useMutation.Options<CopyStorageItemsMutation, CopyStorageItemsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<CopyStorageItemsMutation, CopyStorageItemsMutationVariables>(CopyStorageItemsDocument, options);
+      }
+export type CopyStorageItemsMutationHookResult = ReturnType<typeof useCopyStorageItemsMutation>;
+export type CopyStorageItemsMutationResult = ApolloReact.useMutation.Result<CopyStorageItemsMutation>;
+export const CreateFolderDocument = gql`
+    mutation createFolder($input: CreateFolderInput!) {
+  createFolder(input: $input) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useCreateFolderMutation__
+ *
+ * To run a mutation, you first call `useCreateFolderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFolderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFolderMutation, { data, loading, error }] = useCreateFolderMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateFolderMutation(baseOptions?: ApolloReact.useMutation.Options<CreateFolderMutation, CreateFolderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<CreateFolderMutation, CreateFolderMutationVariables>(CreateFolderDocument, options);
+      }
+export type CreateFolderMutationHookResult = ReturnType<typeof useCreateFolderMutation>;
+export type CreateFolderMutationResult = ApolloReact.useMutation.Result<CreateFolderMutation>;
+export const DeleteFileDocument = gql`
+    mutation deleteFile($path: String!) {
+  deleteFile(path: $path) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useDeleteFileMutation__
+ *
+ * To run a mutation, you first call `useDeleteFileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFileMutation, { data, loading, error }] = useDeleteFileMutation({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useDeleteFileMutation(baseOptions?: ApolloReact.useMutation.Options<DeleteFileMutation, DeleteFileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<DeleteFileMutation, DeleteFileMutationVariables>(DeleteFileDocument, options);
+      }
+export type DeleteFileMutationHookResult = ReturnType<typeof useDeleteFileMutation>;
+export type DeleteFileMutationResult = ApolloReact.useMutation.Result<DeleteFileMutation>;
+export const DeleteStorageItemsDocument = gql`
+    mutation deleteStorageItems($input: DeleteItemsInput!) {
+  deleteStorageItems(input: $input) {
+    errors
+    failureCount
+    successCount
+    successfulItems {
+      id
+      name
+      path
+    }
+  }
+}
+    `;
+
+/**
+ * __useDeleteStorageItemsMutation__
+ *
+ * To run a mutation, you first call `useDeleteStorageItemsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteStorageItemsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteStorageItemsMutation, { data, loading, error }] = useDeleteStorageItemsMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDeleteStorageItemsMutation(baseOptions?: ApolloReact.useMutation.Options<DeleteStorageItemsMutation, DeleteStorageItemsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<DeleteStorageItemsMutation, DeleteStorageItemsMutationVariables>(DeleteStorageItemsDocument, options);
+      }
+export type DeleteStorageItemsMutationHookResult = ReturnType<typeof useDeleteStorageItemsMutation>;
+export type DeleteStorageItemsMutationResult = ApolloReact.useMutation.Result<DeleteStorageItemsMutation>;
+export const GenerateUploadSignedUrlDocument = gql`
+    mutation generateUploadSignedUrl($input: GenerateUploadSignedUrlInput!) {
+  generateUploadSignedUrl(input: $input)
+}
+    `;
+
+/**
+ * __useGenerateUploadSignedUrlMutation__
+ *
+ * To run a mutation, you first call `useGenerateUploadSignedUrlMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateUploadSignedUrlMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateUploadSignedUrlMutation, { data, loading, error }] = useGenerateUploadSignedUrlMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGenerateUploadSignedUrlMutation(baseOptions?: ApolloReact.useMutation.Options<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>(GenerateUploadSignedUrlDocument, options);
+      }
+export type GenerateUploadSignedUrlMutationHookResult = ReturnType<typeof useGenerateUploadSignedUrlMutation>;
+export type GenerateUploadSignedUrlMutationResult = ApolloReact.useMutation.Result<GenerateUploadSignedUrlMutation>;
+export const MoveStorageItemsDocument = gql`
+    mutation moveStorageItems($input: MoveStorageItemsInput!) {
+  moveStorageItems(input: $input) {
+    errors
+    failureCount
+    successCount
+    successfulItems {
+      id
+      name
+      path
+    }
+  }
+}
+    `;
+
+/**
+ * __useMoveStorageItemsMutation__
+ *
+ * To run a mutation, you first call `useMoveStorageItemsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMoveStorageItemsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [moveStorageItemsMutation, { data, loading, error }] = useMoveStorageItemsMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useMoveStorageItemsMutation(baseOptions?: ApolloReact.useMutation.Options<MoveStorageItemsMutation, MoveStorageItemsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<MoveStorageItemsMutation, MoveStorageItemsMutationVariables>(MoveStorageItemsDocument, options);
+      }
+export type MoveStorageItemsMutationHookResult = ReturnType<typeof useMoveStorageItemsMutation>;
+export type MoveStorageItemsMutationResult = ApolloReact.useMutation.Result<MoveStorageItemsMutation>;
+export const RegisterFileUsageDocument = gql`
+    mutation registerFileUsage($input: RegisterFileUsageInput!) {
+  registerFileUsage(input: $input) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useRegisterFileUsageMutation__
+ *
+ * To run a mutation, you first call `useRegisterFileUsageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterFileUsageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerFileUsageMutation, { data, loading, error }] = useRegisterFileUsageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRegisterFileUsageMutation(baseOptions?: ApolloReact.useMutation.Options<RegisterFileUsageMutation, RegisterFileUsageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<RegisterFileUsageMutation, RegisterFileUsageMutationVariables>(RegisterFileUsageDocument, options);
+      }
+export type RegisterFileUsageMutationHookResult = ReturnType<typeof useRegisterFileUsageMutation>;
+export type RegisterFileUsageMutationResult = ApolloReact.useMutation.Result<RegisterFileUsageMutation>;
+export const RenameFileDocument = gql`
+    mutation renameFile($input: RenameFileInput!) {
+  renameFile(input: $input) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useRenameFileMutation__
+ *
+ * To run a mutation, you first call `useRenameFileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRenameFileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [renameFileMutation, { data, loading, error }] = useRenameFileMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRenameFileMutation(baseOptions?: ApolloReact.useMutation.Options<RenameFileMutation, RenameFileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<RenameFileMutation, RenameFileMutationVariables>(RenameFileDocument, options);
+      }
+export type RenameFileMutationHookResult = ReturnType<typeof useRenameFileMutation>;
+export type RenameFileMutationResult = ApolloReact.useMutation.Result<RenameFileMutation>;
+export const SetStorageItemProtectionDocument = gql`
+    mutation setStorageItemProtection($input: SetStorageItemProtectionInput!) {
+  setStorageItemProtection(input: $input) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useSetStorageItemProtectionMutation__
+ *
+ * To run a mutation, you first call `useSetStorageItemProtectionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetStorageItemProtectionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setStorageItemProtectionMutation, { data, loading, error }] = useSetStorageItemProtectionMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSetStorageItemProtectionMutation(baseOptions?: ApolloReact.useMutation.Options<SetStorageItemProtectionMutation, SetStorageItemProtectionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<SetStorageItemProtectionMutation, SetStorageItemProtectionMutationVariables>(SetStorageItemProtectionDocument, options);
+      }
+export type SetStorageItemProtectionMutationHookResult = ReturnType<typeof useSetStorageItemProtectionMutation>;
+export type SetStorageItemProtectionMutationResult = ApolloReact.useMutation.Result<SetStorageItemProtectionMutation>;
+export const UnregisterFileUsageDocument = gql`
+    mutation unregisterFileUsage($input: UnregisterFileUsageInput!) {
+  unregisterFileUsage(input: $input) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useUnregisterFileUsageMutation__
+ *
+ * To run a mutation, you first call `useUnregisterFileUsageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnregisterFileUsageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unregisterFileUsageMutation, { data, loading, error }] = useUnregisterFileUsageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUnregisterFileUsageMutation(baseOptions?: ApolloReact.useMutation.Options<UnregisterFileUsageMutation, UnregisterFileUsageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<UnregisterFileUsageMutation, UnregisterFileUsageMutationVariables>(UnregisterFileUsageDocument, options);
+      }
+export type UnregisterFileUsageMutationHookResult = ReturnType<typeof useUnregisterFileUsageMutation>;
+export type UnregisterFileUsageMutationResult = ApolloReact.useMutation.Result<UnregisterFileUsageMutation>;
+export const UpdateDirectoryPermissionsDocument = gql`
+    mutation updateDirectoryPermissions($input: UpdateDirectoryPermissionsInput!) {
+  updateDirectoryPermissions(input: $input) {
+    item {
+      id
+      name
+      path
+    }
+    message
+    success
+  }
+}
+    `;
+
+/**
+ * __useUpdateDirectoryPermissionsMutation__
+ *
+ * To run a mutation, you first call `useUpdateDirectoryPermissionsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDirectoryPermissionsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDirectoryPermissionsMutation, { data, loading, error }] = useUpdateDirectoryPermissionsMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateDirectoryPermissionsMutation(baseOptions?: ApolloReact.useMutation.Options<UpdateDirectoryPermissionsMutation, UpdateDirectoryPermissionsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useMutation<UpdateDirectoryPermissionsMutation, UpdateDirectoryPermissionsMutationVariables>(UpdateDirectoryPermissionsDocument, options);
+      }
+export type UpdateDirectoryPermissionsMutationHookResult = ReturnType<typeof useUpdateDirectoryPermissionsMutation>;
+export type UpdateDirectoryPermissionsMutationResult = ApolloReact.useMutation.Result<UpdateDirectoryPermissionsMutation>;
+export const CheckFileUsageDocument = gql`
+    query checkFileUsage($input: CheckFileUsageInput!) {
+  checkFileUsage(input: $input) {
+    canDelete
+    deleteBlockReason
+    isInUse
+    usages {
+      created
+      referenceId
+      referenceTable
+      usageType
+    }
+  }
+}
+    `;
+
+/**
+ * __useCheckFileUsageQuery__
+ *
+ * To run a query within a React component, call `useCheckFileUsageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckFileUsageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCheckFileUsageQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCheckFileUsageQuery(baseOptions: ApolloReact.useQuery.Options<CheckFileUsageQuery, CheckFileUsageQueryVariables> & ({ variables: CheckFileUsageQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<CheckFileUsageQuery, CheckFileUsageQueryVariables>(CheckFileUsageDocument, options);
+      }
+export function useCheckFileUsageLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<CheckFileUsageQuery, CheckFileUsageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<CheckFileUsageQuery, CheckFileUsageQueryVariables>(CheckFileUsageDocument, options);
+        }
+export function useCheckFileUsageSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<CheckFileUsageQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<CheckFileUsageQuery, CheckFileUsageQueryVariables>(CheckFileUsageDocument, options);
+        }
+export type CheckFileUsageQueryHookResult = ReturnType<typeof useCheckFileUsageQuery>;
+export type CheckFileUsageLazyQueryHookResult = ReturnType<typeof useCheckFileUsageLazyQuery>;
+export type CheckFileUsageSuspenseQueryHookResult = ReturnType<typeof useCheckFileUsageSuspenseQuery>;
+export type CheckFileUsageQueryResult = ApolloReact.useQuery.Result<CheckFileUsageQuery, CheckFileUsageQueryVariables>;
+export function refetchCheckFileUsageQuery(variables: CheckFileUsageQueryVariables) {
+      return { query: CheckFileUsageDocument, variables: variables }
+    }
+export const FetchDirectoryChildrenDocument = gql`
+    query fetchDirectoryChildren($path: String) {
+  fetchDirectoryChildren(path: $path) {
+    created
+    createdBy
+    id
+    isFromBucket
+    isProtected
+    lastModified
+    name
+    parentPath
+    path
+    permissions {
+      allowCreateSubDirs
+      allowDelete
+      allowDeleteFiles
+      allowMove
+      allowMoveFiles
+      allowUploads
+    }
+    protectChildren
+  }
+}
+    `;
+
+/**
+ * __useFetchDirectoryChildrenQuery__
+ *
+ * To run a query within a React component, call `useFetchDirectoryChildrenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFetchDirectoryChildrenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFetchDirectoryChildrenQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useFetchDirectoryChildrenQuery(baseOptions?: ApolloReact.useQuery.Options<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>(FetchDirectoryChildrenDocument, options);
+      }
+export function useFetchDirectoryChildrenLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>(FetchDirectoryChildrenDocument, options);
+        }
+export function useFetchDirectoryChildrenSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<FetchDirectoryChildrenQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>(FetchDirectoryChildrenDocument, options);
+        }
+export type FetchDirectoryChildrenQueryHookResult = ReturnType<typeof useFetchDirectoryChildrenQuery>;
+export type FetchDirectoryChildrenLazyQueryHookResult = ReturnType<typeof useFetchDirectoryChildrenLazyQuery>;
+export type FetchDirectoryChildrenSuspenseQueryHookResult = ReturnType<typeof useFetchDirectoryChildrenSuspenseQuery>;
+export type FetchDirectoryChildrenQueryResult = ApolloReact.useQuery.Result<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>;
+export function refetchFetchDirectoryChildrenQuery(variables?: FetchDirectoryChildrenQueryVariables) {
+      return { query: FetchDirectoryChildrenDocument, variables: variables }
+    }
+export const GetFileInfoDocument = gql`
+    query getFileInfo($path: String!) {
+  getFileInfo(path: $path) {
+    contentType
+    created
+    createdBy
+    directoryPath
+    id
+    isFromBucket
+    isProtected
+    lastModified
+    md5Hash
+    name
+    path
+    size
+  }
+}
+    `;
+
+/**
+ * __useGetFileInfoQuery__
+ *
+ * To run a query within a React component, call `useGetFileInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFileInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFileInfoQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useGetFileInfoQuery(baseOptions: ApolloReact.useQuery.Options<GetFileInfoQuery, GetFileInfoQueryVariables> & ({ variables: GetFileInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+      }
+export function useGetFileInfoLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<GetFileInfoQuery, GetFileInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+        }
+export function useGetFileInfoSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<GetFileInfoQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+        }
+export type GetFileInfoQueryHookResult = ReturnType<typeof useGetFileInfoQuery>;
+export type GetFileInfoLazyQueryHookResult = ReturnType<typeof useGetFileInfoLazyQuery>;
+export type GetFileInfoSuspenseQueryHookResult = ReturnType<typeof useGetFileInfoSuspenseQuery>;
+export type GetFileInfoQueryResult = ApolloReact.useQuery.Result<GetFileInfoQuery, GetFileInfoQueryVariables>;
+export function refetchGetFileInfoQuery(variables: GetFileInfoQueryVariables) {
+      return { query: GetFileInfoDocument, variables: variables }
+    }
+export const GetFolderInfoDocument = gql`
+    query getFolderInfo($path: String!) {
+  getFolderInfo(path: $path) {
+    created
+    createdBy
+    id
+    isFromBucket
+    isProtected
+    lastModified
+    name
+    parentPath
+    path
+    permissions {
+      allowCreateSubDirs
+      allowDelete
+      allowDeleteFiles
+      allowMove
+      allowMoveFiles
+      allowUploads
+    }
+    protectChildren
+  }
+}
+    `;
+
+/**
+ * __useGetFolderInfoQuery__
+ *
+ * To run a query within a React component, call `useGetFolderInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFolderInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFolderInfoQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useGetFolderInfoQuery(baseOptions: ApolloReact.useQuery.Options<GetFolderInfoQuery, GetFolderInfoQueryVariables> & ({ variables: GetFolderInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+      }
+export function useGetFolderInfoLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<GetFolderInfoQuery, GetFolderInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+        }
+export function useGetFolderInfoSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<GetFolderInfoQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+        }
+export type GetFolderInfoQueryHookResult = ReturnType<typeof useGetFolderInfoQuery>;
+export type GetFolderInfoLazyQueryHookResult = ReturnType<typeof useGetFolderInfoLazyQuery>;
+export type GetFolderInfoSuspenseQueryHookResult = ReturnType<typeof useGetFolderInfoSuspenseQuery>;
+export type GetFolderInfoQueryResult = ApolloReact.useQuery.Result<GetFolderInfoQuery, GetFolderInfoQueryVariables>;
+export function refetchGetFolderInfoQuery(variables: GetFolderInfoQueryVariables) {
+      return { query: GetFolderInfoDocument, variables: variables }
+    }
+export const GetStorageStatsDocument = gql`
+    query getStorageStats($path: String) {
+  getStorageStats(path: $path) {
+    fileTypeBreakdown {
+      count
+      type
+    }
+    totalFiles
+    totalFolders
+    totalSize
+  }
+}
+    `;
+
+/**
+ * __useGetStorageStatsQuery__
+ *
+ * To run a query within a React component, call `useGetStorageStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStorageStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStorageStatsQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useGetStorageStatsQuery(baseOptions?: ApolloReact.useQuery.Options<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
+      }
+export function useGetStorageStatsLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
+        }
+export function useGetStorageStatsSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<GetStorageStatsQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
+        }
+export type GetStorageStatsQueryHookResult = ReturnType<typeof useGetStorageStatsQuery>;
+export type GetStorageStatsLazyQueryHookResult = ReturnType<typeof useGetStorageStatsLazyQuery>;
+export type GetStorageStatsSuspenseQueryHookResult = ReturnType<typeof useGetStorageStatsSuspenseQuery>;
+export type GetStorageStatsQueryResult = ApolloReact.useQuery.Result<GetStorageStatsQuery, GetStorageStatsQueryVariables>;
+export function refetchGetStorageStatsQuery(variables?: GetStorageStatsQueryVariables) {
+      return { query: GetStorageStatsDocument, variables: variables }
+    }
+export const ListFilesDocument = gql`
+    query listFiles($input: ListFilesInput!) {
+  listFiles(input: $input) {
+    hasMore
+    items {
+      id
+      name
+      path
+    }
+    limit
+    offset
+    totalCount
+  }
+}
+    `;
+
+/**
+ * __useListFilesQuery__
+ *
+ * To run a query within a React component, call `useListFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListFilesQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useListFilesQuery(baseOptions: ApolloReact.useQuery.Options<ListFilesQuery, ListFilesQueryVariables> & ({ variables: ListFilesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, options);
+      }
+export function useListFilesLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<ListFilesQuery, ListFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, options);
+        }
+export function useListFilesSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<ListFilesQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, options);
+        }
+export type ListFilesQueryHookResult = ReturnType<typeof useListFilesQuery>;
+export type ListFilesLazyQueryHookResult = ReturnType<typeof useListFilesLazyQuery>;
+export type ListFilesSuspenseQueryHookResult = ReturnType<typeof useListFilesSuspenseQuery>;
+export type ListFilesQueryResult = ApolloReact.useQuery.Result<ListFilesQuery, ListFilesQueryVariables>;
+export function refetchListFilesQuery(variables: ListFilesQueryVariables) {
+      return { query: ListFilesDocument, variables: variables }
+    }
+export const SearchFilesDocument = gql`
+    query searchFiles($fileType: String, $folder: String, $limit: Int!, $searchTerm: String!) {
+  searchFiles(
+    fileType: $fileType
+    folder: $folder
+    limit: $limit
+    searchTerm: $searchTerm
+  ) {
+    hasMore
+    items {
+      id
+      name
+      path
+    }
+    limit
+    offset
+    totalCount
+  }
+}
+    `;
+
+/**
+ * __useSearchFilesQuery__
+ *
+ * To run a query within a React component, call `useSearchFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchFilesQuery({
+ *   variables: {
+ *      fileType: // value for 'fileType'
+ *      folder: // value for 'folder'
+ *      limit: // value for 'limit'
+ *      searchTerm: // value for 'searchTerm'
+ *   },
+ * });
+ */
+export function useSearchFilesQuery(baseOptions: ApolloReact.useQuery.Options<SearchFilesQuery, SearchFilesQueryVariables> & ({ variables: SearchFilesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<SearchFilesQuery, SearchFilesQueryVariables>(SearchFilesDocument, options);
+      }
+export function useSearchFilesLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<SearchFilesQuery, SearchFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<SearchFilesQuery, SearchFilesQueryVariables>(SearchFilesDocument, options);
+        }
+export function useSearchFilesSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<SearchFilesQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<SearchFilesQuery, SearchFilesQueryVariables>(SearchFilesDocument, options);
+        }
+export type SearchFilesQueryHookResult = ReturnType<typeof useSearchFilesQuery>;
+export type SearchFilesLazyQueryHookResult = ReturnType<typeof useSearchFilesLazyQuery>;
+export type SearchFilesSuspenseQueryHookResult = ReturnType<typeof useSearchFilesSuspenseQuery>;
+export type SearchFilesQueryResult = ApolloReact.useQuery.Result<SearchFilesQuery, SearchFilesQueryVariables>;
+export function refetchSearchFilesQuery(variables: SearchFilesQueryVariables) {
+      return { query: SearchFilesDocument, variables: variables }
     }
 export const CreateStudentDocument = gql`
     mutation createStudent($input: CreateStudentInput!) {
