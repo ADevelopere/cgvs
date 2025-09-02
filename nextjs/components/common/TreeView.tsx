@@ -13,23 +13,23 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import type { AutocompleteChangeReason } from "@mui/material/Autocomplete";
 import { useAppTheme } from "@/contexts/ThemeContext";
-// Base interface for tree items with required id
+
 export interface BaseTreeItem {
     id: string | number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
 
-// Define the item renderer types
-type ItemRendererFull<T> = (props: {
+export type TreeViewItemRendererFull<T> = (props: {
     item: T;
     isSelected: boolean;
     isExpanded: boolean;
 }) => React.ReactNode;
-type ItemRendererSimple<T> = (item: T) => React.ReactNode;
-type ItemRenderer<T> = ItemRendererFull<T> | ItemRendererSimple<T>;
+export type TreeViewItemRendererSimple<T> = (item: T) => React.ReactNode;
+export type TreeViewItemRenderer<T> =
+    | TreeViewItemRendererFull<T>
+    | TreeViewItemRendererSimple<T>;
 
-// Generic TreeView component
 export function TreeView<T extends BaseTreeItem>({
     items,
     onSelectItem,
@@ -42,48 +42,69 @@ export function TreeView<T extends BaseTreeItem>({
     noItemsMessage,
     searchText,
     style,
+    expandedItems: expandedItemsProp,
+    onExpandItem,
+    onCollapseItem,
+    onHoverItem,
 }: Readonly<{
     items: T[];
     onSelectItem?: (item: T) => void;
     selectedItemId?: string;
     itemHeight?: number;
-    itemRenderer?: ItemRenderer<T>;
+    itemRenderer?: TreeViewItemRenderer<T>;
     childrenKey?: string;
     labelKey?: string;
     header?: string;
     noItemsMessage: string;
     searchText: string;
     style?: React.CSSProperties;
+    expandedItems?: Set<string | number>;
+    onExpandItem?: (item: T) => void;
+    onCollapseItem?: (item: T) => void;
+    onHoverItem?: (item: T) => void;
 }>) {
     const { isRtl } = useAppTheme();
 
-    const [expandedItems, setExpandedItems] = useState<Set<string | number>>(
-        new Set(),
-    );
+    const [internalExpandedItems, setInternalExpandedItems] = useState<
+        Set<string | number>
+    >(new Set());
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Function to toggle expand/collapse
-    const toggleExpand = useCallback(
-        (itemId: string | number, event: React.MouseEvent) => {
-            event.stopPropagation();
-            setExpandedItems((prev) => {
-                const newSet = new Set(prev);
-                if (newSet.has(itemId)) {
-                    newSet.delete(itemId);
-                } else {
-                    newSet.add(itemId);
-                }
-                return newSet;
-            });
-        },
-        [],
+    const expandedItems = expandedItemsProp ?? internalExpandedItems;
+    const setExpandedItems = useMemo(
+        () => (expandedItemsProp ? () => {} : setInternalExpandedItems),
+        [expandedItemsProp, setInternalExpandedItems],
     );
 
-    // Helper function to determine if the renderer is simple or full
+    const toggleExpand = useCallback(
+        (item: T, event: React.MouseEvent) => {
+            event.stopPropagation();
+            if (expandedItems.has(item.id)) {
+                onCollapseItem?.(item);
+                if (!expandedItemsProp) {
+                    setInternalExpandedItems((prev) => {
+                        const newSet = new Set(prev);
+                        newSet.delete(item.id);
+                        return newSet;
+                    });
+                }
+            } else {
+                onExpandItem?.(item);
+                if (!expandedItemsProp) {
+                    setInternalExpandedItems((prev) => {
+                        const newSet = new Set(prev);
+                        newSet.add(item.id);
+                        return newSet;
+                    });
+                }
+            }
+        },
+        [expandedItems, onCollapseItem, onExpandItem, expandedItemsProp],
+    );
+
     const renderItem = useCallback(
         (item: T, isSelected: boolean, isExpanded: boolean) => {
             if (!itemRenderer) {
-                // Default renderer
                 const itemLabel = item[labelKey] || "";
                 return (
                     <Typography
@@ -91,7 +112,7 @@ export function TreeView<T extends BaseTreeItem>({
                         noWrap
                         sx={{
                             fontWeight: isSelected ? 500 : 400,
-                            minWidth: "max-content", // Set minimum width to content size
+                            minWidth: "max-content",
                             textWrap: "balance",
                         }}
                     >
@@ -102,13 +123,10 @@ export function TreeView<T extends BaseTreeItem>({
                 );
             }
 
-            // Check if it's a simple renderer (one parameter) or full renderer (object parameter)
             if (itemRenderer.length === 1) {
-                // Simple renderer that only takes the item
-                return (itemRenderer as ItemRendererSimple<T>)(item);
+                return (itemRenderer as TreeViewItemRendererSimple<T>)(item);
             } else {
-                // Full renderer that takes an object with item, isSelected, and isExpanded
-                return (itemRenderer as ItemRendererFull<T>)({
+                return (itemRenderer as TreeViewItemRendererFull<T>)({
                     item,
                     isSelected,
                     isExpanded,
@@ -118,10 +136,8 @@ export function TreeView<T extends BaseTreeItem>({
         [itemRenderer, labelKey],
     );
 
-    // Update the flatten function to use childrenKey
     const flattenedItems = useMemo(() => {
         const result: T[] = [];
-
         const flatten = (items: T[]) => {
             items.forEach((item) => {
                 result.push(item);
@@ -130,20 +146,16 @@ export function TreeView<T extends BaseTreeItem>({
                 }
             });
         };
-
         flatten(items);
         return result;
     }, [items, childrenKey]);
 
-    // Update the filter function to use childrenKey and labelKey
     const filteredItems = useMemo(() => {
         if (!searchTerm.trim()) return items;
 
-        // Helper function to search recursively
         const filterTree = (items: T[]): T[] => {
             return items
                 .map((item) => {
-                    // Check if current item matches
                     const itemLabel = item[labelKey] || "";
                     const matchesSearch =
                         typeof itemLabel === "string" &&
@@ -151,7 +163,6 @@ export function TreeView<T extends BaseTreeItem>({
                             .toLowerCase()
                             .includes(searchTerm.toLowerCase());
 
-                    // Check if any children match
                     const children = item[childrenKey] as T[] | undefined;
                     const filteredChildren = children
                         ? filterTree(children)
@@ -159,7 +170,6 @@ export function TreeView<T extends BaseTreeItem>({
                     const hasMatchingChildren =
                         filteredChildren && filteredChildren.length > 0;
 
-                    // Include this item if it matches or has matching children
                     if (matchesSearch || hasMatchingChildren) {
                         return {
                             ...item,
@@ -175,25 +185,21 @@ export function TreeView<T extends BaseTreeItem>({
         return filterTree(items);
     }, [items, searchTerm, childrenKey, labelKey]);
 
-    // Update the auto-expand function to use labelKey and childrenKey
     useEffect(() => {
         if (!searchTerm.trim()) return;
 
         const itemsToExpand = new Set<string | number>();
-
         const findAndExpandParents = (
             items: T[],
             parentIds: (string | number)[] = [],
         ) => {
             items.forEach((item) => {
                 const currentPath = [...parentIds, item.id];
-
                 const itemLabel = item[labelKey] || "";
                 if (
                     typeof itemLabel === "string" &&
                     itemLabel.toLowerCase().includes(searchTerm.toLowerCase())
                 ) {
-                    // Add all parents to the expanded set
                     parentIds.forEach((id) => itemsToExpand.add(id));
                 }
 
@@ -206,11 +212,8 @@ export function TreeView<T extends BaseTreeItem>({
 
         findAndExpandParents(items);
         setExpandedItems((prev) => new Set([...prev, ...itemsToExpand]));
-    }, [searchTerm, items, childrenKey, labelKey]);
+    }, [searchTerm, items, childrenKey, labelKey, setExpandedItems]);
 
-    // Update the findParents function to use childrenKey
-
-    // Refactored to use useCallback and match Autocomplete onChange signature
     const handleAutocompleteChange = useCallback(
         (
             _event: React.SyntheticEvent,
@@ -221,7 +224,6 @@ export function TreeView<T extends BaseTreeItem>({
                 const itemLabel = value[labelKey] || "";
                 setSearchTerm(typeof itemLabel === "string" ? itemLabel : "");
 
-                // Find and expand all parent nodes
                 const findParents = (
                     items: T[],
                     targetId: string | number,
@@ -231,7 +233,6 @@ export function TreeView<T extends BaseTreeItem>({
                         if (item.id === targetId) {
                             return path;
                         }
-
                         const children = item[childrenKey] as T[] | undefined;
                         if (children) {
                             const result = findParents(children, targetId, [
@@ -241,23 +242,21 @@ export function TreeView<T extends BaseTreeItem>({
                             if (result) return result;
                         }
                     }
-
                     return null;
                 };
 
                 const parents = findParents(items, value.id);
                 if (parents) {
-                    setExpandedItems((prev) =>
-                        new Set([...prev, ...parents, value.id]),
+                    setExpandedItems(
+                        (prev) => new Set([...prev, ...parents, value.id]),
                     );
                     onSelectItem?.(value);
                 }
             }
         },
-        [items, labelKey, childrenKey, onSelectItem],
+        [items, labelKey, childrenKey, onSelectItem, setExpandedItems],
     );
 
-    // Recursive component to render tree items
     const renderTreeItems = useCallback(
         (items: T[], level = 0) => {
             return items.map((item) => {
@@ -274,9 +273,7 @@ export function TreeView<T extends BaseTreeItem>({
                                 alignItems: "center",
                                 cursor: item.disabled ? "default" : "pointer",
                                 opacity: item.disabled ? 0.5 : 1,
-                                pointerEvents: item.disabled
-                                    ? "none"
-                                    : "auto",
+                                pointerEvents: item.disabled ? "none" : "auto",
                                 paddingInlineStart: `${
                                     level * 20 + (!hasChildren ? 10 : 0)
                                 }px`,
@@ -298,11 +295,12 @@ export function TreeView<T extends BaseTreeItem>({
                             onClick={() =>
                                 !item.disabled && onSelectItem?.(item)
                             }
+                            onMouseOver={() => onHoverItem?.(item)}
                         >
                             {hasChildren && (
                                 <IconButton
                                     size="small"
-                                    onClick={(e) => toggleExpand(item.id, e)}
+                                    onClick={(e) => toggleExpand(item, e)}
                                     sx={{
                                         padding: "4px",
                                         marginRight: "4px",
@@ -320,7 +318,6 @@ export function TreeView<T extends BaseTreeItem>({
                                     ) : (
                                         <ChevronRightIcon fontSize="medium" />
                                     )}
-                                    {/* <ChevronRight size={18} /> */}
                                 </IconButton>
                             )}
                             {!hasChildren && <Box sx={{ width: 26 }} />}
@@ -344,6 +341,7 @@ export function TreeView<T extends BaseTreeItem>({
             toggleExpand,
             isRtl,
             renderItem,
+            onHoverItem,
         ],
     );
 
