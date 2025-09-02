@@ -128,10 +128,11 @@ fun storageService(
                             fileName = part.value
                         }
                     }
+
                     is PartData.FileItem -> {
                         if (fileBytes == null) {
                             originalFileName = part.originalFileName
-                            fileContentType = ContentType.values().find { it.value == part.contentType?.toString() }
+                            fileContentType = ContentType.entries.find { it.value == part.contentType?.toString() }
                             fileBytes = part.provider().readBuffer.readByteArray()
                         }
                     }
@@ -149,7 +150,10 @@ fun storageService(
             val finalFileName = if (!fileName.isNullOrBlank()) fileName else originalFileName
 
             if (finalFileName.isNullOrBlank()) {
-                call.respond(HttpStatusCode.BadRequest, FileUploadResult(success = false, message = "File must have a name"))
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    FileUploadResult(success = false, message = "File must have a name")
+                )
                 return
             }
 
@@ -199,10 +203,11 @@ fun storageService(
 
     override fun generateUploadSignedUrl(path: String, contentType: ContentType): String {
         validatePath(path)?.let { throw Exception(it) }
-        val location = UploadLocation.values().find { path.startsWith(it.path) } ?: throw Exception("Invalid upload location")
+        val location =
+            UploadLocation.entries.find { path.startsWith(it.path) } ?: throw Exception("Invalid upload location")
         validateFileType(contentType, location)?.let { throw Exception(it) }
 
-        check (path.startsWith("public/")) {
+        check(path.startsWith("public/")) {
             "Uploads are restricted to the 'public' directory."
         }
 
@@ -275,7 +280,7 @@ fun storageService(
                 created = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli()),
                 url = gcsConfig.baseUrl + blob.name,
                 mediaLink = blob.mediaLink,
-                fileType = determineFileType(ContentType.values().find { it.value == blob.contentType }),
+                fileType = determineFileType(ContentType.entries.find { it.value == blob.contentType }),
                 md5Hash = blob.md5,
                 isPublic = true
             )
@@ -498,7 +503,7 @@ fun storageService(
                 } else {
                     totalFiles++
                     totalSize += blob.size
-                    val fileType = determineFileType(ContentType.values().find { it.value == blob.contentType })
+                    val fileType = determineFileType(ContentType.entries.find { it.value == blob.contentType })
                     val existing = fileTypes.find { it.type == fileType }
                     if (existing != null) {
                         fileTypes[fileTypes.indexOf(existing)] = existing.copy(count = existing.count + 1)
@@ -576,7 +581,7 @@ fun storageService(
             created = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli()),
             url = gcsConfig.baseUrl + blob.name,
             mediaLink = blob.mediaLink,
-            fileType = determineFileType(ContentType.values().find { it.value == blob.contentType }),
+            fileType = determineFileType(ContentType.entries.find { it.value == blob.contentType }),
             md5Hash = blob.md5,
             isPublic = blob.name.startsWith("public/")
         )
