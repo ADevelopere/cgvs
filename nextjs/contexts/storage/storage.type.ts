@@ -1,8 +1,5 @@
 import * as Graphql from "@/graphql/generated/types";
 
-// Types for local state
-export type StorageItem = Graphql.FileInfo | Graphql.FolderInfo;
-
 export type StorageQueryParams = {
     path: string; // This will be relative to 'public/' (e.g., "templateCover" instead of "public/templateCover")
     limit: number;
@@ -12,78 +9,51 @@ export type StorageQueryParams = {
     sortField?: Graphql.FileSortField;
 };
 
-export type StorageManagementContextType = {
-    // Data
-    items: StorageItem[];
-    stats?: Graphql.StorageStats;
-    pagination: {
-        totalCount: number;
-        limit: number;
-        offset: number;
-        hasMore: boolean;
-    } | null;
+// Union type for storage items (files and folders)
+export type StorageItem = Graphql.FileEntity | Graphql.DirectoryEntity;
 
-    // Selection
-    selectedPaths: string[];
+// Pagination information
+export type PaginationInfo = {
+    hasMore: boolean;
+    limit: number;
+    offset: number;
+    totalCount: number;
+};
 
-    // Query params
-    params: StorageQueryParams;
+// Directory tree node for lazy loading
+export type DirectoryTreeNode = {
+    id: string;
+    name: string;
+    path: string;
+    children?: DirectoryTreeNode[]; // undefined = not loaded, [] = loaded but empty, [...] = loaded with content
+    hasChildren: boolean; // server indicates if this node has subdirectories
+    isExpanded: boolean; // client-side expansion state
+    isLoading: boolean; // loading state for this specific node
+    isPrefetched: boolean; // whether children have been pre-fetched
+};
 
-    // Loading/error
-    loading: boolean;
-    error?: string;
+// Core context type for the StorageManagementCoreContext
+export type StorageManagementCoreContextType = {
+    // State
+    stats: Graphql.StorageStats | null;
 
-    // Actions
-    setParams: (partial: Partial<StorageQueryParams>) => void;
-    navigateTo: (path: string) => void;
-    goUp: () => void;
-    refresh: () => Promise<void>;
+    // Data Fetching
+    fetchList: (params: StorageQueryParams) => Promise<{ items: StorageItem[], pagination: PaginationInfo } | null>;
+    fetchDirectoryChildren: (path?: string) => Promise<DirectoryTreeNode[] | null>;
+    fetchStats: (path?: string) => Promise<Graphql.StorageStats | null>;
 
-    toggleSelect: (path: string) => void;
-    selectAll: () => void;
-    clearSelection: () => void;
-
+    // File Operations
     rename: (path: string, newName: string) => Promise<boolean>;
     remove: (paths: string[]) => Promise<boolean>;
+    move: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
+    copy: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
+    createFolder: (path: string, name: string) => Promise<boolean>;
 
-    search: (term: string) => void;
-    setFilterType: (type?: Graphql.FileType) => void;
-    setSortField: (field?: Graphql.FileSortField) => void;
-    setPage: (page: number) => void; // converts to offset
-    setLimit: (limit: number) => void;
+    // Search
+    search: (query: string, path?: string) => Promise<{ items: StorageItem[], totalCount: number } | null>;
 };
 
-export type UploadFileState = {
-    file: File;
-    status: "pending" | "uploading" | "success" | "error";
-    progress: number;
-    error?: string;
-    signedUrl?: string;
-    xhr?: XMLHttpRequest;
-};
-
-export type UploadBatchState = {
-    files: Map<string, UploadFileState>;
-    location: Graphql.UploadLocation;
-    targetPath: string;
-    isUploading: boolean;
-    completedCount: number;
-    totalCount: number;
-    totalProgress: number;
-    timeRemaining: number | null; // in seconds
-    totalSize: number;
-    bytesUploaded: number;
-};
-
-export type StorageUploadContextType = {
-    uploadBatch: UploadBatchState | undefined;
-    startUpload: (
-        files: File[],
-        targetPath: string,
-        callbacks?: { onComplete?: () => void },
-    ) => Promise<void>;
-    cancelUpload: (fileKey?: string) => void;
-    retryFailedUploads: () => Promise<void>;
-    retryFile: (fileKey: string) => Promise<void>;
-    clearUploadBatch: () => void;
-};
+// Re-export GraphQL types for convenience
+export type StorageStats = Graphql.StorageStats;
+export type FileEntity = Graphql.FileEntity;
+export type DirectoryEntity = Graphql.DirectoryEntity;

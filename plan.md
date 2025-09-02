@@ -2,13 +2,28 @@
 
 This document outlines a comprehensive plan for the file manager UI. The architecture is centered around a clear separation of concerns between core data operations, UI interaction state, and presentational components.
 
+## Implementation Progress
+
+- ✅ **StorageManagementCoreContext** - Completed (2025-09-02)
+  - Headless core context for all backend data operations
+  - Depends on StorageGraphQLContext as required
+  - Handles all file operations, data fetching, and search
+  - Provides proper error handling and notifications
+  - Exports all required types for UI components
+
+- ⏳ **Next Steps**:
+  - StorageManagementUIContext (UI State & Interactions)
+  - MenuManagerContext (Context Menus)
+  - File Browser Components
+  - Directory Tree with Lazy Loading
+
 ---
 
 ## 1. High-Level Architecture: A Multi-Context Approach
 
 The system will be governed by four distinct contexts working together:
 
-1.  **`StorageManagementContext` (Core):** The headless, core context responsible for all backend data operations. It fetches the file list and provides the core API for mutations (`rename`, `delete`, etc.). It contains no UI state.
+1.  **`StorageManagementCoreContext` (Core):** The headless, core context responsible for all backend data operations. It fetches the file list and provides the core API for mutations (`rename`, `delete`, etc.). It contains no UI state.
 2.  **`StorageUIManagerContext` (UI State):** A new UI-centric context that manages all user interaction state, including item selection, clipboard (cut/copy), and drag-and-drop states. It consumes the Core context to execute actions.
 3.  **`MenuManagerContext` (Menus):** A specialized context for managing the visibility, position, and content of all context menus.
 4.  **`StorageUploadContext` (Uploads):** A specialized context for handling file uploads from the user's computer. **Note: Upload progress UI is already implemented** via `UploadProgress.tsx` and related components in `nextjs/views/storage/uploading/` - this floating component manages upload states and should wrap the entire application.
@@ -382,7 +397,7 @@ This section defines the content of each menu.
 
 -   **Paste:** (Disabled if clipboard is empty).
 -   **Upload Files:** Call `startUpload()` from `StorageUploadContext`.
--   **New Folder:** Call `createFolder()` from `StorageManagementContext`.
+-   **New Folder:** Call `createFolder()` from `StorageManagementCoreContext`.
 -   **Refresh:** Call the context's `refresh()` function.
 -   **Select All**
 
@@ -407,7 +422,7 @@ This section details the components responsible for rendering the file browser, 
 -   **Responsibilities:**
     -   Renders the folder tree navigation in the first pane of the split layout with lazy loading.
     -   Uses the `TreeView` component from `nextjs/components/common/TreeView.tsx`.
-    -   Consumes `StorageManagementContext` to get the directory structure.
+    -   Consumes `StorageManagementCoreContext` to get the directory structure.
     -   Handles navigation by calling `navigateTo` from the context when folders are selected.
     -   **Implements lazy loading strategy:**
         -   Initially loads only top-level directories
@@ -415,7 +430,7 @@ This section details the components responsible for rendering the file browser, 
         -   Pre-fetches subdirectories on hover for improved UX performance
 -   **TreeView Configuration:**
     -   `items`: Directory tree structure fetched from the backend (initially top-level only)
-    -   `selectedItemId`: Current directory path from `StorageManagementContext`
+    -   `selectedItemId`: Current directory path from `StorageManagementCoreContext`
     -   `onSelectItem`: Calls `navigateTo` to navigate to the selected folder
     -   `onExpandItem`: Calls `expandDirectoryNode` to load children if not already loaded
     -   `onCollapseItem`: Calls `collapseDirectoryNode` to collapse node
@@ -462,7 +477,7 @@ This section details the components responsible for rendering the file browser, 
 
 -   **Responsibilities:**
     -   Displays a set of filter dropdowns to refine the list of files. This component is only visible when no items are selected.
-    -   The filtering will be achieved by updating the URL query parameters, which will trigger a data re-fetch from the `StorageManagementContext`.
+    -   The filtering will be achieved by updating the URL query parameters, which will trigger a data re-fetch from the `StorageManagementCoreContext`.
 -   **Filters to Implement:**
     -   **Type Filter:** A dropdown menu that allows users to filter by file type (e.g., Folders, Documents, Spreadsheets, Presentations, Videos, Forms, Photos & images, PDFs, Videos, Archives, Audio, Drawings, Sites, Shortcuts), as seen in the type filtering menu design.
     -   **Modified Filter:** A dropdown menu that allows users to filter by a date range (e.g., Today, Last 7 days, Last 30 days, This year, Last year, Custom date range), as seen in the modified filtering menu design.
@@ -492,7 +507,7 @@ This section details the components responsible for rendering the file browser, 
     -   Shows a dropdown with search history when the input is focused and has history.
     -   Clicking on a history item populates the search field and triggers the search.
     -   On search submission (Enter key or search button):
-        -   Calls `search()` from `StorageManagementContext`.
+        -   Calls `search()` from `StorageManagementCoreContext`.
         -   Adds the query to search history (avoiding duplicates).
         -   Updates the UI to show search results instead of current directory listing.
     -   Provides a "Clear" or "X" button to exit search mode and return to directory browsing.
@@ -507,7 +522,7 @@ This section details the components responsible for rendering the file browser, 
     -   `sortBy`: The field to sort by (e.g., 'name', 'size', 'lastModified').
     -   `sortDirection`: The sorting direction ('asc' or 'desc').
 -   **Responsibilities:**
-    -   Consumes `StorageManagementContext` to get the list of items (either directory listing or search results).
+    -   Consumes `StorageManagementCoreContext` to get the list of items (either directory listing or search results).
     -   **Performs local (client-side) sorting** on the currently fetched list of files based on `sortBy` and `sortDirection`. This does not require a new API call.
     -   Detects whether the current view is showing search results or directory contents.
     -   Contains the logic for switching between grid and list views.
@@ -629,7 +644,7 @@ This component will be a modal dialog responsible for handling the moving of fil
 ## 9. Final File List
 
 -   **Contexts:**
-    -   `nextjs/contexts/storage/StorageManagementCoreContext.tsx` (New)
+    -   `nextjs/contexts/storage/StorageManagementCoreContext.tsx` ✅ **COMPLETED**
     -   `nextjs/contexts/storage/StorageManagementUIContext.tsx` (New)
     -   `nextjs/contexts/MenuManagerContext.tsx`
     -   **Note:** `StorageUploadContext` and upload progress UI already exist in `nextjs/views/storage/uploading/`
