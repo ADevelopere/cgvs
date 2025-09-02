@@ -59,8 +59,8 @@ interface StorageService {
 
     // New methods for directory tree and bulk operations
     suspend fun fetchDirectoryChildren(path: String? = null): List<FolderInfo>
-    suspend fun moveItems(input: MoveItemsInput): BulkOperationResult
-    suspend fun copyItems(input: CopyItemsInput): BulkOperationResult
+    suspend fun moveItems(input: MoveStorageItemsInput): BulkOperationResult
+    suspend fun copyItems(input: CopyStorageItemsInput): BulkOperationResult
     suspend fun deleteItems(input: DeleteItemsInput): BulkOperationResult
 }
 
@@ -692,7 +692,7 @@ fun storageService(
         return (dbFolders + bucketFolders).sortedBy { it.name }
     }
 
-    override suspend fun moveItems(input: MoveItemsInput): BulkOperationResult {
+    override suspend fun moveItems(input: MoveStorageItemsInput): BulkOperationResult {
         val errors = mutableListOf<String>()
         val successfulItems = mutableListOf<StorageObject>()
 
@@ -763,7 +763,7 @@ fun storageService(
         )
     }
 
-    override suspend fun copyItems(input: CopyItemsInput): BulkOperationResult {
+    override suspend fun copyItems(input: CopyStorageItemsInput): BulkOperationResult {
         val errors = mutableListOf<String>()
         val successfulItems = mutableListOf<StorageObject>()
 

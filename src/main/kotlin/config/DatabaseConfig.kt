@@ -23,7 +23,7 @@ object DatabaseConfig {
             idleTimeout = 300000
             connectionTimeout = 30000
             leakDetectionThreshold = 60000
-            poolName = "CGSV-HikariCP"
+            poolName = "CGVS-HikariCP"
         }
 
         dataSource = HikariDataSource(hikariConfig)

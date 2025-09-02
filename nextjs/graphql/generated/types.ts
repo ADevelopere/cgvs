@@ -29,9 +29,28 @@ export type AuthPayload = {
   user: User;
 };
 
+/** Result of bulk operations */
+export type BulkOperationResult = {
+  __typename?: 'BulkOperationResult';
+  /** List of error messages for failed items */
+  errors: Array<Scalars['String']['output']>;
+  /** Number of items that failed */
+  failureCount: Scalars['Int']['output'];
+  /** Number of items successfully processed */
+  successCount: Scalars['Int']['output'];
+  /** List of successfully processed items */
+  successfulItems: Array<StorageObject>;
+};
+
 export type CategorySpecialType =
   | 'Main'
   | 'Suspension';
+
+/** Input for checking file usage */
+export type CheckFileUsageInput = {
+  /** File path to check */
+  filePath: Scalars['String']['input'];
+};
 
 /** Supported content types for file uploads. */
 export type ContentType =
@@ -47,6 +66,14 @@ export type ContentType =
   | 'WEBP'
   | 'WOFF'
   | 'WOFF2';
+
+/** Input for copying files or directories */
+export type CopyStorageItemsInput = {
+  /** Destination directory path */
+  destinationPath: Scalars['String']['input'];
+  /** Source paths to copy */
+  sourcePaths: Array<Scalars['String']['input']>;
+};
 
 export type CountryCode =
   | 'AD'
@@ -307,6 +334,16 @@ export type CreateDateTemplateVariableInput = {
   templateId: Scalars['Int']['input'];
 };
 
+/** Input for creating a folder with permissions */
+export type CreateFolderInput = {
+  /** The name of the folder */
+  name: Scalars['String']['input'];
+  /** The path where to create the folder */
+  path: Scalars['String']['input'];
+  /** Initial permissions for the folder */
+  permissions?: InputMaybe<DirectoryPermissionsInput>;
+};
+
 export type CreateNumberTemplateVariableInput = {
   decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -377,6 +414,47 @@ export type DateTemplateVariable = TemplateVariable & {
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
+/** Input for bulk deletion */
+export type DeleteItemsInput = {
+  /** Force deletion even if files are in use (requires admin) */
+  force: Scalars['Boolean']['input'];
+  /** Paths to delete */
+  paths: Array<Scalars['String']['input']>;
+};
+
+/** Directory permissions configuration */
+export type DirectoryPermissions = {
+  __typename?: 'DirectoryPermissions';
+  /** Whether subdirectories can be created */
+  allowCreateSubdirs: Scalars['Boolean']['output'];
+  /** Whether this directory can be deleted */
+  allowDelete: Scalars['Boolean']['output'];
+  /** Whether files in this directory can be deleted */
+  allowDeleteFiles: Scalars['Boolean']['output'];
+  /** Whether this directory can be moved */
+  allowMove: Scalars['Boolean']['output'];
+  /** Whether files in this directory can be moved */
+  allowMoveFiles: Scalars['Boolean']['output'];
+  /** Whether uploads are allowed to this directory */
+  allowUploads: Scalars['Boolean']['output'];
+};
+
+/** Directory permissions configuration */
+export type DirectoryPermissionsInput = {
+  /** Whether subdirectories can be created */
+  allowCreateSubdirs: Scalars['Boolean']['input'];
+  /** Whether this directory can be deleted */
+  allowDelete: Scalars['Boolean']['input'];
+  /** Whether files in this directory can be deleted */
+  allowDeleteFiles: Scalars['Boolean']['input'];
+  /** Whether this directory can be moved */
+  allowMove: Scalars['Boolean']['input'];
+  /** Whether files in this directory can be moved */
+  allowMoveFiles: Scalars['Boolean']['input'];
+  /** Whether uploads are allowed to this directory */
+  allowUploads: Scalars['Boolean']['input'];
+};
+
 /** Enhanced file information with metadata */
 export type FileInfo = StorageObject & {
   __typename?: 'FileInfo';
@@ -386,6 +464,12 @@ export type FileInfo = StorageObject & {
   created: Scalars['LocalDateTime']['output'];
   /** File type category */
   fileType: FileType;
+  /** Whether this file exists only in bucket (not in DB) */
+  isFromBucketOnly: Scalars['Boolean']['output'];
+  /** Whether the file is currently being used */
+  isInUse: Scalars['Boolean']['output'];
+  /** Whether the file is protected from deletion */
+  isProtected: Scalars['Boolean']['output'];
   /** Whether the file is publicly accessible */
   isPublic: Scalars['Boolean']['output'];
   /** Last modified timestamp */
@@ -402,6 +486,8 @@ export type FileInfo = StorageObject & {
   size: Scalars['Long']['output'];
   /** URL for accessing the file */
   url?: Maybe<Scalars['String']['output']>;
+  /** List of current usages */
+  usages: Array<FileUsageInfo>;
 };
 
 /** Result of a file operation */
@@ -438,6 +524,32 @@ export type FileTypeCount = {
   type: FileType;
 };
 
+/** File usage information */
+export type FileUsageInfo = {
+  __typename?: 'FileUsageInfo';
+  /** When this usage was created */
+  created: Scalars['LocalDateTime']['output'];
+  /** ID of the entity using this file */
+  referenceId: Scalars['Long']['output'];
+  /** Table/entity type using this file */
+  referenceTable: Scalars['String']['output'];
+  /** Type of usage */
+  usageType: Scalars['String']['output'];
+};
+
+/** Result of checking file usage */
+export type FileUsageResult = {
+  __typename?: 'FileUsageResult';
+  /** Whether the file can be safely deleted */
+  canDelete: Scalars['Boolean']['output'];
+  /** Reason why file cannot be deleted (if applicable) */
+  deleteBlockReason?: Maybe<Scalars['String']['output']>;
+  /** Whether the file is currently in use */
+  isInUse: Scalars['Boolean']['output'];
+  /** List of current usages */
+  usages: Array<FileUsageInfo>;
+};
+
 /** Folder information */
 export type FolderInfo = StorageObject & {
   __typename?: 'FolderInfo';
@@ -447,12 +559,20 @@ export type FolderInfo = StorageObject & {
   fileCount: Scalars['Int']['output'];
   /** Number of subfolders */
   folderCount: Scalars['Int']['output'];
+  /** Whether this directory exists only in bucket (not in DB) */
+  isFromBucketOnly: Scalars['Boolean']['output'];
+  /** Whether this directory is protected from deletion */
+  isProtected: Scalars['Boolean']['output'];
   /** Last modified timestamp */
   lastModified: Scalars['LocalDateTime']['output'];
   /** Folder name */
   name: Scalars['String']['output'];
   /** Full path in the bucket */
   path: Scalars['String']['output'];
+  /** Directory permissions */
+  permissions: DirectoryPermissions;
+  /** Whether children are protected from deletion */
+  protectChildren: Scalars['Boolean']['output'];
   /** Total size of all files in the folder */
   totalSize: Scalars['Long']['output'];
 };
@@ -500,9 +620,21 @@ export type LogoutResponse = {
   message: Scalars['String']['output'];
 };
 
+/** Input for moving files or directories */
+export type MoveStorageItemsInput = {
+  /** Destination directory path */
+  destinationPath: Scalars['String']['input'];
+  /** Source paths to move */
+  sourcePaths: Array<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Copy multiple files/folders to a new location */
+  copyStorageItems: BulkOperationResult;
   createDateTemplateVariable: DateTemplateVariable;
+  /** Create a new folder */
+  createFolder: FileOperationResult;
   createNumberTemplateVariable: NumberTemplateVariable;
   createSelectTemplateVariable: SelectTemplateVariable;
   createStudent: Student;
@@ -511,6 +643,8 @@ export type Mutation = {
   createTextTemplateVariable: TextTemplateVariable;
   /** Delete a single file */
   deleteFile: FileOperationResult;
+  /** Delete multiple files/folders */
+  deleteStorageItems: BulkOperationResult;
   deleteStudent: Student;
   deleteTemplate?: Maybe<Template>;
   deleteTemplateCategory: TemplateCategory;
@@ -521,16 +655,26 @@ export type Mutation = {
   login?: Maybe<AuthPayload>;
   /** Logout current user */
   logout: LogoutResponse;
+  /** Move multiple files/folders to a new location */
+  moveStorageItems: BulkOperationResult;
   partialUpdateStudent: Student;
   /** Refresh the access token using the session cookie */
   refreshToken?: Maybe<AuthPayload>;
   /** Register a new user */
   register?: Maybe<AuthPayload>;
+  /** Register file usage to track dependencies */
+  registerFileUsage: FileOperationResult;
   /** Rename a file */
   renameFile: FileOperationResult;
+  /** Set protection for files or directories */
+  setStorageItemProtection: FileOperationResult;
   suspendTemplate?: Maybe<Template>;
+  /** Unregister file usage to remove dependencies */
+  unregisterFileUsage: FileOperationResult;
   unsuspendTemplate?: Maybe<Template>;
   updateDateTemplateVariable: DateTemplateVariable;
+  /** Update directory permissions */
+  updateDirectoryPermissions: FileOperationResult;
   updateNumberTemplateVariable: NumberTemplateVariable;
   updateSelectTemplateVariable: SelectTemplateVariable;
   updateTemplate?: Maybe<Template>;
@@ -539,8 +683,18 @@ export type Mutation = {
 };
 
 
+export type MutationCopyStorageItemsArgs = {
+  input: CopyStorageItemsInput;
+};
+
+
 export type MutationCreateDateTemplateVariableArgs = {
   input: CreateDateTemplateVariableInput;
+};
+
+
+export type MutationCreateFolderArgs = {
+  input: CreateFolderInput;
 };
 
 
@@ -579,6 +733,11 @@ export type MutationDeleteFileArgs = {
 };
 
 
+export type MutationDeleteStorageItemsArgs = {
+  input: DeleteItemsInput;
+};
+
+
 export type MutationDeleteStudentArgs = {
   id: Scalars['Int']['input'];
 };
@@ -609,6 +768,11 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationMoveStorageItemsArgs = {
+  input: MoveStorageItemsInput;
+};
+
+
 export type MutationPartialUpdateStudentArgs = {
   input: PartialUpdateStudentInput;
 };
@@ -619,13 +783,28 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationRegisterFileUsageArgs = {
+  input: RegisterFileUsageInput;
+};
+
+
 export type MutationRenameFileArgs = {
   input: RenameFileInput;
 };
 
 
+export type MutationSetStorageItemProtectionArgs = {
+  input: SetStorageItemProtectionInput;
+};
+
+
 export type MutationSuspendTemplateArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationUnregisterFileUsageArgs = {
+  input: UnregisterFileUsageInput;
 };
 
 
@@ -636,6 +815,11 @@ export type MutationUnsuspendTemplateArgs = {
 
 export type MutationUpdateDateTemplateVariableArgs = {
   input: UpdateDateTemplateVariableInput;
+};
+
+
+export type MutationUpdateDirectoryPermissionsArgs = {
+  input: UpdateDirectoryPermissionsInput;
 };
 
 
@@ -741,6 +925,10 @@ export type PartialUpdateStudentInput = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Check if a file is currently in use */
+  checkFileUsage: FileUsageResult;
+  /** Fetch immediate children directories for lazy loading directory tree */
+  fetchDirectoryChildren: Array<FolderInfo>;
   getFileInfo?: Maybe<FileInfo>;
   getFolderInfo: FolderInfo;
   /** Get storage statistics */
@@ -765,6 +953,16 @@ export type Query = {
   user?: Maybe<User>;
   /** Get all users (admin only) */
   users?: Maybe<Array<User>>;
+};
+
+
+export type QueryCheckFileUsageArgs = {
+  input: CheckFileUsageInput;
+};
+
+
+export type QueryFetchDirectoryChildrenArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -827,6 +1025,18 @@ export type QueryUserArgs = {
   id: Scalars['Int']['input'];
 };
 
+/** Input for registering file usage */
+export type RegisterFileUsageInput = {
+  /** File path being used */
+  filePath: Scalars['String']['input'];
+  /** ID of the entity using this file */
+  referenceId: Scalars['Long']['input'];
+  /** Table/entity type using this file */
+  referenceTable: Scalars['String']['input'];
+  /** Type of usage (e.g., 'template_cover', 'certificate_image') */
+  usageType: Scalars['String']['input'];
+};
+
 export type RegisterInput = {
   email: Scalars['Email']['input'];
   name: Scalars['String']['input'];
@@ -855,6 +1065,16 @@ export type SelectTemplateVariable = TemplateVariable & {
   template?: Maybe<Template>;
   type: TemplateVariableType;
   updatedAt: Scalars['LocalDateTime']['output'];
+};
+
+/** Input for setting file/directory protection */
+export type SetStorageItemProtectionInput = {
+  /** Whether to protect from deletion */
+  isProtected: Scalars['Boolean']['input'];
+  /** The file or directory path */
+  path: Scalars['String']['input'];
+  /** For directories: whether to protect all children (recursive) */
+  protectChildren: Scalars['Boolean']['input'];
 };
 
 export type SortDirection =
@@ -955,6 +1175,7 @@ export type Template = {
   createdAt?: Maybe<Scalars['LocalDateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
+  imageFile?: Maybe<FileInfo>;
   imageUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
   order: Scalars['Int']['output'];
@@ -1018,6 +1239,16 @@ export type TextTemplateVariable = TemplateVariable & {
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
+/** Input for unregistering file usage */
+export type UnregisterFileUsageInput = {
+  /** File path */
+  filePath: Scalars['String']['input'];
+  /** Reference ID to remove */
+  referenceId: Scalars['Long']['input'];
+  /** Usage type to remove */
+  usageType: Scalars['String']['input'];
+};
+
 export type UpdateDateTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   format?: InputMaybe<Scalars['String']['input']>;
@@ -1027,6 +1258,14 @@ export type UpdateDateTemplateVariableInput = {
   name: Scalars['String']['input'];
   previewValue?: InputMaybe<Scalars['LocalDate']['input']>;
   required: Scalars['Boolean']['input'];
+};
+
+/** Input for updating directory permissions */
+export type UpdateDirectoryPermissionsInput = {
+  /** The directory path */
+  path: Scalars['String']['input'];
+  /** New permissions configuration */
+  permissions: DirectoryPermissionsInput;
 };
 
 export type UpdateNumberTemplateVariableInput = {
@@ -1061,7 +1300,7 @@ export type UpdateTemplateInput = {
   categoryId: Scalars['Int']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  imageFileName?: InputMaybe<Scalars['String']['input']>;
+  imageFileId?: InputMaybe<Scalars['Long']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 

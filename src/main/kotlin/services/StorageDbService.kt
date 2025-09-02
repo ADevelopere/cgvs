@@ -12,7 +12,7 @@ interface StorageDbService {
     suspend fun getFileEntityByPath(path: String): FileEntity?
     suspend fun checkFileUsage(input: CheckFileUsageInput): FileUsageResult
     suspend fun updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): FileOperationResult
-    suspend fun setProtection(input: SetProtectionInput): FileOperationResult
+    suspend fun setProtection(input: SetStorageItemProtectionInput): FileOperationResult
     suspend fun registerFileUsage(input: RegisterFileUsageInput): FileOperationResult
     suspend fun unregisterFileUsage(input: UnregisterFileUsageInput): FileOperationResult
     suspend fun addFileFromBucket(
@@ -93,7 +93,7 @@ fun storageDbService(
         }
     }
 
-    override suspend fun setProtection(input: SetProtectionInput): FileOperationResult {
+    override suspend fun setProtection(input: SetStorageItemProtectionInput): FileOperationResult {
         return try {
             // Check if it's a file or directory
             val dbFile = storageRepository.getFileByPath(input.path)
@@ -150,7 +150,7 @@ fun storageDbService(
 
             val registeredUsage = storageRepository.registerFileUsage(usage)
             val fileInfo = fileEntityToFileInfo(dbFile)
-            
+
             FileOperationResult(true, "File usage registered successfully", fileInfo)
         } catch (e: Exception) {
             FileOperationResult(false, "Failed to register file usage: ${e.message}", null)
