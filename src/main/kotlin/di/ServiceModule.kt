@@ -6,6 +6,7 @@ import services.TemplateCategoryService
 import services.TemplateConfigService
 import services.TemplateService
 import services.TemplateVariableService
+import services.FileInitializationService
 
 val serviceModule = module {
     single<TemplateCategoryService> {
@@ -37,6 +38,15 @@ val serviceModule = module {
         TemplateVariableService(
             repository = get(),
             templateRepository = get()
+        )
+    }
+
+    single<FileInitializationService> {
+        FileInitializationService(
+            storageService = get(),
+            storageRepository = get(),
+            storage = get(),
+            gcsConfig = get()
         )
     }
 }

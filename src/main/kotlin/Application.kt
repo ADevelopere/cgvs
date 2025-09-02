@@ -4,6 +4,7 @@ import plugins.configureDI
 import plugins.configureHTTP
 import plugins.configureHealth
 import plugins.configureSecurity
+import plugins.configureInitialization
 import plugins.graphQLModule
 
 fun main(args: Array<String>) {
@@ -17,4 +18,5 @@ fun Application.module() {
     configureHealth()
     graphQLModule()
     configureSecurity()
+    configureInitialization()
 }
