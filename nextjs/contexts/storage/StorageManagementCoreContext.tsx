@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
+import useAppTranslation from "@/locale/useAppTranslation";
 import * as Graphql from "@/graphql/generated/types";
 import {
     StorageQueryParams,
@@ -27,6 +28,7 @@ export const useStorageManagementCore = () => {
 export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const storageGraphQL = useStorageGraphQL();
     const notifications = useNotifications();
+    const { management: translations } = useAppTranslation("storageTranslations");
     const [stats, setStats] = useState<StorageStats | null>(null);
 
     // Helper function to transform GraphQL DirectoryEntity to DirectoryTreeNode
@@ -78,10 +80,10 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
             return { items, pagination };
         } catch (error) {
             logger.error('Error fetching file list:', error);
-            showNotification('Failed to fetch file list', 'error');
+            showNotification(translations.failedToFetchFileList, 'error');
             return null;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     const fetchDirectoryChildren = useCallback(async (path?: string): Promise<DirectoryTreeNode[] | null> => {
         try {
@@ -94,10 +96,10 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
             return result.fetchDirectoryChildren.map(transformDirectoryToTreeNode);
         } catch (error) {
             logger.error('Error fetching directory children:', error);
-            showNotification('Failed to fetch directory contents', 'error');
+            showNotification(translations.failedToFetchDirectoryContents, 'error');
             return null;
         }
-    }, [storageGraphQL, transformDirectoryToTreeNode, showNotification]);
+    }, [storageGraphQL, transformDirectoryToTreeNode, showNotification, translations]);
 
     const fetchStats = useCallback(async (path?: string): Promise<StorageStats | null> => {
         try {
@@ -112,10 +114,10 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
             return statsData;
         } catch (error) {
             logger.error('Error fetching storage stats:', error);
-            showNotification('Failed to fetch storage statistics', 'error');
+            showNotification(translations.failedToFetchStorageStatistics, 'error');
             return null;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     // File Operations
     const rename = useCallback(async (path: string, newName: string): Promise<boolean> => {
@@ -128,18 +130,18 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
             });
             
             if (result.renameFile?.success) {
-                showNotification(`Successfully renamed to "${newName}"`, 'success');
+                showNotification(translations.successfullyRenamedTo.replace('%{newName}', newName), 'success');
                 return true;
             } else {
-                showNotification(result.renameFile?.message || 'Failed to rename file', 'error');
+                showNotification(result.renameFile?.message || translations.failedToRenameFile, 'error');
                 return false;
             }
         } catch (error) {
             logger.error('Error renaming file:', error);
-            showNotification('Failed to rename file', 'error');
+            showNotification(translations.failedToRenameFile, 'error');
             return false;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     const remove = useCallback(async (paths: string[]): Promise<boolean> => {
         try {
@@ -154,22 +156,25 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
                 const { successCount, failureCount, errors } = result.deleteStorageItems;
                 
                 if (failureCount === 0) {
-                    showNotification(`Successfully deleted ${successCount} item(s)`, 'success');
+                    showNotification(translations.successfullyDeleted.replace('%{count}', `${successCount} ${successCount === 1 ? translations.item : translations.items}`), 'success');
                     return true;
                 } else {
-                    showNotification(`Deleted ${successCount} item(s), failed to delete ${failureCount}. Errors: ${errors.join(', ')}`, 'warning');
+                    showNotification(translations.deletedPartial
+                        .replace('%{successCount}', successCount.toString())
+                        .replace('%{failureCount}', failureCount.toString())
+                        .replace('%{errors}', errors.join(', ')), 'warning');
                     return successCount > 0; // Partial success
                 }
             } else {
-                showNotification('Failed to delete items', 'error');
+                showNotification(translations.failedToDeleteItems, 'error');
                 return false;
             }
         } catch (error) {
             logger.error('Error deleting items:', error);
-            showNotification('Failed to delete items', 'error');
+            showNotification(translations.failedToDeleteItems, 'error');
             return false;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     const move = useCallback(async (sourcePaths: string[], destinationPath: string): Promise<boolean> => {
         try {
@@ -184,22 +189,25 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
                 const { successCount, failureCount, errors } = result.moveStorageItems;
                 
                 if (failureCount === 0) {
-                    showNotification(`Successfully moved ${successCount} item(s)`, 'success');
+                    showNotification(translations.successfullyMoved.replace('%{count}', `${successCount} ${successCount === 1 ? translations.item : translations.items}`), 'success');
                     return true;
                 } else {
-                    showNotification(`Moved ${successCount} item(s), failed to move ${failureCount}. Errors: ${errors.join(', ')}`, 'warning');
+                    showNotification(translations.movedPartial
+                        .replace('%{successCount}', successCount.toString())
+                        .replace('%{failureCount}', failureCount.toString())
+                        .replace('%{errors}', errors.join(', ')), 'warning');
                     return successCount > 0; // Partial success
                 }
             } else {
-                showNotification('Failed to move items', 'error');
+                showNotification(translations.failedToMoveItems, 'error');
                 return false;
             }
         } catch (error) {
             logger.error('Error moving items:', error);
-            showNotification('Failed to move items', 'error');
+            showNotification(translations.failedToMoveItems, 'error');
             return false;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     const copy = useCallback(async (sourcePaths: string[], destinationPath: string): Promise<boolean> => {
         try {
@@ -214,22 +222,25 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
                 const { successCount, failureCount, errors } = result.copyStorageItems;
                 
                 if (failureCount === 0) {
-                    showNotification(`Successfully copied ${successCount} item(s)`, 'success');
+                    showNotification(translations.successfullyCopied.replace('%{count}', `${successCount} ${successCount === 1 ? translations.item : translations.items}`), 'success');
                     return true;
                 } else {
-                    showNotification(`Copied ${successCount} item(s), failed to copy ${failureCount}. Errors: ${errors.join(', ')}`, 'warning');
+                    showNotification(translations.copiedPartial
+                        .replace('%{successCount}', successCount.toString())
+                        .replace('%{failureCount}', failureCount.toString())
+                        .replace('%{errors}', errors.join(', ')), 'warning');
                     return successCount > 0; // Partial success
                 }
             } else {
-                showNotification('Failed to copy items', 'error');
+                showNotification(translations.failedToCopyItems, 'error');
                 return false;
             }
         } catch (error) {
             logger.error('Error copying items:', error);
-            showNotification('Failed to copy items', 'error');
+            showNotification(translations.failedToCopyItems, 'error');
             return false;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     const createFolder = useCallback(async (path: string, name: string): Promise<boolean> => {
         try {
@@ -241,18 +252,18 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
             });
             
             if (result.createFolder?.success) {
-                showNotification(`Successfully created folder "${name}"`, 'success');
+                showNotification(translations.successfullyCreatedFolder.replace('%{name}', name), 'success');
                 return true;
             } else {
-                showNotification(result.createFolder?.message || 'Failed to create folder', 'error');
+                showNotification(result.createFolder?.message || translations.failedToCreateFolder, 'error');
                 return false;
             }
         } catch (error) {
             logger.error('Error creating folder:', error);
-            showNotification('Failed to create folder', 'error');
+            showNotification(translations.failedToCreateFolder, 'error');
             return false;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     // Search Function
     const search = useCallback(async (query: string, path?: string): Promise<{ items: StorageItem[], totalCount: number } | null> => {
@@ -276,10 +287,10 @@ export const StorageManagementCoreProvider: React.FC<{ children: React.ReactNode
             };
         } catch (error) {
             logger.error('Error searching files:', error);
-            showNotification('Failed to search files', 'error');
+            showNotification(translations.failedToSearchFiles, 'error');
             return null;
         }
-    }, [storageGraphQL, showNotification]);
+    }, [storageGraphQL, showNotification, translations]);
 
     const contextValue: StorageManagementCoreContextType = useMemo(
         () => ({

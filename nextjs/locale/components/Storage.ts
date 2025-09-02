@@ -19,188 +19,145 @@ type StorageUploadingTranslations = {
     cancel: string;
 };
 
-type StorageTranslations = {
-    [key: string]: string | undefined | StorageUploadingTranslations;
+type StorageManagementCoreTranslations = {
+    // Data fetching error messages
+    failedToFetchFileList: string;
+    failedToFetchDirectoryContents: string;
+    failedToFetchStorageStatistics: string;
+    
+    // File operation success messages
+    successfullyRenamedTo: string; // %{newName}
+    successfullyCreatedFolder: string; // %{name}
+    successfullyDeleted: string; // %{count}
+    successfullyMoved: string; // %{count}
+    successfullyMovedPartial: string; // %{successCount}, %{failureCount}, %{errors}
+    successfullyCopied: string; // %{count}
+    successfullyCopiedPartial: string; // %{successCount}, %{failureCount}, %{errors}
+    
+    // File operation error messages
+    failedToRenameFile: string;
+    failedToCreateFolder: string;
+    failedToDeleteItems: string;
+    deletedPartial: string; // %{successCount}, %{failureCount}, %{errors}
+    failedToMoveItems: string;
+    movedPartial: string; // %{successCount}, %{failureCount}, %{errors}
+    failedToCopyItems: string;
+    copiedPartial: string; // %{successCount}, %{failureCount}, %{errors}
+    failedToSearchFiles: string;
+    
+    // Generic terms
+    items: string;
+    item: string;
+    errors: string;
+};
 
-    failedListFiles: string;
-    failedFetchStorageStats: string;
-    uploadNotAllowed: string;
-    uploadCancelled: string;
-    uploadFailed: string;
-    failedRename: string;
-    failedDelete: string;
-    noFailedUploads: string;
-    fileAlreadyExists: string;
-    failedGenerateSignedUrl: string;
-    uploadStarted: string;
-    uploadCompleted: string;
-    uploadProgress: string;
-
-    // Additional messages used in the context
-    renameSuccess: string;
-    deleteSuccess: string;
-    uploadBlockedByCors: string;
-    retryCompleted: string;
-    retryFailed: string;
-    uploadSuccessCount: string; // expects "%{count}" placeholder
-    uploadFailedCount: string; // expects "%{count}" placeholder
-    uploadFailedWithStatus: string;
-    networkErrorDuringUpload: string;
-    uploadFailedForFile: string;
-    noResponseText: string;
-    internalUploadError: string;
-    itemsSelected: string;
-    download: string;
-    copyLinks: string;
-    delete: string;
-    confirmBulkDelete: string;
-    confirmBulkDeleteMessage: string;
-    cancel: string;
-    deleteItems: string;
-    deleteFolder: string;
-    deleteFile: string;
-    deleteItem: string;
-    aboutToDelete: string;
-    aboutToDeleteItem: string;
-    cannotBeUndone: string;
-    itemsToBeDeleted: string;
-    deleteFolderWarning: string;
-    deleting: string;
-    uploadStartedSuccessfully: string;
-    failedToStartUpload: string;
-    noFilesYet: string;
-    thisFolderIsEmpty: string;
-    chooseStorageLocation: string;
-    emptyFolderGetStarted: string;
-    emptyFolder: string;
-    uploadFiles: string;
-    goUp: string;
-    dragAndDropHelpText: string;
-    networkError: string;
-    authenticationError: string;
-    accessDenied: string;
-    contentNotFound: string;
-    requestTimeout: string;
-    serverError: string;
-    retry: string;
-    failedToLoadStorageContent: string;
-    zeroBytes: string;
-    bytes: string;
-    kb: string;
-    mb: string;
-    gb: string;
-    tb: string;
-    unknown: string;
-    moreActions: string;
-    modified: string;
-    size: string;
-    copyLink: string;
-    rename: string;
-    emptyFolderUpload: string;
-    foldersCount: string;
-    filesCount: string;
-    remainingMore: string;
-    storageLocations: string;
-    allowedFileTypes: string;
-    showingItems: string;
-    perPage: string;
-    // SearchBar
-    nameCannotBeEmpty: string;
-    nameMustBeDifferent: string;
-    nameCannotContainForwardSlashes: string;
-    nameCannotContainBackslashes: string;
-    nameTooLong: string;
-    nameContainsIllegalCharacters: string;
-    failedToRenameItem: string;
-    unexpectedError: string;
-    // SelectHeader
-    renameItem: string;
-    newName: string;
-    enterNewName: string;
-    renaming: string;
-    search: string;
-    clearSearch: string;
-    selectAllItems: string;
-    selectedOfTotal: string;
-    // StorageBreadcrumbs
-    goUpOneLevel: string;
-    breadcrumbNavigation: string;
-    chooseStorageLocationBreadcrumb: string;
-    // StorageStatsBar
-    totalStorage: string;
-    acrossFilesAndFolders: string;
-    currentDirectory: string;
-    folder: string;
-    folders: string;
-    file: string;
-    files: string;
-    fileTypes: string;
-    more: string;
-    // StorageToolbar
-    allFiles: string;
-    images: string;
-    documents: string;
-    videos: string;
-    audio: string;
-    archives: string;
-    other: string;
-    default: string;
-    name: string;
-    modifiedDate: string;
-    fileType: string;
-    searchFilesAndFolders: string;
-    filter: string;
-    sort: string;
-    uploadToLocation: string;
-    navigateToLocationToUpload: string;
-    selected: string;
-    activeFilters: string;
-    typeFilter: string;
-    searchFilter: string;
-    pending: string;
-    success: string;
-    failed: string;
-    cancelUpload: string;
-    retryUpload: string;
-    allFilesUploaded: string;
-    uploadStatus: string;
-    uploadingFiles: string;
-    fileUpload: string;
-    cancelAll: string;
-    uploadLocation: string;
-
-    // File Selector translations
-    selectLocation: string;
-    selectLocationFirst: string;
-    invalidFileTypes: string;
-    allowedTypes: string;
-    dropFilesHere: string;
-    dragFilesHere: string;
-    orClickToSelect: string;
-    selectFiles: string;
-    completed: string;
-    uploadingString: string;
-    clearList: string;
-    preview: string;
-    selectOrUploadFiles: string;
-    selectOrUploadFile: string;
-    selectFile: string;
-    select: string;
-    close: string;
-    filesSelected: string;
-    fileSelected: string;
-    noFileSelected: string;
-    max: string;
-    selectionLimitReached: string;
+type StorageManagementUITranslations = {
+    // Navigation error messages
+    failedToNavigateToDirectory: string;
+    failedToRefreshDirectory: string;
+    searchFailed: string;
+    
+    // Loading states
+    loadingFolderContents: string;
+    folderExpanded: string; // %{count}
+    
+    // View mode and sorting
+    gridView: string;
+    listView: string;
+    sortByName: string;
+    sortBySize: string;
+    sortByLastModified: string;
+    sortByCreated: string;
+    sortByType: string;
+    ascending: string;
+    descending: string;
+    
+    // Selection and clipboard
     selectAll: string;
     clearSelection: string;
+    selectedItems: string; // %{count}
+    copyItems: string;
+    cutItems: string;
+    pasteItems: string;
+    noItemsInClipboard: string;
+    itemsCopied: string; // %{count}
+    itemsCut: string; // %{count}
+    
+    // Search
+    searchPlaceholder: string;
+    searchResults: string; // %{count}
+    noSearchResults: string;
+    exitSearchMode: string;
+    searchInFolder: string; // %{folderName}
+    
+    // Tree navigation
+    expandFolder: string;
+    collapseFolder: string;
+    noFoldersFound: string;
+    
+    // Filter and view controls
+    filterByType: string;
+    filterByDate: string;
+    clearFilters: string;
+    showFilters: string;
+    hideFilters: string;
+    
+    // Accessibility
+    focusedItem: string; // %{itemName}
+    navigationInstructions: string;
+    keyboardShortcuts: string;
+    
+    // Context menu actions
+    open: string;
+    rename: string;
+    delete: string;
+    copy: string;
+    cut: string;
+    paste: string;
+    download: string;
+    getInfo: string;
+    newFolder: string;
+    uploadFiles: string;
     refresh: string;
-    view: string;
-    grid: string;
-    list: string;
-    selectLocationToViewFiles: string;
-    noFilesInLocation: string;
+    
+    // File types for filtering
+    allTypes: string;
+    folders: string;
+    documents: string;
+    spreadsheets: string;
+    presentations: string;
+    videos: string;
+    forms: string;
+    photos: string;
+    pdfs: string;
+    archives: string;
+    audio: string;
+    drawings: string;
+    sites: string;
+    shortcuts: string;
+    
+    // Pagination
+    itemsPerPage: string;
+    page: string; // %{current} of %{total}
+    showingItems: string; // %{start}-{end} of %{total}
+    
+    // Generic UI terms
+    loading: string;
+    error: string;
+    retry: string;
+    cancel: string;
+    close: string;
+    save: string;
+    apply: string;
+    reset: string;
+};
+
+type StorageTranslations = {
+    [key: string]: string | undefined | StorageUploadingTranslations | StorageManagementCoreTranslations | StorageManagementUITranslations;
+
     uploading: StorageUploadingTranslations;
+    management: StorageManagementCoreTranslations;
+    ui: StorageManagementUITranslations;
 };
 
 export default StorageTranslations;
