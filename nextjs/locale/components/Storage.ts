@@ -64,6 +64,7 @@ type StorageManagementUITranslations = {
     // View mode and sorting
     gridView: string;
     listView: string;
+    sortBy: string;
     sortByName: string;
     sortBySize: string;
     sortByLastModified: string;
@@ -71,6 +72,16 @@ type StorageManagementUITranslations = {
     sortByType: string;
     ascending: string;
     descending: string;
+    name: string;
+    size: string;
+    lastModified: string;
+    created: string;
+    
+    // Empty states and messages
+    emptyFolder: string;
+    tryDifferentSearch: string;
+    uploadOrCreate: string;
+    searching: string;
     
     // Selection and clipboard
     selectAll: string;
@@ -89,6 +100,8 @@ type StorageManagementUITranslations = {
     noSearchResults: string;
     exitSearchMode: string;
     searchInFolder: string; // %{folderName}
+    item: string;
+    items: string;
     
     // Tree navigation
     expandFolder: string;
@@ -96,6 +109,16 @@ type StorageManagementUITranslations = {
     noFoldersFound: string;
     
     // Filter and view controls
+    filters: string;
+    activeFilters: string;
+    allDates: string;
+    today: string;
+    last7Days: string;
+    last30Days: string;
+    thisYear: string;
+    lastYear: string;
+    customDateRange: string;
+    searchTerm: string;
     filterByType: string;
     filterByDate: string;
     clearFilters: string;
@@ -119,6 +142,7 @@ type StorageManagementUITranslations = {
     newFolder: string;
     uploadFiles: string;
     refresh: string;
+    moveTo: string;
     
     // File types for filtering
     allTypes: string;
@@ -135,11 +159,16 @@ type StorageManagementUITranslations = {
     drawings: string;
     sites: string;
     shortcuts: string;
+    otherTypes: string;
     
     // Pagination
     itemsPerPage: string;
     page: string; // %{current} of %{total}
     showingItems: string; // %{start}-{end} of %{total}
+    
+    // Navigation and breadcrumb
+    myDrive: string;
+    breadcrumbNavigation: string;
     
     // Generic UI terms
     loading: string;
