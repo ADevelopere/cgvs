@@ -3,6 +3,7 @@ package schema.mutation
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.server.operations.Mutation
 import services.StorageService
+import services.StorageDbService
 import schema.model.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -13,6 +14,7 @@ import kotlinx.datetime.toLocalDateTime
 @Suppress("unused")
 class StorageMutation : Mutation, KoinComponent {
     private val storageService: StorageService by inject()
+    private val storageDbService: StorageDbService by inject()
 
     @GraphQLDescription("Rename a file")
     fun renameFile(
@@ -68,14 +70,14 @@ class StorageMutation : Mutation, KoinComponent {
     suspend fun updateDirectoryPermissions(
         input: UpdateDirectoryPermissionsInput
     ): FileOperationResult {
-        return storageService.updateDirectoryPermissions(input)
+        return storageDbService.updateDirectoryPermissions(input)
     }
 
     @GraphQLDescription("Set protection for files or directories")
     suspend fun setProtection(
         input: SetProtectionInput
     ): FileOperationResult {
-        return storageService.setProtection(input)
+        return storageDbService.setProtection(input)
     }
 
     @GraphQLDescription("Register file usage to track dependencies")

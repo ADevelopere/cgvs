@@ -55,10 +55,6 @@ interface StorageService {
 
     fun getFileInfoByPath(path: String): FileInfo?
 
-    fun getFileInfoById(id: Long): FileInfo?
-
-    fun getFileInfosByIds(ids: List<Long>): List<FileInfo>
-
     fun getStorageStatistics(path: String? = null): StorageStats
 
     // New methods for directory tree and bulk operations
@@ -66,9 +62,6 @@ interface StorageService {
     suspend fun moveItems(input: MoveItemsInput): BulkOperationResult
     suspend fun copyItems(input: CopyItemsInput): BulkOperationResult
     suspend fun deleteItems(input: DeleteItemsInput): BulkOperationResult
-    suspend fun checkFileUsage(input: CheckFileUsageInput): FileUsageResult
-    suspend fun updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): FileOperationResult
-    suspend fun setProtection(input: SetProtectionInput): FileOperationResult
 }
 
 @OptIn(InternalAPI::class)
@@ -101,7 +94,9 @@ fun storageService(
                         }
                     }
 
-                    else -> {}
+                    else -> {
+                        println("Unknown part: $part")
+                    }
                 }
                 part.dispose()
             }
@@ -537,18 +532,6 @@ fun storageService(
         }
     }
 
-    override fun getFileInfoById(id: Long): FileInfo? {
-        return runBlocking {
-            storageRepository.getFileById(id)?.let { fileEntityToFileInfo(it) }
-        }
-    }
-
-    override fun getFileInfosByIds(ids: List<Long>): List<FileInfo> {
-        return runBlocking {
-            storageRepository.getFilesByIds(ids).map { fileEntityToFileInfo(it) }
-        }
-    }
-
     override fun getStorageStatistics(path: String?): StorageStats {
         return try {
             val prefix = path?.let { "$it/" } ?: ""
@@ -911,89 +894,6 @@ fun storageService(
         )
     }
 
-    override suspend fun checkFileUsage(input: CheckFileUsageInput): FileUsageResult {
-        return try {
-            val isInUse = storageRepository.isFileInUse(input.filePath)
-            val usages = if (isInUse) {
-                storageRepository.getFileUsages(input.filePath).map { usage ->
-                    FileUsageInfo(
-                        usageType = usage.usageType,
-                        referenceId = usage.referenceId,
-                        referenceTable = usage.referenceTable,
-                        created = usage.created
-                    )
-                }
-            } else {
-                emptyList()
-            }
-
-            FileUsageResult(
-                isInUse = isInUse,
-                usages = usages,
-                canDelete = !isInUse,
-                deleteBlockReason = if (isInUse) "File is currently in use" else null
-            )
-        } catch (_: Exception) {
-            FileUsageResult(
-                isInUse = false,
-                usages = emptyList(),
-                canDelete = true,
-                deleteBlockReason = null
-            )
-        }
-    }
-
-    override suspend fun updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): FileOperationResult {
-        return try {
-            val updated = storageRepository.updateDirectoryPermissions(input.path, input.permissions)
-            if (updated) {
-                val updatedDir = storageRepository.getDirectoryByPath(input.path)
-                val folderInfo = updatedDir?.let { directoryEntityToFolderInfo(it) }
-                FileOperationResult(true, "Directory permissions updated successfully", folderInfo)
-            } else {
-                FileOperationResult(false, "Directory not found", null)
-            }
-        } catch (e: Exception) {
-            FileOperationResult(false, "Failed to update permissions: ${e.message}", null)
-        }
-    }
-
-    override suspend fun setProtection(input: SetProtectionInput): FileOperationResult {
-        return try {
-            // Check if it's a file or directory
-            val dbFile = storageRepository.getFileByPath(input.path)
-            val dbDir = storageRepository.getDirectoryByPath(input.path)
-
-            when {
-                dbFile != null -> {
-                    val updated = storageRepository.setFileProtection(input.path, input.isProtected)
-                    if (updated) {
-                        val updatedFile = storageRepository.getFileByPath(input.path)
-                        val fileInfo = updatedFile?.let { fileEntityToFileInfo(it) }
-                        FileOperationResult(true, "File protection updated successfully", fileInfo)
-                    } else {
-                        FileOperationResult(false, "Failed to update file protection", null)
-                    }
-                }
-                dbDir != null -> {
-                    val updated = storageRepository.setDirectoryProtection(input.path, input.isProtected, input.protectChildren)
-                    if (updated) {
-                        val updatedDir = storageRepository.getDirectoryByPath(input.path)
-                        val folderInfo = updatedDir?.let { directoryEntityToFolderInfo(it) }
-                        FileOperationResult(true, "Directory protection updated successfully", folderInfo)
-                    } else {
-                        FileOperationResult(false, "Failed to update directory protection", null)
-                    }
-                }
-                else -> {
-                    FileOperationResult(false, "Path not found in database", null)
-                }
-            }
-        } catch (e: Exception) {
-            FileOperationResult(false, "Failed to set protection: ${e.message}", null)
-        }
-    }
-
     // Helper functions
     private fun directoryEntityToFolderInfo(dir: DirectoryEntity): FolderInfo {
         return FolderInfo(
@@ -1011,23 +911,4 @@ fun storageService(
         )
     }
 
-    private fun fileEntityToFileInfo(file: FileEntity): FileInfo {
-        return FileInfo(
-            name = file.name,
-            path = file.path,
-            size = file.size,
-            contentType = file.contentType,
-            fileType = determineFileType(ContentType.entries.find { it.value == file.contentType }),
-            lastModified = file.lastModified,
-            created = file.created,
-            url = gcsConfig.baseUrl + file.path,
-            mediaLink = null,
-            md5Hash = file.md5Hash,
-            isPublic = file.path.startsWith("public/"),
-            isProtected = file.isProtected,
-            isInUse = false, // Could be populated if needed
-            usages = emptyList(), // Could be populated if needed
-            isFromBucketOnly = file.isFromBucket
-        )
-    }
 }
