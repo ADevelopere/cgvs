@@ -25,5 +25,5 @@ fun storageModule(application: Application) = module {
         StorageOptions.getDefaultInstance().service
     single<Storage> { storage }
 
-    single<StorageService> { storageService(get(), gcsConfig) }
+    single<StorageService> { storageService(get(), gcsConfig, get()) }
 }

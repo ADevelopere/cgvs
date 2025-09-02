@@ -106,6 +106,10 @@ interface StorageService {
 
     fun getFileInfoByPath(path: String): FileInfo?
 
+    fun getFileInfoById(id: Long): FileInfo?
+
+    fun getFileInfosByIds(ids: List<Long>): List<FileInfo>
+
     fun getStorageStatistics(path: String? = null): StorageStats
 
     // New methods for directory tree and bulk operations
@@ -321,7 +325,7 @@ fun storageService(
                     )
                     storageRepository.createFile(fileEntity)
                 } catch (e: Exception) {
-                    // Log but don't fail the upload since file is already in bucket
+                    // Log but don't fail the upload since the file is already in bucket
                     println("Failed to add file to DB: ${e.message}")
                 }
             }
@@ -533,13 +537,13 @@ fun storageService(
 
             // Check permissions and protection
             runBlocking {
-                // Check if file is in use
+                // Check if the file is in use
                 val isInUse = storageRepository.isFileInUse(path)
                 if (isInUse) {
                     return@runBlocking FileOperationResult(false, "File is currently in use and cannot be deleted")
                 }
 
-                // Check if file is protected
+                // Check if the file is protected
                 val dbFile = storageRepository.getFileByPath(path)
                 if (dbFile?.isProtected == true) {
                     return@runBlocking FileOperationResult(false, "File is protected from deletion")
@@ -556,19 +560,19 @@ fun storageService(
             val blobId = BlobId.of(gcsConfig.bucketName, path)
             val deleted = storage.delete(blobId)
 
-            if (deleted) {
+            return if (deleted) {
                 // Remove from DB if exists
                 runBlocking {
                     try {
                         storageRepository.deleteFile(path)
                     } catch (e: Exception) {
-                        // Log but don't fail the operation since file was deleted from bucket
+                        // Log but don't fail the operation since the file was deleted from bucket
                         println("Failed to remove file from DB: ${e.message}")
                     }
                 }
-                return FileOperationResult(true, "File deleted successfully")
+                FileOperationResult(true, "File deleted successfully")
             } else {
-                return FileOperationResult(false, "File not found: $path")
+                FileOperationResult(false, "File not found: $path")
             }
         } catch (e: Exception) {
             return FileOperationResult(false, "Failed to delete file: ${e.message}")
@@ -581,6 +585,18 @@ fun storageService(
             blobToFileInfo(blob)
         } catch (_: Exception) {
             null
+        }
+    }
+
+    override fun getFileInfoById(id: Long): FileInfo? {
+        return runBlocking {
+            storageRepository.getFileById(id)?.let { fileEntityToFileInfo(it) }
+        }
+    }
+
+    override fun getFileInfosByIds(ids: List<Long>): List<FileInfo> {
+        return runBlocking {
+            storageRepository.getFilesByIds(ids).map { fileEntityToFileInfo(it) }
         }
     }
 
@@ -750,7 +766,7 @@ fun storageService(
 
         for (sourcePath in input.sourcePaths) {
             try {
-                // Check if source exists in bucket
+                // Check if source exists in the bucket
                 val sourceBlob = storage.get(gcsConfig.bucketName, sourcePath)
                 if (sourceBlob == null) {
                     errors.add("Source path not found: $sourcePath")
@@ -821,7 +837,7 @@ fun storageService(
 
         for (sourcePath in input.sourcePaths) {
             try {
-                // Check if source exists in bucket
+                // Check if source exists in the bucket
                 val sourceBlob = storage.get(gcsConfig.bucketName, sourcePath)
                 if (sourceBlob == null) {
                     errors.add("Source path not found: $sourcePath")
@@ -968,7 +984,7 @@ fun storageService(
                 canDelete = !isInUse,
                 deleteBlockReason = if (isInUse) "File is currently in use" else null
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             FileUsageResult(
                 isInUse = false,
                 usages = emptyList(),

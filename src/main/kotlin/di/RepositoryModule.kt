@@ -18,4 +18,5 @@ val repositoryModule = module {
     single<TemplateRepository> { TemplateRepository(get()) }
     single<StudentRepository> { StudentRepository(get()) }
     single<TemplateVariableRepository> { TemplateVariableRepository(get()) }
+    single<repositories.StorageRepository> { repositories.impl.StorageRepositoryImpl() }
 }

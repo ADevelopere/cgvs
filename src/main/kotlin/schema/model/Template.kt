@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
-import schema.dataloaders.UrlDataLoader
+import schema.dataloaders.StorageFileDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
 
@@ -17,10 +17,10 @@ data class Template(
     val id: Int = 0,
     val name: String,
     val description: String? = null,
-    @GraphQLIgnore val imageFileName: String? = null,
-    @GraphQLIgnore val categoryId: Int,
+    @param:GraphQLIgnore val imageFileId: Long? = null,
+    @param:GraphQLIgnore val categoryId: Int,
     val order: Int = 0,
-    @GraphQLIgnore val preSuspensionCategoryId: Int? = null,
+    @param:GraphQLIgnore val preSuspensionCategoryId: Int? = null,
     val createdAt: LocalDateTime? = now(),
     val updatedAt: LocalDateTime? = now()
 ){
@@ -42,13 +42,23 @@ data class Template(
         )
     }
 
-    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String> {
-        return if (imageFileName.isNullOrBlank()) {
-            CompletableFuture.completedFuture("")
-        } else {
+    fun imageFile(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<FileInfo?> {
+        return if (imageFileId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(
-                UrlDataLoader.dataLoaderName, imageFileName
+                StorageFileDataLoader.dataLoaderName, imageFileId
             )
+        } else {
+            CompletableFuture.completedFuture(null)
+        }
+    }
+
+    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String> {
+        return if (imageFileId != null) {
+            imageFile(dataFetchingEnvironment).thenApply { fileInfo ->
+                fileInfo?.path ?: ""
+            }
+        } else {
+            CompletableFuture.completedFuture("")
         }
     }
 }
@@ -65,7 +75,7 @@ data class UpdateTemplateInput(
     val name: String? = null,
     val description: String? = null,
     val categoryId: Int,
-    val imageFileName: String? = null,
+    val imageFileId: Long? = null,
 )
 
 data class PaginatedTemplatesResponse(
