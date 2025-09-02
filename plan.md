@@ -22,8 +22,7 @@ This document outlines a comprehensive plan for the file manager UI. The archite
   - Full TypeScript support with proper error handling
 
 **Ready for Implementation:**
-- ⏳ **MenuManagerContext** (Context Menus)
-- ⏳ **File Browser Components** (Views & UI Components)
+- ⏳ **File Browser Components** (Views & UI Components with Material-UI)
 - ⏳ **Directory Tree Component** with TreeView integration
 - ⏳ **File Operations Dialogs** (MoveToDialog, etc.)
 
@@ -33,12 +32,11 @@ This document outlines a comprehensive plan for the file manager UI. The archite
 
 ## 1. High-Level Architecture: A Multi-Context Approach
 
-The system will be governed by four distinct contexts working together:
+The system will be governed by three distinct contexts working together:
 
 1.  **`StorageManagementCoreContext` (Core):** The headless, core context responsible for all backend data operations. It fetches the file list and provides the core API for mutations (`rename`, `delete`, etc.). It contains no UI state.
 2.  **`StorageUIManagerContext` (UI State):** A new UI-centric context that manages all user interaction state, including item selection, clipboard (cut/copy), and drag-and-drop states. It consumes the Core context to execute actions.
-3.  **`MenuManagerContext` (Menus):** A specialized context for managing the visibility, position, and content of all context menus.
-4.  **`StorageUploadContext` (Uploads):** A specialized context for handling file uploads from the user's computer. **Note: Upload progress UI is already implemented** via `UploadProgress.tsx` and related components in `nextjs/views/storage/uploading/` - this floating component manages upload states and should wrap the entire application.
+3.  **`StorageUploadContext` (Uploads):** A specialized context for handling file uploads from the user's computer. **Note: Upload progress UI is already implemented** via `UploadProgress.tsx` and related components in `nextjs/views/storage/uploading/` - this floating component manages upload states and should wrap the entire application.
 
 ---
 
@@ -359,11 +357,22 @@ This section details the architecture for handling context menus and file upload
 
 ### Menu Architecture
 
-A flexible system for displaying context menus, decoupled from the trigger mechanism (works for both right-click and left-click).
+Context menus will be implemented using Material-UI's `Menu` component directly in each component that needs them. This approach leverages MUI's built-in positioning, accessibility, and theming capabilities.
 
--   **`MenuManagerContext`:** A central context will hold the state of the currently active menu (its type, target data, and position).
--   **`MenuManager` Component:** A single `MenuManager`, placed high in the app layout, will read from this context and render the appropriate menu component (`FileMenu`, `FolderMenu`, etc.) at the correct position.
--   **Triggering:** Any component can trigger a menu by calling the `openMenu` function from the `MenuManagerContext`.
+-   **Implementation Pattern:** Each component requiring a context menu will manage its own menu state using the standard MUI pattern:
+    ```tsx
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const handleContextMenu = (event: React.MouseEvent) => {
+        event.preventDefault();
+        setAnchorEl(event.currentTarget);
+    };
+    ```
+-   **Menu Components:** Individual menu components (`FileMenu`, `FolderMenu`, `ViewAreaMenu`) will be rendered directly using MUI's `Menu` and `MenuItem` components.
+-   **Benefits:** 
+    - Consistent with existing codebase patterns
+    - Leverages MUI's accessibility features
+    - Simpler architecture without additional context layer
+    - Better performance with localized state management
 
 ### Upload Architecture
 
@@ -382,64 +391,76 @@ This floating upload progress component should wrap the entire application and i
 
 ---
 
-## 6. Menu Actions & Content (Updated)
+## 6. Menu Actions & Content
 
-This section defines the content of each menu.
+This section defines the content of each menu. All menus will be implemented using Material-UI's `Menu` and `MenuItem` components.
 
-### `FileMenu`
+### `FileMenu` (MUI Menu Component)
 
--   **Cut**
--   **Copy**
--   **Download:** Create a link (`<a>`) with its `href` set to the file's `mediaLink` property.
--   **Rename:** Trigger a modal and call the context's `rename()` function.
--   **Delete:** Show a confirmation dialog and call the context's `remove()` function.
--   **Get Info:** Open a details panel showing `name`, `size`, `contentType`, `lastModified`, `created`, and `path`.
+-   **Cut** - MUI `MenuItem` with cut icon
+-   **Copy** - MUI `MenuItem` with copy icon  
+-   **Download** - MUI `MenuItem` that creates a link (`<a>`) with its `href` set to the file's `mediaLink` property
+-   **Rename** - MUI `MenuItem` that triggers a MUI `Dialog` and calls the context's `rename()` function
+-   **Delete** - MUI `MenuItem` that shows a MUI confirmation dialog and calls the context's `remove()` function
+-   **Get Info** - MUI `MenuItem` that opens a MUI details panel/dialog showing `name`, `size`, `contentType`, `lastModified`, `created`, and `path`
 
-### `FolderMenu`
+### `FolderMenu` (MUI Menu Component)
 
--   **Open:** Call the context's `navigateTo()` function.
--   **Cut**
--   **Copy**
--   **Paste:** (Disabled if clipboard is empty).
--   **Rename**
--   **Delete**
--   **Get Info:** Open a details panel showing `name`, `path`, `fileCount`, `folderCount`, `totalSize`, etc.
+-   **Open** - MUI `MenuItem` that calls the context's `navigateTo()` function
+-   **Cut** - MUI `MenuItem` with cut icon
+-   **Copy** - MUI `MenuItem` with copy icon
+-   **Paste** - MUI `MenuItem` (disabled if clipboard is empty)
+-   **Rename** - MUI `MenuItem` that triggers rename dialog
+-   **Delete** - MUI `MenuItem` that triggers confirmation dialog
+-   **Get Info** - MUI `MenuItem` that opens details panel showing `name`, `path`, `fileCount`, `folderCount`, `totalSize`, etc.
 
-### `ViewAreaMenu`
+### `ViewAreaMenu` (MUI Menu Component)
 
--   **Paste:** (Disabled if clipboard is empty).
--   **Upload Files:** Call `startUpload()` from `StorageUploadContext`.
--   **New Folder:** Call `createFolder()` from `StorageManagementCoreContext`.
--   **Refresh:** Call the context's `refresh()` function.
--   **Select All**
+-   **Paste** - MUI `MenuItem` (disabled if clipboard is empty)
+-   **Upload Files** - MUI `MenuItem` that calls `startUpload()` from `StorageUploadContext`
+-   **New Folder** - MUI `MenuItem` that calls `createFolder()` from `StorageManagementCoreContext`
+-   **Refresh** - MUI `MenuItem` that calls the context's `refresh()` function
+-   **Select All** - MUI `MenuItem` for selecting all items
 
 ---
 
-## 7. Views: Grid and List Rendering (Updated & Merged)
+## 7. Views: Grid and List Rendering (Material-UI Components)
 
-This section details the components responsible for rendering the file browser, now driven by the new `StorageUIManagerContext`. The implementation will use standard HTML elements (`div`, `table`, etc.) and will not rely on a UI library like MUI for its core structure.
+This section details the components responsible for rendering the file browser, now driven by the new `StorageUIManagerContext`. **All components will use Material-UI (MUI) components for consistent theming, accessibility, and design system integration.**
 
-### `StorageBrowserView.tsx` (New)
+### Material-UI Component Usage Strategy
+
+-   **Layout Components:** Use MUI `Box`, `Container`, `Grid`, `Stack` for layout and spacing
+-   **Navigation:** Use MUI `Breadcrumbs`, `Chip`, `Button` for breadcrumb navigation
+-   **Inputs & Controls:** Use MUI `TextField`, `Select`, `MenuItem`, `IconButton`, `Tooltip` for all user inputs
+-   **Data Display:** Use MUI `Table`, `TableHead`, `TableBody`, `TableRow`, `TableCell` for list view
+-   **Feedback:** Use MUI `CircularProgress`, `LinearProgress`, `Skeleton` for loading states
+-   **Surfaces:** Use MUI `Card`, `Paper`, `Dialog` for containers and modals
+-   **Typography:** Use MUI `Typography` component for all text content
+-   **Icons:** Use Material-UI icons (`@mui/icons-material`) throughout
+
+### `StorageBrowserView.tsx` (Material-UI Layout)
 
 -   **Responsibilities:**
-    -   Acts as the main container for the file browser UI.
-    -   Will be wrapped by all necessary contexts (`StorageManagementProvider`, `StorageUIManagerProvider`, etc.).
+    -   Acts as the main container for the file browser UI using MUI `Box` component
+    -   Will be wrapped by all necessary contexts (`StorageManagementProvider`, `StorageUIManagerProvider`, etc.)
     -   Uses the `SplitPaneViewController` component to create a two-pane layout:
-        -   **First Pane:** Directory tree navigation (`StorageDirectoryTree`)
+        -   **First Pane:** Directory tree navigation (`StorageDirectoryTree`) 
         -   **Second Pane:** Main file browser view (`StorageMainView`)
         -   **Title:** The `StorageSearch` component is passed as the title prop to the split pane controller
 
-### `StorageDirectoryTree.tsx` (New)
+### `StorageDirectoryTree.tsx` (Material-UI TreeView)
 
 -   **Responsibilities:**
-    -   Renders the folder tree navigation in the first pane of the split layout with lazy loading.
-    -   Uses the `TreeView` component from `nextjs/components/common/TreeView.tsx`.
-    -   Consumes `StorageManagementCoreContext` to get the directory structure.
-    -   Handles navigation by calling `navigateTo` from the context when folders are selected.
-    -   **Implements lazy loading strategy:**
+    -   Renders the folder tree navigation in the first pane using MUI components
+    -   Uses the existing `TreeView` component from `nextjs/components/common/TreeView.tsx` with MUI styling
+    -   Consumes `StorageManagementCoreContext` to get the directory structure
+    -   Handles navigation by calling `navigateTo` from the context when folders are selected
+    -   **Implements lazy loading strategy** with MUI loading indicators:
         -   Initially loads only top-level directories
-        -   Loads subdirectories on-demand when parent nodes are expanded
+        -   Loads subdirectories on-demand when parent nodes are expanded  
         -   Pre-fetches subdirectories on hover for improved UX performance
+        -   Uses MUI `CircularProgress` for loading states
 -   **TreeView Configuration:**
     -   `items`: Directory tree structure fetched from the backend (initially top-level only)
     -   `selectedItemId`: Current directory path from `StorageManagementCoreContext`
@@ -450,9 +471,9 @@ This section details the components responsible for rendering the file browser, 
     -   `expandedItems`: Set of expanded node paths from UI context
     -   `childrenKey`: "children" (for nested folder structure)
     -   `labelKey`: "name" (folder name display)
-    -   `itemRenderer`: Custom renderer to show folder icons, names, and loading states
-    -   `searchText`: "Search folders..."
-    -   `noItemsMessage`: "No folders found"
+    -   `itemRenderer`: Custom renderer using MUI components to show folder icons, names, and loading states
+    -   `searchText`: "Search folders..." with MUI `TextField`
+    -   `noItemsMessage`: "No folders found" using MUI `Typography`
 -   **Lazy Loading Behavior:**
     -   **Initial Load:** Fetch only root-level directories when component mounts (using `fetchDirectoryChildren()` with undefined path)
     -   **Expansion:** When user clicks to expand a folder:
@@ -469,187 +490,230 @@ This section details the components responsible for rendering the file browser, 
         -   Cache fetched directory children to avoid re-fetching
         -   Use loading states only for explicit user actions (clicks), not hover pre-fetching
 
-### `StorageMainView.tsx` (New)
+### `StorageMainView.tsx` (Material-UI Container)
 
 -   **Responsibilities:**
-    -   Acts as the container for the main file browser content in the second pane.
-    -   Renders the `StorageBreadcrumb` component at the top.
-    -   Renders the `StorageToolbar.tsx` component below the breadcrumb.
-    -   Renders the `StorageItemsView` component at the bottom.
+    -   Acts as the container for the main file browser content using MUI `Box` component
+    -   Renders the `StorageBreadcrumb` component at the top
+    -   Renders the `StorageToolbar.tsx` component below the breadcrumb
+    -   Renders the `StorageItemsView` component at the bottom
+    -   Uses MUI `Stack` for vertical layout organization
 
-### `StorageToolbar.tsx` (New)
-
--   **Responsibilities:**
-    -   Acts as a conditional container that sits between the breadcrumb and the items view.
-    -   Consumes `StorageUIManagerContext` to check if any items are selected.
-    -   If `selectedItems` is empty, it renders the `StorageFilters` component.
-    -   If `selectedItems` has one or more items, it renders the `StorageSelectionActions` component.
-
-### `StorageFilters.tsx` (New)
+### `StorageToolbar.tsx` (Material-UI Conditional Layout)
 
 -   **Responsibilities:**
-    -   Displays a set of filter dropdowns to refine the list of files. This component is only visible when no items are selected.
-    -   The filtering will be achieved by updating the URL query parameters, which will trigger a data re-fetch from the `StorageManagementCoreContext`.
+    -   Acts as a conditional container using MUI `Box` component that sits between the breadcrumb and the items view
+    -   Consumes `StorageUIManagerContext` to check if any items are selected
+    -   If `selectedItems` is empty, it renders the `StorageFilters` component
+    -   If `selectedItems` has one or more items, it renders the `StorageSelectionActions` component
+    -   Uses MUI `Fade` or `Collapse` for smooth transitions between states
+
+### `StorageFilters.tsx` (Material-UI Form Controls)
+
+-   **Responsibilities:**
+    -   Displays filter controls using MUI `Select`, `MenuItem`, and `FormControl` components
+    -   This component is only visible when no items are selected
+    -   The filtering will be achieved by updating the URL query parameters, which will trigger a data re-fetch from the `StorageManagementCoreContext`
 -   **Filters to Implement:**
-    -   **Type Filter:** A dropdown menu that allows users to filter by file type (e.g., Folders, Documents, Spreadsheets, Presentations, Videos, Forms, Photos & images, PDFs, Videos, Archives, Audio, Drawings, Sites, Shortcuts), as seen in the type filtering menu design.
-    -   **Modified Filter:** A dropdown menu that allows users to filter by a date range (e.g., Today, Last 7 days, Last 30 days, This year, Last year, Custom date range), as seen in the modified filtering menu design.
+    -   **Type Filter:** MUI `Select` dropdown with `MenuItem` options for file types (Folders, Documents, Spreadsheets, Presentations, Videos, Forms, Photos & images, PDFs, Archives, Audio, Drawings, Sites, Shortcuts)
+    -   **Modified Filter:** MUI `Select` dropdown with `MenuItem` options for date ranges (Today, Last 7 days, Last 30 days, This year, Last year, Custom date range)
+    -   Uses MUI `Chip` components to display active filters
 
-### `StorageSelectionActions.tsx` (New)
+### `StorageSelectionActions.tsx` (Material-UI Button Group)
 
 -   **Responsibilities:**
-    -   Displays a toolbar with actions for the currently selected items. This component is only visible when one or more items are selected.
-    -   Consumes `StorageUIManagerContext` to get the list of `selectedItems`.
+    -   Displays a toolbar with actions using MUI `ButtonGroup`, `Button`, and `IconButton` components
+    -   This component is only visible when one or more items are selected
+    -   Consumes `StorageUIManagerContext` to get the list of `selectedItems`
+    -   Uses MUI `Tooltip` for action descriptions
 -   **Actions to Implement:**
-    -   **Download:** Available for any selection.
-    -   **Move To:** Available for any selection. Will trigger a dialog in the future.
-    -   **Delete:** Available for any selection. Will trigger a confirmation dialog.
-    -   **Rename:** Conditionally rendered. It will only be visible if `selectedItems.length === 1`.
+    -   **Download:** MUI `Button` with download icon, available for any selection
+    -   **Move To:** MUI `Button` with move icon, available for any selection. Will trigger a MUI dialog
+    -   **Delete:** MUI `Button` with delete icon, available for any selection. Will trigger a MUI confirmation dialog
+    -   **Rename:** MUI `Button` with edit icon, conditionally rendered only if `selectedItems.length === 1`
 
-### `StorageSearch.tsx` (New)
+### `StorageSearch.tsx` (Material-UI Search Component)
 
--   **Props:** None (consumes context directly).
+-   **Props:** None (consumes context directly)
 -   **State to Manage:**
-    -   `searchQuery`: Current search input value.
-    -   `searchHistory`: Array of previous search queries (persisted in localStorage).
-    -   `showHistory`: Boolean to control the visibility of the search history dropdown.
-    -   `isSearching`: Boolean to show loading state during search.
+    -   `searchQuery`: Current search input value
+    -   `searchHistory`: Array of previous search queries (persisted in localStorage)
+    -   `showHistory`: Boolean to control the visibility of the search history dropdown
+    -   `isSearching`: Boolean to show loading state during search
 -   **Logic:**
-    -   Renders a search input field with a search icon.
-    -   Maintains search history in localStorage (key: `storage-search-history`).
-    -   Shows a dropdown with search history when the input is focused and has history.
-    -   Clicking on a history item populates the search field and triggers the search.
+    -   Renders search input using MUI `TextField` with `InputAdornment` for search icon
+    -   Maintains search history in localStorage (key: `storage-search-history`)
+    -   Shows a MUI `Autocomplete` or `Popper` with search history when the input is focused and has history
+    -   Uses MUI `List` and `ListItem` components for history display
+    -   Clicking on a history item populates the search field and triggers the search
     -   On search submission (Enter key or search button):
-        -   Calls `search()` from `StorageManagementCoreContext`.
-        -   Adds the query to search history (avoiding duplicates).
-        -   Updates the UI to show search results instead of current directory listing.
-    -   Provides a "Clear" or "X" button to exit search mode and return to directory browsing.
+        -   Calls `search()` from `StorageManagementCoreContext`
+        -   Adds the query to search history (avoiding duplicates)
+        -   Updates the UI to show search results instead of current directory listing
+    -   Provides MUI `IconButton` with clear icon to exit search mode and return to directory browsing
     -   Search history management:
-        -   Stores up to 10 recent searches.
-        -   Removes duplicates by moving existing queries to the top.
-        -   Provides option to clear individual history items or entire history.
+        -   Stores up to 10 recent searches
+        -   Removes duplicates by moving existing queries to the top
+        -   Provides option to clear individual history items or entire history using MUI `MenuItem` actions
 
-### `StorageItemsView.tsx`
+### `StorageItemsView.tsx` (Material-UI Data Display)
 
 -   **State to Manage:**
-    -   `sortBy`: The field to sort by (e.g., 'name', 'size', 'lastModified').
-    -   `sortDirection`: The sorting direction ('asc' or 'desc').
+    -   `sortBy`: The field to sort by (e.g., 'name', 'size', 'lastModified')
+    -   `sortDirection`: The sorting direction ('asc' or 'desc')
 -   **Responsibilities:**
-    -   Consumes `StorageManagementCoreContext` to get the list of items (either directory listing or search results).
-    -   **Performs local (client-side) sorting** on the currently fetched list of files based on `sortBy` and `sortDirection`. This does not require a new API call.
-    -   Detects whether the current view is showing search results or directory contents.
-    -   Contains the logic for switching between grid and list views.
-    -   Displays a toolbar with view switching controls.
-    -   For search results: Shows the number of results found and the search query.
-    -   Renders the appropriate container (`div` for grid, `table` for list) and maps over the sorted items, rendering a `StorageItem` for each.
+    -   Consumes `StorageManagementCoreContext` to get the list of items (either directory listing or search results)
+    -   **Performs local (client-side) sorting** on the currently fetched list of files based on `sortBy` and `sortDirection`. This does not require a new API call
+    -   Detects whether the current view is showing search results or directory contents
+    -   Contains the logic for switching between grid and list views using MUI `ToggleButtonGroup`
+    -   Displays a toolbar with view switching controls using MUI `AppBar` or `Toolbar`
+    -   For search results: Shows the number of results found and the search query using MUI `Typography`
+    -   Renders the appropriate container (MUI `Grid` for grid view, MUI `Table` for list view) and maps over the sorted items, rendering a `StorageItem` for each
 -   **Sorting Logic:**
-    -   **List View:** Renders a `<table>` with a `<thead>`. Each column header (Name, Size, Last Modified) will be clickable to update the `sortBy` and `sortDirection` state, providing interactive column sorting.
-    -   **Grid View:** Does not have visible column headers. A separate sort menu/button in the toolbar will be displayed to allow the user to select the `sortBy` field and `sortDirection`.
+    -   **List View:** Renders MUI `Table` with `TableHead`. Each `TableCell` header (Name, Size, Last Modified) will be clickable using MUI `TableSortLabel` to update the `sortBy` and `sortDirection` state
+    -   **Grid View:** Uses MUI `Menu` or `Select` component in the toolbar to allow the user to select the `sortBy` field and `sortDirection`
 
-### `StorageBreadcrumb.tsx` (New)
+### `StorageBreadcrumb.tsx` (Material-UI Navigation)
 
--   **Props:** `path` (string), `onNavigateToPath` (function).
+-   **Props:** `path` (string), `onNavigateToPath` (function)
 -   **Logic:**
-    -   Renders the breadcrumb navigation based on the current path, as seen in the design.
-    -   Each part of the path should be a clickable link to navigate to that directory.
-    -   For paths that are too long to fit the container, it should intelligently truncate the path, showing the beginning and the end, with an ellipsis in the middle (e.g., `My Drive > ... > very > long > path`).
+    -   Renders breadcrumb navigation using MUI `Breadcrumbs` component
+    -   Each part of the path uses MUI `Link` or `Button` component to navigate to that directory
+    -   For paths that are too long, uses MUI `Typography` with text truncation and `Tooltip` to show full path
+    -   Implements intelligent truncation showing beginning and end with MUI `Chip` for middle sections (e.g., `My Drive > ... > very > long > path`)
 
-### `StorageItem.tsx`
+### `StorageItem.tsx` (Material-UI Item Router)
 
 -   **Responsibilities:**
-    -   Acts as a router for an individual item, deciding whether to render the grid or list version.
-    -   Consumes `StorageUIManagerContext` to determine if it is `isSelected` or `isCut` and applies styles accordingly.
-    -   Its `onClick` handler will call the advanced selection logic from the UI context (handling ctrl/shift keys).
-    -   Handles the double-click action to navigate into a folder.
-    -   It will be a **draggable source** for the drag-to-move functionality.
-    -   If the item is a folder, it will also be a **drop target**.
-    -   Decides whether to render a `StorageItemGrid` or `StorageItemListRow` component.
+    -   Acts as a router for an individual item, deciding whether to render the grid or list version
+    -   Consumes `StorageUIManagerContext` to determine if it is `isSelected` or `isCut` and applies MUI theme-based styles accordingly
+    -   Its `onClick` handler will call the advanced selection logic from the UI context (handling ctrl/shift keys)
+    -   Handles the double-click action to navigate into a folder
+    -   It will be a **draggable source** for the drag-to-move functionality using HTML5 drag API with MUI visual feedback
+    -   If the item is a folder, it will also be a **drop target** with MUI visual indicators
+    -   Context menu integration using MUI `Menu` component triggered on right-click
+    -   Decides whether to render a `StorageItemGrid` or `StorageItemListRow` component
 
-### `StorageItemGrid.tsx`
+### `StorageItemGrid.tsx` (Material-UI Card Component)
 
--   **Props:** `item`, `isSelected`.
+-   **Props:** `item`, `isSelected`
 -   **Logic:**
-    -   Renders a single "card" in the grid view using a `div`.
-    -   If the item is a folder, it displays a large `FileTypeIcon`.
-    -   If the item is a file, it renders the `FilePreview` component.
-    -   Displays the `item.name` below the icon/preview with text truncation.
-    -   The `onClick` and drag/drop logic is handled by the parent `StorageItem`.
+    -   Renders a single "card" in the grid view using MUI `Card` and `CardContent` components
+    -   If the item is a folder, it displays a large Material-UI icon using `@mui/icons-material`
+    -   If the item is a file, it renders the `FilePreview` component within a MUI `CardMedia` area
+    -   Displays the `item.name` using MUI `Typography` component with text truncation
+    -   Uses MUI `Skeleton` for loading states
+    -   Selection state indicated by MUI theme-based background color changes
+    -   The `onClick` and drag/drop logic is handled by the parent `StorageItem`
 
-### `StorageItemListRow.tsx`
+### `StorageItemListRow.tsx` (Material-UI Table Row)
 
--   **Props:** `item`, `isSelected`.
+-   **Props:** `item`, `isSelected`
 -   **Logic:**
-    -   Renders a single row in the list view using a `<tr>` (table row) element.
-    -   Uses `<td>` cells for columns:
-        -   The `FileTypeIcon` component.
-        -   The `item.name`.
-        -   The formatted `item.size`.
-        -   The formatted `item.lastModified` date.
-    -   For folders, the size and date columns will display a dash (—).
+    -   Renders a single row in the list view using MUI `TableRow` and `TableCell` components
+    -   Uses MUI `TableCell` components for columns:
+        -   The `FileTypeIcon` component using Material-UI icons
+        -   The `item.name` using MUI `Typography`
+        -   The formatted `item.size` using MUI `Typography`
+        -   The formatted `item.lastModified` date using MUI `Typography`
+    -   For folders, the size and date columns will display a dash (—) using MUI `Typography`
+    -   Selection state indicated by MUI `TableRow` selected prop and theme styling
+    -   Hover effects using MUI theme hover states
 
-### `FilePreview.tsx`
+### `FilePreview.tsx` (Material-UI Media Component)
 
--   **Props:** `file` (FileInfo).
+-   **Props:** `file` (FileInfo)
 -   **Logic:**
-    -   Renders the large preview area within the `StorageItemGrid` card.
-    -   Initially, it will use the `FileTypeIcon` to show a large, centered icon.
-    -   **Future Enhancement:** Can be enhanced to check `file.contentType`. If it's an image, render an `<img>` tag. For other types, fall back to the icon.
+    -   Renders the large preview area within the `StorageItemGrid` card using MUI `CardMedia` or `Box`
+    -   Initially, it will use the `FileTypeIcon` component with Material-UI icons
+    -   **Future Enhancement:** Can be enhanced to check `file.contentType`. If it's an image, render using MUI `CardMedia` with `<img>` tag. For other types, fall back to the icon
+    -   Uses MUI `Skeleton` component for loading states
 
-### `FileTypeIcon.tsx`
+### `FileTypeIcon.tsx` (Material-UI Icon Component)
 
--   **Props:** `item` (StorageItem).
--   **Logic:** A small, reusable helper component to centralize the logic for choosing an icon. It inspects the item's type to return the appropriate icon (e.g., Folder, Image, Article). This ensures consistency between views.
+-   **Props:** `item` (StorageItem)
+-   **Logic:** A small, reusable helper component using Material-UI icons (`@mui/icons-material`) to centralize the logic for choosing an icon. It inspects the item's type to return the appropriate Material-UI icon component (e.g., `FolderIcon`, `ImageIcon`, `ArticleIcon`). This ensures consistency between views and leverages MUI's icon system.
 
 ---
 
-## 8. Dialogs and Modals
+## 8. Dialogs and Modals (Material-UI Components)
 
-This section outlines the design and functionality of modal dialogs used for specific file operations.
+This section outlines the design and functionality of modal dialogs used for specific file operations. All dialogs will use Material-UI components for consistent theming and accessibility.
 
-### `MoveToDialog.tsx` (New)
+### `MoveToDialog.tsx` (Material-UI Dialog)
 
-This component will be a modal dialog responsible for handling the moving of files and folders. It will be triggered by the "Move To" action in file/folder context menus.
+This component will be a modal dialog using MUI `Dialog`, `DialogTitle`, `DialogContent`, and `DialogActions` components responsible for handling the moving of files and folders. It will be triggered by the "Move To" action in file/folder context menus.
 
 -   **State to Manage:**
-    -   `isOpen`: Boolean to control the visibility of the dialog.
-    -   `itemsToMove`: The items (files/folders) that are being moved.
-    -   `currentPathInDialog`: The path of the directory currently being viewed *inside the dialog*.
-    -   `itemsInView`: The list of files and folders for the `currentPathInDialog`.
-    -   `isLoading`: Boolean to indicate when the dialog is fetching directory contents.
-    -   `hoveredItemPath`: The path of the item currently being hovered over in the list.
+    -   `isOpen`: Boolean to control the visibility of the dialog
+    -   `itemsToMove`: The items (files/folders) that are being moved
+    -   `currentPathInDialog`: The path of the directory currently being viewed *inside the dialog*
+    -   `itemsInView`: The list of files and folders for the `currentPathInDialog`
+    -   `isLoading`: Boolean to indicate when the dialog is fetching directory contents
+    -   `hoveredItemPath`: The path of the item currently being hovered over in the list
 
--   **UI Design & Behavior:**
+-   **UI Design & Behavior (Material-UI Implementation):**
     -   **Header:**
-        -   Dynamic dialog title, e.g., "Move 'Untitled folder'" or "Move 3 items".
-        -   A "Current location" section showing a folder icon followed by the current directory name (clickable button to navigate to that path).
-        -   **No tabs** (Suggested, Starred, All locations) - only show the current directory contents by default.
+        -   Dynamic dialog title using MUI `DialogTitle` with MUI `Typography`, e.g., "Move 'Untitled folder'" or "Move 3 items"
+        -   A "Current location" section using MUI `Chip` or `Button` showing a folder icon followed by the current directory name (clickable button to navigate to that path)
+        -   **No tabs** - only show the current directory contents by default
     
     -   **Navigation:**
         -   When in a subdirectory, show a navigation header with:
-            -   A "navigate up" (back arrow) icon to go to parent directory.
-            -   Current directory name.
-        -   The view lists items for the `currentPathInDialog` (not the entire directory tree).
+            -   MUI `IconButton` with back arrow icon to go to parent directory
+            -   Current directory name using MUI `Typography`
+        -   The view lists items for the `currentPathInDialog` (not the entire directory tree)
     
     -   **Item Listing:**
-        -   Display both files and folders for the current directory.
-        -   Files are shown but non-interactive (for context).
-        -   Folders are interactive and can be navigated into or used as move destinations.
-        -   **Visual fade/blur effect** at the bottom of the scrollable list to indicate more content.
+        -   Display both files and folders using MUI `List`, `ListItem`, and `ListItemText` components
+        -   Files are shown but non-interactive (for context) with disabled styling
+        -   Folders are interactive and can be navigated into or used as move destinations
+        -   **Visual fade/blur effect** at the bottom using MUI `Box` with gradient overlay to indicate more content
     
     -   **Item Interaction (on Hover):**
-        -   When hovering over a directory, show two action buttons at the end of the row:
-            1.  **Move Button:** Executes the move operation to move selected items to this directory.
-            2.  **Navigate Into Button (`>`):** Updates the dialog view to show contents of this directory.
+        -   When hovering over a directory, show two MUI `IconButton` actions at the end of the `ListItem`:
+            1.  **Move Button:** MUI `IconButton` with move icon that executes the move operation to move selected items to this directory
+            2.  **Navigate Into Button (`>`):** MUI `IconButton` with arrow icon that updates the dialog view to show contents of this directory
+        -   Use MUI `Tooltip` components for button descriptions
     
     -   **Footer Actions:**
-        -   Primary "Move" button to move items to the `currentPathInDialog`.
-        -   "Cancel" button to close dialog without action.
-        -   Optional "New Folder" button to create a new folder in current directory.
+        -   MUI `DialogActions` containing:
+            -   Primary MUI `Button` with "Move" text to move items to the `currentPathInDialog`
+            -   MUI `Button` with "Cancel" text to close dialog without action
+            -   Optional MUI `Button` with "New Folder" text to create a new folder in current directory
+        -   Use MUI `CircularProgress` in buttons during operations
 
 -   **Responsibilities:**
-    -   Fetch directory contents when navigating between folders.
-    -   Handle move operations by calling the Core context's move function.
-    -   Maintain navigation state within the dialog independently from the main file browser.
-    -   Validate move operations (prevent moving folders into themselves or their children).
+    -   Fetch directory contents when navigating between folders using MUI loading states
+    -   Handle move operations by calling the Core context's move function
+    -   Maintain navigation state within the dialog independently from the main file browser
+    -   Validate move operations (prevent moving folders into themselves or their children) with MUI `Alert` components for error display
+
+### `RenameDialog.tsx` (Material-UI Dialog)
+
+This component will be a modal dialog using MUI `Dialog`, `DialogTitle`, `DialogContent`, and `DialogActions` components, responsible for handling the renaming of a single file or folder. It will be triggered by the "Rename" action in file/folder context menus.
+
+-   **State to Manage:**
+    -   `isOpen`: Boolean to control the visibility of the dialog.
+    -   `itemToRename`: The item (file or folder) that is being renamed.
+    -   `newName`: The new name entered by the user in the text field.
+    -   `isLoading`: Boolean to indicate when the rename operation is in progress.
+
+-   **UI Design & Behavior (Material-UI Implementation):**
+    -   **Title:** An MUI `DialogTitle` with the text "Rename".
+    -   **Content:** An MUI `DialogContent` containing a single MUI `TextField` for the new name.
+        -   The text field should be pre-populated with the item's current name.
+        -   The text of the current name (without the extension for files) should be selected by default for easy replacement.
+        -   The text field should have `autoFocus` enabled and support Enter key to submit.
+    -   **Footer Actions:**
+        -   MUI `DialogActions` containing:
+            -   A MUI `Button` with "Cancel" text to close the dialog.
+            -   A primary MUI `Button` with "OK" text to submit the rename operation. The button should be disabled if the new name is empty or unchanged.
+    -   **Logic:**
+        -   On "OK" click or Enter key press, it calls the `renameItem()` function from the `StorageManagementUIContext`.
+        -   Handle validation (e.g., empty name, invalid characters, duplicate names).
+        -   Display validation errors using MUI `Alert` components or `TextField` error states.
+        -   Close dialog automatically on successful rename operation.
 
 ---
 
@@ -658,28 +722,30 @@ This component will be a modal dialog responsible for handling the moving of fil
 -   **Contexts:**
     -   `nextjs/contexts/storage/StorageManagementCoreContext.tsx` ✅ **COMPLETED**
     -   `nextjs/contexts/storage/StorageManagementUIContext.tsx` ✅ **COMPLETED**
-    -   `nextjs/contexts/MenuManagerContext.tsx`
     -   **Note:** `StorageUploadContext` and upload progress UI already exist in `nextjs/views/storage/uploading/`
--   **Components:**
-    -   `nextjs/components/storage/dialogs/MoveToDialog.tsx` (New)
-    -   `nextjs/components/storage/dropzone/...` (New - for drag-and-drop upload zones)
-    -   `nextjs/components/storage/menu/...`
+-   **Components (Material-UI Based):**
+    -   `nextjs/components/storage/dialogs/MoveToDialog.tsx` (New - MUI Dialog)
+    -   `nextjs/components/storage/dialogs/RenameDialog.tsx` (New - MUI Dialog)
+    -   `nextjs/components/storage/dropzone/...` (New - for drag-and-drop upload zones with MUI components)
+    -   `nextjs/components/storage/menu/FileMenu.tsx` (New - MUI Menu for files)
+    -   `nextjs/components/storage/menu/FolderMenu.tsx` (New - MUI Menu for folders)
+    -   `nextjs/components/storage/menu/ViewAreaMenu.tsx` (New - MUI Menu for view area)
     -   **Note:** Upload progress components already exist in `nextjs/views/storage/uploading/`
--   **Views:**
-    -   `nextjs/views/storage/browser/StorageBrowserView.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageDirectoryTree.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageMainView.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageToolbar.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageFilters.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageSelectionActions.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageSearch.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageItemsView.tsx`
-    -   `nextjs/views/storage/browser/StorageBreadcrumb.tsx` (New)
-    -   `nextjs/views/storage/browser/StorageItem.tsx`
-    -   `nextjs/views/storage/browser/StorageItemGrid.tsx`
-    -   `nextjs/views/storage/browser/StorageItemListRow.tsx`
-    -   `nextjs/views/storage/browser/FilePreview.tsx`
-    -   `nextjs/views/storage/browser/FileTypeIcon.tsx`
+-   **Views (Material-UI Based):**
+    -   `nextjs/views/storage/browser/StorageBrowserView.tsx` (New - MUI Box container)
+    -   `nextjs/views/storage/browser/StorageDirectoryTree.tsx` (New - MUI TreeView with loading)
+    -   `nextjs/views/storage/browser/StorageMainView.tsx` (New - MUI Stack layout)
+    -   `nextjs/views/storage/browser/StorageToolbar.tsx` (New - MUI conditional container)
+    -   `nextjs/views/storage/browser/StorageFilters.tsx` (New - MUI Select and FormControl)
+    -   `nextjs/views/storage/browser/StorageSelectionActions.tsx` (New - MUI ButtonGroup)
+    -   `nextjs/views/storage/browser/StorageSearch.tsx` (New - MUI TextField and Autocomplete)
+    -   `nextjs/views/storage/browser/StorageItemsView.tsx` (MUI Table/Grid with sorting)
+    -   `nextjs/views/storage/browser/StorageBreadcrumb.tsx` (New - MUI Breadcrumbs)
+    -   `nextjs/views/storage/browser/StorageItem.tsx` (MUI themed item router)
+    -   `nextjs/views/storage/browser/StorageItemGrid.tsx` (MUI Card component)
+    -   `nextjs/views/storage/browser/StorageItemListRow.tsx` (MUI TableRow)
+    -   `nextjs/views/storage/browser/FilePreview.tsx` (MUI CardMedia)
+    -   `nextjs/views/storage/browser/FileTypeIcon.tsx` (Material-UI icons)
 
 ---
 
@@ -755,9 +821,8 @@ Context Providers (Wrapping the entire view):
 │ UploadProgress.tsx (Floating Component - Already Implemented)                │
 │  └─ StorageManagementCoreContext (Data Operations)                          │
 │     └─ StorageUIManagerContext (UI State & Interactions)                    │
-│        └─ MenuManagerContext (Context Menus)                                │
-│           └─ StorageUploadContext (File Uploads - Already Implemented)      │
-│              └─ [All Components Above]                                      │
+│        └─ StorageUploadContext (File Uploads - Already Implemented)         │
+│           └─ [All Components Above] (Material-UI Themed)                    │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 Legend:
