@@ -2,6 +2,7 @@ package schema.dataloaders
 
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import com.expediagroup.graphql.generator.extensions.get
+import config.GcsConfig
 import graphql.GraphQLContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future

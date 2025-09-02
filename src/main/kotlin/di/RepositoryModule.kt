@@ -4,11 +4,13 @@ import config.DatabaseConfig
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.koin.dsl.module
 import repositories.SessionRepository
+import repositories.StorageRepository
 import repositories.StudentRepository
 import repositories.TemplateCategoryRepository
 import repositories.TemplateRepository
 import repositories.TemplateVariableRepository
 import repositories.UserRepository
+import repositories.impl.StorageRepositoryImpl
 
 val repositoryModule = module {
     single<Database> { Database.connect(DatabaseConfig.dataSource) }
@@ -18,5 +20,5 @@ val repositoryModule = module {
     single<TemplateRepository> { TemplateRepository(get()) }
     single<StudentRepository> { StudentRepository(get()) }
     single<TemplateVariableRepository> { TemplateVariableRepository(get()) }
-    single<repositories.StorageRepository> { repositories.impl.StorageRepositoryImpl() }
+    single<StorageRepository> { StorageRepositoryImpl(get()) }
 }

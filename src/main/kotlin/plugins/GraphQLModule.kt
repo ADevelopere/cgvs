@@ -22,6 +22,7 @@ import schema.mutation.AuthMutation
 import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
 import hooks.customSchemaGeneratorHooks
+import schema.dataloaders.StorageFileDataLoader
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateCategoryTemplatesDataLoader
@@ -71,8 +72,6 @@ fun Application.graphQLModule() {
                 StudentMutation()
             )
             hooks = customSchemaGeneratorHooks
-
-
         }
         engine {
             dataLoaderRegistryFactory = KotlinDataLoaderRegistryFactory(
@@ -81,7 +80,8 @@ fun Application.graphQLModule() {
                 TemplateCategoryTemplatesDataLoader,
                 TemplateDataLoader,
                 TemplateVariablesDataLoader,
-                UrlDataLoader
+                UrlDataLoader,
+                StorageFileDataLoader
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }

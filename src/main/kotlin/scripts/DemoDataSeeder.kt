@@ -1,25 +1,12 @@
 package scripts
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import repositories.RepositoryManager
-import config.DatabaseConfig
-import io.ktor.server.config.*
-import schema.model.Email
-import schema.model.Gender
-import schema.model.CountryCode
-import schema.model.Student
-import schema.model.Template
-import schema.model.TemplateCategory
-import schema.model.TextTemplateVariable
-import schema.model.NumberTemplateVariable
-import schema.model.DateTemplateVariable
-import schema.model.SelectTemplateVariable
-import schema.model.User
+import schema.model.*
 import services.FileInitializationService
 import tables.CategorySpecialType
 import kotlin.random.Random
@@ -168,29 +155,43 @@ class DemoDataSeeder(
         val allCategories = mutableListOf<TemplateCategory>()
 
         // Create special type categories first (main and suspension)
-        val mainCategory = TemplateCategory(
-            name = "الفئة الرئيسية",
-            description = "الفئة الرئيسية لجميع الشهادات",
-            parentCategoryId = null,
-            order = 0,
-            categorySpecialType = CategorySpecialType.Main,
-            createdAt = currentTime,
-            updatedAt = currentTime
-        )
-        val createdMain = repositoryManager.templateCategoryRepository.create(mainCategory)
-        allCategories.add(createdMain)
+        // Check if main category already exists
+        val existingMain = repositoryManager.templateCategoryRepository.mainCategory()
+        val mainCategory = if (existingMain != null) {
+            println("   ✅ Main category already exists")
+            existingMain
+        } else {
+            val newMain = TemplateCategory(
+                name = "الفئة الرئيسية",
+                description = "الفئة الرئيسية لجميع الشهادات",
+                parentCategoryId = null,
+                order = 0,
+                categorySpecialType = CategorySpecialType.Main,
+                createdAt = currentTime,
+                updatedAt = currentTime
+            )
+            repositoryManager.templateCategoryRepository.create(newMain)
+        }
+        allCategories.add(mainCategory)
 
-        val suspensionCategory = TemplateCategory(
-            name = "فئة الإيقاف",
-            description = "فئة الشهادات الموقوفة أو المعلقة",
-            parentCategoryId = null,
-            order = 1,
-            categorySpecialType = CategorySpecialType.Suspension,
-            createdAt = currentTime,
-            updatedAt = currentTime
-        )
-        val createdSuspension = repositoryManager.templateCategoryRepository.create(suspensionCategory)
-        allCategories.add(createdSuspension)
+        // Check if suspension category already exists
+        val existingSuspension = repositoryManager.templateCategoryRepository.suspensionCategory()
+        val suspensionCategory = if (existingSuspension != null) {
+            println("   ✅ Suspension category already exists")
+            existingSuspension
+        } else {
+            val newSuspension = TemplateCategory(
+                name = "فئة الإيقاف",
+                description = "فئة الشهادات الموقوفة أو المعلقة",
+                parentCategoryId = null,
+                order = 1,
+                categorySpecialType = CategorySpecialType.Suspension,
+                createdAt = currentTime,
+                updatedAt = currentTime
+            )
+            repositoryManager.templateCategoryRepository.create(newSuspension)
+        }
+        allCategories.add(suspensionCategory)
 
         // Now create the rest of the categories as before
         templateCategoriesData.forEachIndexed { index, categoryData ->
@@ -255,7 +256,7 @@ class DemoDataSeeder(
 
             val createdTemplate = repositoryManager.templateRepository.create(template)
 
-            // Register file usage if template has an image
+            // Register file usage if the template has an image
             if (createdTemplate.imageFileId != null) {
                 fileInitializationService.registerTemplateFileUsage(createdTemplate.id, createdTemplate.imageFileId)
             }
@@ -326,10 +327,21 @@ class DemoDataSeeder(
 
         baseVariables.forEach { variable ->
             when (variable) {
-                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
-                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
-                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
-                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(
+                    variable
+                )
+
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(
+                    variable
+                )
+
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(
+                    variable
+                )
+
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(
+                    variable
+                )
             }
         }
     }
@@ -366,10 +378,21 @@ class DemoDataSeeder(
 
         academicVariables.forEach { variable ->
             when (variable) {
-                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
-                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
-                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
-                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(
+                    variable
+                )
+
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(
+                    variable
+                )
+
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(
+                    variable
+                )
+
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(
+                    variable
+                )
             }
         }
     }
@@ -411,10 +434,21 @@ class DemoDataSeeder(
 
         professionalVariables.forEach { variable ->
             when (variable) {
-                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
-                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
-                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
-                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(
+                    variable
+                )
+
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(
+                    variable
+                )
+
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(
+                    variable
+                )
+
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(
+                    variable
+                )
             }
         }
     }
@@ -485,10 +519,21 @@ class DemoDataSeeder(
 
         appreciationVariables.forEach { variable ->
             when (variable) {
-                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
-                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
-                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
-                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(
+                    variable
+                )
+
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(
+                    variable
+                )
+
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(
+                    variable
+                )
+
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(
+                    variable
+                )
             }
         }
     }
@@ -525,10 +570,21 @@ class DemoDataSeeder(
 
         volunteerVariables.forEach { variable ->
             when (variable) {
-                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(variable)
-                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(variable)
-                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(variable)
-                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(variable)
+                is TextTemplateVariable -> repositoryManager.templateVariableRepository.createTextTemplateVariable(
+                    variable
+                )
+
+                is NumberTemplateVariable -> repositoryManager.templateVariableRepository.createNumberTemplateVariable(
+                    variable
+                )
+
+                is DateTemplateVariable -> repositoryManager.templateVariableRepository.createDateTemplateVariable(
+                    variable
+                )
+
+                is SelectTemplateVariable -> repositoryManager.templateVariableRepository.createSelectTemplateVariable(
+                    variable
+                )
             }
         }
     }
@@ -592,140 +648,10 @@ class DemoDataSeeder(
         val day = random.nextInt(1, 29) // Safe day range for all months
         return LocalDate(year, month, day)
     }
-
-    data class CategoryData(
-        val name: String,
-        val description: String,
-        val subcategories: List<CategoryData> = emptyList()
-    )
 }
 
-/**
- * Main function to run the demo data seeder
- */
-fun main() {
-    // Initialize database configuration
-    val config = ApplicationConfig("application.conf")
-    DatabaseConfig.init(config)
-
-    // Get database connection
-    val database = org.jetbrains.exposed.v1.jdbc.Database.connect(DatabaseConfig.dataSource)
-
-    // Initialize repository manager
-    val repositoryManager = RepositoryManager.getInstance(database)
-
-    // For demonstration purposes, we'll create a mock FileInitializationService
-    // In a real application, this would be injected through DI
-    println("⚠️  Note: FileInitializationService is not fully configured in standalone mode")
-    println("⚠️  Run this seeder through the application startup for full file system integration")
-
-    // Run the seeder with a minimal setup
-    runBlocking {
-        // Create a minimal demo seeder that doesn't require file services
-        val seeder = MinimalDemoDataSeeder(repositoryManager)
-        seeder.seedAllData()
-    }
-}
-
-/**
- * Minimal version of the demo data seeder for standalone execution
- */
-class MinimalDemoDataSeeder(private val repositoryManager: RepositoryManager) {
-    private val random = Random.Default
-    private val currentTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-
-    suspend fun seedAllData() {
-        println("🌱 Starting minimal demo data seeding...")
-
-        try {
-            // Create admin user
-            createAdminUser()
-
-            // Create template categories
-            val categories = createTemplateCategories()
-
-            // Create templates without file references
-            createMinimalTemplates(categories)
-
-            // Create students
-            createStudents()
-
-            println("✅ Minimal demo data seeding completed successfully!")
-            println("📊 Summary:")
-            println("   - Admin user: admin@cgvs.com (password: cgvs@123)")
-            println("   - Categories: ${categories.size}")
-            println("   - Templates: ${categories.size} (without images)")
-            println("   - Students: 1000")
-
-        } catch (e: Exception) {
-            println("❌ Error during seeding: ${e.message}")
-            e.printStackTrace()
-            throw e
-        }
-    }
-
-    // ... copy methods from main seeder as needed but without file dependencies
-    private suspend fun createAdminUser(): User {
-        println("Creating admin user...")
-
-        // Check if admin user already exists
-        val existingAdmin = repositoryManager.userRepository.findByEmail("admin@cgvs.com")
-        if (existingAdmin != null) {
-            println("⚠️  Admin user already exists, skipping creation")
-            return existingAdmin
-        }
-
-        // Create admin user with hashed password
-        val hashedPassword = BCrypt.withDefaults().hashToString(12, "cgvs@123".toCharArray())
-
-        val adminUser = User(
-            name = "System Administrator",
-            email = Email("admin@cgvs.com"),
-            password = hashedPassword,
-            isAdmin = true,
-            createdAt = currentTime,
-            updatedAt = currentTime
-        )
-
-        val createdAdmin = repositoryManager.userRepository.create(adminUser)
-        println("✅ Admin user created successfully:")
-        println("   Email: admin@cgvs.com")
-        println("   Password: cgvs@123")
-        println("   Role: Administrator")
-
-        return createdAdmin
-    }
-
-    // Simplified template creation without files
-    private suspend fun createMinimalTemplates(categories: List<TemplateCategory>) {
-        println("📋 Creating minimal templates...")
-
-        val topLevelCategories = categories.filter { it.parentCategoryId == null }
-
-        topLevelCategories.forEach { category ->
-            val template = Template(
-                name = "نموذج ${category.name}",
-                description = "نموذج تجريبي لـ${category.name}",
-                imageFileId = null, // No file reference in minimal mode
-                categoryId = category.id,
-                order = 1,
-                createdAt = currentTime,
-                updatedAt = currentTime
-            )
-
-            repositoryManager.templateRepository.create(template)
-        }
-
-        println("   ✅ Created ${topLevelCategories.size} minimal templates")
-    }
-
-    // ... copy other minimal methods as needed
-    private suspend fun createTemplateCategories(): List<TemplateCategory> {
-        // Implementation similar to main seeder but simplified
-        return emptyList()
-    }
-
-    private suspend fun createStudents() {
-        // Implementation similar to main seeder
-    }
-}
+data class CategoryData(
+    val name: String,
+    val description: String,
+    val subcategories: List<CategoryData> = emptyList()
+)

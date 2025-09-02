@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
 import schema.dataloaders.StorageFileDataLoader
+import schema.dataloaders.UrlDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
 
@@ -54,9 +55,9 @@ data class Template(
 
     fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String> {
         return if (imageFileId != null) {
-            imageFile(dataFetchingEnvironment).thenApply { fileInfo ->
-                fileInfo?.path ?: ""
-            }
+            dataFetchingEnvironment.getValueFromDataLoader(
+                UrlDataLoader.dataLoaderName, imageFileId
+            )
         } else {
             CompletableFuture.completedFuture("")
         }

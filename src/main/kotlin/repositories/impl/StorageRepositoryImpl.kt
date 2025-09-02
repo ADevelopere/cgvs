@@ -14,7 +14,9 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class StorageRepositoryImpl : StorageRepository {
+class StorageRepositoryImpl(
+    private val database: Database
+) : StorageRepository {
 
     override suspend fun getDirectoryByPath(path: String): DirectoryEntity? = dbQuery {
         StorageDirectories.selectAll()
@@ -313,10 +315,12 @@ class StorageRepositoryImpl : StorageRepository {
         created = row[FileUsages.created]
     )
 
-    // Helper function for database queries
+    /**
+     * A helper function to execute a database transaction on a dedicated IO thread pool
+     */
     private suspend fun <T> dbQuery(block: () -> T): T =
         withContext(Dispatchers.IO) {
-            transaction {
+            transaction(database) {
                 block()
             }
         }

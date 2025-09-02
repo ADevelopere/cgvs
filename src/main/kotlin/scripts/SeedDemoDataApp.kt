@@ -1,10 +1,17 @@
 package scripts
 
+import com.google.cloud.storage.Storage
+import com.google.cloud.storage.StorageOptions
 import kotlinx.coroutines.runBlocking
 import repositories.RepositoryManager
 import config.DatabaseConfig
+import config.GcsConfig
 import io.ktor.server.config.*
 import org.jetbrains.exposed.v1.jdbc.Database
+import services.FileInitializationService
+import services.getStorageFromSecretManager
+import services.storageDbService
+import services.storageService
 import kotlin.system.exitProcess
 
 /**
@@ -21,17 +28,49 @@ object SeedDemoDataApp {
         try {
             // Initialize database configuration
             val config = ApplicationConfig("application.yaml")
-            DatabaseConfig.init(config)
 
+            DatabaseConfig.init(config)
             // Get database connection
             val database = Database.connect(DatabaseConfig.dataSource)
 
             // Initialize repository manager
             val repositoryManager = RepositoryManager.getInstance(database)
 
-            // Run the seeder
+            val gcsConfig = GcsConfig(
+                bucketName = config.property("gcp.bucket_name").getString()
+            )
+
+            val projectId = config.property("gcp.project_id").getString()
+            val secretId = config.property("gcp.secret_id").getString()
+            val versionId = config.propertyOrNull("gcp.secret_version")?.getString() ?: "latest"
+
+            val storage: Storage =
+                getStorageFromSecretManager(projectId, secretId, versionId) ?: StorageOptions.getDefaultInstance().service
+
+            val storageService = storageService(
+                storage, gcsConfig, repositoryManager.storageRepository
+            )
+
+            val storageDbService = storageDbService(
+                repositoryManager.storageRepository,
+                gcsConfig
+            )
+            val fileInitializationService = FileInitializationService(
+                storageService,
+                storageDbService,
+                storage,
+                gcsConfig
+            )
+
+            // For demonstration purposes, we'll create a mock FileInitializationService
+            // In a real application, this would be injected through DI
+            println("⚠️  Note: FileInitializationService is not fully configured in standalone mode")
+            println("⚠️  Run this seeder through the application startup for full file system integration")
+
+            // Run the seeder with a minimal setup
             runBlocking {
-                val seeder = MinimalDemoDataSeeder(repositoryManager)
+                // Create a minimal demo seeder that doesn't require file services
+                val seeder = DemoDataSeeder(repositoryManager, fileInitializationService)
                 seeder.seedAllData()
             }
 
