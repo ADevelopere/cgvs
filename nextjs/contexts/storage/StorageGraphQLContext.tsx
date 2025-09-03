@@ -1,6 +1,6 @@
 "use client";
 
-import {createContext, useCallback, useContext, useMemo} from "react";
+import React, {createContext, useCallback, useContext, useMemo} from "react";
 import * as Graphql from "@/graphql/generated/types";
 import {ApolloClient, ErrorLike, OperationVariables} from "@apollo/client";
 import * as ApolloReact from '@apollo/client/react';

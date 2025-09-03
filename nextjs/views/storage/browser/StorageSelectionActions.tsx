@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     ButtonGroup,
@@ -22,7 +22,9 @@ import {
 import { useStorageManagementUI } from '@/contexts/storage/StorageManagementUIContext';
 import useAppTranslation from '@/locale/useAppTranslation';
 import { StorageItem } from '@/contexts/storage/storage.type';
-import logger from '@/utils/logger';
+import DeleteConfirmationDialog from '../dialogs/DeleteConfirmationDialog';
+import MoveToDialog from '../dialogs/MoveToDialog';
+import RenameDialog from '../dialogs/RenameDialog';
 
 /**
  * Selection action toolbar component for the storage browser.
@@ -40,10 +42,14 @@ const StorageSelectionActions: React.FC = () => {
         copyItems,
         cutItems,
         pasteItems,
-        deleteItems,
         loading,
     } = useStorageManagementUI();
     const { ui: translations } = useAppTranslation('storageTranslations');
+
+    // Dialog state
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [moveDialogOpen, setMoveDialogOpen] = useState(false);
+    const [renameDialogOpen, setRenameDialogOpen] = useState(false);
 
     // Get the current items list (search results or regular items)
     const currentItems = searchMode ? searchResults : items;
@@ -55,8 +61,20 @@ const StorageSelectionActions: React.FC = () => {
 
     const selectedCount = selectedItems.length;
     const isSingleSelection = selectedCount === 1;
-    const isMultipleSelection = selectedCount > 1;
     const hasClipboard = clipboard && clipboard.items.length > 0;
+
+    // Dialog close handlers
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    const handleCloseMoveDialog = () => {
+        setMoveDialogOpen(false);
+    };
+
+    const handleCloseRenameDialog = () => {
+        setRenameDialogOpen(false);
+    };
 
     // Handle download action
     const handleDownload = () => {
@@ -75,31 +93,19 @@ const StorageSelectionActions: React.FC = () => {
         });
     };
 
-    // Handle move to action (will open MoveToDialog in Phase 5)
+    // Handle move to action
     const handleMoveTo = () => {
-        // TODO: Open MoveToDialog component (Phase 5)
-        logger.log('Move to dialog will be implemented in Phase 5');
+        setMoveDialogOpen(true);
     };
 
-    // Handle rename action (will open RenameDialog in Phase 5)
+    // Handle rename action
     const handleRename = () => {
-        // TODO: Open RenameDialog component (Phase 5)
-        logger.log('Rename dialog will be implemented in Phase 5');
+        setRenameDialogOpen(true);
     };
 
     // Handle delete action
-    const handleDelete = async () => {
-        // TODO: Show confirmation dialog before deleting (Phase 5)
-        // For now, we'll call delete directly
-        const confirmed = window.confirm(
-            selectedCount === 1
-                ? `Are you sure you want to delete "${selectedItemObjects[0]?.name}"?`
-                : `Are you sure you want to delete ${selectedCount} items?`
-        );
-        
-        if (confirmed) {
-            await deleteItems(selectedItems);
-        }
+    const handleDelete = () => {
+        setDeleteDialogOpen(true);
     };
 
     // Handle copy action
@@ -264,6 +270,30 @@ const StorageSelectionActions: React.FC = () => {
                     </Typography>
                 </Box>
             )}
+
+            {/* Dialogs */}
+            <>
+                {/* Delete Confirmation Dialog */}
+                <DeleteConfirmationDialog
+                    open={deleteDialogOpen}
+                    onClose={handleCloseDeleteDialog}
+                    items={selectedItemObjects}
+                />
+
+                {/* Move To Dialog */}
+                <MoveToDialog
+                    open={moveDialogOpen}
+                    onClose={handleCloseMoveDialog}
+                    items={selectedItemObjects}
+                />
+
+                {/* Rename Dialog */}
+                <RenameDialog
+                    open={renameDialogOpen}
+                    onClose={handleCloseRenameDialog}
+                    item={isSingleSelection ? selectedItemObjects[0] : null}
+                />
+            </>
         </Box>
     );
 };

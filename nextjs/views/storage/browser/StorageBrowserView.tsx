@@ -2,14 +2,12 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import SplitPaneViewController from "@/components/splitPane/SplitPaneViewController";
-import { StorageManagementCoreProvider } from "@/contexts/storage/StorageManagementCoreContext";
-import { StorageManagementUIProvider } from "@/contexts/storage/StorageManagementUIContext";
 import StorageDirectoryTree from "./StorageDirectoryTree";
 import StorageMainView from "./StorageMainView";
 import StorageSearch from "./StorageSearch";
 import useAppTranslation from "@/locale/useAppTranslation";
 
-const StorageBrowserViewContent: React.FC = () => {
+const StorageBrowserView: React.FC = () => {
     const { ui: translations } = useAppTranslation("storageTranslations");
 
     return (
@@ -36,16 +34,6 @@ const StorageBrowserViewContent: React.FC = () => {
                 }}
             />
         </Box>
-    );
-};
-
-const StorageBrowserView: React.FC = () => {
-    return (
-        <StorageManagementCoreProvider>
-            <StorageManagementUIProvider>
-                <StorageBrowserViewContent />
-            </StorageManagementUIProvider>
-        </StorageManagementCoreProvider>
     );
 };
 
