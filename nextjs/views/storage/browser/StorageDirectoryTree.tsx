@@ -36,6 +36,7 @@ const StorageDirectoryTree: React.FC = () => {
 
     const handleRetryFetchTree = useCallback(() => {
         // Use prefetchDirectoryChildren with empty path to refetch root directories
+        // The refresh=true parameter forces a refetch even if already cached
         prefetchDirectoryChildren("", true);
     }, [prefetchDirectoryChildren]);
 
