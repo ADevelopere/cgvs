@@ -1,70 +1,66 @@
 import React from "react";
 import {
-    Box,
-    Grid,
-    Table,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    TableSortLabel,
-    Typography,
-    ToggleButtonGroup,
-    ToggleButton,
-    Toolbar,
-    Stack,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Paper,
     Alert,
+    Box,
     CircularProgress,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
     SelectChangeEvent,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    TableSortLabel,
+    ToggleButton,
+    ToggleButtonGroup,
+    Toolbar,
+    Typography,
 } from "@mui/material";
 import {
     GridView as GridViewIcon,
-    ViewList as ListViewIcon,
     Sort as SortIcon,
+    ViewList as ListViewIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import StorageItem from "./StorageItem";
+import { StorageManagementUITranslations } from "@/locale/components/Storage";
+import {
+    StorageItem as StorageItemType,
+    StorageQueryParams,
+    ViewMode,
+} from "@/contexts/storage/storage.type";
 
-/**
- * Main items display area for the storage browser.
- * Handles view mode switching, local sorting, and rendering of items.
- * Supports both grid and list views with client-side sorting.
- */
-const StorageItemsView: React.FC = () => {
-    const {
-        // items, // unused
-        // searchResults, // unused
-        searchMode,
-        viewMode,
-        setViewMode,
-        sortBy,
-        sortDirection,
-        setSortBy,
-        setSortDirection,
-        getSortedItems,
-        loading,
-        operationErrors,
-        params,
-    } = useStorageManagementUI();
-    const { ui: translations } = useAppTranslation("storageTranslations");
-
-    // Get current items (search results or regular directory listing)
-    const currentItems = getSortedItems();
-
-    const isLoading = React.useMemo(() => {
-        return loading.fetchList || loading.search;
-    }, [loading.fetchList, loading.search]);
-
-    const hasError = React.useMemo(() => {
-        return operationErrors.fetchList || operationErrors.search;
-    }, [operationErrors.fetchList, operationErrors.search]);
-
+// Render toolbar with view controls and sorting
+const StorageToolbar: React.FC<{
+    searchMode: boolean;
+    viewMode: "grid" | "list";
+    currentItems: StorageItemType[];
+    sortBy: string;
+    sortDirection: "ASC" | "DESC";
+    translations: StorageManagementUITranslations;
+    params: StorageQueryParams;
+    setViewMode: (mode: ViewMode) => void;
+    setSortBy: (field: string) => void;
+    setSortDirection: (direction: "ASC" | "DESC") => void;
+}> = ({
+    searchMode,
+    viewMode,
+    currentItems,
+    sortBy,
+    sortDirection,
+    translations,
+    params,
+    setViewMode,
+    setSortBy,
+    setSortDirection,
+}) => {
     // Handle view mode change
     const handleViewModeChange = React.useCallback(
         (
@@ -91,21 +87,6 @@ const StorageItemsView: React.FC = () => {
         setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
     }, [setSortDirection, sortDirection]);
 
-    // Handle table header click (for list view)
-    const handleTableSort = React.useCallback(
-        (field: string) => {
-            if (sortBy === field) {
-                // Same field, toggle direction
-                setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
-            } else {
-                // New field, set ascending
-                setSortBy(field);
-                setSortDirection("ASC");
-            }
-        },
-        [setSortBy, setSortDirection, sortBy, sortDirection],
-    );
-
     // Sort field options for grid view
     const sortFieldOptions = React.useMemo(
         () => [
@@ -124,8 +105,7 @@ const StorageItemsView: React.FC = () => {
         ],
     );
 
-    // Render toolbar with view controls and sorting
-    const renderToolbar = () => (
+    return (
         <Paper
             elevation={0}
             sx={{
@@ -232,23 +212,39 @@ const StorageItemsView: React.FC = () => {
             </Toolbar>
         </Paper>
     );
+};
 
-    // Render grid view
-    const renderGridView = () => (
-        <Grid container spacing={2} sx={{ p: 2 }}>
-            {currentItems.map((item) => (
-                <Grid
-                    size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
-                    key={item.path}
-                >
-                    <StorageItem item={item} />
-                </Grid>
-            ))}
-        </Grid>
+// function ListView(sortBy: string, sortDirection: "ASC" | "DESC", handleTableSort: (field: string) => void, translations: StorageManagementUITranslations, currentItems: StorageItemType[]) {
+const ListView: React.FC<{
+    sortBy: string;
+    sortDirection: "ASC" | "DESC";
+    translations: StorageManagementUITranslations;
+    currentItems: StorageItemType[];
+    setSortBy: (field: string) => void;
+    setSortDirection: (direction: "ASC" | "DESC") => void;
+}> = ({
+    sortBy,
+    sortDirection,
+    translations,
+    currentItems,
+    setSortBy,
+    setSortDirection,
+}) => {
+    // Handle table header click (for list view)
+    const handleTableSort = React.useCallback(
+        (field: string) => {
+            if (sortBy === field) {
+                // Same field, toggle direction
+                setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+            } else {
+                // New field, set ascending
+                setSortBy(field);
+                setSortDirection("ASC");
+            }
+        },
+        [setSortBy, setSortDirection, sortBy, sortDirection],
     );
-
-    // Render list view
-    const renderListView = () => (
+    return (
         <Table stickyHeader>
             <TableHead>
                 <TableRow>
@@ -324,9 +320,55 @@ const StorageItemsView: React.FC = () => {
             </TableBody>
         </Table>
     );
+};
 
-    // Render empty state
-    const renderEmptyState = () => (
+const ErrorState: React.FC<{
+    hasError: string | undefined;
+    translations: StorageManagementUITranslations;
+}> = ({ hasError, translations }) => {
+    return (
+        <Alert
+            severity="error"
+            sx={{ m: 2 }}
+            action={
+                <button onClick={() => window.location.reload()}>
+                    {translations.retry}
+                </button>
+            }
+        >
+            {hasError}
+        </Alert>
+    );
+};
+
+const LoadingStates: React.FC<{
+    searchMode: boolean;
+    translations: StorageManagementUITranslations;
+}> = ({ searchMode, translations }) => {
+    return (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: 200,
+                gap: 2,
+            }}
+        >
+            <CircularProgress />
+            <Typography variant="body2" color="text.secondary">
+                {searchMode ? translations.searching : translations.loading}
+            </Typography>
+        </Box>
+    );
+};
+
+const EmptyState: React.FC<{
+    translations: StorageManagementUITranslations;
+    searchMode: boolean;
+}> = ({ translations, searchMode }) => {
+    return (
         <Box
             sx={{
                 display: "flex",
@@ -350,40 +392,58 @@ const StorageItemsView: React.FC = () => {
             </Typography>
         </Box>
     );
+};
 
-    // Render loading state
-    const renderLoadingState = () => (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 200,
-                gap: 2,
-            }}
-        >
-            <CircularProgress />
-            <Typography variant="body2" color="text.secondary">
-                {searchMode ? translations.searching : translations.loading}
-            </Typography>
-        </Box>
+const GridView: React.FC<{
+    currentItems: StorageItemType[];
+}> = ({ currentItems }) => {
+    return (
+        <Grid container spacing={2} sx={{ p: 2 }}>
+            {currentItems.map((item) => (
+                <Grid
+                    size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
+                    key={item.path}
+                >
+                    <StorageItem item={item} />
+                </Grid>
+            ))}
+        </Grid>
     );
+};
 
-    // Render error state
-    const renderErrorState = () => (
-        <Alert
-            severity="error"
-            sx={{ m: 2 }}
-            action={
-                <button onClick={() => window.location.reload()}>
-                    {translations.retry}
-                </button>
-            }
-        >
-            {hasError}
-        </Alert>
-    );
+/**
+ * Main items display area for the storage browser.
+ * Handles view mode switching, local sorting, and rendering of items.
+ * Supports both grid and list views with client-side sorting.
+ */
+const StorageItemsView: React.FC = () => {
+    const {
+        // items, // unused
+        // searchResults, // unused
+        searchMode,
+        viewMode,
+        setViewMode,
+        sortBy,
+        sortDirection,
+        setSortBy,
+        setSortDirection,
+        getSortedItems,
+        loading,
+        operationErrors,
+        params,
+    } = useStorageManagementUI();
+    const { ui: translations } = useAppTranslation("storageTranslations");
+
+    // Get current items (search results or regular directory listing)
+    const currentItems = getSortedItems();
+
+    const isLoading = React.useMemo(() => {
+        return loading.fetchList || loading.search;
+    }, [loading.fetchList, loading.search]);
+
+    const hasError = React.useMemo(() => {
+        return operationErrors.fetchList || operationErrors.search;
+    }, [operationErrors.fetchList, operationErrors.search]);
 
     return (
         <Box
@@ -395,20 +455,54 @@ const StorageItemsView: React.FC = () => {
             }}
         >
             {/* Toolbar */}
-            {renderToolbar()}
+            <StorageToolbar
+                searchMode={searchMode}
+                viewMode={viewMode}
+                currentItems={currentItems}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                translations={translations}
+                params={params}
+                setViewMode={setViewMode}
+                setSortBy={setSortBy}
+                setSortDirection={setSortDirection}
+            />
 
             {/* Content Area */}
             <Box sx={{ flex: 1, overflow: "auto" }}>
-                {isLoading && renderLoadingState()}
-                {!isLoading && hasError && renderErrorState()}
-                {!isLoading &&
-                    !hasError &&
-                    currentItems.length === 0 &&
-                    renderEmptyState()}
+                {isLoading && (
+                    <LoadingStates
+                        searchMode={searchMode}
+                        translations={translations}
+                    />
+                )}
+                {!isLoading && hasError && (
+                    <ErrorState
+                        hasError={hasError}
+                        translations={translations}
+                    />
+                )}
+                {!isLoading && !hasError && currentItems.length === 0 && (
+                    <EmptyState
+                        translations={translations}
+                        searchMode={searchMode}
+                    />
+                )}
                 {!isLoading && !hasError && currentItems.length > 0 && (
                     <>
-                        {viewMode === "grid" && renderGridView()}
-                        {viewMode === "list" && renderListView()}
+                        {viewMode === "grid" && (
+                            <GridView currentItems={currentItems} />
+                        )}
+                        {viewMode === "list" && (
+                            <ListView
+                                sortBy={sortBy}
+                                sortDirection={sortDirection}
+                                translations={translations}
+                                currentItems={currentItems}
+                                setSortBy={setSortBy}
+                                setSortDirection={setSortDirection}
+                            />
+                        )}
                     </>
                 )}
             </Box>
