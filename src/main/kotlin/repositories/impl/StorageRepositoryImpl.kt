@@ -26,25 +26,31 @@ class StorageRepositoryImpl(
     }
 
     override suspend fun createDirectory(directory: DirectoryEntity): DirectoryEntity = dbQuery {
-        val insertStatement = StorageDirectories.insert {
-            it[path] = directory.path
-            it[name] = directory.name
-            it[parentPath] = directory.parentPath
-            it[allowUploads] = directory.permissions.allowUploads
-            it[allowDelete] = directory.permissions.allowDelete
-            it[allowMove] = directory.permissions.allowMove
-            it[allowCreateSubDirs] = directory.permissions.allowCreateSubDirs
-            it[allowDeleteFiles] = directory.permissions.allowDeleteFiles
-            it[allowMoveFiles] = directory.permissions.allowMoveFiles
-            it[isProtected] = directory.isProtected
-            it[protectChildren] = directory.protectChildren
-            it[created] = directory.created
-            it[lastModified] = directory.lastModified
-            it[createdBy] = directory.createdBy?.toInt()
-            it[isFromBucket] = directory.isFromBucket
-        }
-        val id = insertStatement[StorageDirectories.id]
-        directory.copy(id = id)
+        StorageDirectories.selectAll()
+            .where { StorageDirectories.path eq directory.path }
+            .singleOrNull()
+            ?.let(::mapDirectoryRow)
+            ?: run {
+                val insertStatement = StorageDirectories.insert {
+                    it[path] = directory.path
+                    it[name] = directory.name
+                    it[parentPath] = directory.parentPath
+                    it[allowUploads] = directory.permissions.allowUploads
+                    it[allowDelete] = directory.permissions.allowDelete
+                    it[allowMove] = directory.permissions.allowMove
+                    it[allowCreateSubDirs] = directory.permissions.allowCreateSubDirs
+                    it[allowDeleteFiles] = directory.permissions.allowDeleteFiles
+                    it[allowMoveFiles] = directory.permissions.allowMoveFiles
+                    it[isProtected] = directory.isProtected
+                    it[protectChildren] = directory.protectChildren
+                    it[created] = directory.created
+                    it[lastModified] = directory.lastModified
+                    it[createdBy] = directory.createdBy?.toInt()
+                    it[isFromBucket] = directory.isFromBucket
+                }
+                val id = insertStatement[StorageDirectories.id]
+                directory.copy(id = id)
+            }
     }
 
     override suspend fun updateDirectory(directory: DirectoryEntity): DirectoryEntity? = dbQuery {

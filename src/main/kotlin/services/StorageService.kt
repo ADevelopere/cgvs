@@ -705,7 +705,7 @@ fun storageService(
 
     // New implementations for missing methods
     override suspend fun fetchDirectoryChildren(path: String?): List<DirectoryEntity> {
-        val searchPath = if (path.isNullOrEmpty()) "" else path.trimEnd('/')
+        val searchPath = if (path.isNullOrEmpty()) "public" else path.trimEnd('/')
 
         // Get directories from DB first
         val dbDirectories = storageRepository.getDirectoriesByParentPath(searchPath.takeIf { it.isNotEmpty() })
