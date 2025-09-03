@@ -108,16 +108,45 @@ export const StorageManagementUIProvider: React.FC<{
         [],
     );
 
-    // Initialize directory tree on mount
+    // Initialize directory tree on mount with proper hydration handling
     useEffect(() => {
+        let isMounted = true;
+        
         const initializeDirectoryTree = async () => {
-            const rootDirectories = await coreContext.fetchDirectoryChildren();
-            if (rootDirectories) {
-                setDirectoryTree(rootDirectories);
+            // Wait for hydration to complete
+            await new Promise(resolve => setTimeout(resolve, 0));
+            
+            // Check if component is still mounted
+            if (!isMounted) return;
+            
+            try {
+                updateLoading("prefetchingNode", "");
+                const rootDirectories = await coreContext.fetchDirectoryChildren();
+                
+                // Check again if component is still mounted before updating state
+                if (isMounted && rootDirectories) {
+                    setDirectoryTree(rootDirectories);
+                }
+            } catch (error) {
+                // Only log if not an abort error during unmount
+                if (isMounted) {
+                    logger.error("Error initializing directory tree:", error);
+                }
+            } finally {
+                if (isMounted) {
+                    updateLoading("prefetchingNode", null);
+                }
             }
         };
-        initializeDirectoryTree();
-    }, [coreContext]);
+        
+        // Use setTimeout to ensure this runs after hydration
+        const timeoutId = setTimeout(initializeDirectoryTree, 100);
+        
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
+    }, [coreContext, updateLoading]);
 
     // Navigation Functions
     const navigateTo = useCallback(
