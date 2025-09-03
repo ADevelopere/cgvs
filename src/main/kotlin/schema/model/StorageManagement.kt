@@ -14,10 +14,6 @@ data class DirectoryEntity(
     override val id: Long? = null,
     @param:GraphQLDescription("Full path of the directory")
     override val path: String,
-    @param:GraphQLDescription("Name of the directory")
-    override val name: String,
-    @param:GraphQLDescription("Parent directory path")
-    val parentPath: String?,
     @param:GraphQLDescription("Directory permissions")
     val permissions: DirectoryPermissions = DirectoryPermissions(),
     @param:GraphQLDescription("Whether this directory is protected from deletion")
@@ -32,7 +28,15 @@ data class DirectoryEntity(
     val createdBy: Long? = null,
     @param:GraphQLDescription("Whether this directory exists only in bucket (not in DB)")
     val isFromBucket: Boolean = false // true if discovered from bucket and added to DB
-) : StorageEntity
+) : StorageEntity {
+    @GraphQLDescription("Name of the directory")
+    override val name: String
+        get() = if (path.contains("/")) path.substringAfterLast("/") else path
+    
+    @GraphQLDescription("Parent directory path")
+    val parentPath: String?
+        get() = if (path.contains("/")) path.substringBeforeLast("/").takeIf { it.isNotEmpty() } else null
+}
 
 @Serializable
 @GraphQLIgnore
