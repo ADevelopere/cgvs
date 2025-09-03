@@ -169,6 +169,11 @@ const arStorageTranslations: StorageTranslations = {
         renameDialogFailedToRename: "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
         renameDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
         //rename dialog end
+
+        // Delete dialog
+        deleteDialogFailedToDelete: "فشل في حذف العنصر. يرجى المحاولة مرة أخرى.",
+        deleteDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        // Delete dialog end
         
         // Move to dialog
         moveDialogTitle: "نقل العناصر",
