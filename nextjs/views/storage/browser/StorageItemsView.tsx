@@ -165,12 +165,10 @@ const StorageItemsView: React.FC = () => {
                     {viewMode === "grid" && (
                         <>
                             <FormControl size="small" sx={{ minWidth: 120 }}>
-                                <InputLabel>
-                                    {translations.sortBy || "Sort by"}
-                                </InputLabel>
+                                <InputLabel>{translations.sortBy}</InputLabel>
                                 <Select
                                     value={sortBy}
-                                    label={translations.sortBy || "Sort by"}
+                                    label={translations.sortBy}
                                     onChange={handleSortFieldChange}
                                 >
                                     {sortFieldOptions.map((option) => (
@@ -266,7 +264,7 @@ const StorageItemsView: React.FC = () => {
                             }
                             onClick={() => handleTableSort("name")}
                         >
-                            {translations.name || "Name"}
+                            {translations.name}
                         </TableSortLabel>
                     </TableCell>
                     <TableCell sx={{ width: "15%" }}>
@@ -281,7 +279,7 @@ const StorageItemsView: React.FC = () => {
                             }
                             onClick={() => handleTableSort("size")}
                         >
-                            {translations.size || "Size"}
+                            {translations.size}
                         </TableSortLabel>
                     </TableCell>
                     <TableCell sx={{ width: "20%" }}>
@@ -296,7 +294,7 @@ const StorageItemsView: React.FC = () => {
                             }
                             onClick={() => handleTableSort("lastModified")}
                         >
-                            {translations.lastModified || "Last Modified"}
+                            {translations.lastModified}
                         </TableSortLabel>
                     </TableCell>
                     <TableCell sx={{ width: "20%" }}>
@@ -311,7 +309,7 @@ const StorageItemsView: React.FC = () => {
                             }
                             onClick={() => handleTableSort("created")}
                         >
-                            {translations.created || "Created"}
+                            {translations.created}
                         </TableSortLabel>
                     </TableCell>
                     <TableCell sx={{ width: "5%" }}>
@@ -343,14 +341,12 @@ const StorageItemsView: React.FC = () => {
             <Typography variant="h6" gutterBottom>
                 {searchMode
                     ? translations.noSearchResults
-                    : translations.emptyFolder || "This folder is empty"}
+                    : translations.emptyFolder}
             </Typography>
             <Typography variant="body2">
                 {searchMode
-                    ? translations.tryDifferentSearch ||
-                      "Try a different search term"
-                    : translations.uploadOrCreate ||
-                      "Upload files or create a new folder"}
+                    ? translations.tryDifferentSearch
+                    : translations.uploadOrCreate}
             </Typography>
         </Box>
     );
@@ -369,9 +365,7 @@ const StorageItemsView: React.FC = () => {
         >
             <CircularProgress />
             <Typography variant="body2" color="text.secondary">
-                {searchMode
-                    ? translations.searching || "Searching..."
-                    : translations.loading}
+                {searchMode ? translations.searching : translations.loading}
             </Typography>
         </Box>
     );

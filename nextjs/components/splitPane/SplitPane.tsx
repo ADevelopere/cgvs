@@ -44,8 +44,6 @@ type PaneProps = {
 };
 
 const defaultPaneProps: PaneProps = {
-    // minSize: 50,
-    // maxSize: '50%',
     preferredRatio: 0.5,
     visible: true,
 };
