@@ -124,7 +124,7 @@ class FileInitializationService(
         val bucketPath = "public/templates/covers/$fileName"
 
         // First check if file exists in database using StorageDbService
-        val existingFileInDb = storageDbService.getFileEntityByPath(bucketPath)
+        val existingFileInDb = storageDbService.getFileByPath(bucketPath)
         if (existingFileInDb != null) {
             println("   🖼️  Demo file already exists in database: $fileName (ID: ${existingFileInDb.id})")
             return
@@ -219,7 +219,7 @@ class FileInitializationService(
         )
 
         for ((fileName, bucketPath) in demoFiles) {
-            val existingFileInDb = storageDbService.getFileEntityByPath(bucketPath)
+            val existingFileInDb = storageDbService.getFileByPath(bucketPath)
             if (existingFileInDb == null) {
                 println("   ⚠️  Demo file $fileName not found in database, attempting to register...")
 
@@ -265,7 +265,7 @@ class FileInitializationService(
 
         println("   🔍 Checking for demo files in database...")
         val fileIds = demoFiles.mapNotNull { path ->
-            val fileEntity = storageDbService.getFileEntityByPath(path)
+            val fileEntity = storageDbService.getFileByPath(path)
             if (fileEntity != null) {
                 println("   ✅ Found demo file in database: $path (ID: ${fileEntity.id})")
                 fileEntity.id
@@ -291,7 +291,7 @@ class FileInitializationService(
         )
 
         return demoFiles.filter { path ->
-            storageDbService.getFileEntityByPath(path) != null
+            storageDbService.getFileByPath(path) != null
         }
     }
 
@@ -299,7 +299,7 @@ class FileInitializationService(
      * Register file usage for template covers
      */
     suspend fun registerTemplateFileUsage(templateId: Int, fileId: Long) {
-        val fileEntity = storageDbService.getFileEntityById(fileId)
+        val fileEntity = storageDbService.getFileById(fileId)
         if (fileEntity != null) {
             val input = RegisterFileUsageInput(
                 filePath = fileEntity.path,

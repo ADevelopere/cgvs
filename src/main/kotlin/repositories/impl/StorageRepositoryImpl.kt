@@ -18,14 +18,14 @@ class StorageRepositoryImpl(
     private val database: Database
 ) : StorageRepository {
 
-    override suspend fun getDirectoryByPath(path: String): DirectoryEntity? = dbQuery {
+    override suspend fun getDirectoryByPath(path: String): Directory? = dbQuery {
         StorageDirectories.selectAll()
             .where { StorageDirectories.path eq path }
             .singleOrNull()
             ?.let(::mapDirectoryRow)
     }
 
-    override suspend fun createDirectory(directory: DirectoryEntity): DirectoryEntity = dbQuery {
+    override suspend fun createDirectory(directory: Directory): Directory = dbQuery {
         StorageDirectories.selectAll()
             .where { StorageDirectories.path eq directory.path }
             .singleOrNull()
@@ -51,7 +51,7 @@ class StorageRepositoryImpl(
             }
     }
 
-    override suspend fun updateDirectory(directory: DirectoryEntity): DirectoryEntity? = dbQuery {
+    override suspend fun updateDirectory(directory: Directory): Directory? = dbQuery {
         val rowsUpdated = StorageDirectories.update({ StorageDirectories.path eq directory.path }) {
             it[allowUploads] = directory.permissions.allowUploads
             it[allowDelete] = directory.permissions.allowDelete
@@ -70,7 +70,7 @@ class StorageRepositoryImpl(
         StorageDirectories.deleteWhere { StorageDirectories.path eq path } > 0
     }
 
-    override suspend fun getDirectoriesByParentPath(parentPath: String?): List<DirectoryEntity> = dbQuery {
+    override suspend fun getDirectoriesByParentPath(parentPath: String?): List<Directory> = dbQuery {
         StorageDirectories.selectAll()
             .where {
                 if (parentPath == null) {
@@ -108,19 +108,19 @@ class StorageRepositoryImpl(
         }
 
     // File operations
-    override suspend fun getFileByPath(path: String): FileEntity? = dbQuery {
+    override suspend fun getFileByPath(path: String): File? = dbQuery {
         StorageFiles.selectAll().where { StorageFiles.path eq path }.singleOrNull()?.let(::mapFileRow)
     }
 
-    override suspend fun getFileById(id: Long): FileEntity? = dbQuery {
+    override suspend fun getFileById(id: Long): File? = dbQuery {
         StorageFiles.selectAll().where { StorageFiles.id eq id }.singleOrNull()?.let(::mapFileRow)
     }
 
-    override suspend fun getFilesByIds(ids: List<Long>): List<FileEntity> = dbQuery {
+    override suspend fun getFilesByIds(ids: List<Long>): List<File> = dbQuery {
         StorageFiles.selectAll().where { StorageFiles.id inList ids }.map(::mapFileRow)
     }
 
-    override suspend fun createFile(file: FileEntity): FileEntity = transaction {
+    override suspend fun createFile(file: File): File = transaction {
         val insertStatement = StorageFiles.insert {
             it[path] = file.path
             it[name] = file.name
@@ -138,7 +138,7 @@ class StorageRepositoryImpl(
         file.copy(id = id)
     }
 
-    override suspend fun updateFile(file: FileEntity): FileEntity? = transaction {
+    override suspend fun updateFile(file: File): File? = transaction {
         val rowsUpdated = StorageFiles.update({ StorageFiles.path eq file.path }) {
             it[name] = file.name
             it[directoryPath] = file.directoryPath
@@ -155,7 +155,7 @@ class StorageRepositoryImpl(
         StorageFiles.deleteWhere { StorageFiles.path eq path } > 0
     }
 
-    override suspend fun getFilesByDirectoryPath(directoryPath: String): List<FileEntity> = transaction {
+    override suspend fun getFilesByDirectoryPath(directoryPath: String): List<File> = transaction {
         StorageFiles.selectAll().where { StorageFiles.directoryPath eq directoryPath }
             .map(::mapFileRow)
     }
@@ -205,9 +205,9 @@ class StorageRepositoryImpl(
         }
 
     // Fallback operations
-    override suspend fun addDirectoryFromBucket(path: String): DirectoryEntity {
+    override suspend fun addDirectoryFromBucket(path: String): Directory {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val directory = DirectoryEntity(
+        val directory = Directory(
             path = path,
             permissions = DirectoryPermissions(),
             isProtected = false,
@@ -227,9 +227,9 @@ class StorageRepositoryImpl(
         size: Long,
         contentType: String?,
         md5Hash: String?
-    ): FileEntity {
+    ): File {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val file = FileEntity(
+        val file = File(
             path = path,
             name = name,
             directoryPath = directoryPath,
@@ -246,12 +246,12 @@ class StorageRepositoryImpl(
     }
 
     // Bulk operations
-    override suspend fun getDirectoriesWithProtection(): List<DirectoryEntity> = transaction {
+    override suspend fun getDirectoriesWithProtection(): List<Directory> = transaction {
         StorageDirectories.selectAll().where { StorageDirectories.isProtected eq true }
             .map(::mapDirectoryRow)
     }
 
-    override suspend fun getFilesWithProtection(): List<FileEntity> = transaction {
+    override suspend fun getFilesWithProtection(): List<File> = transaction {
         StorageFiles.selectAll().where { StorageFiles.isProtected eq true }
             .map(::mapFileRow)
     }
@@ -276,7 +276,7 @@ class StorageRepositoryImpl(
     }
 
     // Mapping functions
-    private fun mapDirectoryRow(row: ResultRow): DirectoryEntity = DirectoryEntity(
+    private fun mapDirectoryRow(row: ResultRow): Directory = Directory(
         id = row[StorageDirectories.id],
         path = row[StorageDirectories.path],
         permissions = DirectoryPermissions(
@@ -295,7 +295,7 @@ class StorageRepositoryImpl(
         isFromBucket = row[StorageDirectories.isFromBucket]
     )
 
-    private fun mapFileRow(row: ResultRow): FileEntity = FileEntity(
+    private fun mapFileRow(row: ResultRow): File = File(
         id = row[StorageFiles.id],
         path = row[StorageFiles.path],
         name = row[StorageFiles.name],

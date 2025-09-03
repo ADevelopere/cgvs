@@ -108,11 +108,11 @@ export const StorageManagementUIProvider: React.FC<{
         [],
     );
 
-    // Initialize directory tree on mount with proper hydration handling
+    // Initialize directory tree and root items on mount with proper hydration handling
     useEffect(() => {
         let isMounted = true;
         
-        const initializeDirectoryTree = async () => {
+        const initializeStorageData = async () => {
             // Wait for hydration to complete
             await new Promise(resolve => setTimeout(resolve, 0));
             
@@ -120,33 +120,47 @@ export const StorageManagementUIProvider: React.FC<{
             if (!isMounted) return;
             
             try {
+                // Initialize both directory tree and root items in parallel
                 updateLoading("prefetchingNode", "");
-                const rootDirectories = await coreContext.fetchDirectoryChildren();
+                updateLoading("fetchList", true);
+                
+                const [rootDirectories, rootItems] = await Promise.all([
+                    coreContext.fetchDirectoryChildren(),
+                    coreContext.fetchList(queryParams)
+                ]);
                 
                 // Check again if component is still mounted before updating state
-                if (isMounted && rootDirectories) {
-                    setDirectoryTree(rootDirectories);
+                if (isMounted) {
+                    if (rootDirectories) {
+                        setDirectoryTree(rootDirectories);
+                    }
+                    if (rootItems) {
+                        setItems(rootItems.items);
+                        setPagination(rootItems.pagination);
+                    }
                 }
             } catch (error) {
                 // Only log if not an abort error during unmount
                 if (isMounted) {
-                    logger.error("Error initializing directory tree:", error);
+                    logger.error("Error initializing storage data:", error);
+                    updateError("fetchList", translations.failedToNavigateToDirectory);
                 }
             } finally {
                 if (isMounted) {
                     updateLoading("prefetchingNode", null);
+                    updateLoading("fetchList", false);
                 }
             }
         };
         
         // Use setTimeout to ensure this runs after hydration
-        const timeoutId = setTimeout(initializeDirectoryTree, 100);
+        const timeoutId = setTimeout(initializeStorageData, 100);
         
         return () => {
             isMounted = false;
             clearTimeout(timeoutId);
         };
-    }, [coreContext, updateLoading]);
+    }, [coreContext, updateLoading, queryParams, updateError, translations.failedToNavigateToDirectory]);
 
     // Navigation Functions
     const navigateTo = useCallback(
