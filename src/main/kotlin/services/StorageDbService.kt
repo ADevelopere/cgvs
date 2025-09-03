@@ -6,10 +6,9 @@ import util.determineFileType
 import kotlinx.datetime.toLocalDateTime
 
 interface StorageDbService {
-    suspend fun getFileInfoById(id: Long): FileInfo?
-    suspend fun getFileInfosByIds(ids: List<Long>): List<FileInfo>
-    suspend fun getFileEntityById(id: Long): FileEntity?
-    suspend fun getFileEntityByPath(path: String): FileEntity?
+    suspend fun getFileById(id: Long): File?
+    suspend fun getFilesByIds(ids: List<Long>): List<File>
+    suspend fun getFileByPath(path: String): File?
     suspend fun checkFileUsage(input: CheckFileUsageInput): FileUsageResult
     suspend fun updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): FileOperationResult
     suspend fun setProtection(input: SetStorageItemProtectionInput): FileOperationResult
@@ -22,7 +21,7 @@ interface StorageDbService {
         size: Long,
         contentType: String?,
         md5Hash: String?
-    ): FileEntity
+    ): File
 }
 
 fun storageDbService(
@@ -30,19 +29,15 @@ fun storageDbService(
     gcsConfig: GcsConfig
 ) = object : StorageDbService {
 
-    override suspend fun getFileInfoById(id: Long): FileInfo? {
-        return storageRepository.getFileById(id)?.let { fileEntityToFileInfo(it) }
-    }
-
-    override suspend fun getFileInfosByIds(ids: List<Long>): List<FileInfo> {
-        return storageRepository.getFilesByIds(ids).map { fileEntityToFileInfo(it) }
-    }
-
-    override suspend fun getFileEntityById(id: Long): FileEntity? {
+    override suspend fun getFileById(id: Long): File? {
         return storageRepository.getFileById(id)
     }
 
-    override suspend fun getFileEntityByPath(path: String): FileEntity? {
+    override suspend fun getFilesByIds(ids: List<Long>): List<File> {
+        return storageRepository.getFilesByIds(ids)
+    }
+
+    override suspend fun getFileByPath(path: String): File? {
         return storageRepository.getFileByPath(path)
     }
 
@@ -174,7 +169,7 @@ fun storageDbService(
         size: Long,
         contentType: String?,
         md5Hash: String?
-    ): FileEntity {
+    ): File {
         return storageRepository.addFileFromBucket(
             path = path,
             name = name,
@@ -185,40 +180,4 @@ fun storageDbService(
         )
     }
 
-    // Helper functions
-    private fun directoryEntityToFolderInfo(dir: DirectoryEntity): FolderInfo {
-        return FolderInfo(
-            name = dir.name,
-            path = dir.path,
-            permissions = dir.permissions,
-            isProtected = dir.isProtected,
-            protectChildren = dir.protectChildren,
-            fileCount = 0, // Could be populated with actual count if needed
-            folderCount = 0, // Could be populated with actual count if needed
-            totalSize = 0, // Could be populated with actual size if needed
-            created = dir.created,
-            lastModified = dir.lastModified,
-            isFromBucketOnly = dir.isFromBucket
-        )
-    }
-
-    private fun fileEntityToFileInfo(file: FileEntity): FileInfo {
-        return FileInfo(
-            name = file.name,
-            path = file.path,
-            size = file.size,
-            contentType = file.contentType,
-            fileType = determineFileType(ContentType.entries.find { it.value == file.contentType }),
-            lastModified = file.lastModified,
-            created = file.created,
-            url = gcsConfig.baseUrl + file.path,
-            mediaLink = null,
-            md5Hash = file.md5Hash,
-            isPublic = file.path.startsWith("public/"),
-            isProtected = file.isProtected,
-            isInUse = false, // Could be populated if needed
-            usages = emptyList(), // Could be populated if needed
-            isFromBucketOnly = file.isFromBucket
-        )
-    }
 }

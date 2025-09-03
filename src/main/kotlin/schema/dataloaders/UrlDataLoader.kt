@@ -27,7 +27,7 @@ val UrlDataLoader: KotlinDataLoader<Long, String> =
                             ?: CoroutineScope(EmptyCoroutineContext)
 
                     coroutineScope.future {
-                        storageDbService.getFileInfosByIds(ids).map {
+                        storageDbService.getFilesByIds(ids).map {
                             it.url ?: (gcsConfig.baseUrl + it.path)
                         }
                     }

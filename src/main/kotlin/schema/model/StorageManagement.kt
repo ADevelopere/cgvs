@@ -5,11 +5,11 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
-// Database entities for storage management
+// Combined storage objects
 @Serializable
 @GraphQLIgnore
-@GraphQLDescription("Directory entity with database ID")
-data class DirectoryEntity(
+@GraphQLDescription("Directory with complete information")
+data class Directory(
     @param:GraphQLDescription("Database ID of the directory")
     override val id: Long? = null,
     @param:GraphQLDescription("Full path of the directory")
@@ -27,8 +27,14 @@ data class DirectoryEntity(
     @param:GraphQLDescription("ID of user who created this directory")
     val createdBy: Long? = null,
     @param:GraphQLDescription("Whether this directory exists only in bucket (not in DB)")
-    val isFromBucket: Boolean = false // true if discovered from bucket and added to DB
-) : StorageEntity {
+    val isFromBucket: Boolean = false,
+    @param:GraphQLDescription("Number of files in the folder")
+    val fileCount: Int = 0,
+    @param:GraphQLDescription("Number of subfolders")
+    val folderCount: Int = 0,
+    @param:GraphQLDescription("Total size of all files in the folder")
+    val totalSize: Long = 0
+) : StorageObject {
     @GraphQLDescription("Name of the directory")
     override val name: String
         get() = if (path.contains("/")) path.substringAfterLast("/") else path
@@ -40,14 +46,14 @@ data class DirectoryEntity(
 
 @Serializable
 @GraphQLIgnore
-@GraphQLDescription("File entity with database ID")
-data class FileEntity(
+@GraphQLDescription("File with complete information")
+data class File(
     @param:GraphQLDescription("Database ID of the file")
     override val id: Long? = null,
+    @param:GraphQLDescription("File name")
+    override val name: String,
     @param:GraphQLDescription("Full path of the file")
     override val path: String,
-    @param:GraphQLDescription("Name of the file")
-    override val name: String,
     @param:GraphQLDescription("Directory path containing this file")
     val directoryPath: String,
     @param:GraphQLDescription("File size in bytes")
@@ -65,8 +71,20 @@ data class FileEntity(
     @param:GraphQLDescription("ID of user who created this file")
     val createdBy: Long? = null,
     @param:GraphQLDescription("Whether this file exists only in bucket (not in DB)")
-    val isFromBucket: Boolean = false // true if discovered from bucket and added to DB
-) : StorageEntity
+    val isFromBucket: Boolean = false,
+    @param:GraphQLDescription("URL for accessing the file")
+    val url: String? = null,
+    @param:GraphQLDescription("Media link for streaming (if applicable)")
+    val mediaLink: String? = null,
+    @param:GraphQLDescription("File type category")
+    val fileType: FileType = FileType.OTHER,
+    @param:GraphQLDescription("Whether the file is publicly accessible")
+    val isPublic: Boolean = false,
+    @param:GraphQLDescription("Whether the file is currently being used")
+    val isInUse: Boolean = false,
+    @param:GraphQLDescription("List of current usages")
+    val usages: List<FileUsageInfo> = emptyList()
+) : StorageObject
 
 @Serializable
 @GraphQLDescription("Directory permissions configuration")
@@ -253,102 +271,16 @@ enum class FileType {
 }
 
 interface StorageObject {
-    val name: String
-    val path: String
-}
-
-interface StorageEntity {
     val id: Long?
     val name: String
     val path: String
 }
-
-// Response types
-
-@Serializable
-@GraphQLIgnore
-@GraphQLDescription("Enhanced file information with metadata")
-data class FileInfo(
-    @param:GraphQLDescription("File name")
-    override val name: String,
-    @param:GraphQLDescription("Full path in the bucket")
-    override val path: String,
-    @param:GraphQLDescription("File size in bytes")
-    val size: Long,
-    @param:GraphQLDescription("MIME content type")
-    val contentType: String?,
-    @param:GraphQLDescription("Last modified timestamp")
-    val lastModified: LocalDateTime,
-    @param:GraphQLDescription("Creation timestamp")
-    val created: LocalDateTime,
-    @param:GraphQLDescription("URL for accessing the file")
-    val url: String?,
-    @param:GraphQLDescription("Media link for streaming (if applicable)")
-    val mediaLink: String? = null,
-    @param:GraphQLDescription("File type category")
-    val fileType: FileType,
-    @param:GraphQLDescription("MD5 hash of the file")
-    val md5Hash: String?,
-    @param:GraphQLDescription("Whether the file is publicly accessible")
-    val isPublic: Boolean = false,
-    @param:GraphQLDescription("Whether the file is protected from deletion")
-    val isProtected: Boolean = false,
-    @param:GraphQLDescription("Whether the file is currently being used")
-    val isInUse: Boolean = false,
-    @param:GraphQLDescription("List of current usages")
-    val usages: List<FileUsageInfo> = emptyList(),
-    @param:GraphQLDescription("Whether this file exists only in bucket (not in DB)")
-    val isFromBucketOnly: Boolean = false
-) : StorageObject
-
-@Serializable
-@GraphQLIgnore
-@GraphQLDescription("Folder information")
-data class FolderInfo(
-    @param:GraphQLDescription("Folder name")
-    override val name: String,
-    @param:GraphQLDescription("Full path in the bucket")
-    override val path: String,
-    @param:GraphQLDescription("Number of files in the folder")
-    val fileCount: Int,
-    @param:GraphQLDescription("Number of subfolders")
-    val folderCount: Int,
-    @param:GraphQLDescription("Total size of all files in the folder")
-    val totalSize: Long,
-    @param:GraphQLDescription("Creation timestamp")
-    val created: LocalDateTime,
-    @param:GraphQLDescription("Last modified timestamp")
-    val lastModified: LocalDateTime,
-    @param:GraphQLDescription("Directory permissions")
-    val permissions: DirectoryPermissions = DirectoryPermissions(),
-    @param:GraphQLDescription("Whether this directory is protected from deletion")
-    val isProtected: Boolean = false,
-    @param:GraphQLDescription("Whether children are protected from deletion")
-    val protectChildren: Boolean = false,
-    @param:GraphQLDescription("Whether this directory exists only in bucket (not in DB)")
-    val isFromBucketOnly: Boolean = false
-) : StorageObject
 
 @Serializable
 @GraphQLDescription("Paginated list of storage objects")
 data class StorageObjectList(
     @param:GraphQLDescription("List of files and folders")
     val items: List<StorageObject>,
-    @param:GraphQLDescription("Total number of items")
-    val totalCount: Int,
-    @param:GraphQLDescription("Current page offset")
-    val offset: Int,
-    @param:GraphQLDescription("Items per page")
-    val limit: Int,
-    @param:GraphQLDescription("Whether there are more items")
-    val hasMore: Boolean
-)
-
-@Serializable
-@GraphQLDescription("Paginated list of storage entities")
-data class StorageEntityList(
-    @param:GraphQLDescription("List of files and folders with database IDs")
-    val items: List<StorageEntity>,
     @param:GraphQLDescription("Total number of items")
     val totalCount: Int,
     @param:GraphQLDescription("Current page offset")
@@ -367,7 +299,7 @@ data class FileOperationResult(
     @param:GraphQLDescription("Success or error message")
     val message: String,
     @param:GraphQLDescription("The affected file/folder (if applicable)")
-    val item: StorageEntity? = null
+    val item: StorageObject? = null
 )
 
 @Serializable
@@ -393,7 +325,7 @@ data class BulkOperationResult(
     @param:GraphQLDescription("List of error messages for failed items")
     val errors: List<String>,
     @param:GraphQLDescription("List of successfully processed items")
-    val successfulItems: List<StorageEntity> = emptyList()
+    val successfulItems: List<StorageObject> = emptyList()
 )
 
 @Serializable
@@ -406,7 +338,7 @@ data class DirectoryValidationResult(
     @param:GraphQLDescription("Whether the directory was automatically added to database")
     val wasAddedToDb: Boolean = false,
     @param:GraphQLDescription("Directory information after validation")
-    val directoryInfo: DirectoryEntity? = null
+    val directoryInfo: Directory? = null
 )
 
 @Serializable
@@ -417,7 +349,7 @@ data class FileUploadResult(
     @param:GraphQLDescription("Success or error message")
     val message: String,
     @param:GraphQLDescription("The uploaded file information")
-    val fileInfo: FileEntity? = null
+    val fileInfo: File? = null
 )
 
 @Serializable
