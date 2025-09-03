@@ -127,7 +127,7 @@ export type StorageManagementUIContextType = {
     refresh: () => Promise<void>;
     expandDirectoryNode: (path: string) => Promise<void>;
     collapseDirectoryNode: (path: string) => void;
-    prefetchDirectoryChildren: (path: string) => Promise<void>;
+    prefetchDirectoryChildren: (path: string, refresh?: boolean) => Promise<void>;
 
     // Selection Management
     toggleSelect: (path: string) => void;

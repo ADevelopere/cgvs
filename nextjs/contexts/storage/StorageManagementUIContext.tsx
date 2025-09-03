@@ -186,6 +186,15 @@ export const StorageManagementUIProvider: React.FC<{
                     const updateTreeNode = (
                         nodes: DirectoryTreeNode[],
                     ): DirectoryTreeNode[] => {
+                        // If nodes array is empty and this is the root path, return the children directly
+                        if (nodes.length === 0 && path === "") {
+                            return children.map(child => ({
+                                ...child,
+                                isExpanded: true,
+                                isLoading: false,
+                            }));
+                        }
+                        
                         return nodes.map((node) => {
                             if (node.path === path) {
                                 return {
@@ -247,8 +256,8 @@ export const StorageManagementUIProvider: React.FC<{
     }, []);
 
     const prefetchDirectoryChildren = useCallback(
-        async (path: string) => {
-            if (prefetchedNodes.has(path) || expandedNodes.has(path)) return;
+        async (path: string, refresh?: boolean) => {
+            if (!refresh && prefetchedNodes.has(path) || expandedNodes.has(path)) return;
 
             updateLoading("prefetchingNode", path);
             setPrefetchedNodes((prev) => new Set([...prev, path]));
@@ -260,6 +269,14 @@ export const StorageManagementUIProvider: React.FC<{
                     const updateTreeNode = (
                         nodes: DirectoryTreeNode[],
                     ): DirectoryTreeNode[] => {
+                        // If nodes array is empty and this is the root path, return the children directly
+                        if (nodes.length === 0 && path === "") {
+                            return children.map(child => ({
+                                ...child,
+                                isPrefetched: true,
+                            }));
+                        }
+                        
                         return nodes.map((node) => {
                             if (node.path === path) {
                                 return {
