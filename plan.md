@@ -65,10 +65,10 @@ This document outlines a comprehensive plan for the file manager UI. The archite
   - Material-UI theming and internationalization
 
 **Remaining Phase 5 Components:**
-- ⏳ **RenameDialog.tsx** - The dialog for renaming an item
-- ⏳ **MoveToDialog.tsx** - The dialog for moving items to a new location
+- ✅ **RenameDialog.tsx** - The dialog for renaming an item
+- ✅ **MoveToDialog.tsx** - The dialog for moving items to a new location - Completed (2025-09-03)
 
-**Foundation Complete:** ✅ The core architecture, main view components, browser integration, and context menus are now ready. Only dialogs remain in Phase 5.
+**Foundation Complete:** ✅ The core architecture, main view components, browser integration, context menus, and all dialogs are now complete. Phase 5 is fully implemented.
 
 ---
 
@@ -113,7 +113,7 @@ Context menus are now implemented and ready for integration with StorageItem and
 - ✅ **`ViewAreaMenu.tsx`**: Context menu for view area - Completed (2025-09-03)
   - Paste, Upload Files, New Folder, Refresh, Select All actions
   - Integration with upload and folder creation functionality
-- ⏳ **`RenameDialog.tsx`**: The dialog for renaming an item (file/folder)
+- ✅ **`RenameDialog.tsx`**: The dialog for renaming an item (file/folder)
 - ⏳ **`MoveToDialog.tsx`**: The dialog for moving items to a new location
 
 ---

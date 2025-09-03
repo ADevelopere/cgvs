@@ -158,6 +158,35 @@ const arStorageTranslations: StorageTranslations = {
         deleteConfirmation: 'حذف "%{fileName}"',
         deleteConfirmationMessage:
             'هل أنت متأكد أنك تريد حذف "%{fileName}"؟ لا يمكن التراجع عن هذا الإجراء.',
+
+        // Rename dialog
+        renameDialogTitle: "إعادة تسمية",
+        renameDialogLabel: "الاسم الجديد",
+        renameDialogOk: "موافق",
+        renameDialogCancel: "إلغاء",
+        renameDialogEmpty: "الاسم لا يمكن أن يكون فارغاً",
+        renameDialogInvalid: "الاسم يحتوي على أحرف غير صالحة",
+        renameDialogFailedToRename: "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
+        renameDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        //rename dialog end
+        
+        // Move to dialog
+        moveDialogTitle: "نقل العناصر",
+        moveDialogSelectDestination: "اختر مجلد الوجهة",
+        moveDialogRoot: "الجذر",
+        moveDialogGoUp: "الصعود للأعلى",
+        moveDialogRefresh: "تحديث",
+        moveDialogNoFolders: "لم يتم العثور على مجلدات",
+        moveDialogInvalid: "غير صالح",
+        moveDialogCannotMoveHere: "لا يمكن نقل العناصر إلى هذا الموقع",
+        moveDialogCancel: "إلغاء",
+        moveDialogMove: "نقل هنا",
+        moveDialogFailedToLoad: "فشل في تحميل المجلدات",
+        moveDialogFailedToMove: "فشل في نقل العناصر",
+        moveDialogInvalidDestination: "وجهة غير صالحة",
+        moveDialogUnexpectedError: "حدث خطأ غير متوقع",
+        moving: "جاري النقل...",
+        // Move to dialog end
         contentType: "نوع المحتوى",
         path: "المسار",
         md5Hash: "تشفير MD5",

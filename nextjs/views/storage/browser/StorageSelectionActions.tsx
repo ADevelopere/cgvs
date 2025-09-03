@@ -63,9 +63,10 @@ const StorageSelectionActions: React.FC = () => {
         selectedItemObjects.forEach(item => {
             if (item.__typename === 'FileEntity' && 'mediaLink' in item && item.mediaLink) {
                 // Create a temporary link to trigger download
+                const fileItem = item as unknown as { mediaLink: string; name: string };
                 const link = document.createElement('a');
-                link.href = item.mediaLink;
-                link.download = item.name;
+                link.href = fileItem.mediaLink;
+                link.download = fileItem.name;
                 link.style.display = 'none';
                 document.body.appendChild(link);
                 link.click();
