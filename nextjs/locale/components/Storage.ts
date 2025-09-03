@@ -158,6 +158,11 @@ type StorageManagementUITranslations = {
     renameDialogFailedToRename: string;
     renameDialogUnexpectedError: string;
     //rename dialog end
+
+    // Delete dialog
+    deleteDialogFailedToDelete: string;
+    deleteDialogUnexpectedError: string;
+    // Delete dialog end
     
     // Move to dialog
     moveDialogTitle: string;

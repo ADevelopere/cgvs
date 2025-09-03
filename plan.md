@@ -114,8 +114,8 @@ Context menus are now implemented and ready for integration with StorageItem and
   - Paste, Upload Files, New Folder, Refresh, Select All actions
   - Integration with upload and folder creation functionality
 - ✅ **`RenameDialog.tsx`**: The dialog for renaming an item (file/folder)
-- ⏳ **`MoveToDialog.tsx`**: The dialog for moving items to a new location
-
+- ✅ **`MoveToDialog.tsx`**: The dialog for moving items to a new location
+- ✅ **`MoveToDialog.tsx`**: DeleteConfirmationDialog
 ---
 
 ## 1. High-Level Architecture: A Multi-Context Approach
