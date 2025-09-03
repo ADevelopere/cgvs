@@ -25,7 +25,7 @@ import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCateg
 import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput } from "@/graphql/generated/types";
 import type { FileInfo } from "@/graphql/generated/types";
-import StorageFilePicker from "@/views/storage/filePicker/StorageFilePicker";
+// import StorageFilePicker from "@/views/storage/filePicker/StorageFilePicker";
 
 type FormDataType = {
     name: string;
@@ -145,7 +145,7 @@ const BasicInfoTab: React.FC = () => {
             name: formData.name,
             description: formData.description || undefined,
             categoryId: template.category.id,
-            imageFileName: formData.imagePath,
+            // imageFileName: formData.imagePath,
         };
 
         const updatedTemplate = await updateTemplate({
@@ -157,14 +157,7 @@ const BasicInfoTab: React.FC = () => {
             setUnsavedChangesRef.current(false);
         }
         setSaving(false);
-    }, [
-        formData.description,
-        formData.imagePath,
-        formData.name,
-        template?.category.id,
-        template?.id,
-        updateTemplate,
-    ]);
+    }, [formData.description, formData.name, template?.category.id, template?.id, updateTemplate]);
 
     const handleCancel = useCallback(() => {
         if (template) {
@@ -288,7 +281,7 @@ const BasicInfoTab: React.FC = () => {
                                     onClick={() => setSelectorDialogOpen(true)}
                                     color="primary"
                                 >
-                                    {storageStrings.selectFile}
+                                    {/* {storageStrings.selectFile} */}
                                 </Button>
                                 {formData.imageUrl && (
                                     <Button
@@ -340,14 +333,14 @@ const BasicInfoTab: React.FC = () => {
             </Box>
 
             {/* File Selector Dialog */}
-            <StorageFilePicker
+            {/* <StorageFilePicker
                 open={selectorDialogOpen}
                 onClose={() => setSelectorDialogOpen(false)}
                 prohibitedUrls={formData.imageUrl ? [formData.imageUrl] : []}
                 initialLocation={"TEMPLATE_COVER"}
                 onSelectAction={handleSelectFiles}
                 title={storageStrings.selectFile}
-            />
+            /> */}
         </Box>
     );
 };
