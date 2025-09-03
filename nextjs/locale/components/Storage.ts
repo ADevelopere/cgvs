@@ -148,6 +148,34 @@ type StorageManagementUITranslations = {
     // Dialog messages
     deleteConfirmation: string; // %{fileName}
     deleteConfirmationMessage: string; // %{fileName}
+    //rename dialog
+    renameDialogTitle: string;
+    renameDialogLabel: string;
+    renameDialogOk: string;
+    renameDialogCancel: string;
+    renameDialogEmpty: string;
+    renameDialogInvalid: string;
+    renameDialogFailedToRename: string;
+    renameDialogUnexpectedError: string;
+    //rename dialog end
+    
+    // Move to dialog
+    moveDialogTitle: string;
+    moveDialogSelectDestination: string;
+    moveDialogRoot: string;
+    moveDialogGoUp: string;
+    moveDialogRefresh: string;
+    moveDialogNoFolders: string;
+    moveDialogInvalid: string;
+    moveDialogCannotMoveHere: string;
+    moveDialogCancel: string;
+    moveDialogMove: string;
+    moveDialogFailedToLoad: string;
+    moveDialogFailedToMove: string;
+    moveDialogInvalidDestination: string;
+    moveDialogUnexpectedError: string;
+    moving: string;
+    // Move to dialog end
     contentType: string;
     path: string;
     md5Hash: string;
