@@ -20,15 +20,11 @@ export interface BaseTreeItem {
     [key: string]: any;
 }
 
-export type TreeViewItemRendererFull<T> = (props: {
+export type TreeViewItemRenderer<T> = (props: {
     item: T;
     isSelected: boolean;
     isExpanded: boolean;
 }) => React.ReactNode;
-export type TreeViewItemRendererSimple<T> = (item: T) => React.ReactNode;
-export type TreeViewItemRenderer<T> =
-    | TreeViewItemRendererFull<T>
-    | TreeViewItemRendererSimple<T>;
 
 export function TreeView<T extends BaseTreeItem>({
     items,
@@ -55,7 +51,7 @@ export function TreeView<T extends BaseTreeItem>({
     childrenKey?: string;
     labelKey?: string;
     header?: string;
-    noItemsMessage: string;
+    noItemsMessage: string | React.ReactNode;
     searchText: string;
     style?: React.CSSProperties;
     expandedItems?: Set<string | number>;
@@ -123,15 +119,11 @@ export function TreeView<T extends BaseTreeItem>({
                 );
             }
 
-            if (itemRenderer.length === 1) {
-                return (itemRenderer as TreeViewItemRendererSimple<T>)(item);
-            } else {
-                return (itemRenderer as TreeViewItemRendererFull<T>)({
-                    item,
-                    isSelected,
-                    isExpanded,
-                });
-            }
+            return itemRenderer({
+                item,
+                isSelected,
+                isExpanded,
+            });
         },
         [itemRenderer, labelKey],
     );
@@ -443,9 +435,13 @@ export function TreeView<T extends BaseTreeItem>({
                             color: "text.secondary",
                         }}
                     >
-                        <Typography variant="body2">
-                            {noItemsMessage}
-                        </Typography>
+                        {typeof noItemsMessage === "string" ? (
+                            <Typography variant="body2" component="div">
+                                {noItemsMessage}
+                            </Typography>
+                        ) : (
+                            noItemsMessage
+                        )}
                     </Box>
                 )}
             </Box>

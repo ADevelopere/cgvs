@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import {
     TreeView,
     BaseTreeItem,
-    TreeViewItemRendererFull,
+    TreeViewItemRenderer,
 } from "@/components/common/TreeView";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import { DirectoryTreeNode } from "@/contexts/storage/storage.type";
@@ -13,9 +13,11 @@ import FolderIcon from "@mui/icons-material/Folder";
 import Typography from "@mui/material/Typography";
 import { useDebouncedCallback } from "use-debounce";
 import useAppTranslation from "@/locale/useAppTranslation";
+import Button from "@mui/material/Button";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 type DirectoryTreeItemRendererProps = Pick<
-    Parameters<TreeViewItemRendererFull<DirectoryTreeNode>>[0],
+    Parameters<TreeViewItemRenderer<DirectoryTreeNode>>[0],
     "item" | "isSelected"
 >;
 
@@ -31,6 +33,11 @@ const StorageDirectoryTree: React.FC = () => {
         loading,
     } = useStorageManagementUI();
     const { ui: translations } = useAppTranslation("storageTranslations");
+
+    const handleRetryFetchTree = useCallback(() => {
+        // Use prefetchDirectoryChildren with empty path to refetch root directories
+        prefetchDirectoryChildren("", true);
+    }, [prefetchDirectoryChildren]);
 
     const handleSelectItem = useCallback(
         (item: BaseTreeItem) => {
@@ -111,7 +118,30 @@ const StorageDirectoryTree: React.FC = () => {
             itemRenderer={itemRenderer}
             childrenKey="children"
             labelKey="name"
-            noItemsMessage={translations.noFoldersFound}
+            noItemsMessage={
+                directoryTree.length === 0 ? (
+                    <Box sx={{ textAlign: "center", p: 2 }}>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mb: 2 }}
+                        >
+                            {translations.noFoldersFound}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<RefreshIcon />}
+                            onClick={handleRetryFetchTree}
+                            disabled={loading.prefetchingNode !== null}
+                        >
+                            {translations.retry}
+                        </Button>
+                    </Box>
+                ) : (
+                    translations.noFoldersFound
+                )
+            }
             searchText={translations.searchFolders}
         />
     );
