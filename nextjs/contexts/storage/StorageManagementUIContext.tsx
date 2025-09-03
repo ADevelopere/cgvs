@@ -215,23 +215,10 @@ export const StorageManagementUIProvider: React.FC<{
                     const updateTreeNode = (
                         nodes: DirectoryTreeNode[],
                     ): DirectoryTreeNode[] => {
-                        // If nodes array is empty and this is the root path, return the children directly
-                        if (nodes.length === 0 && path === "") {
-                            return children.map(child => ({
-                                ...child,
-                                isExpanded: true,
-                                isLoading: false,
-                            }));
-                        }
-                        
                         return nodes.map((node) => {
                             if (node.path === path) {
-                                return {
-                                    ...node,
-                                    children,
-                                    isExpanded: true,
-                                    isLoading: false,
-                                };
+                                // Replace children instead of concatenating
+                                return { ...node, children: children };
                             }
                             if (node.children) {
                                 return {

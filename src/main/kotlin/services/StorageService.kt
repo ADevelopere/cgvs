@@ -231,10 +231,7 @@ fun storageService(
 
                     if (bucketDirExists || directoryPath.isEmpty()) {
                         // Add directory to DB with default permissions
-                        val dirName = directoryPath.substringAfterLast('/').takeIf { it.isNotEmpty() } ?: "root"
-                        val parentPath = directoryPath.substringBeforeLast('/').takeIf { it.isNotEmpty() }
-
-                        storageRepository.addDirectoryFromBucket(directoryPath, dirName, parentPath)
+                        storageRepository.addDirectoryFromBucket(directoryPath)
                     } else {
                         return@runBlocking FileUploadResult(false, "Directory does not exist", null)
                     }
@@ -428,8 +425,6 @@ fun storageService(
                     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                     val directoryEntity = DirectoryEntity(
                         path = fullPath,
-                        name = input.name,
-                        parentPath = input.path.takeIf { it.isNotEmpty() },
                         permissions = input.permissions ?: DirectoryPermissions(),
                         created = now,
                         lastModified = now,
@@ -645,18 +640,13 @@ fun storageService(
 
         if (folderExists) {
             // Add directory to database
-            val folderName = path.substringAfterLast('/')
-            val parentPath = path.substringBeforeLast('/').takeIf { it.isNotEmpty() }
-
             return runBlocking {
                 try {
-                    storageRepository.addDirectoryFromBucket(path, folderName, parentPath)
+                    storageRepository.addDirectoryFromBucket(path)
                 } catch (_: Exception) {
                     // If DB operation fails, return a temporary entity
                     DirectoryEntity(
-                        name = folderName,
                         path = path,
-                        parentPath = parentPath,
                         permissions = DirectoryPermissions(),
                         isProtected = false,
                         created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
@@ -669,9 +659,7 @@ fun storageService(
 
         // Return a default entity if folder doesn't exist
         return DirectoryEntity(
-            name = path.substringAfterLast('/'),
             path = path,
-            parentPath = path.substringBeforeLast('/').takeIf { it.isNotEmpty() },
             permissions = DirectoryPermissions(),
             isProtected = false,
             created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
@@ -709,7 +697,6 @@ fun storageService(
 
         // Get directories from DB first
         val dbDirectories = storageRepository.getDirectoriesByParentPath(searchPath.takeIf { it.isNotEmpty() })
-        val dbPaths = dbDirectories.map { it.path }.toSet()
 
         // Get directories from bucket that might not be in DB
         val prefix = if (searchPath.isEmpty()) "" else "$searchPath/"
@@ -721,38 +708,38 @@ fun storageService(
 
         val page = storage.list(gcsConfig.bucketName, *options.toTypedArray())
         val bucketFolders = mutableListOf<DirectoryEntity>()
+        val dbPaths = dbDirectories.map { it.path }.toSet()
 
         // Process prefixes (folders) from bucket
         page.iterateAll().forEach { blob ->
-            if (blob.isDirectory && blob.name !=prefix) {
-                val folderPath = blob.name.trimEnd('/')
-                if (!dbPaths.contains(folderPath)) {
-                    // Folder exists in bucket but not in DB - add it with fallback
-                    val folderName = folderPath.substringAfterLast('/')
-                    val parentPath = folderPath.substringBeforeLast('/').takeIf { it.isNotEmpty() }
-
-                    try {
-                        val addedDir = storageRepository.addDirectoryFromBucket(folderPath, folderName, parentPath)
-                        bucketFolders.add(addedDir)
-                    } catch (_: Exception) {
-                        // If DB operation fails, still show the folder but mark it as bucket-only
-                        bucketFolders.add(DirectoryEntity(
-                            name = folderName,
-                            path = folderPath,
-                            parentPath = parentPath,
-                            permissions = DirectoryPermissions(), // Default permissions
-                            isProtected = false,
-                            created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                            lastModified = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                            isFromBucket = true
-                        ))
-                    }
+            val folderPath = blob.name.trimEnd('/')
+            // Ensure we don't include the parent folder itself in the results
+            if (blob.isDirectory && folderPath != prefix.trimEnd('/') && folderPath != searchPath) {
+                if (folderPath !in dbPaths) {
+                    // Create a temporary DirectoryEntity for the bucket folder
+                    val bucketFolder = DirectoryEntity(
+                        path = folderPath,
+                        permissions = DirectoryPermissions(), // Default permissions
+                        isProtected = false,
+                        created = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli()),
+                        lastModified = timestampToLocalDateTime(blob.updateTimeOffsetDateTime.toInstant().toEpochMilli()),
+                        isFromBucket = true
+                    )
+                    bucketFolders.add(bucketFolder)
                 }
             }
         }
 
-        // Convert DB directories and combine with bucket folders
-        return (dbDirectories + bucketFolders).sortedBy { it.name }
+        // Convert DB directories and combine with bucket folders, ensuring no duplicates
+        val finalFolders = dbDirectories.toMutableList()
+        val finalDbPaths = dbDirectories.map { it.path }.toSet()
+        bucketFolders.forEach { bucketFolder ->
+            if (bucketFolder.path !in finalDbPaths) {
+                finalFolders.add(bucketFolder)
+            }
+        }
+
+        return finalFolders.sortedBy { it.name }
     }
 
     override suspend fun moveItems(input: MoveStorageItemsInput): BulkOperationResult {

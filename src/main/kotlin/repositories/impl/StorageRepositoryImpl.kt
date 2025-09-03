@@ -33,8 +33,6 @@ class StorageRepositoryImpl(
             ?: run {
                 val insertStatement = StorageDirectories.insert {
                     it[path] = directory.path
-                    it[name] = directory.name
-                    it[parentPath] = directory.parentPath
                     it[allowUploads] = directory.permissions.allowUploads
                     it[allowDelete] = directory.permissions.allowDelete
                     it[allowMove] = directory.permissions.allowMove
@@ -55,8 +53,6 @@ class StorageRepositoryImpl(
 
     override suspend fun updateDirectory(directory: DirectoryEntity): DirectoryEntity? = dbQuery {
         val rowsUpdated = StorageDirectories.update({ StorageDirectories.path eq directory.path }) {
-            it[name] = directory.name
-            it[parentPath] = directory.parentPath
             it[allowUploads] = directory.permissions.allowUploads
             it[allowDelete] = directory.permissions.allowDelete
             it[allowMove] = directory.permissions.allowMove
@@ -77,8 +73,14 @@ class StorageRepositoryImpl(
     override suspend fun getDirectoriesByParentPath(parentPath: String?): List<DirectoryEntity> = dbQuery {
         StorageDirectories.selectAll()
             .where {
-                if (parentPath == null) StorageDirectories.parentPath.isNull()
-                else StorageDirectories.parentPath eq parentPath
+                if (parentPath == null) {
+                    // Get root directories (those that don't contain "/" or only have root level paths)
+                    StorageDirectories.path.notLike("%/%")
+                } else {
+                    // Get direct children of the parent path
+                    StorageDirectories.path.like("$parentPath/%") and 
+                    StorageDirectories.path.notLike("$parentPath/%/%")
+                }
             }
             .map(::mapDirectoryRow)
     }
@@ -203,12 +205,10 @@ class StorageRepositoryImpl(
         }
 
     // Fallback operations
-    override suspend fun addDirectoryFromBucket(path: String, name: String, parentPath: String?): DirectoryEntity {
+    override suspend fun addDirectoryFromBucket(path: String): DirectoryEntity {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val directory = DirectoryEntity(
             path = path,
-            name = name,
-            parentPath = parentPath,
             permissions = DirectoryPermissions(),
             isProtected = false,
             protectChildren = false,
@@ -279,8 +279,6 @@ class StorageRepositoryImpl(
     private fun mapDirectoryRow(row: ResultRow): DirectoryEntity = DirectoryEntity(
         id = row[StorageDirectories.id],
         path = row[StorageDirectories.path],
-        name = row[StorageDirectories.name],
-        parentPath = row[StorageDirectories.parentPath],
         permissions = DirectoryPermissions(
             allowUploads = row[StorageDirectories.allowUploads],
             allowDelete = row[StorageDirectories.allowDelete],

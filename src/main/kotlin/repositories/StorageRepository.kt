@@ -32,7 +32,7 @@ interface StorageRepository {
     suspend fun getUsagesByReference(referenceTable: String, referenceId: Long): List<FileUsage>
     
     // Fallback operations for bucket-only items
-    suspend fun addDirectoryFromBucket(path: String, name: String, parentPath: String?): DirectoryEntity
+    suspend fun addDirectoryFromBucket(path: String): DirectoryEntity
     suspend fun addFileFromBucket(
         path: String, 
         name: String, 

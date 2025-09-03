@@ -6,8 +6,6 @@ import org.jetbrains.exposed.v1.datetime.datetime
 object StorageDirectories : Table("storage_directories") {
     val id = long("id").autoIncrement()
     val path = varchar("path", 1024).uniqueIndex()
-    val name = varchar("name", 255)
-    val parentPath = varchar("parent_path", 1024).nullable()
 
     // Directory permissions
     val allowUploads = bool("allow_uploads").default(true)
