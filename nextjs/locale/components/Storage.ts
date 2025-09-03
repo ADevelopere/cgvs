@@ -51,7 +51,7 @@ type StorageManagementCoreTranslations = {
     errors: string;
 };
 
-type StorageManagementUITranslations = {
+export type StorageManagementUITranslations = {
     // Navigation error messages
     failedToNavigateToDirectory: string;
     failedToRefreshDirectory: string;
