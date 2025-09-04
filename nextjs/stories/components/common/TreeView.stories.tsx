@@ -8,7 +8,7 @@ import {
     defaultStoryArgs,
 } from "@/stories/argTypes";
 import AppRouterCacheProvider from "@/components/appRouter/AppRouterCacheProvider";
-import { TreeView, BaseTreeItem } from "@/components/common/TreeView";
+import { TreeView, BaseTreeItem } from "@/components/treeView/TreeView";
 import useStoryTheme from "@/stories/useStoryTheme";
 
 export default {
