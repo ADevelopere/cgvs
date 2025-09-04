@@ -1,30 +1,26 @@
 package services
 
 import com.google.cloud.storage.*
+import com.google.cloud.storage.HttpMethod
 import config.GcsConfig
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.PartData
-import io.ktor.http.content.forEachPart
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.log
-import io.ktor.server.request.receiveMultipart
-import io.ktor.server.response.respond
-import io.ktor.utils.io.InternalAPI
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlinx.io.readByteArray
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDateTime
+import kotlinx.io.readByteArray
 import schema.model.*
+import schema.model.ContentType
 import services.StorageService.Companion.SIGNED_URL_DURATION
-import util.timestampToLocalDateTime
-import util.*
+import tables.DirectoryEntity
 import tables.FileEntity
+import util.*
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
-import tables.DirectoryEntity
 
 
 // Data classes for bucket blob representations
@@ -89,105 +85,99 @@ interface StorageService {
     suspend fun deleteItems(input: DeleteItemsInput): BulkOperationResult
 }
 
+// Helper function to combine bucket file data with DB entity
+private fun combineFileData(bucketFile: BucketFile, dbEntity: FileEntity?): FileInfo {
+    return if (dbEntity != null) {
+        FileInfo(
+            path = bucketFile.path,
+            directoryPath = bucketFile.directoryPath,
+            size = bucketFile.size,
+            contentType = bucketFile.contentType,
+            md5Hash = bucketFile.md5Hash,
+            isProtected = dbEntity.isProtected,
+            created = bucketFile.created,
+            lastModified = bucketFile.lastModified,
+            createdBy = null,
+            isFromBucket = false,
+            url = bucketFile.url,
+            mediaLink = bucketFile.mediaLink,
+            fileType = bucketFile.fileType,
+            isPublic = bucketFile.isPublic
+        )
+    } else {
+        FileInfo(
+            path = bucketFile.path,
+            directoryPath = bucketFile.directoryPath,
+            size = bucketFile.size,
+            contentType = bucketFile.contentType,
+            md5Hash = bucketFile.md5Hash,
+            isProtected = false,
+            created = bucketFile.created,
+            lastModified = bucketFile.lastModified,
+            createdBy = null,
+            isFromBucket = true,
+            url = bucketFile.url,
+            mediaLink = bucketFile.mediaLink,
+            fileType = bucketFile.fileType,
+            isPublic = bucketFile.isPublic
+        )
+    }
+}
+
+// Helper function to combine bucket directory data with DB entity
+private fun combineDirectoryData(bucketDir: BucketDirectory, dbEntity: DirectoryEntity?): DirectoryInfo {
+    return if (dbEntity != null) {
+        DirectoryInfo(
+            path = bucketDir.path,
+            permissions = DirectoryPermissions(
+                allowUploads = dbEntity.allowUploads,
+                allowDelete = dbEntity.allowDelete,
+                allowMove = dbEntity.allowMove,
+                allowCreateSubDirs = dbEntity.allowCreateSubDirs,
+                allowDeleteFiles = dbEntity.allowDeleteFiles,
+                allowMoveFiles = dbEntity.allowMoveFiles
+            ),
+            isProtected = dbEntity.isProtected,
+            protectChildren = dbEntity.protectChildren,
+            created = bucketDir.created,
+            lastModified = bucketDir.lastModified,
+            createdBy = null,
+            isFromBucket = false
+        )
+    } else {
+        DirectoryInfo(
+            path = bucketDir.path,
+            permissions = DirectoryPermissions(), // Default permissions
+            isProtected = false,
+            protectChildren = false,
+            created = bucketDir.created,
+            lastModified = bucketDir.lastModified,
+            createdBy = null,
+            isFromBucket = true
+        )
+    }
+}
+
+// Helper function to create Directory from bucket path (when no blob exists)
+private fun createDirectoryFromPath(path: String): DirectoryInfo {
+    return DirectoryInfo(
+        path = path,
+        permissions = DirectoryPermissions(), // Default permissions
+        isProtected = false,
+        protectChildren = false,
+        created = now(),
+        lastModified = now(),
+        createdBy = null,
+        isFromBucket = true
+    )
+}
+
 @OptIn(InternalAPI::class)
 fun storageService(
     storage: Storage,
     gcsConfig: GcsConfig,
     storageDbService: StorageDbService
 ) = object : StorageService {
-
-    // Helper function to combine bucket file data with DB entity
-    private fun combineFileData(bucketFile: BucketFile, dbEntity: FileEntity?): FileInfo {
-        return if (dbEntity != null) {
-            FileInfo(
-                id = dbEntity.id.value,
-                path = bucketFile.path,
-                directoryPath = bucketFile.directoryPath,
-                size = bucketFile.size,
-                contentType = bucketFile.contentType,
-                md5Hash = bucketFile.md5Hash,
-                isProtected = dbEntity.isProtected,
-                created = bucketFile.created,
-                lastModified = bucketFile.lastModified,
-                createdBy = null,
-                isFromBucket = false,
-                url = bucketFile.url,
-                mediaLink = bucketFile.mediaLink,
-                fileType = bucketFile.fileType,
-                isPublic = bucketFile.isPublic
-            )
-        } else {
-            FileInfo(
-                id = null,
-                path = bucketFile.path,
-                directoryPath = bucketFile.directoryPath,
-                size = bucketFile.size,
-                contentType = bucketFile.contentType,
-                md5Hash = bucketFile.md5Hash,
-                isProtected = false,
-                created = bucketFile.created,
-                lastModified = bucketFile.lastModified,
-                createdBy = null,
-                isFromBucket = true,
-                url = bucketFile.url,
-                mediaLink = bucketFile.mediaLink,
-                fileType = bucketFile.fileType,
-                isPublic = bucketFile.isPublic
-            )
-        }
-    }
-
-    // Helper function to combine bucket directory data with DB entity
-    private fun combineDirectoryData(bucketDir: BucketDirectory, dbEntity: DirectoryEntity?): DirectoryInfo {
-        return if (dbEntity != null) {
-            DirectoryInfo(
-                id = dbEntity.id.value,
-                path = bucketDir.path,
-                permissions = DirectoryPermissions(
-                    allowUploads = dbEntity.allowUploads,
-                    allowDelete = dbEntity.allowDelete,
-                    allowMove = dbEntity.allowMove,
-                    allowCreateSubDirs = dbEntity.allowCreateSubDirs,
-                    allowDeleteFiles = dbEntity.allowDeleteFiles,
-                    allowMoveFiles = dbEntity.allowMoveFiles
-                ),
-                isProtected = dbEntity.isProtected,
-                protectChildren = dbEntity.protectChildren,
-                created = bucketDir.created,
-                lastModified = bucketDir.lastModified,
-                createdBy = null,
-                isFromBucket = false
-            )
-        } else {
-            DirectoryInfo(
-                id = null,
-                path = bucketDir.path,
-                permissions = DirectoryPermissions(), // Default permissions
-                isProtected = false,
-                protectChildren = false,
-                created = bucketDir.created,
-                lastModified = bucketDir.lastModified,
-                createdBy = null,
-                isFromBucket = true
-            )
-        }
-    }
-
-    // Helper function to create Directory from bucket path (when no blob exists)
-    private fun createDirectoryFromPath(path: String): DirectoryInfo {
-        return DirectoryInfo(
-            id = null,
-            path = path,
-            permissions = DirectoryPermissions(), // Default permissions
-            isProtected = false,
-            protectChildren = false,
-            created = now(),
-            lastModified = now(),
-            createdBy = null,
-            isFromBucket = true
-        )
-    }
-
     override suspend fun handleFileUpload(call: ApplicationCall, folder: String) {
         try {
             val parts = call.receiveMultipart()
@@ -508,26 +498,13 @@ fun storageService(
 
             // Only save folder in DB if custom permissions are provided
             val createdEntity = runBlocking {
-                val hasCustomPermissions = input.permissions != null &&
-                    input.permissions != DirectoryPermissions()
+                val hasCustomPermissions = input.permissions != null || input.protected == true || input.protectChildren == true
 
                 if (hasCustomPermissions) {
                     try {
-                        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-                        val createDirInput = repositories.CreateDirectoryInput(
-                            path = fullPath,
-                            allowUploads = input.permissions.allowUploads,
-                            allowDelete = input.permissions.allowDelete,
-                            allowMove = input.permissions.allowMove,
-                            allowCreateSubDirs = input.permissions.allowCreateSubDirs,
-                            allowDeleteFiles = input.permissions.allowDeleteFiles,
-                            allowMoveFiles = input.permissions.allowMoveFiles,
-                            isProtected = input.protected ?: false
-                        )
-                        val directoryEntity = storageDbService.createDirectory(createDirInput)
+                        val directoryEntity = storageDbService.createDirectory(input)
                         // Convert entity to schema model
                         DirectoryInfo(
-                            id = directoryEntity.id.value,
                             path = directoryEntity.path,
                             permissions = DirectoryPermissions(
                                 allowUploads = directoryEntity.allowUploads,
@@ -539,8 +516,8 @@ fun storageService(
                             ),
                             isProtected = directoryEntity.isProtected,
                             protectChildren = directoryEntity.protectChildren,
-                            created = now,
-                            lastModified = now,
+                            created = now(),
+                            lastModified = now(),
                             isFromBucket = false
                         )
                     } catch (e: Exception) {
@@ -735,7 +712,6 @@ fun storageService(
         if (dbDirectory != null) {
             // Convert entity to schema model
             return DirectoryInfo(
-                id = dbDirectory.id.value,
                 path = dbDirectory.path,
                 permissions = DirectoryPermissions(
                     allowUploads = dbDirectory.allowUploads,

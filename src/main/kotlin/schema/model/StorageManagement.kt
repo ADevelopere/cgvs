@@ -4,26 +4,25 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
+import util.now
 
 // Combined storage objects
 @Serializable
 @GraphQLIgnore
 @GraphQLDescription("Directory with complete information")
-data class Directory(
-    @param:GraphQLDescription("Database ID of the directory")
-    override val id: Long? = null,
+data class DirectoryInfo(
     @param:GraphQLDescription("Full path of the directory")
     override val path: String,
+    @param:GraphQLDescription("Whether this directory is protected from deletion")
+    override val isProtected: Boolean = false,
     @param:GraphQLDescription("Directory permissions")
     val permissions: DirectoryPermissions = DirectoryPermissions(),
-    @param:GraphQLDescription("Whether this directory is protected from deletion")
-    val isProtected: Boolean = false,
     @param:GraphQLDescription("Whether children are protected from deletion")
     val protectChildren: Boolean = false,
     @param:GraphQLDescription("Creation timestamp")
-    val created: LocalDateTime,
+    val created: LocalDateTime = now(),
     @param:GraphQLDescription("Last modified timestamp")
-    val lastModified: LocalDateTime,
+    val lastModified: LocalDateTime = now(),
     @param:GraphQLDescription("ID of user who created this directory")
     val createdBy: Long? = null,
     @param:GraphQLDescription("Whether this directory exists only in bucket (not in DB)")
@@ -34,26 +33,16 @@ data class Directory(
     val folderCount: Int = 0,
     @param:GraphQLDescription("Total size of all files in the folder")
     val totalSize: Long = 0
-) : StorageObject {
-    @GraphQLDescription("Name of the directory")
-    override val name: String
-        get() = if (path.contains("/")) path.substringAfterLast("/") else path
-    
-    @GraphQLDescription("Parent directory path")
-    val parentPath: String?
-        get() = if (path.contains("/")) path.substringBeforeLast("/").takeIf { it.isNotEmpty() } else null
-}
+) : StorageObject
 
 @Serializable
 @GraphQLIgnore
 @GraphQLDescription("File with complete information")
-data class File(
-    @param:GraphQLDescription("Database ID of the file")
-    override val id: Long? = null,
-    @param:GraphQLDescription("File name")
-    override val name: String,
+data class FileInfo(
     @param:GraphQLDescription("Full path of the file")
     override val path: String,
+    @param:GraphQLDescription("Whether the file is protected from deletion")
+    override val isProtected: Boolean = false,
     @param:GraphQLDescription("Directory path containing this file")
     val directoryPath: String,
     @param:GraphQLDescription("File size in bytes")
@@ -62,8 +51,7 @@ data class File(
     val contentType: String?,
     @param:GraphQLDescription("MD5 hash of the file")
     val md5Hash: String?,
-    @param:GraphQLDescription("Whether the file is protected from deletion")
-    val isProtected: Boolean = false,
+
     @param:GraphQLDescription("Creation timestamp")
     val created: LocalDateTime,
     @param:GraphQLDescription("Last modified timestamp")
@@ -104,19 +92,12 @@ data class DirectoryPermissions(
 )
 
 @Serializable
-@GraphQLIgnore
-data class FileUsage(
-    val id: Long? = null,
-    val filePath: String,
-    val usageType: String, // e.g., "template_cover", "certificate_image", etc.
-    val referenceId: Long, // ID of the entity using this file
-    val referenceTable: String, // Table name of the entity
-    val created: LocalDateTime
-)
-
-@Serializable
 @GraphQLDescription("File usage information")
 data class FileUsageInfo(
+    @param:GraphQLDescription("Database ID of the usage record")
+    val id: Long,
+    @param:GraphQLDescription("Path of the file being used")
+    val filePath: String,
     @param:GraphQLDescription("Type of usage")
     val usageType: String,
     @param:GraphQLDescription("ID of the entity using this file")
@@ -127,28 +108,17 @@ data class FileUsageInfo(
     val created: LocalDateTime
 )
 
-@Serializable
-@GraphQLDescription("Protection levels for files and directories")
-enum class ProtectionLevel {
-    @GraphQLDescription("No protection - can be deleted/modified")
-    NONE,
-    @GraphQLDescription("Protected from deletion but can be modified")
-    PROTECTED,
-    @GraphQLDescription("Protected from deletion and modification")
-    LOCKED,
-    @GraphQLDescription("System-level protection - cannot be changed by users")
-    SYSTEM
-}
-
 // Input types for file operations
 @GraphQLDescription("Input for creating a folder with permissions")
 data class CreateFolderInput(
-    @param:GraphQLDescription("The path where to create the folder")
+    @param:GraphQLDescription("The path where to create the folder + folder name")
     val path: String,
-    @param:GraphQLDescription("The name of the folder")
-    val name: String,
     @param:GraphQLDescription("Initial permissions for the folder")
-    val permissions: DirectoryPermissions? = null
+    val permissions: DirectoryPermissions? = null,
+    @param:GraphQLDescription("Whether to protect the folder from deletion")
+    val protected: Boolean? = false,
+    @param:GraphQLDescription("For directories: whether to protect all children (recursive)")
+    val protectChildren: Boolean? = false
 )
 
 @GraphQLDescription("Input for updating directory permissions")
@@ -211,16 +181,6 @@ data class RegisterFileUsageInput(
     val referenceTable: String
 )
 
-@GraphQLDescription("Input for unregistering file usage")
-data class UnregisterFileUsageInput(
-    @param:GraphQLDescription("File path")
-    val filePath: String,
-    @param:GraphQLDescription("Usage type to remove")
-    val usageType: String,
-    @param:GraphQLDescription("Reference ID to remove")
-    val referenceId: Long
-)
-
 @GraphQLDescription("Input for renaming a file or folder")
 data class RenameFileInput(
     @param:GraphQLDescription("The current path of the file/folder")
@@ -245,8 +205,8 @@ data class ListFilesInput(
     val sortBy: FileSortField? = FileSortField.NAME,
     @param:GraphQLDescription("Sort direction")
     val sortDirection: SortDirection? = SortDirection.ASC
-){
-    companion object{
+) {
+    companion object {
         const val DEFAULT_LIMIT = 20
     }
 }
@@ -271,9 +231,8 @@ enum class FileType {
 }
 
 interface StorageObject {
-    val id: Long?
-    val name: String
     val path: String
+    val isProtected: Boolean
 }
 
 @Serializable
@@ -329,19 +288,6 @@ data class BulkOperationResult(
 )
 
 @Serializable
-@GraphQLDescription("Directory validation result")
-data class DirectoryValidationResult(
-    @param:GraphQLDescription("Whether the directory exists in database")
-    val existsInDb: Boolean,
-    @param:GraphQLDescription("Whether the directory exists in bucket")
-    val existsInBucket: Boolean,
-    @param:GraphQLDescription("Whether the directory was automatically added to database")
-    val wasAddedToDb: Boolean = false,
-    @param:GraphQLDescription("Directory information after validation")
-    val directoryInfo: Directory? = null
-)
-
-@Serializable
 @GraphQLDescription("File upload result")
 data class FileUploadResult(
     @param:GraphQLDescription("Whether the upload was successful")
@@ -349,7 +295,7 @@ data class FileUploadResult(
     @param:GraphQLDescription("Success or error message")
     val message: String,
     @param:GraphQLDescription("The uploaded file information")
-    val fileInfo: File? = null
+    val fileInfo: FileInfo? = null
 )
 
 @Serializable
@@ -372,15 +318,6 @@ data class StorageStats(
     val totalSize: Long,
     @param:GraphQLDescription("Breakdown by file type")
     val fileTypeBreakdown: List<FileTypeCount>
-)
-
-@Serializable
-@GraphQLDescription("Represents a signed URL for uploading a file")
-data class UploadSignedUrl(
-    @param:GraphQLDescription("The signed URL for the upload")
-    val url: String,
-    @param:GraphQLDescription("The path where the file will be stored")
-    val path: String
 )
 
 @GraphQLDescription("Supported content types for file uploads.")

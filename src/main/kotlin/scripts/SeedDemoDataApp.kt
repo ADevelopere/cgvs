@@ -46,15 +46,16 @@ object SeedDemoDataApp {
 
             val storage: Storage =
                 getStorageFromSecretManager(projectId, secretId, versionId) ?: StorageOptions.getDefaultInstance().service
-
-            val storageService = storageService(
-                storage, gcsConfig, repositoryManager.storageRepository
-            )
-
             val storageDbService = storageDbService(
                 repositoryManager.storageRepository,
-                gcsConfig
+                gcsConfig,
+                storage
             )
+            val storageService = storageService(
+                storage, gcsConfig, storageDbService
+            )
+
+
             val fileInitializationService = FileInitializationService(
                 storageService,
                 storageDbService,

@@ -4,7 +4,6 @@ import com.google.cloud.storage.Storage
 import config.GcsConfig
 import schema.model.*
 import repositories.StorageRepository
-import repositories.RegisterFileUsageInput as RepoRegisterFileUsageInput
 import tables.FileEntity
 import tables.DirectoryEntity
 
@@ -16,7 +15,7 @@ interface StorageDbService {
     // Directory methods
     suspend fun getDirectoryByPath(path: String): DirectoryEntity?
     suspend fun getDirectoriesByParentPath(parentPath: String?): List<DirectoryEntity>
-    suspend fun createDirectory(input: repositories.CreateDirectoryInput): DirectoryEntity
+    suspend fun createDirectory(input: CreateFolderInput): DirectoryEntity
     suspend fun updateDirectory(directory: DirectoryEntity): DirectoryEntity?
     suspend fun deleteDirectory(path: String): Boolean
 
@@ -32,7 +31,6 @@ interface StorageDbService {
     suspend fun updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): FileOperationResult
     suspend fun setProtection(input: SetStorageItemProtectionInput): FileOperationResult
     suspend fun registerFileUsage(input: RegisterFileUsageInput): FileOperationResult
-    suspend fun unregisterFileUsage(input: UnregisterFileUsageInput): FileOperationResult
     suspend fun createFile(
         path: String,
         name: String,
@@ -83,7 +81,7 @@ fun storageDbService(
         return storageRepository.getDirectoriesByParentPath(parentPath)
     }
 
-    override suspend fun createDirectory(input: repositories.CreateDirectoryInput): DirectoryEntity {
+    override suspend fun createDirectory(input: CreateFolderInput): DirectoryEntity {
         return storageRepository.createDirectory(input)
     }
 
@@ -108,14 +106,7 @@ fun storageDbService(
         return try {
             val isInUse = storageRepository.isFileInUse(input.filePath)
             val usages = if (isInUse) {
-                storageRepository.getFileUsages(input.filePath).map { usage ->
-                    FileUsageInfo(
-                        usageType = usage.usageType,
-                        referenceId = usage.referenceId,
-                        referenceTable = usage.referenceTable,
-                        created = usage.created
-                    )
-                }
+                storageRepository.getFileUsages(input.filePath).map { it.toFileUsageInfo() }
             } else {
                 emptyList()
             }
@@ -204,50 +195,28 @@ fun storageDbService(
     override suspend fun registerFileUsage(input: RegisterFileUsageInput): FileOperationResult {
         return try {
             // Check if file exists in DB, if not, add it from bucket
-            var dbFile = storageRepository.getFileByPath(input.filePath)
-            if (dbFile == null) {
+            val fileEntity = storageRepository.getFileByPath(input.filePath)
+            if (fileEntity == null) {
                 // File not in DB, try to add it from bucket
                 try {
-                    val blob = storage.get(gcsConfig.bucketName, input.filePath) ?: return FileOperationResult(
+                    storage.get(gcsConfig.bucketName, input.filePath) ?: return FileOperationResult(
                         false,
                         "File not found in bucket: ${input.filePath}",
                         null
                     )
 
-                    dbFile = storageRepository.createFile(input.filePath)
+                    storageRepository.createFile(input.filePath)
                     println("📁 Registered file in DB upon first usage: ${input.filePath}")
                 } catch (e: Exception) {
                     return FileOperationResult(false, "Failed to register file from bucket: ${e.message}", null)
                 }
             }
 
-            // Create file usage using the repository input type
-            val repoInput = RepoRegisterFileUsageInput(
-                filePath = input.filePath,
-                usageType = input.usageType,
-                referenceId = input.referenceId,
-                referenceTable = input.referenceTable
-            )
-
-            storageRepository.registerFileUsage(repoInput)
+            storageRepository.registerFileUsage(input)
 
             FileOperationResult(true, "File usage registered successfully", null)
         } catch (e: Exception) {
             FileOperationResult(false, "Failed to register file usage: ${e.message}", null)
-        }
-    }
-
-    override suspend fun unregisterFileUsage(input: UnregisterFileUsageInput): FileOperationResult {
-        return try {
-            val success = storageRepository.unregisterFileUsage(input.filePath, input.usageType, input.referenceId)
-            if (success) {
-                val dbFile = storageRepository.getFileByPath(input.filePath)
-                FileOperationResult(true, "File usage unregistered successfully", dbFile)
-            } else {
-                FileOperationResult(false, "File usage not found or could not be removed", null)
-            }
-        } catch (e: Exception) {
-            FileOperationResult(false, "Failed to unregister file usage: ${e.message}", null)
         }
     }
 

@@ -22,13 +22,13 @@ class StorageQuery : Query, KoinComponent {
 
     fun getFileInfo(
         path: String
-    ): File? {
+    ): FileInfo? {
         return storageService.getFileEntityByPath(path)
     }
 
     fun getFolderInfo(
         path: String
-    ): Directory {
+    ): DirectoryInfo {
         return storageService.getFolderEntityByPath(path)
     }
 
@@ -62,7 +62,7 @@ class StorageQuery : Query, KoinComponent {
     suspend fun fetchDirectoryChildren(
         @GraphQLDescription("Parent directory path (empty or null for root level)")
         path: String? = null
-    ): List<Directory> {
+    ): List<DirectoryInfo> {
         return storageService.fetchDirectoryChildren(path)
     }
 
