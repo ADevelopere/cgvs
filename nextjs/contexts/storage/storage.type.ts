@@ -81,6 +81,12 @@ export type LoadingStates = {
     prefetchingNode: string | null;
 };
 
+export type QueueStates = {
+    fetchQueue: Set<string>;
+    expansionQueue: Set<string>;
+    currentlyFetching: Set<string>;
+};
+
 export type OperationErrors = {
     fetchList?: string;
     rename?: string;
@@ -120,12 +126,13 @@ export type StorageManagementUIContextType = {
     // Operation States
     loading: LoadingStates;
     operationErrors: OperationErrors;
+    queueStates: QueueStates;
 
     // Navigation Functions
     navigateTo: (path: string) => Promise<void>;
     goUp: () => Promise<void>;
     refresh: () => Promise<void>;
-    expandDirectoryNode: (path: string) => Promise<void>;
+    expandDirectoryNode: (path: string) => void;
     collapseDirectoryNode: (path: string) => void;
     prefetchDirectoryChildren: (path: string, refresh?: boolean) => Promise<void>;
 

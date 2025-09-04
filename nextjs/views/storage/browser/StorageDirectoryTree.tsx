@@ -31,6 +31,7 @@ const StorageDirectoryTree: React.FC = () => {
         prefetchDirectoryChildren,
         expandedNodes,
         loading,
+        queueStates,
     } = useStorageManagementUI();
     const { ui: translations } = useAppTranslation("storageTranslations");
 
@@ -82,7 +83,13 @@ const StorageDirectoryTree: React.FC = () => {
 
     const itemRenderer = React.useCallback(
         ({ item, isSelected }: DirectoryTreeItemRendererProps) => {
-            const isLoading = loading.expandingNode === item.path;
+            const isExpandingNode = loading.expandingNode === item.path;
+            const isPrefetching = loading.prefetchingNode === item.path;
+            const isInExpansionQueue = queueStates.expansionQueue.has(item.path);
+            const isCurrentlyFetching = queueStates.currentlyFetching.has(item.path);
+            
+            const showLoading = isExpandingNode || isPrefetching || isInExpansionQueue || isCurrentlyFetching;
+            
             return (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <FolderIcon
@@ -100,11 +107,11 @@ const StorageDirectoryTree: React.FC = () => {
                     >
                         {item.name}
                     </Typography>
-                    {isLoading && <CircularProgress size={16} />}
+                    {showLoading && <CircularProgress size={16} />}
                 </Box>
             );
         },
-        [loading.expandingNode],
+        [loading.expandingNode, loading.prefetchingNode, queueStates.expansionQueue, queueStates.currentlyFetching],
     );
 
     return (
