@@ -2,6 +2,7 @@ package schema.dataloaders
 
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import com.expediagroup.graphql.generator.extensions.get
+import config.GcsConfig
 import graphql.GraphQLContext
 import org.dataloader.DataLoader
 import org.dataloader.DataLoaderFactory
@@ -17,6 +18,7 @@ val UrlDataLoader: KotlinDataLoader<Long, String> =
     object : KotlinDataLoader<Long, String>, KoinComponent {
         override val dataLoaderName = "UrlDataLoader"
         private val storageDbService: StorageDbService by inject()
+        private val gcsConfig: GcsConfig by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Long, String> =
             DataLoaderFactory.newDataLoader(
                 { ids, batchLoaderEnvironment ->
@@ -26,7 +28,7 @@ val UrlDataLoader: KotlinDataLoader<Long, String> =
 
                     coroutineScope.future {
                         storageDbService.getFilesByIds(ids).map {
-                            it.path
+                            gcsConfig.baseUrl + it.path
                         }
                     }
                 },

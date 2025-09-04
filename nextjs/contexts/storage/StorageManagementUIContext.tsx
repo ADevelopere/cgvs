@@ -116,7 +116,7 @@ export const StorageManagementUIProvider: React.FC<{
             // Wait for hydration to complete
             await new Promise((resolve) => setTimeout(resolve, 0));
 
-            // Check if component is still mounted
+            // Check if the component is still mounted
             if (!isMounted) return;
 
             try {
@@ -129,7 +129,7 @@ export const StorageManagementUIProvider: React.FC<{
                     coreContext.fetchList(queryParams),
                 ]);
 
-                // Check again if component is still mounted before updating state
+                // Check again if component is still mounted before updating the state
                 if (isMounted) {
                     if (rootDirectories) {
                         setDirectoryTree(rootDirectories);
@@ -192,7 +192,7 @@ export const StorageManagementUIProvider: React.FC<{
                     setQueryParams(newParams);
                     setSelectedItems([]);
                     setLastSelectedItem(null);
-                    
+
                     // Set focus to first item if available
                     if (result.items.length > 0) {
                         setFocusedItem(result.items[0].path);
@@ -215,14 +215,7 @@ export const StorageManagementUIProvider: React.FC<{
                 updateLoading("fetchList", false);
             }
         },
-        [
-            queryParams,
-            coreContext,
-            searchMode,
-            updateError,
-            updateLoading,
-            translations,
-        ],
+        [queryParams, coreContext, searchMode, updateError, updateLoading, translations.failedToNavigateToDirectory],
     );
 
     const goUp = useCallback(async () => {
@@ -245,7 +238,7 @@ export const StorageManagementUIProvider: React.FC<{
         } finally {
             updateLoading("fetchList", false);
         }
-    }, [queryParams, coreContext, updateError, updateLoading, translations]);
+    }, [queryParams, coreContext, updateError, updateLoading, translations.failedToRefreshDirectory]);
 
     const expandDirectoryNode = useCallback(
         async (path: string) => {
@@ -262,8 +255,12 @@ export const StorageManagementUIProvider: React.FC<{
                     ): DirectoryTreeNode[] => {
                         return nodes.map((node) => {
                             if (node.path === path) {
-                                // Replace children instead of concatenating
-                                return { ...node, children: children };
+                                // Replace children and update hasChildren based on the result
+                                return {
+                                    ...node,
+                                    children: children,
+                                    hasChildren: children.length > 0,
+                                };
                             }
                             if (node.children) {
                                 return {
@@ -446,13 +443,7 @@ export const StorageManagementUIProvider: React.FC<{
                 updateLoading("search", false);
             }
         },
-        [
-            coreContext,
-            queryParams.path,
-            updateError,
-            updateLoading,
-            translations,
-        ],
+        [coreContext, queryParams.path, updateError, updateLoading, translations.searchFailed],
     );
 
     const setFilterType = useCallback(
@@ -725,50 +716,7 @@ export const StorageManagementUIProvider: React.FC<{
             setFocusedItem,
             exitSearchMode,
         }),
-        [
-            items,
-            pagination,
-            directoryTree,
-            expandedNodes,
-            prefetchedNodes,
-            queryParams,
-            selectedItems,
-            lastSelectedItem,
-            focusedItem,
-            viewMode,
-            searchMode,
-            searchResults,
-            clipboard,
-            sortBy,
-            sortDirection,
-            loading,
-            operationErrors,
-            navigateTo,
-            goUp,
-            refresh,
-            expandDirectoryNode,
-            collapseDirectoryNode,
-            prefetchDirectoryChildren,
-            toggleSelect,
-            selectAll,
-            clearSelection,
-            selectRange,
-            setParams,
-            search,
-            setFilterType,
-            setSortField,
-            setPage,
-            setLimit,
-            getSortedItems,
-            copyItems,
-            cutItems,
-            pasteItems,
-            renameItem,
-            deleteItems,
-            moveItems,
-            copyItemsTo,
-            exitSearchMode,
-        ],
+        [items, pagination, directoryTree, expandedNodes, prefetchedNodes, queryParams, selectedItems, lastSelectedItem, focusedItem, viewMode, searchResults, clipboard, sortBy, sortDirection, loading, operationErrors, navigateTo, goUp, refresh, expandDirectoryNode, collapseDirectoryNode, prefetchDirectoryChildren, toggleSelect, selectAll, clearSelection, selectRange, setParams, search, setFilterType, setSortField, setPage, setLimit, getSortedItems, copyItems, cutItems, pasteItems, renameItem, deleteItems, moveItems, exitSearchMode],
     );
 
     return (
