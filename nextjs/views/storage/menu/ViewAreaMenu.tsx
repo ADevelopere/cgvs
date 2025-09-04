@@ -25,29 +25,31 @@ export interface ViewAreaMenuProps {
     anchorEl: HTMLElement | null;
     open: boolean;
     onClose: () => void;
+    anchorPosition?: {
+        top: number;
+        left: number;
+    };
+    onContextMenu?: (event: React.MouseEvent) => void;
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
     anchorEl,
     open,
     onClose,
+    anchorPosition,
+    onContextMenu,
 }) => {
     const theme = useTheme();
     const { ui: translations } = useAppTranslation("storageTranslations");
-    const {
-        pasteItems,
-        refresh,
-        selectAll,
-        clipboard,
-        params,
-    } = useStorageManagementUI();
+    const { pasteItems, refresh, selectAll, clipboard, params } =
+        useStorageManagementUI();
     const { createFolder } = useStorageManagementCore();
 
     const [isPasting, setIsPasting] = useState(false);
     const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
     // Handle menu actions
-    const handlePaste = async () => {
+    const handlePaste = React.useCallback(async () => {
         setIsPasting(true);
         const success = await pasteItems();
         setIsPasting(false);
@@ -55,16 +57,16 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
             refresh();
         }
         onClose();
-    };
+    }, [onClose, pasteItems, refresh]);
 
-    const handleUploadFiles = () => {
+    const handleUploadFiles = React.useCallback(() => {
         // TODO: This will trigger the file upload functionality
         // For now, we can create a file input element
         const input = document.createElement("input");
         input.type = "file";
         input.multiple = true;
         input.style.display = "none";
-        
+
         input.onchange = (event) => {
             const files = (event.target as HTMLInputElement).files;
             if (files) {
@@ -74,14 +76,14 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
                 // uploadFiles(Array.from(files), queryParams.path);
             }
         };
-        
+
         document.body.appendChild(input);
         input.click();
         document.body.removeChild(input);
         onClose();
-    };
+    }, [onClose]);
 
-    const handleNewFolder = async () => {
+    const handleNewFolder = React.useCallback(async () => {
         // Simple prompt for now - will be replaced with a proper dialog later
         const folderName = prompt("Enter folder name:");
         if (folderName?.trim()) {
@@ -93,23 +95,27 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
             }
         }
         onClose();
-    };
+    }, [createFolder, onClose, params.path, refresh]);
 
-    const handleRefresh = () => {
+    const handleRefresh = React.useCallback(() => {
         refresh();
         onClose();
-    };
+    }, [onClose, refresh]);
 
-    const handleSelectAll = () => {
+    const handleSelectAll = React.useCallback(() => {
         selectAll();
         onClose();
-    };
+    }, [onClose, selectAll]);
 
     // Check if paste is available
-    const isPasteAvailable = clipboard && clipboard.items.length > 0;
+    const isPasteAvailable = React.useMemo(
+        () => clipboard && clipboard.items.length > 0,
+        [clipboard],
+    );
 
     return (
         <Menu
+            id="storage-view-area-menu"
             anchorEl={anchorEl}
             open={open}
             onClose={onClose}
@@ -121,18 +127,24 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
                         minWidth: 200,
                     },
                 },
+                backdrop: {
+                    onContextMenu: onContextMenu,
+                },
             }}
+            // Position the menu at the exact cursor position
+            anchorReference="anchorPosition"
+            anchorPosition={anchorPosition}
             transformOrigin={{
                 vertical: "top",
-                horizontal: "right",
+                horizontal: "left",
             }}
             anchorOrigin={{
                 vertical: "top",
-                horizontal: "right",
+                horizontal: "left",
             }}
         >
-            <MenuItem 
-                onClick={handlePaste} 
+            <MenuItem
+                onClick={handlePaste}
                 disabled={!isPasteAvailable || isPasting}
             >
                 <ListItemIcon>
@@ -152,15 +164,14 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
                 <ListItemText>{translations.uploadFiles}</ListItemText>
             </MenuItem>
 
-            <MenuItem 
-                onClick={handleNewFolder}
-                disabled={isCreatingFolder}
-            >
+            <MenuItem onClick={handleNewFolder} disabled={isCreatingFolder}>
                 <ListItemIcon>
                     <NewFolderIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText>
-                    {isCreatingFolder ? translations.loading : translations.newFolder}
+                    {isCreatingFolder
+                        ? translations.loading
+                        : translations.newFolder}
                 </ListItemText>
             </MenuItem>
 

@@ -30,14 +30,17 @@ import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 export interface FolderMenuProps {
-    anchorEl: HTMLElement | null;
+    anchorPosition?: {
+        top: number;
+        left: number;
+    };
     open: boolean;
     onClose: () => void;
     folder: Graphql.DirectoryInfo;
 }
 
 const FolderMenu: React.FC<FolderMenuProps> = ({
-    anchorEl,
+    anchorPosition,
     open,
     onClose,
     folder,
@@ -136,7 +139,6 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
     return (
         <>
             <Menu
-                anchorEl={anchorEl}
                 open={open}
                 onClose={onClose}
                 slotProps={{
@@ -148,13 +150,16 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                         },
                     },
                 }}
+                // Position the menu at the exact cursor position
+                anchorReference="anchorPosition"
+                anchorPosition={anchorPosition}
                 transformOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "left",
                 }}
                 anchorOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "left",
                 }}
             >
                 <MenuItem onClick={handleOpen}>

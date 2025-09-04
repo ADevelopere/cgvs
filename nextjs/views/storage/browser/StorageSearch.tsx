@@ -127,12 +127,17 @@ const StorageSearch: React.FC = () => {
                         }}
                     />
                 )}
-                renderOption={(props, option) => (
-                    <li {...props}>
-                        <HistoryIcon sx={{ mr: 1, color: "text.secondary" }} />
-                        <Typography variant="body2">{option}</Typography>
-                    </li>
-                )}
+                renderOption={(props, option) => {
+                    // The key is being passed in props, but needs to be passed directly to the element.
+                    // See https://react.dev/learn/rendering-lists#why-does-react-need-keys
+                    const { key, ...otherProps } = props;
+                    return (
+                        <li key={key} {...otherProps}>
+                            <HistoryIcon sx={{ mr: 1, color: "text.secondary" }} />
+                            <Typography variant="body2">{option}</Typography>
+                        </li>
+                    );
+                }}
             />
         </Box>
     );

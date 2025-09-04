@@ -797,14 +797,13 @@ fun storageService(
 
         val page = storage.list(gcsConfig.bucketName, *options.toTypedArray())
         val bucketFolders = mutableListOf<DirectoryInfo>()
-        val dbPaths = dbDirectories.map { it.path }.toSet()
         val dbDirectoriesByPath = dbDirectories.associateBy { it.path }
 
         // Process prefixes (folders) from bucket
         page.iterateAll().forEach { blob ->
             val folderPath = blob.name.trimEnd('/')
             // Ensure we don't include the parent folder itself in the results
-            if (blob.isDirectory && folderPath != prefix.trimEnd('/') && folderPath != searchPath && folderPath !in dbPaths) {
+            if (blob.isDirectory && folderPath != prefix.trimEnd('/') && folderPath != searchPath) {
                 // Create a BucketDirectory and find matching DB entity
                 val bucketDir = blobToDirectoryInfo(blob)
                 val dbEntity = dbDirectoriesByPath[bucketDir.path]

@@ -20,8 +20,8 @@ import {
     ContentCopy as CopyIcon,
     Download as DownloadIcon,
     Edit as RenameIcon,
-    Delete as DeleteIcon,
     Info as InfoIcon,
+    Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import { StorageItem } from "@/contexts/storage/storage.type";
@@ -29,14 +29,17 @@ import * as Graphql from "@/graphql/generated/types";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 export interface FileMenuProps {
-    anchorEl: HTMLElement | null;
+    anchorPosition?: {
+        top: number;
+        left: number;
+    };
     open: boolean;
     onClose: () => void;
     file: Graphql.FileInfo;
 }
 
 const FileMenu: React.FC<FileMenuProps> = ({
-    anchorEl,
+    anchorPosition,
     open,
     onClose,
     file,
@@ -134,7 +137,6 @@ const FileMenu: React.FC<FileMenuProps> = ({
     return (
         <>
             <Menu
-                anchorEl={anchorEl}
                 open={open}
                 onClose={onClose}
                 slotProps={{
@@ -146,13 +148,16 @@ const FileMenu: React.FC<FileMenuProps> = ({
                         },
                     },
                 }}
+                // Position the menu at the exact cursor position
+                anchorReference="anchorPosition"
+                anchorPosition={anchorPosition}
                 transformOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "left",
                 }}
                 anchorOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "left",
                 }}
             >
                 <MenuItem onClick={handleCut}>
