@@ -101,6 +101,9 @@ export const StorageManagementUIProvider: React.FC<{
         currentlyFetching: new Set(),
     });
 
+    // Track if this is the initial mount or subsequent navigation
+    const isInitialMount = useRef(true);
+
     // Helper function to update loading state
     const updateLoading = useCallback(
         (key: keyof LoadingStates, value: boolean | string | null) => {
@@ -197,26 +200,47 @@ export const StorageManagementUIProvider: React.FC<{
             if (!isMounted) return;
 
             try {
-                // Initialize both directory tree and root items in parallel
-                updateLoading("prefetchingNode", "");
-                updateLoading("fetchList", true);
+                if (isInitialMount.current) {
+                    // Initial mount: Initialize both directory tree and root items
+                    updateLoading("prefetchingNode", "");
+                    updateLoading("fetchList", true);
 
-                const [rootDirectories, rootItems] = await Promise.all([
-                    coreContext.fetchDirectoryChildren(),
-                    coreContext.fetchList(queryParams),
-                ]);
+                    const [rootDirectories, rootItems] = await Promise.all([
+                        coreContext.fetchDirectoryChildren(),
+                        coreContext.fetchList(queryParams),
+                    ]);
 
-                // Check again if component is still mounted before updating the state
-                if (isMounted) {
-                    if (rootDirectories) {
-                        setDirectoryTree(rootDirectories);
+                    // Check again if component is still mounted before updating the state
+                    if (isMounted) {
+                        if (rootDirectories) {
+                            setDirectoryTree(rootDirectories);
+                        }
+                        if (rootItems) {
+                            setItems(rootItems.items);
+                            setPagination(rootItems.pagination);
+                            // Set focus to first item if no focused item
+                            if (rootItems.items.length > 0 && !focusedItem) {
+                                setFocusedItem(rootItems.items[0].path);
+                            }
+                        }
                     }
-                    if (rootItems) {
-                        setItems(rootItems.items);
-                        setPagination(rootItems.pagination);
-                        // Set focus to first item if no focused item
-                        if (rootItems.items.length > 0 && !focusedItem) {
-                            setFocusedItem(rootItems.items[0].path);
+                    
+                    // Mark that initial mount is complete
+                    isInitialMount.current = false;
+                } else {
+                    // Navigation change: Only fetch items for the new path, keep directory tree intact
+                    updateLoading("fetchList", true);
+                    
+                    const result = await coreContext.fetchList(queryParams);
+                    
+                    if (isMounted && result) {
+                        setItems(result.items);
+                        setPagination(result.pagination);
+                        // Set focus to first item if available
+                        if (result.items.length > 0) {
+                            setFocusedItem(result.items[0].path);
+                        } else {
+                            setFocusedItem(null);
                         }
                     }
                 }
@@ -256,43 +280,21 @@ export const StorageManagementUIProvider: React.FC<{
     // Navigation Functions
     const navigateTo = useCallback(
         async (path: string) => {
-            updateLoading("fetchList", true);
-            updateError("fetchList");
-
-            try {
-                const newParams = { ...queryParams, path, offset: 0 };
-                const result = await coreContext.fetchList(newParams);
-
-                if (result) {
-                    setItems(result.items);
-                    setPagination(result.pagination);
-                    setQueryParams(newParams);
-                    setSelectedItems([]);
-                    setLastSelectedItem(null);
-
-                    // Set focus to first item if available
-                    if (result.items.length > 0) {
-                        setFocusedItem(result.items[0].path);
-                    } else {
-                        setFocusedItem(null);
-                    }
-
-                    // Exit search mode if navigating
-                    if (searchMode) {
-                        setSearchMode(false);
-                        setSearchResults([]);
-                    }
-                }
-            } catch {
-                updateError(
-                    "fetchList",
-                    translations.failedToNavigateToDirectory,
-                );
-            } finally {
-                updateLoading("fetchList", false);
+            // Only update query params - the useEffect will handle fetching the data
+            const newParams = { ...queryParams, path, offset: 0 };
+            setQueryParams(newParams);
+            
+            // Clear selection and search state immediately
+            setSelectedItems([]);
+            setLastSelectedItem(null);
+            
+            // Exit search mode if navigating
+            if (searchMode) {
+                setSearchMode(false);
+                setSearchResults([]);
             }
         },
-        [queryParams, coreContext, searchMode, updateError, updateLoading, translations.failedToNavigateToDirectory],
+        [queryParams, searchMode],
     );
 
     const goUp = useCallback(async () => {
