@@ -4,7 +4,7 @@ import {
     TreeView,
     BaseTreeItem,
     TreeViewItemRenderer,
-} from "@/components/common/TreeView";
+} from "@/components/treeView/TreeView";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import { DirectoryTreeNode } from "@/contexts/storage/storage.type";
 import Box from "@mui/material/Box";

@@ -8,11 +8,9 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Autocomplete from "@mui/material/Autocomplete";
-import IconButton from "@mui/material/IconButton";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import type { AutocompleteChangeReason } from "@mui/material/Autocomplete";
 import { useAppTheme } from "@/contexts/ThemeContext";
+import TreeViewNode from "@/components/treeView/TreeViewNode";
 
 export interface BaseTreeItem {
     id: string | number;
@@ -95,37 +93,7 @@ export function TreeView<T extends BaseTreeItem>({
                 }
             }
         },
-        [expandedItems, onCollapseItem, onExpandItem, expandedItemsProp],
-    );
-
-    const renderItem = useCallback(
-        (item: T, isSelected: boolean, isExpanded: boolean) => {
-            if (!itemRenderer) {
-                const itemLabel = item[labelKey] || "";
-                return (
-                    <Typography
-                        variant="body2"
-                        noWrap
-                        sx={{
-                            fontWeight: isSelected ? 500 : 400,
-                            minWidth: "max-content",
-                            textWrap: "balance",
-                        }}
-                    >
-                        {typeof itemLabel === "string"
-                            ? itemLabel
-                            : String(itemLabel)}
-                    </Typography>
-                );
-            }
-
-            return itemRenderer({
-                item,
-                isSelected,
-                isExpanded,
-            });
-        },
-        [itemRenderer, labelKey],
+        [expandedItems, onCollapseItem, expandedItemsProp, onExpandItem],
     );
 
     const flattenedItems = useMemo(() => {
@@ -149,11 +117,9 @@ export function TreeView<T extends BaseTreeItem>({
             return items
                 .map((item) => {
                     const itemLabel = item[labelKey] || "";
-                    const matchesSearch =
-                        typeof itemLabel === "string" &&
-                        itemLabel
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase());
+                    const matchesSearch = itemLabel
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase());
 
                     const children = item[childrenKey] as T[] | undefined;
                     const filteredChildren = children
@@ -189,7 +155,6 @@ export function TreeView<T extends BaseTreeItem>({
                 const currentPath = [...parentIds, item.id];
                 const itemLabel = item[labelKey] || "";
                 if (
-                    typeof itemLabel === "string" &&
                     itemLabel.toLowerCase().includes(searchTerm.toLowerCase())
                 ) {
                     parentIds.forEach((id) => itemsToExpand.add(id));
@@ -213,8 +178,8 @@ export function TreeView<T extends BaseTreeItem>({
             _reason: AutocompleteChangeReason,
         ) => {
             if (value && typeof value !== "string") {
-                const itemLabel = value[labelKey] || "";
-                setSearchTerm(typeof itemLabel === "string" ? itemLabel : "");
+                const itemLabel: string = value[labelKey] || "";
+                setSearchTerm(itemLabel);
 
                 const findParents = (
                     items: T[],
@@ -247,94 +212,6 @@ export function TreeView<T extends BaseTreeItem>({
             }
         },
         [items, labelKey, childrenKey, onSelectItem, setExpandedItems],
-    );
-
-    const renderTreeItems = useCallback(
-        (items: T[], level = 0) => {
-            return items.map((item) => {
-                const children = item[childrenKey] as T[] | undefined;
-                const hasChildren = children && children.length > 0;
-                const isExpanded = expandedItems.has(item.id);
-                const isSelected = item.id === selectedItemId;
-
-                return (
-                    <Box key={item.id}>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                cursor: item.disabled ? "default" : "pointer",
-                                opacity: item.disabled ? 0.5 : 1,
-                                pointerEvents: item.disabled ? "none" : "auto",
-                                paddingInlineStart: `${
-                                    level * 20 + (!hasChildren ? 10 : 0)
-                                }px`,
-                                height: `${itemHeight}px`,
-                                borderRadius: 2,
-                                backgroundColor: isSelected
-                                    ? item.selectedColor ||
-                                      "rgba(25, 118, 210, 0.08)"
-                                    : "transparent",
-                                "&:hover": {
-                                    backgroundColor: item.disabled
-                                        ? "transparent"
-                                        : isSelected
-                                          ? item.selectedColor ||
-                                            "rgba(25, 118, 210, 0.12)"
-                                          : "rgba(0, 0, 0, 0.04)",
-                                },
-                            }}
-                            onClick={() =>
-                                !item.disabled && onSelectItem?.(item)
-                            }
-                            onMouseOver={() => onHoverItem?.(item)}
-                        >
-                            {hasChildren && (
-                                <IconButton
-                                    size="small"
-                                    onClick={(e) => toggleExpand(item, e)}
-                                    sx={{
-                                        padding: "4px",
-                                        marginRight: "4px",
-                                        transform: isExpanded
-                                            ? isRtl
-                                                ? "rotate(-90deg)"
-                                                : "rotate(90deg)"
-                                            : "rotate(0deg)",
-                                        transition:
-                                            "transform 0.15s ease-in-out",
-                                    }}
-                                >
-                                    {isRtl ? (
-                                        <ChevronLeftIcon fontSize="medium" />
-                                    ) : (
-                                        <ChevronRightIcon fontSize="medium" />
-                                    )}
-                                </IconButton>
-                            )}
-                            {!hasChildren && <Box sx={{ width: 26 }} />}
-
-                            {renderItem(item, isSelected, isExpanded)}
-                        </Box>
-
-                        {hasChildren && isExpanded && (
-                            <Box>{renderTreeItems(children, level + 1)}</Box>
-                        )}
-                    </Box>
-                );
-            });
-        },
-        [
-            childrenKey,
-            expandedItems,
-            selectedItemId,
-            itemHeight,
-            onSelectItem,
-            toggleExpand,
-            isRtl,
-            renderItem,
-            onHoverItem,
-        ],
     );
 
     const treeHeaderRef = useRef<HTMLDivElement>(null);
@@ -426,7 +303,20 @@ export function TreeView<T extends BaseTreeItem>({
                 }}
             >
                 {filteredItems.length > 0 ? (
-                    renderTreeItems(filteredItems)
+                    <TreeViewNode
+                        items={filteredItems}
+                        level={0}
+                        childrenKey={childrenKey}
+                        selectedItemId={selectedItemId}
+                        itemHeight={itemHeight}
+                        onSelectItem={onSelectItem}
+                        toggleExpand={toggleExpand}
+                        isRtl={isRtl}
+                        onHoverItem={onHoverItem}
+                        expandedItems={expandedItems}
+                        itemRenderer={itemRenderer}
+                        labelKey={labelKey}
+                    />
                 ) : (
                     <Box
                         sx={{

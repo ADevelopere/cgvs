@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { TemplateCategory } from "@/graphql/generated/types";
 import { Folder } from "lucide-react";
-import { TreeView } from "@/components/common/TreeView";
+import { TreeView } from "@/components/treeView/TreeView";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";

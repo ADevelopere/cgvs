@@ -16,7 +16,7 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import { TemplateCategory } from "@/graphql/generated/types";
 import CategoryEditDialog from "./CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
-import { TreeView } from "@/components/common/TreeView";
+import { TreeView } from "@/components/treeView/TreeView";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
     const { theme } = useAppTheme();
