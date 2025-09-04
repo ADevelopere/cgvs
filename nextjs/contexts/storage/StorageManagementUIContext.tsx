@@ -111,24 +111,24 @@ export const StorageManagementUIProvider: React.FC<{
     // Initialize directory tree and root items on mount with proper hydration handling
     useEffect(() => {
         let isMounted = true;
-        
+
         const initializeStorageData = async () => {
             // Wait for hydration to complete
-            await new Promise(resolve => setTimeout(resolve, 0));
-            
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
             // Check if component is still mounted
             if (!isMounted) return;
-            
+
             try {
                 // Initialize both directory tree and root items in parallel
                 updateLoading("prefetchingNode", "");
                 updateLoading("fetchList", true);
-                
+
                 const [rootDirectories, rootItems] = await Promise.all([
                     coreContext.fetchDirectoryChildren(),
-                    coreContext.fetchList(queryParams)
+                    coreContext.fetchList(queryParams),
                 ]);
-                
+
                 // Check again if component is still mounted before updating state
                 if (isMounted) {
                     if (rootDirectories) {
@@ -143,7 +143,10 @@ export const StorageManagementUIProvider: React.FC<{
                 // Only log if not an abort error during unmount
                 if (isMounted) {
                     logger.error("Error initializing storage data:", error);
-                    updateError("fetchList", translations.failedToNavigateToDirectory);
+                    updateError(
+                        "fetchList",
+                        translations.failedToNavigateToDirectory,
+                    );
                 }
             } finally {
                 if (isMounted) {
@@ -152,15 +155,21 @@ export const StorageManagementUIProvider: React.FC<{
                 }
             }
         };
-        
+
         // Use setTimeout to ensure this runs after hydration
         const timeoutId = setTimeout(initializeStorageData, 100);
-        
+
         return () => {
             isMounted = false;
             clearTimeout(timeoutId);
         };
-    }, [coreContext, updateLoading, queryParams, updateError, translations.failedToNavigateToDirectory]);
+    }, [
+        coreContext,
+        updateLoading,
+        queryParams,
+        updateError,
+        translations.failedToNavigateToDirectory,
+    ]);
 
     // Navigation Functions
     const navigateTo = useCallback(
@@ -186,12 +195,22 @@ export const StorageManagementUIProvider: React.FC<{
                     }
                 }
             } catch {
-                updateError("fetchList", translations.failedToNavigateToDirectory);
+                updateError(
+                    "fetchList",
+                    translations.failedToNavigateToDirectory,
+                );
             } finally {
                 updateLoading("fetchList", false);
             }
         },
-        [queryParams, coreContext, searchMode, updateError, updateLoading, translations],
+        [
+            queryParams,
+            coreContext,
+            searchMode,
+            updateError,
+            updateLoading,
+            translations,
+        ],
     );
 
     const goUp = useCallback(async () => {
@@ -287,7 +306,11 @@ export const StorageManagementUIProvider: React.FC<{
 
     const prefetchDirectoryChildren = useCallback(
         async (path: string, refresh?: boolean) => {
-            if (!refresh && prefetchedNodes.has(path) || expandedNodes.has(path)) return;
+            if (
+                (!refresh && prefetchedNodes.has(path)) ||
+                expandedNodes.has(path)
+            )
+                return;
 
             updateLoading("prefetchingNode", path);
             setPrefetchedNodes((prev) => new Set([...prev, path]));
@@ -301,12 +324,12 @@ export const StorageManagementUIProvider: React.FC<{
                     ): DirectoryTreeNode[] => {
                         // If nodes array is empty and this is the root path, return the children directly
                         if (nodes.length === 0 && path === "") {
-                            return children.map(child => ({
+                            return children.map((child) => ({
                                 ...child,
                                 isPrefetched: true,
                             }));
                         }
-                        
+
                         return nodes.map((node) => {
                             if (node.path === path) {
                                 return {
@@ -411,7 +434,13 @@ export const StorageManagementUIProvider: React.FC<{
                 updateLoading("search", false);
             }
         },
-        [coreContext, queryParams.path, updateError, updateLoading, translations],
+        [
+            coreContext,
+            queryParams.path,
+            updateError,
+            updateLoading,
+            translations,
+        ],
     );
 
     const setFilterType = useCallback(
@@ -449,11 +478,12 @@ export const StorageManagementUIProvider: React.FC<{
         return [...currentItems].sort((a, b) => {
             let aValue: string | number;
             let bValue: string | number;
-
+            const aName = (a.path.split("/").pop() || a.path).toLowerCase();
+            const bName = (b.path.split("/").pop() || b.path).toLowerCase();
             switch (sortBy) {
                 case "name":
-                    aValue = a.name.toLowerCase();
-                    bValue = b.name.toLowerCase();
+                    aValue = aName;
+                    bValue = bName;
                     break;
                 case "size":
                     aValue = "size" in a ? a.size : 0;
@@ -474,8 +504,8 @@ export const StorageManagementUIProvider: React.FC<{
                         (b as unknown as { created?: number }).created ?? 0;
                     break;
                 default:
-                    aValue = a.name.toLowerCase();
-                    bValue = b.name.toLowerCase();
+                    aValue = aName;
+                    bValue = bName;
             }
 
             if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;

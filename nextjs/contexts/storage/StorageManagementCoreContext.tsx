@@ -45,12 +45,12 @@ export const StorageManagementCoreProvider: React.FC<{
     );
     const [stats, setStats] = useState<StorageStats | null>(null);
 
-    // Helper function to transform GraphQL DirectoryEntity to DirectoryTreeNode
+    // Helper function to transform GraphQL DirectoryInfo to DirectoryTreeNode
     const transformDirectoryToTreeNode = useCallback(
-        (directory: Graphql.DirectoryEntity): DirectoryTreeNode => {
+        (directory: Graphql.DirectoryInfo): DirectoryTreeNode => {
             return {
                 id: directory.path,
-                name: directory.name,
+                name: directory.path.split("/").pop() || directory.path,
                 path: directory.path,
                 children: undefined, // Not loaded initially
                 hasChildren: true, // Assume directories have children until proven otherwise
@@ -408,10 +408,7 @@ export const StorageManagementCoreProvider: React.FC<{
         async (path: string, name: string): Promise<boolean> => {
             try {
                 const result = await storageGraphQL.createFolder({
-                    input: {
-                        path: path,
-                        name,
-                    },
+                    input: { path: path + "/" + name },
                 });
 
                 if (result.createFolder?.success) {

@@ -20,13 +20,13 @@ class StorageQuery : Query, KoinComponent {
         return storageService.listFiles(input)
     }
 
-    fun getFileInfo(
+    fun fileInfo(
         path: String
     ): FileInfo? {
         return storageService.getFileEntityByPath(path)
     }
 
-    fun getFolderInfo(
+    fun folderInfo(
         path: String
     ): DirectoryInfo {
         return storageService.getFolderEntityByPath(path)
@@ -51,7 +51,7 @@ class StorageQuery : Query, KoinComponent {
     }
 
     @GraphQLDescription("Get storage statistics")
-    fun getStorageStats(
+    fun storageStats(
         @GraphQLDescription("Folder path to get stats for (optional, gets stats for entire bucket if not specified)")
         path: String? = null
     ): StorageStats {
@@ -59,7 +59,7 @@ class StorageQuery : Query, KoinComponent {
     }
 
     @GraphQLDescription("Fetch immediate children directories for lazy loading directory tree")
-    suspend fun fetchDirectoryChildren(
+    suspend fun directoryChildren(
         @GraphQLDescription("Parent directory path (empty or null for root level)")
         path: String? = null
     ): List<DirectoryInfo> {
@@ -67,7 +67,7 @@ class StorageQuery : Query, KoinComponent {
     }
 
     @GraphQLDescription("Check if a file is currently in use")
-    suspend fun checkFileUsage(
+    suspend fun fileUsage(
         input: CheckFileUsageInput
     ): FileUsageResult {
         return storageDbService.checkFileUsage(input)

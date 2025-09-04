@@ -7,8 +7,7 @@ mutation copyStorageItems($input: CopyStorageItemsInput!){
         failureCount
         successCount
         successfulItems{
-            id
-            name
+            isProtected
             path
         }
     }

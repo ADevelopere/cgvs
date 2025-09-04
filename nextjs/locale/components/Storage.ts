@@ -17,6 +17,19 @@ type StorageUploadingTranslations = {
     hoursLeft: string; // %{hours}
     minutesLeftShort: string; // %{minutes}
     cancel: string;
+    fileAlreadyExists: string;
+    failedGenerateSignedUrl: string;
+    uploadCancelled: string; 
+    uploadFailedWithStatus: string; // %{status}
+    uploadFailed: string;
+    uploadCompleted: string;
+    uploadNotAllowed: string;
+    uploadSuccessCount: string; // %{count}
+    uploadFailedCount: string; // %{count}
+    noFailedUploads: string;
+    retryCompletedUploads: string;
+    retryFailedUploads: string;
+    retryUploads: string;
 };
 
 type StorageManagementCoreTranslations = {

@@ -39,7 +39,7 @@ export type BulkOperationResult = {
   /** Number of items successfully processed */
   successCount: Scalars['Int']['output'];
   /** List of successfully processed items */
-  successfulItems: Array<StorageEntity>;
+  successfulItems: Array<StorageObject>;
 };
 
 export type CategorySpecialType =
@@ -336,12 +336,14 @@ export type CreateDateTemplateVariableInput = {
 
 /** Input for creating a folder with permissions */
 export type CreateFolderInput = {
-  /** The name of the folder */
-  name: Scalars['String']['input'];
-  /** The path where to create the folder */
+  /** The path where to create the folder + folder name */
   path: Scalars['String']['input'];
   /** Initial permissions for the folder */
   permissions?: InputMaybe<DirectoryPermissionsInput>;
+  /** For directories: whether to protect all children (recursive) */
+  protectChildren?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether to protect the folder from deletion */
+  protected?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type CreateNumberTemplateVariableInput = {
@@ -422,31 +424,31 @@ export type DeleteItemsInput = {
   paths: Array<Scalars['String']['input']>;
 };
 
-/** Directory entity with database ID */
-export type DirectoryEntity = StorageEntity & {
-  __typename?: 'DirectoryEntity';
+/** Directory with complete information */
+export type DirectoryInfo = StorageObject & {
+  __typename?: 'DirectoryInfo';
   /** Creation timestamp */
   created: Scalars['LocalDateTime']['output'];
   /** ID of user who created this directory */
   createdBy?: Maybe<Scalars['Long']['output']>;
-  /** Database ID of the directory */
-  id?: Maybe<Scalars['Long']['output']>;
+  /** Number of files in the folder */
+  fileCount: Scalars['Int']['output'];
+  /** Number of subfolders */
+  folderCount: Scalars['Int']['output'];
   /** Whether this directory exists only in bucket (not in DB) */
   isFromBucket: Scalars['Boolean']['output'];
   /** Whether this directory is protected from deletion */
   isProtected: Scalars['Boolean']['output'];
   /** Last modified timestamp */
   lastModified: Scalars['LocalDateTime']['output'];
-  /** Name of the directory */
-  name: Scalars['String']['output'];
-  /** Parent directory path */
-  parentPath?: Maybe<Scalars['String']['output']>;
   /** Full path of the directory */
   path: Scalars['String']['output'];
   /** Directory permissions */
   permissions: DirectoryPermissions;
   /** Whether children are protected from deletion */
   protectChildren: Scalars['Boolean']['output'];
+  /** Total size of all files in the folder */
+  totalSize: Scalars['Long']['output'];
 };
 
 /** Directory permissions configuration */
@@ -482,9 +484,9 @@ export type DirectoryPermissionsInput = {
   allowUploads: Scalars['Boolean']['input'];
 };
 
-/** File entity with database ID */
-export type FileEntity = StorageEntity & {
-  __typename?: 'FileEntity';
+/** File with complete information */
+export type FileInfo = StorageObject & {
+  __typename?: 'FileInfo';
   /** MIME content type */
   contentType?: Maybe<Scalars['String']['output']>;
   /** Creation timestamp */
@@ -493,35 +495,10 @@ export type FileEntity = StorageEntity & {
   createdBy?: Maybe<Scalars['Long']['output']>;
   /** Directory path containing this file */
   directoryPath: Scalars['String']['output'];
-  /** Database ID of the file */
-  id?: Maybe<Scalars['Long']['output']>;
-  /** Whether this file exists only in bucket (not in DB) */
-  isFromBucket: Scalars['Boolean']['output'];
-  /** Whether the file is protected from deletion */
-  isProtected: Scalars['Boolean']['output'];
-  /** Last modified timestamp */
-  lastModified: Scalars['LocalDateTime']['output'];
-  /** MD5 hash of the file */
-  md5Hash?: Maybe<Scalars['String']['output']>;
-  /** Name of the file */
-  name: Scalars['String']['output'];
-  /** Full path of the file */
-  path: Scalars['String']['output'];
-  /** File size in bytes */
-  size: Scalars['Long']['output'];
-};
-
-/** Enhanced file information with metadata */
-export type FileInfo = StorageObject & {
-  __typename?: 'FileInfo';
-  /** MIME content type */
-  contentType?: Maybe<Scalars['String']['output']>;
-  /** Creation timestamp */
-  created: Scalars['LocalDateTime']['output'];
   /** File type category */
   fileType: FileType;
   /** Whether this file exists only in bucket (not in DB) */
-  isFromBucketOnly: Scalars['Boolean']['output'];
+  isFromBucket: Scalars['Boolean']['output'];
   /** Whether the file is currently being used */
   isInUse: Scalars['Boolean']['output'];
   /** Whether the file is protected from deletion */
@@ -534,9 +511,7 @@ export type FileInfo = StorageObject & {
   md5Hash?: Maybe<Scalars['String']['output']>;
   /** Media link for streaming (if applicable) */
   mediaLink?: Maybe<Scalars['String']['output']>;
-  /** File name */
-  name: Scalars['String']['output'];
-  /** Full path in the bucket */
+  /** Full path of the file */
   path: Scalars['String']['output'];
   /** File size in bytes */
   size: Scalars['Long']['output'];
@@ -550,7 +525,7 @@ export type FileInfo = StorageObject & {
 export type FileOperationResult = {
   __typename?: 'FileOperationResult';
   /** The affected file/folder (if applicable) */
-  item?: Maybe<StorageEntity>;
+  item?: Maybe<StorageObject>;
   /** Success or error message */
   message: Scalars['String']['output'];
   /** Whether the operation was successful */
@@ -585,6 +560,10 @@ export type FileUsageInfo = {
   __typename?: 'FileUsageInfo';
   /** When this usage was created */
   created: Scalars['LocalDateTime']['output'];
+  /** Path of the file being used */
+  filePath: Scalars['String']['output'];
+  /** Database ID of the usage record */
+  id: Scalars['Long']['output'];
   /** ID of the entity using this file */
   referenceId: Scalars['Long']['output'];
   /** Table/entity type using this file */
@@ -691,15 +670,11 @@ export type Mutation = {
   refreshToken?: Maybe<AuthPayload>;
   /** Register a new user */
   register?: Maybe<AuthPayload>;
-  /** Register file usage to track dependencies */
-  registerFileUsage: FileOperationResult;
   /** Rename a file */
   renameFile: FileOperationResult;
   /** Set protection for files or directories */
   setStorageItemProtection: FileOperationResult;
   suspendTemplate?: Maybe<Template>;
-  /** Unregister file usage to remove dependencies */
-  unregisterFileUsage: FileOperationResult;
   unsuspendTemplate?: Maybe<Template>;
   updateDateTemplateVariable: DateTemplateVariable;
   /** Update directory permissions */
@@ -812,11 +787,6 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationRegisterFileUsageArgs = {
-  input: RegisterFileUsageInput;
-};
-
-
 export type MutationRenameFileArgs = {
   input: RenameFileInput;
 };
@@ -829,11 +799,6 @@ export type MutationSetStorageItemProtectionArgs = {
 
 export type MutationSuspendTemplateArgs = {
   id: Scalars['Int']['input'];
-};
-
-
-export type MutationUnregisterFileUsageArgs = {
-  input: UnregisterFileUsageInput;
 };
 
 
@@ -957,19 +922,19 @@ export type Query = {
   /** Check if a file is currently in use */
   checkFileUsage: FileUsageResult;
   /** Fetch immediate children directories for lazy loading directory tree */
-  fetchDirectoryChildren: Array<DirectoryEntity>;
-  getFileInfo?: Maybe<FileEntity>;
-  getFolderInfo: DirectoryEntity;
+  fetchDirectoryChildren: Array<DirectoryInfo>;
+  getFileInfo?: Maybe<FileInfo>;
+  getFolderInfo: DirectoryInfo;
   /** Get storage statistics */
   getStorageStats: StorageStats;
   /** Check if user is authenticated */
   isAuthenticated: Scalars['Boolean']['output'];
   /** List files and folders with pagination and filtering */
-  listFiles: StorageEntityList;
+  listFiles: StorageObjectList;
   mainTemplateCategory?: Maybe<TemplateCategory>;
   /** Get current authenticated user */
   me?: Maybe<User>;
-  searchFiles: StorageEntityList;
+  searchFiles: StorageObjectList;
   student?: Maybe<Student>;
   students: PaginatedStudentResponse;
   suspensionTemplateCategory?: Maybe<TemplateCategory>;
@@ -1054,18 +1019,6 @@ export type QueryUserArgs = {
   id: Scalars['Int']['input'];
 };
 
-/** Input for registering file usage */
-export type RegisterFileUsageInput = {
-  /** File path being used */
-  filePath: Scalars['String']['input'];
-  /** ID of the entity using this file */
-  referenceId: Scalars['Long']['input'];
-  /** Table/entity type using this file */
-  referenceTable: Scalars['String']['input'];
-  /** Type of usage (e.g., 'template_cover', 'certificate_image') */
-  usageType: Scalars['String']['input'];
-};
-
 export type RegisterInput = {
   email: Scalars['Email']['input'];
   name: Scalars['String']['input'];
@@ -1110,30 +1063,24 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
-export type StorageEntity = {
-  id?: Maybe<Scalars['Long']['output']>;
-  name: Scalars['String']['output'];
+export type StorageObject = {
+  isProtected: Scalars['Boolean']['output'];
   path: Scalars['String']['output'];
 };
 
-/** Paginated list of storage entities */
-export type StorageEntityList = {
-  __typename?: 'StorageEntityList';
+/** Paginated list of storage objects */
+export type StorageObjectList = {
+  __typename?: 'StorageObjectList';
   /** Whether there are more items */
   hasMore: Scalars['Boolean']['output'];
-  /** List of files and folders with database IDs */
-  items: Array<StorageEntity>;
+  /** List of files and folders */
+  items: Array<StorageObject>;
   /** Items per page */
   limit: Scalars['Int']['output'];
   /** Current page offset */
   offset: Scalars['Int']['output'];
   /** Total number of items */
   totalCount: Scalars['Int']['output'];
-};
-
-export type StorageObject = {
-  name: Scalars['String']['output'];
-  path: Scalars['String']['output'];
 };
 
 /** Storage statistics */
@@ -1274,16 +1221,6 @@ export type TextTemplateVariable = TemplateVariable & {
   updatedAt: Scalars['LocalDateTime']['output'];
 };
 
-/** Input for unregistering file usage */
-export type UnregisterFileUsageInput = {
-  /** File path */
-  filePath: Scalars['String']['input'];
-  /** Reference ID to remove */
-  referenceId: Scalars['Long']['input'];
-  /** Usage type to remove */
-  usageType: Scalars['String']['input'];
-};
-
 export type UpdateDateTemplateVariableInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   format?: InputMaybe<Scalars['String']['input']>;
@@ -1417,28 +1354,28 @@ export type CopyStorageItemsMutationVariables = Exact<{
 }>;
 
 
-export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
 
 export type CreateFolderMutationVariables = Exact<{
   input: CreateFolderInput;
 }>;
 
 
-export type CreateFolderMutation = { __typename?: 'Mutation', createFolder: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+export type CreateFolderMutation = { __typename?: 'Mutation', createFolder: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
 
 export type DeleteFileMutationVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
 
 export type DeleteStorageItemsMutationVariables = Exact<{
   input: DeleteItemsInput;
 }>;
 
 
-export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
 
 export type GenerateUploadSignedUrlMutationVariables = Exact<{
   input: GenerateUploadSignedUrlInput;
@@ -1452,70 +1389,56 @@ export type MoveStorageItemsMutationVariables = Exact<{
 }>;
 
 
-export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
-
-export type RegisterFileUsageMutationVariables = Exact<{
-  input: RegisterFileUsageInput;
-}>;
-
-
-export type RegisterFileUsageMutation = { __typename?: 'Mutation', registerFileUsage: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
 
 export type RenameFileMutationVariables = Exact<{
   input: RenameFileInput;
 }>;
 
 
-export type RenameFileMutation = { __typename?: 'Mutation', renameFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+export type RenameFileMutation = { __typename?: 'Mutation', renameFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
 
 export type SetStorageItemProtectionMutationVariables = Exact<{
   input: SetStorageItemProtectionInput;
 }>;
 
 
-export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
-
-export type UnregisterFileUsageMutationVariables = Exact<{
-  input: UnregisterFileUsageInput;
-}>;
-
-
-export type UnregisterFileUsageMutation = { __typename?: 'Mutation', unregisterFileUsage: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
 
 export type UpdateDirectoryPermissionsMutationVariables = Exact<{
   input: UpdateDirectoryPermissionsInput;
 }>;
 
 
-export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string } | null } };
+export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
 
 export type CheckFileUsageQueryVariables = Exact<{
   input: CheckFileUsageInput;
 }>;
 
 
-export type CheckFileUsageQuery = { __typename?: 'Query', checkFileUsage: { __typename?: 'FileUsageResult', canDelete: boolean, deleteBlockReason?: string | null, isInUse: boolean, usages: Array<{ __typename?: 'FileUsageInfo', created: any, referenceId: any, referenceTable: string, usageType: string }> } };
+export type CheckFileUsageQuery = { __typename?: 'Query', checkFileUsage: { __typename?: 'FileUsageResult', canDelete: boolean, deleteBlockReason?: string | null, isInUse: boolean, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } };
 
 export type FetchDirectoryChildrenQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type FetchDirectoryChildrenQuery = { __typename?: 'Query', fetchDirectoryChildren: Array<{ __typename?: 'DirectoryEntity', created: any, createdBy?: any | null, id?: any | null, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, parentPath?: string | null, path: string, protectChildren: boolean, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
+export type FetchDirectoryChildrenQuery = { __typename?: 'Query', fetchDirectoryChildren: Array<{ __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
 
 export type GetFileInfoQueryVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type GetFileInfoQuery = { __typename?: 'Query', getFileInfo?: { __typename?: 'FileEntity', contentType?: string | null, created: any, createdBy?: any | null, directoryPath: string, id?: any | null, isFromBucket: boolean, isProtected: boolean, lastModified: any, md5Hash?: string | null, name: string, path: string, size: any } | null };
+export type GetFileInfoQuery = { __typename?: 'Query', getFileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, createdBy?: any | null, directoryPath: string, fileType: FileType, isFromBucket: boolean, isInUse: boolean, isProtected: boolean, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, path: string, size: any, url?: string | null, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } | null };
 
 export type GetFolderInfoQueryVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo: { __typename?: 'DirectoryEntity', created: any, createdBy?: any | null, id?: any | null, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, parentPath?: string | null, path: string, protectChildren: boolean, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
+export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo: { __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
 
 export type GetStorageStatsQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;
@@ -1529,7 +1452,7 @@ export type ListFilesQueryVariables = Exact<{
 }>;
 
 
-export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageEntityList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
 
 export type SearchFilesQueryVariables = Exact<{
   fileType?: InputMaybe<Scalars['String']['input']>;
@@ -1539,7 +1462,7 @@ export type SearchFilesQueryVariables = Exact<{
 }>;
 
 
-export type SearchFilesQuery = { __typename?: 'Query', searchFiles: { __typename?: 'StorageEntityList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryEntity', id?: any | null, name: string, path: string } | { __typename?: 'FileEntity', id?: any | null, name: string, path: string }> } };
+export type SearchFilesQuery = { __typename?: 'Query', searchFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
 
 export type CreateStudentMutationVariables = Exact<{
   input: CreateStudentInput;
@@ -2092,8 +2015,7 @@ export const CopyStorageItemsDocument = gql`
     failureCount
     successCount
     successfulItems {
-      id
-      name
+      isProtected
       path
     }
   }
@@ -2127,8 +2049,7 @@ export const CreateFolderDocument = gql`
     mutation createFolder($input: CreateFolderInput!) {
   createFolder(input: $input) {
     item {
-      id
-      name
+      isProtected
       path
     }
     message
@@ -2164,8 +2085,7 @@ export const DeleteFileDocument = gql`
     mutation deleteFile($path: String!) {
   deleteFile(path: $path) {
     item {
-      id
-      name
+      isProtected
       path
     }
     message
@@ -2204,8 +2124,7 @@ export const DeleteStorageItemsDocument = gql`
     failureCount
     successCount
     successfulItems {
-      id
-      name
+      isProtected
       path
     }
   }
@@ -2271,8 +2190,7 @@ export const MoveStorageItemsDocument = gql`
     failureCount
     successCount
     successfulItems {
-      id
-      name
+      isProtected
       path
     }
   }
@@ -2302,49 +2220,11 @@ export function useMoveStorageItemsMutation(baseOptions?: ApolloReact.useMutatio
       }
 export type MoveStorageItemsMutationHookResult = ReturnType<typeof useMoveStorageItemsMutation>;
 export type MoveStorageItemsMutationResult = ApolloReact.useMutation.Result<MoveStorageItemsMutation>;
-export const RegisterFileUsageDocument = gql`
-    mutation registerFileUsage($input: RegisterFileUsageInput!) {
-  registerFileUsage(input: $input) {
-    item {
-      id
-      name
-      path
-    }
-    message
-    success
-  }
-}
-    `;
-
-/**
- * __useRegisterFileUsageMutation__
- *
- * To run a mutation, you first call `useRegisterFileUsageMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRegisterFileUsageMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [registerFileUsageMutation, { data, loading, error }] = useRegisterFileUsageMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useRegisterFileUsageMutation(baseOptions?: ApolloReact.useMutation.Options<RegisterFileUsageMutation, RegisterFileUsageMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useMutation<RegisterFileUsageMutation, RegisterFileUsageMutationVariables>(RegisterFileUsageDocument, options);
-      }
-export type RegisterFileUsageMutationHookResult = ReturnType<typeof useRegisterFileUsageMutation>;
-export type RegisterFileUsageMutationResult = ApolloReact.useMutation.Result<RegisterFileUsageMutation>;
 export const RenameFileDocument = gql`
     mutation renameFile($input: RenameFileInput!) {
   renameFile(input: $input) {
     item {
-      id
-      name
+      isProtected
       path
     }
     message
@@ -2380,8 +2260,7 @@ export const SetStorageItemProtectionDocument = gql`
     mutation setStorageItemProtection($input: SetStorageItemProtectionInput!) {
   setStorageItemProtection(input: $input) {
     item {
-      id
-      name
+      isProtected
       path
     }
     message
@@ -2413,49 +2292,11 @@ export function useSetStorageItemProtectionMutation(baseOptions?: ApolloReact.us
       }
 export type SetStorageItemProtectionMutationHookResult = ReturnType<typeof useSetStorageItemProtectionMutation>;
 export type SetStorageItemProtectionMutationResult = ApolloReact.useMutation.Result<SetStorageItemProtectionMutation>;
-export const UnregisterFileUsageDocument = gql`
-    mutation unregisterFileUsage($input: UnregisterFileUsageInput!) {
-  unregisterFileUsage(input: $input) {
-    item {
-      id
-      name
-      path
-    }
-    message
-    success
-  }
-}
-    `;
-
-/**
- * __useUnregisterFileUsageMutation__
- *
- * To run a mutation, you first call `useUnregisterFileUsageMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUnregisterFileUsageMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [unregisterFileUsageMutation, { data, loading, error }] = useUnregisterFileUsageMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUnregisterFileUsageMutation(baseOptions?: ApolloReact.useMutation.Options<UnregisterFileUsageMutation, UnregisterFileUsageMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useMutation<UnregisterFileUsageMutation, UnregisterFileUsageMutationVariables>(UnregisterFileUsageDocument, options);
-      }
-export type UnregisterFileUsageMutationHookResult = ReturnType<typeof useUnregisterFileUsageMutation>;
-export type UnregisterFileUsageMutationResult = ApolloReact.useMutation.Result<UnregisterFileUsageMutation>;
 export const UpdateDirectoryPermissionsDocument = gql`
     mutation updateDirectoryPermissions($input: UpdateDirectoryPermissionsInput!) {
   updateDirectoryPermissions(input: $input) {
     item {
-      id
-      name
+      isProtected
       path
     }
     message
@@ -2495,6 +2336,8 @@ export const CheckFileUsageDocument = gql`
     isInUse
     usages {
       created
+      filePath
+      id
       referenceId
       referenceTable
       usageType
@@ -2543,12 +2386,11 @@ export const FetchDirectoryChildrenDocument = gql`
   fetchDirectoryChildren(path: $path) {
     created
     createdBy
-    id
+    fileCount
+    folderCount
     isFromBucket
     isProtected
     lastModified
-    name
-    parentPath
     path
     permissions {
       allowCreateSubDirs
@@ -2559,6 +2401,7 @@ export const FetchDirectoryChildrenDocument = gql`
       allowUploads
     }
     protectChildren
+    totalSize
   }
 }
     `;
@@ -2605,14 +2448,25 @@ export const GetFileInfoDocument = gql`
     created
     createdBy
     directoryPath
-    id
+    fileType
     isFromBucket
+    isInUse
     isProtected
+    isPublic
     lastModified
     md5Hash
-    name
+    mediaLink
     path
     size
+    url
+    usages {
+      created
+      filePath
+      id
+      referenceId
+      referenceTable
+      usageType
+    }
   }
 }
     `;
@@ -2657,12 +2511,11 @@ export const GetFolderInfoDocument = gql`
   getFolderInfo(path: $path) {
     created
     createdBy
-    id
+    fileCount
+    folderCount
     isFromBucket
     isProtected
     lastModified
-    name
-    parentPath
     path
     permissions {
       allowCreateSubDirs
@@ -2673,6 +2526,7 @@ export const GetFolderInfoDocument = gql`
       allowUploads
     }
     protectChildren
+    totalSize
   }
 }
     `;
@@ -2766,8 +2620,7 @@ export const ListFilesDocument = gql`
   listFiles(input: $input) {
     hasMore
     items {
-      id
-      name
+      isProtected
       path
     }
     limit
@@ -2822,8 +2675,7 @@ export const SearchFilesDocument = gql`
   ) {
     hasMore
     items {
-      id
-      name
+      isProtected
       path
     }
     limit

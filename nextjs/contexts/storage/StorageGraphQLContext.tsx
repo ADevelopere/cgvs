@@ -49,18 +49,12 @@ type StorageGraphQLContextType = {
     moveStorageItems: (
         variables: Graphql.MoveStorageItemsMutationVariables,
     ) => Promise<Graphql.MoveStorageItemsMutation>;
-    registerFileUsage: (
-        variables: Graphql.RegisterFileUsageMutationVariables,
-    ) => Promise<Graphql.RegisterFileUsageMutation>;
     renameFile: (
         variables: Graphql.RenameFileMutationVariables,
     ) => Promise<Graphql.RenameFileMutation>;
     setStorageItemProtection: (
         variables: Graphql.SetStorageItemProtectionMutationVariables,
     ) => Promise<Graphql.SetStorageItemProtectionMutation>;
-    unregisterFileUsage: (
-        variables: Graphql.UnregisterFileUsageMutationVariables,
-    ) => Promise<Graphql.UnregisterFileUsageMutation>;
     updateDirectoryPermissions: (
         variables: Graphql.UpdateDirectoryPermissionsMutationVariables,
     ) => Promise<Graphql.UpdateDirectoryPermissionsMutation>;
@@ -159,15 +153,9 @@ export const StorageGraphQLProvider: React.FC<{
     const moveStorageItems = useMutationWrapper(
         Graphql.useMoveStorageItemsMutation,
     );
-    const registerFileUsage = useMutationWrapper(
-        Graphql.useRegisterFileUsageMutation,
-    );
     const renameFile = useMutationWrapper(Graphql.useRenameFileMutation);
     const setStorageItemProtection = useMutationWrapper(
         Graphql.useSetStorageItemProtectionMutation,
-    );
-    const unregisterFileUsage = useMutationWrapper(
-        Graphql.useUnregisterFileUsageMutation,
     );
     const updateDirectoryPermissions = useMutationWrapper(
         Graphql.useUpdateDirectoryPermissionsMutation,
@@ -188,10 +176,8 @@ export const StorageGraphQLProvider: React.FC<{
             deleteStorageItems,
             generateUploadSignedUrl,
             moveStorageItems,
-            registerFileUsage,
             renameFile,
             setStorageItemProtection,
-            unregisterFileUsage,
             updateDirectoryPermissions,
         }),
         [
@@ -208,10 +194,8 @@ export const StorageGraphQLProvider: React.FC<{
             deleteStorageItems,
             generateUploadSignedUrl,
             moveStorageItems,
-            registerFileUsage,
             renameFile,
             setStorageItemProtection,
-            unregisterFileUsage,
             updateDirectoryPermissions,
         ],
     );

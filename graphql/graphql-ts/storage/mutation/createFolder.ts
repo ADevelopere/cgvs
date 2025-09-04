@@ -4,8 +4,7 @@ export const CREATE_FOLDER = gql`
 mutation createFolder($input: CreateFolderInput!){
     createFolder(input: $input){
         item{
-            id
-            name
+            isProtected
             path
         }
         message
