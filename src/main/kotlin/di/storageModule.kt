@@ -28,5 +28,5 @@ fun storageModule(application: Application) = module {
     single<Storage> { storage }
 
     single<StorageService> { storageService(get(), gcsConfig, get()) }
-    single<StorageDbService> { storageDbService(get(), gcsConfig) }
+    single<StorageDbService> { storageDbService(get(), gcsConfig, get()) }
 }

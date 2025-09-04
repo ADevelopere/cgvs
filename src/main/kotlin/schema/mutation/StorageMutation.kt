@@ -7,9 +7,6 @@ import services.StorageDbService
 import schema.model.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Suppress("unused")
 class StorageMutation : Mutation, KoinComponent {
@@ -78,42 +75,5 @@ class StorageMutation : Mutation, KoinComponent {
         input: SetStorageItemProtectionInput
     ): FileOperationResult {
         return storageDbService.setProtection(input)
-    }
-
-    @GraphQLDescription("Register file usage to track dependencies")
-    suspend fun registerFileUsage(
-        input: RegisterFileUsageInput
-    ): FileOperationResult {
-        return try {
-            val storageRepository = org.koin.core.context.GlobalContext.get().get<repositories.StorageRepository>()
-            val usage = FileUsage(
-                filePath = input.filePath,
-                usageType = input.usageType,
-                referenceId = input.referenceId,
-                referenceTable = input.referenceTable,
-                created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-            )
-            storageRepository.registerFileUsage(usage)
-            FileOperationResult(true, "File usage registered successfully", null)
-        } catch (e: Exception) {
-            FileOperationResult(false, "Failed to register file usage: ${e.message}", null)
-        }
-    }
-
-    @GraphQLDescription("Unregister file usage to remove dependencies")
-    suspend fun unregisterFileUsage(
-        input: UnregisterFileUsageInput
-    ): FileOperationResult {
-        return try {
-            val storageRepository = org.koin.core.context.GlobalContext.get().get<repositories.StorageRepository>()
-            val removed = storageRepository.unregisterFileUsage(input.filePath, input.usageType, input.referenceId)
-            if (removed) {
-                FileOperationResult(true, "File usage unregistered successfully", null)
-            } else {
-                FileOperationResult(false, "File usage not found", null)
-            }
-        } catch (e: Exception) {
-            FileOperationResult(false, "Failed to unregister file usage: ${e.message}", null)
-        }
     }
 }
