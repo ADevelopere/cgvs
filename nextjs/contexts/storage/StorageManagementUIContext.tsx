@@ -7,6 +7,7 @@ import React, {
     useMemo,
     useState,
     useEffect,
+    useRef,
 } from "react";
 import { useStorageManagementCore } from "./StorageManagementCoreContext";
 import * as Graphql from "@/graphql/generated/types";
@@ -20,6 +21,7 @@ import {
     Clipboard,
     LoadingStates,
     OperationErrors,
+    QueueStates,
 } from "./storage.type";
 import logger from "@/utils/logger";
 import useAppTranslation from "@/locale/useAppTranslation";
@@ -91,6 +93,13 @@ export const StorageManagementUIProvider: React.FC<{
         prefetchingNode: null,
     });
     const [operationErrors, setOperationErrors] = useState<OperationErrors>({});
+    
+    // Queue States
+    const [queueStates, setQueueStates] = useState<QueueStates>({
+        fetchQueue: new Set(),
+        expansionQueue: new Set(),
+        currentlyFetching: new Set(),
+    });
 
     // Helper function to update loading state
     const updateLoading = useCallback(
@@ -107,6 +116,74 @@ export const StorageManagementUIProvider: React.FC<{
         },
         [],
     );
+
+    // Queue management helper functions
+    const addToFetchQueue = useCallback((path: string) => {
+        setQueueStates((prev) => ({
+            ...prev,
+            fetchQueue: new Set([...prev.fetchQueue, path])
+        }));
+    }, []);
+
+    const removeFromFetchQueue = useCallback((path: string) => {
+        setQueueStates((prev) => ({
+            ...prev,
+            fetchQueue: new Set([...prev.fetchQueue].filter(p => p !== path))
+        }));
+    }, []);
+
+    const addToExpansionQueue = useCallback((path: string) => {
+        setQueueStates((prev) => ({
+            ...prev,
+            expansionQueue: new Set([...prev.expansionQueue, path])
+        }));
+    }, []);
+
+    const removeFromExpansionQueue = useCallback((path: string) => {
+        setQueueStates((prev) => ({
+            ...prev,
+            expansionQueue: new Set([...prev.expansionQueue].filter(p => p !== path))
+        }));
+    }, []);
+
+    const setCurrentlyFetching = useCallback((path: string, isFetching: boolean) => {
+        setQueueStates((prev) => {
+            const newSet = new Set(prev.currentlyFetching);
+            if (isFetching) {
+                newSet.add(path);
+            } else {
+                newSet.delete(path);
+            }
+            return {
+                ...prev,
+                currentlyFetching: newSet
+            };
+        });
+    }, []);
+
+    // Function to process expansion queue
+    const processExpansionQueue = useCallback((path: string) => {
+        if (queueStates.expansionQueue.has(path)) {
+            // Check if children are available in the tree
+            const hasChildrenInTree = (nodes: DirectoryTreeNode[], targetPath: string): boolean => {
+                for (const node of nodes) {
+                    if (node.path === targetPath && node.children !== undefined) {
+                        return true;
+                    }
+                    if (node.children && hasChildrenInTree(node.children, targetPath)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            if (hasChildrenInTree(directoryTree, path)) {
+                // Children are available, expand immediately
+                setExpandedNodes((prev) => new Set([...prev, path]));
+                removeFromExpansionQueue(path);
+            }
+        }
+    }, [queueStates.expansionQueue, directoryTree, removeFromExpansionQueue]);
 
     // Initialize directory tree and root items on mount with proper hydration handling
     useEffect(() => {
@@ -240,87 +317,18 @@ export const StorageManagementUIProvider: React.FC<{
         }
     }, [queryParams, coreContext, updateError, updateLoading, translations.failedToRefreshDirectory]);
 
-    const expandDirectoryNode = useCallback(
-        async (path: string) => {
-            if (expandedNodes.has(path)) return; // Already expanded
-
-            updateLoading("expandingNode", path);
-
-            try {
-                const children = await coreContext.fetchDirectoryChildren(path);
-                if (children) {
-                    // Update the directory tree
-                    const updateTreeNode = (
-                        nodes: DirectoryTreeNode[],
-                    ): DirectoryTreeNode[] => {
-                        return nodes.map((node) => {
-                            if (node.path === path) {
-                                // Replace children and update hasChildren based on the result
-                                return {
-                                    ...node,
-                                    children: children,
-                                    hasChildren: children.length > 0,
-                                };
-                            }
-                            if (node.children) {
-                                return {
-                                    ...node,
-                                    children: updateTreeNode(node.children),
-                                };
-                            }
-                            return node;
-                        });
-                    };
-
-                    setDirectoryTree((prev) => updateTreeNode(prev));
-                    setExpandedNodes((prev) => new Set([...prev, path]));
-                }
-            } catch (error) {
-                logger.error("Error expanding directory node:", error);
-            } finally {
-                updateLoading("expandingNode", null);
-            }
-        },
-        [expandedNodes, coreContext, updateLoading],
-    );
-
-    const collapseDirectoryNode = useCallback((path: string) => {
-        const updateTreeNode = (
-            nodes: DirectoryTreeNode[],
-        ): DirectoryTreeNode[] => {
-            return nodes.map((node) => {
-                if (node.path === path) {
-                    return {
-                        ...node,
-                        isExpanded: false,
-                    };
-                }
-                if (node.children) {
-                    return {
-                        ...node,
-                        children: updateTreeNode(node.children),
-                    };
-                }
-                return node;
-            });
-        };
-
-        setDirectoryTree((prev) => updateTreeNode(prev));
-        setExpandedNodes((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(path);
-            return newSet;
-        });
-    }, []);
-
     const prefetchDirectoryChildren = useCallback(
         async (path: string, refresh?: boolean) => {
             if (
                 (!refresh && prefetchedNodes.has(path)) ||
-                expandedNodes.has(path)
+                expandedNodes.has(path) ||
+                queueStates.currentlyFetching.has(path)
             )
                 return;
 
+            // Add to fetch queue and mark as currently fetching
+            addToFetchQueue(path);
+            setCurrentlyFetching(path, true);
             updateLoading("prefetchingNode", path);
             setPrefetchedNodes((prev) => new Set([...prev, path]));
 
@@ -358,16 +366,99 @@ export const StorageManagementUIProvider: React.FC<{
                     };
 
                     setDirectoryTree((prev) => updateTreeNode(prev));
+                    
+                    // Process expansion queue for this path after successful fetch
+                    processExpansionQueue(path);
                 }
             } catch (error) {
                 // Fail silently for prefetching
                 logger.debug("Prefetch failed:", error);
             } finally {
+                // Remove from queues and update loading state
+                removeFromFetchQueue(path);
+                setCurrentlyFetching(path, false);
                 updateLoading("prefetchingNode", null);
             }
         },
-        [prefetchedNodes, expandedNodes, updateLoading, coreContext],
+        [
+            prefetchedNodes, 
+            expandedNodes, 
+            queueStates.currentlyFetching,
+            addToFetchQueue,
+            setCurrentlyFetching,
+            updateLoading, 
+            coreContext,
+            processExpansionQueue,
+            removeFromFetchQueue
+        ],
     );
+
+    const expandDirectoryNode = useCallback(
+        (path: string) => {
+            if (expandedNodes.has(path)) return; // Already expanded
+
+            // Check if children are already available in the tree
+            const findNodeInTree = (nodes: DirectoryTreeNode[], targetPath: string): DirectoryTreeNode | null => {
+                for (const node of nodes) {
+                    if (node.path === targetPath) {
+                        return node;
+                    }
+                    if (node.children) {
+                        const found = findNodeInTree(node.children, targetPath);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+
+            const targetNode = findNodeInTree(directoryTree, path);
+            
+            if (targetNode?.children !== undefined) {
+                // Children are already available, expand immediately
+                setExpandedNodes((prev) => new Set([...prev, path]));
+            } else if (targetNode?.hasChildren) {
+                // Children are not available but node has children
+                // Add to expansion queue and trigger fetch if not already fetching
+                addToExpansionQueue(path);
+                
+                if (!queueStates.currentlyFetching.has(path) && !queueStates.fetchQueue.has(path)) {
+                    // Not currently fetching and not in fetch queue, trigger prefetch
+                    prefetchDirectoryChildren(path);
+                }
+            }
+            // If node doesn't have children, do nothing
+        },
+        [expandedNodes, directoryTree, addToExpansionQueue, queueStates.currentlyFetching, queueStates.fetchQueue, prefetchDirectoryChildren],
+    );
+
+    const collapseDirectoryNode = useCallback((path: string) => {
+        const updateTreeNode = (
+            nodes: DirectoryTreeNode[],
+        ): DirectoryTreeNode[] => {
+            return nodes.map((node) => {
+                if (node.path === path) {
+                    return {
+                        ...node,
+                        isExpanded: false,
+                    };
+                }
+                if (node.children) {
+                    return {
+                        ...node,
+                        children: updateTreeNode(node.children),
+                    };
+                }
+                return node;
+            });
+        };
+
+        setDirectoryTree((prev) => updateTreeNode(prev));
+        setExpandedNodes((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(path);
+            return newSet;
+        });
+    }, []);
 
     // Selection Management
     const toggleSelect = useCallback((path: string) => {
@@ -672,6 +763,7 @@ export const StorageManagementUIProvider: React.FC<{
             // Operation States
             loading,
             operationErrors,
+            queueStates,
 
             // Navigation Functions
             navigateTo,
@@ -716,7 +808,7 @@ export const StorageManagementUIProvider: React.FC<{
             setFocusedItem,
             exitSearchMode,
         }),
-        [items, pagination, directoryTree, expandedNodes, prefetchedNodes, queryParams, selectedItems, lastSelectedItem, focusedItem, viewMode, searchResults, clipboard, sortBy, sortDirection, loading, operationErrors, navigateTo, goUp, refresh, expandDirectoryNode, collapseDirectoryNode, prefetchDirectoryChildren, toggleSelect, selectAll, clearSelection, selectRange, setParams, search, setFilterType, setSortField, setPage, setLimit, getSortedItems, copyItems, cutItems, pasteItems, renameItem, deleteItems, moveItems, exitSearchMode],
+        [items, pagination, directoryTree, expandedNodes, prefetchedNodes, queryParams, selectedItems, lastSelectedItem, focusedItem, viewMode, searchMode, searchResults, clipboard, sortBy, sortDirection, loading, operationErrors, queueStates, navigateTo, goUp, refresh, expandDirectoryNode, collapseDirectoryNode, prefetchDirectoryChildren, toggleSelect, selectAll, clearSelection, selectRange, setParams, search, setFilterType, setSortField, setPage, setLimit, getSortedItems, copyItems, cutItems, pasteItems, renameItem, deleteItems, moveItems, copyItemsTo, exitSearchMode],
     );
 
     return (
