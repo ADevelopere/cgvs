@@ -33,7 +33,7 @@ export interface FolderMenuProps {
     anchorEl: HTMLElement | null;
     open: boolean;
     onClose: () => void;
-    folder: Graphql.DirectoryEntity;
+    folder: Graphql.DirectoryInfo;
 }
 
 const FolderMenu: React.FC<FolderMenuProps> = ({
@@ -89,8 +89,9 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
 
     const handleRename = () => {
         // Simple prompt for now - will be replaced with RenameDialog component later
-        const newName = prompt("Enter new name:", folder.name);
-        if (newName && newName !== folder.name) {
+        const folderName = folder.name;
+        const newName = prompt("Enter new name:", folderName);
+        if (newName && newName !== folderName) {
             renameItem(folder.path, newName);
         }
         onClose();
@@ -179,8 +180,8 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                     <ListItemText>{translations.copy}</ListItemText>
                 </MenuItem>
 
-                <MenuItem 
-                    onClick={handlePaste} 
+                <MenuItem
+                    onClick={handlePaste}
                     disabled={!isPasteAvailable || isPasting}
                 >
                     <ListItemIcon>
@@ -243,7 +244,10 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                         id="delete-folder-dialog-description"
                         sx={{ color: theme.palette.text.secondary }}
                     >
-                        {translations.deleteConfirmationMessage.replace("%{fileName}", folder.name)}
+                        {translations.deleteConfirmationMessage.replace(
+                            "%{fileName}",
+                            folder.name,
+                        )}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions sx={{ padding: theme.spacing(1, 3, 2) }}>
@@ -272,7 +276,9 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                         }}
                         autoFocus
                     >
-                        {isDeleting ? translations.loading : translations.delete}
+                        {isDeleting
+                            ? translations.loading
+                            : translations.delete}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -305,43 +311,66 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                         sx={{ color: theme.palette.text.secondary }}
                     >
                         <div style={{ marginBottom: theme.spacing(2) }}>
-                            <strong>{translations.name}:</strong> {folder.name}
+                            <strong>{translations.name}:</strong>{" "}
+                            {folder.name}
                         </div>
                         <div style={{ marginBottom: theme.spacing(2) }}>
                             <strong>{translations.path}:</strong> {folder.path}
                         </div>
-                        {folder.parentPath && (
+                        {folder.path && (
                             <div style={{ marginBottom: theme.spacing(2) }}>
-                                <strong>{translations.parentPath}:</strong> {folder.parentPath}
+                                <strong>{translations.parentPath}:</strong>{" "}
+                                {folder.path
+                                    .split("/")
+                                    .slice(0, -1)
+                                    .join("/") || folder.path}
                             </div>
                         )}
                         <div style={{ marginBottom: theme.spacing(2) }}>
-                            <strong>{translations.lastModified}:</strong> {formatDate(folder.lastModified)}
+                            <strong>{translations.lastModified}:</strong>{" "}
+                            {formatDate(folder.lastModified)}
                         </div>
                         <div style={{ marginBottom: theme.spacing(2) }}>
-                            <strong>{translations.created}:</strong> {formatDate(folder.created)}
+                            <strong>{translations.created}:</strong>{" "}
+                            {formatDate(folder.created)}
                         </div>
                         {folder.isProtected && (
                             <div style={{ marginBottom: theme.spacing(2) }}>
-                                <strong>{translations.protected}:</strong> {translations.yes}
+                                <strong>{translations.protected}:</strong>{" "}
+                                {translations.yes}
                             </div>
                         )}
                         {folder.protectChildren && (
                             <div style={{ marginBottom: theme.spacing(2) }}>
-                                <strong>{translations.protectChildren}:</strong> {translations.yes}
+                                <strong>{translations.protectChildren}:</strong>{" "}
+                                {translations.yes}
                             </div>
                         )}
                         {folder.permissions && (
                             <div style={{ marginBottom: theme.spacing(2) }}>
                                 <strong>{translations.permissions}:</strong>
-                                <div style={{ marginLeft: theme.spacing(2), fontSize: '0.9em' }}>
-                                    • {translations.allowUploads}: {folder.permissions.allowUploads ? translations.yes : translations.no}
-                                    <br />
-                                    • {translations.allowCreateFolders}: {folder.permissions.allowCreateSubDirs ? translations.yes : translations.no}
-                                    <br />
-                                    • {translations.allowDeleteFiles}: {folder.permissions.allowDeleteFiles ? translations.yes : translations.no}
-                                    <br />
-                                    • {translations.allowMoveFiles}: {folder.permissions.allowMoveFiles ? translations.yes : translations.no}
+                                <div
+                                    style={{
+                                        marginLeft: theme.spacing(2),
+                                        fontSize: "0.9em",
+                                    }}
+                                >
+                                    • {translations.allowUploads}:{" "}
+                                    {folder.permissions.allowUploads
+                                        ? translations.yes
+                                        : translations.no}
+                                    <br />• {translations.allowCreateFolders}:{" "}
+                                    {folder.permissions.allowCreateSubDirs
+                                        ? translations.yes
+                                        : translations.no}
+                                    <br />• {translations.allowDeleteFiles}:{" "}
+                                    {folder.permissions.allowDeleteFiles
+                                        ? translations.yes
+                                        : translations.no}
+                                    <br />• {translations.allowMoveFiles}:{" "}
+                                    {folder.permissions.allowMoveFiles
+                                        ? translations.yes
+                                        : translations.no}
                                 </div>
                             </div>
                         )}

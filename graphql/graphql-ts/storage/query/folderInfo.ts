@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const GET_FOLDER_INFO = gql`
-query getFolderInfo($path: String!){
-    getFolderInfo(path: $path){
+export const FOLDER_INFO = gql`
+query folderInfo($path: String!){
+    folderInfo(path: $path){
         created
         createdBy
         fileCount
@@ -10,6 +10,7 @@ query getFolderInfo($path: String!){
         isFromBucket
         isProtected
         lastModified
+        name
         path
         permissions{
             allowCreateSubDirs

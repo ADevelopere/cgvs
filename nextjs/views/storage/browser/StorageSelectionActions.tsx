@@ -79,7 +79,7 @@ const StorageSelectionActions: React.FC = () => {
     // Handle download action
     const handleDownload = () => {
         selectedItemObjects.forEach(item => {
-            if (item.__typename === 'FileEntity' && 'mediaLink' in item && item.mediaLink) {
+            if (item.__typename === 'FileInfo' && 'mediaLink' in item && item.mediaLink) {
                 // Create a temporary link to trigger download
                 const fileItem = item as unknown as { mediaLink: string; name: string };
                 const link = document.createElement('a');
@@ -125,7 +125,7 @@ const StorageSelectionActions: React.FC = () => {
 
     // Check if download is available for selected items
     const canDownload = selectedItemObjects.some(item =>
-        item.__typename === 'FileEntity' && 'mediaLink' in item && item.mediaLink
+        item.__typename === 'FileInfo' && 'mediaLink' in item && item.mediaLink
     );
 
     return (

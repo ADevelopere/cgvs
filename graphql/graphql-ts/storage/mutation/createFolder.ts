@@ -5,6 +5,7 @@ mutation createFolder($input: CreateFolderInput!){
     createFolder(input: $input){
         item{
             isProtected
+            name
             path
         }
         message

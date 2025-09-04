@@ -5,6 +5,7 @@ mutation setStorageItemProtection($input: SetStorageItemProtectionInput!){
     setStorageItemProtection(input: $input){
         item{
             isProtected
+            name
             path
         }
         message

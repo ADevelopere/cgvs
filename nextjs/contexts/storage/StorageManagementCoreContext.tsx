@@ -50,7 +50,7 @@ export const StorageManagementCoreProvider: React.FC<{
         (directory: Graphql.DirectoryInfo): DirectoryTreeNode => {
             return {
                 id: directory.path,
-                name: directory.path.split("/").pop() || directory.path,
+                name: directory.name,
                 path: directory.path,
                 children: undefined, // Not loaded initially
                 hasChildren: true, // Assume directories have children until proven otherwise
@@ -124,11 +124,11 @@ export const StorageManagementCoreProvider: React.FC<{
                     path: path || "",
                 });
 
-                if (!result.fetchDirectoryChildren) {
+                if (!result.directoryChildren) {
                     return [];
                 }
 
-                return result.fetchDirectoryChildren.map(
+                return result.directoryChildren.map(
                     transformDirectoryToTreeNode,
                 );
             } catch (error) {
@@ -153,11 +153,11 @@ export const StorageManagementCoreProvider: React.FC<{
             try {
                 const result = await storageGraphQL.getStorageStats({ path });
 
-                if (!result.getStorageStats) {
+                if (!result.storageStats) {
                     return null;
                 }
 
-                const statsData = result.getStorageStats;
+                const statsData = result.storageStats;
                 setStats(statsData);
                 return statsData;
             } catch (error) {

@@ -5,6 +5,7 @@ mutation deleteFile($path: String!){
     deleteFile(path: $path){
         item{
             isProtected
+            name
             path
         }
         message

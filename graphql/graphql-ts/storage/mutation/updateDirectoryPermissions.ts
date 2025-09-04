@@ -5,6 +5,7 @@ mutation updateDirectoryPermissions($input: UpdateDirectoryPermissionsInput!){
     updateDirectoryPermissions(input: $input){
         item{
             isProtected
+            name
             path
         }
         message

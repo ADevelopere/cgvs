@@ -118,11 +118,11 @@ const CategoryTree: React.FC = () => {
                 justifyContent: "start",
             }}
             items={regularCategories}
-            itemRenderer={(item: TemplateCategory) => (
+            itemRenderer={({ item, isSelected }) => (
                 <RenderCategoryItem
                     category={item}
                     onClick={trySelectCategory}
-                    selected={currentCategory?.id === item.id}
+                    selected={isSelected || currentCategory?.id === item.id}
                     selectedColor={theme.palette.action.focus}
                 />
             )}

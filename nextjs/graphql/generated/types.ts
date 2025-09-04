@@ -441,6 +441,7 @@ export type DirectoryInfo = StorageObject & {
   isProtected: Scalars['Boolean']['output'];
   /** Last modified timestamp */
   lastModified: Scalars['LocalDateTime']['output'];
+  name: Scalars['String']['output'];
   /** Full path of the directory */
   path: Scalars['String']['output'];
   /** Directory permissions */
@@ -511,6 +512,7 @@ export type FileInfo = StorageObject & {
   md5Hash?: Maybe<Scalars['String']['output']>;
   /** Media link for streaming (if applicable) */
   mediaLink?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   /** Full path of the file */
   path: Scalars['String']['output'];
   /** File size in bytes */
@@ -919,14 +921,12 @@ export type PartialUpdateStudentInput = {
 
 export type Query = {
   __typename?: 'Query';
-  /** Check if a file is currently in use */
-  checkFileUsage: FileUsageResult;
   /** Fetch immediate children directories for lazy loading directory tree */
-  fetchDirectoryChildren: Array<DirectoryInfo>;
-  getFileInfo?: Maybe<FileInfo>;
-  getFolderInfo: DirectoryInfo;
-  /** Get storage statistics */
-  getStorageStats: StorageStats;
+  directoryChildren: Array<DirectoryInfo>;
+  fileInfo?: Maybe<FileInfo>;
+  /** Check if a file is currently in use */
+  fileUsage: FileUsageResult;
+  folderInfo: DirectoryInfo;
   /** Check if user is authenticated */
   isAuthenticated: Scalars['Boolean']['output'];
   /** List files and folders with pagination and filtering */
@@ -935,6 +935,8 @@ export type Query = {
   /** Get current authenticated user */
   me?: Maybe<User>;
   searchFiles: StorageObjectList;
+  /** Get storage statistics */
+  storageStats: StorageStats;
   student?: Maybe<Student>;
   students: PaginatedStudentResponse;
   suspensionTemplateCategory?: Maybe<TemplateCategory>;
@@ -950,28 +952,23 @@ export type Query = {
 };
 
 
-export type QueryCheckFileUsageArgs = {
+export type QueryDirectoryChildrenArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFileInfoArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+export type QueryFileUsageArgs = {
   input: CheckFileUsageInput;
 };
 
 
-export type QueryFetchDirectoryChildrenArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryGetFileInfoArgs = {
+export type QueryFolderInfoArgs = {
   path: Scalars['String']['input'];
-};
-
-
-export type QueryGetFolderInfoArgs = {
-  path: Scalars['String']['input'];
-};
-
-
-export type QueryGetStorageStatsArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -985,6 +982,11 @@ export type QuerySearchFilesArgs = {
   folder?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Int']['input'];
   searchTerm: Scalars['String']['input'];
+};
+
+
+export type QueryStorageStatsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1065,6 +1067,7 @@ export type SortDirection =
 
 export type StorageObject = {
   isProtected: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
   path: Scalars['String']['output'];
 };
 
@@ -1354,28 +1357,28 @@ export type CopyStorageItemsMutationVariables = Exact<{
 }>;
 
 
-export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
+export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }> } };
 
 export type CreateFolderMutationVariables = Exact<{
   input: CreateFolderInput;
 }>;
 
 
-export type CreateFolderMutation = { __typename?: 'Mutation', createFolder: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
+export type CreateFolderMutation = { __typename?: 'Mutation', createFolder: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string } | null } };
 
 export type DeleteFileMutationVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
+export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string } | null } };
 
 export type DeleteStorageItemsMutationVariables = Exact<{
   input: DeleteItemsInput;
 }>;
 
 
-export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
+export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }> } };
 
 export type GenerateUploadSignedUrlMutationVariables = Exact<{
   input: GenerateUploadSignedUrlInput;
@@ -1389,70 +1392,63 @@ export type MoveStorageItemsMutationVariables = Exact<{
 }>;
 
 
-export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
+export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems: { __typename?: 'BulkOperationResult', errors: Array<string>, failureCount: number, successCount: number, successfulItems: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }> } };
 
 export type RenameFileMutationVariables = Exact<{
   input: RenameFileInput;
 }>;
 
 
-export type RenameFileMutation = { __typename?: 'Mutation', renameFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
+export type RenameFileMutation = { __typename?: 'Mutation', renameFile: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string } | null } };
 
 export type SetStorageItemProtectionMutationVariables = Exact<{
   input: SetStorageItemProtectionInput;
 }>;
 
 
-export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
+export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string } | null } };
 
 export type UpdateDirectoryPermissionsMutationVariables = Exact<{
   input: UpdateDirectoryPermissionsInput;
 }>;
 
 
-export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string } | null } };
+export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions: { __typename?: 'FileOperationResult', message: string, success: boolean, item?: { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string } | null } };
 
-export type CheckFileUsageQueryVariables = Exact<{
+export type DirectoryChildrenQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type DirectoryChildrenQuery = { __typename?: 'Query', directoryChildren: Array<{ __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
+
+export type FileInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, createdBy?: any | null, directoryPath: string, fileType: FileType, isFromBucket: boolean, isInUse: boolean, isProtected: boolean, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url?: string | null, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } | null };
+
+export type FileUsageQueryVariables = Exact<{
   input: CheckFileUsageInput;
 }>;
 
 
-export type CheckFileUsageQuery = { __typename?: 'Query', checkFileUsage: { __typename?: 'FileUsageResult', canDelete: boolean, deleteBlockReason?: string | null, isInUse: boolean, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } };
+export type FileUsageQuery = { __typename?: 'Query', fileUsage: { __typename?: 'FileUsageResult', canDelete: boolean, deleteBlockReason?: string | null, isInUse: boolean, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } };
 
-export type FetchDirectoryChildrenQueryVariables = Exact<{
-  path?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type FetchDirectoryChildrenQuery = { __typename?: 'Query', fetchDirectoryChildren: Array<{ __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
-
-export type GetFileInfoQueryVariables = Exact<{
+export type FolderInfoQueryVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type GetFileInfoQuery = { __typename?: 'Query', getFileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, createdBy?: any | null, directoryPath: string, fileType: FileType, isFromBucket: boolean, isInUse: boolean, isProtected: boolean, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, path: string, size: any, url?: string | null, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } | null };
-
-export type GetFolderInfoQueryVariables = Exact<{
-  path: Scalars['String']['input'];
-}>;
-
-
-export type GetFolderInfoQuery = { __typename?: 'Query', getFolderInfo: { __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
-
-export type GetStorageStatsQueryVariables = Exact<{
-  path?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type GetStorageStatsQuery = { __typename?: 'Query', getStorageStats: { __typename?: 'StorageStats', totalFiles: number, totalFolders: number, totalSize: any, fileTypeBreakdown: Array<{ __typename?: 'FileTypeCount', count: number, type: FileType }> } };
+export type FolderInfoQuery = { __typename?: 'Query', folderInfo: { __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
 
 export type ListFilesQueryVariables = Exact<{
   input: ListFilesInput;
 }>;
 
 
-export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
+export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }> } };
 
 export type SearchFilesQueryVariables = Exact<{
   fileType?: InputMaybe<Scalars['String']['input']>;
@@ -1462,7 +1458,14 @@ export type SearchFilesQueryVariables = Exact<{
 }>;
 
 
-export type SearchFilesQuery = { __typename?: 'Query', searchFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, path: string } | { __typename?: 'FileInfo', isProtected: boolean, path: string }> } };
+export type SearchFilesQuery = { __typename?: 'Query', searchFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }> } };
+
+export type StorageStatsQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type StorageStatsQuery = { __typename?: 'Query', storageStats: { __typename?: 'StorageStats', totalFiles: number, totalFolders: number, totalSize: any, fileTypeBreakdown: Array<{ __typename?: 'FileTypeCount', count: number, type: FileType }> } };
 
 export type CreateStudentMutationVariables = Exact<{
   input: CreateStudentInput;
@@ -2016,6 +2019,7 @@ export const CopyStorageItemsDocument = gql`
     successCount
     successfulItems {
       isProtected
+      name
       path
     }
   }
@@ -2050,6 +2054,7 @@ export const CreateFolderDocument = gql`
   createFolder(input: $input) {
     item {
       isProtected
+      name
       path
     }
     message
@@ -2086,6 +2091,7 @@ export const DeleteFileDocument = gql`
   deleteFile(path: $path) {
     item {
       isProtected
+      name
       path
     }
     message
@@ -2125,6 +2131,7 @@ export const DeleteStorageItemsDocument = gql`
     successCount
     successfulItems {
       isProtected
+      name
       path
     }
   }
@@ -2191,6 +2198,7 @@ export const MoveStorageItemsDocument = gql`
     successCount
     successfulItems {
       isProtected
+      name
       path
     }
   }
@@ -2225,6 +2233,7 @@ export const RenameFileDocument = gql`
   renameFile(input: $input) {
     item {
       isProtected
+      name
       path
     }
     message
@@ -2261,6 +2270,7 @@ export const SetStorageItemProtectionDocument = gql`
   setStorageItemProtection(input: $input) {
     item {
       isProtected
+      name
       path
     }
     message
@@ -2297,6 +2307,7 @@ export const UpdateDirectoryPermissionsDocument = gql`
   updateDirectoryPermissions(input: $input) {
     item {
       isProtected
+      name
       path
     }
     message
@@ -2328,62 +2339,9 @@ export function useUpdateDirectoryPermissionsMutation(baseOptions?: ApolloReact.
       }
 export type UpdateDirectoryPermissionsMutationHookResult = ReturnType<typeof useUpdateDirectoryPermissionsMutation>;
 export type UpdateDirectoryPermissionsMutationResult = ApolloReact.useMutation.Result<UpdateDirectoryPermissionsMutation>;
-export const CheckFileUsageDocument = gql`
-    query checkFileUsage($input: CheckFileUsageInput!) {
-  checkFileUsage(input: $input) {
-    canDelete
-    deleteBlockReason
-    isInUse
-    usages {
-      created
-      filePath
-      id
-      referenceId
-      referenceTable
-      usageType
-    }
-  }
-}
-    `;
-
-/**
- * __useCheckFileUsageQuery__
- *
- * To run a query within a React component, call `useCheckFileUsageQuery` and pass it any options that fit your needs.
- * When your component renders, `useCheckFileUsageQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCheckFileUsageQuery({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCheckFileUsageQuery(baseOptions: ApolloReact.useQuery.Options<CheckFileUsageQuery, CheckFileUsageQueryVariables> & ({ variables: CheckFileUsageQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useQuery<CheckFileUsageQuery, CheckFileUsageQueryVariables>(CheckFileUsageDocument, options);
-      }
-export function useCheckFileUsageLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<CheckFileUsageQuery, CheckFileUsageQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReact.useLazyQuery<CheckFileUsageQuery, CheckFileUsageQueryVariables>(CheckFileUsageDocument, options);
-        }
-export function useCheckFileUsageSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<CheckFileUsageQueryVariables> ) {
-          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReact.useSuspenseQuery<CheckFileUsageQuery, CheckFileUsageQueryVariables>(CheckFileUsageDocument, options);
-        }
-export type CheckFileUsageQueryHookResult = ReturnType<typeof useCheckFileUsageQuery>;
-export type CheckFileUsageLazyQueryHookResult = ReturnType<typeof useCheckFileUsageLazyQuery>;
-export type CheckFileUsageSuspenseQueryHookResult = ReturnType<typeof useCheckFileUsageSuspenseQuery>;
-export type CheckFileUsageQueryResult = ApolloReact.useQuery.Result<CheckFileUsageQuery, CheckFileUsageQueryVariables>;
-export function refetchCheckFileUsageQuery(variables: CheckFileUsageQueryVariables) {
-      return { query: CheckFileUsageDocument, variables: variables }
-    }
-export const FetchDirectoryChildrenDocument = gql`
-    query fetchDirectoryChildren($path: String) {
-  fetchDirectoryChildren(path: $path) {
+export const DirectoryChildrenDocument = gql`
+    query directoryChildren($path: String) {
+  directoryChildren(path: $path) {
     created
     createdBy
     fileCount
@@ -2391,6 +2349,7 @@ export const FetchDirectoryChildrenDocument = gql`
     isFromBucket
     isProtected
     lastModified
+    name
     path
     permissions {
       allowCreateSubDirs
@@ -2407,43 +2366,43 @@ export const FetchDirectoryChildrenDocument = gql`
     `;
 
 /**
- * __useFetchDirectoryChildrenQuery__
+ * __useDirectoryChildrenQuery__
  *
- * To run a query within a React component, call `useFetchDirectoryChildrenQuery` and pass it any options that fit your needs.
- * When your component renders, `useFetchDirectoryChildrenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useDirectoryChildrenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDirectoryChildrenQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useFetchDirectoryChildrenQuery({
+ * const { data, loading, error } = useDirectoryChildrenQuery({
  *   variables: {
  *      path: // value for 'path'
  *   },
  * });
  */
-export function useFetchDirectoryChildrenQuery(baseOptions?: ApolloReact.useQuery.Options<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>) {
+export function useDirectoryChildrenQuery(baseOptions?: ApolloReact.useQuery.Options<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useQuery<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>(FetchDirectoryChildrenDocument, options);
+        return ApolloReact.useQuery<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>(DirectoryChildrenDocument, options);
       }
-export function useFetchDirectoryChildrenLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>) {
+export function useDirectoryChildrenLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return ApolloReact.useLazyQuery<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>(FetchDirectoryChildrenDocument, options);
+          return ApolloReact.useLazyQuery<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>(DirectoryChildrenDocument, options);
         }
-export function useFetchDirectoryChildrenSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<FetchDirectoryChildrenQueryVariables> ) {
+export function useDirectoryChildrenSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<DirectoryChildrenQueryVariables> ) {
           const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReact.useSuspenseQuery<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>(FetchDirectoryChildrenDocument, options);
+          return ApolloReact.useSuspenseQuery<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>(DirectoryChildrenDocument, options);
         }
-export type FetchDirectoryChildrenQueryHookResult = ReturnType<typeof useFetchDirectoryChildrenQuery>;
-export type FetchDirectoryChildrenLazyQueryHookResult = ReturnType<typeof useFetchDirectoryChildrenLazyQuery>;
-export type FetchDirectoryChildrenSuspenseQueryHookResult = ReturnType<typeof useFetchDirectoryChildrenSuspenseQuery>;
-export type FetchDirectoryChildrenQueryResult = ApolloReact.useQuery.Result<FetchDirectoryChildrenQuery, FetchDirectoryChildrenQueryVariables>;
-export function refetchFetchDirectoryChildrenQuery(variables?: FetchDirectoryChildrenQueryVariables) {
-      return { query: FetchDirectoryChildrenDocument, variables: variables }
+export type DirectoryChildrenQueryHookResult = ReturnType<typeof useDirectoryChildrenQuery>;
+export type DirectoryChildrenLazyQueryHookResult = ReturnType<typeof useDirectoryChildrenLazyQuery>;
+export type DirectoryChildrenSuspenseQueryHookResult = ReturnType<typeof useDirectoryChildrenSuspenseQuery>;
+export type DirectoryChildrenQueryResult = ApolloReact.useQuery.Result<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>;
+export function refetchDirectoryChildrenQuery(variables?: DirectoryChildrenQueryVariables) {
+      return { query: DirectoryChildrenDocument, variables: variables }
     }
-export const GetFileInfoDocument = gql`
-    query getFileInfo($path: String!) {
-  getFileInfo(path: $path) {
+export const FileInfoDocument = gql`
+    query fileInfo($path: String!) {
+  fileInfo(path: $path) {
     contentType
     created
     createdBy
@@ -2456,6 +2415,7 @@ export const GetFileInfoDocument = gql`
     lastModified
     md5Hash
     mediaLink
+    name
     path
     size
     url
@@ -2472,43 +2432,96 @@ export const GetFileInfoDocument = gql`
     `;
 
 /**
- * __useGetFileInfoQuery__
+ * __useFileInfoQuery__
  *
- * To run a query within a React component, call `useGetFileInfoQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFileInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useFileInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFileInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetFileInfoQuery({
+ * const { data, loading, error } = useFileInfoQuery({
  *   variables: {
  *      path: // value for 'path'
  *   },
  * });
  */
-export function useGetFileInfoQuery(baseOptions: ApolloReact.useQuery.Options<GetFileInfoQuery, GetFileInfoQueryVariables> & ({ variables: GetFileInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useFileInfoQuery(baseOptions: ApolloReact.useQuery.Options<FileInfoQuery, FileInfoQueryVariables> & ({ variables: FileInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+        return ApolloReact.useQuery<FileInfoQuery, FileInfoQueryVariables>(FileInfoDocument, options);
       }
-export function useGetFileInfoLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<GetFileInfoQuery, GetFileInfoQueryVariables>) {
+export function useFileInfoLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<FileInfoQuery, FileInfoQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return ApolloReact.useLazyQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+          return ApolloReact.useLazyQuery<FileInfoQuery, FileInfoQueryVariables>(FileInfoDocument, options);
         }
-export function useGetFileInfoSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<GetFileInfoQueryVariables> ) {
+export function useFileInfoSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<FileInfoQueryVariables> ) {
           const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReact.useSuspenseQuery<GetFileInfoQuery, GetFileInfoQueryVariables>(GetFileInfoDocument, options);
+          return ApolloReact.useSuspenseQuery<FileInfoQuery, FileInfoQueryVariables>(FileInfoDocument, options);
         }
-export type GetFileInfoQueryHookResult = ReturnType<typeof useGetFileInfoQuery>;
-export type GetFileInfoLazyQueryHookResult = ReturnType<typeof useGetFileInfoLazyQuery>;
-export type GetFileInfoSuspenseQueryHookResult = ReturnType<typeof useGetFileInfoSuspenseQuery>;
-export type GetFileInfoQueryResult = ApolloReact.useQuery.Result<GetFileInfoQuery, GetFileInfoQueryVariables>;
-export function refetchGetFileInfoQuery(variables: GetFileInfoQueryVariables) {
-      return { query: GetFileInfoDocument, variables: variables }
+export type FileInfoQueryHookResult = ReturnType<typeof useFileInfoQuery>;
+export type FileInfoLazyQueryHookResult = ReturnType<typeof useFileInfoLazyQuery>;
+export type FileInfoSuspenseQueryHookResult = ReturnType<typeof useFileInfoSuspenseQuery>;
+export type FileInfoQueryResult = ApolloReact.useQuery.Result<FileInfoQuery, FileInfoQueryVariables>;
+export function refetchFileInfoQuery(variables: FileInfoQueryVariables) {
+      return { query: FileInfoDocument, variables: variables }
     }
-export const GetFolderInfoDocument = gql`
-    query getFolderInfo($path: String!) {
-  getFolderInfo(path: $path) {
+export const FileUsageDocument = gql`
+    query fileUsage($input: CheckFileUsageInput!) {
+  fileUsage(input: $input) {
+    canDelete
+    deleteBlockReason
+    isInUse
+    usages {
+      created
+      filePath
+      id
+      referenceId
+      referenceTable
+      usageType
+    }
+  }
+}
+    `;
+
+/**
+ * __useFileUsageQuery__
+ *
+ * To run a query within a React component, call `useFileUsageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFileUsageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFileUsageQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useFileUsageQuery(baseOptions: ApolloReact.useQuery.Options<FileUsageQuery, FileUsageQueryVariables> & ({ variables: FileUsageQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<FileUsageQuery, FileUsageQueryVariables>(FileUsageDocument, options);
+      }
+export function useFileUsageLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<FileUsageQuery, FileUsageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<FileUsageQuery, FileUsageQueryVariables>(FileUsageDocument, options);
+        }
+export function useFileUsageSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<FileUsageQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<FileUsageQuery, FileUsageQueryVariables>(FileUsageDocument, options);
+        }
+export type FileUsageQueryHookResult = ReturnType<typeof useFileUsageQuery>;
+export type FileUsageLazyQueryHookResult = ReturnType<typeof useFileUsageLazyQuery>;
+export type FileUsageSuspenseQueryHookResult = ReturnType<typeof useFileUsageSuspenseQuery>;
+export type FileUsageQueryResult = ApolloReact.useQuery.Result<FileUsageQuery, FileUsageQueryVariables>;
+export function refetchFileUsageQuery(variables: FileUsageQueryVariables) {
+      return { query: FileUsageDocument, variables: variables }
+    }
+export const FolderInfoDocument = gql`
+    query folderInfo($path: String!) {
+  folderInfo(path: $path) {
     created
     createdBy
     fileCount
@@ -2516,6 +2529,7 @@ export const GetFolderInfoDocument = gql`
     isFromBucket
     isProtected
     lastModified
+    name
     path
     permissions {
       allowCreateSubDirs
@@ -2532,88 +2546,39 @@ export const GetFolderInfoDocument = gql`
     `;
 
 /**
- * __useGetFolderInfoQuery__
+ * __useFolderInfoQuery__
  *
- * To run a query within a React component, call `useGetFolderInfoQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFolderInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useFolderInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFolderInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetFolderInfoQuery({
+ * const { data, loading, error } = useFolderInfoQuery({
  *   variables: {
  *      path: // value for 'path'
  *   },
  * });
  */
-export function useGetFolderInfoQuery(baseOptions: ApolloReact.useQuery.Options<GetFolderInfoQuery, GetFolderInfoQueryVariables> & ({ variables: GetFolderInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useFolderInfoQuery(baseOptions: ApolloReact.useQuery.Options<FolderInfoQuery, FolderInfoQueryVariables> & ({ variables: FolderInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+        return ApolloReact.useQuery<FolderInfoQuery, FolderInfoQueryVariables>(FolderInfoDocument, options);
       }
-export function useGetFolderInfoLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<GetFolderInfoQuery, GetFolderInfoQueryVariables>) {
+export function useFolderInfoLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<FolderInfoQuery, FolderInfoQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return ApolloReact.useLazyQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+          return ApolloReact.useLazyQuery<FolderInfoQuery, FolderInfoQueryVariables>(FolderInfoDocument, options);
         }
-export function useGetFolderInfoSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<GetFolderInfoQueryVariables> ) {
+export function useFolderInfoSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<FolderInfoQueryVariables> ) {
           const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReact.useSuspenseQuery<GetFolderInfoQuery, GetFolderInfoQueryVariables>(GetFolderInfoDocument, options);
+          return ApolloReact.useSuspenseQuery<FolderInfoQuery, FolderInfoQueryVariables>(FolderInfoDocument, options);
         }
-export type GetFolderInfoQueryHookResult = ReturnType<typeof useGetFolderInfoQuery>;
-export type GetFolderInfoLazyQueryHookResult = ReturnType<typeof useGetFolderInfoLazyQuery>;
-export type GetFolderInfoSuspenseQueryHookResult = ReturnType<typeof useGetFolderInfoSuspenseQuery>;
-export type GetFolderInfoQueryResult = ApolloReact.useQuery.Result<GetFolderInfoQuery, GetFolderInfoQueryVariables>;
-export function refetchGetFolderInfoQuery(variables: GetFolderInfoQueryVariables) {
-      return { query: GetFolderInfoDocument, variables: variables }
-    }
-export const GetStorageStatsDocument = gql`
-    query getStorageStats($path: String) {
-  getStorageStats(path: $path) {
-    fileTypeBreakdown {
-      count
-      type
-    }
-    totalFiles
-    totalFolders
-    totalSize
-  }
-}
-    `;
-
-/**
- * __useGetStorageStatsQuery__
- *
- * To run a query within a React component, call `useGetStorageStatsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetStorageStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetStorageStatsQuery({
- *   variables: {
- *      path: // value for 'path'
- *   },
- * });
- */
-export function useGetStorageStatsQuery(baseOptions?: ApolloReact.useQuery.Options<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReact.useQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
-      }
-export function useGetStorageStatsLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<GetStorageStatsQuery, GetStorageStatsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReact.useLazyQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
-        }
-export function useGetStorageStatsSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<GetStorageStatsQueryVariables> ) {
-          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReact.useSuspenseQuery<GetStorageStatsQuery, GetStorageStatsQueryVariables>(GetStorageStatsDocument, options);
-        }
-export type GetStorageStatsQueryHookResult = ReturnType<typeof useGetStorageStatsQuery>;
-export type GetStorageStatsLazyQueryHookResult = ReturnType<typeof useGetStorageStatsLazyQuery>;
-export type GetStorageStatsSuspenseQueryHookResult = ReturnType<typeof useGetStorageStatsSuspenseQuery>;
-export type GetStorageStatsQueryResult = ApolloReact.useQuery.Result<GetStorageStatsQuery, GetStorageStatsQueryVariables>;
-export function refetchGetStorageStatsQuery(variables?: GetStorageStatsQueryVariables) {
-      return { query: GetStorageStatsDocument, variables: variables }
+export type FolderInfoQueryHookResult = ReturnType<typeof useFolderInfoQuery>;
+export type FolderInfoLazyQueryHookResult = ReturnType<typeof useFolderInfoLazyQuery>;
+export type FolderInfoSuspenseQueryHookResult = ReturnType<typeof useFolderInfoSuspenseQuery>;
+export type FolderInfoQueryResult = ApolloReact.useQuery.Result<FolderInfoQuery, FolderInfoQueryVariables>;
+export function refetchFolderInfoQuery(variables: FolderInfoQueryVariables) {
+      return { query: FolderInfoDocument, variables: variables }
     }
 export const ListFilesDocument = gql`
     query listFiles($input: ListFilesInput!) {
@@ -2621,6 +2586,7 @@ export const ListFilesDocument = gql`
     hasMore
     items {
       isProtected
+      name
       path
     }
     limit
@@ -2676,6 +2642,7 @@ export const SearchFilesDocument = gql`
     hasMore
     items {
       isProtected
+      name
       path
     }
     limit
@@ -2722,6 +2689,55 @@ export type SearchFilesSuspenseQueryHookResult = ReturnType<typeof useSearchFile
 export type SearchFilesQueryResult = ApolloReact.useQuery.Result<SearchFilesQuery, SearchFilesQueryVariables>;
 export function refetchSearchFilesQuery(variables: SearchFilesQueryVariables) {
       return { query: SearchFilesDocument, variables: variables }
+    }
+export const StorageStatsDocument = gql`
+    query storageStats($path: String) {
+  storageStats(path: $path) {
+    fileTypeBreakdown {
+      count
+      type
+    }
+    totalFiles
+    totalFolders
+    totalSize
+  }
+}
+    `;
+
+/**
+ * __useStorageStatsQuery__
+ *
+ * To run a query within a React component, call `useStorageStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStorageStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStorageStatsQuery({
+ *   variables: {
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useStorageStatsQuery(baseOptions?: ApolloReact.useQuery.Options<StorageStatsQuery, StorageStatsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReact.useQuery<StorageStatsQuery, StorageStatsQueryVariables>(StorageStatsDocument, options);
+      }
+export function useStorageStatsLazyQuery(baseOptions?: ApolloReact.useLazyQuery.Options<StorageStatsQuery, StorageStatsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReact.useLazyQuery<StorageStatsQuery, StorageStatsQueryVariables>(StorageStatsDocument, options);
+        }
+export function useStorageStatsSuspenseQuery(baseOptions: ApolloReact.SkipToken | ApolloReact.useSuspenseQuery.Options<StorageStatsQueryVariables> ) {
+          const options = baseOptions === ApolloReact.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReact.useSuspenseQuery<StorageStatsQuery, StorageStatsQueryVariables>(StorageStatsDocument, options);
+        }
+export type StorageStatsQueryHookResult = ReturnType<typeof useStorageStatsQuery>;
+export type StorageStatsLazyQueryHookResult = ReturnType<typeof useStorageStatsLazyQuery>;
+export type StorageStatsSuspenseQueryHookResult = ReturnType<typeof useStorageStatsSuspenseQuery>;
+export type StorageStatsQueryResult = ApolloReact.useQuery.Result<StorageStatsQuery, StorageStatsQueryVariables>;
+export function refetchStorageStatsQuery(variables?: StorageStatsQueryVariables) {
+      return { query: StorageStatsDocument, variables: variables }
     }
 export const CreateStudentDocument = gql`
     mutation createStudent($input: CreateStudentInput!) {

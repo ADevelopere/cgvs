@@ -157,7 +157,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
                     >
                         <TreeView
                             items={regularCategories}
-                            itemRenderer={(item: TemplateCategory) => (
+                            itemRenderer={({ item }) => (
                                 <RenderCategoryItem
                                     key={item.id}
                                     category={item}

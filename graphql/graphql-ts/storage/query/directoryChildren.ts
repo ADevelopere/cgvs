@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const FETCH_DIRECTORY_CHILDREN = gql`
-query fetchDirectoryChildren($path: String){
-    fetchDirectoryChildren(path: $path){
+export const DIRECTORY_CHILDREN = gql`
+query directoryChildren($path: String){
+    directoryChildren(path: $path){
         created
         createdBy
         fileCount
@@ -10,6 +10,7 @@ query fetchDirectoryChildren($path: String){
         isFromBucket
         isProtected
         lastModified
+        name
         path
         permissions{
             allowCreateSubDirs

@@ -9,20 +9,20 @@ import logger from "@/utils/logger";
 type StorageGraphQLContextType = {
     // Queries
     checkFileUsage: (
-        variables: Graphql.CheckFileUsageQueryVariables,
-    ) => Promise<Graphql.CheckFileUsageQuery>;
+        variables: Graphql.FileUsageQueryVariables,
+    ) => Promise<Graphql.FileUsageQuery>;
     fetchDirectoryChildren: (
-        variables: Graphql.FetchDirectoryChildrenQueryVariables,
-    ) => Promise<Graphql.FetchDirectoryChildrenQuery>;
+        variables: Graphql.DirectoryChildrenQueryVariables,
+    ) => Promise<Graphql.DirectoryChildrenQuery>;
     getFileInfo: (
-        variables: Graphql.GetFileInfoQueryVariables,
-    ) => Promise<Graphql.GetFileInfoQuery>;
+        variables: Graphql.FileInfoQueryVariables,
+    ) => Promise<Graphql.FileInfoQuery>;
     getFolderInfo: (
-        variables: Graphql.GetFolderInfoQueryVariables,
-    ) => Promise<Graphql.GetFolderInfoQuery>;
+        variables: Graphql.FolderInfoQueryVariables,
+    ) => Promise<Graphql.FolderInfoQuery>;
     getStorageStats: (
-        variables: Graphql.GetStorageStatsQueryVariables,
-    ) => Promise<Graphql.GetStorageStatsQuery>;
+        variables: Graphql.StorageStatsQueryVariables,
+    ) => Promise<Graphql.StorageStatsQuery>;
     listFiles: (
         variables: Graphql.ListFilesQueryVariables,
     ) => Promise<Graphql.ListFilesQuery>;
@@ -127,15 +127,13 @@ function useMutationWrapper<T, V extends OperationVariables>(
 export const StorageGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const checkFileUsage = useQueryWrapper(Graphql.useCheckFileUsageLazyQuery);
+    const checkFileUsage = useQueryWrapper(Graphql.useFileUsageLazyQuery);
     const fetchDirectoryChildren = useQueryWrapper(
-        Graphql.useFetchDirectoryChildrenLazyQuery,
+        Graphql.useDirectoryChildrenLazyQuery,
     );
-    const getFileInfo = useQueryWrapper(Graphql.useGetFileInfoLazyQuery);
-    const getFolderInfo = useQueryWrapper(Graphql.useGetFolderInfoLazyQuery);
-    const getStorageStats = useQueryWrapper(
-        Graphql.useGetStorageStatsLazyQuery,
-    );
+    const getFileInfo = useQueryWrapper(Graphql.useFileInfoLazyQuery);
+    const getFolderInfo = useQueryWrapper(Graphql.useFolderInfoLazyQuery);
+    const getStorageStats = useQueryWrapper(Graphql.useStorageStatsLazyQuery);
     const listFiles = useQueryWrapper(Graphql.useListFilesLazyQuery);
     const searchFiles = useQueryWrapper(Graphql.useSearchFilesLazyQuery);
 
