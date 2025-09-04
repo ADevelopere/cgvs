@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const GET_FILE_INFO = gql`
-query getFileInfo($path: String!){
-    getFileInfo(path: $path){
+export const FILE_INFO = gql`
+query fileInfo($path: String!){
+    fileInfo(path: $path){
         contentType
         created
         createdBy
@@ -15,6 +15,7 @@ query getFileInfo($path: String!){
         lastModified
         md5Hash
         mediaLink
+        name
         path
         size
         url

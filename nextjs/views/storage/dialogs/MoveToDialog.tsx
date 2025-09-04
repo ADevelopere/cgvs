@@ -32,9 +32,8 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagementCore } from "@/contexts/storage/StorageManagementCoreContext";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
-import { StorageItem } from "@/contexts/storage/storage.type";
+import { DirectoryTreeNode, StorageItem } from "@/contexts/storage/storage.type";
 import useAppTranslation from "@/locale/useAppTranslation";
-
 export interface MoveToDialogProps {
     open: boolean;
     onClose: () => void;
@@ -49,7 +48,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
 
     // State
     const [currentPath, setCurrentPath] = useState<string>("");
-    const [directories, setDirectories] = useState<StorageItem[]>([]);
+    const [directories, setDirectories] = useState<DirectoryTreeNode[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isMoving, setIsMoving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -63,13 +62,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
         try {
             const result = await fetchDirectoryChildren(path || undefined);
             if (result) {
-                // Convert DirectoryTreeNode[] to StorageItem[] (folders only)
-                const folders: StorageItem[] = result.map(node => ({
-                    name: node.name,
-                    path: node.path,
-                    // DirectoryEntity properties (no contentType means it's a folder)
-                } as StorageItem));
-                setDirectories(folders);
+                setDirectories(result);
             } else {
                 setError(translations.moveDialogFailedToLoad || "Failed to load directories");
                 setDirectories([]);

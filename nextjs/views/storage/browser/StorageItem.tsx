@@ -26,7 +26,7 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
     const isSelected = selectedItems.includes(item.path);
     const isCut = clipboard?.operation === 'cut' && 
                   clipboard.items.some(clipItem => clipItem.path === item.path);
-    const isDirectory = item.__typename === 'DirectoryEntity';
+    const isDirectory = item.__typename === 'DirectoryInfo';
 
     // Handle click events for selection
     const handleClick = (event: React.MouseEvent) => {

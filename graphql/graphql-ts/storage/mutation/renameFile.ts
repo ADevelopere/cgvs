@@ -5,6 +5,7 @@ mutation renameFile($input: RenameFileInput!){
     renameFile(input: $input){
         item{
             isProtected
+            name
             path
         }
         message

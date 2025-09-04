@@ -498,7 +498,8 @@ fun storageService(
 
             // Only save folder in DB if custom permissions are provided
             val createdEntity = runBlocking {
-                val hasCustomPermissions = input.permissions != null || input.protected == true || input.protectChildren == true
+                val hasCustomPermissions =
+                    input.permissions != null || input.protected == true || input.protectChildren == true
 
                 if (hasCustomPermissions) {
                     try {
@@ -750,10 +751,15 @@ fun storageService(
     }
 
     fun blobToDirectoryInfo(blob: Blob): BucketDirectory {
+        val createdTime = blob.createTimeOffsetDateTime?.toInstant()?.toEpochMilli()
+            ?: System.currentTimeMillis()
+        val updatedTime = blob.updateTimeOffsetDateTime?.toInstant()?.toEpochMilli()
+            ?: createdTime
+
         return BucketDirectory(
             path = blob.name.trimEnd('/'),
-            created = timestampToLocalDateTime(blob.createTimeOffsetDateTime.toInstant().toEpochMilli()),
-            lastModified = timestampToLocalDateTime(blob.updateTimeOffsetDateTime.toInstant().toEpochMilli()),
+            created = timestampToLocalDateTime(createdTime),
+            lastModified = timestampToLocalDateTime(updatedTime),
             isPublic = blob.name.startsWith("public/")
         )
     }
@@ -860,7 +866,8 @@ fun storageService(
                 if (dbFile != null) {
                     storageDbService.deleteFile(sourcePath)
                     val newFileEntity = storageDbService.createFile(newPath, dbFile.isProtected)
-                    val updatedFile = combineFileData(blobToFileInfo(storage.get(gcsConfig.bucketName, newPath)!!), newFileEntity)
+                    val updatedFile =
+                        combineFileData(blobToFileInfo(storage.get(gcsConfig.bucketName, newPath)!!), newFileEntity)
                     successfulItems.add(updatedFile)
                 } else {
                     // File not in DB, get entity from bucket
@@ -918,7 +925,8 @@ fun storageService(
                 val dbFile = storageDbService.getFileByPath(sourcePath)
                 if (dbFile != null) {
                     val copiedFileEntity = storageDbService.createFile(newPath, dbFile.isProtected)
-                    val copiedFile = combineFileData(blobToFileInfo(storage.get(gcsConfig.bucketName, newPath)!!), copiedFileEntity)
+                    val copiedFile =
+                        combineFileData(blobToFileInfo(storage.get(gcsConfig.bucketName, newPath)!!), copiedFileEntity)
                     successfulItems.add(copiedFile)
                 } else {
                     // File not in DB, get entity from bucket

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const GET_STORAGE_STATS = gql`
-query getStorageStats($path: String){
-    getStorageStats(path: $path){
+export const STORAGE_STATS = gql`
+query storageStats($path: String){
+    storageStats(path: $path){
         fileTypeBreakdown{
             count
             type

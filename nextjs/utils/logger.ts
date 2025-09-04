@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
 
-import { debug } from "console";
-
 const enabled = process.env.NODE_ENV === "development";
 const logger = {
     log: (...args: unknown[]) => {

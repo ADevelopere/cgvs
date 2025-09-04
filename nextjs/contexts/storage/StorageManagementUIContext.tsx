@@ -478,12 +478,10 @@ export const StorageManagementUIProvider: React.FC<{
         return [...currentItems].sort((a, b) => {
             let aValue: string | number;
             let bValue: string | number;
-            const aName = (a.path.split("/").pop() || a.path).toLowerCase();
-            const bName = (b.path.split("/").pop() || b.path).toLowerCase();
             switch (sortBy) {
                 case "name":
-                    aValue = aName;
-                    bValue = bName;
+                    aValue = a.name;
+                    bValue = b.name;
                     break;
                 case "size":
                     aValue = "size" in a ? a.size : 0;
@@ -504,8 +502,8 @@ export const StorageManagementUIProvider: React.FC<{
                         (b as unknown as { created?: number }).created ?? 0;
                     break;
                 default:
-                    aValue = aName;
-                    bValue = bName;
+                    aValue = a.name;
+                    bValue = b.name;
             }
 
             if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;

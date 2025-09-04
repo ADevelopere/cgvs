@@ -33,7 +33,10 @@ data class DirectoryInfo(
     val folderCount: Int = 0,
     @param:GraphQLDescription("Total size of all files in the folder")
     val totalSize: Long = 0
-) : StorageObject
+) : StorageObject {
+    override val name: String
+        get() = path.substringAfterLast('/')
+}
 
 @Serializable
 @GraphQLIgnore
@@ -72,7 +75,10 @@ data class FileInfo(
     val isInUse: Boolean = false,
     @param:GraphQLDescription("List of current usages")
     val usages: List<FileUsageInfo> = emptyList()
-) : StorageObject
+) : StorageObject {
+    override val name: String
+        get() = path.substringAfterLast('/')
+}
 
 @Serializable
 @GraphQLDescription("Directory permissions configuration")
@@ -232,6 +238,7 @@ enum class FileType {
 
 interface StorageObject {
     val path: String
+    val name: String
     val isProtected: Boolean
 }
 

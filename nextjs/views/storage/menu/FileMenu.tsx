@@ -32,7 +32,7 @@ export interface FileMenuProps {
     anchorEl: HTMLElement | null;
     open: boolean;
     onClose: () => void;
-    file: Graphql.FileEntity;
+    file: Graphql.FileInfo;
 }
 
 const FileMenu: React.FC<FileMenuProps> = ({
@@ -63,25 +63,27 @@ const FileMenu: React.FC<FileMenuProps> = ({
     };
 
     const handleDownload = () => {
-        // Construct download URL from file path
-        // This assumes there's an API endpoint that serves files for download
-        const downloadUrl = `/api/storage/download/${encodeURIComponent(file.path)}`;
+        if (file.mediaLink) {
+            // Construct download URL from file path
+            // This assumes there's an API endpoint that serves files for download
 
-        // Create a temporary link and trigger download
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = file.name;
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        onClose();
+            // Create a temporary link and trigger download
+            const link = document.createElement("a");
+            link.href = file.mediaLink;
+            link.download = file.name;
+            link.target = "_blank";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            onClose();
+        }
     };
 
     const handleRename = () => {
         // Simple prompt for now - will be replaced with RenameDialog component later
-        const newName = prompt("Enter new name:", file.name);
-        if (newName && newName !== file.name) {
+        const fileName = file.name;
+        const newName = prompt("Enter new name:", fileName);
+        if (newName && newName !== fileName) {
             renameItem(file.path, newName);
         }
         onClose();
@@ -293,7 +295,8 @@ const FileMenu: React.FC<FileMenuProps> = ({
                         sx={{ color: theme.palette.text.secondary }}
                     >
                         <div style={{ marginBottom: theme.spacing(2) }}>
-                            <strong>{translations.name}:</strong> {file.name}
+                            <strong>{translations.name}:</strong>{" "}
+                            {file.name}
                         </div>
                         <div style={{ marginBottom: theme.spacing(2) }}>
                             <strong>{translations.size}:</strong>{" "}

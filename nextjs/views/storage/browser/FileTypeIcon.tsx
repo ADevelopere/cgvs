@@ -22,12 +22,12 @@ interface FileTypeIconProps extends Omit<SvgIconProps, 'component'> {
  */
 const FileTypeIcon: React.FC<FileTypeIconProps> = ({ item, ...iconProps }) => {
     // Handle directory items
-    if (item.__typename === 'DirectoryEntity') {
+    if (item.__typename === 'DirectoryInfo') {
         return <FolderIcon {...iconProps} />;
     }
 
     // Handle file items based on MIME type
-    if (item.__typename === 'FileEntity') {
+    if (item.__typename === 'FileInfo') {
         // Convert MIME type to ContentType using the utility mapping
         if (item.contentType && mimeToContentType[item.contentType]) {
             const contentType = mimeToContentType[item.contentType];

@@ -41,7 +41,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
         }
     };
 
-    const isDirectory = item.__typename === 'DirectoryEntity';
+    const isDirectory = item.__typename === 'DirectoryInfo';
 
     return (
         <TableRow
@@ -79,7 +79,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
                             wordBreak: 'break-word',
                         }}
                     >
-                        {item.name}
+                        {item.path.split('/').pop()}
                     </Typography>
                 </Box>
             </TableCell>

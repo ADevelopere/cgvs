@@ -6,6 +6,7 @@ query listFiles($input: ListFilesInput!){
         hasMore
         items{
             isProtected
+            name
             path
         }
         limit

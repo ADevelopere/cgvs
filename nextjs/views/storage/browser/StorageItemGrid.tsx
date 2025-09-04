@@ -22,7 +22,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     onDoubleClick,
     onContextMenu,
 }) => {
-    const isDirectory = item.__typename === 'DirectoryEntity';
+    const isDirectory = item.__typename === 'DirectoryInfo';
 
     return (
         <Card

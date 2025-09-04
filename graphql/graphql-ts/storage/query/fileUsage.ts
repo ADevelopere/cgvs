@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
-export const CHECK_FILE_USAGE = gql`
-query checkFileUsage($input: CheckFileUsageInput!){
-    checkFileUsage(input: $input){
+export const FILE_USAGE = gql`
+query fileUsage($input: CheckFileUsageInput!){
+    fileUsage(input: $input){
         canDelete
         deleteBlockReason
         isInUse

@@ -24,7 +24,7 @@ import { useAppTheme } from "@/contexts/ThemeContext";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput } from "@/graphql/generated/types";
-import type { FileInfo } from "@/graphql/generated/types";
+// import type { FileInfo } from "@/graphql/generated/types";
 // import StorageFilePicker from "@/views/storage/filePicker/StorageFilePicker";
 
 type FormDataType = {
@@ -37,7 +37,7 @@ type FormDataType = {
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
     const strings = useAppTranslation("templateCategoryTranslations");
-    const storageStrings = useAppTranslation("storageTranslations");
+    // const storageStrings = useAppTranslation("storageTranslations");
 
     const { template, unsavedChanges, setUnsavedChanges } =
         useTemplateManagement();
@@ -61,7 +61,7 @@ const BasicInfoTab: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
 
-    const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
+    // const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
 
     useEffect(() => {
         if (template) {
@@ -109,19 +109,19 @@ const BasicInfoTab: React.FC = () => {
         [],
     );
 
-    const handleSelectFiles = useCallback(
-        (files: FileInfo[]) => {
-            if (files.length > 0) {
-                // For template cover, we only need one image
-                setFormData((prev) => ({
-                    ...prev,
-                    imageUrl: files[0].url ?? "",
-                    imagePath: files[0].path,
-                }));
-            }
-        },
-        []
-    );
+    // const handleSelectFiles = useCallback(
+    //     (files: FileInfo[]) => {
+    //         if (files.length > 0) {
+    //             // For template cover, we only need one image
+    //             setFormData((prev) => ({
+    //                 ...prev,
+    //                 imageUrl: files[0].url ?? "",
+    //                 imagePath: files[0].path,
+    //             }));
+    //         }
+    //     },
+    //     []
+    // );
 
     const handleRemoveImage = useCallback((): void => {
         setFormData((prev) => ({
@@ -278,7 +278,7 @@ const BasicInfoTab: React.FC = () => {
                                 <Button
                                     variant="contained"
                                     startIcon={<ImageIcon />}
-                                    onClick={() => setSelectorDialogOpen(true)}
+                                    // onClick={() => setSelectorDialogOpen(true)}
                                     color="primary"
                                 >
                                     {/* {storageStrings.selectFile} */}
