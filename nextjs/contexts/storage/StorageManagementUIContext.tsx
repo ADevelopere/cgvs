@@ -137,6 +137,10 @@ export const StorageManagementUIProvider: React.FC<{
                     if (rootItems) {
                         setItems(rootItems.items);
                         setPagination(rootItems.pagination);
+                        // Set focus to first item if no focused item
+                        if (rootItems.items.length > 0 && !focusedItem) {
+                            setFocusedItem(rootItems.items[0].path);
+                        }
                     }
                 }
             } catch (error) {
@@ -169,6 +173,7 @@ export const StorageManagementUIProvider: React.FC<{
         queryParams,
         updateError,
         translations.failedToNavigateToDirectory,
+        focusedItem,
     ]);
 
     // Navigation Functions
@@ -187,6 +192,13 @@ export const StorageManagementUIProvider: React.FC<{
                     setQueryParams(newParams);
                     setSelectedItems([]);
                     setLastSelectedItem(null);
+                    
+                    // Set focus to first item if available
+                    if (result.items.length > 0) {
+                        setFocusedItem(result.items[0].path);
+                    } else {
+                        setFocusedItem(null);
+                    }
 
                     // Exit search mode if navigating
                     if (searchMode) {

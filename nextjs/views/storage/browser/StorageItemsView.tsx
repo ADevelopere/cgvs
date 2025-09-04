@@ -30,6 +30,7 @@ import {
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import StorageItem from "./StorageItem";
+import ViewAreaMenu from "../menu/ViewAreaMenu";
 import { StorageManagementUITranslations } from "@/locale/components/Storage";
 import {
     StorageItem as StorageItemType,
@@ -222,6 +223,8 @@ const ListView: React.FC<{
     currentItems: StorageItemType[];
     setSortBy: (field: string) => void;
     setSortDirection: (direction: "ASC" | "DESC") => void;
+    onContextMenu: (event: React.MouseEvent) => void;
+    onClick: (event: React.MouseEvent) => void;
 }> = ({
     sortBy,
     sortDirection,
@@ -229,6 +232,8 @@ const ListView: React.FC<{
     currentItems,
     setSortBy,
     setSortDirection,
+    onContextMenu,
+    onClick,
 }) => {
     // Handle table header click (for list view)
     const handleTableSort = React.useCallback(
@@ -244,81 +249,93 @@ const ListView: React.FC<{
         },
         [setSortBy, setSortDirection, sortBy, sortDirection],
     );
+
     return (
-        <Table stickyHeader>
-            <TableHead>
-                <TableRow>
-                    <TableCell sx={{ width: "40%" }}>
-                        <TableSortLabel
-                            active={sortBy === "name"}
-                            direction={
-                                sortBy === "name"
-                                    ? sortDirection === "ASC"
-                                        ? "asc"
-                                        : "desc"
-                                    : "asc"
-                            }
-                            onClick={() => handleTableSort("name")}
-                        >
-                            {translations.name}
-                        </TableSortLabel>
-                    </TableCell>
-                    <TableCell sx={{ width: "15%" }}>
-                        <TableSortLabel
-                            active={sortBy === "size"}
-                            direction={
-                                sortBy === "size"
-                                    ? sortDirection === "ASC"
-                                        ? "asc"
-                                        : "desc"
-                                    : "asc"
-                            }
-                            onClick={() => handleTableSort("size")}
-                        >
-                            {translations.size}
-                        </TableSortLabel>
-                    </TableCell>
-                    <TableCell sx={{ width: "20%" }}>
-                        <TableSortLabel
-                            active={sortBy === "lastModified"}
-                            direction={
-                                sortBy === "lastModified"
-                                    ? sortDirection === "ASC"
-                                        ? "asc"
-                                        : "desc"
-                                    : "asc"
-                            }
-                            onClick={() => handleTableSort("lastModified")}
-                        >
-                            {translations.lastModified}
-                        </TableSortLabel>
-                    </TableCell>
-                    <TableCell sx={{ width: "20%" }}>
-                        <TableSortLabel
-                            active={sortBy === "created"}
-                            direction={
-                                sortBy === "created"
-                                    ? sortDirection === "ASC"
-                                        ? "asc"
-                                        : "desc"
-                                    : "asc"
-                            }
-                            onClick={() => handleTableSort("created")}
-                        >
-                            {translations.created}
-                        </TableSortLabel>
-                    </TableCell>
-                    <TableCell sx={{ width: "5%" }}>
-                        {/* Actions column - no sorting */}
-                    </TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {currentItems.map((item) => (
-                    <StorageItem key={item.path} item={item} />
-                ))}
-            </TableBody>
-        </Table>
+        <Box
+            sx={{
+                height: "100%",
+                width: "100%",
+                overflow: "auto",
+                position: "relative",
+            }}
+            onContextMenu={onContextMenu}
+            onClick={onClick}
+        >
+            <Table stickyHeader sx={{ minHeight: "100%" }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell sx={{ width: "40%" }}>
+                            <TableSortLabel
+                                active={sortBy === "name"}
+                                direction={
+                                    sortBy === "name"
+                                        ? sortDirection === "ASC"
+                                            ? "asc"
+                                            : "desc"
+                                        : "asc"
+                                }
+                                onClick={() => handleTableSort("name")}
+                            >
+                                {translations.name}
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell sx={{ width: "15%" }}>
+                            <TableSortLabel
+                                active={sortBy === "size"}
+                                direction={
+                                    sortBy === "size"
+                                        ? sortDirection === "ASC"
+                                            ? "asc"
+                                            : "desc"
+                                        : "asc"
+                                }
+                                onClick={() => handleTableSort("size")}
+                            >
+                                {translations.size}
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell sx={{ width: "20%" }}>
+                            <TableSortLabel
+                                active={sortBy === "lastModified"}
+                                direction={
+                                    sortBy === "lastModified"
+                                        ? sortDirection === "ASC"
+                                            ? "asc"
+                                            : "desc"
+                                        : "asc"
+                                }
+                                onClick={() => handleTableSort("lastModified")}
+                            >
+                                {translations.lastModified}
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell sx={{ width: "20%" }}>
+                            <TableSortLabel
+                                active={sortBy === "created"}
+                                direction={
+                                    sortBy === "created"
+                                        ? sortDirection === "ASC"
+                                            ? "asc"
+                                            : "desc"
+                                        : "asc"
+                                }
+                                onClick={() => handleTableSort("created")}
+                            >
+                                {translations.created}
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell sx={{ width: "5%" }}>
+                            {/* Actions column - no sorting */}
+                        </TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {currentItems.map((item) => (
+                        <StorageItem key={item.path} item={item} />
+                    ))}
+                </TableBody>
+            </Table>
+        </Box>
     );
 };
 
@@ -396,18 +413,38 @@ const EmptyState: React.FC<{
 
 const GridView: React.FC<{
     currentItems: StorageItemType[];
-}> = ({ currentItems }) => {
+    onContextMenu: (event: React.MouseEvent) => void;
+    onClick: (event: React.MouseEvent) => void;
+}> = ({ currentItems, onContextMenu, onClick }) => {
     return (
-        <Grid container spacing={2} sx={{ p: 2 }}>
-            {currentItems.map((item) => (
-                <Grid
-                    size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
-                    key={item.path}
-                >
-                    <StorageItem item={item} />
-                </Grid>
-            ))}
-        </Grid>
+        <Box
+            sx={{
+                height: "100%",
+                width: "100%",
+                overflow: "auto",
+                position: "relative",
+            }}
+            onContextMenu={onContextMenu}
+            onClick={onClick}
+        >
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    p: 2,
+                    minHeight: "100%", // Ensure it takes at least full height
+                }}
+            >
+                {currentItems.map((item) => (
+                    <Grid
+                        size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
+                        key={item.path}
+                    >
+                        <StorageItem item={item} />
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
     );
 };
 
@@ -431,8 +468,49 @@ const StorageItemsView: React.FC = () => {
         loading,
         operationErrors,
         params,
+        selectedItems,
+        focusedItem,
+        setFocusedItem,
+        toggleSelect,
+        selectRange,
+        clearSelection,
+        selectAll,
+        navigateTo,
+        lastSelectedItem,
     } = useStorageManagementUI();
     const { ui: translations } = useAppTranslation("storageTranslations");
+
+    // Context menu state
+    const [viewAreaMenuAnchor, setViewAreaMenuAnchor] =
+        React.useState<HTMLElement | null>(null);
+    const [viewAreaMenuPosition, setViewAreaMenuPosition] = React.useState<
+        | {
+              top: number;
+              left: number;
+          }
+        | undefined
+    >(undefined);
+    const [viewAreaMenuOpen, setViewAreaMenuOpen] = React.useState(false);
+
+    // Global context menu management to close all menus when a new one opens
+    React.useEffect(() => {
+        const handleGlobalContextMenu = () => {
+            // Close all existing context menus when a new context menu is about to open
+            setViewAreaMenuOpen(false);
+            setViewAreaMenuPosition(undefined);
+            setViewAreaMenuAnchor(null);
+        };
+
+        // Listen for context menu events globally
+        document.addEventListener("contextmenu", handleGlobalContextMenu);
+
+        return () => {
+            document.removeEventListener(
+                "contextmenu",
+                handleGlobalContextMenu,
+            );
+        };
+    }, []);
 
     // Get current items (search results or regular directory listing)
     const currentItems = getSortedItems();
@@ -445,6 +523,176 @@ const StorageItemsView: React.FC = () => {
         return operationErrors.fetchList || operationErrors.search;
     }, [operationErrors.fetchList, operationErrors.search]);
 
+    // Keyboard navigation handler
+    const handleKeyDown = React.useCallback(
+        (event: KeyboardEvent) => {
+            if (currentItems.length === 0) return;
+
+            const currentFocusedIndex = focusedItem
+                ? currentItems.findIndex((item) => item.path === focusedItem)
+                : -1;
+
+            switch (event.key) {
+                case "ArrowDown": {
+                    event.preventDefault();
+                    const nextIndex = Math.min(
+                        currentFocusedIndex + 1,
+                        currentItems.length - 1,
+                    );
+                    if (nextIndex !== currentFocusedIndex) {
+                        setFocusedItem(currentItems[nextIndex].path);
+                        if (event.shiftKey && lastSelectedItem) {
+                            selectRange(
+                                lastSelectedItem,
+                                currentItems[nextIndex].path,
+                            );
+                        }
+                    }
+                    break;
+                }
+
+                case "ArrowUp": {
+                    event.preventDefault();
+                    const prevIndex = Math.max(currentFocusedIndex - 1, 0);
+                    if (prevIndex !== currentFocusedIndex) {
+                        setFocusedItem(currentItems[prevIndex].path);
+                        if (event.shiftKey && lastSelectedItem) {
+                            selectRange(
+                                lastSelectedItem,
+                                currentItems[prevIndex].path,
+                            );
+                        }
+                    }
+                    break;
+                }
+
+                case "Home":
+                    event.preventDefault();
+                    setFocusedItem(currentItems[0].path);
+                    if (event.shiftKey && lastSelectedItem) {
+                        selectRange(lastSelectedItem, currentItems[0].path);
+                    }
+                    break;
+
+                case "End":
+                    event.preventDefault();
+                    setFocusedItem(currentItems[currentItems.length - 1].path);
+                    if (event.shiftKey && lastSelectedItem) {
+                        selectRange(
+                            lastSelectedItem,
+                            currentItems[currentItems.length - 1].path,
+                        );
+                    }
+                    break;
+
+                case "Enter":
+                    event.preventDefault();
+                    if (focusedItem) {
+                        const item = currentItems.find(
+                            (item) => item.path === focusedItem,
+                        );
+                        if (item && item.__typename === "DirectoryInfo") {
+                            navigateTo(item.path);
+                        }
+                    }
+                    break;
+
+                case " ":
+                    event.preventDefault();
+                    if (focusedItem) {
+                        if (event.ctrlKey) {
+                            toggleSelect(focusedItem);
+                        } else {
+                            clearSelection();
+                            toggleSelect(focusedItem);
+                        }
+                    }
+                    break;
+
+                case "a":
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        selectAll();
+                    }
+                    break;
+
+                case "Delete":
+                    if (selectedItems.length > 0) {
+                        event.preventDefault();
+                        // Delete functionality will be handled by delete key
+                        // For now, just prevent default
+                    }
+                    break;
+            }
+        },
+        [
+            currentItems,
+            focusedItem,
+            setFocusedItem,
+            lastSelectedItem,
+            selectRange,
+            navigateTo,
+            toggleSelect,
+            clearSelection,
+            selectAll,
+            selectedItems.length,
+        ],
+    );
+
+    const handleCloseViewAreaMenu = React.useCallback(() => {
+        setViewAreaMenuOpen(false);
+        setViewAreaMenuPosition(undefined);
+        setViewAreaMenuAnchor(null);
+    }, []);
+
+    // Add keyboard event listener
+    React.useEffect(() => {
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [handleKeyDown]);
+
+    // Handle click on view area (empty space) to deselect items
+    const handleViewAreaClick = React.useCallback(
+        (event: React.MouseEvent) => {
+            // Only deselect if clicking on empty area (not on items)
+            const target = event.target as HTMLElement;
+            const isEmptyArea = target.closest("[data-storage-item]") === null;
+
+            if (isEmptyArea && selectedItems.length > 0) {
+                clearSelection();
+            }
+        },
+        [clearSelection, selectedItems.length],
+    );
+
+    // Handle context menu for view area (right-click on empty space)
+    const handleViewAreaContextMenu = React.useCallback(
+        (event: React.MouseEvent) => {
+            // Only show context menu if clicking on empty area (not on items)
+            const target = event.target as HTMLElement;
+            const isEmptyArea = target.closest("[data-storage-item]") === null;
+
+            if (isEmptyArea) {
+                event.preventDefault();
+
+                // Close any existing context menus first
+                handleCloseViewAreaMenu();
+
+                // Small delay to ensure previous menu is closed
+                setTimeout(() => {
+                    setViewAreaMenuPosition({
+                        top: event.clientY,
+                        left: event.clientX,
+                    });
+                    setViewAreaMenuOpen(true);
+                }, 0);
+            }
+        },
+        [handleCloseViewAreaMenu],
+    );
+
     return (
         <Box
             sx={{
@@ -452,6 +700,7 @@ const StorageItemsView: React.FC = () => {
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
+                height: "100%",
             }}
         >
             {/* Toolbar */}
@@ -469,7 +718,11 @@ const StorageItemsView: React.FC = () => {
             />
 
             {/* Content Area */}
-            <Box sx={{ flex: 1, overflow: "auto" }}>
+            <Box
+                sx={{ flex: 1, overflow: "auto" }}
+                onContextMenu={handleViewAreaContextMenu}
+                onClick={handleViewAreaClick}
+            >
                 {isLoading && (
                     <LoadingStates
                         searchMode={searchMode}
@@ -491,7 +744,11 @@ const StorageItemsView: React.FC = () => {
                 {!isLoading && !hasError && currentItems.length > 0 && (
                     <>
                         {viewMode === "grid" && (
-                            <GridView currentItems={currentItems} />
+                            <GridView
+                                currentItems={currentItems}
+                                onContextMenu={handleViewAreaContextMenu}
+                                onClick={handleViewAreaClick}
+                            />
                         )}
                         {viewMode === "list" && (
                             <ListView
@@ -501,11 +758,22 @@ const StorageItemsView: React.FC = () => {
                                 currentItems={currentItems}
                                 setSortBy={setSortBy}
                                 setSortDirection={setSortDirection}
+                                onContextMenu={handleViewAreaContextMenu}
+                                onClick={handleViewAreaClick}
                             />
                         )}
                     </>
                 )}
             </Box>
+
+            {/* View Area Context Menu */}
+            <ViewAreaMenu
+                anchorEl={viewAreaMenuAnchor}
+                open={viewAreaMenuOpen}
+                anchorPosition={viewAreaMenuPosition}
+                onClose={handleCloseViewAreaMenu}
+                onContextMenu={handleViewAreaContextMenu}
+            />
         </Box>
     );
 };

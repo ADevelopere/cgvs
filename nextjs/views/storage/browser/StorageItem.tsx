@@ -16,8 +16,11 @@ interface StorageItemProps {
 const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
     const {
         selectedItems,
+        lastSelectedItem,
         viewMode,
         toggleSelect,
+        selectRange,
+        clearSelection,
         navigateTo,
         setFocusedItem,
         clipboard,
@@ -35,9 +38,19 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
         // Set focused item for keyboard navigation
         setFocusedItem(item.path);
         
-        // For now, all click types use toggleSelect
-        // The UI context will handle the different selection behaviors
-        toggleSelect(item.path);
+        // Handle different selection behaviors based on modifier keys
+        if (event.shiftKey && lastSelectedItem) {
+            // Shift+click: Select range from last selected to current
+            selectRange(lastSelectedItem, item.path);
+        } else if (event.ctrlKey || event.metaKey) {
+            // Ctrl+click (or Cmd+click on Mac): Toggle selection
+            toggleSelect(item.path);
+        } else if (!isSelected || selectedItems.length > 1) {
+            // Regular click: Clear all selections and select only this item
+            // Only change selection if item is not selected or multiple items are selected
+            clearSelection();
+            toggleSelect(item.path);
+        }
     };
 
     // Handle double-click for navigation
@@ -53,15 +66,16 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
     // Handle context menu (right-click)
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
+        event.stopPropagation(); // Prevent view area context menu from opening
         
         // If item is not selected, select it first
         if (!isSelected) {
+            clearSelection();
             toggleSelect(item.path);
             setFocusedItem(item.path);
         }
 
-        // Context menu will be implemented in Phase 5 with FileMenu/FolderMenu components
-        // For now, just prevent the default browser context menu
+        // The actual context menu handling is done by the child components
     };
 
     // Common props for both view types
@@ -71,6 +85,7 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
         onClick: handleClick,
         onDoubleClick: handleDoubleClick,
         onContextMenu: handleContextMenu,
+        'data-storage-item': true, // Mark for view area click detection
     };
 
     // Apply cut styling if item is cut to clipboard
