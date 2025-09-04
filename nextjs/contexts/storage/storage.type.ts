@@ -10,7 +10,7 @@ export type StorageQueryParams = {
 };
 
 // Union type for storage items (files and folders)
-export type StorageItem = Graphql.FileEntity | Graphql.DirectoryEntity;
+export type StorageItem = Graphql.FileInfo | Graphql.DirectoryInfo;
 
 // Pagination information
 export type PaginationInfo = {
@@ -173,5 +173,5 @@ export type StorageManagementUIContextType = {
 
 // Re-export GraphQL types for convenience
 export type StorageStats = Graphql.StorageStats;
-export type FileEntity = Graphql.FileEntity;
-export type DirectoryEntity = Graphql.DirectoryEntity;
+export type FileInfo = Graphql.FileInfo;
+export type DirectoryInfo = Graphql.DirectoryInfo;

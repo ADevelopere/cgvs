@@ -7,14 +7,25 @@ query getFileInfo($path: String!){
         created
         createdBy
         directoryPath
-        id
+        fileType
         isFromBucket
+        isInUse
         isProtected
+        isPublic
         lastModified
         md5Hash
-        name
+        mediaLink
         path
         size
+        url
+        usages{
+            created
+            filePath
+            id
+            referenceId
+            referenceTable
+            usageType
+        }
     }
 }
 `;

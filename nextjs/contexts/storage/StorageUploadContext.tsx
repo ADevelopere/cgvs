@@ -76,8 +76,9 @@ export const StorageUploadProvider: React.FC<{
 }) => {
     const gql = useStorageGraphQL();
     const notifications = useNotifications();
-    const translations = useAppTranslation("storageTranslations");
-
+    const { uploading: translations } = useAppTranslation(
+        "storageTranslations",
+    );
     const [uploadBatch, setUploadBatch] = useState<
         UploadBatchState | undefined
     >(undefined);
@@ -129,9 +130,8 @@ export const StorageUploadProvider: React.FC<{
                     const existingItems =
                         listResForCheck.listFiles?.items || [];
                     const conflict = existingItems.some(
-                        (it: { path: string; name: string }) =>
-                            it.path === destinationStoragePath ||
-                            it.name === file.name,
+                        (it: { path: string }) =>
+                            it.path === destinationStoragePath,
                     );
 
                     if (conflict) {
@@ -668,13 +668,13 @@ export const StorageUploadProvider: React.FC<{
                     ),
                 );
             }
-            notifications.show(translations.retryCompleted, {
+            notifications.show(translations.retryCompletedUploads, {
                 severity: "success",
                 autoHideDuration: 2000,
             });
         } catch (error) {
             logger.error("Retry failed:", error);
-            notifications.show(translations.retryFailed, {
+            notifications.show(translations.retryFailedUploads, {
                 severity: "error",
                 autoHideDuration: 3000,
             });
@@ -687,10 +687,10 @@ export const StorageUploadProvider: React.FC<{
         uploadBatch,
         notifications,
         translations.noFailedUploads,
-        translations.retryCompleted,
-        translations.retryFailed,
-        uploadSingleFile,
+        translations.retryCompletedUploads,
+        translations.retryFailedUploads,
         maxConcurrentUploads,
+        uploadSingleFile,
     ]);
 
     const value: StorageUploadContextType = useMemo(

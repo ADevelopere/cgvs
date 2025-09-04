@@ -5,8 +5,7 @@ query searchFiles($fileType: String, $folder: String, $limit: Int!, $searchTerm:
     searchFiles(fileType: $fileType, folder: $folder, limit: $limit, searchTerm: $searchTerm){
         hasMore
         items{
-            id
-            name
+            isProtected
             path
         }
         limit

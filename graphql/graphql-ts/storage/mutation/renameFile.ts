@@ -4,8 +4,7 @@ export const RENAME_FILE = gql`
 mutation renameFile($input: RenameFileInput!){
     renameFile(input: $input){
         item{
-            id
-            name
+            isProtected
             path
         }
         message

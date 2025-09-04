@@ -8,6 +8,8 @@ query checkFileUsage($input: CheckFileUsageInput!){
         isInUse
         usages{
             created
+            filePath
+            id
             referenceId
             referenceTable
             usageType

@@ -7,8 +7,7 @@ mutation deleteStorageItems($input: DeleteItemsInput!){
         failureCount
         successCount
         successfulItems{
-            id
-            name
+            isProtected
             path
         }
     }

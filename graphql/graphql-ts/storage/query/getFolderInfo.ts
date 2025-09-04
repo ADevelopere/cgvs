@@ -5,12 +5,11 @@ query getFolderInfo($path: String!){
     getFolderInfo(path: $path){
         created
         createdBy
-        id
+        fileCount
+        folderCount
         isFromBucket
         isProtected
         lastModified
-        name
-        parentPath
         path
         permissions{
             allowCreateSubDirs
@@ -21,6 +20,7 @@ query getFolderInfo($path: String!){
             allowUploads
         }
         protectChildren
+        totalSize
     }
 }
 `;
