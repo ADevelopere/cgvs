@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import useAppTranslation from "@/locale/useAppTranslation";
+import logger from "@/utils/logger";
 
 interface StorageBreadcrumbProps {
     /**
@@ -64,20 +65,31 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
         const lastThreeSegments = allSegments.slice(-3);
 
         displaySegments = [
-            { name: firstSegment, path: firstSegment },
+            { name: firstSegment, path: "" }, // Always empty string for root
             { name: "...", path: "", isTruncated: true },
-            ...lastThreeSegments.map((segment, index) => ({
-                name: segment,
-                path: allSegments
-                    .slice(0, allSegments.length - 3 + index + 1)
-                    .join("/"),
-            })),
+            ...lastThreeSegments.map((segment, index) => {
+                const segmentIndex = allSegments.length - 3 + index;
+                const pathSegments = allSegments.slice(1, segmentIndex + 1); // Skip the empty root segment
+                return {
+                    name: segment,
+                    path: pathSegments.join("/"), // Join without leading slash
+                };
+            }),
         ];
     } else {
-        displaySegments = allSegments.map((segment, index) => ({
-            name: segment,
-            path: allSegments.slice(0, index + 1).join("/"),
-        }));
+        displaySegments = allSegments.map((segment, index) => {
+            if (index === 0) {
+                // Root segment always has empty path
+                return { name: segment, path: "" };
+            } else {
+                // For non-root segments, construct path without leading slash
+                const pathSegments = allSegments.slice(1, index + 1); // Skip the empty root segment
+                return {
+                    name: segment,
+                    path: pathSegments.join("/"),
+                };
+            }
+        });
     }
 
     const handleBreadcrumbClick = (
@@ -88,6 +100,13 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
             // Don't navigate for truncated segments
             return;
         }
+        
+        logger.debug("Breadcrumb navigation:", {
+            from: currentPath,
+            to: targetPath,
+            isRoot: targetPath === ""
+        });
+        
         handleNavigate(targetPath);
     };
 
