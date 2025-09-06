@@ -103,6 +103,7 @@ export const StorageManagementUIProvider: React.FC<{
 
     // Track if this is the initial mount or subsequent navigation
     const isInitialMount = useRef(true);
+    const lastNavigationRequest = useRef<string | null>(null);
 
     // Helper function to update loading state
     const updateLoading = useCallback(
@@ -229,29 +230,49 @@ export const StorageManagementUIProvider: React.FC<{
                     isInitialMount.current = false;
                 } else {
                     // Navigation change: Only fetch items for the new path, keep directory tree intact
+                    const currentPath = queryParams.path;
+                    lastNavigationRequest.current = currentPath;
+                    
                     updateLoading("fetchList", true);
+                    updateError("fetchList"); // Clear any previous errors
                     
                     const result = await coreContext.fetchList(queryParams);
                     
-                    if (isMounted && result) {
-                        setItems(result.items);
-                        setPagination(result.pagination);
-                        // Set focus to first item if available
-                        if (result.items.length > 0) {
-                            setFocusedItem(result.items[0].path);
+                    // Check if this is still the most recent navigation request
+                    if (isMounted && lastNavigationRequest.current === currentPath) {
+                        if (result) {
+                            setItems(result.items);
+                            setPagination(result.pagination);
+                            // Set focus to first item if available
+                            if (result.items.length > 0) {
+                                setFocusedItem(result.items[0].path);
+                            } else {
+                                setFocusedItem(null);
+                            }
                         } else {
-                            setFocusedItem(null);
+                            // Handle null result - this shouldn't happen but prevents empty state
+                            logger.warn("Navigation returned null result for path:", queryParams.path);
+                            updateError("fetchList", translations.failedToNavigateToDirectory);
                         }
+                    } else {
+                        logger.debug("Ignoring stale navigation result for path:", currentPath);
                     }
                 }
             } catch (error) {
                 // Only log if not an abort error during unmount
                 if (isMounted) {
-                    logger.error("Error initializing storage data:", error);
+                    logger.error("Error during navigation/initialization:", error);
                     updateError(
                         "fetchList",
                         translations.failedToNavigateToDirectory,
                     );
+                    
+                    // If this was a navigation error (not initial mount), try to recover
+                    if (!isInitialMount.current) {
+                        logger.debug("Attempting to recover from navigation error by staying in current directory");
+                        // Don't change items/pagination on navigation errors to avoid empty state
+                        // User can retry or navigate manually
+                    }
                 }
             } finally {
                 if (isMounted) {
@@ -280,6 +301,14 @@ export const StorageManagementUIProvider: React.FC<{
     // Navigation Functions
     const navigateTo = useCallback(
         async (path: string) => {
+            // Avoid unnecessary navigation to the same path
+            if (queryParams.path === path) {
+                logger.debug("Already at path:", path, "- skipping navigation");
+                return;
+            }
+            
+            logger.debug("Navigating from:", queryParams.path, "to:", path);
+            
             // Only update query params - the useEffect will handle fetching the data
             const newParams = { ...queryParams, path, offset: 0 };
             setQueryParams(newParams);
@@ -298,7 +327,25 @@ export const StorageManagementUIProvider: React.FC<{
     );
 
     const goUp = useCallback(async () => {
-        const parentPath = queryParams.path.split("/").slice(0, -1).join("/");
+        const currentPath = queryParams.path;
+        
+        // Handle edge cases for path calculation
+        if (!currentPath || currentPath === "") {
+            // Already at root, can't go up further
+            logger.debug("Already at root directory, cannot navigate up");
+            return;
+        }
+        
+        // Remove trailing slashes and calculate parent path
+        const cleanPath = currentPath.replace(/\/+$/, "");
+        const pathSegments = cleanPath.split("/").filter(segment => segment !== "");
+        
+        // Calculate parent path
+        const parentPath = pathSegments.length > 1 
+            ? pathSegments.slice(0, -1).join("/")
+            : ""; // Go to root if only one segment
+            
+        logger.debug("Navigating up from:", currentPath, "to:", parentPath);
         await navigateTo(parentPath);
     }, [queryParams.path, navigateTo]);
 
