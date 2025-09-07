@@ -803,6 +803,39 @@ This component will be a modal dialog using MUI `Dialog`, `DialogTitle`, `Dialog
         -   Display validation errors using MUI `Alert` components or `TextField` error states.
         -   Close dialog automatically on successful rename operation.
 
+### `FilePickerDialog.tsx` (Material-UI Dialog)
+
+This component will be a simplified modal dialog for selecting a single file from storage. It will be used in places where a user needs to pick a file, for example, attaching a file.
+
+Browse & Navigate: Users can see a list of files and folders and navigate through folders.
+Single File Selection: Users can select only one file at a time.
+Breadcrumbs: A breadcrumb trail will show the current folder path for easy navigation.
+
+-   **State to Manage:**
+    -   `isOpen`: Boolean to control the visibility of the dialog.
+    -   `onFileSelect`: Callback function to be called when a file is selected.
+    -   `currentPathInDialog`: The path of the directory currently being viewed *inside the dialog*.
+    -   `itemsInView`: The list of files and folders for the `currentPathInDialog`.
+    -   `isLoading`: Boolean to indicate when the dialog is fetching directory contents.
+
+-   **UI Design & Behavior (Material-UI Implementation):**
+    -   **Header:**
+        -   An MUI `DialogTitle` with the text "Select a file".
+        -   A breadcrumb navigation using MUI `Breadcrumbs` to show the `currentPathInDialog`.
+    -   **Item Listing:**
+        -   Display files and folders using MUI `List`, `ListItem`, and `ListItemText`.
+        -   Clicking a folder navigates into it.
+        -   Clicking a file selects it.
+    -   **Footer Actions:**
+        -   MUI `DialogActions` containing:
+            -   A MUI `Button` with "Cancel" text to close the dialog.
+            -   A primary MUI `Button` with "Select" text, which is enabled when a file is selected. Clicking it calls `onFileSelect` with the selected file and closes the dialog.
+
+-   **Responsibilities:**
+    -   Fetch directory contents when navigating between folders.
+    -   Handle single file selection.
+    -   Provide a simple and straightforward way for users to select a file from their storage.
+
 ---
 
 ## 9. Final File List
@@ -814,6 +847,7 @@ This component will be a modal dialog using MUI `Dialog`, `DialogTitle`, `Dialog
 -   **Components (Material-UI Based):**
     -   `nextjs/components/storage/dialogs/MoveToDialog.tsx` (New - MUI Dialog)
     -   `nextjs/components/storage/dialogs/RenameDialog.tsx` (New - MUI Dialog)
+    -   `nextjs/components/storage/dialogs/FilePickerDialog.tsx` (New - MUI Dialog)
     -   `nextjs/components/storage/dropzone/...` (New - for drag-and-drop upload zones with MUI components)
     -   `nextjs/components/storage/menu/FileMenu.tsx` (New - MUI Menu for files)
     -   `nextjs/components/storage/menu/FolderMenu.tsx` (New - MUI Menu for folders)

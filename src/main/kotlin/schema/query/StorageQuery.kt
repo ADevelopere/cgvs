@@ -23,13 +23,13 @@ class StorageQuery : Query, KoinComponent {
     fun fileInfo(
         path: String
     ): FileInfo? {
-        return storageService.getFileEntityByPath(path)
+        return storageService.fileInfoByPath(path)
     }
 
     fun folderInfo(
         path: String
     ): DirectoryInfo {
-        return storageService.getFolderEntityByPath(path)
+        return storageService.directoryInfoByPath(path)
     }
 
     fun searchFiles(
@@ -55,7 +55,7 @@ class StorageQuery : Query, KoinComponent {
         @GraphQLDescription("Folder path to get stats for (optional, gets stats for entire bucket if not specified)")
         path: String? = null
     ): StorageStats {
-        return storageService.getStorageStatistics(path)
+        return storageService.storageStatistics(path)
     }
 
     @GraphQLDescription("Fetch immediate children directories for lazy loading directory tree")

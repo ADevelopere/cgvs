@@ -11,7 +11,6 @@ import {
     Box,
     TextField,
     Card,
-    CardMedia,
     Button,
     Typography,
     Alert,
@@ -23,21 +22,21 @@ import { useTemplateManagement } from "@/contexts/template/TemplateManagementCon
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { useTemplateCategoryManagement } from "@/contexts/template/TemplateCategoryManagementContext";
 import useAppTranslation from "@/locale/useAppTranslation";
-import { UpdateTemplateInput } from "@/graphql/generated/types";
-// import type { FileInfo } from "@/graphql/generated/types";
-// import StorageFilePicker from "@/views/storage/filePicker/StorageFilePicker";
+import { UpdateTemplateInput, FileInfo } from "@/graphql/generated/types";
+import FilePickerDialog from "@/views/storage/dialogs/FilePickerDialog";
+import Image from "next/image";
+import logger from "@/utils/logger";
 
 type FormDataType = {
     name: string;
-    description: string;
-    imageUrl?: string;
-    imagePath?: string;
+    description?: string | null;
+    imageFile?: FileInfo;
 };
 
 const BasicInfoTab: React.FC = () => {
     const { theme } = useAppTheme();
     const strings = useAppTranslation("templateCategoryTranslations");
-    // const storageStrings = useAppTranslation("storageTranslations");
+    const storageStrings = useAppTranslation("storageTranslations");
 
     const { template, unsavedChanges, setUnsavedChanges } =
         useTemplateManagement();
@@ -55,45 +54,42 @@ const BasicInfoTab: React.FC = () => {
     const [formData, setFormData] = useState<FormDataType>({
         name: "",
         description: "",
-        imageUrl: "",
+        imageFile: undefined,
     });
 
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
 
-    // const [selectorDialogOpen, setSelectorDialogOpen] = useState(false);
+    const [filePickerOpen, setFilePickerOpen] = useState(false);
 
     useEffect(() => {
         if (template) {
-            setFormData({
+            logger.info("Setting form data from template", JSON.stringify(template) );
+                setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                imageUrl: template.imageUrl,
+                imageFile: template.imageFile,
             });
         }
     }, [template]);
 
     useEffect(() => {
-        if (!template) {
+        if (!template || !formData) {
             setUnsavedChangesRef.current(false);
             return;
         }
-        const originalData = {
-            name: template.name ?? "",
-            description: template.description ?? "",
-            image: template.imageUrl,
+        const originalData: FormDataType = {
+            name: template.name,
+            description: template.description,
+            imageFile: template.imageFile,
         };
 
-        const currentData = {
-            name: formData.name,
-            description: formData.description,
-            image: formData.imageUrl,
-        };
+        const currentData = formData;
 
         const hasChanges =
             originalData.name !== currentData.name ||
             originalData.description !== currentData.description ||
-            originalData.image !== currentData.image;
+            originalData.imageFile?.path !== currentData.imageFile?.path;
 
         setUnsavedChangesRef.current(hasChanges);
     }, [formData, template]);
@@ -109,19 +105,13 @@ const BasicInfoTab: React.FC = () => {
         [],
     );
 
-    // const handleSelectFiles = useCallback(
-    //     (files: FileInfo[]) => {
-    //         if (files.length > 0) {
-    //             // For template cover, we only need one image
-    //             setFormData((prev) => ({
-    //                 ...prev,
-    //                 imageUrl: files[0].url ?? "",
-    //                 imagePath: files[0].path,
-    //             }));
-    //         }
-    //     },
-    //     []
-    // );
+    const handleFileSelect = useCallback((file: FileInfo) => {
+        setFormData((prev) => ({
+            ...prev,
+            imageFile: file,
+        }));
+        setFilePickerOpen(false);
+    }, []);
 
     const handleRemoveImage = useCallback((): void => {
         setFormData((prev) => ({
@@ -145,7 +135,7 @@ const BasicInfoTab: React.FC = () => {
             name: formData.name,
             description: formData.description || undefined,
             categoryId: template.category.id,
-            // imageFileName: formData.imagePath,
+            // Note: imageFileId integration pending file ID resolution
         };
 
         const updatedTemplate = await updateTemplate({
@@ -157,19 +147,29 @@ const BasicInfoTab: React.FC = () => {
             setUnsavedChangesRef.current(false);
         }
         setSaving(false);
-    }, [formData.description, formData.name, template?.category.id, template?.id, updateTemplate]);
+    }, [
+        formData.description,
+        formData.name,
+        template?.category.id,
+        template?.id,
+        updateTemplate,
+    ]);
 
     const handleCancel = useCallback(() => {
         if (template) {
             setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                imageUrl: template.imageUrl ?? "",
-                imagePath: undefined,
+                imageFile: template.imageFile,
             });
         }
         setError(null);
     }, [template]);
+
+    if(!formData.imageFile?.url){
+        logger.warn("No image URL found in formData.imageFile");
+        return null;
+    }
 
     return (
         <Box
@@ -278,12 +278,15 @@ const BasicInfoTab: React.FC = () => {
                                 <Button
                                     variant="contained"
                                     startIcon={<ImageIcon />}
-                                    // onClick={() => setSelectorDialogOpen(true)}
+                                    onClick={() => setFilePickerOpen(true)}
                                     color="primary"
                                 >
-                                    {/* {storageStrings.selectFile} */}
+                                    {
+                                        storageStrings.ui
+                                            .filePickerDialogSelectFile
+                                    }
                                 </Button>
-                                {formData.imageUrl && (
+                                {formData.imageFile && (
                                     <Button
                                         variant="outlined"
                                         startIcon={<DeleteIcon />}
@@ -307,14 +310,14 @@ const BasicInfoTab: React.FC = () => {
                                 border: "1px dashed grey",
                             }}
                         >
-                            {formData.imageUrl ? (
-                                <CardMedia
-                                    component="img"
-                                    image={formData.imageUrl}
-                                    alt="Template background"
-                                    sx={{
-                                        maxHeight: "100%",
-                                        width: "auto",
+                            {formData.imageFile ? (
+                                <Image
+                                    src={formData.imageFile.url}
+                                    alt={formData.imageFile.name}
+                                    width={300}
+                                    height={200}
+                                    style={{
+                                        maxHeight: "200px",
                                         maxWidth: "100%",
                                         objectFit: "contain",
                                     }}
@@ -332,15 +335,14 @@ const BasicInfoTab: React.FC = () => {
                 </Grid>
             </Box>
 
-            {/* File Selector Dialog */}
-            {/* <StorageFilePicker
-                open={selectorDialogOpen}
-                onClose={() => setSelectorDialogOpen(false)}
-                prohibitedUrls={formData.imageUrl ? [formData.imageUrl] : []}
-                initialLocation={"TEMPLATE_COVER"}
-                onSelectAction={handleSelectFiles}
-                title={storageStrings.selectFile}
-            /> */}
+            {/* File Picker Dialog */}
+            <FilePickerDialog
+                open={filePickerOpen}
+                onClose={() => setFilePickerOpen(false)}
+                onFileSelect={handleFileSelect}
+                allowedFileTypes={["image/*"]} // Only allow image files for template covers
+                title={storageStrings.ui.filePickerDialogSelectFile}
+            />
         </Box>
     );
 };

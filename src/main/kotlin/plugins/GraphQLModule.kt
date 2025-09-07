@@ -22,7 +22,7 @@ import schema.mutation.AuthMutation
 import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
 import hooks.customSchemaGeneratorHooks
-import schema.dataloaders.StorageFileInfoDataLoader
+import schema.dataloaders.StorageFileInfoByIdDataLoader
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateCategoryTemplatesDataLoader
@@ -81,7 +81,7 @@ fun Application.graphQLModule() {
                 TemplateDataLoader,
                 TemplateVariablesDataLoader,
                 UrlDataLoader,
-                StorageFileInfoDataLoader
+                StorageFileInfoByIdDataLoader
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }

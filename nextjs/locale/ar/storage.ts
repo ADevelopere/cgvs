@@ -205,6 +205,18 @@ const arStorageTranslations: StorageTranslations = {
         moveDialogUnexpectedError: "حدث خطأ غير متوقع",
         moving: "جاري النقل...",
         // Move to dialog end
+
+        // File picker dialog
+        filePickerDialogTitle: "اختيار ملف",
+        filePickerDialogSelectFile: "اختر ملف",
+        filePickerDialogNoFiles: "لا توجد ملفات في هذا المجلد",
+        filePickerDialogSelect: "اختيار",
+        filePickerDialogCancel: "إلغاء",
+        filePickerDialogFailedToLoad: "فشل في تحميل الملفات",
+        filePickerDialogUnexpectedError: "حدث خطأ غير متوقع",
+        selecting: "جاري الاختيار...",
+        // File picker dialog end
+        
         contentType: "نوع المحتوى",
         path: "المسار",
         md5Hash: "تشفير MD5",
