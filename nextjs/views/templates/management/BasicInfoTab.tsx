@@ -25,12 +25,11 @@ import useAppTranslation from "@/locale/useAppTranslation";
 import { UpdateTemplateInput, FileInfo } from "@/graphql/generated/types";
 import FilePickerDialog from "@/views/storage/dialogs/FilePickerDialog";
 import Image from "next/image";
-import logger from "@/utils/logger";
 
 type FormDataType = {
     name: string;
     description?: string | null;
-    imageFile?: FileInfo;
+    imageUrl?: string | null;
 };
 
 const BasicInfoTab: React.FC = () => {
@@ -54,7 +53,7 @@ const BasicInfoTab: React.FC = () => {
     const [formData, setFormData] = useState<FormDataType>({
         name: "",
         description: "",
-        imageFile: undefined,
+        imageUrl: undefined,
     });
 
     const [error, setError] = useState<string | null>(null);
@@ -64,24 +63,23 @@ const BasicInfoTab: React.FC = () => {
 
     useEffect(() => {
         if (template) {
-            logger.info("Setting form data from template", JSON.stringify(template) );
-                setFormData({
+            setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                imageFile: template.imageFile,
+                imageUrl: template.imageUrl,
             });
         }
     }, [template]);
 
     useEffect(() => {
-        if (!template || !formData) {
+        if (!template) {
             setUnsavedChangesRef.current(false);
             return;
         }
         const originalData: FormDataType = {
             name: template.name,
             description: template.description,
-            imageFile: template.imageFile,
+            imageUrl: template.imageUrl,
         };
 
         const currentData = formData;
@@ -89,7 +87,7 @@ const BasicInfoTab: React.FC = () => {
         const hasChanges =
             originalData.name !== currentData.name ||
             originalData.description !== currentData.description ||
-            originalData.imageFile?.path !== currentData.imageFile?.path;
+            originalData.imageUrl !== currentData.imageUrl;
 
         setUnsavedChangesRef.current(hasChanges);
     }, [formData, template]);
@@ -108,7 +106,7 @@ const BasicInfoTab: React.FC = () => {
     const handleFileSelect = useCallback((file: FileInfo) => {
         setFormData((prev) => ({
             ...prev,
-            imageFile: file,
+            imageUrl: file.url,
         }));
         setFilePickerOpen(false);
     }, []);
@@ -116,8 +114,7 @@ const BasicInfoTab: React.FC = () => {
     const handleRemoveImage = useCallback((): void => {
         setFormData((prev) => ({
             ...prev,
-            imageUrl: "",
-            imagePath: undefined,
+            imageUrl: undefined,
         }));
     }, []);
 
@@ -160,16 +157,11 @@ const BasicInfoTab: React.FC = () => {
             setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                imageFile: template.imageFile,
+                imageUrl: template.imageUrl,
             });
         }
         setError(null);
     }, [template]);
-
-    if(!formData.imageFile?.url){
-        logger.warn("No image URL found in formData.imageFile");
-        return null;
-    }
 
     return (
         <Box
@@ -286,7 +278,7 @@ const BasicInfoTab: React.FC = () => {
                                             .filePickerDialogSelectFile
                                     }
                                 </Button>
-                                {formData.imageFile && (
+                                {formData.imageUrl && (
                                     <Button
                                         variant="outlined"
                                         startIcon={<DeleteIcon />}
@@ -310,10 +302,10 @@ const BasicInfoTab: React.FC = () => {
                                 border: "1px dashed grey",
                             }}
                         >
-                            {formData.imageFile ? (
+                            {formData.imageUrl ? (
                                 <Image
-                                    src={formData.imageFile.url}
-                                    alt={formData.imageFile.name}
+                                    src={formData.imageUrl}
+                                    alt={formData.imageUrl.split("/").pop() || "Template Image"}
                                     width={300}
                                     height={200}
                                     style={{
