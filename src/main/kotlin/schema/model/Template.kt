@@ -76,7 +76,7 @@ data class UpdateTemplateInput(
     val name: String? = null,
     val description: String? = null,
     val categoryId: Int,
-    val imageFileId: Long? = null,
+    val imagePath: String? = null,
 )
 
 data class PaginatedTemplatesResponse(

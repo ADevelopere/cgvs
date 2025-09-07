@@ -9,10 +9,13 @@ import schema.pagination.PaginationResult
 import schema.pagination.PaginationUtils
 import schema.model.PaginationArgs
 import tables.CategorySpecialType
+import tables.FileEntity
 
 class TemplateService(
     private val templateRepository: TemplateRepository,
-    private val templateCategoryRepository: TemplateCategoryRepository
+    private val templateCategoryRepository: TemplateCategoryRepository,
+    private val storageService: StorageService,
+    private val storageDbService: StorageDbService,
 ) {
     /**
      * Find templates with pagination and return pagination info
@@ -79,6 +82,19 @@ class TemplateService(
             }
         }
 
+        var fileEntity: FileEntity? = null
+        if (input.imagePath != null) {
+            val entity = storageDbService.fileByPath(input.imagePath)
+            if (entity != null) {
+                fileEntity = entity
+            } else {
+                check(storageService.fileExists(input.imagePath)) {
+                    "Image file at path ${input.imagePath} does not exist in storage."
+                }
+                fileEntity = storageDbService.createFile(input.imagePath)
+            }
+        }
+
 
         return templateRepository.update(
             input.id,
@@ -86,7 +102,7 @@ class TemplateService(
                 name = input.name ?: existingTemplate.name,
                 description = input.description ?: existingTemplate.description,
                 categoryId = newCategoryId,
-                imageFileId = input.imageFileId ?: existingTemplate.imageFileId,
+                imageFileId = fileEntity?.id?.value ?: existingTemplate.imageFileId,
             )
         )
     }

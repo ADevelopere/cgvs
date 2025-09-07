@@ -30,7 +30,7 @@ interface StorageRepository {
     // File operations
     suspend fun getFileByPath(path: String): FileEntity?
     suspend fun getFileById(id: Long): FileEntity?
-    suspend fun getFilesByIds(ids: List<Long>): List<FileEntity>
+    suspend fun filesByIds(ids: List<Long>): List<FileEntity>
     suspend fun getFilesByDirectoryPath(directoryPath: String): List<FileEntity>
     suspend fun getFileCount(): Long
 
