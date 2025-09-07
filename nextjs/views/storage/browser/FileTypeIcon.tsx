@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Folder as FolderIcon,
     InsertDriveFile as FileIcon,
     Image as ImageIcon,
     VideoFile as VideoIcon,
@@ -21,10 +20,6 @@ interface FileTypeIconProps extends Omit<SvgIconProps, 'component'> {
  * Ensures consistency between grid and list views.
  */
 const FileTypeIcon: React.FC<FileTypeIconProps> = ({ item, ...iconProps }) => {
-    // Handle directory items
-    if (item.__typename === 'DirectoryInfo') {
-        return <FolderIcon {...iconProps} />;
-    }
 
     // Handle file items based on MIME type
     if (item.__typename === 'FileInfo') {

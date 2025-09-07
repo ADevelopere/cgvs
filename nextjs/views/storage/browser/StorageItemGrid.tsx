@@ -15,6 +15,11 @@ interface StorageItemGridProps {
     onContextMenu?: (event: React.MouseEvent) => void;
 }
 
+function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
+    return item.__typename === "DirectoryInfo";
+}
+
+
 /**
  * Renders a single "card" in the grid view using Material-UI Card components.
  * Displays a preview/icon and the item name with text truncation.
@@ -26,7 +31,8 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     onDoubleClick,
     onContextMenu,
 }) => {
-    const isDirectory = item.__typename === 'DirectoryInfo';
+    const isDirectory = React.useMemo(() => isDirectoryItem(item), [item]);
+    
     const [contextMenuPosition, setContextMenuPosition] = useState<{
         top: number;
         left: number;
@@ -109,7 +115,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
             >
                 {/* Preview Area */}
                 <Box sx={{ p: 1 }}>
-                    <FilePreview file={item} height={120} />
+                    <FilePreview item={item} height={120} />
                 </Box>
 
                 {/* Content Area */}
@@ -154,7 +160,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
                     anchorPosition={contextMenuPosition}
                     open={contextMenuOpen}
                     onClose={handleCloseContextMenu}
-                    folder={item}
+                    folder={item as Graphql.DirectoryInfo}
                 />
             ) : (
                 <FileMenu

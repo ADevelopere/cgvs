@@ -10,21 +10,18 @@ import {
     Alert,
     Box,
     Typography,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell,
     Breadcrumbs,
     Link,
     CircularProgress,
     useTheme,
-    Divider,
     IconButton,
     Tooltip,
 } from "@mui/material";
 import {
-    Folder as FolderIcon,
     Home as HomeIcon,
     NavigateNext as NavigateNextIcon,
     ArrowUpward as ArrowUpwardIcon,
@@ -35,9 +32,10 @@ import {
     useStorageManagementCore,
 } from "@/contexts/storage/StorageManagementCoreContext";
 import FileTypeIcon from "@/views/storage/browser/FileTypeIcon";
+import FilePreview from "@/views/storage/browser/FilePreview";
 import useAppTranslation from "@/locale/useAppTranslation";
 import { FileInfo } from "@/graphql/generated/types";
-import { StorageItem } from "@/contexts/storage/storage.type";
+import { StorageItem as StorageItemType } from "@/contexts/storage/storage.type";
 import { StorageGraphQLProvider } from "@/contexts/storage/StorageGraphQLContext";
 
 export interface FilePickerDialogProps {
@@ -46,6 +44,10 @@ export interface FilePickerDialogProps {
     onFileSelect: (file: FileInfo) => void;
     allowedFileTypes?: string[]; // Optional array of allowed content types (e.g., ['image/*', 'application/pdf'])
     title?: string; // Optional custom title
+}
+
+function isFile(item: StorageItemType): item is FileInfo {
+    return item.__typename === "FileInfo";
 }
 
 const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
@@ -61,7 +63,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
     // State
     const [currentPath, setCurrentPath] = useState<string>("");
-    const [items, setItems] = useState<StorageItem[]>([]);
+    const [items, setItems] = useState<StorageItemType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSelecting, setIsSelecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -70,35 +72,40 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     // Filter items to show only folders and allowed files
     const filteredItems = useMemo(() => {
         return items.filter((item) => {
-            // Always show folders
-            if (!("contentType" in item)) {
+            // Always show folders (DirectoryInfo)
+            if (item.__typename === "DirectoryInfo") {
                 return true;
             }
 
-            // If no file type restrictions, show all files
-            if (!allowedFileTypes || allowedFileTypes.length === 0) {
-                return true;
-            }
-
-            // Check if file matches allowed types
-            return allowedFileTypes.some((allowedType) => {
-                if (allowedType.endsWith("/*")) {
-                    const baseType = allowedType.slice(0, -2);
-                    return item.contentType?.startsWith(baseType);
+            // For files (FileInfo), check file type restrictions
+            if (isFile(item)) {
+                // If no file type restrictions, show all files
+                if (!allowedFileTypes || allowedFileTypes.length === 0) {
+                    return true;
                 }
-                return item.contentType === allowedType;
-            });
+
+                // Check if file matches allowed types
+                return allowedFileTypes.some((allowedType) => {
+                    if (allowedType.endsWith("/*")) {
+                        const baseType = allowedType.slice(0, -2);
+                        return item.contentType?.startsWith(baseType);
+                    }
+                    return item.contentType === allowedType;
+                });
+            }
+
+            return false;
         });
     }, [items, allowedFileTypes]);
 
     // Separate folders and files for better organization
     const folders = useMemo(
-        () => filteredItems.filter((item) => !("contentType" in item)),
+        () => filteredItems.filter((item) => item.__typename === "DirectoryInfo"),
         [filteredItems],
     );
 
     const files = useMemo(
-        () => filteredItems.filter((item) => "contentType" in item),
+        () => filteredItems.filter((item) => item.__typename === "FileInfo"),
         [filteredItems],
     );
 
@@ -386,132 +393,143 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                                     "No files found in this folder"}
                             </Typography>
                         </Box>
-                    ) : files.length === 0 ? (
-                        <Box sx={{ p: 3, textAlign: "center" }}>
-                            <Typography color="text.secondary">
-                                {translations.filePickerDialogNoFiles ||
-                                    "No files found in this folder"}
-                            </Typography>
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ mt: 1, display: "block" }}
-                            >
-                                {folders.length > 0
-                                    ? "Navigate to a folder to browse for files"
-                                    : ""}
-                            </Typography>
-                        </Box>
                     ) : (
-                        <List sx={{ p: 0 }}>
-                            {/* Folders first */}
-                            {folders.map((folder, index) => (
-                                <React.Fragment key={folder.path}>
-                                    <ListItem disablePadding>
-                                        <ListItemButton
-                                            onClick={() =>
-                                                navigateToDirectory(folder.path)
-                                            }
-                                            disabled={isLoading}
-                                            sx={{
-                                                py: 1.5,
-                                                px: 3,
-                                            }}
-                                        >
-                                            <ListItemIcon sx={{ minWidth: 40 }}>
-                                                <FolderIcon
+                        <Box>
+                            {/* Folders - Table format for navigation */}
+                            {folders.length > 0 && (
+                                <Box sx={{ mb: 2 }}>
+                                    <Typography variant="subtitle2" sx={{ mb: 1, px: 2, color: "text.secondary" }}>
+                                        Folders
+                                    </Typography>
+                                    <Table size="small">
+                                        <TableBody>
+                                            {folders.map((folder) => (
+                                                <TableRow
+                                                    key={folder.path}
+                                                    hover
+                                                    onClick={() => navigateToDirectory(folder.path)}
                                                     sx={{
-                                                        color: theme.palette
-                                                            .warning.main,
-                                                    }}
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={folder.name}
-                                                sx={{
-                                                    "& .MuiListItemText-primary":
-                                                        {
-                                                            color: theme.palette
-                                                                .text.primary,
+                                                        cursor: "pointer",
+                                                        "&:hover": {
+                                                            backgroundColor: "action.hover",
                                                         },
-                                                }}
-                                            />
-                                        </ListItemButton>
-                                    </ListItem>
-                                    {(index < folders.length - 1 ||
-                                        files.length > 0) && <Divider />}
-                                </React.Fragment>
-                            ))}
-
-                            {/* Files */}
-                            {files.map((file, index) => {
-                                const isSelected =
-                                    selectedFile?.path === file.path;
-                                // Type assertion is safe here because we know 'file' has contentType (it's a FileInfo)
-                                const fileInfo = file as FileInfo;
-
-                                return (
-                                    <React.Fragment key={file.path}>
-                                        <ListItem disablePadding>
-                                            <ListItemButton
-                                                onClick={() =>
-                                                    setSelectedFile(fileInfo)
-                                                }
-                                                onDoubleClick={() => {
-                                                    setSelectedFile(fileInfo);
-                                                    handleFileSelect(fileInfo);
-                                                }}
-                                                disabled={isLoading}
-                                                selected={isSelected}
-                                                sx={{
-                                                    py: 1.5,
-                                                    px: 3,
-                                                    backgroundColor: isSelected
-                                                        ? theme.palette.action
-                                                              .selected
-                                                        : "transparent",
-                                                }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{ minWidth: 40 }}
-                                                >
-                                                    <FileTypeIcon item={file} />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={file.name}
-                                                    secondary={
-                                                        fileInfo.contentType
-                                                    }
-                                                    sx={{
-                                                        "& .MuiListItemText-primary":
-                                                            {
-                                                                color: theme
-                                                                    .palette
-                                                                    .text
-                                                                    .primary,
-                                                            },
-                                                        "& .MuiListItemText-secondary":
-                                                            {
-                                                                color: theme
-                                                                    .palette
-                                                                    .text
-                                                                    .secondary,
-                                                                fontSize:
-                                                                    "0.75rem",
-                                                            },
                                                     }}
-                                                />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {index < files.length - 1 && (
-                                            <Divider />
-                                        )}
-                                    </React.Fragment>
-                                );
-                            })}
-                        </List>
+                                                >
+                                                    <TableCell>
+                                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                            <FileTypeIcon
+                                                                item={folder}
+                                                                sx={{
+                                                                    fontSize: "1.5rem",
+                                                                    color: theme.palette.warning.main,
+                                                                }}
+                                                            />
+                                                            <Typography
+                                                                variant="body2"
+                                                                sx={{ fontWeight: 500 }}
+                                                            >
+                                                                {folder.name}
+                                                            </Typography>
+                                                        </Box>
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        <Typography variant="body2" color="text.secondary">
+                                                            Folder
+                                                        </Typography>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </Box>
+                            )}
+
+                            {/* Files - Grid format with previews */}
+                            {files.length > 0 && (
+                                <Box>
+                                    <Typography variant="subtitle2" sx={{ mb: 1, px: 2, color: "text.secondary" }}>
+                                        Files
+                                    </Typography>
+                                    <Box sx={{ 
+                                        display: "grid", 
+                                        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", 
+                                        gap: 2, 
+                                        p: 2 
+                                    }}>
+                                        {files.map((file) => {
+                                            // Since we filtered by __typename === "FileInfo", this is guaranteed to be FileInfo
+                                            if (file.__typename !== "FileInfo") return null;
+                                            
+                                            const isSelected = selectedFile?.path === file.path;
+                                            
+                                            return (
+                                                <Box
+                                                    key={file.path}
+                                                    onClick={() => setSelectedFile(file)}
+                                                    onDoubleClick={() => {
+                                                        setSelectedFile(file);
+                                                        handleFileSelect(file);
+                                                    }}
+                                                    sx={{
+                                                        border: 1,
+                                                        borderColor: isSelected ? "primary.main" : "divider",
+                                                        borderRadius: 1,
+                                                        p: 1,
+                                                        cursor: "pointer",
+                                                        backgroundColor: isSelected ? "action.selected" : "transparent",
+                                                        "&:hover": {
+                                                            backgroundColor: isSelected ? "action.selected" : "action.hover",
+                                                        },
+                                                        transition: "all 0.2s ease",
+                                                    }}
+                                                >
+                                                    {/* File Preview */}
+                                                    <FilePreview 
+                                                        item={file} 
+                                                        height={100}
+                                                    />
+                                                    
+                                                    {/* File Info */}
+                                                    <Box sx={{ mt: 1 }}>
+                                                        <Typography 
+                                                            variant="caption" 
+                                                            sx={{ 
+                                                                fontWeight: 500,
+                                                                display: "-webkit-box",
+                                                                WebkitLineClamp: 2,
+                                                                WebkitBoxOrient: "vertical",
+                                                                overflow: "hidden",
+                                                                lineHeight: 1.2,
+                                                            }}
+                                                        >
+                                                            {file.name}
+                                                        </Typography>
+                                                        <Typography 
+                                                            variant="caption" 
+                                                            color="text.secondary"
+                                                            sx={{ display: "block", mt: 0.5 }}
+                                                        >
+                                                            {file.size ? `${Math.round(file.size / 1024)} KB` : ""}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            );
+                                        })}
+                                    </Box>
+                                </Box>
+                            )}
+                        </Box>
                     )}
                 </Box>
+
+                {/* Show message when there are only folders but no files */}
+                {filteredItems.length > 0 && files.length === 0 && folders.length > 0 && (
+                    <Box sx={{ p: 3, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                            No files found in this folder. Navigate to a folder to browse for files.
+                        </Typography>
+                    </Box>
+                )}
 
                 {/* Selected File Info */}
                 {selectedFile && (

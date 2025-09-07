@@ -8,13 +8,13 @@ import tables.FileEntity
 import tables.DirectoryEntity
 
 interface StorageDbService {
-    suspend fun getFileById(id: Long): FileEntity?
-    suspend fun getFilesByIds(ids: List<Long>): List<FileEntity>
-    suspend fun getFileByPath(path: String): FileEntity?
+    suspend fun fileById(id: Long): FileEntity?
+    suspend fun filesByIds(ids: List<Long>): List<FileEntity>
+    suspend fun fileByPath(path: String): FileEntity?
 
     // Directory methods
-    suspend fun getDirectoryByPath(path: String): DirectoryEntity?
-    suspend fun getDirectoriesByParentPath(parentPath: String?): List<DirectoryEntity>
+    suspend fun directoryByPath(path: String): DirectoryEntity?
+    suspend fun directoriesByParentPath(parentPath: String?): List<DirectoryEntity>
     suspend fun createDirectory(input: CreateFolderInput): DirectoryEntity
     suspend fun updateDirectory(directory: DirectoryEntity): DirectoryEntity?
     suspend fun deleteDirectory(path: String): Boolean
@@ -47,15 +47,15 @@ fun storageDbService(
     storage: Storage
 ) = object : StorageDbService {
 
-    override suspend fun getFileById(id: Long): FileEntity? {
+    override suspend fun fileById(id: Long): FileEntity? {
         return storageRepository.getFileById(id)
     }
 
-    override suspend fun getFilesByIds(ids: List<Long>): List<FileEntity> {
-        return storageRepository.getFilesByIds(ids)
+    override suspend fun filesByIds(ids: List<Long>): List<FileEntity> {
+        return storageRepository.filesByIds(ids)
     }
 
-    override suspend fun getFileByPath(path: String): FileEntity? {
+    override suspend fun fileByPath(path: String): FileEntity? {
         return storageRepository.getFileByPath(path)
     }
 
@@ -73,11 +73,11 @@ fun storageDbService(
     }
 
     // Directory methods
-    override suspend fun getDirectoryByPath(path: String): DirectoryEntity? {
+    override suspend fun directoryByPath(path: String): DirectoryEntity? {
         return storageRepository.getDirectoryByPath(path)
     }
 
-    override suspend fun getDirectoriesByParentPath(parentPath: String?): List<DirectoryEntity> {
+    override suspend fun directoriesByParentPath(parentPath: String?): List<DirectoryEntity> {
         return storageRepository.getDirectoriesByParentPath(parentPath)
     }
 

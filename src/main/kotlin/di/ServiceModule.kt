@@ -18,7 +18,9 @@ val serviceModule = module {
     single<TemplateService> {
         TemplateService(
             templateRepository = get(),
-            templateCategoryRepository = get()
+            templateCategoryRepository = get(),
+            storageService = get(),
+            storageDbService = get(),
         )
     }
 

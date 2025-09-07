@@ -1271,7 +1271,7 @@ export type UpdateTemplateInput = {
   categoryId: Scalars['Int']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  imageFileId?: InputMaybe<Scalars['Long']['input']>;
+  imagePath?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1444,7 +1444,7 @@ export type ListFilesQueryVariables = Exact<{
 }>;
 
 
-export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string } | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }> } };
+export type ListFilesQuery = { __typename?: 'Query', listFiles: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items: Array<{ __typename?: 'DirectoryInfo', created: any, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } | { __typename?: 'FileInfo', contentType?: string | null, created: any, directoryPath: string, fileType: FileType, isFromBucket: boolean, isInUse: boolean, isProtected: boolean, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url: string, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> }> } };
 
 export type SearchFilesQueryVariables = Exact<{
   fileType?: InputMaybe<Scalars['String']['input']>;
@@ -2578,9 +2578,54 @@ export const ListFilesDocument = gql`
   listFiles(input: $input) {
     hasMore
     items {
-      isProtected
       name
       path
+      isProtected
+      ... on DirectoryInfo {
+        created
+        fileCount
+        folderCount
+        isFromBucket
+        isProtected
+        lastModified
+        name
+        path
+        permissions {
+          allowCreateSubDirs
+          allowDelete
+          allowDeleteFiles
+          allowMove
+          allowMoveFiles
+          allowUploads
+        }
+        protectChildren
+        totalSize
+      }
+      ... on FileInfo {
+        contentType
+        created
+        directoryPath
+        fileType
+        isFromBucket
+        isInUse
+        isProtected
+        isPublic
+        lastModified
+        md5Hash
+        mediaLink
+        name
+        path
+        size
+        url
+        usages {
+          created
+          filePath
+          id
+          referenceId
+          referenceTable
+          usageType
+        }
+      }
     }
     limit
     offset

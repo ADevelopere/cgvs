@@ -318,7 +318,7 @@ fun storageService(
 
             // Check if the directory exists in DB and get permissions
             runBlocking {
-                val dbDirectory = storageDbService.getDirectoryByPath(directoryPath)
+                val dbDirectory = storageDbService.directoryByPath(directoryPath)
 
                 if (dbDirectory != null) {
                     // Directory exists in DB, check permissions
@@ -479,7 +479,7 @@ fun storageService(
 
             // Check parent directory permissions
             runBlocking {
-                val parentDir = storageDbService.getDirectoryByPath(input.path)
+                val parentDir = storageDbService.directoryByPath(input.path)
                 if (parentDir != null && !parentDir.allowCreateSubDirs) {
                     return@runBlocking FileOperationResult(
                         false,
@@ -569,7 +569,7 @@ fun storageService(
             val fileEntity = runBlocking {
                 try {
                     // Get old file from DB first
-                    val oldDbFile = storageDbService.getFileByPath(input.currentPath)
+                    val oldDbFile = storageDbService.fileByPath(input.currentPath)
 
                     if (oldDbFile != null) {
                         // Delete the old file record first
@@ -611,14 +611,14 @@ fun storageService(
                 }
 
                 // Check if the file is protected
-                val dbFile = storageDbService.getFileByPath(path)
+                val dbFile = storageDbService.fileByPath(path)
                 if (dbFile?.isProtected == true) {
                     return@runBlocking FileOperationResult(false, "File is protected from deletion")
                 }
 
                 // Check parent directory permissions
                 val parentPath = path.substringBeforeLast('/')
-                val parentDir = storageDbService.getDirectoryByPath(parentPath)
+                val parentDir = storageDbService.directoryByPath(parentPath)
                 if (parentDir != null && !parentDir.allowDeleteFiles) {
                     return@runBlocking FileOperationResult(false, "File deletion not allowed in this directory")
                 }
@@ -653,7 +653,7 @@ fun storageService(
             val bucketFile = blobToFileInfo(blob)
 
             // Then check if file exists in the database
-            val dbFile = runBlocking { storageDbService.getFileByPath(path) }
+            val dbFile = runBlocking { storageDbService.fileByPath(path) }
 
             // Combine bucket data with DB data
             return combineFileData(bucketFile, dbFile)
@@ -664,7 +664,7 @@ fun storageService(
 
     override fun fileInfoByDbFileId(id: Long): FileInfo? = try {
         // First check DB to get file data
-        val dbFile = runBlocking { storageDbService.getFileById(id) } ?: return null
+        val dbFile = runBlocking { storageDbService.fileById(id) } ?: return null
 
         // Then check bucket to get file data
         val blob = storage.get(gcsConfig.bucketName, dbFile.path) ?: return null
@@ -721,7 +721,7 @@ fun storageService(
 
     override fun directoryInfoByPath(path: String): DirectoryInfo {
         // First check if directory exists in database (only for folders with special permissions)
-        val dbDirectory = runBlocking { storageDbService.getDirectoryByPath(path) }
+        val dbDirectory = runBlocking { storageDbService.directoryByPath(path) }
         if (dbDirectory != null) {
             // Convert entity to schema model
             return DirectoryInfo(
@@ -797,7 +797,7 @@ fun storageService(
         val searchPath = if (path.isNullOrEmpty()) "public" else path.trimEnd('/')
 
         // Get directories from DB first
-        val dbDirectories = storageDbService.getDirectoriesByParentPath(searchPath.takeIf { it.isNotEmpty() })
+        val dbDirectories = storageDbService.directoriesByParentPath(searchPath.takeIf { it.isNotEmpty() })
 
         // Get directories from bucket that might not be in DB
         val prefix = if (searchPath.isEmpty()) "" else "$searchPath/"
@@ -843,14 +843,14 @@ fun storageService(
 
                 // Check permissions for source directory
                 val sourceDir = sourcePath.substringBeforeLast('/')
-                val dbSourceDir = storageDbService.getDirectoryByPath(sourceDir)
+                val dbSourceDir = storageDbService.directoryByPath(sourceDir)
                 if (dbSourceDir != null && !dbSourceDir.allowMove) {
                     errors.add("Move not allowed from directory: $sourceDir")
                     continue
                 }
 
                 // Check permissions for destination directory
-                val dbDestDir = storageDbService.getDirectoryByPath(input.destinationPath)
+                val dbDestDir = storageDbService.directoryByPath(input.destinationPath)
                 if (dbDestDir != null && !dbDestDir.allowUploads) {
                     errors.add("Uploads not allowed to destination directory")
                     continue
@@ -873,7 +873,7 @@ fun storageService(
                 storage.delete(sourceBlobId)
 
                 // Update DB records
-                val dbFile = storageDbService.getFileByPath(sourcePath)
+                val dbFile = storageDbService.fileByPath(sourcePath)
                 if (dbFile != null) {
                     storageDbService.deleteFile(sourcePath)
                     val newFileEntity = storageDbService.createFile(newPath, dbFile.isProtected)
@@ -912,7 +912,7 @@ fun storageService(
                 }
 
                 // Check permissions for destination directory
-                val dbDestDir = storageDbService.getDirectoryByPath(input.destinationPath)
+                val dbDestDir = storageDbService.directoryByPath(input.destinationPath)
                 if (dbDestDir != null && !dbDestDir.allowUploads) {
                     errors.add("Uploads not allowed to destination directory")
                     continue
@@ -933,7 +933,7 @@ fun storageService(
                 ).result
 
                 // Add to DB if source was in DB
-                val dbFile = storageDbService.getFileByPath(sourcePath)
+                val dbFile = storageDbService.fileByPath(sourcePath)
                 if (dbFile != null) {
                     val copiedFileEntity = storageDbService.createFile(newPath, dbFile.isProtected)
                     val copiedFile =
@@ -973,8 +973,8 @@ fun storageService(
                 }
 
                 // Check if file/directory is protected
-                val dbFile = storageDbService.getFileByPath(path)
-                val dbDir = storageDbService.getDirectoryByPath(path)
+                val dbFile = storageDbService.fileByPath(path)
+                val dbDir = storageDbService.directoryByPath(path)
 
                 if (dbFile?.isProtected == true || dbDir?.isProtected == true) {
                     errors.add("Item is protected from deletion: $path")
@@ -983,7 +983,7 @@ fun storageService(
 
                 // Check parent directory permissions
                 val parentPath = path.substringBeforeLast('/')
-                val parentDir = storageDbService.getDirectoryByPath(parentPath)
+                val parentDir = storageDbService.directoryByPath(parentPath)
                 if (parentDir != null) {
                     val isFile = dbFile != null
                     val canDelete = if (isFile) parentDir.allowDeleteFiles else parentDir.allowDelete

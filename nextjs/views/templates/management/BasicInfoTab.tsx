@@ -30,6 +30,7 @@ type FormDataType = {
     name: string;
     description?: string | null;
     imageUrl?: string | null;
+    imagePath?: string | null;
 };
 
 const BasicInfoTab: React.FC = () => {
@@ -53,7 +54,6 @@ const BasicInfoTab: React.FC = () => {
     const [formData, setFormData] = useState<FormDataType>({
         name: "",
         description: "",
-        imageUrl: undefined,
     });
 
     const [error, setError] = useState<string | null>(null);
@@ -107,6 +107,7 @@ const BasicInfoTab: React.FC = () => {
         setFormData((prev) => ({
             ...prev,
             imageUrl: file.url,
+            imagePath: file.path,
         }));
         setFilePickerOpen(false);
     }, []);
@@ -115,6 +116,7 @@ const BasicInfoTab: React.FC = () => {
         setFormData((prev) => ({
             ...prev,
             imageUrl: undefined,
+            imagePath: undefined,
         }));
     }, []);
 
@@ -130,9 +132,9 @@ const BasicInfoTab: React.FC = () => {
         const input: UpdateTemplateInput = {
             id: template.id,
             name: formData.name,
-            description: formData.description || undefined,
+            description: formData.description,
             categoryId: template.category.id,
-            // Note: imageFileId integration pending file ID resolution
+            imagePath: formData.imagePath,
         };
 
         const updatedTemplate = await updateTemplate({
@@ -146,6 +148,7 @@ const BasicInfoTab: React.FC = () => {
         setSaving(false);
     }, [
         formData.description,
+        formData.imagePath,
         formData.name,
         template?.category.id,
         template?.id,
@@ -305,7 +308,10 @@ const BasicInfoTab: React.FC = () => {
                             {formData.imageUrl ? (
                                 <Image
                                     src={formData.imageUrl}
-                                    alt={formData.imageUrl.split("/").pop() || "Template Image"}
+                                    alt={
+                                        formData.imageUrl.split("/").pop() ||
+                                        "Template Image"
+                                    }
                                     width={300}
                                     height={200}
                                     style={{

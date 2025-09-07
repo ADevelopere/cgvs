@@ -81,8 +81,8 @@ class StorageRepositoryImpl(
         FileEntity.findById(id)
     }
 
-    override suspend fun getFilesByIds(ids: List<Long>): List<FileEntity> = dbQuery {
-        FileEntity.find { StorageFiles.id inList ids }.toList()
+    override suspend fun filesByIds(ids: List<Long>): List<FileEntity> = dbQuery {
+        FileEntity.find { StorageFiles.id inList ids }.toList().sortedBy { ids.indexOf(it.id.value) }
     }
 
     override suspend fun getFilesByDirectoryPath(directoryPath: String): List<FileEntity> = dbQuery {

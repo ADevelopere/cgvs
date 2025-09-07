@@ -180,7 +180,7 @@ class FileInitializationService(
         println("   🔍 Checking for demo files and registering as needed...")
         val fileIds = demoFiles.mapNotNull { path ->
             // First check if already in DB
-            val existingFile = storageDbService.getFileByPath(path)
+            val existingFile = storageDbService.fileByPath(path)
             if (existingFile != null) {
                 println("   ✅ Found demo file in database: $path (ID: ${existingFile.id})")
                 existingFile.id
@@ -223,7 +223,7 @@ class FileInitializationService(
      * Register file usage for template covers
      */
     suspend fun registerTemplateFileUsage(templateId: Int, fileId: Long) {
-        val fileEntity = storageDbService.getFileById(fileId)
+        val fileEntity = storageDbService.fileById(fileId)
         if (fileEntity != null) {
             val input = RegisterFileUsageInput(
                 filePath = fileEntity.path,
