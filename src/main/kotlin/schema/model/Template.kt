@@ -43,7 +43,7 @@ data class Template(
         )
     }
 
-    fun imageFile(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<FileInfo> {
+    fun imageFile(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<FileInfo?> {
         return if (imageFileId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(
                 StorageFileInfoByIdDataLoader.dataLoaderName, imageFileId
@@ -53,7 +53,7 @@ data class Template(
         }
     }
 
-    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String> {
+    fun imageUrl(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<String?> {
         return if (imageFileId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(
                 UrlDataLoader.dataLoaderName, imageFileId

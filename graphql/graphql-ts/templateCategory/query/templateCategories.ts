@@ -16,18 +16,6 @@ export const TEMPLATE_CATEGORIES = gql`
                 name
                 description
                 imageUrl
-                imageFile {
-                    contentType
-                    fileType
-                    isProtected
-                    lastModified
-                    md5Hash
-                    mediaLink
-                    name
-                    path
-                    size
-                    url
-                }
                 order
                 createdAt
                 updatedAt
