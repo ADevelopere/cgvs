@@ -23,8 +23,6 @@ data class DirectoryInfo(
     val created: LocalDateTime = now(),
     @param:GraphQLDescription("Last modified timestamp")
     val lastModified: LocalDateTime = now(),
-    @param:GraphQLDescription("ID of user who created this directory")
-    val createdBy: Long? = null,
     @param:GraphQLDescription("Whether this directory exists only in bucket (not in DB)")
     val isFromBucket: Boolean = false,
     @param:GraphQLDescription("Number of files in the folder")
@@ -54,17 +52,14 @@ data class FileInfo(
     val contentType: String?,
     @param:GraphQLDescription("MD5 hash of the file")
     val md5Hash: String?,
-
     @param:GraphQLDescription("Creation timestamp")
     val created: LocalDateTime,
     @param:GraphQLDescription("Last modified timestamp")
     val lastModified: LocalDateTime,
-    @param:GraphQLDescription("ID of user who created this file")
-    val createdBy: Long? = null,
     @param:GraphQLDescription("Whether this file exists only in bucket (not in DB)")
     val isFromBucket: Boolean = false,
     @param:GraphQLDescription("URL for accessing the file")
-    val url: String? = null,
+    val url: String,
     @param:GraphQLDescription("Media link for streaming (if applicable)")
     val mediaLink: String? = null,
     @param:GraphQLDescription("File type category")

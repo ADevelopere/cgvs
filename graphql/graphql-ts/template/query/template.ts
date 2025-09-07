@@ -7,6 +7,18 @@ query template($id: Int!){
         name
         description
         imageUrl
+        imageFile {
+            contentType
+            fileType
+            isProtected
+            lastModified
+            md5Hash
+            mediaLink
+            name
+            path
+            size
+            url
+        }
         category{
             id
             name

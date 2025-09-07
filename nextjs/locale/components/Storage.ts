@@ -194,6 +194,18 @@ export type StorageManagementUITranslations = {
     moveDialogUnexpectedError: string;
     moving: string;
     // Move to dialog end
+
+    // File picker dialog
+    filePickerDialogTitle: string;
+    filePickerDialogSelectFile: string;
+    filePickerDialogNoFiles: string;
+    filePickerDialogSelect: string;
+    filePickerDialogCancel: string;
+    filePickerDialogFailedToLoad: string;
+    filePickerDialogUnexpectedError: string;
+    selecting: string;
+    // File picker dialog end
+    
     contentType: string;
     path: string;
     md5Hash: string;

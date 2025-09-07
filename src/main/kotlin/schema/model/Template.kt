@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
-import schema.dataloaders.StorageFileInfoDataLoader
+import schema.dataloaders.StorageFileInfoByIdDataLoader
 import schema.dataloaders.UrlDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
@@ -43,10 +43,10 @@ data class Template(
         )
     }
 
-    fun imageFile(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<FileInfo?> {
+    fun imageFile(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<FileInfo> {
         return if (imageFileId != null) {
             dataFetchingEnvironment.getValueFromDataLoader(
-                StorageFileInfoDataLoader.dataLoaderName, imageFileId
+                StorageFileInfoByIdDataLoader.dataLoaderName, imageFileId
             )
         } else {
             CompletableFuture.completedFuture(null)

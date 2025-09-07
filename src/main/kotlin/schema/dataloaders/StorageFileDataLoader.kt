@@ -14,20 +14,20 @@ import org.koin.core.component.inject
 import services.StorageService
 import kotlin.coroutines.EmptyCoroutineContext
 
-val StorageFileInfoDataLoader: KotlinDataLoader<String, FileInfo> =
-    object : KotlinDataLoader<String, FileInfo>, KoinComponent {
+val StorageFileInfoByIdDataLoader: KotlinDataLoader<Long, FileInfo> =
+    object : KotlinDataLoader<Long, FileInfo>, KoinComponent {
         override val dataLoaderName = "StorageFileDataLoader"
         private val storageService: StorageService by inject()
-        override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<String, FileInfo> =
+        override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Long, FileInfo> =
             DataLoaderFactory.newDataLoader(
-                { paths, batchLoaderEnvironment ->
+                { ids, batchLoaderEnvironment ->
                     val coroutineScope =
                         batchLoaderEnvironment.getContext<GraphQLContext>()?.get<CoroutineScope>()
                             ?: CoroutineScope(EmptyCoroutineContext)
 
                     coroutineScope.future {
-                        paths.mapNotNull { path ->
-                            storageService.getFileEntityByPath(path)
+                        ids.mapNotNull { id ->
+                            storageService.fileInfoByDbFileId(id)
                         }
                     }
                 },

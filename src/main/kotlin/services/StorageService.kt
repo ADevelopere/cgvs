@@ -32,7 +32,7 @@ data class BucketFile(
     val md5Hash: String?,
     val created: LocalDateTime,
     val lastModified: LocalDateTime,
-    val url: String?,
+    val url: String,
     val mediaLink: String?,
     val fileType: FileType,
     val isPublic: Boolean
@@ -72,11 +72,13 @@ interface StorageService {
 
     fun deleteFile(path: String): FileOperationResult
 
-    fun getFolderEntityByPath(path: String): DirectoryInfo
+    fun directoryInfoByPath(path: String): DirectoryInfo
 
-    fun getFileEntityByPath(path: String): FileInfo?
+    fun fileInfoByPath(path: String): FileInfo?
 
-    fun getStorageStatistics(path: String? = null): StorageStats
+    fun fileInfoByDbFileId(id: Long): FileInfo?
+
+    fun storageStatistics(path: String? = null): StorageStats
 
     // New methods for directory tree and bulk operations
     suspend fun fetchDirectoryChildren(path: String? = null): List<DirectoryInfo>
@@ -97,7 +99,6 @@ private fun combineFileData(bucketFile: BucketFile, dbEntity: FileEntity?): File
             isProtected = dbEntity.isProtected,
             created = bucketFile.created,
             lastModified = bucketFile.lastModified,
-            createdBy = null,
             isFromBucket = false,
             url = bucketFile.url,
             mediaLink = bucketFile.mediaLink,
@@ -114,7 +115,6 @@ private fun combineFileData(bucketFile: BucketFile, dbEntity: FileEntity?): File
             isProtected = false,
             created = bucketFile.created,
             lastModified = bucketFile.lastModified,
-            createdBy = null,
             isFromBucket = true,
             url = bucketFile.url,
             mediaLink = bucketFile.mediaLink,
@@ -141,7 +141,6 @@ private fun combineDirectoryData(bucketDir: BucketDirectory, dbEntity: Directory
             protectChildren = dbEntity.protectChildren,
             created = bucketDir.created,
             lastModified = bucketDir.lastModified,
-            createdBy = null,
             isFromBucket = false
         )
     } else {
@@ -152,7 +151,6 @@ private fun combineDirectoryData(bucketDir: BucketDirectory, dbEntity: Directory
             protectChildren = false,
             created = bucketDir.created,
             lastModified = bucketDir.lastModified,
-            createdBy = null,
             isFromBucket = true
         )
     }
@@ -167,7 +165,6 @@ private fun createDirectoryFromPath(path: String): DirectoryInfo {
         protectChildren = false,
         created = now(),
         lastModified = now(),
-        createdBy = null,
         isFromBucket = true
     )
 }
@@ -383,12 +380,12 @@ fun storageService(
                 // It's a folder
                 val folderName = blob.name.removeSuffix("/").substringAfterLast('/')
                 if (folderName.isNotEmpty()) {
-                    val folderEntity = getFolderEntityByPath(blob.name.removeSuffix("/"))
+                    val folderEntity = directoryInfoByPath(blob.name.removeSuffix("/"))
                     items.add(folderEntity)
                 }
             } else {
                 // It's a file
-                val fileEntity = getFileEntityByPath(blob.name)
+                val fileEntity = fileInfoByPath(blob.name)
                 val fileName = blob.name.substringAfterLast('/')
                 if (fileEntity != null) {
                     // Apply filters
@@ -585,11 +582,11 @@ fun storageService(
                         combineFileData(blobToFileInfo(newBlob), newFileEntity)
                     } else {
                         // File wasn't in DB, just return bucket entity
-                        getFileEntityByPath(newPath)
+                        fileInfoByPath(newPath)
                     }
                 } catch (_: Exception) {
                     // Fallback to creating a new entity
-                    getFileEntityByPath(newPath)
+                    fileInfoByPath(newPath)
                 }
             }
 
@@ -649,7 +646,7 @@ fun storageService(
         }
     }
 
-    override fun getFileEntityByPath(path: String): FileInfo? {
+    override fun fileInfoByPath(path: String): FileInfo? {
         return try {
             // First check bucket to get file data
             val blob = storage.get(gcsConfig.bucketName, path) ?: return null
@@ -665,7 +662,22 @@ fun storageService(
         }
     }
 
-    override fun getStorageStatistics(path: String?): StorageStats {
+    override fun fileInfoByDbFileId(id: Long): FileInfo? = try {
+        // First check DB to get file data
+        val dbFile = runBlocking { storageDbService.getFileById(id) } ?: return null
+
+        // Then check bucket to get file data
+        val blob = storage.get(gcsConfig.bucketName, dbFile.path) ?: return null
+        val bucketFile = blobToFileInfo(blob)
+
+        // Combine bucket data with DB data
+        combineFileData(bucketFile, dbFile)
+    } catch (_: Exception) {
+        null
+    }
+
+
+    override fun storageStatistics(path: String?): StorageStats {
         return try {
             val prefix = path?.let { "$it/" } ?: ""
             val blobs = storage.list(
@@ -707,7 +719,7 @@ fun storageService(
         }
     }
 
-    override fun getFolderEntityByPath(path: String): DirectoryInfo {
+    override fun directoryInfoByPath(path: String): DirectoryInfo {
         // First check if directory exists in database (only for folders with special permissions)
         val dbDirectory = runBlocking { storageDbService.getDirectoryByPath(path) }
         if (dbDirectory != null) {
@@ -870,7 +882,7 @@ fun storageService(
                     successfulItems.add(updatedFile)
                 } else {
                     // File not in DB, get entity from bucket
-                    getFileEntityByPath(newPath)?.let { successfulItems.add(it) }
+                    fileInfoByPath(newPath)?.let { successfulItems.add(it) }
                 }
 
             } catch (e: Exception) {
@@ -929,7 +941,7 @@ fun storageService(
                     successfulItems.add(copiedFile)
                 } else {
                     // File not in DB, get entity from bucket
-                    getFileEntityByPath(newPath)?.let { successfulItems.add(it) }
+                    fileInfoByPath(newPath)?.let { successfulItems.add(it) }
                 }
 
             } catch (e: Exception) {
@@ -982,8 +994,8 @@ fun storageService(
                 }
 
                 // Get entity before deleting for the result
-                val fileEntity = getFileEntityByPath(path)
-                val folderEntity = if (fileEntity == null) getFolderEntityByPath(path) else null
+                val fileEntity = fileInfoByPath(path)
+                val folderEntity = if (fileEntity == null) directoryInfoByPath(path) else null
 
                 // Delete from bucket
                 val deleted = storage.delete(gcsConfig.bucketName, path)

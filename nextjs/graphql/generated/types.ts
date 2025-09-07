@@ -429,8 +429,6 @@ export type DirectoryInfo = StorageObject & {
   __typename?: 'DirectoryInfo';
   /** Creation timestamp */
   created: Scalars['LocalDateTime']['output'];
-  /** ID of user who created this directory */
-  createdBy?: Maybe<Scalars['Long']['output']>;
   /** Number of files in the folder */
   fileCount: Scalars['Int']['output'];
   /** Number of subfolders */
@@ -492,8 +490,6 @@ export type FileInfo = StorageObject & {
   contentType?: Maybe<Scalars['String']['output']>;
   /** Creation timestamp */
   created: Scalars['LocalDateTime']['output'];
-  /** ID of user who created this file */
-  createdBy?: Maybe<Scalars['Long']['output']>;
   /** Directory path containing this file */
   directoryPath: Scalars['String']['output'];
   /** File type category */
@@ -518,7 +514,7 @@ export type FileInfo = StorageObject & {
   /** File size in bytes */
   size: Scalars['Long']['output'];
   /** URL for accessing the file */
-  url?: Maybe<Scalars['String']['output']>;
+  url: Scalars['String']['output'];
   /** List of current usages */
   usages: Array<FileUsageInfo>;
 };
@@ -1160,7 +1156,7 @@ export type Template = {
   createdAt?: Maybe<Scalars['LocalDateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  imageFile?: Maybe<FileInfo>;
+  imageFile: FileInfo;
   imageUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
   order: Scalars['Int']['output'];
@@ -1420,14 +1416,14 @@ export type DirectoryChildrenQueryVariables = Exact<{
 }>;
 
 
-export type DirectoryChildrenQuery = { __typename?: 'Query', directoryChildren: Array<{ __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
+export type DirectoryChildrenQuery = { __typename?: 'Query', directoryChildren: Array<{ __typename?: 'DirectoryInfo', created: any, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } }> };
 
 export type FileInfoQueryVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, createdBy?: any | null, directoryPath: string, fileType: FileType, isFromBucket: boolean, isInUse: boolean, isProtected: boolean, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url?: string | null, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } | null };
+export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created: any, directoryPath: string, fileType: FileType, isFromBucket: boolean, isInUse: boolean, isProtected: boolean, isPublic: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url: string, usages: Array<{ __typename?: 'FileUsageInfo', created: any, filePath: string, id: any, referenceId: any, referenceTable: string, usageType: string }> } | null };
 
 export type FileUsageQueryVariables = Exact<{
   input: CheckFileUsageInput;
@@ -1441,7 +1437,7 @@ export type FolderInfoQueryVariables = Exact<{
 }>;
 
 
-export type FolderInfoQuery = { __typename?: 'Query', folderInfo: { __typename?: 'DirectoryInfo', created: any, createdBy?: any | null, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
+export type FolderInfoQuery = { __typename?: 'Query', folderInfo: { __typename?: 'DirectoryInfo', created: any, fileCount: number, folderCount: number, isFromBucket: boolean, isProtected: boolean, lastModified: any, name: string, path: string, protectChildren: boolean, totalSize: any, permissions: { __typename?: 'DirectoryPermissions', allowCreateSubDirs: boolean, allowDelete: boolean, allowDeleteFiles: boolean, allowMove: boolean, allowMoveFiles: boolean, allowUploads: boolean } } };
 
 export type ListFilesQueryVariables = Exact<{
   input: ListFilesInput;
@@ -1544,7 +1540,7 @@ export type TemplateQueryVariables = Exact<{
 }>;
 
 
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, variables?: Array<{ __typename?: 'DateTemplateVariable', minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'NumberTemplateVariable', minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'SelectTemplateVariable', options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'TextTemplateVariable', minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number }> | null } | null };
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, imageFile: { __typename?: 'FileInfo', contentType?: string | null, fileType: FileType, isProtected: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url: string }, category: { __typename?: 'TemplateCategory', id: number, name: string }, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, variables?: Array<{ __typename?: 'DateTemplateVariable', minDate?: any | null, maxDate?: any | null, format?: string | null, datePreviewValue?: any | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'NumberTemplateVariable', minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, numberPreviewValue?: number | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'SelectTemplateVariable', options?: Array<string> | null, multiple?: boolean | null, selectPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number } | { __typename?: 'TextTemplateVariable', minLength?: number | null, maxLength?: number | null, pattern?: string | null, textPreviewValue?: string | null, type: TemplateVariableType, id: number, name: string, description?: string | null, required: boolean, order: number }> | null } | null };
 
 export type TemplateConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1592,7 +1588,7 @@ export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspension
 export type TemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null }> | null }> };
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, categorySpecialType?: CategorySpecialType | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, imageUrl: string, order: number, createdAt?: any | null, updatedAt?: any | null, imageFile: { __typename?: 'FileInfo', contentType?: string | null, fileType: FileType, isProtected: boolean, lastModified: any, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: any, url: string } }> | null }> };
 
 export type TemplateCategoryQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -2343,7 +2339,6 @@ export const DirectoryChildrenDocument = gql`
     query directoryChildren($path: String) {
   directoryChildren(path: $path) {
     created
-    createdBy
     fileCount
     folderCount
     isFromBucket
@@ -2405,7 +2400,6 @@ export const FileInfoDocument = gql`
   fileInfo(path: $path) {
     contentType
     created
-    createdBy
     directoryPath
     fileType
     isFromBucket
@@ -2523,7 +2517,6 @@ export const FolderInfoDocument = gql`
     query folderInfo($path: String!) {
   folderInfo(path: $path) {
     created
-    createdBy
     fileCount
     folderCount
     isFromBucket
@@ -3194,6 +3187,18 @@ export const TemplateDocument = gql`
     name
     description
     imageUrl
+    imageFile {
+      contentType
+      fileType
+      isProtected
+      lastModified
+      md5Hash
+      mediaLink
+      name
+      path
+      size
+      url
+    }
     category {
       id
       name
@@ -3630,6 +3635,18 @@ export const TemplateCategoriesDocument = gql`
       name
       description
       imageUrl
+      imageFile {
+        contentType
+        fileType
+        isProtected
+        lastModified
+        md5Hash
+        mediaLink
+        name
+        path
+        size
+        url
+      }
       order
       createdAt
       updatedAt

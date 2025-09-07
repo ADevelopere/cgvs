@@ -5,7 +5,6 @@ query fileInfo($path: String!){
     fileInfo(path: $path){
         contentType
         created
-        createdBy
         directoryPath
         fileType
         isFromBucket

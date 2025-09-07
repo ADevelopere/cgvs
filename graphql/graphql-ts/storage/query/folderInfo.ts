@@ -4,7 +4,6 @@ export const FOLDER_INFO = gql`
 query folderInfo($path: String!){
     folderInfo(path: $path){
         created
-        createdBy
         fileCount
         folderCount
         isFromBucket
