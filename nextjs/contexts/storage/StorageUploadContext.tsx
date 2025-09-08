@@ -525,19 +525,60 @@ export const StorageUploadProvider: React.FC<{
 
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
+
                     const updated = new Map(prev.files);
                     const fileState = updated.get(fileKey);
+
+                    if (
+                        !fileState ||
+                        fileState.status === "success" ||
+                        fileState.status === "error"
+                    ) {
+                        return prev;
+                    }
+
+                    const bytesUploadedForFile =
+                        (fileState.progress / 100) * fileState.file.size;
+
                     updated.set(fileKey, {
-                        ...fileState!,
+                        ...fileState,
                         status: "error",
                         error: translations.uploadCancelled,
                         xhr: undefined,
                     });
-                    notifications.show(translations.uploadCancelled, {
-                        severity: "info",
-                        autoHideDuration: 2000,
-                    });
-                    return { ...prev, files: updated };
+
+                    const isStillUploading = Array.from(updated.values()).some(
+                        (f) => f.status === "pending" || f.status === "uploading",
+                    );
+
+                    setTimeout(() => {
+                        notifications.show(translations.uploadCancelled, {
+                            severity: "info",
+                            autoHideDuration: 2000,
+                        });
+                    }, 0);
+
+                    const newTotalSize = prev.totalSize - fileState.file.size;
+                    const newBytesUploaded =
+                        prev.bytesUploaded - bytesUploadedForFile;
+
+                    if (!isStillUploading) {
+                        return {
+                            ...prev,
+                            files: updated,
+                            isUploading: false,
+                            timeRemaining: null,
+                            totalSize: newTotalSize,
+                            bytesUploaded: newBytesUploaded,
+                        };
+                    }
+
+                    return {
+                        ...prev,
+                        files: updated,
+                        totalSize: newTotalSize,
+                        bytesUploaded: newBytesUploaded,
+                    };
                 });
                 return;
             }
@@ -555,21 +596,39 @@ export const StorageUploadProvider: React.FC<{
             setUploadBatch((prev) => {
                 if (!prev) return prev;
                 const updated = new Map(prev.files);
+                let sizeToSubtract = 0;
+                let bytesToSubtract = 0;
 
                 updated.forEach((f, key) => {
-                    updated.set(key, {
-                        ...f,
-                        status: "error",
-                        error: translations.uploadCancelled,
-                        xhr: undefined,
-                    });
+                    if (f.status === "pending" || f.status === "uploading") {
+                        sizeToSubtract += f.file.size;
+                        bytesToSubtract += (f.progress / 100) * f.file.size;
+                        updated.set(key, {
+                            ...f,
+                            status: "error",
+                            error: translations.uploadCancelled,
+                            xhr: undefined,
+                        });
+                    }
                 });
 
-                notifications.show(translations.uploadCancelled, {
-                    severity: "info",
-                    autoHideDuration: 2000,
-                });
-                return { ...prev, files: updated, isUploading: false };
+                if (sizeToSubtract === 0) return prev; // No active uploads to cancel
+
+                setTimeout(() => {
+                    notifications.show(translations.uploadCancelled, {
+                        severity: "info",
+                        autoHideDuration: 2000,
+                    });
+                }, 0);
+
+                return {
+                    ...prev,
+                    files: updated,
+                    isUploading: false,
+                    timeRemaining: null,
+                    totalSize: prev.totalSize - sizeToSubtract,
+                    bytesUploaded: prev.bytesUploaded - bytesToSubtract,
+                };
             });
         },
         [notifications, translations.uploadCancelled],
@@ -579,7 +638,7 @@ export const StorageUploadProvider: React.FC<{
         async (fileKey: string): Promise<void> => {
             if (!uploadBatch) return;
             const fileState = uploadBatch.files.get(fileKey);
-            if (!fileState) return;
+            if (!fileState || fileState.status !== "error") return;
 
             // Reset status to pending and call uploadSingleFile
             setUploadBatch((prev) => {
@@ -592,7 +651,12 @@ export const StorageUploadProvider: React.FC<{
                     progress: 0,
                     error: undefined,
                 });
-                return { ...prev, files: updated, isUploading: true };
+                return {
+                    ...prev,
+                    files: updated,
+                    isUploading: true,
+                    totalSize: prev.totalSize + f.file.size,
+                };
             });
 
             try {
@@ -615,9 +679,14 @@ export const StorageUploadProvider: React.FC<{
     const retryFailedUploads = useCallback(async (): Promise<void> => {
         if (!uploadBatch) return;
 
-        const failedFiles = Array.from(uploadBatch.files.values())
-            .filter((f) => f.status === "error")
-            .map((f) => f.file);
+        let sizeToAdd = 0;
+        const failedFiles: File[] = [];
+        uploadBatch.files.forEach((f) => {
+            if (f.status === "error") {
+                failedFiles.push(f.file);
+                sizeToAdd += f.file.size;
+            }
+        });
 
         if (failedFiles.length === 0) {
             notifications.show(translations.noFailedUploads, {
@@ -631,17 +700,22 @@ export const StorageUploadProvider: React.FC<{
         setUploadBatch((prev) => {
             if (!prev) return prev;
             const updated = new Map(prev.files);
-            Array.from(updated.entries()).forEach(([key, file]) => {
-                if (file.status === "error") {
-                    updated.set(key, {
-                        ...file,
-                        status: "pending",
-                        progress: 0,
-                        error: undefined,
-                    });
-                }
+            failedFiles.forEach((file) => {
+                const key = getFileKey(file);
+                const f = updated.get(key)!;
+                updated.set(key, {
+                    ...f,
+                    status: "pending",
+                    progress: 0,
+                    error: undefined,
+                });
             });
-            return { ...prev, files: updated, isUploading: true };
+            return {
+                ...prev,
+                files: updated,
+                isUploading: true,
+                totalSize: prev.totalSize + sizeToAdd,
+            };
         });
 
         // Retry failed uploads
@@ -679,9 +753,7 @@ export const StorageUploadProvider: React.FC<{
     }, [
         uploadBatch,
         notifications,
-        translations.noFailedUploads,
-        translations.retryCompletedUploads,
-        translations.retryFailedUploads,
+        translations,
         maxConcurrentUploads,
         uploadSingleFile,
     ]);

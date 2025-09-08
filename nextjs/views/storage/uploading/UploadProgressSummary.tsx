@@ -57,17 +57,13 @@ const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({
                 <Button
                     onClick={onCancelAll}
                     size="small"
+                    disabled={!timeRemaining || timeRemaining <= 0}
                     sx={{
-                        color: theme.palette.primary.main,
                         textTransform: "none",
                         fontSize: "0.875rem",
                         fontWeight: 500,
                         padding: theme.spacing(0.5, 1),
                         minWidth: "auto",
-                        "&:hover": {
-                            backgroundColor: theme.palette.action.hover,
-                            color: theme.palette.primary.dark,
-                        },
                     }}
                 >
                     {translations.cancel}

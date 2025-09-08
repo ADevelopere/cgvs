@@ -79,7 +79,7 @@ function useQueryWrapper<T, V extends OperationVariables>(
         baseOptions?: ApolloReact.useLazyQuery.Options<T, V>,
     ) => ApolloReact.useLazyQuery.ResultTuple<T, V>,
 ) {
-    const [execute] = useLazyQueryHook();
+    const [execute] = useLazyQueryHook({ fetchPolicy: "network-only" });
     return useCallback(
         async (variables: V) => {
             const result = await execute({ variables }).catch((err) => {

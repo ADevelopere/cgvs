@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import { useStorageManagementCore } from "@/contexts/storage/StorageManagementCoreContext";
+import { useStorageUpload } from "@/contexts/storage/StorageUploadContext";
 import useAppTranslation from "@/locale/useAppTranslation";
 import logger from "@/utils/logger";
 
@@ -44,6 +45,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
     const { pasteItems, refresh, selectAll, clipboard, params } =
         useStorageManagementUI();
     const { createFolder } = useStorageManagementCore();
+    const { startUpload } = useStorageUpload();
 
     const [isPasting, setIsPasting] = useState(false);
     const [isCreatingFolder, setIsCreatingFolder] = useState(false);
@@ -60,20 +62,29 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
     }, [onClose, pasteItems, refresh]);
 
     const handleUploadFiles = React.useCallback(() => {
-        // TODO: This will trigger the file upload functionality
-        // For now, we can create a file input element
+        // Create a file input element to trigger file selection
         const input = document.createElement("input");
         input.type = "file";
         input.multiple = true;
         input.style.display = "none";
 
-        input.onchange = (event) => {
+        input.onchange = async (event) => {
             const files = (event.target as HTMLInputElement).files;
-            if (files) {
-                // TODO: Integrate with StorageUploadContext
-                logger.log("Selected files for upload:", files);
-                // This would call the upload functionality from StorageUploadContext
-                // uploadFiles(Array.from(files), queryParams.path);
+            if (files && files.length > 0) {
+                try {
+                    logger.info(
+                        `Starting upload of ${files.length} files to ${params.path}`,
+                    );
+
+                    await startUpload(Array.from(files), params.path, {
+                        onComplete: () => {
+                            logger.info("Upload completed successfully");
+                            refresh(); // Refresh the file list after upload
+                        },
+                    });
+                } catch (error) {
+                    logger.error("Upload failed:", error);
+                }
             }
         };
 
@@ -81,7 +92,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
         input.click();
         document.body.removeChild(input);
         onClose();
-    }, [onClose]);
+    }, [onClose, params.path, startUpload, refresh]);
 
     const handleNewFolder = React.useCallback(async () => {
         // Simple prompt for now - will be replaced with a proper dialog later
