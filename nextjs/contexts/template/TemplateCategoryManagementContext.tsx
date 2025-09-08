@@ -282,14 +282,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 }));
             }
 
-            logger.log(
-                "No templates found in category:",
-                JSON.stringify(
-                    getSerializableTemplateCategory(category),
-                    null,
-                    2,
-                ),
-            );
             return [];
         });
 
@@ -337,14 +329,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 const currentCategorySerialized =
                     getSerializableTemplateCategory(currentCategoryState);
 
-                logger.log(
-                    "Fresh category:",
-                    JSON.stringify(freshCategorySerialized, null, 2),
-                );
-                logger.log(
-                    "Current category:",
-                    JSON.stringify(currentCategorySerialized, null, 2),
-                );
                 if (
                     JSON.stringify(freshCategorySerialized, null, 2) !==
                     JSON.stringify(currentCategorySerialized, null, 2)
@@ -422,11 +406,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error(messages.failedToCreateCategory, {
-                    error: gqlError,
-                    name,
-                    parentId,
-                });
             }
         },
         [
@@ -480,11 +459,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error(messages.failedToUpdateCategory, {
-                    error: gqlError,
-                    category: category,
-                    parentCategoryId: parentCategoryId,
-                });
             }
         },
         [
@@ -498,7 +472,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const deleteCategory = useCallback(
         async (categoryId: number) => {
             try {
-                logger.info(messages.attemptingToDeleteCategory, categoryId);
                 await deleteTemplateCategoryMutation({ id: categoryId });
                 // Cache updated by Apollo.
                 if (currentCategoryState?.id === categoryId) {
@@ -520,10 +493,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 notifications.show(errorMessage, {
                     severity: "error",
                     autoHideDuration: 5000,
-                });
-                logger.error(messages.errorDeletingCategory, {
-                    categoryId,
-                    error: gqlError,
                 });
             }
         },
@@ -602,12 +571,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error(messages.failedToCreateCategory, {
-                    error: gqlError,
-                    name,
-                    categoryId,
-                    hasDescription: !!description,
-                });
 
                 throw error;
             }
@@ -655,10 +618,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error(messages.errorUpdatingTemplate, {
-                    error: gqlError,
-                    variables: variables,
-                });
 
                 return null;
             }
@@ -675,7 +634,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const suspendTemplate = useCallback(
         async (templateId: number) => {
             try {
-                logger.info(messages.movingTemplateToDeletion, templateId);
                 await suspendTemplateMutation({ id: templateId });
                 // Cache updated by Apollo.
                 if (currentTemplate?.id === templateId) {
@@ -702,10 +660,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error(messages.errorMovingToDeletion, {
-                    error: gqlError,
-                    templateId,
-                });
 
                 throw error;
             }
@@ -722,7 +676,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const unsuspendTemplate = useCallback(
         async (templateId: number) => {
             try {
-                logger.info("Restoring template", templateId);
                 await unsuspendTemplateMutation({ id: templateId });
                 notifications.show(messages.templateRestoredSuccessfully, {
                     severity: "success",
@@ -742,11 +695,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     severity: "error",
                     autoHideDuration: 5000,
                 });
-                logger.error(messages.errorRestoringTemplate, {
-                    error: gqlError,
-                    templateId,
-                });
-
                 throw error;
             }
         },

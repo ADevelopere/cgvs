@@ -14,8 +14,6 @@ import {
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import useAppTranslation from "@/locale/useAppTranslation";
-import logger from "@/utils/logger";
-
 interface StorageBreadcrumbProps {
     /**
      * Optional custom path override. If not provided, uses current path from context.
@@ -100,13 +98,6 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
             // Don't navigate for truncated segments
             return;
         }
-        
-        logger.debug("Breadcrumb navigation:", {
-            from: currentPath,
-            to: targetPath,
-            isRoot: targetPath === ""
-        });
-        
         handleNavigate(targetPath);
     };
 

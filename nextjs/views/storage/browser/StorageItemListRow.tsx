@@ -11,8 +11,9 @@ import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUICo
 interface StorageItemListRowProps {
     item: StorageItem;
     isSelected: boolean;
+    isCut: boolean;
     onClick?: (event: React.MouseEvent) => void;
-    onDoubleClick?: () => void;
+    onDoubleClick?: (event: React.MouseEvent) => void;
     onContextMenu?: (event: React.MouseEvent) => void;
 }
 
@@ -41,6 +42,7 @@ const formatDate = (dateString: string): string => {
 const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
     item,
     isSelected,
+    isCut,
     onClick,
     onDoubleClick,
     onContextMenu,
@@ -60,7 +62,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
         setContextMenuOpen(false);
         setContextMenuAnchor(undefined);
     }, []);
-    
+
     // Global context menu management to close this menu when others open
     React.useEffect(() => {
         const handleGlobalContextMenu = () => {
@@ -109,12 +111,14 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
     return (
         <>
             <TableRow
-                data-storage-item
                 selected={isSelected}
                 onClick={onClick}
                 onDoubleClick={onDoubleClick}
                 onContextMenu={handleContextMenu}
+                data-storage-item="true"
+                className="storage-item"
                 sx={{
+                    height: 52,
                     cursor: "pointer",
                     "&:hover": {
                         backgroundColor: "action.hover",
@@ -131,6 +135,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
                         outlineColor: "primary.main",
                         outlineOffset: "-2px",
                     }),
+                    opacity: isCut ? 0.5 : 1,
                 }}
             >
                 {/* Icon and Name Column */}

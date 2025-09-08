@@ -83,11 +83,11 @@ function useQueryWrapper<T, V extends OperationVariables>(
     return useCallback(
         async (variables: V) => {
             const result = await execute({ variables }).catch((err) => {
-                logger.error("Error executing query:", err);
+                logger.warn("Error executing query:", err);
                 throw err;
             });
             if (result.error) {
-                logger.error("Error executing query:", result.error);
+                logger.warn("Error executing query:", result.error);
                 throw result.error;
             }
             if (!result.data) {
@@ -112,7 +112,7 @@ function useMutationWrapper<T, V extends OperationVariables>(
             });
             const error: ErrorLike | undefined = result.error;
             if (error) {
-                logger.error("Error executing mutation:", error);
+                logger.warn("Error executing mutation:", error);
                 throw new Error(error.message);
             }
             if (!result.data) {

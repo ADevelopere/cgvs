@@ -153,12 +153,7 @@ export const StorageUploadProvider: React.FC<{
                         );
                         return;
                     }
-                } catch (err) {
-                    logger.warn(
-                        "Failed to verify existing files before upload:",
-                        err,
-                    );
-                }
+                } catch {}
 
                 const signedUrlRes = await gql.generateUploadSignedUrl({
                     input: {
@@ -342,7 +337,7 @@ export const StorageUploadProvider: React.FC<{
                     currentXhr.addEventListener("abort", abortListener);
                 });
             } catch (error) {
-                logger.error(`Upload failed for ${file.name}:`, error);
+                logger.warn(`Upload failed for ${file.name}:`, error);
                 setUploadBatch((prev) => {
                     if (!prev) return prev;
                     const updated = new Map(prev.files);
@@ -490,8 +485,7 @@ export const StorageUploadProvider: React.FC<{
 
                     return { ...prev, isUploading: false };
                 });
-            } catch (error) {
-                logger.error("Upload batch failed:", error);
+            } catch {
                 notifications.show(translations.uploadFailed, {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -672,8 +666,7 @@ export const StorageUploadProvider: React.FC<{
                 severity: "success",
                 autoHideDuration: 2000,
             });
-        } catch (error) {
-            logger.error("Retry failed:", error);
+        } catch {
             notifications.show(translations.retryFailedUploads, {
                 severity: "error",
                 autoHideDuration: 3000,

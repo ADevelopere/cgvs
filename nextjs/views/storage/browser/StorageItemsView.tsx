@@ -261,7 +261,7 @@ const ListView: React.FC<{
             onContextMenu={onContextMenu}
             onClick={onClick}
         >
-            <Table stickyHeader sx={{ minHeight: "100%" }}>
+            <Table stickyHeader>
                 <TableHead>
                     <TableRow>
                         <TableCell sx={{ width: "40%" }}>
@@ -432,7 +432,6 @@ const GridView: React.FC<{
                 spacing={2}
                 sx={{
                     p: 2,
-                    minHeight: "100%", // Ensure it takes at least full height
                 }}
             >
                 {currentItems.map((item) => (
@@ -658,13 +657,14 @@ const StorageItemsView: React.FC = () => {
         (event: React.MouseEvent) => {
             // Only deselect if clicking on empty area (not on items)
             const target = event.target as HTMLElement;
-            const isEmptyArea = target.closest("[data-storage-item]") === null;
-
+            const isEmptyArea =
+                target.closest("[data-storage-item]") === null &&
+                target.closest(".storage-item") === null;
             if (isEmptyArea && selectedItems.length > 0) {
                 clearSelection();
             }
         },
-        [clearSelection, selectedItems.length],
+        [clearSelection, selectedItems],
     );
 
     // Handle context menu for view area (right-click on empty space)
@@ -672,7 +672,9 @@ const StorageItemsView: React.FC = () => {
         (event: React.MouseEvent) => {
             // Only show context menu if clicking on empty area (not on items)
             const target = event.target as HTMLElement;
-            const isEmptyArea = target.closest("[data-storage-item]") === null;
+            const isEmptyArea =
+                target.closest("[data-storage-item]") === null &&
+                target.closest(".storage-item") === null;
 
             if (isEmptyArea) {
                 event.preventDefault();

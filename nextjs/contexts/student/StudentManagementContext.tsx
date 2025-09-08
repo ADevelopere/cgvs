@@ -13,7 +13,6 @@ import { useStudentGraphQL } from "./StudentGraphQLContext";
 import { PaginationInfo, Student } from "@/graphql/generated/types";
 import { mapSingleStudent } from "@/utils/student/student-mappers";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import logger from "@/utils/logger";
 
 type StudentManagementContextType = {
     // States
@@ -68,9 +67,9 @@ export const StudentManagementProvider: React.FC<{
 
     const [students, setStudents] = useState<Student[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
-    const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null | undefined>(
-        null,
-    );
+    const [paginationInfo, setPaginationInfo] = useState<
+        PaginationInfo | null | undefined
+    >(null);
     const [queryParams, setQueryParams] =
         useState<Graphql.StudentsQueryVariables>(DEFAULT_QUERY_PARAMS);
 
@@ -94,8 +93,7 @@ export const StudentManagementProvider: React.FC<{
                     setStudents(result.students.data);
                     setPaginationInfo(result.students.paginationInfo);
                 }
-            } catch (error) {
-                logger.error("Error fetching students:", error);
+            } catch {
                 notifications.show("Failed to fetch students", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -140,8 +138,7 @@ export const StudentManagementProvider: React.FC<{
                     autoHideDuration: 3000,
                 });
                 return false;
-            } catch (error) {
-                logger.error("Error creating student:", error);
+            } catch {
                 notifications.show("Failed to create student", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -180,8 +177,7 @@ export const StudentManagementProvider: React.FC<{
                     autoHideDuration: 3000,
                 });
                 return false;
-            } catch (error) {
-                logger.error("Error updating student:", error);
+            } catch {
                 notifications.show("Failed to update student", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -211,8 +207,7 @@ export const StudentManagementProvider: React.FC<{
                     autoHideDuration: 3000,
                 });
                 return false;
-            } catch (error) {
-                logger.error("Error deleting student:", error);
+            } catch {
                 notifications.show("Failed to delete student", {
                     severity: "error",
                     autoHideDuration: 3000,
@@ -242,7 +237,7 @@ export const StudentManagementProvider: React.FC<{
         setSelectedStudents([]);
     }, []);
 
-    const value : StudentManagementContextType= useMemo(
+    const value: StudentManagementContextType = useMemo(
         () => ({
             students,
             selectedStudents,

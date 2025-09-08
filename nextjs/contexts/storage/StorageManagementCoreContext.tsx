@@ -19,7 +19,6 @@ import {
     StorageStats,
     StorageManagementCoreContextType,
 } from "./storage.type";
-import logger from "@/utils/logger";
 
 const StorageManagementCoreContext = createContext<
     StorageManagementCoreContextType | undefined
@@ -108,8 +107,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     .items as StorageItem[];
 
                 return { items, pagination };
-            } catch (error) {
-                logger.error("Error fetching file list:", error);
+            } catch {
                 showNotification(translations.failedToFetchFileList, "error");
                 return null;
             }
@@ -131,8 +129,7 @@ export const StorageManagementCoreProvider: React.FC<{
                 return result.directoryChildren.map(
                     transformDirectoryToTreeNode,
                 );
-            } catch (error) {
-                logger.error("Error fetching directory children:", error);
+            } catch {
                 showNotification(
                     translations.failedToFetchDirectoryContents,
                     "error",
@@ -160,8 +157,7 @@ export const StorageManagementCoreProvider: React.FC<{
                 const statsData = result.storageStats;
                 setStats(statsData);
                 return statsData;
-            } catch (error) {
-                logger.error("Error fetching storage stats:", error);
+            } catch {
                 showNotification(
                     translations.failedToFetchStorageStatistics,
                     "error",
@@ -204,8 +200,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     );
                     return false;
                 }
-            } catch (error) {
-                logger.error("Error renaming file:", error);
+            } catch {
                 showNotification(translations.failedToRenameFile, "error");
                 return false;
             }
@@ -261,8 +256,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     showNotification(translations.failedToDeleteItems, "error");
                     return false;
                 }
-            } catch (error) {
-                logger.error("Error deleting items:", error);
+            } catch {
                 showNotification(translations.failedToDeleteItems, "error");
                 return false;
             }
@@ -324,8 +318,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     showNotification(translations.failedToMoveItems, "error");
                     return false;
                 }
-            } catch (error) {
-                logger.error("Error moving items:", error);
+            } catch {
                 showNotification(translations.failedToMoveItems, "error");
                 return false;
             }
@@ -387,8 +380,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     showNotification(translations.failedToCopyItems, "error");
                     return false;
                 }
-            } catch (error) {
-                logger.error("Error copying items:", error);
+            } catch {
                 showNotification(translations.failedToCopyItems, "error");
                 return false;
             }
@@ -428,8 +420,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     );
                     return false;
                 }
-            } catch (error) {
-                logger.error("Error creating folder:", error);
+            } catch {
                 showNotification(translations.failedToCreateFolder, "error");
                 return false;
             }
@@ -470,8 +461,7 @@ export const StorageManagementCoreProvider: React.FC<{
                     items,
                     totalCount: result.searchFiles.totalCount,
                 };
-            } catch (error) {
-                logger.error("Error searching files:", error);
+            } catch {
                 showNotification(translations.failedToSearchFiles, "error");
                 return null;
             }

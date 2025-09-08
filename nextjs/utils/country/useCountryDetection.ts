@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import logger from "../logger";
 import { loadFromLocalStorage } from "../localStorage";
 
 interface CountryDetectionResult {
@@ -17,39 +16,30 @@ const detectCountry = async (
     setLoading: (loading: boolean) => void,
     defaultCountryCode: string,
 ) => {
-    logger.log("Starting country detection");
     try {
         const response = await fetch("https://ipapi.co/json/");
-        logger.log("Response received", response);
         if (response.status === 429) {
             setError("Request limit reached for today");
             setLoading(false);
-            logger.log("Request limit reached for today");
             return;
         }
         const data: { country_code: string } = await response.json();
-        logger.log("Country data received", data);
         if (typeof localStorage !== "undefined") {
             localStorage.setItem("countryCode", data.country_code);
             localStorage.setItem(
                 "countryCodeFetchDate",
                 new Date().toISOString(),
             );
-            logger.log("Country code and fetch date stored in localStorage");
         }
         setCountryCode(data.country_code);
-    } catch (err) {
+    } catch {
         setError("Failed to detect country");
-        logger.error("Error detecting country", err);
         if (typeof localStorage !== "undefined") {
             localStorage.setItem(
                 "countryCodeRequestCount",
                 MAX_REQUESTS_PER_DAY.toString(),
             );
             localStorage.setItem("countryCode", defaultCountryCode);
-            logger.log(
-                "Request count set to max and default country code stored in localStorage",
-            );
         }
         setCountryCode(defaultCountryCode);
     } finally {
@@ -64,13 +54,8 @@ const detectCountry = async (
                 "countryCodeRequestCount",
                 (requestCount + 1).toString(),
             );
-            logger.log(
-                "Request count updated in localStorage",
-                requestCount + 1,
-            );
         }
         setLoading(false);
-        logger.log("Country detection finished");
     }
 };
 
@@ -80,10 +65,11 @@ const fetchCountryCode = (
     setLoading: (loading: boolean) => void,
     defaultCountryCode: string,
 ) => {
-    logger.log("Fetching country code");
     if (typeof localStorage !== "undefined") {
         const storedCountryCode = loadFromLocalStorage<string>("countryCode");
-        const storedFetchDate = loadFromLocalStorage<string>("countryCodeFetchDate");
+        const storedFetchDate = loadFromLocalStorage<string>(
+            "countryCodeFetchDate",
+        );
         const storedRequestCount = loadFromLocalStorage<string>(
             "countryCodeRequestCount",
         );
@@ -92,12 +78,6 @@ const fetchCountryCode = (
         const requestCount = storedRequestCount
             ? parseInt(storedRequestCount, 10)
             : 0;
-
-        logger.log("LocalStorage values", {
-            storedCountryCode,
-            storedFetchDate,
-            storedRequestCount,
-        });
 
         if (
             storedCountryCode &&
@@ -111,10 +91,6 @@ const fetchCountryCode = (
                 );
                 setCountryCode(storedCountryCode);
                 setLoading(false);
-                logger.log(
-                    "Country code fetched from localStorage",
-                    storedCountryCode,
-                );
                 return;
             } else {
                 setError("Request limit reached for today");
@@ -123,7 +99,6 @@ const fetchCountryCode = (
                     MAX_REQUESTS_PER_DAY.toString(),
                 );
                 setLoading(false);
-                logger.log("Request limit reached for today");
                 return;
             }
         } else if (storedCountryCode && (!fetchDate || !storedRequestCount)) {
@@ -134,9 +109,6 @@ const fetchCountryCode = (
             localStorage.setItem("countryCodeRequestCount", "1");
             setCountryCode(storedCountryCode);
             setLoading(false);
-            logger.log(
-                "Country code set but fetch date or request count missing, updated localStorage",
-            );
             return;
         }
     }
@@ -151,22 +123,17 @@ const useCountryDetection = (
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    logger.log("useCountryDetection started");
-
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             if (loading) {
                 setCountryCode(defaultCountryCode);
                 setLoading(false);
-                logger.log(
-                    "Timeout reached, setting default country code",
-                    defaultCountryCode,
-                );
             }
         }, timeout);
 
         if (typeof localStorage !== "undefined") {
-            const storedCountryCode = loadFromLocalStorage<string>("countryCode");
+            const storedCountryCode =
+                loadFromLocalStorage<string>("countryCode");
             const storedFetchDate = loadFromLocalStorage<string>(
                 "countryCodeFetchDate",
             );
@@ -182,10 +149,6 @@ const useCountryDetection = (
             ) {
                 setCountryCode(storedCountryCode);
                 setLoading(false);
-                logger.log(
-                    "Country code fetched from localStorage",
-                    storedCountryCode,
-                );
             } else {
                 fetchCountryCode(
                     setCountryCode,
@@ -205,8 +168,6 @@ const useCountryDetection = (
 
         return () => clearTimeout(timeoutId);
     }, [loading, timeout, defaultCountryCode]);
-
-    logger.log("useCountryDetection finished");
 
     return {
         countryCode: countryCode ?? defaultCountryCode,
