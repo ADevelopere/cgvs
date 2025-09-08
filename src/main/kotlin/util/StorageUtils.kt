@@ -7,7 +7,8 @@ import schema.model.*
  */
 
 const val MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
-val PATH_PATTERN = Regex("^[a-zA-Z0-9._/-]+$")
+//val PATH_PATTERN = Regex("^[a-zA-Z0-9._/-]+$")
+val PATH_PATTERN = Regex("^[a-zA-Z0-9._/\\- ()]+$")
 
 /**
  * Validates a file path for security and format compliance

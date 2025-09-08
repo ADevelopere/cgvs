@@ -21,6 +21,8 @@ import {
     ToggleButtonGroup,
     Toolbar,
     Typography,
+    alpha,
+    useTheme,
 } from "@mui/material";
 import {
     GridView as GridViewIcon,
@@ -31,6 +33,7 @@ import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUICo
 import useAppTranslation from "@/locale/useAppTranslation";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
+import { useUploadDropzone } from "@/views/storage/dropzone/useUploadDropzone";
 import { StorageManagementUITranslations } from "@/locale/components/Storage";
 import {
     StorageItem as StorageItemType,
@@ -454,8 +457,6 @@ const GridView: React.FC<{
  */
 const StorageItemsView: React.FC = () => {
     const {
-        // items, // unused
-        // searchResults, // unused
         searchMode,
         viewMode,
         setViewMode,
@@ -476,8 +477,10 @@ const StorageItemsView: React.FC = () => {
         selectAll,
         navigateTo,
         lastSelectedItem,
+        refresh,
     } = useStorageManagementUI();
     const { ui: translations } = useAppTranslation("storageTranslations");
+    const theme = useTheme();
 
     // Context menu state
     const [viewAreaMenuAnchor, setViewAreaMenuAnchor] =
@@ -521,6 +524,15 @@ const StorageItemsView: React.FC = () => {
     const hasError = React.useMemo(() => {
         return operationErrors.fetchList || operationErrors.search;
     }, [operationErrors.fetchList, operationErrors.search]);
+
+    // Add dropzone functionality for the main view area
+    const { getRootProps, getInputProps, isDragActive } = useUploadDropzone({
+        uploadPath: params.path,
+        disabled: isLoading,
+        onUploadComplete: () => {
+            refresh();
+        },
+    });
 
     // Keyboard navigation handler
     const handleKeyDown = React.useCallback(
@@ -721,10 +733,24 @@ const StorageItemsView: React.FC = () => {
 
             {/* Content Area */}
             <Box
-                sx={{ flex: 1, overflow: "auto" }}
+                {...getRootProps()}
+                sx={{
+                    flex: 1,
+                    overflow: "auto",
+                    position: "relative",
+                    border: isDragActive
+                        ? `2px dashed ${theme.palette.primary.main}`
+                        : "2px solid transparent",
+                    backgroundColor: isDragActive
+                        ? alpha(theme.palette.primary.main, 0.05)
+                        : "transparent",
+                    transition:
+                        "border-color 0.2s ease, background-color 0.2s ease",
+                }}
                 onContextMenu={handleViewAreaContextMenu}
                 onClick={handleViewAreaClick}
             >
+                <input {...getInputProps()} />
                 {isLoading && (
                     <LoadingStates
                         searchMode={searchMode}

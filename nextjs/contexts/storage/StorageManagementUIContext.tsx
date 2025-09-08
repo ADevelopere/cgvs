@@ -103,6 +103,7 @@ export const StorageManagementUIProvider: React.FC<{
     // Track if this is the initial mount or subsequent navigation
     const isInitialMount = useRef(true);
     const lastNavigationRequest = useRef<string | null>(null);
+    const prevQueryParams = useRef<StorageQueryParams>(queryParams);
 
     // Helper function to update loading state
     const updateLoading = useCallback(
@@ -207,6 +208,12 @@ export const StorageManagementUIProvider: React.FC<{
 
     // Initialize directory tree and root items on mount with proper hydration handling
     useEffect(() => {
+        if (
+            !isInitialMount.current &&
+            JSON.stringify(prevQueryParams.current) === JSON.stringify(queryParams)
+        ) {
+            return;
+        }
         let isMounted = true;
 
         const initializeStorageData = async () => {
@@ -309,6 +316,7 @@ export const StorageManagementUIProvider: React.FC<{
 
         // Use setTimeout to ensure this runs after hydration
         const timeoutId = setTimeout(initializeStorageData, 100);
+        prevQueryParams.current = queryParams;
 
         return () => {
             isMounted = false;

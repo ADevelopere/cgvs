@@ -267,6 +267,33 @@ const arStorageTranslations: StorageTranslations = {
         apply: "تطبيق",
         reset: "إعادة تعيين",
     },
+    dropzone: {
+        // Drag and drop messages
+        dragFilesHere: "اسحب الملفات هنا",
+        dragToUpload: "اسحب لتحميل الملفات",
+        dragOverToUpload: "أفلت هنا لتحميل الملفات",
+        dragAndDropFiles: "اسحب وأفلت الملفات",
+        orClickToSelect: "أو انقر لاختيار الملفات",
+        clickToSelectFiles: "انقر لاختيار الملفات",
+        uploading: "جاري التحميل",
+        
+        // File validation messages
+        invalidFileType: 'نوع الملف غير صالح: "%{fileName}"',
+        fileTooLarge: 'الملف "%{fileName}" كبير جداً. الحد الأقصى: %{maxSize}',
+        tooManyFiles: 'عدد كبير من الملفات: %{count}. الحد الأقصى: %{maxFiles}',
+        
+        // Upload feedback
+        filesSelected: "تم اختيار %{count} ملف",
+        startingUpload: "بدء التحميل...",
+        uploadSuccess: "تم تحميل %{count} ملف بنجاح",
+        uploadFailed: "فشل التحميل: %{error}",
+        
+        // Dropzone states
+        dropzoneActive: "منطقة الإفلات نشطة",
+        dropzoneInactive: "منطقة الإفلات غير نشطة",
+        dropHereToUpload: "أفلت هنا للتحميل",
+        releaseToUpload: "أفلت لبدء التحميل",
+    },
 };
 
 export default arStorageTranslations;

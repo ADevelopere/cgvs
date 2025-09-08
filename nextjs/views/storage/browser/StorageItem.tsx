@@ -3,6 +3,7 @@ import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
 import { useStorageManagementUI } from "@/contexts/storage/StorageManagementUIContext";
 import { StorageItem as StorageItemType } from "@/contexts/storage/storage.type";
+import FolderDropTarget from "@/views/storage/dropzone/FolderDropTarget";
 interface StorageItemProps {
     item: StorageItemType;
 }
@@ -123,11 +124,25 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
     );
 
     // Render the appropriate component based on view mode
-    if (viewMode === "grid") {
-        return <StorageItemGrid {...commonProps} isCut={isCut} />;
-    } else {
-        return <StorageItemListRow {...commonProps} isCut={isCut} />;
+    const renderItem = () => {
+        if (viewMode === "grid") {
+            return <StorageItemGrid {...commonProps} isCut={isCut} />;
+        } else {
+            return <StorageItemListRow {...commonProps} isCut={isCut} />;
+        }
+    };
+
+    // Wrap directories with FolderDropTarget for drag-and-drop upload
+    if (isDirectory) {
+        return (
+            <FolderDropTarget folderPath={item.path}>
+                {renderItem()}
+            </FolderDropTarget>
+        );
     }
+
+    // For files, render normally
+    return renderItem();
 };
 
 export default StorageItem;

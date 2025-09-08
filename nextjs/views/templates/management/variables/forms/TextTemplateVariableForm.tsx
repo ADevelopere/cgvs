@@ -146,7 +146,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 
             <TextField
                 label={strings?.description ?? "Description"}
-                value={state.description}
+                value={state.description ?? ""}
                 onChange={handleChange("description")}
                 fullWidth
                 multiline
@@ -171,7 +171,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 
             <TextField
                 label={strings?.pattern ?? "Pattern"}
-                value={state.pattern}
+                value={state.pattern ?? ""}
                 onChange={handleChange("pattern")}
                 fullWidth
                 helperText={
@@ -182,7 +182,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
 
             <TextField
                 label={strings?.previewValue ?? "Preview Value"}
-                value={state.previewValue}
+                value={state.previewValue ?? ""}
                 onChange={handleChange("previewValue")}
                 fullWidth
             />

@@ -257,17 +257,47 @@ export type StorageManagementUITranslations = {
     reset: string;
 };
 
+type StorageDropzoneTranslations = {
+    // Drag and drop messages
+    dragFilesHere: string;
+    dragToUpload: string;
+    dragOverToUpload: string;
+    dragAndDropFiles: string;
+    orClickToSelect: string;
+    clickToSelectFiles: string;
+    uploading: string;
+    
+    // File validation messages
+    invalidFileType: string; // %{fileName}
+    fileTooLarge: string; // %{fileName}, %{maxSize}
+    tooManyFiles: string; // %{count}, %{maxFiles}
+    
+    // Upload feedback
+    filesSelected: string; // %{count}
+    startingUpload: string;
+    uploadSuccess: string; // %{count}
+    uploadFailed: string; // %{error}
+    
+    // Dropzone states
+    dropzoneActive: string;
+    dropzoneInactive: string;
+    dropHereToUpload: string;
+    releaseToUpload: string;
+};
+
 type StorageTranslations = {
     [key: string]:
         | string
         | undefined
         | StorageUploadingTranslations
         | StorageManagementCoreTranslations
-        | StorageManagementUITranslations;
+        | StorageManagementUITranslations
+        | StorageDropzoneTranslations;
 
     uploading: StorageUploadingTranslations;
     management: StorageManagementCoreTranslations;
     ui: StorageManagementUITranslations;
+    dropzone: StorageDropzoneTranslations;
 };
 
 export default StorageTranslations;
