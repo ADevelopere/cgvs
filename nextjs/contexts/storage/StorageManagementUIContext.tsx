@@ -23,7 +23,6 @@ import {
     OperationErrors,
     QueueStates,
 } from "./storage.type";
-import logger from "@/utils/logger";
 import useAppTranslation from "@/locale/useAppTranslation";
 
 const StorageManagementUIContext = createContext<
@@ -93,7 +92,7 @@ export const StorageManagementUIProvider: React.FC<{
         prefetchingNode: null,
     });
     const [operationErrors, setOperationErrors] = useState<OperationErrors>({});
-    
+
     // Queue States
     const [queueStates, setQueueStates] = useState<QueueStates>({
         fetchQueue: new Set(),
@@ -125,69 +124,86 @@ export const StorageManagementUIProvider: React.FC<{
     const addToFetchQueue = useCallback((path: string) => {
         setQueueStates((prev) => ({
             ...prev,
-            fetchQueue: new Set([...prev.fetchQueue, path])
+            fetchQueue: new Set([...prev.fetchQueue, path]),
         }));
     }, []);
 
     const removeFromFetchQueue = useCallback((path: string) => {
         setQueueStates((prev) => ({
             ...prev,
-            fetchQueue: new Set([...prev.fetchQueue].filter(p => p !== path))
+            fetchQueue: new Set([...prev.fetchQueue].filter((p) => p !== path)),
         }));
     }, []);
 
     const addToExpansionQueue = useCallback((path: string) => {
         setQueueStates((prev) => ({
             ...prev,
-            expansionQueue: new Set([...prev.expansionQueue, path])
+            expansionQueue: new Set([...prev.expansionQueue, path]),
         }));
     }, []);
 
     const removeFromExpansionQueue = useCallback((path: string) => {
         setQueueStates((prev) => ({
             ...prev,
-            expansionQueue: new Set([...prev.expansionQueue].filter(p => p !== path))
+            expansionQueue: new Set(
+                [...prev.expansionQueue].filter((p) => p !== path),
+            ),
         }));
     }, []);
 
-    const setCurrentlyFetching = useCallback((path: string, isFetching: boolean) => {
-        setQueueStates((prev) => {
-            const newSet = new Set(prev.currentlyFetching);
-            if (isFetching) {
-                newSet.add(path);
-            } else {
-                newSet.delete(path);
-            }
-            return {
-                ...prev,
-                currentlyFetching: newSet
-            };
-        });
-    }, []);
+    const setCurrentlyFetching = useCallback(
+        (path: string, isFetching: boolean) => {
+            setQueueStates((prev) => {
+                const newSet = new Set(prev.currentlyFetching);
+                if (isFetching) {
+                    newSet.add(path);
+                } else {
+                    newSet.delete(path);
+                }
+                return {
+                    ...prev,
+                    currentlyFetching: newSet,
+                };
+            });
+        },
+        [],
+    );
 
     // Function to process expansion queue
-    const processExpansionQueue = useCallback((path: string) => {
-        if (queueStates.expansionQueue.has(path)) {
-            // Check if children are available in the tree
-            const hasChildrenInTree = (nodes: DirectoryTreeNode[], targetPath: string): boolean => {
-                for (const node of nodes) {
-                    if (node.path === targetPath && node.children !== undefined) {
-                        return true;
+    const processExpansionQueue = useCallback(
+        (path: string) => {
+            if (queueStates.expansionQueue.has(path)) {
+                // Check if children are available in the tree
+                const hasChildrenInTree = (
+                    nodes: DirectoryTreeNode[],
+                    targetPath: string,
+                ): boolean => {
+                    for (const node of nodes) {
+                        if (
+                            node.path === targetPath &&
+                            node.children !== undefined
+                        ) {
+                            return true;
+                        }
+                        if (
+                            node.children &&
+                            hasChildrenInTree(node.children, targetPath)
+                        ) {
+                            return true;
+                        }
                     }
-                    if (node.children && hasChildrenInTree(node.children, targetPath)) {
-                        return true;
-                    }
-                }
-                return false;
-            };
+                    return false;
+                };
 
-            if (hasChildrenInTree(directoryTree, path)) {
-                // Children are available, expand immediately
-                setExpandedNodes((prev) => new Set([...prev, path]));
-                removeFromExpansionQueue(path);
+                if (hasChildrenInTree(directoryTree, path)) {
+                    // Children are available, expand immediately
+                    setExpandedNodes((prev) => new Set([...prev, path]));
+                    removeFromExpansionQueue(path);
+                }
             }
-        }
-    }, [queueStates.expansionQueue, directoryTree, removeFromExpansionQueue]);
+        },
+        [queueStates.expansionQueue, directoryTree, removeFromExpansionQueue],
+    );
 
     // Initialize directory tree and root items on mount with proper hydration handling
     useEffect(() => {
@@ -225,51 +241,60 @@ export const StorageManagementUIProvider: React.FC<{
                             }
                         }
                     }
-                    
+
                     // Mark that initial mount is complete
                     isInitialMount.current = false;
                 } else {
                     // Navigation change: Only fetch items for the new path, keep directory tree intact
                     const currentPath = queryParams.path;
                     lastNavigationRequest.current = currentPath;
-                    
+
                     updateLoading("fetchList", true);
                     updateError("fetchList"); // Clear any previous errors
-                    
+
                     const result = await coreContext.fetchList(queryParams);
-                    
+
                     // Check if this is still the most recent navigation request
-                    if (isMounted && lastNavigationRequest.current === currentPath) {
+                    if (
+                        isMounted &&
+                        lastNavigationRequest.current === currentPath
+                    ) {
                         if (result) {
                             setItems(result.items);
                             setPagination(result.pagination);
-                            // Set focus to first item if available
+                            // Only set focus to first item if no item is currently focused
+                            // or if the currently focused item no longer exists
                             if (result.items.length > 0) {
-                                setFocusedItem(result.items[0].path);
+                                if (
+                                    !focusedItem ||
+                                    !result.items.some(
+                                        (item) => item.path === focusedItem,
+                                    )
+                                ) {
+                                    setFocusedItem(result.items[0].path);
+                                }
                             } else {
                                 setFocusedItem(null);
                             }
                         } else {
                             // Handle null result - this shouldn't happen but prevents empty state
-                            logger.warn("Navigation returned null result for path:", queryParams.path);
-                            updateError("fetchList", translations.failedToNavigateToDirectory);
+                            updateError(
+                                "fetchList",
+                                translations.failedToNavigateToDirectory,
+                            );
                         }
-                    } else {
-                        logger.debug("Ignoring stale navigation result for path:", currentPath);
                     }
                 }
-            } catch (error) {
+            } catch {
                 // Only log if not an abort error during unmount
                 if (isMounted) {
-                    logger.error("Error during navigation/initialization:", error);
                     updateError(
                         "fetchList",
                         translations.failedToNavigateToDirectory,
                     );
-                    
+
                     // If this was a navigation error (not initial mount), try to recover
                     if (!isInitialMount.current) {
-                        logger.debug("Attempting to recover from navigation error by staying in current directory");
                         // Don't change items/pagination on navigation errors to avoid empty state
                         // User can retry or navigate manually
                     }
@@ -303,20 +328,17 @@ export const StorageManagementUIProvider: React.FC<{
         async (path: string) => {
             // Avoid unnecessary navigation to the same path
             if (queryParams.path === path) {
-                logger.debug("Already at path:", path, "- skipping navigation");
                 return;
             }
-            
-            logger.debug("Navigating from:", queryParams.path, "to:", path);
-            
+
             // Only update query params - the useEffect will handle fetching the data
             const newParams = { ...queryParams, path, offset: 0 };
             setQueryParams(newParams);
-            
+
             // Clear selection and search state immediately
             setSelectedItems([]);
             setLastSelectedItem(null);
-            
+
             // Exit search mode if navigating
             if (searchMode) {
                 setSearchMode(false);
@@ -328,24 +350,23 @@ export const StorageManagementUIProvider: React.FC<{
 
     const goUp = useCallback(async () => {
         const currentPath = queryParams.path;
-        
+
         // Handle edge cases for path calculation
         if (!currentPath || currentPath === "") {
             // Already at root, can't go up further
-            logger.debug("Already at root directory, cannot navigate up");
             return;
         }
-        
+
         // Remove trailing slashes and calculate parent path
         const cleanPath = currentPath.replace(/\/+$/, "");
-        const pathSegments = cleanPath.split("/").filter(segment => segment !== "");
-        
+        const pathSegments = cleanPath
+            .split("/")
+            .filter((segment) => segment !== "");
+
         // Calculate parent path
-        const parentPath = pathSegments.length > 1 
-            ? pathSegments.slice(0, -1).join("/")
-            : ""; // Go to root if only one segment
-            
-        logger.debug("Navigating up from:", currentPath, "to:", parentPath);
+        const parentPath =
+            pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : ""; // Go to root if only one segment
+
         await navigateTo(parentPath);
     }, [queryParams.path, navigateTo]);
 
@@ -364,7 +385,13 @@ export const StorageManagementUIProvider: React.FC<{
         } finally {
             updateLoading("fetchList", false);
         }
-    }, [queryParams, coreContext, updateError, updateLoading, translations.failedToRefreshDirectory]);
+    }, [
+        queryParams,
+        coreContext,
+        updateError,
+        updateLoading,
+        translations.failedToRefreshDirectory,
+    ]);
 
     const prefetchDirectoryChildren = useCallback(
         async (path: string, refresh?: boolean) => {
@@ -415,13 +442,10 @@ export const StorageManagementUIProvider: React.FC<{
                     };
 
                     setDirectoryTree((prev) => updateTreeNode(prev));
-                    
+
                     // Process expansion queue for this path after successful fetch
                     processExpansionQueue(path);
                 }
-            } catch (error) {
-                // Fail silently for prefetching
-                logger.debug("Prefetch failed:", error);
             } finally {
                 // Remove from queues and update loading state
                 removeFromFetchQueue(path);
@@ -430,15 +454,15 @@ export const StorageManagementUIProvider: React.FC<{
             }
         },
         [
-            prefetchedNodes, 
-            expandedNodes, 
+            prefetchedNodes,
+            expandedNodes,
             queueStates.currentlyFetching,
             addToFetchQueue,
             setCurrentlyFetching,
-            updateLoading, 
+            updateLoading,
             coreContext,
             processExpansionQueue,
-            removeFromFetchQueue
+            removeFromFetchQueue,
         ],
     );
 
@@ -447,7 +471,10 @@ export const StorageManagementUIProvider: React.FC<{
             if (expandedNodes.has(path)) return; // Already expanded
 
             // Check if children are already available in the tree
-            const findNodeInTree = (nodes: DirectoryTreeNode[], targetPath: string): DirectoryTreeNode | null => {
+            const findNodeInTree = (
+                nodes: DirectoryTreeNode[],
+                targetPath: string,
+            ): DirectoryTreeNode | null => {
                 for (const node of nodes) {
                     if (node.path === targetPath) {
                         return node;
@@ -461,7 +488,7 @@ export const StorageManagementUIProvider: React.FC<{
             };
 
             const targetNode = findNodeInTree(directoryTree, path);
-            
+
             if (targetNode?.children !== undefined) {
                 // Children are already available, expand immediately
                 setExpandedNodes((prev) => new Set([...prev, path]));
@@ -469,15 +496,25 @@ export const StorageManagementUIProvider: React.FC<{
                 // Children are not available but node has children
                 // Add to expansion queue and trigger fetch if not already fetching
                 addToExpansionQueue(path);
-                
-                if (!queueStates.currentlyFetching.has(path) && !queueStates.fetchQueue.has(path)) {
+
+                if (
+                    !queueStates.currentlyFetching.has(path) &&
+                    !queueStates.fetchQueue.has(path)
+                ) {
                     // Not currently fetching and not in fetch queue, trigger prefetch
                     prefetchDirectoryChildren(path);
                 }
             }
             // If node doesn't have children, do nothing
         },
-        [expandedNodes, directoryTree, addToExpansionQueue, queueStates.currentlyFetching, queueStates.fetchQueue, prefetchDirectoryChildren],
+        [
+            expandedNodes,
+            directoryTree,
+            addToExpansionQueue,
+            queueStates.currentlyFetching,
+            queueStates.fetchQueue,
+            prefetchDirectoryChildren,
+        ],
     );
 
     const collapseDirectoryNode = useCallback((path: string) => {
@@ -513,11 +550,11 @@ export const StorageManagementUIProvider: React.FC<{
     const toggleSelect = useCallback((path: string) => {
         setSelectedItems((prev) => {
             const isSelected = prev.includes(path);
-            if (isSelected) {
-                return prev.filter((p) => p !== path);
-            } else {
-                return [...prev, path];
-            }
+            const newSelection = isSelected
+                ? prev.filter((p) => p !== path)
+                : [...prev, path];
+
+            return newSelection;
         });
         setLastSelectedItem(path);
     }, []);
@@ -529,7 +566,9 @@ export const StorageManagementUIProvider: React.FC<{
     }, [searchMode, searchResults, items]);
 
     const clearSelection = useCallback(() => {
-        setSelectedItems([]);
+        setSelectedItems(() => {
+            return [];
+        });
         setLastSelectedItem(null);
     }, []);
 
@@ -552,7 +591,9 @@ export const StorageManagementUIProvider: React.FC<{
 
                 setSelectedItems((prev) => {
                     const newSelection = new Set([...prev, ...rangePaths]);
-                    return Array.from(newSelection);
+                    const newSelectionArray = Array.from(newSelection);
+
+                    return newSelectionArray;
                 });
             }
         },
@@ -583,7 +624,13 @@ export const StorageManagementUIProvider: React.FC<{
                 updateLoading("search", false);
             }
         },
-        [coreContext, queryParams.path, updateError, updateLoading, translations.searchFailed],
+        [
+            coreContext,
+            queryParams.path,
+            updateError,
+            updateLoading,
+            translations.searchFailed,
+        ],
     );
 
     const setFilterType = useCallback(
@@ -857,7 +904,51 @@ export const StorageManagementUIProvider: React.FC<{
             setFocusedItem,
             exitSearchMode,
         }),
-        [items, pagination, directoryTree, expandedNodes, prefetchedNodes, queryParams, selectedItems, lastSelectedItem, focusedItem, viewMode, searchMode, searchResults, clipboard, sortBy, sortDirection, loading, operationErrors, queueStates, navigateTo, goUp, refresh, expandDirectoryNode, collapseDirectoryNode, prefetchDirectoryChildren, toggleSelect, selectAll, clearSelection, selectRange, setParams, search, setFilterType, setSortField, setPage, setLimit, getSortedItems, copyItems, cutItems, pasteItems, renameItem, deleteItems, moveItems, copyItemsTo, exitSearchMode],
+        [
+            items,
+            pagination,
+            directoryTree,
+            expandedNodes,
+            prefetchedNodes,
+            queryParams,
+            selectedItems,
+            lastSelectedItem,
+            focusedItem,
+            viewMode,
+            searchMode,
+            searchResults,
+            clipboard,
+            sortBy,
+            sortDirection,
+            loading,
+            operationErrors,
+            queueStates,
+            navigateTo,
+            goUp,
+            refresh,
+            expandDirectoryNode,
+            collapseDirectoryNode,
+            prefetchDirectoryChildren,
+            toggleSelect,
+            selectAll,
+            clearSelection,
+            selectRange,
+            setParams,
+            search,
+            setFilterType,
+            setSortField,
+            setPage,
+            setLimit,
+            getSortedItems,
+            copyItems,
+            cutItems,
+            pasteItems,
+            renameItem,
+            deleteItems,
+            moveItems,
+            copyItemsTo,
+            exitSearchMode,
+        ],
     );
 
     return (

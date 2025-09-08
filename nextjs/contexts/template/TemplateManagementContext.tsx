@@ -23,7 +23,6 @@ import {
     mapSingleTemplate,
     mapTemplateConfig,
 } from "@/utils/template/template-mappers";
-import logger from "@/utils/logger";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -134,7 +133,6 @@ export const TemplateManagementProvider: React.FC<{
     );
 
     useEffect(() => {
-        logger.log("Fetching template data...");
         const fetchTemplate = async () => {
             setLoading(true);
             try {
@@ -164,7 +162,6 @@ export const TemplateManagementProvider: React.FC<{
                     settemplate(template);
                 } else {
                     setError("Template not found");
-                    logger.error("Template not found");
                 }
             } catch (error) {
                 let message = "Failed to load template";
@@ -179,7 +176,6 @@ export const TemplateManagementProvider: React.FC<{
                     message = (error as { message: string }).message;
                 }
                 setError(message);
-                logger.error("Error loading template:", error);
             } finally {
                 setLoading(false);
             }

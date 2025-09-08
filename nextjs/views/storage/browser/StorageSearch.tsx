@@ -11,7 +11,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import HistoryIcon from "@mui/icons-material/History";
-import logger from "@/utils/logger";
 
 const STORAGE_SEARCH_HISTORY_KEY = "storage-search-history";
 
@@ -29,12 +28,7 @@ const StorageSearch: React.FC = () => {
             if (storedHistory) {
                 setSearchHistory(JSON.parse(storedHistory));
             }
-        } catch (error) {
-            logger.error(
-                "Failed to parse search history from localStorage",
-                error,
-            );
-        }
+        } catch {}
     }, []);
 
     const updateSearchHistory = React.useCallback(
@@ -49,12 +43,7 @@ const StorageSearch: React.FC = () => {
                     STORAGE_SEARCH_HISTORY_KEY,
                     JSON.stringify(newHistory),
                 );
-            } catch (error) {
-                logger.error(
-                    "Failed to save search history to localStorage",
-                    error,
-                );
-            }
+            } catch {}
         },
         [searchHistory],
     );
@@ -133,7 +122,9 @@ const StorageSearch: React.FC = () => {
                     const { key, ...otherProps } = props;
                     return (
                         <li key={key} {...otherProps}>
-                            <HistoryIcon sx={{ mr: 1, color: "text.secondary" }} />
+                            <HistoryIcon
+                                sx={{ mr: 1, color: "text.secondary" }}
+                            />
                             <Typography variant="body2">{option}</Typography>
                         </li>
                     );

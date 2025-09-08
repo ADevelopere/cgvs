@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useCallback, useMemo } from "react";
 import * as Graphql from "@/graphql/generated/types";
 import { ApolloLink } from "@apollo/client";
-import logger from "@/utils/logger";
 
 type TemplateGraphQLContextType = {
     /**
@@ -364,7 +363,6 @@ export const TemplateGraphQLProvider: React.FC<{
 
             const unsuspendedTemplate = data.unsuspendTemplate;
 
-            logger.log("Restoring template", unsuspendedTemplate);
             const existingData =
                 cache.readQuery<Graphql.TemplateCategoriesQuery>({
                     query: Graphql.TemplateCategoriesDocument,

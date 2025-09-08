@@ -18,7 +18,6 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Calendar from "@/types/Calendar";
 import CalendarTranslations from "@/locale/components/Calendar";
 import useAppTranslation from "@/locale/useAppTranslation";
-import logger from "@/utils/logger";
 
 export type DateScrollPickerProps = {
     setCalendar: (calendar: Calendar) => void;
@@ -68,7 +67,6 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
     }, [maxDate]);
 
     const minGregorianDate: moment.Moment = useMemo(() => {
-        logger.log("calc minGregorianDate");
         return minDate &&
             minDate.isValid() &&
             minDate.isAfter(minPossibleGregorianDate)
@@ -256,13 +254,6 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
                     updateInputFunction = updateInputValuesGregorian;
                 }
 
-                logger.log("newDate", newDate.format("YYYY-MM-DD"));
-                logger.log(
-                    "maxGregorianDate",
-                    maxGregorianDate.format("YYYY-MM-DD"),
-                );
-                const bool = newDate.isAfter(maxGregorianDate);
-                logger.log("bool", bool);
                 if (newDate.isAfter(maxGregorianDate)) {
                     newDate = maxGregorianDate.clone();
                 }

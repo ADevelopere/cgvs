@@ -21,7 +21,6 @@ import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import ConnectivityTranslations from "@/locale/components/Connectivity";
 import useAppTranslation from "@/locale/useAppTranslation";
-import logger from "@/utils/logger";
 
 export type NetworkConnectivityContextType = {
     isConnected: boolean;
@@ -124,9 +123,8 @@ export const AppApolloProvider: React.FC<{
             setLastChecked(new Date());
 
             return connected;
-        } catch (error) {
+        } catch {
             // Only log unexpected errors, not network connectivity failures
-            logger.error("Unexpected error during connectivity check:", error);
             setIsConnected(false);
             isConnectedRef.current = false;
             setLastChecked(new Date());
@@ -219,7 +217,7 @@ export const AppApolloProvider: React.FC<{
 
                     return () => subscription.unsubscribe();
                 }
-                
+
                 // If we're already marked as disconnected, check connectivity
                 if (!isConnectedRef.current) {
                     checkConnectivity()
@@ -267,7 +265,6 @@ export const AppApolloProvider: React.FC<{
                     error.message?.includes("ERR_CONNECTION_REFUSED"));
 
             if (isNetworkError) {
-                logger.warn("GraphQL network error detected:", error.message);
                 setIsConnected(false);
                 isConnectedRef.current = false;
                 notifyIfDisconnected();
@@ -311,7 +308,6 @@ export const AppApolloProvider: React.FC<{
         let onlineTimeout: NodeJS.Timeout;
 
         const handleOnline = () => {
-            logger.info("Browser detected online status");
             // Debounce the connectivity check
             clearTimeout(onlineTimeout);
             onlineTimeout = setTimeout(() => {
@@ -320,7 +316,6 @@ export const AppApolloProvider: React.FC<{
         };
 
         const handleOffline = () => {
-            logger.warn("Browser detected offline status");
             clearTimeout(onlineTimeout);
             setIsConnected(false);
             isConnectedRef.current = false;

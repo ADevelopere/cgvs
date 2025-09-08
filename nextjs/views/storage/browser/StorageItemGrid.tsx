@@ -10,8 +10,9 @@ import { useStorageManagementUI } from '@/contexts/storage/StorageManagementUICo
 interface StorageItemGridProps {
     item: StorageItem;
     isSelected: boolean;
+    isCut: boolean;
     onClick?: (event: React.MouseEvent) => void;
-    onDoubleClick?: () => void;
+    onDoubleClick?: (event: React.MouseEvent) => void;
     onContextMenu?: (event: React.MouseEvent) => void;
 }
 
@@ -27,6 +28,7 @@ function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
 const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     item,
     isSelected,
+    isCut,
     onClick,
     onDoubleClick,
     onContextMenu,
@@ -87,14 +89,16 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     return (
         <>
             <Card
-                data-storage-item
                 onClick={onClick}
                 onDoubleClick={onDoubleClick}
                 onContextMenu={handleContextMenu}
+                data-storage-item="true"
+                className="storage-item"
                 sx={{
                     cursor: 'pointer',
                     backgroundColor: isSelected ? 'action.selected' : 'background.paper',
                     transition: 'all 0.2s ease-in-out',
+                    opacity: isCut ? 0.5 : 1,
                     '&:hover': {
                         backgroundColor: isSelected ? 'action.selected' : 'action.hover',
                         transform: 'translateY(-2px)',
@@ -102,7 +106,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
                     },
                     border: isSelected ? 1 : 0,
                     borderColor: isSelected ? 'primary.main' : 'transparent',
-                    height: '100%',
+                    height: 200,
                     display: 'flex',
                     flexDirection: 'column',
                     // Add focus indicator

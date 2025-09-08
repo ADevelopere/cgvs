@@ -25,7 +25,6 @@ import React, {
 } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
-import logger from "@/utils/logger";
 import { loadFromLocalStorage } from "@/utils/localStorage";
 
 // Filter out null or undefined children
@@ -101,17 +100,8 @@ const getStorageKey = (key?: string) =>
 const savePaneState = (key: string | undefined, state: PaneState) => {
     if (!key) return;
     try {
-        logger.log(
-            "Saving editor pane state to local storage:",
-            JSON.stringify(state),
-        );
         localStorage.setItem(getStorageKey(key)!, JSON.stringify(state));
-    } catch (error) {
-        logger.warn(
-            "Failed to save editor pane state to local storage:",
-            error,
-        );
-    }
+    } catch {}
 };
 
 // Helper to create a debounced function
@@ -181,7 +171,6 @@ const EditorPane: FC<EditorPaneProps> = ({
             };
         }
         const state = loadFromLocalStorage<PaneState>(storageKey);
-        logger.log("Loading stored state:", JSON.stringify(state));
         if (state) {
             // Only use stored sizes if visibility matches current state
             return {
