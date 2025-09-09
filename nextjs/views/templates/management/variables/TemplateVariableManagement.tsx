@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -12,6 +12,12 @@ import {
     Menu,
     MenuItem,
     Typography,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    CircularProgress,
 } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
 import { useTemplateVariableManagement } from "@/contexts/templateVariable/TemplateVariableManagementContext";
@@ -21,14 +27,37 @@ import type {
     TemplateVariableType,
 } from "@/graphql/generated/types";
 import TemplateVariableModal from "./TemplateVariableModal";
+import useAppTranslation from "@/locale/useAppTranslation";
+import TemplateVariableTranslation from "@/locale/components/TemplateVariable";
 
 interface ContentProps {
     onOpenModal: (variable: TemplateVariable) => void;
+    strings: TemplateVariableTranslation;
 }
 
-const Content: FC<ContentProps> = ({ onOpenModal }) => {
+const Content: FC<ContentProps> = ({ onOpenModal, strings }) => {
     const { deleteTemplateVariable } = useTemplateVariableManagement();
     const { template } = useTemplateManagement();
+    const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
+        useState(false);
+    const [variableToDelete, setVariableToDelete] = useState<number | null>(
+        null,
+    );
+
+    const typeToLabelMap: Record<TemplateVariableType, string> = useMemo(
+        () => ({
+            TEXT: strings.textTypeLabel,
+            NUMBER: strings.numberTypeLabel,
+            DATE: strings.dateTypeLabel,
+            SELECT: strings.selectTypeLabel,
+        }),
+        [
+            strings.dateTypeLabel,
+            strings.numberTypeLabel,
+            strings.selectTypeLabel,
+            strings.textTypeLabel,
+        ],
+    );
 
     const handleVariableClick = useCallback(
         (variable: TemplateVariable) => {
@@ -37,18 +66,36 @@ const Content: FC<ContentProps> = ({ onOpenModal }) => {
         [onOpenModal],
     );
 
-    const handleDeleteClick = useCallback(
-        async (id: number) => {
-            if (
-                window.confirm("Are you sure you want to delete this variable?")
-            ) {
-                await deleteTemplateVariable(id);
-            }
-        },
-        [deleteTemplateVariable],
-    );
+    const handleDeleteClick = useCallback((id: number) => {
+        setVariableToDelete(id);
+        setIsDeleteConfirmationDialogOpen(true);
+    }, []);
 
-    if (!template?.variables || template.variables.length === 0) {
+    const handleConfirmDelete = useCallback(async () => {
+        if (variableToDelete) {
+            await deleteTemplateVariable(variableToDelete);
+            setIsDeleteConfirmationDialogOpen(false);
+            setVariableToDelete(null);
+        }
+    }, [variableToDelete, deleteTemplateVariable]);
+
+    if (!template?.variables) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                    height: "100%",
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (template.variables.length === 0) {
         return (
             <Box
                 sx={{
@@ -61,65 +108,95 @@ const Content: FC<ContentProps> = ({ onOpenModal }) => {
                     overflow: "hidden",
                 }}
             >
-                <Typography>
-                    No variables found. Create one by clicking the create
-                    button.
-                </Typography>
+                <Typography>{strings.noVariables}</Typography>
             </Box>
         );
     }
 
     return (
-        <List
-            sx={{
-                width: "100%",
-                bgcolor: "background.paper",
-                flexGrow: 1,
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-            }}
-        >
-            {template.variables.map((variable) => {
-                const type = variable.type;
+        <>
+            <List
+                sx={{
+                    width: "100%",
+                    bgcolor: "background.paper",
+                    flexGrow: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 1,
+                }}
+            >
+                {template.variables.map((variable) => {
+                    const type = variable.type;
 
-                return (
-                    <ListItem
-                        key={variable.id}
-                        disablePadding
-                        secondaryAction={
-                            <IconButton
-                                edge="end"
-                                aria-label="delete"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteClick(variable.id);
-                                }}
-                            >
-                                <Trash2 size={18} />
-                            </IconButton>
-                        }
-                    >
-                        <ListItemButton
-                            onClick={() => handleVariableClick(variable)}
+                    return (
+                        <ListItem
+                            key={variable.id}
+                            disablePadding
+                            secondaryAction={
+                                <IconButton
+                                    edge="end"
+                                    aria-label={strings.delete}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteClick(variable.id);
+                                    }}
+                                >
+                                    <Trash2 size={18} />
+                                </IconButton>
+                            }
                         >
-                            <ListItemText
-                                primary={variable.name}
-                                secondary={type}
-                            />
-                        </ListItemButton>
-                    </ListItem>
-                );
-            })}
-        </List>
+                            <ListItemButton
+                                onClick={() => handleVariableClick(variable)}
+                            >
+                                <ListItemText
+                                    primary={variable.name}
+                                    secondary={typeToLabelMap[type] || type}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    );
+                })}
+            </List>
+
+            {/*  Delete Confirmation Dialog */}
+            <Dialog
+                open={isDeleteConfirmationDialogOpen}
+                onClose={() => setIsDeleteConfirmationDialogOpen(false)}
+            >
+                <DialogTitle>{strings.deleteVariable}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {strings.confirmDelete}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => setIsDeleteConfirmationDialogOpen(false)}
+                        color="primary"
+                        variant="contained"
+                    >
+                        {strings.cancel}
+                    </Button>
+                    <Button
+                        onClick={handleConfirmDelete}
+                        autoFocus
+                        color="error"
+                        variant="outlined"
+                    >
+                        {strings.confirm}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 };
 
 interface FooterProps {
     onOpenModal: (type: TemplateVariableType) => void;
+    strings: TemplateVariableTranslation;
 }
 
-const Header: FC<FooterProps> = ({ onOpenModal }) => {
+const Header: FC<FooterProps> = ({ onOpenModal, strings }) => {
     // Popover menu state
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -158,23 +235,23 @@ const Header: FC<FooterProps> = ({ onOpenModal }) => {
                     startIcon={<Plus size={16} />}
                     onClick={handleCreateClick}
                 >
-                    Create Variable
+                    {strings.createVariable}
                 </Button>
             </Box>
 
             {/* popover menu */}
             <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
                 <MenuItem onClick={() => handleVariableTypeSelect("TEXT")}>
-                    Text Variable
+                    {strings.textVariable}
                 </MenuItem>
                 <MenuItem onClick={() => handleVariableTypeSelect("NUMBER")}>
-                    Number Variable
+                    {strings.numberVariable}
                 </MenuItem>
                 <MenuItem onClick={() => handleVariableTypeSelect("DATE")}>
-                    Date Variable
+                    {strings.dateVariable}
                 </MenuItem>
                 <MenuItem onClick={() => handleVariableTypeSelect("SELECT")}>
-                    Select Variable
+                    {strings.selectVariable}
                 </MenuItem>
             </Menu>
         </>
@@ -187,6 +264,7 @@ const TemplateVariableManagement: FC = () => {
         number | undefined
     >(undefined);
     const [type, setType] = useState<TemplateVariableType>("TEXT");
+    const strings = useAppTranslation("templateVariableTranslations");
 
     const handleEdit = (variable: TemplateVariable) => {
         setEditingVariableID(variable.id);
@@ -216,7 +294,7 @@ const TemplateVariableManagement: FC = () => {
                     height: "100%",
                 }}
             >
-                <Header onOpenModal={handleCreate} />
+                <Header onOpenModal={handleCreate} strings={strings} />
                 <Box
                     sx={{
                         overflow: "auto",
@@ -227,7 +305,7 @@ const TemplateVariableManagement: FC = () => {
                         px: 2,
                     }}
                 >
-                    <Content onOpenModal={handleEdit} />
+                    <Content onOpenModal={handleEdit} strings={strings} />
                 </Box>
             </Box>
 

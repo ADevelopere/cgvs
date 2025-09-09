@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -16,10 +16,9 @@ import DateTemplateVariableForm from "./forms/DateTemplateVariableForm";
 import TextTemplateVariableForm from "./forms/TextTemplateVariableForm";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import {
-    TemplateVariableType,
-} from "@/graphql/generated/types";
+import { TemplateVariableType } from "@/graphql/generated/types";
 import SelectTemplateVariableForm from "./forms/SelectTemplateVariableForm";
+import useAppTranslation from "@/locale/useAppTranslation";
 
 interface TemplateVariableModalProps {
     open: boolean;
@@ -35,6 +34,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
     type,
 }) => {
     const { template } = useTemplateManagement();
+    const strings = useAppTranslation("templateVariableTranslations");
 
     // Close modal when template variables are updated (indicating successful operation)
     useEffect(() => {
@@ -44,9 +44,34 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
         // This could be based on listening to template.variables changes or notifications
     }, [template?.variables, open]);
 
-    const modalTitle = `${editingVariableID ? "Edit" : "Create"} ${
-        type.charAt(0).toUpperCase() + type.slice(1)
-    } Variable`;
+    const typeToLabelMap: Record<TemplateVariableType, string> = useMemo(
+        () => ({
+            TEXT: strings.textTypeLabel,
+            NUMBER: strings.numberTypeLabel,
+            DATE: strings.dateTypeLabel,
+            SELECT: strings.selectTypeLabel,
+        }),
+        [
+            strings.dateTypeLabel,
+            strings.numberTypeLabel,
+            strings.selectTypeLabel,
+            strings.textTypeLabel,
+        ],
+    );
+
+    const modalTitle = useMemo(
+        () =>
+            `${editingVariableID ? strings.editVariable : strings.createVariable} ${
+                typeToLabelMap[type]
+            }`,
+        [
+            editingVariableID,
+            strings.createVariable,
+            strings.editVariable,
+            type,
+            typeToLabelMap,
+        ],
+    );
 
     return (
         <Dialog
@@ -90,14 +115,18 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
                             onDispose={onClose}
                         />
                     )}
-                    {type === "NUMBER" && <NumberTemplateVariableForm
-                        editingVariableID={editingVariableID}
-                        onDispose={onClose}
-                    />}
-                    {type === "SELECT" && <SelectTemplateVariableForm
-                        editingVariableID={editingVariableID}
-                        onDispose={onClose}
-                    />}
+                    {type === "NUMBER" && (
+                        <NumberTemplateVariableForm
+                            editingVariableID={editingVariableID}
+                            onDispose={onClose}
+                        />
+                    )}
+                    {type === "SELECT" && (
+                        <SelectTemplateVariableForm
+                            editingVariableID={editingVariableID}
+                            onDispose={onClose}
+                        />
+                    )}
                     {type === "DATE" && (
                         <DateTemplateVariableForm
                             editingVariableID={editingVariableID}

@@ -7,7 +7,6 @@ type TemplateVariableTranslation = {
     patternHelperText: string;
     previewValue: string;
     required: string;
-    createVariable: string;
     updateVariable: string;
     options: string;
     addOptionPlaceholder: string;
@@ -21,6 +20,31 @@ type TemplateVariableTranslation = {
     minimumDate: string;
     maximumDate: string;
     invalidDateError: string;
+
+    noVariables: string;
+
+    // Delete variable
+    deleteVariable: string;
+    delete: string;
+    cancel: string;
+    confirm: string;
+    confirmDelete: string;
+
+    // create variable
+    createVariable: string;
+    textVariable: string;
+    numberVariable: string;
+    dateVariable: string;
+    selectVariable: string;
+
+    // type labels
+    textTypeLabel: string;
+    numberTypeLabel: string;
+    dateTypeLabel: string;
+    selectTypeLabel: string;
+
+    // edit/create modal
+    editVariable: string;
 };
 
 export default TemplateVariableTranslation;
