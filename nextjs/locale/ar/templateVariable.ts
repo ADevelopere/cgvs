@@ -9,7 +9,6 @@ const templateVariable: TemplateVariableTranslation = {
     patternHelperText: "نمط التعبير العادي للتحقق من الصحة",
     previewValue: "قيمة المعاينة",
     required: "مطلوب",
-    createVariable: "إنشاء متغير",
     updateVariable: "تحديث المتغير",
     options: "الخيارات",
     addOptionPlaceholder: "أضف خيارًا واضغط Enter",
@@ -22,7 +21,34 @@ const templateVariable: TemplateVariableTranslation = {
     invalidDateRangeError: "تاريخ غير صالح أو خارج النطاق المحدد",
     minimumDate: "الحد الأدنى للتاريخ",
     maximumDate: "الحد الأقصى للتاريخ",
-    invalidDateError: "تاريخ غير صالح"
+    invalidDateError: "تاريخ غير صالح",
+
+    noVariables:
+        "لا توجد متغيرات تم إنشاؤها بعد. انقر على 'إنشاء متغير' للبدء.",
+
+    // Delete variable
+    deleteVariable: "حذف المتغير",
+    delete: "حذف",
+    cancel: "إلغاء",
+    confirm: "تأكيد",
+    confirmDelete:
+        "هل أنت متأكد أنك تريد حذف هذا المتغير؟ لا يمكن التراجع عن هذا الإجراء.",
+
+    // create variable
+    createVariable: "إنشاء متغير",
+    textVariable: "نصي",
+    numberVariable: "رقمي",
+    dateVariable: "تاريخ",
+    selectVariable: "اختيار",
+
+    // type labels
+    textTypeLabel: "نصي",
+    numberTypeLabel: "رقمي",
+    dateTypeLabel: "تاريخ",
+    selectTypeLabel: "اختيار",
+
+    // edit/create modal
+    editVariable: "تعديل متغير",
 };
 
 export default templateVariable;
