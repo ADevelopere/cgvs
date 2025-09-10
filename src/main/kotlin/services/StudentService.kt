@@ -16,6 +16,14 @@ class StudentService(
         return repository.findById(id)
     }
 
+    suspend fun existsById(id: Int): Boolean {
+        return repository.existsById(id)
+    }
+
+    suspend fun allExistsById(ids: Set<Int>): Boolean {
+        return repository.allExistsByIds(ids)
+    }
+
     suspend fun students(
         paginationArgs: PaginationArgs? = null,
         orderBy: List<OrderStudentsByClause>? = null,

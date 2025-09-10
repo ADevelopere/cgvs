@@ -30,7 +30,6 @@ class TemplateService(
     }
 
     suspend fun create(input: CreateTemplateInput): Template {
-
         // validate name
         check(input.name.length in 3..255) {
             "Template name must be between 3 and 255 characters long."

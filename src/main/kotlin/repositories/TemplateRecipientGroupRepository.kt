@@ -2,9 +2,6 @@ package repositories
 
 import schema.model.TemplateRecipientGroup
 import tables.TemplateRecipientGroups
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -16,21 +13,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import schema.model.CreateRecipientGroupInput
+import schema.model.UpdateRecipientGroupInput
+import util.now
 
 class TemplateRecipientGroupRepository(private val database: Database) {
 
-    suspend fun create(group: TemplateRecipientGroup): TemplateRecipientGroup = dbQuery {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+    suspend fun create(group: CreateRecipientGroupInput): TemplateRecipientGroup = dbQuery {
+        val now = now()
         val insertStatement = TemplateRecipientGroups.insert {
             it[templateId] = group.templateId
             it[name] = group.name
             it[description] = group.description
+            it[date] = group.date
             it[createdAt] = now
             it[updatedAt] = now
         }
 
         val id = insertStatement[TemplateRecipientGroups.id]
-        group.copy(
+        group.toRecipientGroup(
             id = id,
             createdAt = now,
             updatedAt = now
@@ -44,52 +45,43 @@ class TemplateRecipientGroupRepository(private val database: Database) {
             .singleOrNull()
     }
 
-    suspend fun findByTemplate(templateId: Int): List<TemplateRecipientGroup> = dbQuery {
+    suspend fun findAllByTemplateId(templateId: Int): List<TemplateRecipientGroup> = dbQuery {
         TemplateRecipientGroups.selectAll()
             .where { TemplateRecipientGroups.templateId eq templateId }
             .map { rowToTemplateRecipientGroup(it) }
     }
 
-    suspend fun findByName(name: String): List<TemplateRecipientGroup> = dbQuery {
-        TemplateRecipientGroups.selectAll()
-            .where { TemplateRecipientGroups.name eq name }
-            .map { rowToTemplateRecipientGroup(it) }
-    }
-
-    suspend fun findByTemplateAndName(templateId: Int, name: String): TemplateRecipientGroup? = dbQuery {
+    suspend fun searchByTemplateIdAndName(templateId: Int, name: String): TemplateRecipientGroup? = dbQuery {
         TemplateRecipientGroups.selectAll()
             .where { (TemplateRecipientGroups.templateId eq templateId) and (TemplateRecipientGroups.name eq name) }
             .map { rowToTemplateRecipientGroup(it) }
             .singleOrNull()
     }
 
-    suspend fun findAll(): List<TemplateRecipientGroup> = dbQuery {
+    suspend fun existsById(id: Int): Boolean = dbQuery {
         TemplateRecipientGroups.selectAll()
-            .map { rowToTemplateRecipientGroup(it) }
+            .where { TemplateRecipientGroups.id eq id }
+            .count() > 0
     }
 
-    suspend fun update(id: Int, group: TemplateRecipientGroup): TemplateRecipientGroup? {
+    suspend fun update(input: UpdateRecipientGroupInput): TemplateRecipientGroup? {
         val updated = dbQuery {
-            TemplateRecipientGroups.update({ TemplateRecipientGroups.id eq id }) {
-                it[templateId] = group.templateId
-                it[name] = group.name
-                it[description] = group.description
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+            TemplateRecipientGroups.update({ TemplateRecipientGroups.id eq input.id }) {
+                it[name] = input.name
+                it[description] = input.description
+                it[date] = input.date
+                it[updatedAt] = now()
             }
         }
         return if (updated > 0) {
-            findById(id)
+            findById(input.id)
         } else {
             null
         }
     }
 
-    suspend fun delete(id: Int): Boolean = dbQuery {
+    suspend fun deleteById(id: Int): Boolean = dbQuery {
         TemplateRecipientGroups.deleteWhere { TemplateRecipientGroups.id eq id } > 0
-    }
-
-    suspend fun deleteByTemplate(templateId: Int): Boolean = dbQuery {
-        TemplateRecipientGroups.deleteWhere { TemplateRecipientGroups.templateId eq templateId } > 0
     }
 
     private fun rowToTemplateRecipientGroup(row: ResultRow): TemplateRecipientGroup {
@@ -98,6 +90,7 @@ class TemplateRecipientGroupRepository(private val database: Database) {
             templateId = row[TemplateRecipientGroups.templateId],
             name = row[TemplateRecipientGroups.name],
             description = row[TemplateRecipientGroups.description],
+            date = row[TemplateRecipientGroups.date],
             createdAt = row[TemplateRecipientGroups.createdAt],
             updatedAt = row[TemplateRecipientGroups.updatedAt]
         )
