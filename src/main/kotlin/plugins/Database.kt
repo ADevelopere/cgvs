@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 
 fun Application.configureDatabase() {
     monitor.subscribe(ApplicationStarted) {
-        DatabaseConfig.init(environment.config)
+        DatabaseConfig.init(environment.config, monitor)
     }
 
     monitor.subscribe(ApplicationStopped) {

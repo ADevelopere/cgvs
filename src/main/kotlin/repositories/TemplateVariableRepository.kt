@@ -1,11 +1,10 @@
 package repositories
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
@@ -56,35 +55,40 @@ class TemplateVariableRepository(private val database: Database) {
     }
 
     // --- Text Template Variable Functions ---
-    suspend fun createTextTemplateVariable(variable: TextTemplateVariable): TextTemplateVariable = dbQuery {
+    suspend fun createTextTemplateVariable(variable: TextTemplateVariable): TextTemplateVariable {
         // Insert into base table
-        val baseId = runBlocking { insertIntoBase(variable, TemplateVariableType.TEXT) }
+        val baseId = insertIntoBase(variable, TemplateVariableType.TEXT)
 
-        // Insert into text-specific table
-        TextTemplateVariables.insert {
-            it[id] = baseId
-            it[minLength] = variable.minLength
-            it[maxLength] = variable.maxLength
-            it[pattern] = variable.pattern
-            it[previewValue] = variable.textPreviewValue
-        }
-
-        variable.apply { id = baseId }
-    }
-
-    suspend fun updateTextTemplateVariable(variable: TextTemplateVariable): TextTemplateVariable? = dbQuery {
-        val baseUpdated = runBlocking { updateBase(variable) }
-
-        if (baseUpdated) {
-            val updated = TextTemplateVariables.update({ TextTemplateVariables.id eq variable.id }) {
+        return dbQuery {
+            // Insert into text-specific table
+            TextTemplateVariables.insert {
+                it[id] = baseId
                 it[minLength] = variable.minLength
                 it[maxLength] = variable.maxLength
                 it[pattern] = variable.pattern
                 it[previewValue] = variable.textPreviewValue
             }
-            if (updated > 0) {
-                runBlocking { findTextTemplateVariableById(variable.id) }
-            } else null
+
+            variable.apply { id = baseId }
+        }
+    }
+
+    suspend fun updateTextTemplateVariable(variable: TextTemplateVariable): TextTemplateVariable? {
+        val baseUpdated = updateBase(variable)
+
+        val updated = dbQuery {
+            if (baseUpdated) {
+                TextTemplateVariables.update({ TextTemplateVariables.id eq variable.id }) {
+                    it[minLength] = variable.minLength
+                    it[maxLength] = variable.maxLength
+                    it[pattern] = variable.pattern
+                    it[previewValue] = variable.textPreviewValue
+                }
+
+            } else 0
+        }
+        return if (updated > 0) {
+            findTextTemplateVariableById(variable.id)
         } else null
     }
 
@@ -97,10 +101,10 @@ class TemplateVariableRepository(private val database: Database) {
     }
 
     // --- Number Template Variable Functions ---
-    suspend fun createNumberTemplateVariable(variable: NumberTemplateVariable): NumberTemplateVariable =
-        dbQuery {
-            val baseId = runBlocking { insertIntoBase(variable, TemplateVariableType.NUMBER) }
+    suspend fun createNumberTemplateVariable(variable: NumberTemplateVariable): NumberTemplateVariable {
+        val baseId = insertIntoBase(variable, TemplateVariableType.NUMBER)
 
+        return dbQuery {
             NumberTemplateVariables.insert {
                 it[id] = baseId
                 it[minValue] = variable.minValue?.toBigDecimal()
@@ -111,25 +115,26 @@ class TemplateVariableRepository(private val database: Database) {
 
             variable.apply { id = baseId }
         }
+    }
 
-    suspend fun updateNumberTemplateVariable(variable: NumberTemplateVariable): NumberTemplateVariable? =
-        dbQuery {
-            val baseUpdated = runBlocking { updateBase(variable) }
+    suspend fun updateNumberTemplateVariable(variable: NumberTemplateVariable): NumberTemplateVariable? {
+        val baseUpdated = updateBase(variable)
 
-
+        val updated = dbQuery {
             if (baseUpdated) {
-                val updated = NumberTemplateVariables.update({ NumberTemplateVariables.id eq variable.id }) {
+                NumberTemplateVariables.update({ NumberTemplateVariables.id eq variable.id }) {
                     it[minValue] = variable.minValue?.toBigDecimal()
                     it[maxValue] = variable.maxValue?.toBigDecimal()
                     it[decimalPlaces] = variable.decimalPlaces
                     it[previewValue] = variable.numberPreviewValue?.toBigDecimal()
                 }
-
-                if (updated > 0) {
-                    runBlocking { findNumberTemplateVariableById(variable.id) }
-                } else null
-            } else null
+            } else 0
         }
+
+        return if (updated > 0) {
+            findNumberTemplateVariableById(variable.id)
+        } else null
+    }
 
     suspend fun findNumberTemplateVariableById(id: Int): NumberTemplateVariable? = dbQuery {
         (TemplateVariableBase innerJoin NumberTemplateVariables)
@@ -140,40 +145,40 @@ class TemplateVariableRepository(private val database: Database) {
     }
 
     // --- Date Template Variable Functions ---
-    suspend fun createDateTemplateVariable(variable: DateTemplateVariable): DateTemplateVariable = dbQuery {
-        val baseId = runBlocking { insertIntoBase(variable, TemplateVariableType.DATE) }
+    suspend fun createDateTemplateVariable(variable: DateTemplateVariable): DateTemplateVariable {
+        val baseId = insertIntoBase(variable, TemplateVariableType.DATE)
 
-        DateTemplateVariables.insert {
-            it[id] = baseId
-            it[minDate] = variable.minDate
-            it[maxDate] = variable.maxDate
-            it[format] = variable.format
-            it[previewValue] = variable.datePreviewValue
+        return dbQuery {
+            DateTemplateVariables.insert {
+                it[id] = baseId
+                it[minDate] = variable.minDate
+                it[maxDate] = variable.maxDate
+                it[format] = variable.format
+                it[previewValue] = variable.datePreviewValue
+            }
+
+            variable.apply { id = baseId }
         }
-
-        variable.apply { id = baseId }
     }
 
-    suspend fun updateDateTemplateVariable(variable: DateTemplateVariable): DateTemplateVariable? =
-        dbQuery {
-
-            val baseUpdated = runBlocking { updateBase(variable) }
-
-
+    suspend fun updateDateTemplateVariable(variable: DateTemplateVariable): DateTemplateVariable? {
+        val baseUpdated = updateBase(variable)
+        val updated = dbQuery {
             if (baseUpdated) {
                 // Update date-specific table
-                val updated = DateTemplateVariables.update({ DateTemplateVariables.id eq variable.id }) {
+                DateTemplateVariables.update({ DateTemplateVariables.id eq variable.id }) {
                     it[minDate] = variable.minDate
                     it[maxDate] = variable.maxDate
                     it[format] = variable.format
                     it[previewValue] = variable.datePreviewValue
                 }
-
-                if (updated > 0) {
-                    runBlocking { findDateTemplateVariableById(variable.id) }
-                } else null
-            } else null
+            } else 0
         }
+
+        return if (updated > 0) {
+            findDateTemplateVariableById(variable.id)
+        } else null
+    }
 
     suspend fun findDateTemplateVariableById(id: Int): DateTemplateVariable? = dbQuery {
         (TemplateVariableBase innerJoin DateTemplateVariables)
@@ -184,10 +189,10 @@ class TemplateVariableRepository(private val database: Database) {
     }
 
     // --- Select Template Variable Functions ---
-    suspend fun createSelectTemplateVariable(variable: SelectTemplateVariable): SelectTemplateVariable =
-        dbQuery {
-            val baseId = runBlocking { insertIntoBase(variable, TemplateVariableType.SELECT) }
+    suspend fun createSelectTemplateVariable(variable: SelectTemplateVariable): SelectTemplateVariable {
+        val baseId = insertIntoBase(variable, TemplateVariableType.SELECT)
 
+        return dbQuery {
             SelectTemplateVariables.insert {
                 it[id] = baseId
                 it[options] = Json.encodeToString(variable.options)
@@ -197,23 +202,24 @@ class TemplateVariableRepository(private val database: Database) {
 
             variable.apply { id = baseId }
         }
+    }
 
-    suspend fun updateSelectTemplateVariable(variable: SelectTemplateVariable): SelectTemplateVariable? =
-        dbQuery {
-            val baseUpdated = runBlocking { updateBase(variable) }
+    suspend fun updateSelectTemplateVariable(variable: SelectTemplateVariable): SelectTemplateVariable? {
+        val baseUpdated = updateBase(variable)
 
-
+        val updated: Int = dbQuery {
             if (baseUpdated) {
-                val updated = SelectTemplateVariables.update({ SelectTemplateVariables.id eq variable.id }) {
+                SelectTemplateVariables.update({ SelectTemplateVariables.id eq variable.id }) {
                     it[options] = Json.encodeToString(variable.options)
                     it[multiple] = variable.multiple
                 }
-
-                if (updated > 0) {
-                    runBlocking { findSelectTemplateVariableById(variable.id) }
-                } else null
-            } else null
+            } else 0
         }
+
+        return if (updated > 0) {
+            findSelectTemplateVariableById(variable.id)
+        } else null
+    }
 
     suspend fun findSelectTemplateVariableById(id: Int): SelectTemplateVariable? = dbQuery {
         (TemplateVariableBase innerJoin SelectTemplateVariables)
@@ -224,33 +230,34 @@ class TemplateVariableRepository(private val database: Database) {
     }
 
     // --- Generic Template Variable Functions ---
-    suspend fun findTemplateVariableById(id: Int): TemplateVariable? = dbQuery {
-        val baseRow = TemplateVariableBase.selectAll()
-            .where { TemplateVariableBase.id eq id }
-            .singleOrNull() ?: return@dbQuery null
-        runBlocking {
-            when (baseRow[TemplateVariableBase.type]) {
-                TemplateVariableType.TEXT -> findTextTemplateVariableById(id)
-                TemplateVariableType.NUMBER -> findNumberTemplateVariableById(id)
-                TemplateVariableType.DATE -> findDateTemplateVariableById(id)
-                TemplateVariableType.SELECT -> findSelectTemplateVariableById(id)
-            }
+    suspend fun findTemplateVariableById(id: Int): TemplateVariable? {
+        val baseRow: ResultRow = dbQuery {
+            TemplateVariableBase.selectAll()
+                .where { TemplateVariableBase.id eq id }
+                .singleOrNull()
+        } ?: return null
+
+        return when (baseRow[TemplateVariableBase.type]) {
+            TemplateVariableType.TEXT -> findTextTemplateVariableById(id)
+            TemplateVariableType.NUMBER -> findNumberTemplateVariableById(id)
+            TemplateVariableType.DATE -> findDateTemplateVariableById(id)
+            TemplateVariableType.SELECT -> findSelectTemplateVariableById(id)
         }
     }
 
-    suspend fun findTemplateVariablesByTemplateId(templateId: Int): List<TemplateVariable> = dbQuery {
-        val baseRows = TemplateVariableBase.selectAll()
-            .where { TemplateVariableBase.templateId eq templateId }
-            .orderBy(TemplateVariableBase.order)
+    suspend fun findTemplateVariablesByTemplateId(templateId: Int): List<TemplateVariable> {
+        val baseRows = dbQuery {
+            TemplateVariableBase.selectAll()
+                .where { TemplateVariableBase.templateId eq templateId }
+                .orderBy(TemplateVariableBase.order)
+        }
 
-        runBlocking {
-            baseRows.mapNotNull { baseRow ->
-                when (baseRow[TemplateVariableBase.type]) {
-                    TemplateVariableType.TEXT -> findTextTemplateVariableById(baseRow[TemplateVariableBase.id])
-                    TemplateVariableType.NUMBER -> findNumberTemplateVariableById(baseRow[TemplateVariableBase.id])
-                    TemplateVariableType.DATE -> findDateTemplateVariableById(baseRow[TemplateVariableBase.id])
-                    TemplateVariableType.SELECT -> findSelectTemplateVariableById(baseRow[TemplateVariableBase.id])
-                }
+        return baseRows.mapNotNull { baseRow ->
+            when (baseRow[TemplateVariableBase.type]) {
+                TemplateVariableType.TEXT -> findTextTemplateVariableById(baseRow[TemplateVariableBase.id])
+                TemplateVariableType.NUMBER -> findNumberTemplateVariableById(baseRow[TemplateVariableBase.id])
+                TemplateVariableType.DATE -> findDateTemplateVariableById(baseRow[TemplateVariableBase.id])
+                TemplateVariableType.SELECT -> findSelectTemplateVariableById(baseRow[TemplateVariableBase.id])
             }
         }
     }
@@ -258,10 +265,6 @@ class TemplateVariableRepository(private val database: Database) {
     suspend fun deleteTemplateVariable(id: Int): Boolean = dbQuery {
         // Delete from base table (cascading will handle the specific tables)
         TemplateVariableBase.deleteWhere { TemplateVariableBase.id eq id } > 0
-    }
-
-    suspend fun deleteTemplateVariablesByTemplate(templateId: Int): Boolean = dbQuery {
-        TemplateVariableBase.deleteWhere { TemplateVariableBase.templateId eq templateId } > 0
     }
 
     suspend fun findMaxOrderByTemplateId(categoryId: Int): Int = dbQuery {

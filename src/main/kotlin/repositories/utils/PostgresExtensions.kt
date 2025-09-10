@@ -26,7 +26,7 @@ class TsQuery(val text: String, val config: String = "simple") : Expression<Stri
             }
         }
 
-        // 3. Join the parts with the AND operator and escape for SQL.
+        // 3. Join the parts with the 'AND' operator and escape for SQL.
         val tsQueryString = queryParts.joinToString(" & ")
         append("to_tsquery('", config, "', '", tsQueryString.replace("'", "''"), "')")
     }

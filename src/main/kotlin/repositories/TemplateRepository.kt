@@ -3,15 +3,15 @@ package repositories
 import schema.model.Template
 import tables.Templates
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -35,23 +35,26 @@ class TemplateRepository(private val database: Database) : PaginatableRepository
         Templates.selectAll().count()
     }
 
-    suspend fun create(template: Template): Template = dbQuery {
-        val newOrder = runBlocking { findMaxOrderByCategoryId(template.categoryId) + 1 }
+    suspend fun create(template: Template): Template {
+        val newOrder = findMaxOrderByCategoryId(template.categoryId) + 1
 
-        val insertStatement = Templates.insert {
-            it[name] = template.name
-            it[description] = template.description
-            it[categoryId] = template.categoryId
-            it[imageFileId] = template.imageFileId
-            it[order] = newOrder
-            it[createdAt] = now()
-            it[updatedAt] = now()
+        return dbQuery {
+
+            val insertStatement = Templates.insert {
+                it[name] = template.name
+                it[description] = template.description
+                it[categoryId] = template.categoryId
+                it[imageFileId] = template.imageFileId
+                it[order] = newOrder
+                it[createdAt] = now()
+                it[updatedAt] = now()
+            }
+
+            val id = insertStatement[Templates.id]
+            template.copy(
+                id = id,
+            )
         }
-
-        val id = insertStatement[Templates.id]
-        template.copy(
-            id = id,
-        )
     }
 
     suspend fun findByIds(ids: List<Int>): List<Template> = dbQuery {
