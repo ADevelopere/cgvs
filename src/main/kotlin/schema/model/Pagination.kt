@@ -1,7 +1,5 @@
 package schema.model
 
-import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-
 /**
  * Pagination arguments that can be used in GraphQL queries
  */
@@ -14,12 +12,49 @@ data class PaginationArgs(
     val page: Int? = null,
     val defaultCount: Int? = 10,
     val maxCount: Int? = 100
-){
-    companion object{
+) {
+    companion object {
         const val DEFAULT_COUNT = 10
         const val MAX_COUNT = 5000
     }
+
+    val perPage = minOf(
+        first ?: defaultCount ?: DEFAULT_COUNT,
+        maxCount ?: MAX_COUNT
+    )
+
+    val currentPage = page ?: 1
+    val offset = skip ?: ((currentPage - 1) * perPage)
 }
+
+fun paginationArgsToInfo(
+    args: PaginationArgs?,
+    count: Int,
+    total: Int,
+): PaginationInfo = args?.let {
+    val lastPage = if (total > 0) ((total - 1) / it.perPage) + 1 else 1
+    val firstItem = if (count == 0) it.offset + 1 else null
+    val lastItem = if (count > 0) it.offset + count else null
+    PaginationInfo(
+        count = count,
+        currentPage = it.currentPage,
+        firstItem = firstItem,
+        hasMorePages = it.currentPage < lastPage,
+        lastItem = lastItem,
+        lastPage = lastPage,
+        perPage = it.perPage,
+        total = total
+    )
+} ?: PaginationInfo(
+    count = count,
+    currentPage = 1,
+    firstItem = 1,
+    hasMorePages = false,
+    lastItem = count,
+    lastPage = 1,
+    perPage = count,
+    total = total
+)
 
 /**
  * Pagination information returned with paginated results
@@ -34,66 +69,3 @@ data class PaginationInfo(
     val perPage: Int,
     val total: Int
 )
-
-
-/**
- * Connection-style pagination for Relay compatibility
- */
-data class Connection<T>(
-    @param:GraphQLDescription("List of edges")
-    val edges: List<Edge<T>>,
-
-    @param:GraphQLDescription("Information about pagination")
-    val pageInfo: PageInfo
-)
-
-/**
- * Edge for connection-style pagination
- */
-data class Edge<T>(
-    @param:GraphQLDescription("The item")
-    val node: T,
-
-    @param:GraphQLDescription("Cursor for this item")
-    val cursor: String
-)
-
-/**
- * Page information for connection-style pagination
- */
-data class PageInfo(
-    @param:GraphQLDescription("Whether there are more items after this page")
-    val hasNextPage: Boolean,
-
-    @param:GraphQLDescription("Whether there are more items before this page")
-    val hasPreviousPage: Boolean,
-
-    @param:GraphQLDescription("Cursor of the first item in this page")
-    val startCursor: String?,
-
-    @param:GraphQLDescription("Cursor of the last item in this page")
-    val endCursor: String?
-)
-
-/**
- * Enum defining the types of pagination supported
- */
-enum class PaginationType {
-    /**
-     * Offset-based pagination with total count, similar to Laravel's default pagination
-     */
-    @GraphQLDescription("Offset-based pagination with total count")
-    PAGINATOR,
-
-    /**
-     * Simple offset-based pagination without total count
-     */
-    @GraphQLDescription("Simple offset-based pagination without total count")
-    SIMPLE,
-
-    /**
-     * Cursor-based pagination compatible with Relay specification
-     */
-    @GraphQLDescription("Cursor-based pagination compatible with Relay specification")
-    CONNECTION
-}

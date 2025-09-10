@@ -8,6 +8,7 @@ object TemplateRecipientGroups : Table("template_recipient_groups") {
     val templateId = integer("template_id").references(Templates.id)
     val name = varchar("name", 255)
     val description = text("description").nullable()
+    val date = datetime("date").nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 

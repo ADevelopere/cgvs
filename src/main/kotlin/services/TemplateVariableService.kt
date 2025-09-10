@@ -142,7 +142,7 @@ class TemplateVariableService(
 
 
     private suspend fun checkCreateInput(input: CreateTemplateVariableInput) {
-        check(templateRepository.exists(input.templateId)) {
+        check(templateRepository.existsById(input.templateId)) {
             "Template with ID ${input.templateId} does not exist."
         }
 

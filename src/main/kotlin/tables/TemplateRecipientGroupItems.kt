@@ -3,7 +3,7 @@ package tables
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object TemplateRecipientGroupStudents : Table("template_recipient_group_students") {
+object TemplateRecipientGroupItems : Table("template_recipient_group_items") {
     val id = integer("id").autoIncrement()
     val templateRecipientGroupId = integer("template_recipient_group_id").references(TemplateRecipientGroups.id)
     val studentId = integer("student_id").references(Students.id)
@@ -13,6 +13,6 @@ object TemplateRecipientGroupStudents : Table("template_recipient_group_students
     override val primaryKey = PrimaryKey(id)
 
     init {
-        uniqueIndex("trgs_student_group_unique", studentId, templateRecipientGroupId)
+        uniqueIndex("trgi_student_group_unique", studentId, templateRecipientGroupId)
     }
 }
