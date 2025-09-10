@@ -67,6 +67,22 @@ class TemplateRecipientGroupItemService(
         paginationArgs: PaginationArgs?,
         orderBy: List<OrderStudentsByClause>? = null,
         filterArgs: StudentFilterArgs?
-    ): PaginatedStudentResponse {
-    }
+    ): PaginatedStudentResponse = repository.searchStudentsInGroup(
+        groupId,
+        orderBy,
+        paginationArgs,
+        filterArgs
+    )
+
+    suspend fun findStudentsNotInGroup(
+        groupId: Int,
+        paginationArgs: PaginationArgs?,
+        orderBy: List<OrderStudentsByClause>? = null,
+        filterArgs: StudentFilterArgs?
+    ): PaginatedStudentResponse = repository.searchStudentsNotInGroup(
+        groupId,
+        orderBy,
+        paginationArgs,
+        filterArgs
+    )
 }

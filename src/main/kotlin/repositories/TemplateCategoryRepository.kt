@@ -4,8 +4,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import schema.model.TemplateCategory
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.core.max
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -123,7 +125,7 @@ class TemplateCategoryRepository(private val database: Database) {
             .singleOrNull()
     }
 
-    suspend fun delete(id: Int): Boolean? = dbQuery {
+    suspend fun delete(id: Int): Boolean = dbQuery {
         TemplateCategories.deleteWhere { TemplateCategories.id eq id } > 0
     }
 

@@ -2,11 +2,9 @@ package repositories
 
 import schema.model.Certificate
 import tables.Certificates
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -15,12 +13,15 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import util.now
 
 class CertificateRepository(private val database: Database) {
 
     suspend fun create(certificate: Certificate): Certificate = dbQuery {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+        val now = now()
         val insertStatement = Certificates.insert {
             it[templateId] = certificate.templateId
             it[studentId] = certificate.studentId
@@ -91,7 +92,7 @@ class CertificateRepository(private val database: Database) {
                 it[templateRecipientGroupId] = certificate.templateRecipientGroupId
                 it[releaseDate] = certificate.releaseDate
                 it[verificationCode] = certificate.verificationCode
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+                it[updatedAt] = now()
             }
         }
         return if (updated > 0) {
@@ -99,27 +100,6 @@ class CertificateRepository(private val database: Database) {
         } else {
             null
         }
-    }
-
-    suspend fun softDelete(id: Int): Boolean {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-        val updated = dbQuery {
-            Certificates.update({ Certificates.id eq id }) {
-                it[deletedAt] = now
-                it[updatedAt] = now
-            }
-        }
-        return updated > 0
-    }
-
-    suspend fun restore(id: Int): Boolean {
-        val updated = dbQuery {
-            Certificates.update({ Certificates.id eq id }) {
-                it[deletedAt] = null
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
-            }
-        }
-        return updated > 0
     }
 
     suspend fun delete(id: Int): Boolean = dbQuery {

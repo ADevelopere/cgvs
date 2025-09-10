@@ -6,12 +6,14 @@ import repositories.StorageRepository
 import tables.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.like
+import org.jetbrains.exposed.v1.core.notLike
 import schema.model.CreateFolderInput
 import schema.model.RegisterFileUsageInput
+import util.now
 
 class StorageRepositoryImpl(
     private val database: Database
@@ -144,7 +146,7 @@ class StorageRepositoryImpl(
             usageType = input.usageType
             referenceId = input.referenceId
             referenceTable = input.referenceTable
-            created = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            created = now()
         }
     }
 

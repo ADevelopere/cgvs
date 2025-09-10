@@ -3,7 +3,6 @@ package repositories
 import schema.model.TemplateRecipientGroupItem
 import tables.TemplateRecipientGroupItems
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -11,9 +10,11 @@ import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.v1.core.alias
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.core.leftJoin
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import repositories.utils.applyStudentFilters
@@ -77,16 +78,6 @@ class TemplateRecipientGroupItemRepository(private val database: Database) {
             .map { rowToTemplateRecipientGroupItem(it) }
     }
 
-    suspend fun findByGroupIdAndStudentId(groupId: Int, studentId: Int): TemplateRecipientGroupItem? = dbQuery {
-        TemplateRecipientGroupItems.selectAll()
-            .where {
-                (TemplateRecipientGroupItems.templateRecipientGroupId eq groupId) and
-                    (TemplateRecipientGroupItems.studentId eq studentId)
-            }
-            .map { rowToTemplateRecipientGroupItem(it) }
-            .singleOrNull()
-    }
-
     suspend fun existsByGroupIdAndStudentId(groupId: Int, studentId: Int): Boolean = dbQuery {
         TemplateRecipientGroupItems.selectAll()
             .where {
@@ -122,7 +113,7 @@ class TemplateRecipientGroupItemRepository(private val database: Database) {
                 .selectAll()
                 .where { TemplateRecipientGroupItems.templateRecipientGroupId eq groupId }
                 .applyStudentFilters(filterArgs)
-            
+
             query
                 .applyStudentOrdering(orderBy)
 

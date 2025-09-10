@@ -2,11 +2,7 @@ package repositories
 
 import schema.model.User
 import tables.Users
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -14,13 +10,15 @@ import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import schema.model.Email
+import util.now
 
 class UserRepository(private val database: Database) {
 
     suspend fun create(user: User): User = dbQuery {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+        val now = now()
         val insertStatement = Users.insert {
             it[name] = user.name
             it[email] = user.email.value
@@ -66,7 +64,7 @@ class UserRepository(private val database: Database) {
                 it[password] = user.password
                 it[emailVerifiedAt] = user.emailVerifiedAt
                 it[isAdmin] = user.isAdmin
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+                it[updatedAt] = now()
             }
         }
         return if (updated > 0) {

@@ -2,11 +2,7 @@ package repositories
 
 import schema.model.RecipientGroupItemVariableValue
 import tables.RecipientGroupItemVariableValues
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -15,12 +11,14 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import util.now
 
 class RecipientGroupItemVariableValueRepository(private val database: Database) {
 
     suspend fun create(value: RecipientGroupItemVariableValue): RecipientGroupItemVariableValue = dbQuery {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+        val now = now()
         val insertStatement = RecipientGroupItemVariableValues.insert {
             it[templateRecipientGroupItemId] = value.templateRecipientGroupItemId
             it[templateVariableId] = value.templateVariableId
@@ -82,7 +80,7 @@ class RecipientGroupItemVariableValueRepository(private val database: Database) 
                 it[templateVariableId] = value.templateVariableId
                 it[this.value] = value.value
                 it[valueIndexed] = value.valueIndexed
-                it[updatedAt] = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+                it[updatedAt] = now()
             }
         }
         return if (updated > 0) {
