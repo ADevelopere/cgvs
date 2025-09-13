@@ -35,6 +35,8 @@ import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { mapSingleTemplate } from "@/utils/template/template-mappers";
 import { useRouter } from "next/navigation";
 import logger from "@/utils/logger";
+import { useDashboardLayout } from "../DashboardLayoutContext";
+import { NavigationPageItem } from "../adminLayout.types";
 
 // Helper function to find a category in a hierarchical tree by ID
 const findCategoryInTreeById = (
@@ -230,6 +232,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
 }> = ({ children }) => {
     const messages = useAppTranslation("templateCategoryTranslations");
     const notifications = useNotifications();
+
+    const { setNavigation } = useDashboardLayout();
 
     const router = useRouter();
     const [templateToManage, setTemplateToManage] = useState<
@@ -711,9 +715,26 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 return;
             }
             setTemplateToManage(template);
+            setNavigation((prevNav) => {
+                if (!prevNav) return prevNav;
+                return prevNav.map((item) => {
+                    if ("id" in item && item.id === "templates") {
+                        return {
+                            ...item,
+                            segment: `admin/templates/${templateId}/manage`,
+                        } as NavigationPageItem;
+                    }
+                    return item;
+                });
+            });
             router.push(`/admin/templates/${templateId}/manage`);
         },
-        [router, allTemplatesFromCache],
+        [
+            allTemplatesFromCache,
+            setNavigation,
+            router,
+            setTemplateToManage,
+        ],
     );
 
     // Category switching logic

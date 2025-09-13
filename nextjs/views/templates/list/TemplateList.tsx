@@ -10,7 +10,7 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { TemplateCategory } from "@/graphql/generated/types";
 import { Folder } from "lucide-react";
@@ -139,6 +139,7 @@ const TemplateList: React.FC = () => {
     const { headerHeight, sidebarState: dashboardsidebarState } =
         useDashboardLayout();
     const { allTemplates, currentCategory } = useTemplateCategoryManagement();
+    const { setNavigation } = useDashboardLayout();
 
     const [open, setOpen] = useState(true);
     const theme = useTheme();
@@ -148,6 +149,18 @@ const TemplateList: React.FC = () => {
     const toggleSidebar = () => {
         setOpen((prev) => !prev);
     };
+
+    useEffect(() => {
+        setNavigation((prevNav) => {
+            if (!prevNav) return prevNav;
+            return prevNav.map((item) => {
+                if ("id" in item && item.id === "templates") {
+                    return { ...item, segment: "admin/templates" };
+                }
+                return item;
+            });
+        });
+    }, [setNavigation]);
 
     return (
         <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>

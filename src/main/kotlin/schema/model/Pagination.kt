@@ -1,5 +1,7 @@
 package schema.model
 
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+
 /**
  * Pagination arguments that can be used in GraphQL queries
  */
@@ -18,13 +20,16 @@ data class PaginationArgs(
         const val MAX_COUNT = 5000
     }
 
+    @GraphQLIgnore
     val perPage = minOf(
         first ?: defaultCount ?: DEFAULT_COUNT,
         maxCount ?: MAX_COUNT
     )
 
+    @GraphQLIgnore
     val currentPage = page ?: 1
-    val offset = skip ?: ((currentPage - 1) * perPage)
+    @GraphQLIgnore
+    val offset: Int = skip ?: ((currentPage - 1) * perPage)
 }
 
 fun paginationArgsToInfo(
@@ -33,7 +38,7 @@ fun paginationArgsToInfo(
     total: Int,
 ): PaginationInfo = args?.let {
     val lastPage = if (total > 0) ((total - 1) / it.perPage) + 1 else 1
-    val firstItem = if (count == 0) it.offset + 1 else null
+    val firstItem = if (count > 0) it.offset + 1 else null
     val lastItem = if (count > 0) it.offset + count else null
     PaginationInfo(
         count = count,

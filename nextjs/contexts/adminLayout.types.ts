@@ -9,7 +9,8 @@ export interface Title {
     iconColor?: string;
 }
 
-export interface NavigationPageItem {
+export type NavigationPageItem = {
+    id: string;
     kind?: "page";
     segment?: string;
     title?: string;
@@ -17,7 +18,7 @@ export interface NavigationPageItem {
     pattern?: string;
     action?: React.ReactNode;
     children?: Navigation;
-}
+};
 export interface NavigationSubheaderItem {
     kind: "header";
     title: string;
@@ -57,7 +58,7 @@ export type SlotName = keyof DashboardLayoutSlots;
 
 export type DashboardLayoutContextProps = {
     navigation?: Navigation;
-    setNavigation: (navigation: Navigation) => void;
+    setNavigation: React.Dispatch<React.SetStateAction<Navigation | undefined>>;
     slots: DashboardLayoutSlots;
     // title states
     title?: Title;

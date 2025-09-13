@@ -23,6 +23,8 @@ import {
     mapSingleTemplate,
     mapTemplateConfig,
 } from "@/utils/template/template-mappers";
+import { useDashboardLayout } from "../DashboardLayoutContext";
+import { NavigationPageItem } from "../adminLayout.types";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -68,6 +70,7 @@ export const TemplateManagementProvider: React.FC<{
     const id = params?.id;
     const { allTemplates, templateToManage } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
+    const { setNavigation } = useDashboardLayout();
 
     const { data: apolloTemplateData } = useTemplateQuery({
         variables: { id: id ? parseInt(id, 10) : 0 },
@@ -230,6 +233,21 @@ export const TemplateManagementProvider: React.FC<{
     useEffect(() => {
         fetchConfig();
     }, [fetchConfig]);
+
+    useEffect(() => {
+        setNavigation((prevNav) => {
+            if (!prevNav) return prevNav;
+            return prevNav.map((item) => {
+                if ("id" in item && item.id === "templates") {
+                    return {
+                        ...item,
+                        segment: `admin/templates/${template?.id}/manage`,
+                    } as NavigationPageItem;
+                }
+                return item;
+            });
+        });
+    }, [setNavigation, template?.id]);
 
     const value = useMemo(
         () => ({

@@ -9,11 +9,13 @@ import {
     Typography,
     Box,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
 import { TemplateManagementTabType } from "@/contexts/template/TemplateManagementContext";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import useAppTranslation from "@/locale/useAppTranslation";
+import { useRouter } from "next/navigation";
 interface TabListProps {
     onChange: (
         event: React.SyntheticEvent,
@@ -94,10 +96,12 @@ const ManagementTabList: React.FC<TabListProps> = ({ onChange, activeTab }) => {
 
 interface ManagementHeaderInernalProps {
     templateName: string;
+    onBack: () => void;
 }
 
 const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
     templateName,
+    onBack,
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -121,6 +125,25 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
                     flexGrow: 1,
                 }}
             >
+                <IconButton
+                    size="small"
+                    onClick={onBack}
+                    sx={{
+                        color: "primary.main",
+                        "&:hover": {
+                            backgroundColor: "action.hover",
+                        },
+                    }}
+                >
+                    <ArrowBackIcon
+                        sx={{
+                            transform:
+                                theme.direction === "rtl"
+                                    ? "scaleX(-1)"
+                                    : "none",
+                        }}
+                    />
+                </IconButton>
                 <IconButton
                     size="small"
                     sx={{
@@ -170,31 +193,49 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
     );
 };
 
-type ManagementHeaderProps = ManagementHeaderInernalProps & TabListProps;
+type ManagementHeaderProps = TabListProps & {
+    templateName: string;
+};
 
 const ManagementHeader: React.FC<ManagementHeaderProps> = ({
     onChange,
     activeTab,
     templateName,
 }) => {
-    const { setDashboardSlot } = useDashboardLayout();
+    const { setDashboardSlot, setNavigation } = useDashboardLayout();
+    const router = useRouter();
+
+    const handleBack = React.useCallback(() => {
+        router.push("/admin/templates");
+        setNavigation((prevNav) => {
+            if (!prevNav) return prevNav;
+            return prevNav.map((item) => {
+                if ("id" in item && item.id === "templates") {
+                    return { ...item, segment: "admin/templates" };
+                }
+                return item;
+            });
+        });
+    }, [router, setNavigation]);
 
     useEffect(() => {
         // setDashboardSlot(
         //     "middleActions",
         //     <ManagementTabList onChange={onChange} activeTab={activeTab} />,
         // );
-
         setDashboardSlot(
             "titleRenderer",
-            <ManagementHeaderInernal templateName={templateName} />,
+            <ManagementHeaderInernal
+                templateName={templateName}
+                onBack={handleBack}
+            />,
         );
 
         return () => {
             setDashboardSlot("middleActions", null);
             setDashboardSlot("titleRenderer", null);
         };
-    }, [setDashboardSlot, templateName]);
+    }, [setDashboardSlot, templateName, handleBack, setNavigation]);
 
     return <ManagementTabList onChange={onChange} activeTab={activeTab} />;
 };
