@@ -25,26 +25,31 @@ const NAVIGATION: Navigation = [
         title: "الإدارة",
     },
     {
+        id: "dashboard",
         segment: "admin/dashboard",
         title: "لوحة التحكم",
         icon: <DashboardIcon />,
     },
     {
+        id: "templateCategories",
         segment: "admin/categories",
         title: "فئات الشهادات",
         icon: <CategoryIcon />,
     },
     {
+        id: "templates",
         segment: "admin/templates",
         title: "الشهادات",
         icon: <TemplatesIcon />,
     },
     {
+        id: "storage",
         segment: "admin/storage",
         title: "الملفات",
         icon: <StorageIcon />,
     },
     {
+        id: "students",
         segment: "admin/students",
         title: "الطلاب",
         icon: <StudentsIcon />,
