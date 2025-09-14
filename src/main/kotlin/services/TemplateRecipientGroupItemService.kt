@@ -74,6 +74,9 @@ class TemplateRecipientGroupItemService(
         filterArgs
     )
 
+    suspend fun findAllStudentsByGroupId(groupId: Int): List<TemplateRecipientGroupItem> =
+        repository.findAllStudentsByGroupId(groupId)
+
     suspend fun findStudentsNotInGroup(
         groupId: Int,
         paginationArgs: PaginationArgs?,

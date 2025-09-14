@@ -23,12 +23,15 @@ import context.CustomGraphQLContextFactory
 import context.CustomDataFetcherExceptionHandler
 import hooks.customSchemaGeneratorHooks
 import schema.dataloaders.StorageFileInfoByIdDataLoader
+import schema.dataloaders.StudentDataLoader
 import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateCategoryTemplatesDataLoader
 import schema.dataloaders.TemplateDataLoader
-import schema.dataloaders.TemplateRecipientGroupsDataLoader
-import schema.dataloaders.TemplateVariablesDataLoader
+import schema.dataloaders.TemplateRecipientGroupByTemplateIdDataLoader
+import schema.dataloaders.TemplateRecipientGroupDataLoader
+import schema.dataloaders.TemplateRecipientGroupItemsByGroupIdDataLoader
+import schema.dataloaders.TemplateVariablesByTemplateIdDataLoader
 import schema.dataloaders.UrlDataLoader
 import schema.mutation.StudentMutation
 import schema.mutation.TemplateCategoryMutation
@@ -84,10 +87,13 @@ fun Application.graphQLModule() {
                 TemplateCategoryChildrenDataLoader,
                 TemplateCategoryTemplatesDataLoader,
                 TemplateDataLoader,
-                TemplateVariablesDataLoader,
+                TemplateVariablesByTemplateIdDataLoader,
                 UrlDataLoader,
                 StorageFileInfoByIdDataLoader,
-                TemplateRecipientGroupsDataLoader
+                TemplateRecipientGroupDataLoader,
+                TemplateRecipientGroupByTemplateIdDataLoader,
+                TemplateRecipientGroupItemsByGroupIdDataLoader,
+                StudentDataLoader,
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }

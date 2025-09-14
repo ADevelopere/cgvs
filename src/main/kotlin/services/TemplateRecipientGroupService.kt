@@ -27,6 +27,10 @@ class TemplateRecipientGroupService(
     suspend fun findAllByTemplateId(templateId: Int): List<TemplateRecipientGroup> =
         repository.findAllByTemplateId(templateId)
 
+    suspend fun findById(id: Int): TemplateRecipientGroup? = repository.findById(id)
+
+    suspend fun findByIds(ids: List<Int>): List<TemplateRecipientGroup> = repository.findByIds(ids)
+
     suspend fun update(input: UpdateRecipientGroupInput): TemplateRecipientGroup? {
         // validate name
         check(input.name.length in 3..255) {

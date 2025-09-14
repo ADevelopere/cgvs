@@ -62,6 +62,12 @@ class StudentRepository(private val database: Database) {
         count == ids.size.toLong()
     }
 
+    suspend fun findByIds(ids: List<Int>): List<Student> = dbQuery {
+        Students.selectAll()
+            .where { Students.id inList ids }
+            .map { rowToStudent(it) }
+            .sortedBy { ids.indexOf(it.id) }
+    }
 
     /**
      * Returns the total count of students

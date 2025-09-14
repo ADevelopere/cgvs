@@ -6,9 +6,9 @@ import graphql.schema.DataFetchingEnvironment
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
-import schema.dataloaders.TemplateVariablesDataLoader
+import schema.dataloaders.TemplateVariablesByTemplateIdDataLoader
 import schema.dataloaders.StorageFileInfoByIdDataLoader
-import schema.dataloaders.TemplateRecipientGroupsDataLoader
+import schema.dataloaders.TemplateRecipientGroupByTemplateIdDataLoader
 import schema.dataloaders.UrlDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
@@ -40,7 +40,7 @@ data class Template(
 
     fun variables(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateVariable>?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
-            TemplateVariablesDataLoader.dataLoaderName, id
+            TemplateVariablesByTemplateIdDataLoader.dataLoaderName, id
         )
     }
 
@@ -66,7 +66,7 @@ data class Template(
 
     fun recipientGroups(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateRecipientGroup>?> {
         return dataFetchingEnvironment.getValueFromDataLoader(
-            TemplateRecipientGroupsDataLoader.dataLoaderName, id
+            TemplateRecipientGroupByTemplateIdDataLoader.dataLoaderName, id
         )
     }
 }

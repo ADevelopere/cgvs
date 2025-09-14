@@ -12,5 +12,5 @@ class TemplateRecipientGroupQuery : Query, KoinComponent {
     val service by inject<TemplateRecipientGroupService>()
 
     @GraphQLDescription("Get all recipient groups for a template.")
-    suspend fun templateRecipientGroups(id: Int) = service.findAllByTemplateId(id)
+    suspend fun templateRecipientGroups(templateId: Int) = service.findAllByTemplateId(templateId)
 }
