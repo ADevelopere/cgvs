@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.events.Events
 import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.config.ApplicationConfig
-import org.jetbrains.exposed.v1.core.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.v1.core.StdOutSqlLogger
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils

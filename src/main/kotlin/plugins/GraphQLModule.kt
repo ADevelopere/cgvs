@@ -27,6 +27,7 @@ import schema.dataloaders.TemplateCategoryChildrenDataLoader
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateCategoryTemplatesDataLoader
 import schema.dataloaders.TemplateDataLoader
+import schema.dataloaders.TemplateRecipientGroupsDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
 import schema.dataloaders.UrlDataLoader
 import schema.mutation.StudentMutation
@@ -34,10 +35,12 @@ import schema.mutation.TemplateCategoryMutation
 import schema.mutation.TemplateMutation
 import schema.mutation.TemplateVariableMutation
 import schema.mutation.StorageMutation
+import schema.mutation.TemplateRecipientGroupMutation
 import schema.query.StudentQuery
 import schema.query.TemplateCategoryQuery
 import schema.query.TemplateConfigQuery
 import schema.query.TemplateQuery
+import schema.query.TemplateRecipientGroupQuery
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -61,6 +64,7 @@ fun Application.graphQLModule() {
                 TemplateQuery(),
                 TemplateConfigQuery(),
                 TemplateCategoryQuery(),
+                TemplateRecipientGroupQuery(),
                 StudentQuery(),
             )
             mutations = listOf(
@@ -69,7 +73,8 @@ fun Application.graphQLModule() {
                 TemplateCategoryMutation(),
                 TemplateMutation(),
                 TemplateVariableMutation(),
-                StudentMutation()
+                TemplateRecipientGroupMutation(),
+                StudentMutation(),
             )
             hooks = customSchemaGeneratorHooks
         }
@@ -81,7 +86,8 @@ fun Application.graphQLModule() {
                 TemplateDataLoader,
                 TemplateVariablesDataLoader,
                 UrlDataLoader,
-                StorageFileInfoByIdDataLoader
+                StorageFileInfoByIdDataLoader,
+                TemplateRecipientGroupsDataLoader
             )
             exceptionHandler = CustomDataFetcherExceptionHandler()
         }
