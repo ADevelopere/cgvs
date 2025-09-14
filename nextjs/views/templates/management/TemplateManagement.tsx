@@ -17,14 +17,17 @@ import { useState, useEffect } from "react";
 import ManagementHeader from "./ManagementHeader";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import { TemplateVariableManagementProvider } from "@/contexts/templateVariable/TemplateVariableManagementContext";
+import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
+import { NavigationPageItem } from "@/contexts/adminLayout.types";
 
 const TemplateManagement: React.FC = () => {
     const theme = useTheme();
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { template, activeTab, setActiveTab, setTabError } =
+    const { template, activeTab, changeTab, setTabError } =
         useTemplateManagement();
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const { setNavigation } = useDashboardLayout();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -40,9 +43,23 @@ const TemplateManagement: React.FC = () => {
         newValue: TemplateManagementTabType,
     ) => {
         try {
-            setActiveTab(newValue);
+            changeTab(newValue);
             const params = new URLSearchParams(searchParams.toString());
             params.set("tab", newValue);
+
+            setNavigation((prevNav) => {
+                if (!prevNav) return prevNav;
+                return prevNav.map((item) => {
+                    if ("id" in item && item.id === "templates") {
+                        return {
+                            ...item,
+                            segment: `admin/templates/${template?.id}/manage?${params.toString()}`,
+                        } as NavigationPageItem;
+                    }
+                    return item;
+                });
+            });
+
             router.push(`?${params.toString()}`);
         } catch {
             setTabError(newValue, {

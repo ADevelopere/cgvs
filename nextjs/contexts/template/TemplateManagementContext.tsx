@@ -51,7 +51,7 @@ interface TemplateManagementContextType {
     config: TemplateConfig;
     template: Template | undefined;
     loading: boolean;
-    setActiveTab: (tab: TemplateManagementTabType) => void;
+    changeTab: (tab: TemplateManagementTabType) => void;
     setTabLoaded: (tab: TemplateManagementTabType) => void;
     setUnsavedChanges: (hasChanges: boolean) => void;
     setTabError: (tab: TemplateManagementTabType, error: TabError) => void;
@@ -68,7 +68,7 @@ export const TemplateManagementProvider: React.FC<{
     const searchParams = useSearchParams();
     const params = useParams<{ id: string }>();
     const id = params?.id;
-    const { allTemplates, templateToManage } = useTemplateCategoryManagement();
+    const { allTemplates, templateToManage, templateManagementTab, setTemplateManagementTab } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
     const { setNavigation } = useDashboardLayout();
 
@@ -86,6 +86,7 @@ export const TemplateManagementProvider: React.FC<{
     const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>(
         [],
     );
+
     const [error, setError] = useState<string | undefined>(undefined);
     const [tabErrors, setTabErrors] = useState<
         Record<TemplateManagementTabType, TabError | undefined>
@@ -104,11 +105,17 @@ export const TemplateManagementProvider: React.FC<{
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const tab = (searchParams.get("tab") ??
-            "basic") as TemplateManagementTabType;
+        const tab = (searchParams.get("tab") ?? templateManagementTab) as TemplateManagementTabType;
         setActiveTab(tab);
-    }, [searchParams]);
+    }, [searchParams, templateManagementTab]);
 
+    const changeTab = useCallback(
+        (tab: TemplateManagementTabType) => {
+        setActiveTab(tab);
+        setTemplateManagementTab(tab);
+        },[setTemplateManagementTab]
+    )
+    
     const handleSetTabLoaded = useCallback((tab: TemplateManagementTabType) => {
         setLoadedTabs((prevTabs) =>
             prevTabs.includes(tab) ? prevTabs : [...prevTabs, tab],
@@ -259,7 +266,7 @@ export const TemplateManagementProvider: React.FC<{
             config,
             template,
             loading,
-            setActiveTab,
+            changeTab,
             setTabLoaded: handleSetTabLoaded,
             setUnsavedChanges,
             setTabError: handleSetTabError,
@@ -267,6 +274,7 @@ export const TemplateManagementProvider: React.FC<{
         }),
         [
             activeTab,
+            changeTab,
             unsavedChanges,
             loadedTabs,
             error,

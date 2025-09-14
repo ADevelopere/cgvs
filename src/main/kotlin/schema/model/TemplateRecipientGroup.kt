@@ -1,5 +1,7 @@
 package schema.model
 
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.datetime.LocalDateTime
@@ -10,6 +12,7 @@ import java.util.concurrent.CompletableFuture
 @Suppress("unused")
 data class TemplateRecipientGroup(
     val id: Int,
+    @GraphQLIgnore
     val templateId: Int,
     val name: String,
     val description: String? = null,
@@ -21,6 +24,7 @@ data class TemplateRecipientGroup(
         return dataFetchingEnvironment.getValueFromDataLoader(TemplateDataLoader.dataLoaderName, templateId)
     }
 
+    @GraphQLDescription("List of recipient group items (students) associated with this recipient group")
     fun items(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateRecipientGroupItem>> {
         return dataFetchingEnvironment.getValueFromDataLoader(
             TemplateRecipientGroupItemsByGroupIdDataLoader.dataLoaderName,

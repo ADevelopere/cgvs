@@ -37,6 +37,7 @@ import { useRouter } from "next/navigation";
 import logger from "@/utils/logger";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
+import { TemplateManagementTabType } from "./TemplateManagementContext";
 
 // Helper function to find a category in a hierarchical tree by ID
 const findCategoryInTreeById = (
@@ -207,6 +208,8 @@ type TemplateCategoryManagementContextType = {
     setOnNewTemplateCancel: (callback: (() => void) | undefined) => void;
 
     templateToManage?: Template;
+    templateManagementTab: TemplateManagementTabType;
+    setTemplateManagementTab: (tab: TemplateManagementTabType) => void;
     manageTemplate: (templateId: number) => void;
 };
 
@@ -239,6 +242,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const [templateToManage, setTemplateToManage] = useState<
         Template | undefined
     >(undefined);
+
+    const [templateManagementTab, setTemplateManagementTab] =
+        useState<TemplateManagementTabType>("basic");
 
     const {
         data: apolloCategoryData,
@@ -729,12 +735,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             });
             router.push(`/admin/templates/${templateId}/manage`);
         },
-        [
-            allTemplatesFromCache,
-            setNavigation,
-            router,
-            setTemplateToManage,
-        ],
+        [allTemplatesFromCache, setNavigation, router, setTemplateToManage],
     );
 
     // Category switching logic
@@ -804,6 +805,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
             onNewTemplateCancel,
             setOnNewTemplateCancel,
             manageTemplate,
+            templateManagementTab,
+            setTemplateManagementTab,
             templateToManage,
         }),
         [
@@ -829,6 +832,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
             isAddingTemplate,
             onNewTemplateCancel,
             manageTemplate,
+            templateManagementTab,
+            setTemplateManagementTab,
             templateToManage,
         ],
     );
