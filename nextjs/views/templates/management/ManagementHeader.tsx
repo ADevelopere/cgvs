@@ -133,6 +133,8 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
                         "&:hover": {
                             backgroundColor: "action.hover",
                         },
+                        marginInlineStart: 2,
+                        marginBlock: 1,
                     }}
                 >
                     <ArrowBackIcon
@@ -153,6 +155,8 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
                             transform: "scale(1.05)",
                         },
                         transition: "all 0.2s ease-in-out",
+                        padding: 0,
+                        margin: 0
                     }}
                 >
                     <PrecisionManufacturingIcon />
@@ -171,7 +175,7 @@ const ManagementHeaderInernal: React.FC<ManagementHeaderInernalProps> = ({
                         color: "secondary.main",
                     }}
                 >
-                    Managing template:
+                    إدارة القالب:
                 </Typography>
                 <Typography
                     variant={isMobile ? "h6" : "h5"}

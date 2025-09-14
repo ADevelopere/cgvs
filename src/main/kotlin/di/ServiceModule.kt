@@ -7,6 +7,8 @@ import services.TemplateConfigService
 import services.TemplateService
 import services.TemplateVariableService
 import services.FileInitializationService
+import services.TemplateRecipientGroupItemService
+import services.TemplateRecipientGroupService
 
 val serviceModule = module {
     single<TemplateCategoryService> {
@@ -47,5 +49,13 @@ val serviceModule = module {
         FileInitializationService(
             get(), get(), get(), get(),
         )
+    }
+
+    single<TemplateRecipientGroupService> {
+        TemplateRecipientGroupService(get(), get())
+    }
+
+    single<TemplateRecipientGroupItemService> {
+        TemplateRecipientGroupItemService(get(), get(), get())
     }
 }

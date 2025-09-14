@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateCategoryDataLoader
 import schema.dataloaders.TemplateVariablesDataLoader
 import schema.dataloaders.StorageFileInfoByIdDataLoader
+import schema.dataloaders.TemplateRecipientGroupsDataLoader
 import schema.dataloaders.UrlDataLoader
 import util.now
 import java.util.concurrent.CompletableFuture
@@ -61,6 +62,12 @@ data class Template(
         } else {
             CompletableFuture.completedFuture("")
         }
+    }
+
+    fun recipientGroups(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateRecipientGroup>?> {
+        return dataFetchingEnvironment.getValueFromDataLoader(
+            TemplateRecipientGroupsDataLoader.dataLoaderName, id
+        )
     }
 }
 

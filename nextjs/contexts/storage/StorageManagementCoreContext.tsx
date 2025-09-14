@@ -108,11 +108,10 @@ export const StorageManagementCoreProvider: React.FC<{
 
                 return { items, pagination };
             } catch {
-                showNotification(translations.failedToFetchFileList, "error");
                 return null;
             }
         },
-        [storageGraphQL, showNotification, translations.failedToFetchFileList],
+        [storageGraphQL],
     );
 
     const fetchDirectoryChildren = useCallback(
@@ -130,19 +129,10 @@ export const StorageManagementCoreProvider: React.FC<{
                     transformDirectoryToTreeNode,
                 );
             } catch {
-                showNotification(
-                    translations.failedToFetchDirectoryContents,
-                    "error",
-                );
                 return null;
             }
         },
-        [
-            storageGraphQL,
-            transformDirectoryToTreeNode,
-            showNotification,
-            translations.failedToFetchDirectoryContents,
-        ],
+        [storageGraphQL, transformDirectoryToTreeNode],
     );
 
     const fetchStats = useCallback(
