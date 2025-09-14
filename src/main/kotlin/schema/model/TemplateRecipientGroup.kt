@@ -4,9 +4,10 @@ import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.datetime.LocalDateTime
 import schema.dataloaders.TemplateDataLoader
-import util.now
+import schema.dataloaders.TemplateRecipientGroupItemsByGroupIdDataLoader
 import java.util.concurrent.CompletableFuture
 
+@Suppress("unused")
 data class TemplateRecipientGroup(
     val id: Int,
     val templateId: Int,
@@ -18,6 +19,13 @@ data class TemplateRecipientGroup(
 ) {
     fun template(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<Template?> {
         return dataFetchingEnvironment.getValueFromDataLoader(TemplateDataLoader.dataLoaderName, templateId)
+    }
+
+    fun items(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<List<TemplateRecipientGroupItem>> {
+        return dataFetchingEnvironment.getValueFromDataLoader(
+            TemplateRecipientGroupItemsByGroupIdDataLoader.dataLoaderName,
+            id
+        )
     }
 }
 

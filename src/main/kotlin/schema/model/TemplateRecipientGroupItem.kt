@@ -1,14 +1,31 @@
 package schema.model
 
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.expediagroup.graphql.server.extensions.getValueFromDataLoader
+import graphql.schema.DataFetchingEnvironment
 import kotlinx.datetime.LocalDateTime
+import schema.dataloaders.StudentDataLoader
+import schema.dataloaders.TemplateRecipientGroupDataLoader
+import java.util.concurrent.CompletableFuture
 
+@Suppress("unused")
 data class TemplateRecipientGroupItem(
     val id: Int,
+    @GraphQLIgnore
     val templateRecipientGroupId: Int,
+    @GraphQLIgnore
     val studentId: Int,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
-)
+){
+    fun student(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<Student?> {
+        return dataFetchingEnvironment.getValueFromDataLoader(StudentDataLoader.dataLoaderName, studentId)
+    }
+
+    fun recipientGroup(dataFetchingEnvironment: DataFetchingEnvironment): CompletableFuture<TemplateRecipientGroup?> {
+        return dataFetchingEnvironment.getValueFromDataLoader(TemplateRecipientGroupDataLoader.dataLoaderName, templateRecipientGroupId)
+    }
+}
 
 
 data class AddStudentToRecipientGroupInput(

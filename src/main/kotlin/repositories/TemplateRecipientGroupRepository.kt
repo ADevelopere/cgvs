@@ -11,6 +11,7 @@ import org.jetbrains.exposed.v1.jdbc.update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import schema.model.CreateRecipientGroupInput
 import schema.model.UpdateRecipientGroupInput
@@ -42,6 +43,13 @@ class TemplateRecipientGroupRepository(private val database: Database) {
             .where { TemplateRecipientGroups.id eq id }
             .map { rowToTemplateRecipientGroup(it) }
             .singleOrNull()
+    }
+
+    suspend fun findByIds(ids: List<Int>): List<TemplateRecipientGroup> = dbQuery {
+        TemplateRecipientGroups.selectAll()
+            .where { TemplateRecipientGroups.id inList ids }
+            .map { rowToTemplateRecipientGroup(it) }
+            .sortedBy { ids.indexOf(it.id) }
     }
 
     suspend fun findAllByTemplateId(templateId: Int): List<TemplateRecipientGroup> = dbQuery {

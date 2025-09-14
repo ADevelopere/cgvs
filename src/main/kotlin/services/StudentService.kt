@@ -8,6 +8,7 @@ import schema.model.PaginatedStudentResponse
 import schema.model.PaginationArgs
 import schema.model.StudentFilterArgs
 import schema.model.PartialUpdateStudentInput
+import schema.model.TemplateRecipientGroup
 
 class StudentService(
     private val repository: StudentRepository
@@ -23,6 +24,8 @@ class StudentService(
     suspend fun allExistsById(ids: Set<Int>): Boolean {
         return repository.allExistsByIds(ids)
     }
+
+    suspend fun findByIds(ids: List<Int>): List<Student> = repository.findByIds(ids)
 
     suspend fun students(
         paginationArgs: PaginationArgs? = null,

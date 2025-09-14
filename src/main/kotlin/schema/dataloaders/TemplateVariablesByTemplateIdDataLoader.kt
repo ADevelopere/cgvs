@@ -14,9 +14,9 @@ import schema.model.TemplateVariable
 import services.TemplateVariableService
 import kotlin.coroutines.EmptyCoroutineContext
 
-val TemplateVariablesDataLoader: KotlinDataLoader<Int, List<TemplateVariable>> =
+val TemplateVariablesByTemplateIdDataLoader: KotlinDataLoader<Int, List<TemplateVariable>> =
     object : KotlinDataLoader<Int, List<TemplateVariable>>, KoinComponent {
-        override val dataLoaderName = "TemplateVariablesDataLoader"
+        override val dataLoaderName = "TemplateVariablesByTemplateIdDataLoader"
         private val service: TemplateVariableService by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<TemplateVariable>> =
             DataLoaderFactory.newDataLoader(

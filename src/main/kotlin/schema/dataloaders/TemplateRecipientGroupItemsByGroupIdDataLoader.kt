@@ -17,9 +17,9 @@ import services.TemplateRecipientGroupItemService
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.getValue
 
-val TemplateRecipientGroupItemsDataLoader: KotlinDataLoader<Int, List<TemplateRecipientGroupItem>> =
+val TemplateRecipientGroupItemsByGroupIdDataLoader: KotlinDataLoader<Int, List<TemplateRecipientGroupItem>> =
     object : KotlinDataLoader<Int, List<TemplateRecipientGroupItem>>, KoinComponent {
-        override val dataLoaderName = "TemplateRecipientGroupItemsDataLoader"
+        override val dataLoaderName = "TemplateRecipientGroupItemsByGroupIdDataLoader"
         private val service: TemplateRecipientGroupItemService by inject()
         override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<TemplateRecipientGroupItem>> =
             DataLoaderFactory.newDataLoader(
@@ -29,9 +29,8 @@ val TemplateRecipientGroupItemsDataLoader: KotlinDataLoader<Int, List<TemplateRe
                             ?: CoroutineScope(EmptyCoroutineContext)
 
                     coroutineScope.future {
-                        // For each templateId, fetch its variables
-                        templateIds.map { templateId ->
-                            service.findAllStudentsByGroupId(templateId)
+                        templateIds.map { groupId ->
+                            service.findAllStudentsByGroupId(groupId)
                         }
                     }
                 },

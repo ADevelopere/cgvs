@@ -78,6 +78,12 @@ class TemplateRecipientGroupItemRepository(private val database: Database) {
             .map { rowToTemplateRecipientGroupItem(it) }
     }
 
+    suspend fun findAllStudentsByGroupId(groupId: Int): List<TemplateRecipientGroupItem> = dbQuery {
+        TemplateRecipientGroupItems.selectAll()
+            .where { TemplateRecipientGroupItems.templateRecipientGroupId eq groupId }
+            .map { rowToTemplateRecipientGroupItem(it) }
+    }
+
     suspend fun existsByGroupIdAndStudentId(groupId: Int, studentId: Int): Boolean = dbQuery {
         TemplateRecipientGroupItems.selectAll()
             .where {
