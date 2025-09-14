@@ -7,6 +7,8 @@ import repositories.SessionRepository
 import repositories.StorageRepository
 import repositories.StudentRepository
 import repositories.TemplateCategoryRepository
+import repositories.TemplateRecipientGroupItemRepository
+import repositories.TemplateRecipientGroupRepository
 import repositories.TemplateRepository
 import repositories.TemplateVariableRepository
 import repositories.UserRepository
@@ -21,4 +23,7 @@ val repositoryModule = module {
     single<StudentRepository> { StudentRepository(get()) }
     single<TemplateVariableRepository> { TemplateVariableRepository(get()) }
     single<StorageRepository> { StorageRepositoryImpl(get()) }
+
+    single<TemplateRecipientGroupRepository> { TemplateRecipientGroupRepository(get()) }
+    single<TemplateRecipientGroupItemRepository> { TemplateRecipientGroupItemRepository(get()) }
 }

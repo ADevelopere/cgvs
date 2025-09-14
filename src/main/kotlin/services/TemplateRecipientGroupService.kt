@@ -27,9 +27,6 @@ class TemplateRecipientGroupService(
     suspend fun findAllByTemplateId(templateId: Int): List<TemplateRecipientGroup> =
         repository.findAllByTemplateId(templateId)
 
-    suspend fun searchByTemplateIdAndName(templateId: Int, name: String): TemplateRecipientGroup? =
-        repository.searchByTemplateIdAndName(templateId, name)
-
     suspend fun update(input: UpdateRecipientGroupInput): TemplateRecipientGroup? {
         // validate name
         check(input.name.length in 3..255) {
@@ -44,5 +41,8 @@ class TemplateRecipientGroupService(
         return repository.update(input)
     }
 
-    suspend fun deleteById(id: Int): Boolean = repository.deleteById(id)
+    suspend fun deleteById(id: Int): TemplateRecipientGroup? {
+        val group = repository.findById(id) ?: throw IllegalArgumentException("Group with ID $id does not exist.")
+        return if (repository.deleteById(id)) group else null
+    }
 }
