@@ -25,12 +25,31 @@ class RepositoryManager(private val database: Database) {
 //    val templateElementRepository: TemplateElementRepository by lazy { TemplateElementRepository(database) }
 
     // Recipient management
-    val templateRecipientGroupRepository: TemplateRecipientGroupRepository by lazy { TemplateRecipientGroupRepository(database) }
-    val templateRecipientGroupItemRepository: TemplateRecipientGroupItemRepository by lazy { TemplateRecipientGroupItemRepository(database) }
-    val recipientGroupItemVariableValueRepository: RecipientGroupItemVariableValueRepository by lazy { RecipientGroupItemVariableValueRepository(database) }
+    val templateRecipientGroupRepository: TemplateRecipientGroupRepository by lazy {
+        TemplateRecipientGroupRepository(
+            database
+        )
+    }
+    val templateRecipientGroupItemRepository: TemplateRecipientGroupItemRepository by lazy {
+        TemplateRecipientGroupItemRepository(
+            database
+        )
+    }
+    val recipientGroupItemVariableValueRepository: RecipientGroupItemVariableValueRepository by lazy {
+        RecipientGroupItemVariableValueRepository(
+            database
+        )
+    }
 
 
-    val storageRepository : StorageRepository by lazy { StorageRepositoryImpl(database) }
+    val storageRepository: StorageRepository by lazy { StorageRepositoryImpl(database) }
+
+    val recipientGroupRepository: TemplateRecipientGroupRepository by lazy { TemplateRecipientGroupRepository(database) }
+    val recipientGroupItemRepository: TemplateRecipientGroupItemRepository by lazy {
+        TemplateRecipientGroupItemRepository(
+            database
+        )
+    }
 
     companion object {
         @Volatile

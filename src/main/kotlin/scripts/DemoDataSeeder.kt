@@ -1,14 +1,12 @@
 package scripts
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import repositories.RepositoryManager
 import schema.model.*
 import services.FileInitializationService
 import tables.CategorySpecialType
+import util.now
 import kotlin.random.Random
 
 /**
@@ -21,7 +19,7 @@ class DemoDataSeeder(
 ) {
 
     private val random = Random.Default
-    private val currentTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+    private val currentTime = now()
 
     // Arabic names data
     private val arabicFirstNames = listOf(
@@ -97,17 +95,25 @@ class DemoDataSeeder(
             val categories = createTemplateCategories()
 
             // 4. Create templates
-            createTemplates(categories)
+            val templates = createTemplates(categories)
 
             // 5. Create students
-            createStudents()
+            val students = createStudents()
+
+            // 6. Create recipient groups
+            val groups = createRecipientGroups(templates)
+
+            // 7. Create recipient group items
+            val items = createRecipientGroupItems(groups, students)
 
             println("✅ Demo data seeding completed successfully!")
             println("📊 Summary:")
             println("   - Admin user: admin@cgvs.com (password: cgvs@123)")
             println("   - Categories: ${categories.size}")
-            println("   - Templates: ${categories.size}")
-            println("   - Students: 1000")
+            println("   - Templates: ${templates.size}")
+            println("   - Students: ${students.size}")
+            println("   - Recipient Groups: ${groups.size}")
+            println("   - Recipient Group Items: ${items.size}")
 
         } catch (e: Exception) {
             println("❌ Error during seeding: ${e.message}")
@@ -174,7 +180,7 @@ class DemoDataSeeder(
         }
         allCategories.add(mainCategory)
 
-        // Check if suspension category already exists
+        // Check if the suspension category already exists
         val existingSuspension = repositoryManager.templateCategoryRepository.suspensionCategory()
         val suspensionCategory = if (existingSuspension != null) {
             println("   ✅ Suspension category already exists")
@@ -230,8 +236,9 @@ class DemoDataSeeder(
         return allCategories
     }
 
-    private suspend fun createTemplates(categories: List<TemplateCategory>) {
+    private suspend fun createTemplates(categories: List<TemplateCategory>): List<Template> {
         println("📋 Creating templates...")
+        val createdTemplates = mutableListOf<Template>()
 
         // Get demo file IDs from the file initialization service
         val demoFileIds = fileInitializationService.getDemoFileIds()
@@ -255,6 +262,7 @@ class DemoDataSeeder(
             )
 
             val createdTemplate = repositoryManager.templateRepository.create(template)
+            createdTemplates.add(createdTemplate)
 
             // Register file usage if the template has an image
             if (createdTemplate.imageFileId != null) {
@@ -265,7 +273,8 @@ class DemoDataSeeder(
             createTemplateVariables(createdTemplate, category)
         }
 
-        println("   ✅ Created ${topLevelCategories.size} templates")
+        println("   ✅ Created ${createdTemplates.size} templates")
+        return createdTemplates
     }
 
     private suspend fun createTemplateVariables(template: Template, category: TemplateCategory) {
@@ -589,8 +598,9 @@ class DemoDataSeeder(
         }
     }
 
-    private suspend fun createStudents() {
+    private suspend fun createStudents(): List<Student> {
         println("🎓 Creating students...")
+        val createdStudents = mutableListOf<Student>()
 
         val nationalities = CountryCode.entries
         val genders = Gender.entries
@@ -614,7 +624,8 @@ class DemoDataSeeder(
                 updatedAt = currentTime
             )
 
-            repositoryManager.studentRepository.create(student)
+            val createdStudent = repositoryManager.studentRepository.create(student)
+            createdStudents.add(createdStudent)
 
             if ((index + 1) % 100 == 0) {
                 println("   📝 Created ${index + 1} students...")
@@ -622,6 +633,7 @@ class DemoDataSeeder(
         }
 
         println("   ✅ Created 1000 students")
+        return createdStudents
     }
 
     private fun generateEmail(firstName: String, lastName: String): Email {
@@ -633,13 +645,13 @@ class DemoDataSeeder(
         return Email("${firstNameSafe}${lastNameSafe}$randomNum@${domains.random()}")
     }
 
-    private fun generatePhoneNumber(): schema.model.PhoneNumber {
+    private fun generatePhoneNumber(): PhoneNumber {
         // Generate a random Saudi mobile number (E.164 format: +9665XXXXXXXX)
         val countryCode = "+966"
         val secondDigit = random.nextInt(0, 10)
         val rest = random.nextInt(1000000, 9999999)
         val number = "${countryCode}5${secondDigit}${rest}"
-        return schema.model.PhoneNumber(number)
+        return PhoneNumber(number)
     }
 
     private fun generateDateOfBirth(): LocalDate {
@@ -647,6 +659,68 @@ class DemoDataSeeder(
         val month = random.nextInt(1, 13)
         val day = random.nextInt(1, 29) // Safe day range for all months
         return LocalDate(year, month, day)
+    }
+
+    private suspend fun createRecipientGroups(templates: List<Template>): List<TemplateRecipientGroup> {
+        println("👥 Creating recipient groups...")
+        val createdGroups = mutableListOf<TemplateRecipientGroup>()
+
+        if (templates.isEmpty()) {
+            println("   ⚠️ No templates available to create recipient groups.")
+            return createdGroups
+        }
+
+        templates.forEach { template ->
+            // Create 2 groups per template
+            repeat(2) { i ->
+                val groupInput = CreateRecipientGroupInput(
+                    templateId = template.id,
+                    name = "مجموعة ${template.name} ${i + 1}",
+                    description = "وصف لمجموعة ${template.name} ${i + 1}",
+                    date = currentTime
+                )
+                val createdGroup = repositoryManager.recipientGroupRepository.create(groupInput)
+                createdGroups.add(createdGroup)
+            }
+        }
+
+        println("   ✅ Created ${createdGroups.size} recipient groups.")
+        return createdGroups
+    }
+
+    private suspend fun createRecipientGroupItems(
+        groups: List<TemplateRecipientGroup>,
+        students: List<Student>
+    ): List<TemplateRecipientGroupItem> {
+        println("👥 Creating recipient group items...")
+        val createdItems = mutableListOf<TemplateRecipientGroupItem>()
+
+        if (groups.isEmpty() || students.isEmpty()) {
+            println("   ⚠️ No groups or students available to create recipient group items.")
+            return createdItems
+        }
+
+        groups.forEach { group ->
+            // Add a random number of students (10 to 50) to this group
+            val studentCount = random.nextInt(10, 51)
+            val shuffledStudents = students.shuffled()
+
+            shuffledStudents.take(studentCount).forEach { student ->
+                val itemInput = AddStudentToRecipientGroupInput(
+                    groupId = group.id,
+                    studentId = student.id
+                )
+                try {
+                    val createdItem = repositoryManager.recipientGroupItemRepository.addStudent(itemInput)
+                    createdItems.add(createdItem)
+                } catch (_: Exception) {
+                    // Ignore unique constraint violations if a student is already in the group
+                }
+            }
+        }
+
+        println("   ✅ Created ${createdItems.size} recipient group items.")
+        return createdItems
     }
 }
 
