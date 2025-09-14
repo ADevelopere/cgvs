@@ -1,5 +1,7 @@
 package schema.dataloaders
 
+
+
 import com.expediagroup.graphql.dataloader.KotlinDataLoader
 import com.expediagroup.graphql.generator.extensions.get
 import graphql.GraphQLContext
@@ -10,16 +12,16 @@ import org.dataloader.DataLoaderFactory
 import org.dataloader.DataLoaderOptions
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import schema.model.TemplateRecipientGroup
-import services.TemplateRecipientGroupService
+import schema.model.TemplateRecipientGroupItem
+import services.TemplateRecipientGroupItemService
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.getValue
 
-val TemplateRecipientGroupsDataLoader: KotlinDataLoader<Int, List<TemplateRecipientGroup>> =
-    object : KotlinDataLoader<Int, List<TemplateRecipientGroup>>, KoinComponent {
-        override val dataLoaderName = "TemplateVariablesDataLoader"
-        private val service: TemplateRecipientGroupService by inject()
-        override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<TemplateRecipientGroup>> =
+val TemplateRecipientGroupItemsDataLoader: KotlinDataLoader<Int, List<TemplateRecipientGroupItem>> =
+    object : KotlinDataLoader<Int, List<TemplateRecipientGroupItem>>, KoinComponent {
+        override val dataLoaderName = "TemplateRecipientGroupItemsDataLoader"
+        private val service: TemplateRecipientGroupItemService by inject()
+        override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<Int, List<TemplateRecipientGroupItem>> =
             DataLoaderFactory.newDataLoader(
                 { templateIds, batchLoaderEnvironment ->
                     val coroutineScope =
@@ -29,7 +31,7 @@ val TemplateRecipientGroupsDataLoader: KotlinDataLoader<Int, List<TemplateRecipi
                     coroutineScope.future {
                         // For each templateId, fetch its variables
                         templateIds.map { templateId ->
-                            service.findAllByTemplateId(templateId)
+                            service.findAllStudentsByGroupId(templateId)
                         }
                     }
                 },
