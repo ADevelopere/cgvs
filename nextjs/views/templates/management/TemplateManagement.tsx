@@ -19,6 +19,7 @@ import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import { TemplateVariableManagementProvider } from "@/contexts/templateVariable/TemplateVariableManagementContext";
 import { useDashboardLayout } from "@/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/contexts/adminLayout.types";
+import RecipientTab from "./recipient/RecipientTab";
 
 const TemplateManagement: React.FC = () => {
     const theme = useTheme();
@@ -109,19 +110,7 @@ const TemplateManagement: React.FC = () => {
                             <TemplateVariableManagement />
                         </TabPanel>
                         <TabPanel value="recipients">
-                            <Box
-                                sx={{
-                                    p: 2,
-                                    width: "100%",
-                                    height: "100%",
-
-                                    borderColor: "red",
-                                }}
-                                id="RecipientsTab-management"
-                            >
-                                {/* Variables List will go here */}
-                                <h1>RecipientsTab</h1>
-                            </Box>
+                            <RecipientTab />
                             {/* <RecipientsTab /> */}
                         </TabPanel>
                         {/* <TabPanel value="editor">
