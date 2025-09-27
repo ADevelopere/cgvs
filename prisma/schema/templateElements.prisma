@@ -12,7 +12,7 @@ model TemplateElements {
     qrCodeElement      TemplateQrCodeElements?     @relation("QrCodeElement")
     id                 Int                         @id @default(autoincrement())
     templateId         Int
-    template           Templates                   @relation(fields: [templateId], references: [id])
+    template           Template                    @relation(fields: [templateId], references: [id])
     type               ElementType
     xCoordinate        Float
     yCoordinate        Float
