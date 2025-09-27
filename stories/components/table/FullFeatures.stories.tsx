@@ -171,11 +171,11 @@ const Template: StoryFn<FullFeaturesStoryProps> = (
                 const aValue =
                     typeof columnDef.accessor === "function"
                         ? columnDef.accessor(a)
-                        : a[columnDef.accessor as string];
+                        : a[columnDef.accessor];
                 const bValue =
                     typeof columnDef.accessor === "function"
                         ? columnDef.accessor(b)
-                        : b[columnDef.accessor as string];
+                        : b[columnDef.accessor];
 
                 let comparison = 0;
 

@@ -1,0 +1,27 @@
+model StorageFiles {
+    id          BigInt  @id @default(autoincrement())
+    path        String  @unique @db.VarChar(1024)
+    isProtected Boolean @default(false)
+}
+
+model FileUsages {
+    id             BigInt   @id @default(autoincrement())
+    filePath       String   @db.VarChar(1024)
+    usageType      String   @db.VarChar(100)
+    referenceId    BigInt
+    referenceTable String   @db.VarChar(100)
+    created        DateTime
+}
+
+model StorageDirectories {
+    id                 BigInt  @id @default(autoincrement())
+    path               String  @unique @db.VarChar(1024)
+    allowUploads       Boolean @default(true)
+    allowDelete        Boolean @default(true)
+    allowMove          Boolean @default(true)
+    allowCreateSubDirs Boolean @default(true)
+    allowDeleteFiles   Boolean @default(true)
+    allowMoveFiles     Boolean @default(true)
+    isProtected        Boolean @default(false)
+    protectChildren    Boolean @default(false)
+}

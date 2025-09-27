@@ -1,0 +1,81 @@
+enum ElementType {
+    static_text
+    data_text
+    data_date
+    image
+    qr_code
+}
+
+model TemplateElements {
+    dataDateElement    TemplateDataDateElements?   @relation("DataDateElement")
+    imageElement       TemplateImageElements?      @relation("ImageElement")
+    qrCodeElement      TemplateQrCodeElements?     @relation("QrCodeElement")
+    id                 Int                         @id @default(autoincrement())
+    templateId         Int
+    template           Templates                   @relation(fields: [templateId], references: [id])
+    type               ElementType
+    xCoordinate        Float
+    yCoordinate        Float
+    fontSize           Int?
+    color              String?                     @db.VarChar(20)
+    alignment          String?                     @db.VarChar(20)
+    fontFamily         String?                     @db.VarChar(100)
+    languageConstraint String?                     @db.VarChar(10)
+    createdAt          DateTime
+    updatedAt          DateTime
+    staticTextElement  TemplateStaticTextElements? @relation("StaticTextElement")
+    dataTextElement    TemplateDataTextElements?   @relation("DataTextElement")
+}
+
+model TemplateStaticTextElements {
+    elementId Int              @id
+    element   TemplateElements @relation("StaticTextElement", fields: [elementId], references: [id])
+    content   String // text
+    createdAt DateTime
+    updatedAt DateTime
+}
+
+enum TemplateElementSourceType {
+    student
+    variable
+    certificate
+
+    @@map("SourceType")
+}
+
+model TemplateDataTextElements {
+    elementId   Int                       @id
+    element     TemplateElements          @relation("DataTextElement", fields: [elementId], references: [id])
+    sourceType  TemplateElementSourceType
+    sourceField String                    @db.VarChar(100)
+    createdAt   DateTime
+    updatedAt   DateTime
+}
+
+model TemplateQrCodeElements {
+    elementId Int              @id
+    element   TemplateElements @relation("QrCodeElement", fields: [elementId], references: [id])
+    size      Int?
+    createdAt DateTime
+    updatedAt DateTime
+}
+
+model TemplateImageElements {
+    elementId Int              @id
+    element   TemplateElements @relation("ImageElement", fields: [elementId], references: [id])
+    imageUrl  String           @db.VarChar(500)
+    width     Int?
+    height    Int?
+    createdAt DateTime
+    updatedAt DateTime
+}
+
+model TemplateDataDateElements {
+    elementId   Int                       @id
+    element     TemplateElements          @relation("DataDateElement", fields: [elementId], references: [id])
+    sourceType  TemplateElementSourceType
+    sourceField String                    @db.VarChar(100)
+    dateFormat  String?                   @db.VarChar(50)
+    createdAt   DateTime
+    updatedAt   DateTime
+}

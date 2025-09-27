@@ -64,3 +64,6 @@ out/
 
 .kotlin/
 /graphql/generated/
+
+/generated/
+/ktorOld/
