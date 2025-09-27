@@ -1,0 +1,31 @@
+model Sessions {
+  id           String  @id @db.VarChar(255)
+  userId       Int?
+  ipAddress    String? @db.VarChar(45)
+  userAgent    String?
+  payload      String
+  lastActivity Int
+  user         Users?  @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "sessions_user_id_index")
+  @@index([lastActivity], name: "sessions_last_activity_index")
+}
+
+model PasswordResetTokens {
+  email     String    @id @db.VarChar(255)
+  token     String    @db.VarChar(255)
+  createdAt DateTime?
+}
+
+model Users {
+  sessions        Sessions[]
+  id              Int        @id @default(autoincrement())
+  name            String     @db.VarChar(255)
+  email           String     @unique @db.VarChar(255)
+  emailVerifiedAt DateTime?
+  password        String     @db.VarChar(255)
+  isAdmin         Boolean    @default(false)
+  rememberToken   String?    @db.VarChar(100)
+  createdAt       DateTime
+  updatedAt       DateTime
+}

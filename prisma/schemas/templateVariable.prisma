@@ -1,0 +1,61 @@
+enum TemplateVariableType {
+    TEXT
+    NUMBER
+    DATE
+    SELECT
+}
+
+model TemplateVariableBase {
+    recipientGroupItemValues RecipientGroupItemVariableValues[]
+    id                       Int                                @id @default(autoincrement())
+    templateId               Int
+    name                     String                             @db.VarChar(255)
+    description              String?
+    type                     TemplateVariableType
+    required                 Boolean                            @default(false)
+    order                    Int
+    createdAt                DateTime
+    updatedAt                DateTime
+    template                 Templates                          @relation("TemplateToVariable", fields: [templateId], references: [id])
+    TextTemplateVariables    TextTemplateVariables?
+    NumberTemplateVariables  NumberTemplateVariables?
+    DateTemplateVariables    DateTemplateVariables?
+    SelectTemplateVariables  SelectTemplateVariables?
+
+    @@unique([templateId, name])
+}
+
+model TextTemplateVariables {
+    id           Int                  @id
+    minLength    Int?
+    maxLength    Int?
+    pattern      String?              @db.VarChar(255)
+    previewValue String?              @db.VarChar(255)
+    base         TemplateVariableBase @relation(fields: [id], references: [id])
+}
+
+model NumberTemplateVariables {
+    id            Int                  @id
+    minValue      Decimal?
+    maxValue      Decimal?
+    decimalPlaces Int?
+    previewValue  Decimal?
+    base          TemplateVariableBase @relation(fields: [id], references: [id])
+}
+
+model DateTemplateVariables {
+    id           Int                  @id
+    minDate      DateTime?
+    maxDate      DateTime?
+    format       String?              @db.VarChar(50)
+    previewValue DateTime?
+    base         TemplateVariableBase @relation(fields: [id], references: [id])
+}
+
+model SelectTemplateVariables {
+    id           Int                  @id
+    options      String? // JSON array
+    multiple     Boolean?
+    previewValue String?              @db.VarChar(255)
+    base         TemplateVariableBase @relation(fields: [id], references: [id])
+}

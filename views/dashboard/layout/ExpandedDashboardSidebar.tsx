@@ -197,7 +197,7 @@ const RenderNavItem: React.FC<{
 
     return (
         <NavItem
-            item={item as NavigationPageItem}
+            item={item}
             level={level}
             pathname={pathname}
         />

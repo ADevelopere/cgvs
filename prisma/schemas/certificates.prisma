@@ -1,0 +1,16 @@
+model Certificates {
+  id                       Int                     @id @default(autoincrement())
+  templateId               Int
+  studentId                Int
+  templateRecipientGroupId Int
+  releaseDate              DateTime
+  verificationCode         String                  @unique @db.VarChar(255)
+  deletedAt                DateTime?
+  createdAt                DateTime
+  updatedAt                DateTime
+  template                 Templates               @relation(fields: [templateId], references: [id])
+  student                  Students                @relation(fields: [studentId], references: [id])
+  templateRecipientGroup   TemplateRecipientGroups @relation(fields: [templateRecipientGroupId], references: [id])
+
+  @@unique([templateId, studentId], name: "unique_student_template_certificate")
+}
