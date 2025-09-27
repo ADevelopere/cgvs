@@ -1,10 +1,10 @@
-model StorageFiles {
+model StorageFile {
     id          BigInt  @id @default(autoincrement())
     path        String  @unique @db.VarChar(1024)
     isProtected Boolean @default(false)
 }
 
-model FileUsages {
+model FileUsage {
     id             BigInt   @id @default(autoincrement())
     filePath       String   @db.VarChar(1024)
     usageType      String   @db.VarChar(100)
@@ -13,7 +13,7 @@ model FileUsages {
     created        DateTime
 }
 
-model StorageDirectories {
+model StorageDirectory {
     id                 BigInt  @id @default(autoincrement())
     path               String  @unique @db.VarChar(1024)
     allowUploads       Boolean @default(true)

@@ -12,7 +12,196 @@ import kotlin.random.Random
 /**
  * Demo Data Seeder for Ktor CGVS Application
  * This script creates sample data for testing and demonstration purposes
+ */ * Routes variable creation based on the template's category.
  */
+async function createTemplateVariables(
+    template: Template,
+    category: TemplateCategory,
+) {
+    const baseVariables = [
+        {
+            templateId: template.id,
+            type: TemplateVariableType.TEXT,
+            name: "اسم الطالب",
+            description: "الاسم الكامل للطالب",
+            required: true,
+            order: 1,
+            textPreviewValue: "محمد أحمد العتيبي",
+            minLength: 3,
+            maxLength: 100,
+        },
+        {
+            templateId: template.id,
+            type: TemplateVariableType.DATE,
+            name: "تاريخ الإصدار",
+            description: "تاريخ إصدار الشهادة",
+            required: true,
+            order: 2,
+            datePreviewValue: new Date(),
+            format: "YYYY-MM-DD",
+        },
+        {
+            templateId: template.id,
+            type: TemplateVariableType.TEXT,
+            name: "الرقم المرجعي",
+            description: "الرقم المرجعي للشهادة",
+            required: true,
+            order: 3,
+            textPreviewValue: "CERT2024",
+            minLength: 8,
+            maxLength: 8,
+            pattern: "^[A-Z0-9]{8}$",
+        },
+    ];
+
+    let categoryVariables: any[] = [];
+    switch (category.name) {
+        case "الشهادات الأكاديمية":
+            categoryVariables = [
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.TEXT,
+                    name: "التخصص",
+                    description: "التخصص الأكاديمي",
+                    required: true,
+                    order: 4,
+                    textPreviewValue: "علوم الحاسب",
+                    minLength: 3,
+                    maxLength: 100,
+                },
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.NUMBER,
+                    name: "المعدل",
+                    description: "المعدل التراكمي",
+                    required: true,
+                    order: 5,
+                    numberPreviewValue: 4.5,
+                    minValue: 0.0,
+                    maxValue: 5.0,
+                    decimalPlaces: 2,
+                },
+            ];
+            break;
+        case "الشهادات المهنية":
+            categoryVariables = [
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.SELECT,
+                    name: "المجال",
+                    description: "مجال التدريب",
+                    required: true,
+                    order: 4,
+                    selectPreviewValue: "تقنية المعلومات",
+                    options: [
+                        "تقنية المعلومات",
+                        "إدارة الأعمال",
+                        "الموارد البشرية",
+                        "التسويق الرقمي",
+                        "إدارة المشاريع",
+                    ],
+                    multiple: false,
+                },
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.NUMBER,
+                    name: "مدة التدريب",
+                    description: "عدد ساعات التدريب",
+                    required: true,
+                    order: 5,
+                    numberPreviewValue: 40,
+                    minValue: 1,
+                    maxValue: 1000,
+                    decimalPlaces: 0,
+                },
+            ];
+            break;
+        case "شهادات الحضور":
+            categoryVariables = [
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.TEXT,
+                    name: "اسم الفعالية",
+                    description: "اسم المؤتمر أو ورشة العمل",
+                    required: true,
+                    order: 4,
+                    textPreviewValue: "مؤتمر التقنية السنوي",
+                    minLength: 5,
+                    maxLength: 200,
+                },
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.TEXT,
+                    name: "مكان الانعقاد",
+                    description: "مكان انعقاد الفعالية",
+                    required: true,
+                    order: 5,
+                    textPreviewValue: "الرياض",
+                    minLength: 3,
+                    maxLength: 100,
+                },
+            ];
+            break;
+        case "شهادات التقدير":
+            categoryVariables = [
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.TEXT,
+                    name: "سبب التقدير",
+                    description: "سبب منح شهادة التقدير",
+                    required: true,
+                    order: 4,
+                    textPreviewValue: "التفوق الأكاديمي والإنجاز المتميز",
+                    minLength: 10,
+                    maxLength: 500,
+                },
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.SELECT,
+                    name: "المستوى",
+                    description: "مستوى التقدير",
+                    required: true,
+                    order: 5,
+                    selectPreviewValue: "ممتاز",
+                    options: ["ممتاز", "جيد جداً", "جيد", "مقبول"],
+                    multiple: false,
+                },
+            ];
+            break;
+        case "الشهادات التطوعية":
+            categoryVariables = [
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.TEXT,
+                    name: "نوع العمل التطوعي",
+                    description: "وصف العمل التطوعي",
+                    required: true,
+                    order: 4,
+                    textPreviewValue: "تطوع في الأعمال الخيرية",
+                    minLength: 5,
+                    maxLength: 200,
+                },
+                {
+                    templateId: template.id,
+                    type: TemplateVariableType.NUMBER,
+                    name: "عدد ساعات التطوع",
+                    description: "إجمالي ساعات العمل التطوعي",
+                    required: true,
+                    order: 5,
+                    numberPreviewValue: 100,
+                    minValue: 1,
+                    maxValue: 1000,
+                    decimalPlaces: 0,
+                },
+            ];
+            break;
+    }
+
+    await prisma.templateVariable.createMany({
+        data: [...baseVariables, ...categoryVariables],
+    });
+}
+
 class DemoDataSeeder(
     private val repositoryManager: RepositoryManager,
     private val fileInitializationService: FileInitializationService

@@ -6,7 +6,7 @@ enum TemplateVariableType {
 }
 
 model TemplateVariableBase {
-    recipientGroupItemValues RecipientGroupItemVariableValues[]
+    recipientGroupItemValues RecipientGroupItemVariableValue[]
     id                       Int                                @id @default(autoincrement())
     templateId               Int
     name                     String                             @db.VarChar(255)
@@ -16,16 +16,16 @@ model TemplateVariableBase {
     order                    Int
     createdAt                DateTime
     updatedAt                DateTime
-    template                 Templates                          @relation("TemplateToVariable", fields: [templateId], references: [id])
-    TextTemplateVariables    TextTemplateVariables?
-    NumberTemplateVariables  NumberTemplateVariables?
-    DateTemplateVariables    DateTemplateVariables?
-    SelectTemplateVariables  SelectTemplateVariables?
+    template                 Template                          @relation("TemplateToVariable", fields: [templateId], references: [id])
+    TextTemplateVariable     TextTemplateVariable?
+    NumberTemplateVariable   NumberTemplateVariable?
+    DateTemplateVariable     DateTemplateVariable?
+    SelectTemplateVariable   SelectTemplateVariable?
 
     @@unique([templateId, name])
 }
 
-model TextTemplateVariables {
+model TextTemplateVariable {
     id           Int                  @id
     minLength    Int?
     maxLength    Int?
@@ -34,7 +34,7 @@ model TextTemplateVariables {
     base         TemplateVariableBase @relation(fields: [id], references: [id])
 }
 
-model NumberTemplateVariables {
+model NumberTemplateVariable {
     id            Int                  @id
     minValue      Decimal?
     maxValue      Decimal?
@@ -43,7 +43,7 @@ model NumberTemplateVariables {
     base          TemplateVariableBase @relation(fields: [id], references: [id])
 }
 
-model DateTemplateVariables {
+model DateTemplateVariable {
     id           Int                  @id
     minDate      DateTime?
     maxDate      DateTime?
@@ -52,9 +52,9 @@ model DateTemplateVariables {
     base         TemplateVariableBase @relation(fields: [id], references: [id])
 }
 
-model SelectTemplateVariables {
+model SelectTemplateVariable {
     id           Int                  @id
-    options      String? // JSON array
+    options      Json? // JSON array
     multiple     Boolean?
     previewValue String?              @db.VarChar(255)
     base         TemplateVariableBase @relation(fields: [id], references: [id])

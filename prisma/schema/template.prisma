@@ -1,0 +1,49 @@
+enum TemplateConfigKey {
+    MAX_BACKGROUND_SIZE
+    ALLOWED_FILE_TYPES
+}
+
+model TemplateConfigs {
+    key   TemplateConfigKey @id @unique
+    value String
+}
+
+enum CategorySpecialType {
+    Main
+    Suspension
+}
+
+model TemplateCategory {
+    id                     Int                  @id @default(autoincrement())
+    name                   String               @db.VarChar(255)
+    description            String?
+    parentCategoryId       Int?
+    order                  Int?
+    categorySpecialType    CategorySpecialType?
+    createdAt              DateTime
+    updatedAt              DateTime
+    parentCategory         TemplateCategory?    @relation("ParentCategory", fields: [parentCategoryId], references: [id])
+    subCategories          TemplateCategory[]   @relation("ParentCategory")
+    templates              Template[]           @relation("CategoryTemplates")
+    preSuspensionTemplates Template[]           @relation("PreSuspensionCategoryTemplates")
+
+    @@unique([categorySpecialType])
+}
+
+model Template {
+    certificates            Certificate[]
+    recipientGroups         TemplateRecipientGroup[]
+    id                      Int                      @id @default(autoincrement())
+    name                    String                   @db.VarChar(255)
+    description             String?
+    imageFileId             BigInt?
+    categoryId              Int
+    category                TemplateCategory         @relation("CategoryTemplates", fields: [categoryId], references: [id])
+    order                   Int
+    preSuspensionCategoryId Int?
+    preSuspensionCategory   TemplateCategory?        @relation("PreSuspensionCategoryTemplates", fields: [preSuspensionCategoryId], references: [id])
+    createdAt               DateTime
+    updatedAt               DateTime
+    templateVariables       TemplateVariableBase[]   @relation("TemplateToVariable")
+    elements                TemplateElements[]
+}

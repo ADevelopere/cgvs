@@ -6,7 +6,7 @@ export default function Page() {
     return (
         <div className="apollo-sandbox-wrapper">
             <ApolloSandbox
-                initialEndpoint="http://localhost:8080/graphql"
+                initialEndpoint="http://localhost:3000/api/graphql"
                 className={"apollo-sandbox"}
             />
         </div>

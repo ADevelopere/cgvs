@@ -1,4 +1,4 @@
-model Sessions {
+model Session {
   id           String  @id @db.VarChar(255)
   userId       Int?
   ipAddress    String? @db.VarChar(45)
@@ -18,7 +18,7 @@ model PasswordResetTokens {
 }
 
 model Users {
-  sessions        Sessions[]
+  sessions        Session[]
   id              Int        @id @default(autoincrement())
   name            String     @db.VarChar(255)
   email           String     @unique @db.VarChar(255)

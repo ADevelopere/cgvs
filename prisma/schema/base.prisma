@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider    = "prisma-pothos-types"
+  output      = "../graphql/generated/pothos-types.ts"
+  // Enable prismaUtils feature
+  prismaUtils = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
