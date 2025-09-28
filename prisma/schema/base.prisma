@@ -1,12 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
-generator pothos {
-  provider    = "prisma-pothos-types"
-  output      = "../graphql/generated/pothos-types.ts"
-  // Enable prismaUtils feature
-  prismaUtils = true
+generator typegraphql {
+  provider            = "typegraphql-prisma"
+  output              = "../../graphql/generated/type-graphql"
+  formatGeneratedCode = "prettier"
 }
 
 datasource db {

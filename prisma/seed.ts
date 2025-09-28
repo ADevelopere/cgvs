@@ -9,7 +9,7 @@ import {
     TemplateRecipientGroup,
     TemplateVariableType,
     type Prisma,
-} from "@prisma/client/index.js";
+} from "@prisma/client";
 
 import * as bcrypt from "bcryptjs";
 import prismaClient from "./client";
