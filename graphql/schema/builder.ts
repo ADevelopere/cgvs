@@ -1,13 +1,27 @@
-import SchemaBuilder from "@pothos/core";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import PrismaUtils from "@pothos/plugin-prisma-utils";
 import type PrismaTypes from "@/prisma/generated/pothos-types";
 import prismaClient from "@/prisma/prismaClient";
 import RelayPlugin from "@pothos/plugin-relay";
 import ErrorsPlugin from "@pothos/plugin-errors";
-
+import SchemaBuilder from '@pothos/core';
 import { DateResolver, DateTimeResolver } from "graphql-scalars";
 import logger from "@/utils/logger";
+
+import { drizzle } from "drizzle-orm/prisma/pg";
+// // Import the appropriate getTableConfig for your dialect
+import { getTableConfig } from 'drizzle-orm/sqlite-core';
+import DrizzlePlugin from '@pothos/plugin-drizzle';
+import { sessionsRelations } from "@/db/schema/users";
+
+// import { relations } from './db/relations';
+const db = drizzle(client, { sessionsRelations });
+type DrizzleRelations = typeof relations
+export interface PothosTypes {
+  DrizzleRelations: DrizzleRelations;
+}
+
+
 
 // This is the default location for the generator, but this can be
 // customized as described above.
