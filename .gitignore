@@ -66,5 +66,5 @@ out/
 /graphql/generated/
 
 /generated/
-/ktorOld/
+/prisma/generated/
 /.next/

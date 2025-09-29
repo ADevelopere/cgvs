@@ -12,7 +12,7 @@ import {
 } from "@prisma/client";
 
 import * as bcrypt from "bcryptjs";
-import prismaClient from "./client";
+import prismaClient from "./export default prismaClient;";
 
 const now = new Date();
 
