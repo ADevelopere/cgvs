@@ -4,6 +4,11 @@ generator client {
   output = "../generated/client"
 }
 
+generator drizzle {
+  provider = "drizzle-prisma-generator"
+  output   = "../generated/drizzle"
+}
+
 generator pothos {
   provider    = "prisma-pothos-types"
   clientOutput      = "../generated/client"

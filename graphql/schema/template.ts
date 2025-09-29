@@ -1,7 +1,4 @@
-import {
-    resolveCursorConnection,
-    ResolveCursorConnectionArgs,
-} from "@pothos/plugin-relay";
+import { resolveOffsetConnection } from "@pothos/plugin-relay";
 import prismaClient from "@/prisma/prismaClient";
 import schemaBuilder from "./builder";
 
@@ -49,32 +46,27 @@ schemaBuilder.queryFields((t) => ({
 
     templates: t.connection({
         type: Template,
-        resolve: (_, args) =>
-            resolveCursorConnection(
+        resolve: async (args) => {
+            // Get total count for proper pagination support
+            const totalCount = await prismaClient.template.count();
+
+            return resolveOffsetConnection(
                 {
                     args,
-                    toCursor: (template) => template.createdAt.toISOString(),
+                    defaultSize: 20, // Default page size
+                    maxSize: 100, // Maximum allowed page size
+                    totalCount, // Required to support `last` without `before`
                 },
-                // Manually defining the arg type here is required
-                // so that typescript can correctly infer the return value
-                ({
-                    before,
-                    after,
-                    limit,
-                    inverted,
-                }: ResolveCursorConnectionArgs) =>
-                    prismaClient.template.findMany({
+                ({ limit, offset }) => {
+                    return prismaClient.template.findMany({
+                        skip: offset,
                         take: limit,
-                        where: {
-                            createdAt: {
-                                lt: before,
-                                gt: after,
-                            },
-                        },
                         orderBy: {
-                            createdAt: inverted ? "desc" : "asc",
+                            createdAt: "desc",
                         },
-                    }),
-            ),
+                    });
+                },
+            );
+        },
     }),
 }));
