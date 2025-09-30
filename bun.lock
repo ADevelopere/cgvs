@@ -18,9 +18,8 @@
         "@pothos/plugin-add-graphql": "^4.2.4",
         "@pothos/plugin-drizzle": "^0.13.0",
         "@pothos/plugin-errors": "^4.5.0",
-        "@pothos/plugin-prisma": "^4.11.0",
-        "@pothos/plugin-prisma-utils": "^1.3.3",
-        "@pothos/plugin-relay": "^4.6.2",
+        "@pothos/plugin-scope-auth": "^4.1.6",
+        "@pothos/plugin-simple-objects": "^4.1.3",
         "@toolpad/core": "^0.16.0",
         "@types/moment-hijri": "^2.1.4",
         "@types/stylis": "^4.2.7",
@@ -1579,8 +1578,6 @@
     "graphql-config": ["graphql-config@5.1.5", "", { "dependencies": { "@graphql-tools/graphql-file-loader": "^8.0.0", "@graphql-tools/json-file-loader": "^8.0.0", "@graphql-tools/load": "^8.1.0", "@graphql-tools/merge": "^9.0.0", "@graphql-tools/url-loader": "^8.0.0", "@graphql-tools/utils": "^10.0.0", "cosmiconfig": "^8.1.0", "jiti": "^2.0.0", "minimatch": "^9.0.5", "string-env-interpolation": "^1.0.1", "tslib": "^2.4.0" }, "peerDependencies": { "cosmiconfig-toml-loader": "^1.0.0", "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["cosmiconfig-toml-loader"] }, "sha512-mG2LL1HccpU8qg5ajLROgdsBzx/o2M6kgI3uAmoaXiSH9PCUbtIyLomLqUtCFaAeG2YCFsl0M5cfQ9rKmDoMVA=="],
 
     "graphql-depth-limit": ["graphql-depth-limit@1.1.0", "", { "dependencies": { "arrify": "^1.0.1" }, "peerDependencies": { "graphql": "*" } }, "sha512-+3B2BaG8qQ8E18kzk9yiSdAa75i/hnnOwgSeAxVJctGQPvmeiLtqKOYF6HETCyRjiF7Xfsyal0HbLlxCQkgkrw=="],
-
-    "graphql-relay": ["graphql-relay@0.10.2", "", { "peerDependencies": { "graphql": "^16.2.0" } }, "sha512-abybva1hmlNt7Y9pMpAzHuFnM2Mme/a2Usd8S4X27fNteLGRAECMYfhmsrpZFvGn3BhmBZugMXYW/Mesv3P1Kw=="],
 
     "graphql-scalars": ["graphql-scalars@1.24.2", "", { "dependencies": { "tslib": "^2.5.0" }, "peerDependencies": { "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-FoZ11yxIauEnH0E5rCUkhDXHVn/A6BBfovJdimRZCQlFCl+h7aVvarKmI15zG4VtQunmCDdqdtNs6ixThy3uAg=="],
 
