@@ -11,7 +11,7 @@ import {
     pgEnum,
     uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations } from "drizzle-orm/_relations";
 import { templates } from ".";
 
 export const templateVariableTypeEnum = pgEnum("TemplateVariableType", [

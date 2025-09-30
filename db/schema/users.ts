@@ -8,7 +8,7 @@ import {
     varchar,
     index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations } from "drizzle-orm/_relations";
 
 export const users = pgTable("Users", {
     id: serial("id").primaryKey(),

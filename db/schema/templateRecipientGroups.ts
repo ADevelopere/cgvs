@@ -8,9 +8,9 @@ import {
     uniqueIndex,
     index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations } from "drizzle-orm/_relations";
 import { templates } from "./templates";
-import { certificates, students } from ".";
+import { certificates, students, templateVariableBases } from ".";
 
 export const templateRecipientGroups = pgTable("TemplateRecipientGroup", {
     id: serial("id").primaryKey(),
