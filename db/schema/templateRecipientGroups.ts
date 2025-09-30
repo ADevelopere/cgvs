@@ -87,3 +87,19 @@ export const templateRecipientGroupItemsRelations = relations(
         variableValues: many(recipientGroupItemVariableValues),
     }),
 );
+
+export const recipientGroupItemVariableValuesRelations = relations(
+    recipientGroupItemVariableValues,
+    ({ one }) => ({
+        templateRecipientGroupItem: one(templateRecipientGroupItems, {
+            fields: [
+                recipientGroupItemVariableValues.templateRecipientGroupItemId,
+            ],
+            references: [templateRecipientGroupItems.id],
+        }),
+        templateVariable: one(templateVariableBases, {
+            fields: [recipientGroupItemVariableValues.templateVariableId],
+            references: [templateVariableBases.id],
+        }),
+    }),
+);
