@@ -6,15 +6,12 @@ import {
     varchar,
     uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 import {
     templates,
     students,
-    recipientGroupItemVariableValues,
-    templateRecipientGroupItems,
     templateRecipientGroups,
-    templateVariableBases,
 } from ".";
+import { relations } from "drizzle-orm/_relations";
 
 export const certificates = pgTable(
     "Certificate",

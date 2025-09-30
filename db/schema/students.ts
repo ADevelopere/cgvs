@@ -5,7 +5,7 @@ import {
     timestamp,
     pgEnum,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations } from "drizzle-orm/_relations";
 import { certificates, templateRecipientGroupItems } from ".";
 
 export const genderEnum = pgEnum("Gender", ["MALE", "FEMALE", "OTHER"]);
