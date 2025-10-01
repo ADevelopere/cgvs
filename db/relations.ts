@@ -39,16 +39,16 @@ export const relations = defineRelations(schema, (r) => ({
     //     }),
     // },
     templates: {
-        category: r.one.TemplateCategory({
+        category: r.one.templateCategories({
             from: r.templates.categoryId,
-            to: r.TemplateCategory.id,
+            to: r.templateCategories.id,
             alias: "category",
         }),
-        // preSuspensionCategory: r.one.TemplateCategory({
-        //     from: r.templates.preSuspensionCategoryId,
-        //     to: r.TemplateCategory.id,
-        //     alias: "preSuspensionCategory",
-        // }),
+        preSuspensionCategory: r.one.templateCategories({
+            from: r.templates.preSuspensionCategoryId,
+            to: r.templateCategories.id,
+            alias: "preSuspensionCategory",
+        }),
         // certificates: r.many.certificates({
         //     from: r.templates.id,
         //     to: r.certificates.templateId,
@@ -66,22 +66,27 @@ export const relations = defineRelations(schema, (r) => ({
         //     to: r.templateElements.templateId,
         // }),
     },
-    // templateCategories: {
-    //     parentCategory: r.one.TemplateCategory({
-    //         from: r.TemplateCategory.parentCategoryId,
-    //         to: r.TemplateCategory.id,
-    //         alias: "parentCategory",
-    //     }),
-    //     subCategories: r.many.TemplateCategory({
-    //         from: r.TemplateCategory.id,
-    //         to: r.TemplateCategory.parentCategoryId,
-    //         alias: "subCategories",
-    //     }),
-    //     templates: r.many.templates(),
-    //     preSuspensionTemplates: r.many.templates({
-    //         alias: "preSuspensionTemplates",
-    //     }),
-    // },
+    templateCategories: {
+        parentCategory: r.one.templateCategories({
+            from: r.templateCategories.parentCategoryId,
+            to: r.templateCategories.id,
+            alias: "parentCategory",
+        }),
+        subCategories: r.many.templateCategories({
+            from: r.templateCategories.id,
+            to: r.templateCategories.parentCategoryId,
+            alias: "subCategories",
+        }),
+        templates: r.many.templates({
+            from: r.templateCategories.id,
+            to: r.templates.categoryId,
+        }),
+        preSuspensionTemplates: r.many.templates({
+            from: r.templateCategories.id,
+            to: r.templates.preSuspensionCategoryId,
+            alias: "preSuspensionTemplates",
+        }),
+    },
     // templateRecipientGroups: {
     //     template: r.one.templates({
     //         from: r.templateRecipientGroups.templateId,

@@ -15,7 +15,7 @@ export const categorySpecialTypeEnum = pgEnum("CategorySpecialType", [
     "Suspension",
 ]);
 
-export const TemplateCategory = pgTable(
+export const templateCategories = pgTable(
     "TemplateCategory",
     {
         id: serial("id").primaryKey(),
@@ -23,13 +23,13 @@ export const TemplateCategory = pgTable(
         description: text("description"),
         parentCategoryId: integer("parentCategoryId"),
         order: integer("order"),
-        categorySpecialType: categorySpecialTypeEnum("categorySpecialType"),
+        specialType: categorySpecialTypeEnum("specialType"),
         createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
         updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
     },
     (table) => [
-        uniqueIndex("TemplateCategory_categorySpecialType_key").on(
-            table.categorySpecialType,
+        uniqueIndex("TemplateCategory_specialType_key").on(
+            table.specialType,
         ),
     ],
 );
