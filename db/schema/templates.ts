@@ -10,7 +10,7 @@ import {
     uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const templatecategorySpecialTypeEnum = pgEnum("CategorySpecialType", [
+export const templatecategorySpecialTypeEnum = pgEnum("category_special_type", [
     "Main",
     "Suspension",
 ]);
@@ -21,37 +21,35 @@ export const templateCategories = pgTable(
         id: serial("id").primaryKey(),
         name: varchar("name", { length: 255 }).notNull(),
         description: text("description"),
-        parentCategoryId: integer("parentCategoryId"),
+        parentCategoryId: integer("parent_category_id"),
         order: integer("order"),
-        specialType: templatecategorySpecialTypeEnum("specialType"),
-        createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-        updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+        specialType: templatecategorySpecialTypeEnum("special_type"),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+        updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
     },
     (table) => [
-        uniqueIndex("TemplateCategory_specialType_key").on(
-            table.specialType,
-        ),
+        uniqueIndex("template_category_special_type_key").on(table.specialType),
     ],
 );
 
-export const templates = pgTable("Template", {
+export const templates = pgTable("template", {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
-    imageFileId: bigint("imageFileId", { mode: "bigint" }),
-    categoryId: integer("categoryId").notNull(),
+    imageFileId: bigint("image_file_id", { mode: "bigint" }),
+    categoryId: integer("category_id").notNull(),
     order: integer("order").notNull(),
-    preSuspensionCategoryId: integer("preSuspensionCategoryId"),
-    createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-    updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+    preSuspensionCategoryId: integer("pre_suspension_category_id"),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
 });
 
-export const templateConfigKeyEnum = pgEnum("TemplateConfigKey", [
+export const templatesConfigKeyEnum = pgEnum("template_config_key", [
     "MAX_BACKGROUND_SIZE",
     "ALLOWED_FILE_TYPES",
 ]);
 
-export const templateConfigs = pgTable("TemplateConfigs", {
-    key: templateConfigKeyEnum("key").primaryKey(),
+export const templatesConfig = pgTable("templates_config", {
+    key: templatesConfigKeyEnum("key").primaryKey(),
     value: text("value").notNull(),
 });

@@ -8,28 +8,27 @@ import {
     uniqueIndex,
     index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm/_relations";
-import { templates } from "./templates";
-import { certificates, students, templateVariableBases } from ".";
 
-export const templateRecipientGroups = pgTable("TemplateRecipientGroup", {
+export const templateRecipientGroups = pgTable("template_recipient_group", {
     id: serial("id").primaryKey(),
-    templateId: integer("templateId").notNull(),
+    templateId: integer("template_id").notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
     date: timestamp("date", { precision: 3 }),
-    createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-    updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
 });
 
 export const templateRecipientGroupItems = pgTable(
-    "TemplateRecipientGroupItem",
+    "template_recipient_group_item",
     {
         id: serial("id").primaryKey(),
-        templateRecipientGroupId: integer("templateRecipientGroupId").notNull(),
-        studentId: integer("studentId").notNull(),
-        createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-        updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+        templateRecipientGroupId: integer(
+            "template_recipient_group_id",
+        ).notNull(),
+        studentId: integer("student_id").notNull(),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+        updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
     },
     (table) => [
         uniqueIndex("trgi_student_group_unique").on(
@@ -40,17 +39,17 @@ export const templateRecipientGroupItems = pgTable(
 );
 
 export const recipientGroupItemVariableValues = pgTable(
-    "RecipientGroupItemVariableValue",
+    "recipient_group_item_variable_value",
     {
         id: serial("id").primaryKey(),
         templateRecipientGroupItemId: integer(
-            "templateRecipientGroupItemId",
+            "template_recipient_group_item_id",
         ).notNull(),
         templateVariableId: integer("templateVariableId").notNull(),
         value: text("value"),
-        valueIndexed: varchar("valueIndexed", { length: 255 }),
-        createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-        updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+        valueIndexed: varchar("value_indexed", { length: 255 }),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+        updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
     },
     (table) => [
         uniqueIndex("rgiv_group_item_variable_unique").on(
@@ -59,47 +58,4 @@ export const recipientGroupItemVariableValues = pgTable(
         ),
         index("rgiv_value_idx").on(table.valueIndexed),
     ],
-);
-
-export const templateRecipientGroupsRelations = relations(
-    templateRecipientGroups,
-    ({ one, many }) => ({
-        template: one(templates, {
-            fields: [templateRecipientGroups.templateId],
-            references: [templates.id],
-        }),
-        items: many(templateRecipientGroupItems),
-        certificates: many(certificates),
-    }),
-);
-
-export const templateRecipientGroupItemsRelations = relations(
-    templateRecipientGroupItems,
-    ({ one, many }) => ({
-        templateRecipientGroup: one(templateRecipientGroups, {
-            fields: [templateRecipientGroupItems.templateRecipientGroupId],
-            references: [templateRecipientGroups.id],
-        }),
-        student: one(students, {
-            fields: [templateRecipientGroupItems.studentId],
-            references: [students.id],
-        }),
-        variableValues: many(recipientGroupItemVariableValues),
-    }),
-);
-
-export const recipientGroupItemVariableValuesRelations = relations(
-    recipientGroupItemVariableValues,
-    ({ one }) => ({
-        templateRecipientGroupItem: one(templateRecipientGroupItems, {
-            fields: [
-                recipientGroupItemVariableValues.templateRecipientGroupItemId,
-            ],
-            references: [templateRecipientGroupItems.id],
-        }),
-        templateVariable: one(templateVariableBases, {
-            fields: [recipientGroupItemVariableValues.templateVariableId],
-            references: [templateVariableBases.id],
-        }),
-    }),
 );

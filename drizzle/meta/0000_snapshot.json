@@ -1,11 +1,11 @@
 {
-  "id": "007cb1d3-8a9b-4f05-859e-bb027b5724f5",
+  "id": "c6eed91f-1ac6-4f4e-b475-0c2f4c1c223b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.Certificate": {
-      "name": "Certificate",
+    "public.certificate": {
+      "name": "certificate",
       "schema": "",
       "columns": {
         "id": {
@@ -14,50 +14,50 @@
           "primaryKey": true,
           "notNull": true
         },
-        "templateId": {
-          "name": "templateId",
+        "template_id": {
+          "name": "template_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "studentId": {
-          "name": "studentId",
+        "student_id": {
+          "name": "student_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "templateRecipientGroupId": {
-          "name": "templateRecipientGroupId",
+        "template_recipient_group_id": {
+          "name": "template_recipient_group_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "releaseDate": {
-          "name": "releaseDate",
+        "release_date": {
+          "name": "release_date",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "verificationCode": {
-          "name": "verificationCode",
+        "verification_code": {
+          "name": "verification_code",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "deletedAt": {
-          "name": "deletedAt",
+        "deleted_at": {
+          "name": "deleted_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -68,13 +68,13 @@
           "name": "unique_student_template_certificate",
           "columns": [
             {
-              "expression": "templateId",
+              "expression": "template_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             },
             {
-              "expression": "studentId",
+              "expression": "student_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -89,11 +89,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "Certificate_verificationCode_unique": {
-          "name": "Certificate_verificationCode_unique",
+        "certificate_verification_code_unique": {
+          "name": "certificate_verification_code_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "verificationCode"
+            "verification_code"
           ]
         }
       },
@@ -117,8 +117,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": false
@@ -374,8 +374,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.Student": {
-      "name": "Student",
+    "public.student": {
+      "name": "student",
       "schema": "",
       "columns": {
         "id": {
@@ -396,40 +396,40 @@
           "primaryKey": false,
           "notNull": false
         },
-        "phoneNumber": {
-          "name": "phoneNumber",
+        "phone_number": {
+          "name": "phone_number",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },
-        "dateOfBirth": {
-          "name": "dateOfBirth",
+        "date_of_birth": {
+          "name": "date_of_birth",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": false
         },
         "gender": {
           "name": "gender",
-          "type": "Gender",
+          "type": "gender",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
         "nationality": {
           "name": "nationality",
-          "type": "CountryCode",
+          "type": "cuntry_code",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -465,8 +465,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "parentCategoryId": {
-          "name": "parentCategoryId",
+        "parent_category_id": {
+          "name": "parent_category_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -477,32 +477,32 @@
           "primaryKey": false,
           "notNull": false
         },
-        "specialType": {
-          "name": "specialType",
-          "type": "CategorySpecialType",
+        "special_type": {
+          "name": "special_type",
+          "type": "category_special_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {
-        "TemplateCategory_specialType_key": {
-          "name": "TemplateCategory_specialType_key",
+        "template_category_special_type_key": {
+          "name": "template_category_special_type_key",
           "columns": [
             {
-              "expression": "specialType",
+              "expression": "special_type",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -521,34 +521,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateConfigs": {
-      "name": "TemplateConfigs",
-      "schema": "",
-      "columns": {
-        "key": {
-          "name": "key",
-          "type": "TemplateConfigKey",
-          "typeSchema": "public",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "value": {
-          "name": "value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.Template": {
-      "name": "Template",
+    "public.template": {
+      "name": "template",
       "schema": "",
       "columns": {
         "id": {
@@ -569,14 +543,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "imageFileId": {
-          "name": "imageFileId",
+        "image_file_id": {
+          "name": "image_file_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
-        "categoryId": {
-          "name": "categoryId",
+        "category_id": {
+          "name": "category_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -587,20 +561,20 @@
           "primaryKey": false,
           "notNull": true
         },
-        "preSuspensionCategoryId": {
-          "name": "preSuspensionCategoryId",
+        "pre_suspension_category_id": {
+          "name": "pre_suspension_category_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -614,8 +588,34 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.DateTemplateVariable": {
-      "name": "DateTemplateVariable",
+    "public.templates_config": {
+      "name": "templates_config",
+      "schema": "",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "template_config_key",
+          "typeSchema": "public",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.date_template_variable": {
+      "name": "date_template_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -624,14 +624,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "minDate": {
-          "name": "minDate",
+        "min_date": {
+          "name": "min_date",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": false
         },
-        "maxDate": {
-          "name": "maxDate",
+        "max_date": {
+          "name": "max_date",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": false
@@ -642,8 +642,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "previewValue": {
-          "name": "previewValue",
+        "preview_value": {
+          "name": "preview_value",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": false
@@ -657,8 +657,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.NumberTemplateVariable": {
-      "name": "NumberTemplateVariable",
+    "public.number_template_variable": {
+      "name": "number_template_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -667,26 +667,26 @@
           "primaryKey": true,
           "notNull": true
         },
-        "minValue": {
-          "name": "minValue",
+        "min_value": {
+          "name": "min_value",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
-        "maxValue": {
-          "name": "maxValue",
+        "max_value": {
+          "name": "max_value",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
-        "decimalPlaces": {
-          "name": "decimalPlaces",
+        "decimal_places": {
+          "name": "decimal_places",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "previewValue": {
-          "name": "previewValue",
+        "preview_value": {
+          "name": "preview_value",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
@@ -700,8 +700,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.SelectTemplateVariable": {
-      "name": "SelectTemplateVariable",
+    "public.select_template_variable": {
+      "name": "select_template_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -722,8 +722,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "previewValue": {
-          "name": "previewValue",
+        "preview_value": {
+          "name": "preview_value",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
@@ -737,8 +737,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateVariableBase": {
-      "name": "TemplateVariableBase",
+    "public.template_variable_base": {
+      "name": "template_variable_base",
       "schema": "",
       "columns": {
         "id": {
@@ -747,8 +747,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "templateId": {
-          "name": "templateId",
+        "template_id": {
+          "name": "template_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -767,7 +767,7 @@
         },
         "type": {
           "name": "type",
-          "type": "TemplateVariableType",
+          "type": "template_variable_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -785,25 +785,25 @@
           "primaryKey": false,
           "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {
-        "TemplateVariableBase_templateId_name_key": {
-          "name": "TemplateVariableBase_templateId_name_key",
+        "template_variable_base_template_id_name_key": {
+          "name": "template_variable_base_template_id_name_key",
           "columns": [
             {
-              "expression": "templateId",
+              "expression": "template_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -828,8 +828,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TextTemplateVariable": {
-      "name": "TextTemplateVariable",
+    "public.text_template_variable": {
+      "name": "text_template_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -838,14 +838,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "minLength": {
-          "name": "minLength",
+        "min_length": {
+          "name": "min_length",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "maxLength": {
-          "name": "maxLength",
+        "max_length": {
+          "name": "max_length",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -856,8 +856,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "previewValue": {
-          "name": "previewValue",
+        "preview_value": {
+          "name": "preview_value",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
@@ -871,8 +871,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.RecipientGroupItemVariableValue": {
-      "name": "RecipientGroupItemVariableValue",
+    "public.recipient_group_item_variable_value": {
+      "name": "recipient_group_item_variable_value",
       "schema": "",
       "columns": {
         "id": {
@@ -881,8 +881,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "templateRecipientGroupItemId": {
-          "name": "templateRecipientGroupItemId",
+        "template_recipient_group_item_id": {
+          "name": "template_recipient_group_item_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -899,20 +899,20 @@
           "primaryKey": false,
           "notNull": false
         },
-        "valueIndexed": {
-          "name": "valueIndexed",
+        "value_indexed": {
+          "name": "value_indexed",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -923,7 +923,7 @@
           "name": "rgiv_group_item_variable_unique",
           "columns": [
             {
-              "expression": "templateRecipientGroupItemId",
+              "expression": "template_recipient_group_item_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -944,7 +944,7 @@
           "name": "rgiv_value_idx",
           "columns": [
             {
-              "expression": "valueIndexed",
+              "expression": "value_indexed",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -963,8 +963,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateRecipientGroupItem": {
-      "name": "TemplateRecipientGroupItem",
+    "public.template_recipient_group_item": {
+      "name": "template_recipient_group_item",
       "schema": "",
       "columns": {
         "id": {
@@ -973,26 +973,26 @@
           "primaryKey": true,
           "notNull": true
         },
-        "templateRecipientGroupId": {
-          "name": "templateRecipientGroupId",
+        "template_recipient_group_id": {
+          "name": "template_recipient_group_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "studentId": {
-          "name": "studentId",
+        "student_id": {
+          "name": "student_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1003,13 +1003,13 @@
           "name": "trgi_student_group_unique",
           "columns": [
             {
-              "expression": "studentId",
+              "expression": "student_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             },
             {
-              "expression": "templateRecipientGroupId",
+              "expression": "template_recipient_group_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1028,8 +1028,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateRecipientGroup": {
-      "name": "TemplateRecipientGroup",
+    "public.template_recipient_group": {
+      "name": "template_recipient_group",
       "schema": "",
       "columns": {
         "id": {
@@ -1038,8 +1038,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "templateId": {
-          "name": "templateId",
+        "template_id": {
+          "name": "template_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -1062,14 +1062,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1083,43 +1083,43 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateDataDateElements": {
-      "name": "TemplateDataDateElements",
+    "public.template_data_date_element": {
+      "name": "template_data_date_element",
       "schema": "",
       "columns": {
-        "elementId": {
-          "name": "elementId",
+        "element_id": {
+          "name": "element_id",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
-        "sourceType": {
-          "name": "sourceType",
-          "type": "TemplateElementSourceType",
+        "source_type": {
+          "name": "source_type",
+          "type": "template_element_source_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
-        "sourceField": {
-          "name": "sourceField",
+        "source_field": {
+          "name": "source_field",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
-        "dateFormat": {
-          "name": "dateFormat",
+        "date_format": {
+          "name": "date_format",
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1133,37 +1133,37 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateDataTextElements": {
-      "name": "TemplateDataTextElements",
+    "public.template_data_text_element": {
+      "name": "template_data_text_element",
       "schema": "",
       "columns": {
-        "elementId": {
-          "name": "elementId",
+        "element_id": {
+          "name": "element_id",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
-        "sourceType": {
-          "name": "sourceType",
-          "type": "TemplateElementSourceType",
+        "source_type": {
+          "name": "source_type",
+          "type": "template_element_source_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
-        "sourceField": {
-          "name": "sourceField",
+        "source_field": {
+          "name": "source_field",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1177,8 +1177,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateElements": {
-      "name": "TemplateElements",
+    "public.template_element": {
+      "name": "template_element",
       "schema": "",
       "columns": {
         "id": {
@@ -1187,33 +1187,33 @@
           "primaryKey": true,
           "notNull": true
         },
-        "templateId": {
-          "name": "templateId",
+        "template_id": {
+          "name": "template_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "type": {
           "name": "type",
-          "type": "ElementType",
+          "type": "template_element_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
-        "xCoordinate": {
-          "name": "xCoordinate",
+        "x_coordinate": {
+          "name": "x_coordinate",
           "type": "real",
           "primaryKey": false,
           "notNull": true
         },
-        "yCoordinate": {
-          "name": "yCoordinate",
+        "y_coordinate": {
+          "name": "y_coordinate",
           "type": "real",
           "primaryKey": false,
           "notNull": true
         },
-        "fontSize": {
-          "name": "fontSize",
+        "font_size": {
+          "name": "font_size",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1230,26 +1230,26 @@
           "primaryKey": false,
           "notNull": false
         },
-        "fontFamily": {
-          "name": "fontFamily",
+        "font_family": {
+          "name": "font_family",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "languageConstraint": {
-          "name": "languageConstraint",
+        "language_constraint": {
+          "name": "language_constraint",
           "type": "varchar(10)",
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1263,18 +1263,18 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateImageElements": {
-      "name": "TemplateImageElements",
+    "public.template_image_element": {
+      "name": "template_image_element",
       "schema": "",
       "columns": {
-        "elementId": {
-          "name": "elementId",
+        "element_id": {
+          "name": "element_id",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
-        "imageUrl": {
-          "name": "imageUrl",
+        "image_url": {
+          "name": "image_url",
           "type": "varchar(500)",
           "primaryKey": false,
           "notNull": true
@@ -1291,14 +1291,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1312,12 +1312,12 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateQrCodeElements": {
-      "name": "TemplateQrCodeElements",
+    "public.template_qr_code_element": {
+      "name": "template_qr_code_element",
       "schema": "",
       "columns": {
-        "elementId": {
-          "name": "elementId",
+        "element_id": {
+          "name": "element_id",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
@@ -1328,14 +1328,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1349,12 +1349,12 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateStaticTextElements": {
-      "name": "TemplateStaticTextElements",
+    "public.template_static_text_element": {
+      "name": "template_static_text_element",
       "schema": "",
       "columns": {
-        "elementId": {
-          "name": "elementId",
+        "element_id": {
+          "name": "element_id",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
@@ -1365,14 +1365,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
@@ -1386,8 +1386,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.FileUsage": {
-      "name": "FileUsage",
+    "public.file_usage": {
+      "name": "file_usage",
       "schema": "",
       "columns": {
         "id": {
@@ -1396,26 +1396,26 @@
           "primaryKey": true,
           "notNull": true
         },
-        "filePath": {
-          "name": "filePath",
+        "file_path": {
+          "name": "file_path",
           "type": "varchar(1024)",
           "primaryKey": false,
           "notNull": true
         },
-        "usageType": {
-          "name": "usageType",
+        "usage_type": {
+          "name": "usage_type",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
-        "referenceId": {
-          "name": "referenceId",
+        "reference_id": {
+          "name": "reference_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
-        "referenceTable": {
-          "name": "referenceTable",
+        "reference_table": {
+          "name": "reference_table",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
@@ -1435,8 +1435,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.StorageDirectory": {
-      "name": "StorageDirectory",
+    "public.storage_directory": {
+      "name": "storage_directory",
       "schema": "",
       "columns": {
         "id": {
@@ -1451,57 +1451,57 @@
           "primaryKey": false,
           "notNull": true
         },
-        "allowUploads": {
-          "name": "allowUploads",
+        "allow_uploads": {
+          "name": "allow_uploads",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "allowDelete": {
-          "name": "allowDelete",
+        "allow_delete": {
+          "name": "allow_delete",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "allowMove": {
-          "name": "allowMove",
+        "allow_move": {
+          "name": "allow_move",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "allowCreateSubDirs": {
-          "name": "allowCreateSubDirs",
+        "allow_create_sub_dirs": {
+          "name": "allow_create_sub_dirs",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "allowDeleteFiles": {
-          "name": "allowDeleteFiles",
+        "allow_delete_files": {
+          "name": "allow_delete_files",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "allowMoveFiles": {
-          "name": "allowMoveFiles",
+        "allow_move_files": {
+          "name": "allow_move_files",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "isProtected": {
-          "name": "isProtected",
+        "is_protected": {
+          "name": "is_protected",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": false
         },
-        "protectChildren": {
-          "name": "protectChildren",
+        "protect_children": {
+          "name": "protect_children",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
@@ -1512,8 +1512,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "StorageDirectory_path_unique": {
-          "name": "StorageDirectory_path_unique",
+        "storage_directory_path_unique": {
+          "name": "storage_directory_path_unique",
           "nullsNotDistinct": false,
           "columns": [
             "path"
@@ -1524,8 +1524,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.StorageFile": {
-      "name": "StorageFile",
+    "public.storage_file": {
+      "name": "storage_file",
       "schema": "",
       "columns": {
         "id": {
@@ -1540,8 +1540,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "isProtected": {
-          "name": "isProtected",
+        "is_protected": {
+          "name": "is_protected",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
@@ -1552,8 +1552,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "StorageFile_path_unique": {
-          "name": "StorageFile_path_unique",
+        "storage_file_path_unique": {
+          "name": "storage_file_path_unique",
           "nullsNotDistinct": false,
           "columns": [
             "path"
@@ -1566,16 +1566,16 @@
     }
   },
   "enums": {
-    "public.CountryCode": {
-      "name": "CountryCode",
+    "public.cuntry_code": {
+      "name": "cuntry_code",
       "schema": "public",
       "values": [
         "EG",
         "US"
       ]
     },
-    "public.Gender": {
-      "name": "Gender",
+    "public.gender": {
+      "name": "gender",
       "schema": "public",
       "values": [
         "MALE",
@@ -1583,24 +1583,24 @@
         "OTHER"
       ]
     },
-    "public.TemplateConfigKey": {
-      "name": "TemplateConfigKey",
-      "schema": "public",
-      "values": [
-        "MAX_BACKGROUND_SIZE",
-        "ALLOWED_FILE_TYPES"
-      ]
-    },
-    "public.CategorySpecialType": {
-      "name": "CategorySpecialType",
+    "public.category_special_type": {
+      "name": "category_special_type",
       "schema": "public",
       "values": [
         "Main",
         "Suspension"
       ]
     },
-    "public.TemplateVariableType": {
-      "name": "TemplateVariableType",
+    "public.template_config_key": {
+      "name": "template_config_key",
+      "schema": "public",
+      "values": [
+        "MAX_BACKGROUND_SIZE",
+        "ALLOWED_FILE_TYPES"
+      ]
+    },
+    "public.template_variable_type": {
+      "name": "template_variable_type",
       "schema": "public",
       "values": [
         "TEXT",
@@ -1609,8 +1609,8 @@
         "SELECT"
       ]
     },
-    "public.ElementType": {
-      "name": "ElementType",
+    "public.template_element_type": {
+      "name": "template_element_type",
       "schema": "public",
       "values": [
         "static_text",
@@ -1620,8 +1620,8 @@
         "qr_code"
       ]
     },
-    "public.TemplateElementSourceType": {
-      "name": "TemplateElementSourceType",
+    "public.template_element_source_type": {
+      "name": "template_element_source_type",
       "schema": "public",
       "values": [
         "student",
