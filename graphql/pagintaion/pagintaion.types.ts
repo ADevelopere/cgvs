@@ -10,9 +10,9 @@ export type PageInfo = {
 };
 
 export type PaginationArgs = {
-    first?: number;
-    skip?: number;
-    last?: number;
-    page?: number;
-    maxCount?: number;
+    first?: number | null;
+    skip?: number | null;
+    last?: number | null;
+    page?: number | null;
+    maxCount?: number | null;
 };

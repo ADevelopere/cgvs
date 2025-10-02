@@ -1,6 +1,5 @@
 import { schemaBuilder } from "../builder";
 import {
-    PaginationArgsDefault,
     PaginationArgsObject,
 } from "../pagintaion/pagination.objects";
 import {
@@ -9,20 +8,17 @@ import {
 } from "./template.objects";
 import {
     findTemplateByIdOrThrow,
-    findTemplates,
-    templatesTotalCount,
+    findTemplatesPaginated,
 } from "./template.repository";
-import { PaginatedTemplatesResponse } from "./template.types";
 
 schemaBuilder.queryFields((t) => ({
-    template: t.fieldWithInput({
+    template: t.field({
         type: TemplateObject,
         nullable: true,
-        input: {
-            id: t.input.int({ required: true }),
+        args: {
+            id: t.arg.int({ required: true }),
         },
-        resolve: async (_query, input) =>
-            findTemplateByIdOrThrow(input.input.id),
+        resolve: async (_query, args) => findTemplateByIdOrThrow(args.id),
     }),
 
     templates: t.field({
@@ -32,45 +28,6 @@ schemaBuilder.queryFields((t) => ({
                 type: PaginationArgsObject,
             }),
         },
-        resolve: async (_, args) => {
-            const { first, skip, page, maxCount } = args.pagination ?? {};
-
-            // Count total
-            const total = await templatesTotalCount();
-
-            // Figure out pagination
-            const perPage = Math.min(
-                first ?? PaginationArgsDefault.first,
-                maxCount ?? PaginationArgsDefault.maxCount,
-            );
-            const currentPage =
-                page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
-            const offset = (currentPage - 1) * perPage;
-
-            const templates = await findTemplates({
-                limit: perPage,
-                offset,
-            });
-
-            const length = templates.length;
-            const lastPage = Math.ceil(total / perPage);
-            const hasMorePages = currentPage < lastPage;
-
-            const result: PaginatedTemplatesResponse = {
-                data: templates,
-                pageInfo: {
-                    count: length,
-                    currentPage,
-                    firstItem: length > 0 ? offset + 1 : null,
-                    lastItem: length > 0 ? offset + length : null,
-                    hasMorePages,
-                    lastPage,
-                    perPage,
-                    total,
-                },
-            };
-
-            return result;
-        },
+        resolve: async (_, args) => findTemplatesPaginated(args.pagination),
     }),
 }));

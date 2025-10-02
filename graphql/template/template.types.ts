@@ -2,15 +2,15 @@ import { FileInfo } from "@/services/storage.types";
 import { TemplateCategory } from "../templateCategory/templateCategory.types";
 import { PageInfo } from "../pagintaion/pagintaion.types";
 import { templates } from "@/db/schema";
-import { OmitIdFields as OmitIdRelationFields } from "../helper";
+import { OmitIdRelationFields } from "../helper";
 
 export type TemplateEntity = typeof templates.$inferSelect;
 export type TemplateInput = typeof templates.$inferInsert;
 
 export type TemplateDefinition = TemplateEntity & {
     //relations
+    category?: TemplateCategory;
     imageFile?: FileInfo | null;
-    category?: TemplateCategory | null;
     preSuspensionCategory?: TemplateCategory | null;
     // variables
     // recipientGroups

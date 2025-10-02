@@ -1,33 +1,19 @@
-import { db } from "@/db/db";
 import { schemaBuilder } from "../builder";
 import { TemplateCategory } from "./templateCategory.types";
-import { templateCategories } from "@/db/schema";
-import { inArray } from "drizzle-orm";
-import { TemplateSpecialCategoryType } from "./templateCategory.types";
+import { loadTemplateCategoriesByIds } from "./templateCategory.repository";
+import { TemplateObject } from "../template/template.objects";
+import { loadTemplatesForTemplateCategory } from "../template/template.repository";
+
+const TemplateCategoryObjectRef =
+    schemaBuilder.objectRef<TemplateCategory>("TemplateCategory");
 
 export const TemplateCategoryObject = schemaBuilder.loadableObject<
     TemplateCategory | Error, // LoadResult
     number, // Key
     [], // Interfaces
-    "TemplateCategory" // NameOrRef
->("TemplateCategory", {
-    load: async (ids: number[]) => {
-        const categories = await db
-            .select()
-            .from(templateCategories)
-            .where(inArray(templateCategories.id, ids));
-
-        return ids.map((id) => {
-            const category = categories.find((c) => c.id === id);
-            if (!category) return new Error(`TemplateCategory ${id} not found`);
-
-            return {
-                ...category,
-                specialType:
-                    category.specialType as TemplateSpecialCategoryType | null,
-            };
-        });
-    },
+    typeof TemplateCategoryObjectRef // NameOrRef
+>(TemplateCategoryObjectRef, {
+    load: async (ids: number[]) => loadTemplateCategoriesByIds(ids),
     fields: (t) => ({
         id: t.exposeInt("id"),
         name: t.exposeString("name"),
@@ -36,5 +22,17 @@ export const TemplateCategoryObject = schemaBuilder.loadableObject<
         specialType: t.exposeString("specialType", { nullable: true }),
         createdAt: t.expose("createdAt", { type: "DateTime" }),
         updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+        // relations
+        // parentCategory: TemplateCategory | null;
+        // subCategories: TemplateCategory[];
     }),
 });
+
+schemaBuilder.objectFields(TemplateCategoryObject, (t) => ({
+    templates: t.field({
+        type: [TemplateObject],
+        resolve: (templateCategory) => {
+            return loadTemplatesForTemplateCategory(templateCategory.id);
+        },
+    }),
+}));

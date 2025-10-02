@@ -7,10 +7,16 @@ import {
 } from "./template.types";
 import { PageInfoObject } from "../pagintaion/pagination.objects";
 import { TemplateCategoryObject } from "../templateCategory/templateCategory.objects";
+import { loadTemplatesByIds } from "./template.repository";
 
-const TemplateRef = schemaBuilder.objectRef<TemplateDefinition>("Template");
+const TemplateObjectRef = schemaBuilder.loadableObjectRef<
+    TemplateDefinition,
+    number
+>("Template", {
+    load: async (ids: number[]) => loadTemplatesByIds(ids),
+});
 
-export const TemplateObject = TemplateRef.implement({
+export const TemplateObject = TemplateObjectRef.implement({
     fields: (t) => ({
         id: t.exposeID("id"),
         name: t.exposeString("name"),
@@ -20,18 +26,6 @@ export const TemplateObject = TemplateRef.implement({
         updatedAt: t.expose("updatedAt", { type: "DateTime" }),
         // relations
         // imageFile: FileInfo | null;
-        category: t.loadable({
-            type: TemplateCategoryObject,
-            load: (ids: number[]) =>
-                TemplateCategoryObject.getDataloader(ids).loadMany(ids),
-            resolve: (root) => root.categoryId,
-        }),
-        preSuspensionCategory: t.loadable({
-            type: TemplateCategoryObject,
-            load: (ids: number[]) =>
-                TemplateCategoryObject.getDataloader(ids).loadMany(ids),
-            resolve: (root) => root.preSuspensionCategoryId,
-        }),
         // variables
         // recipientGroups
         // driven
@@ -53,6 +47,21 @@ export const TemplateObject = TemplateRef.implement({
         // }),
     }),
 });
+
+schemaBuilder.objectFields(TemplateObject, (t) => ({
+    category: t.loadable({
+        type: TemplateCategoryObject,
+        load: (ids: number[]) =>
+            TemplateCategoryObject.getDataloader(ids).loadMany(ids),
+        resolve: (template) => template.categoryId,
+    }),
+    preSuspensionCategory: t.loadable({
+        type: TemplateCategoryObject,
+        load: (ids: number[]) =>
+            TemplateCategoryObject.getDataloader(ids).loadMany(ids),
+        resolve: (template) => template.preSuspensionCategoryId,
+    }),
+}));
 
 const TemplateCreateInputRef = schemaBuilder.inputRef<TemplateCreateInput>(
     "TemplateCreateInput",

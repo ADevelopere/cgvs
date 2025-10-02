@@ -10,7 +10,7 @@ import {
     uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const categorySpecialTypeEnum = pgEnum("CategorySpecialType", [
+export const templatecategorySpecialTypeEnum = pgEnum("CategorySpecialType", [
     "Main",
     "Suspension",
 ]);
@@ -23,7 +23,7 @@ export const templateCategories = pgTable(
         description: text("description"),
         parentCategoryId: integer("parentCategoryId"),
         order: integer("order"),
-        specialType: categorySpecialTypeEnum("specialType"),
+        specialType: templatecategorySpecialTypeEnum("specialType"),
         createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
         updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
     },

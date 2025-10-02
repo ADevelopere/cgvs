@@ -1,4 +1,6 @@
-import "./template/template.query";
+import "@/graphql/template/template.query";
+import "@/graphql/templateCategory/templateCategory.query";
+
 import { schemaBuilder } from "./builder";
 
 import { DateResolver, DateTimeResolver } from "graphql-scalars";
