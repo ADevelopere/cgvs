@@ -14,6 +14,7 @@ const TemplateObjectRef = schemaBuilder.loadableObjectRef<
     number
 >("Template", {
     load: async (ids: number[]) => loadTemplatesByIds(ids),
+    sort: (t) => t.id,
 });
 
 export const TemplateObject = TemplateObjectRef.implement({

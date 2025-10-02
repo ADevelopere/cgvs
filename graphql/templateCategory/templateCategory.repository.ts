@@ -30,3 +30,18 @@ export const loadTemplateCategoriesByIds = async (
     });
     return categories;
 };
+
+export const loadSubTemplateCategoriesForCategories = async (
+    parentCategoryIds: number[],
+): Promise<TemplateCategory[][]> => {
+    if (parentCategoryIds.length === 0) return [];
+    const subCategories = await db
+        .select()
+        .from(templateCategories)
+        .where(inArray(templateCategories.parentCategoryId, parentCategoryIds))
+        .orderBy(templateCategories.order);
+
+    return parentCategoryIds.map((parentId) =>
+        subCategories.filter((cat) => cat.parentCategoryId === parentId),
+    );
+};
