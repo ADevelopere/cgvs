@@ -10,7 +10,7 @@
         "tsc": "tsc --noEmit",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "db:seed": "tsx db/seed/drizzleSeed.ts"
+        "db:seed": "tsx server/db/seed/drizzleSeed.ts"
     },
     "dependencies": {
         "@apollo/client": "^4.0.6",
