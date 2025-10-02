@@ -9,7 +9,8 @@
         "lint": "eslint .",
         "tsc": "tsc --noEmit",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "build-storybook": "storybook build",
+        "db:seed": "tsx db/seed/drizzleSeed.ts"
     },
     "dependencies": {
         "@apollo/client": "^4.0.6",
@@ -41,6 +42,7 @@
         "bcryptjs": "^3.0.2",
         "dataloader": "^2.2.3",
         "date-fns": "^4.1.0",
+        "dotenv": "^17.2.3",
         "drizzle-kit": "1.0.0-beta.1-f92627f",
         "drizzle-orm": "1.0.0-beta.1-f92627f",
         "eslint-plugin-drizzle": "^0.2.3",
