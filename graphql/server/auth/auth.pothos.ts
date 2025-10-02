@@ -1,4 +1,4 @@
-import { gqlSchemaBuilder } from "../server/gqlSchemaBuilder";
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
     LoginInput,
     LoginResponse,

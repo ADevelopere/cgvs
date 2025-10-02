@@ -1,7 +1,7 @@
-import { graphQLSchema } from "@/graphql/gqlSchema";
+import { graphQLSchema } from "@/graphql/server/gqlSchema";
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
-import { createGraphQLContext } from "@/graphql/gqlContextFactory";
+import { createGraphQLContext } from "@/graphql/server/gqlContextFactory";
 
 const server = new ApolloServer({
     schema: graphQLSchema,

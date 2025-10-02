@@ -2,12 +2,12 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { db } from "@/db/drizzleDb";
 import { sessions } from "@/db/schema/users";
 import { eq } from "drizzle-orm";
-import { comparePassword } from "@/graphql/auth/password";
+import { comparePassword } from "@/graphql/server/auth/password";
 import {
     generateAccessToken,
     generateRefreshToken,
     verifyToken,
-} from "@/graphql/auth/jwt";
+} from "@/graphql/server/auth/jwt";
 import { GraphQLError } from "graphql";
 import { randomUUID } from "crypto";
 import {
