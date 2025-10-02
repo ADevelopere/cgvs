@@ -1,0 +1,92 @@
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
+import {
+    PaginatedTemplatesResponse,
+    TemplatePothosDefintion,
+    TemplateCreateInput,
+    TemplateUpdateInput,
+} from "./template.types";
+import { PageInfoObject } from "../pagintaion/pagination.objects";
+import { TemplateCategoryPothosObject } from "../templateCategory/templateCategory.pothos";
+import { loadTemplatesByIds } from "./template.repository";
+
+export const TemplatePothosObject = gqlSchemaBuilder
+    .loadableObjectRef<TemplatePothosDefintion, number>("Template", {
+        load: async (ids: number[]) => loadTemplatesByIds(ids),
+        sort: (t) => t.id,
+    })
+    .implement({
+        fields: (t) => ({
+            id: t.exposeID("id"),
+            name: t.exposeString("name"),
+            description: t.exposeString("description", { nullable: true }),
+            order: t.exposeInt("order"),
+            createdAt: t.expose("createdAt", { type: "DateTime" }),
+            updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+            // imageUrl: t.string({
+            //     nullable: true,
+            //     resolve: async ({ id: templateId }) => {
+            //         const template = await findTemplateByIdOrThrow(templateId);
+            //         if (template.imageFileId) {
+            //             const file = await db
+            //                 .select()
+            //                 .from(storageFiles)
+            //                 .where(eq(storageFiles.id, template.imageFileId))
+            //                 .then((res) => res[0]);
+
+            //             return file?.path || null;
+            //         }
+            //         return null;
+            //     },
+            // }),
+        }),
+    });
+
+gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
+    category: t.loadable({
+        type: TemplateCategoryPothosObject,
+        load: (ids: number[], ctx) =>
+            TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
+        resolve: (template) => template.categoryId,
+    }),
+    preSuspensionCategory: t.loadable({
+        type: TemplateCategoryPothosObject,
+        load: (ids: number[], ctx) =>
+            TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
+        resolve: (template) => template.preSuspensionCategoryId,
+    }),
+    // TODO
+    // imageFile: FileInfo | null;
+    // variables
+    // recipientGroups
+    // driven
+}));
+
+export const TemplateCreateInputPothosObject = gqlSchemaBuilder
+    .inputRef<TemplateCreateInput>("TemplateCreateInput")
+    .implement({
+        fields: (t) => ({
+            name: t.string({ required: true }),
+            description: t.string({ required: false }),
+            categoryId: t.int({ required: true }),
+        }),
+    });
+
+export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
+    .inputRef<TemplateUpdateInput>("UpdateTemplateInput")
+    .implement({
+        fields: (t) => ({
+            id: t.int({ required: true }),
+            name: t.string({ required: true }),
+            categoryId: t.int({ required: true }),
+            description: t.string({ required: false }),
+        }),
+    });
+
+export const PaginatedTemplatesResponsePothosObject = gqlSchemaBuilder
+    .objectRef<PaginatedTemplatesResponse>("PaginatedTemplatesResponse")
+    .implement({
+        fields: (t) => ({
+            data: t.expose("data", { type: [TemplatePothosObject] }),
+            pageInfo: t.expose("pageInfo", { type: PageInfoObject }),
+        }),
+    });

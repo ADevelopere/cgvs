@@ -1,7 +1,7 @@
-import { schemaBuilder } from "../builder";
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { PageInfo, PaginationArgs } from "./pagintaion.types";
 
-const PageInfoRef = schemaBuilder.objectRef<PageInfo>("PageInfo");
+const PageInfoRef = gqlSchemaBuilder.objectRef<PageInfo>("PageInfo");
 
 export const PageInfoObject = PageInfoRef.implement({
     fields: (t) => ({
@@ -22,7 +22,7 @@ export const PaginationArgsDefault = {
 };
 
 const PaginationArgsRef =
-    schemaBuilder.inputRef<PaginationArgs>("PaginationArgs");
+    gqlSchemaBuilder.inputRef<PaginationArgs>("PaginationArgs");
 
 export const PaginationArgsObject = PaginationArgsRef.implement({
     fields: (t) => ({

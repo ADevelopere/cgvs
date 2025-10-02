@@ -1,4 +1,4 @@
-import { schemaBuilder } from "../builder";
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
     TemplateCategoryCreateInput,
     TemplateCategoryPothosDefintion,
@@ -8,15 +8,15 @@ import {
     loadSubTemplateCategoriesForCategories,
     loadTemplateCategoriesByIds,
 } from "./templateCategory.repository";
-import { TemplatePothosObject } from "../template/template.objects";
+import { TemplatePothosObject } from "../template/template.pothos";
 import { loadTemplatesForTemplateCategories } from "../template/template.repository";
 
 const TemplateCategoryObjectRef =
-    schemaBuilder.objectRef<TemplateCategoryPothosDefintion>(
+    gqlSchemaBuilder.objectRef<TemplateCategoryPothosDefintion>(
         "TemplateCategory",
     );
 
-export const TemplateCategoryObject = schemaBuilder.loadableObject<
+export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
     TemplateCategoryPothosDefintion | Error, // LoadResult
     number, // Key
     [], // Interfaces
@@ -35,27 +35,27 @@ export const TemplateCategoryObject = schemaBuilder.loadableObject<
     }),
 });
 
-schemaBuilder.objectFields(TemplateCategoryObject, (t) => ({
+gqlSchemaBuilder.objectFields(TemplateCategoryPothosObject, (t) => ({
     templates: t.loadableList({
         type: TemplatePothosObject,
         load: (ids: number[]) => loadTemplatesForTemplateCategories(ids),
         resolve: (templateCategory) => templateCategory.id,
     }),
     parentCategory: t.loadable({
-        type: TemplateCategoryObject,
-        load: (ids: number[]) =>
-            TemplateCategoryObject.getDataloader(ids).loadMany(ids),
+        type: TemplateCategoryPothosObject,
+        load: (ids: number[], ctx) =>
+            TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
         resolve: (templateCategory) => templateCategory.parentCategoryId,
     }),
     subCategories: t.loadableList({
-        type: TemplateCategoryObject,
+        type: TemplateCategoryPothosObject,
         load: (ids: number[]) => loadSubTemplateCategoriesForCategories(ids),
         resolve: (parentTemplateCategory) => parentTemplateCategory.id,
     }),
 }));
 
 const TemplateCategoryCreateInputRef =
-    schemaBuilder.inputRef<TemplateCategoryCreateInput>(
+    gqlSchemaBuilder.inputRef<TemplateCategoryCreateInput>(
         "TemplateCategoryCreateInput",
     );
 
@@ -69,7 +69,7 @@ export const TemplateCategoryCreateInputObject =
     });
 
 const TemplateCategoryUpdateInputRef =
-    schemaBuilder.inputRef<TemplateCategoryUpdateInput>(
+    gqlSchemaBuilder.inputRef<TemplateCategoryUpdateInput>(
         "TemplateCategoryUpdateInput",
     );
 

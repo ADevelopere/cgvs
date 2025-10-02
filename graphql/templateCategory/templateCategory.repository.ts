@@ -1,4 +1,4 @@
-import { db } from "@/db/db";
+import { db } from "@/db/drizzleDb";
 import { eq, inArray, max, isNull, count } from "drizzle-orm";
 import { templateCategories, templates } from "@/db/schema";
 import {
