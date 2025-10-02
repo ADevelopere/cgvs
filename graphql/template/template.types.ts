@@ -4,10 +4,10 @@ import { PageInfo } from "../pagintaion/pagintaion.types";
 import { templates } from "@/db/schema";
 import { OmitIdRelationFields } from "../helper";
 
-export type TemplateEntity = typeof templates.$inferSelect;
-export type TemplateInput = typeof templates.$inferInsert;
+export type TemplateSelectType = typeof templates.$inferSelect;
+export type TemplateInsertInput = typeof templates.$inferInsert;
 
-export type TemplateDefinition = TemplateEntity & {
+export type TemplatePothosDefintion = TemplateSelectType & {
     //relations
     category?: TemplateCategory;
     imageFile?: FileInfo | null;
@@ -18,7 +18,7 @@ export type TemplateDefinition = TemplateEntity & {
     imageUrl?: string | null;
 };
 
-export type Template = OmitIdRelationFields<TemplateDefinition>;
+export type Template = OmitIdRelationFields<TemplatePothosDefintion>;
 
 export type TemplateCreateInput = {
     name: string;
@@ -28,13 +28,13 @@ export type TemplateCreateInput = {
 
 export type TemplateUpdateInput = {
     id: number;
-    name?: string;
+    name: string;
+    categoryId: number;
     description?: string | null;
-    categoryId?: number;
     imagePath?: bigint | null;
 };
 
 export type PaginatedTemplatesResponse = {
-    data: TemplateDefinition[];
+    data: TemplatePothosDefintion[];
     pageInfo: PageInfo;
 };

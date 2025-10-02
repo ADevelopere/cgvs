@@ -1,7 +1,7 @@
 import { schemaBuilder } from "../builder";
 import {
     PaginatedTemplatesResponse,
-    TemplateDefinition,
+    TemplatePothosDefintion,
     TemplateCreateInput,
     TemplateUpdateInput,
 } from "./template.types";
@@ -10,7 +10,7 @@ import { TemplateCategoryObject } from "../templateCategory/templateCategory.obj
 import { loadTemplatesByIds } from "./template.repository";
 
 const TemplateObjectRef = schemaBuilder.loadableObjectRef<
-    TemplateDefinition,
+    TemplatePothosDefintion,
     number
 >("Template", {
     load: async (ids: number[]) => loadTemplatesByIds(ids),
@@ -83,9 +83,9 @@ const TemplateUpdateInputRef = schemaBuilder.inputRef<TemplateUpdateInput>(
 export const TemplateUpdateInputObject = TemplateUpdateInputRef.implement({
     fields: (t) => ({
         id: t.int({ required: true }),
-        name: t.string({ required: false }),
-        description: t.string({ required: false }),
+        name: t.string({ required: true }),
         categoryId: t.int({ required: true }),
+        description: t.string({ required: false }),
     }),
 });
 
