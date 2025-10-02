@@ -1,5 +1,4 @@
-import "./template";
-import "./templateCategory";
+import "./template/template.query";
 import { schemaBuilder } from "./builder";
 
 import { DateResolver, DateTimeResolver } from "graphql-scalars";
@@ -7,7 +6,7 @@ import { DateResolver, DateTimeResolver } from "graphql-scalars";
 schemaBuilder.addScalarType("Date", DateResolver, {});
 schemaBuilder.addScalarType("DateTime", DateTimeResolver, {});
 
-schemaBuilder.mutationType({});
+// schemaBuilder.mutationType({});
 
 schemaBuilder.queryType({});
 

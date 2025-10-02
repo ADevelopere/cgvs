@@ -3,9 +3,9 @@ import AddGraphQL from "@pothos/plugin-add-graphql";
 import ErrorsPlugin from "@pothos/plugin-errors";
 import ScopeAuthPlugin from "@pothos/plugin-relay";
 import WithInputPlugin from "@pothos/plugin-with-input";
-// import type { AuthContexts, BaseContext } from "./context";
-import { type DrizzleRelations, db, relations } from "@/db/db";
+import DataloaderPlugin from "@pothos/plugin-dataloader";
 import DrizzlePlugin from "@pothos/plugin-drizzle";
+import { type DrizzleRelations, db, relations } from "@/db/db";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import logger from "@/utils/logger";
@@ -33,6 +33,7 @@ export const schemaBuilder = new SchemaBuilder<PothosTypes>({
         ScopeAuthPlugin,
         WithInputPlugin,
         SimpleObjectsPlugin,
+        DataloaderPlugin,
     ],
     drizzle: {
         client: () => db,
