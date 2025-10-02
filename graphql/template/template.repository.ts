@@ -1,8 +1,14 @@
 import { db } from "@/db/db";
 import { templates } from "@/db/schema";
-import { count, eq } from "drizzle-orm";
-import { TemplateEntity } from "./template.types";
+import { count, eq, inArray } from "drizzle-orm";
+import {
+    PaginatedTemplatesResponse,
+    TemplateDefinition,
+    TemplateEntity,
+} from "./template.types";
 import logger from "@/utils/logger";
+import { PaginationArgs } from "../pagintaion/pagintaion.types";
+import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
 
 export const findTemplateByIdOrThrow = async (
     id: number,
@@ -40,4 +46,73 @@ export const findTemplates = async (opts: {
         .orderBy()
         .limit(opts.limit)
         .offset(opts.offset);
-}
+};
+
+export const loadTemplatesByIds = async (
+    ids: number[],
+): Promise<(TemplateDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+    const filteredTemplates = await db
+        .select()
+        .from(templates)
+        .where(inArray(templates.id, ids));
+
+    const categories: (TemplateDefinition | Error)[] = ids.map((id) => {
+        const matchingTemplate = filteredTemplates.find((c) => c.id === id);
+        if (!matchingTemplate) return new Error(`Template ${id} not found`);
+        return matchingTemplate;
+    });
+    return categories;
+};
+
+export const loadTemplatesForTemplateCategory = async (
+    templateCategoryId: number,
+): Promise<TemplateDefinition[]> => {
+    if (!templateCategoryId) return [];
+    const templatesForCategory = await db
+        .select()
+        .from(templates)
+        .where(eq(templates.categoryId, templateCategoryId));
+    return templatesForCategory;
+};
+
+export const findTemplatesPaginated = async (
+    paginationArgs?: PaginationArgs | null,
+): Promise<PaginatedTemplatesResponse> => {
+    const { first, skip, page, maxCount } = paginationArgs ?? {};
+
+    const total = await templatesTotalCount();
+
+    // Figure out pagination
+    const perPage = Math.min(
+        first ?? PaginationArgsDefault.first,
+        maxCount ?? PaginationArgsDefault.maxCount,
+    );
+    const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
+    const offset = (currentPage - 1) * perPage;
+
+    const templates = await findTemplates({
+        limit: perPage,
+        offset,
+    });
+
+    const length = templates.length;
+    const lastPage = Math.ceil(total / perPage);
+    const hasMorePages = currentPage < lastPage;
+
+    const result: PaginatedTemplatesResponse = {
+        data: templates,
+        pageInfo: {
+            count: length,
+            currentPage,
+            firstItem: length > 0 ? offset + 1 : null,
+            lastItem: length > 0 ? offset + length : null,
+            hasMorePages,
+            lastPage,
+            perPage,
+            total,
+        },
+    };
+
+    return result;
+};
