@@ -3,18 +3,23 @@ import {
     templatecategorySpecialTypeEnum,
 } from "@/db/schema";
 import { TemplatePothosDefintion } from "../template/template.types";
+import { OmitIdRelationFields } from "../helper";
 
 export type TemplateSpecialCategoryType =
     (typeof templatecategorySpecialTypeEnum.enumValues)[number];
 
-export type TemplateCategoryEntity = typeof templateCategories.$inferSelect;
-export type TemplateCategoryInput = typeof templateCategories.$inferInsert;
+export type TemplateCategorySelectType = typeof templateCategories.$inferSelect;
+export type TemplateCategoryInsertInput =
+    typeof templateCategories.$inferInsert;
 
-export type TemplateCategory = TemplateCategoryEntity & {
+export type TemplateCategoryPothosDefintion = TemplateCategorySelectType & {
     templates?: TemplatePothosDefintion[];
-    // parentCategory: TemplateCategory | null;
-    // subCategories: TemplateCategory[];
+    parentCategory?: TemplateCategoryPothosDefintion | null;
+    subCategories?: TemplateCategoryPothosDefintion[];
 };
+
+export type TemplateCategory =
+    OmitIdRelationFields<TemplateCategoryPothosDefintion>;
 
 export type TemplateCategoryCreateInput = {
     name: string;
@@ -24,7 +29,7 @@ export type TemplateCategoryCreateInput = {
 
 export type TemplateCategoryUpdateInput = {
     id: number;
-    name?: string;
+    name: string;
     description?: string | null;
     parentCategoryId?: number | null;
 };

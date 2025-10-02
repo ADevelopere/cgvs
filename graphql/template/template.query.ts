@@ -3,8 +3,8 @@ import {
     PaginationArgsObject,
 } from "../pagintaion/pagination.objects";
 import {
-    PaginatedTemplatesResponseObject,
-    TemplateObject,
+    PaginatedTemplatesResponsePothosObject,
+    TemplatePothosObject,
 } from "./template.objects";
 import {
     findTemplateByIdOrThrow,
@@ -13,7 +13,7 @@ import {
 
 schemaBuilder.queryFields((t) => ({
     template: t.field({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         nullable: true,
         args: {
             id: t.arg.int({ required: true }),
@@ -22,7 +22,7 @@ schemaBuilder.queryFields((t) => ({
     }),
 
     templates: t.field({
-        type: PaginatedTemplatesResponseObject,
+        type: PaginatedTemplatesResponsePothosObject,
         args: {
             pagination: t.arg({
                 type: PaginationArgsObject,

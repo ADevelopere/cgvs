@@ -1,23 +1,29 @@
 import { schemaBuilder } from "../builder";
-import { TemplateCategory } from "./templateCategory.types";
+import {
+    TemplateCategoryCreateInput,
+    TemplateCategoryPothosDefintion,
+    TemplateCategoryUpdateInput,
+} from "./templateCategory.types";
 import {
     loadSubTemplateCategoriesForCategories,
     loadTemplateCategoriesByIds,
 } from "./templateCategory.repository";
-import { TemplateObject } from "../template/template.objects";
+import { TemplatePothosObject } from "../template/template.objects";
 import { loadTemplatesForTemplateCategories } from "../template/template.repository";
 
 const TemplateCategoryObjectRef =
-    schemaBuilder.objectRef<TemplateCategory>("TemplateCategory");
+    schemaBuilder.objectRef<TemplateCategoryPothosDefintion>(
+        "TemplateCategory",
+    );
 
 export const TemplateCategoryObject = schemaBuilder.loadableObject<
-    TemplateCategory | Error, // LoadResult
+    TemplateCategoryPothosDefintion | Error, // LoadResult
     number, // Key
     [], // Interfaces
     typeof TemplateCategoryObjectRef // NameOrRef
 >(TemplateCategoryObjectRef, {
     load: async (ids: number[]) => await loadTemplateCategoriesByIds(ids),
-    sort: c => c.id,
+    sort: (c) => c.id,
     fields: (t) => ({
         id: t.exposeInt("id"),
         name: t.exposeString("name"),
@@ -26,15 +32,12 @@ export const TemplateCategoryObject = schemaBuilder.loadableObject<
         specialType: t.exposeString("specialType", { nullable: true }),
         createdAt: t.expose("createdAt", { type: "DateTime" }),
         updatedAt: t.expose("updatedAt", { type: "DateTime" }),
-        // relations
-        // parentCategory: TemplateCategory | null;
-        // subCategories: TemplateCategory[];
     }),
 });
 
 schemaBuilder.objectFields(TemplateCategoryObject, (t) => ({
     templates: t.loadableList({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         load: (ids: number[]) => loadTemplatesForTemplateCategories(ids),
         resolve: (templateCategory) => templateCategory.id,
     }),
@@ -50,3 +53,32 @@ schemaBuilder.objectFields(TemplateCategoryObject, (t) => ({
         resolve: (parentTemplateCategory) => parentTemplateCategory.id,
     }),
 }));
+
+const TemplateCategoryCreateInputRef =
+    schemaBuilder.inputRef<TemplateCategoryCreateInput>(
+        "TemplateCategoryCreateInput",
+    );
+
+export const TemplateCategoryCreateInputObject =
+    TemplateCategoryCreateInputRef.implement({
+        fields: (t) => ({
+            name: t.string({ required: true }),
+            description: t.string({ required: false }),
+            parentCategoryId: t.int({ required: false }),
+        }),
+    });
+
+const TemplateCategoryUpdateInputRef =
+    schemaBuilder.inputRef<TemplateCategoryUpdateInput>(
+        "TemplateCategoryUpdateInput",
+    );
+
+export const TemplateCategoryUpdateInputPothosObject =
+    TemplateCategoryUpdateInputRef.implement({
+        fields: (t) => ({
+            id: t.int({ required: true }),
+            name: t.string({ required: true }),
+            parentCategoryId: t.int({ required: false }),
+            description: t.string({ required: false }),
+        }),
+    });

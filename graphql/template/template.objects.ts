@@ -17,7 +17,7 @@ const TemplateObjectRef = schemaBuilder.loadableObjectRef<
     sort: (t) => t.id,
 });
 
-export const TemplateObject = TemplateObjectRef.implement({
+export const TemplatePothosObject = TemplateObjectRef.implement({
     fields: (t) => ({
         id: t.exposeID("id"),
         name: t.exposeString("name"),
@@ -49,7 +49,7 @@ export const TemplateObject = TemplateObjectRef.implement({
     }),
 });
 
-schemaBuilder.objectFields(TemplateObject, (t) => ({
+schemaBuilder.objectFields(TemplatePothosObject, (t) => ({
     category: t.loadable({
         type: TemplateCategoryObject,
         load: (ids: number[]) =>
@@ -68,7 +68,7 @@ const TemplateCreateInputRef = schemaBuilder.inputRef<TemplateCreateInput>(
     "TemplateCreateInput",
 );
 
-export const TemplateCreateInputObject = TemplateCreateInputRef.implement({
+export const TemplateCreateInputPothosObject = TemplateCreateInputRef.implement({
     fields: (t) => ({
         name: t.string({ required: true }),
         description: t.string({ required: false }),
@@ -80,7 +80,7 @@ const TemplateUpdateInputRef = schemaBuilder.inputRef<TemplateUpdateInput>(
     "UpdateTemplateInput",
 );
 
-export const TemplateUpdateInputObject = TemplateUpdateInputRef.implement({
+export const TemplateUpdateInputPothosObject = TemplateUpdateInputRef.implement({
     fields: (t) => ({
         id: t.int({ required: true }),
         name: t.string({ required: true }),
@@ -94,10 +94,10 @@ const PaginatedTemplatesResponseRef =
         "PaginatedTemplatesResponse",
     );
 
-export const PaginatedTemplatesResponseObject =
+export const PaginatedTemplatesResponsePothosObject =
     PaginatedTemplatesResponseRef.implement({
         fields: (t) => ({
-            data: t.expose("data", { type: [TemplateObject] }),
+            data: t.expose("data", { type: [TemplatePothosObject] }),
             pageInfo: t.expose("pageInfo", { type: PageInfoObject }),
         }),
     });

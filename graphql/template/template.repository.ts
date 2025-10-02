@@ -2,11 +2,10 @@ import { db } from "@/db/db";
 import { templateCategories, templates } from "@/db/schema";
 import { count, eq, inArray, max } from "drizzle-orm";
 import {
-    PaginatedTemplatesResponse,
-    TemplateCreateInput,
-    TemplatePothosDefintion,
     TemplateSelectType,
+    PaginatedTemplatesResponseSelectType,
     TemplateInsertInput,
+    TemplateCreateInput,
     TemplateUpdateInput,
 } from "./template.types";
 import logger from "@/utils/logger";
@@ -59,24 +58,24 @@ export const findTemplates = async (opts: {
 
 export const loadTemplatesByIds = async (
     ids: number[],
-): Promise<(TemplatePothosDefintion | Error)[]> => {
+): Promise<(TemplateSelectType | Error)[]> => {
     if (ids.length === 0) return [];
     const filteredTemplates = await db
         .select()
         .from(templates)
         .where(inArray(templates.id, ids));
 
-    const categories: (TemplatePothosDefintion | Error)[] = ids.map((id) => {
+    const templateList: (TemplateSelectType | Error)[] = ids.map((id) => {
         const matchingTemplate = filteredTemplates.find((c) => c.id === id);
         if (!matchingTemplate) return new Error(`Template ${id} not found`);
         return matchingTemplate;
     });
-    return categories;
+    return templateList;
 };
 
 export const loadTemplatesForTemplateCategories = async (
     templateCategoryIds: number[],
-): Promise<TemplatePothosDefintion[][]> => {
+): Promise<TemplateSelectType[][]> => {
     if (templateCategoryIds.length === 0) return [];
     const templatesList = await db
         .select()
@@ -91,7 +90,7 @@ export const loadTemplatesForTemplateCategories = async (
 
 export const findTemplatesPaginated = async (
     paginationArgs?: PaginationArgs | null,
-): Promise<PaginatedTemplatesResponse> => {
+): Promise<PaginatedTemplatesResponseSelectType> => {
     const { first, skip, page, maxCount } = paginationArgs ?? {};
 
     const total = await templatesTotalCount();
@@ -113,7 +112,7 @@ export const findTemplatesPaginated = async (
     const lastPage = Math.ceil(total / perPage);
     const hasMorePages = currentPage < lastPage;
 
-    const result: PaginatedTemplatesResponse = {
+    const result: PaginatedTemplatesResponseSelectType = {
         data: templates,
         pageInfo: {
             count: length,
@@ -130,7 +129,7 @@ export const findTemplatesPaginated = async (
     return result;
 };
 
-export const findMaxOrderByCategoryId = async (
+export const findTemplateMaxOrderByCategoryId = async (
     categoryId: number,
 ): Promise<number> => {
     const [{ maxOrder }] = await db
@@ -151,7 +150,7 @@ export const createTemplate = async (
             "Template name must be between 3 and 255 characters long.",
         );
     }
-    const newOrder = (await findMaxOrderByCategoryId(categoryId)) + 1;
+    const newOrder = (await findTemplateMaxOrderByCategoryId(categoryId)) + 1;
 
     const category = await db
         .select({
@@ -243,6 +242,8 @@ export const deleteTemplateById = async (
     id: number,
 ): Promise<TemplateSelectType> => {
     const existingTemplate = await findTemplateByIdOrThrow(id);
+
+    // todo: check dependancies before delete
 
     // Delete the template
     await db.delete(templates).where(eq(templates.id, id));

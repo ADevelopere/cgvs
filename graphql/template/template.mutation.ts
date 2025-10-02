@@ -1,8 +1,8 @@
 import { schemaBuilder } from "../builder";
 import {
-    TemplateCreateInputObject,
-    TemplateObject,
-    TemplateUpdateInputObject,
+    TemplateCreateInputPothosObject,
+    TemplatePothosObject,
+    TemplateUpdateInputPothosObject,
 } from "./template.objects";
 import {
     createTemplate,
@@ -14,24 +14,24 @@ import {
 
 schemaBuilder.mutationFields((t) => ({
     createTemplate: t.field({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         args: {
-            input: t.arg({ type: TemplateCreateInputObject, required: true }),
+            input: t.arg({ type: TemplateCreateInputPothosObject, required: true }),
         },
         resolve: async (_, args) => createTemplate(args.input),
     }),
 
     updateTemplate: t.field({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         nullable: true,
         args: {
-            input: t.arg({ type: TemplateUpdateInputObject, required: true }),
+            input: t.arg({ type: TemplateUpdateInputPothosObject, required: true }),
         },
         resolve: async (_, args) => updateTemplate(args.input),
     }),
 
     deleteTemplate: t.field({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         nullable: true,
         args: {
             id: t.arg.int({ required: true }),
@@ -40,7 +40,7 @@ schemaBuilder.mutationFields((t) => ({
     }),
 
     suspendTemplate: t.field({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         nullable: true,
         args: {
             id: t.arg.int({ required: true }),
@@ -49,7 +49,7 @@ schemaBuilder.mutationFields((t) => ({
     }),
 
     unsuspendTemplate: t.field({
-        type: TemplateObject,
+        type: TemplatePothosObject,
         nullable: true,
         args: {
             id: t.arg.int({ required: true }),
