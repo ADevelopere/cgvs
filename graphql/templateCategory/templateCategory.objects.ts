@@ -1,8 +1,11 @@
 import { schemaBuilder } from "../builder";
 import { TemplateCategory } from "./templateCategory.types";
-import { loadTemplateCategoriesByIds } from "./templateCategory.repository";
+import {
+    loadSubTemplateCategoriesForCategories,
+    loadTemplateCategoriesByIds,
+} from "./templateCategory.repository";
 import { TemplateObject } from "../template/template.objects";
-import { loadTemplatesForTemplateCategory } from "../template/template.repository";
+import { loadTemplatesForTemplateCategories } from "../template/template.repository";
 
 const TemplateCategoryObjectRef =
     schemaBuilder.objectRef<TemplateCategory>("TemplateCategory");
@@ -13,7 +16,8 @@ export const TemplateCategoryObject = schemaBuilder.loadableObject<
     [], // Interfaces
     typeof TemplateCategoryObjectRef // NameOrRef
 >(TemplateCategoryObjectRef, {
-    load: async (ids: number[]) => loadTemplateCategoriesByIds(ids),
+    load: async (ids: number[]) => await loadTemplateCategoriesByIds(ids),
+    sort: c => c.id,
     fields: (t) => ({
         id: t.exposeInt("id"),
         name: t.exposeString("name"),
@@ -29,10 +33,20 @@ export const TemplateCategoryObject = schemaBuilder.loadableObject<
 });
 
 schemaBuilder.objectFields(TemplateCategoryObject, (t) => ({
-    templates: t.field({
-        type: [TemplateObject],
-        resolve: (templateCategory) => {
-            return loadTemplatesForTemplateCategory(templateCategory.id);
-        },
+    templates: t.loadableList({
+        type: TemplateObject,
+        load: (ids: number[]) => loadTemplatesForTemplateCategories(ids),
+        resolve: (templateCategory) => templateCategory.id,
+    }),
+    parentCategory: t.loadable({
+        type: TemplateCategoryObject,
+        load: (ids: number[]) =>
+            TemplateCategoryObject.getDataloader(ids).loadMany(ids),
+        resolve: (templateCategory) => templateCategory.parentCategoryId,
+    }),
+    subCategories: t.loadableList({
+        type: TemplateCategoryObject,
+        load: (ids: number[]) => loadSubTemplateCategoriesForCategories(ids),
+        resolve: (parentTemplateCategory) => parentTemplateCategory.id,
     }),
 }));

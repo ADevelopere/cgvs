@@ -65,15 +65,19 @@ export const loadTemplatesByIds = async (
     return categories;
 };
 
-export const loadTemplatesForTemplateCategory = async (
-    templateCategoryId: number,
-): Promise<TemplateDefinition[]> => {
-    if (!templateCategoryId) return [];
-    const templatesForCategory = await db
+export const loadTemplatesForTemplateCategories = async (
+    templateCategoryIds: number[],
+): Promise<TemplateDefinition[][]> => {
+    if (templateCategoryIds.length === 0) return [];
+    const templatesList = await db
         .select()
         .from(templates)
-        .where(eq(templates.categoryId, templateCategoryId));
-    return templatesForCategory;
+        .where(inArray(templates.categoryId, templateCategoryIds))
+        .orderBy(templates.order);
+
+    return templateCategoryIds.map((categoryId) =>
+        templatesList.filter((template) => template.categoryId === categoryId),
+    );
 };
 
 export const findTemplatesPaginated = async (
