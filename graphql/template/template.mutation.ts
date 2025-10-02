@@ -1,9 +1,9 @@
-import { schemaBuilder } from "../builder";
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
     TemplateCreateInputPothosObject,
     TemplatePothosObject,
     TemplateUpdateInputPothosObject,
-} from "./template.objects";
+} from "./template.pothos";
 import {
     createTemplate,
     updateTemplate,
@@ -12,7 +12,7 @@ import {
     unsuspendTemplateById,
 } from "./template.repository";
 
-schemaBuilder.mutationFields((t) => ({
+gqlSchemaBuilder.mutationFields((t) => ({
     createTemplate: t.field({
         type: TemplatePothosObject,
         args: {

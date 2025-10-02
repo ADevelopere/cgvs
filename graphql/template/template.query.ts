@@ -1,17 +1,17 @@
-import { schemaBuilder } from "../builder";
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
     PaginationArgsObject,
 } from "../pagintaion/pagination.objects";
 import {
     PaginatedTemplatesResponsePothosObject,
     TemplatePothosObject,
-} from "./template.objects";
+} from "./template.pothos";
 import {
     findTemplateByIdOrThrow,
     findTemplatesPaginated,
 } from "./template.repository";
 
-schemaBuilder.queryFields((t) => ({
+gqlSchemaBuilder.queryFields((t) => ({
     template: t.field({
         type: TemplatePothosObject,
         nullable: true,

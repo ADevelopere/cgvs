@@ -1,21 +1,22 @@
-import { db } from "@/db/db";
+import { db } from "@/db/drizzleDb";
 
-export interface BaseContext {
+export type BaseContext = {
     user?: {
         id: number;
     };
     roles: string[];
-}
+    refreshToken?: string;
+};
 
-export interface AuthContexts {
+export type AuthContexts = {
     loggedIn: BaseContext & { user: object };
     role: BaseContext & { user: object };
-}
+};
 
 export async function createContext({
     userId,
 }: {
-    userId?: string | null;
+    userId?: number | null;
 }): Promise<BaseContext> {
     if (!userId) {
         return {
@@ -28,17 +29,15 @@ export async function createContext({
             id: true,
         },
         with: {
-            //   roles: true,
+            roles: true,
         },
         where: {
-            id: Number.parseInt(userId, 10),
+            id: userId,
         },
     });
 
     return {
         user: user ?? undefined,
-        roles:
-            // user?.roles.map((role) => role.name) ??
-            [],
+        roles: user?.roles.map((role) => role.name) ?? [],
     };
 }

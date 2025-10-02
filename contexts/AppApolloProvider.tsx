@@ -57,7 +57,7 @@ export const useAuthToken = () => {
 };
 
 // Configuration
-const CONNECTIVITY_CHECK_URL = "http://localhost:8080/health"; // Adjust this to your backend health endpoint
+const CONNECTIVITY_CHECK_URL = "/api/graphql"; // Check GraphQL endpoint availability
 const CONNECTIVITY_CHECK_TIMEOUT = 5000; // 5 seconds
 const MIN_CHECK_INTERVAL = 2000; // Minimum 2 seconds between checks
 
@@ -178,7 +178,7 @@ export const AppApolloProvider: React.FC<{
     // Create Apollo client with simple configuration
     const apolloClient = useMemo(() => {
         const httpLink = new HttpLink({
-            uri: "http://localhost:8080/graphql",
+            uri: "/api/graphql",
             credentials: "include",
         });
 

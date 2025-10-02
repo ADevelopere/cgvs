@@ -1,4 +1,4 @@
-import { db } from "@/db/db";
+import { db } from "@/db/drizzleDb";
 import { storageFiles, fileUsages, storageDirectories } from "@/db/schema/storage";
 import { eq, and, sql, inArray } from "drizzle-orm";
 import logger from "@/utils/logger";

@@ -3,27 +3,43 @@ import {
     serial,
     text,
     timestamp,
-    boolean,
     integer,
     varchar,
     index,
+    primaryKey,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm/_relations";
 
-export const users = pgTable("Users", {
+export const users = pgTable("users", {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     email: varchar("email", { length: 255 }).notNull().unique(),
-    emailVerifiedAt: timestamp("emailVerifiedAt", { precision: 3 }),
+    emailVerifiedAt: timestamp("email_verified_at", { precision: 3 }),
     password: varchar("password", { length: 255 }).notNull(),
-    isAdmin: boolean("isAdmin").notNull().default(false),
-    rememberToken: varchar("rememberToken", { length: 100 }),
-    createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-    updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+    rememberToken: varchar("remember_token", { length: 100 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
 });
 
+export const roles = pgTable("roles", {
+    id: integer("id").primaryKey(),
+    name: text("name").notNull().unique(),
+});
+
+export const userRoles = pgTable(
+    "user_roles",
+    {
+        userId: integer("user_id")
+            .notNull()
+            .references(() => users.id, { onDelete: "cascade" }),
+        roleId: integer("role_id")
+            .notNull()
+            .references(() => roles.id, { onDelete: "cascade" }),
+    },
+    (t) => [primaryKey({ columns: [t.userId, t.roleId] })],
+);
+
 export const sessions = pgTable(
-    "Session",
+    "sessions",
     {
         id: varchar("id", { length: 255 }).primaryKey(),
         userId: integer("userId"),
@@ -38,19 +54,8 @@ export const sessions = pgTable(
     ],
 );
 
-export const passwordResetTokens = pgTable("PasswordResetTokens", {
+export const passwordResetTokens = pgTable("passwordResetTokens", {
     email: varchar("email", { length: 255 }).primaryKey(),
     token: varchar("token", { length: 255 }).notNull(),
     createdAt: timestamp("createdAt", { precision: 3 }),
 });
-
-export const usersRelations = relations(users, ({ many }) => ({
-    sessions: many(sessions),
-}));
-
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-    user: one(users, {
-        fields: [sessions.userId],
-        references: [users.id],
-    }),
-}));

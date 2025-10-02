@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
-import { relations } from "./relations";
+import { relations } from "./drizzleRelations";
 import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 

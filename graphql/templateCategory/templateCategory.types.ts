@@ -3,7 +3,7 @@ import {
     templatecategorySpecialTypeEnum,
 } from "@/db/schema";
 import { TemplatePothosDefintion } from "../template/template.types";
-import { OmitIdRelationFields } from "../helper";
+import { OmitIdRelationFields } from "../gqlHelper";
 
 export type TemplateSpecialCategoryType =
     (typeof templatecategorySpecialTypeEnum.enumValues)[number];
