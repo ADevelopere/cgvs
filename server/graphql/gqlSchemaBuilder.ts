@@ -5,7 +5,7 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import WithInputPlugin from "@pothos/plugin-with-input";
 import DataloaderPlugin from "@pothos/plugin-dataloader";
 import DrizzlePlugin from "@pothos/plugin-drizzle";
-import { type DrizzleRelations, db, relations } from "@/db/drizzleDb";
+import { type DrizzleRelations, db, relations } from "@/server/db/drizzleDb";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import logger from "@/utils/logger";

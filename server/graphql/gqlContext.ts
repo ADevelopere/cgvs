@@ -1,4 +1,4 @@
-import { db } from "@/db/drizzleDb";
+import { db } from "@/server/db/drizzleDb";
 
 export type BaseContext = {
     user?: {

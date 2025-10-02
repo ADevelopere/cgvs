@@ -4,7 +4,7 @@ import {
     userRoles,
     sessions,
     passwordResetTokens,
-} from "@/db/schema";
+} from "@/server/db/schema";
 import { OmitIdRelationFields } from "../gqlHelper";
 import { PageInfo } from "../pagintaion/pagintaion.types";
 

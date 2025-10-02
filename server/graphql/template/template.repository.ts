@@ -1,5 +1,5 @@
-import { db } from "@/db/drizzleDb";
-import { templateCategories, templates } from "@/db/schema";
+import { db } from "@/server/db/drizzleDb";
+import { templateCategories, templates } from "@/server/db/schema";
 import { count, eq, inArray, max } from "drizzle-orm";
 import {
     TemplateSelectType,

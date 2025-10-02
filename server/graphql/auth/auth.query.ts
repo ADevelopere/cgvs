@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { db } from "@/db/drizzleDb";
+import { db } from "@/server/db/drizzleDb";
 import { UserPothosObject } from "./auth.pothos";
 import logger from "@/utils/logger";
 

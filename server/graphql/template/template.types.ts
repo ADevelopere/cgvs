@@ -1,7 +1,7 @@
 import { FileInfo } from "@/services/storage.types";
 import { TemplateCategoryPothosDefintion } from "../templateCategory/templateCategory.types";
 import { PageInfo } from "../pagintaion/pagintaion.types";
-import { templates } from "@/db/schema";
+import { templates } from "@/server/db/schema";
 import { OmitIdRelationFields } from "../gqlHelper";
 
 export type TemplateSelectType = typeof templates.$inferSelect;

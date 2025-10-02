@@ -1,5 +1,5 @@
-import { db } from "@/db/drizzleDb";
-import { storageFiles, fileUsages, storageDirectories } from "@/db/schema/storage";
+import { db } from "@/server/db/drizzleDb";
+import { storageFiles, fileUsages, storageDirectories } from "@/server/db/schema/storage";
 import { eq, and, sql, inArray } from "drizzle-orm";
 import logger from "@/utils/logger";
 import {
