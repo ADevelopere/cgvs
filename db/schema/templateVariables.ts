@@ -11,10 +11,8 @@ import {
     pgEnum,
     uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm/_relations";
-import { templates } from ".";
 
-export const templateVariableTypeEnum = pgEnum("TemplateVariableType", [
+export const templateVariableTypeEnum = pgEnum("template_variable_type", [
     "TEXT",
     "NUMBER",
     "DATE",
@@ -22,79 +20,53 @@ export const templateVariableTypeEnum = pgEnum("TemplateVariableType", [
 ]);
 
 export const templateVariableBases = pgTable(
-    "TemplateVariableBase",
+    "template_variable_base",
     {
         id: serial("id").primaryKey(),
-        templateId: integer("templateId").notNull(),
+        templateId: integer("template_id").notNull(),
         name: varchar("name", { length: 255 }).notNull(),
         description: text("description"),
         type: templateVariableTypeEnum("type").notNull(),
         required: boolean("required").notNull().default(false),
         order: integer("order").notNull(),
-        createdAt: timestamp("createdAt", { precision: 3 }).notNull(),
-        updatedAt: timestamp("updatedAt", { precision: 3 }).notNull(),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+        updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
     },
     (table) => [
-        uniqueIndex("TemplateVariableBase_templateId_name_key").on(
+        uniqueIndex("template_variable_base_template_id_name_key").on(
             table.templateId,
             table.name,
         ),
     ],
 );
 
-export const textTemplateVariables = pgTable("TextTemplateVariable", {
+export const textTemplateVariables = pgTable("text_template_variable", {
     id: integer("id").primaryKey(),
-    minLength: integer("minLength"),
-    maxLength: integer("maxLength"),
+    minLength: integer("min_length"),
+    maxLength: integer("max_length"),
     pattern: varchar("pattern", { length: 255 }),
-    previewValue: varchar("previewValue", { length: 255 }),
+    previewValue: varchar("preview_value", { length: 255 }),
 });
 
-export const numberTemplateVariables = pgTable("NumberTemplateVariable", {
+export const numberTemplateVariables = pgTable("number_template_variable", {
     id: integer("id").primaryKey(),
-    minValue: decimal("minValue"),
-    maxValue: decimal("maxValue"),
-    decimalPlaces: integer("decimalPlaces"),
-    previewValue: decimal("previewValue"),
+    minValue: decimal("min_value"),
+    maxValue: decimal("max_value"),
+    decimalPlaces: integer("decimal_places"),
+    previewValue: decimal("preview_value"),
 });
 
-export const dateTemplateVariables = pgTable("DateTemplateVariable", {
+export const dateTemplateVariables = pgTable("date_template_variable", {
     id: integer("id").primaryKey(),
-    minDate: timestamp("minDate", { precision: 3 }),
-    maxDate: timestamp("maxDate", { precision: 3 }),
+    minDate: timestamp("min_date", { precision: 3 }),
+    maxDate: timestamp("max_date", { precision: 3 }),
     format: varchar("format", { length: 50 }),
-    previewValue: timestamp("previewValue", { precision: 3 }),
+    previewValue: timestamp("preview_value", { precision: 3 }),
 });
 
-export const selectTemplateVariables = pgTable("SelectTemplateVariable", {
+export const selectTemplateVariables = pgTable("select_template_variable", {
     id: integer("id").primaryKey(),
     options: json("options"),
     multiple: boolean("multiple"),
-    previewValue: varchar("previewValue", { length: 255 }),
+    previewValue: varchar("preview_value", { length: 255 }),
 });
-
-export const templateVariableBasesRelations = relations(
-    templateVariableBases,
-    ({ one }) => ({
-        template: one(templates, {
-            fields: [templateVariableBases.templateId],
-            references: [templates.id],
-        }),
-        textTemplateVariable: one(textTemplateVariables, {
-            fields: [templateVariableBases.id],
-            references: [textTemplateVariables.id],
-        }),
-        numberTemplateVariable: one(numberTemplateVariables, {
-            fields: [templateVariableBases.id],
-            references: [numberTemplateVariables.id],
-        }),
-        dateTemplateVariable: one(dateTemplateVariables, {
-            fields: [templateVariableBases.id],
-            references: [dateTemplateVariables.id],
-        }),
-        selectTemplateVariable: one(selectTemplateVariables, {
-            fields: [templateVariableBases.id],
-            references: [selectTemplateVariables.id],
-        }),
-    }),
-);

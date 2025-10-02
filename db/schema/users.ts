@@ -57,5 +57,5 @@ export const sessions = pgTable(
 export const passwordResetTokens = pgTable("passwordResetTokens", {
     email: varchar("email", { length: 255 }).primaryKey(),
     token: varchar("token", { length: 255 }).notNull(),
-    createdAt: timestamp("createdAt", { precision: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }),
 });
