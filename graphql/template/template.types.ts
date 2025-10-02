@@ -1,5 +1,5 @@
 import { FileInfo } from "@/services/storage.types";
-import { TemplateCategory } from "../templateCategory/templateCategory.types";
+import { TemplateCategoryPothosDefintion } from "../templateCategory/templateCategory.types";
 import { PageInfo } from "../pagintaion/pagintaion.types";
 import { templates } from "@/db/schema";
 import { OmitIdRelationFields } from "../helper";
@@ -9,9 +9,9 @@ export type TemplateInsertInput = typeof templates.$inferInsert;
 
 export type TemplatePothosDefintion = TemplateSelectType & {
     //relations
-    category?: TemplateCategory;
+    category?: TemplateCategoryPothosDefintion;
     imageFile?: FileInfo | null;
-    preSuspensionCategory?: TemplateCategory | null;
+    preSuspensionCategory?: TemplateCategoryPothosDefintion | null;
     // variables
     // recipientGroups
     // driven
@@ -32,6 +32,11 @@ export type TemplateUpdateInput = {
     categoryId: number;
     description?: string | null;
     imagePath?: bigint | null;
+};
+
+export type PaginatedTemplatesResponseSelectType = {
+    data: TemplateSelectType[];
+    pageInfo: PageInfo;
 };
 
 export type PaginatedTemplatesResponse = {
