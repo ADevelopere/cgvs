@@ -3,7 +3,7 @@ import { eq, inArray } from "drizzle-orm";
 import { templateCategories } from "@/db/schema";
 import { TemplateCategory } from "./templateCategory.types";
 
-export const findTemplateCategoryById = async (id?: number) => {
+export const findTemplateCategoryById = async (id?: number | null) => {
     if (!id) return null;
     const category = await db
         .select()
@@ -45,3 +45,28 @@ export const loadSubTemplateCategoriesForCategories = async (
         subCategories.filter((cat) => cat.parentCategoryId === parentId),
     );
 };
+
+export const findMainTemplateCategory = async (): Promise<TemplateCategory> => {
+    const category = await db
+        .select()
+        .from(templateCategories)
+        .where(eq(templateCategories.specialType, "Main"))
+        .then((res) => res[0]);
+    if (!category) {
+        throw new Error("Main category not found.");
+    }
+    return category;
+};
+
+export const findSuspensionTemplateCategory =
+    async (): Promise<TemplateCategory> => {
+        const category = await db
+            .select()
+            .from(templateCategories)
+            .where(eq(templateCategories.specialType, "Suspension"))
+            .then((res) => res[0]);
+        if (!category) {
+            throw new Error("Suspension category not found.");
+        }
+        return category;
+    };

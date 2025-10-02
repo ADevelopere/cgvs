@@ -1,18 +1,27 @@
 import { db } from "@/db/db";
-import { templates } from "@/db/schema";
-import { count, eq, inArray } from "drizzle-orm";
+import { templateCategories, templates } from "@/db/schema";
+import { count, eq, inArray, max } from "drizzle-orm";
 import {
     PaginatedTemplatesResponse,
-    TemplateDefinition,
-    TemplateEntity,
+    TemplateCreateInput,
+    TemplatePothosDefintion,
+    TemplateSelectType,
+    TemplateInsertInput,
+    TemplateUpdateInput,
 } from "./template.types";
 import logger from "@/utils/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
+import { validateTemplateName } from "./template.utils";
+import {
+    findMainTemplateCategory,
+    findSuspensionTemplateCategory,
+    findTemplateCategoryById,
+} from "../templateCategory/templateCategory.repository";
 
 export const findTemplateByIdOrThrow = async (
     id: number,
-): Promise<TemplateEntity> => {
+): Promise<TemplateSelectType> => {
     try {
         return await db
             .select()
@@ -39,7 +48,7 @@ export const templatesTotalCount = async (): Promise<number> => {
 export const findTemplates = async (opts: {
     limit: number;
     offset: number;
-}): Promise<TemplateEntity[]> => {
+}): Promise<TemplateSelectType[]> => {
     return await db
         .select()
         .from(templates)
@@ -50,14 +59,14 @@ export const findTemplates = async (opts: {
 
 export const loadTemplatesByIds = async (
     ids: number[],
-): Promise<(TemplateDefinition | Error)[]> => {
+): Promise<(TemplatePothosDefintion | Error)[]> => {
     if (ids.length === 0) return [];
     const filteredTemplates = await db
         .select()
         .from(templates)
         .where(inArray(templates.id, ids));
 
-    const categories: (TemplateDefinition | Error)[] = ids.map((id) => {
+    const categories: (TemplatePothosDefintion | Error)[] = ids.map((id) => {
         const matchingTemplate = filteredTemplates.find((c) => c.id === id);
         if (!matchingTemplate) return new Error(`Template ${id} not found`);
         return matchingTemplate;
@@ -67,7 +76,7 @@ export const loadTemplatesByIds = async (
 
 export const loadTemplatesForTemplateCategories = async (
     templateCategoryIds: number[],
-): Promise<TemplateDefinition[][]> => {
+): Promise<TemplatePothosDefintion[][]> => {
     if (templateCategoryIds.length === 0) return [];
     const templatesList = await db
         .select()
@@ -119,4 +128,185 @@ export const findTemplatesPaginated = async (
     };
 
     return result;
+};
+
+export const findMaxOrderByCategoryId = async (
+    categoryId: number,
+): Promise<number> => {
+    const [{ maxOrder }] = await db
+        .select({ maxOrder: max(templates.order) })
+        .from(templates)
+        .where(eq(templates.categoryId, categoryId));
+    return maxOrder ?? 0;
+};
+
+export const createTemplate = async (
+    input: TemplateCreateInput,
+): Promise<TemplateSelectType> => {
+    const { name, description, categoryId } = input;
+
+    // Validate name length
+    if (name.length < 3 || name.length > 255) {
+        throw new Error(
+            "Template name must be between 3 and 255 characters long.",
+        );
+    }
+    const newOrder = (await findMaxOrderByCategoryId(categoryId)) + 1;
+
+    const category = await db
+        .select({
+            id: templateCategories.id,
+            specialType: templateCategories.specialType,
+        })
+        .from(templateCategories)
+        .where(eq(templateCategories.id, categoryId))
+        .then((res) => res[0]);
+
+    // Validate category exists
+    if (!category) {
+        throw new Error(`Category with ID ${categoryId} does not exist.`);
+    }
+
+    // Validate not suspension category
+    if (category.specialType === "Suspension") {
+        throw new Error("Cannot create template in a suspension category.");
+    }
+
+    const [newTemplate] = await db
+        .insert(templates)
+        .values({
+            name,
+            description,
+            categoryId,
+            order: newOrder,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        })
+        .returning();
+
+    return newTemplate;
+};
+
+export const updateTemplate = async (
+    input: TemplateUpdateInput,
+): Promise<TemplateSelectType> => {
+    const {
+        id,
+        name,
+        categoryId: newCategoryId,
+        description,
+        //  _imagePath
+    } = input;
+    // Find existing template
+    const existingTemplate = await findTemplateByIdOrThrow(id);
+    validateTemplateName(existingTemplate.name);
+
+    const currentCategoryId = existingTemplate.categoryId;
+    if (currentCategoryId != newCategoryId) {
+        // Validate category exists if provided
+        const category = await findTemplateCategoryById(newCategoryId);
+        if (!category) {
+            throw new Error(
+                `Category with ID ${newCategoryId} does not exist.`,
+            );
+        }
+
+        // Validate not suspension category
+        if (category.specialType === "Suspension") {
+            throw new Error(
+                "updateTemplate: Cannot move template to a suspension category.",
+            );
+        }
+    }
+
+    // TODO: Add image file handling
+    // This would require implementing storage service
+
+    const updateData: Partial<TemplateInsertInput> = {
+        name: name,
+        categoryId: newCategoryId,
+        updatedAt: new Date(),
+        description: description,
+        // TODO: Handle imagePath -> imageFileId conversion
+    };
+
+    const [updatedTemplate] = await db
+        .update(templates)
+        .set(updateData)
+        .where(eq(templates.id, id))
+        .returning();
+
+    return updatedTemplate;
+};
+
+export const deleteTemplateById = async (
+    id: number,
+): Promise<TemplateSelectType> => {
+    const existingTemplate = await findTemplateByIdOrThrow(id);
+
+    // Delete the template
+    await db.delete(templates).where(eq(templates.id, id));
+
+    // Return the template data as a simple object
+    return existingTemplate;
+};
+
+export const suspendTemplateById = async (
+    id: number,
+): Promise<TemplateSelectType> => {
+    // Find existing template
+    const existingTemplate = await findTemplateByIdOrThrow(id);
+
+    const suspensionCategory = await findSuspensionTemplateCategory();
+
+    const suspensionCategoryId = suspensionCategory.id;
+
+    if (existingTemplate.categoryId === suspensionCategoryId) {
+        throw new Error(`Template with ID ${id} is already suspended.`);
+    }
+
+    const [updatedTemplate] = await db
+        .update(templates)
+        .set({
+            categoryId: suspensionCategoryId,
+            preSuspensionCategoryId: existingTemplate.categoryId,
+            updatedAt: new Date(),
+        })
+        .where(eq(templates.id, id))
+        .returning();
+
+    return updatedTemplate;
+};
+
+export const unsuspendTemplateById = async (
+    id: number,
+): Promise<TemplateSelectType> => {
+    // Find existing template
+    const existingTemplate = await findTemplateByIdOrThrow(id);
+
+    const suspensionCategoryId = (await findSuspensionTemplateCategory()).id;
+    const mainCategoryId = (await findMainTemplateCategory()).id;
+
+    // Validate it is suspended
+    if (existingTemplate.categoryId !== suspensionCategoryId) {
+        throw new Error(`Template with ID ${id} is not suspended.`);
+    }
+
+    const preSuspensionCategory = await findTemplateCategoryById(
+        existingTemplate.preSuspensionCategoryId,
+    );
+
+    const targetCategoryId = preSuspensionCategory?.id || mainCategoryId;
+
+    const [updatedTemplate] = await db
+        .update(templates)
+        .set({
+            categoryId: targetCategoryId,
+            preSuspensionCategoryId: null,
+            updatedAt: new Date(),
+        })
+        .where(eq(templates.id, id))
+        .returning();
+
+    return updatedTemplate;
 };
