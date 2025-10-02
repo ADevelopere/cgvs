@@ -1,11 +1,11 @@
-import "@/graphql/auth/auth.query";
-import "@/graphql/auth/auth.mutation";
+import "@/graphql/server/auth/auth.query";
+import "@/graphql/server/auth/auth.mutation";
 
-import "@/graphql/template/template.query";
-import "@/graphql/template/template.mutation";
+import "@/graphql/server/template/template.query";
+import "@/graphql/server/template/template.mutation";
 
-import "@/graphql/templateCategory/templateCategory.query";
-import "@/graphql/templateCategory/templateCategory.mutation";
+import "@/graphql/server/templateCategory/templateCategory.query";
+import "@/graphql/server/templateCategory/templateCategory.mutation";
 
 import { gqlSchemaBuilder } from "./gqlSchemaBuilder";
 
