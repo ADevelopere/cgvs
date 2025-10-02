@@ -1,7 +1,7 @@
 import {
     templateCategories,
     templatecategorySpecialTypeEnum,
-} from "@/db/schema";
+} from "@/server/db/schema";
 import { TemplatePothosDefintion } from "../template/template.types";
 import { OmitIdRelationFields } from "../gqlHelper";
 

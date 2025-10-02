@@ -1,5 +1,5 @@
-import { db } from "@/db/drizzleDb";
-import { users } from "@/db/schema";
+import { db } from "@/server/db/drizzleDb";
+import { users } from "@/server/db/schema";
 import { count, eq, inArray } from "drizzle-orm";
 import {
     UserSelectType,

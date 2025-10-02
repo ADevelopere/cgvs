@@ -1,6 +1,6 @@
-import { db } from "@/db/drizzleDb";
+import { db } from "@/server/db/drizzleDb";
 import { eq, inArray, max, isNull, count } from "drizzle-orm";
-import { templateCategories, templates } from "@/db/schema";
+import { templateCategories, templates } from "@/server/db/schema";
 import {
     TemplateCategoryCreateInput,
     TemplateCategoryInsertInput,
