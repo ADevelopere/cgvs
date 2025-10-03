@@ -12,11 +12,11 @@ import EditableTypography from "@/client/components/input/EditableTypography";
 import { Boxes } from "lucide-react";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import useAppTranslation from "@/locale/useAppTranslation";
-import { TemplateCategory } from "@/graphql/generated/types";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import CategoryEditDialog from "./CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
 import { TreeView } from "@/client/components/treeView/TreeView";
+import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
     const { theme } = useAppTheme();

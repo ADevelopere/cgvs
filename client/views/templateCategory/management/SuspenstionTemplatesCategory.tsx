@@ -5,7 +5,7 @@ import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { formatDate } from "@/utils/dateUtils";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
@@ -102,7 +102,9 @@ const SuspenstionTemplatesCategory: React.FC = () => {
         id: template.id,
         name: template.name,
         createdAt: template.createdAt,
-        imageUrl: template.imageUrl ?? null,
+        // todo
+        // imageUrl: template.imageUrl ?? null,
+        imageUrl:  null,
     }));
 
     const appBarHeight = useAppBarHeight();

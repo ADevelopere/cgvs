@@ -19,7 +19,7 @@ import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
 import isValidEmail from "@/utils/email";
 import useAppTranslation from "@/client/locale/useAppTranslation";
-import AuthTranslations from "@/client/locale/components/Auth";
+import { AuthTranslations } from "@/client/locale/components";
 import { useRouter } from "next/navigation";
 
 const LoginForm: React.FC = () => {

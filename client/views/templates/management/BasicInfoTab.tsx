@@ -21,8 +21,7 @@ import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
-import useAppTranslation from "@/locale/useAppTranslation";
-import { UpdateTemplateInput, FileInfo } from "@/graphql/generated/types";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import Image from "next/image";
 
@@ -66,7 +65,8 @@ const BasicInfoTab: React.FC = () => {
             setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                imageUrl: template.imageUrl,
+                // todo
+                // imageUrl: template.imageUrl,
             });
         }
     }, [template]);
@@ -79,7 +79,8 @@ const BasicInfoTab: React.FC = () => {
         const originalData: FormDataType = {
             name: template.name,
             description: template.description,
-            imageUrl: template.imageUrl,
+            // todo
+            // imageUrl: template.imageUrl,
         };
 
         const currentData = formData;

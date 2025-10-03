@@ -19,10 +19,10 @@ import EmptyStateIllustration from "@/client/components/common/EmptyStateIllustr
 import EditableTypography from "@/client/components/input/EditableTypography";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import useAppTranslation from "@/locale/useAppTranslation";
-import { Template } from "@/graphql/generated/types";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import TemplateEditDialog from "./TemplateEditDialog";
 import { mapTemplateToUpdateInput } from "@/utils/template/template-mappers";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
