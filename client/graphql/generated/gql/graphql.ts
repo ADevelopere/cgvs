@@ -161,27 +161,27 @@ export type RefreshTokenResponse = {
 export type Template = {
   __typename?: 'Template';
   category?: Maybe<TemplateCategory>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  order?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
   preSuspensionCategory?: Maybe<TemplateCategory>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type TemplateCategory = {
   __typename?: 'TemplateCategory';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
   parentCategory?: Maybe<TemplateCategory>;
   specialType?: Maybe<Scalars['String']['output']>;
   subCategories?: Maybe<Array<TemplateCategory>>;
   templates?: Maybe<Array<Template>>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type TemplateCategoryCreateInput = {
@@ -230,7 +230,7 @@ export type User = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   emailVerifiedAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -238,26 +238,26 @@ export type User = {
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: string | null, name?: string | null, updatedAt?: any | null } | null };
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null };
 
 export type UserQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: string | null, name?: string | null, updatedAt?: any | null } | null };
+export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: string | null, name?: string | null, updatedAt?: any | null }> | null };
+export type UsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null }> | null };
 
 export type LoginMutationVariables = Exact<{
   input: LoginInput;
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: string | null, name?: string | null, updatedAt?: any | null } | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -267,21 +267,21 @@ export type LogoutMutation = { __typename?: 'Mutation', logout?: boolean | null 
 export type RefreshTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken?: { __typename?: 'RefreshTokenResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: string | null, name?: string | null, updatedAt?: any | null } | null } | null };
+export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken?: { __typename?: 'RefreshTokenResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null } | null };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null } | null };
+export type TemplateQuery = { __typename?: 'Query', template?: { __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type TemplatesQueryVariables = Exact<{
   pagination?: InputMaybe<PaginationArgs>;
 }>;
 
 
-export type TemplatesQuery = { __typename?: 'Query', templates?: { __typename?: 'PaginatedTemplatesResponse', data?: Array<{ __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null }> | null, pageInfo?: { __typename?: 'PageInfo', count?: number | null, currentPage?: number | null, firstItem?: number | null, hasMorePages?: boolean | null, lastItem?: number | null, lastPage?: number | null, perPage?: number | null, total?: number | null } | null } | null };
+export type TemplatesQuery = { __typename?: 'Query', templates?: { __typename?: 'PaginatedTemplatesResponse', data?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null }> | null, pageInfo?: { __typename?: 'PageInfo', count?: number | null, currentPage?: number | null, firstItem?: number | null, hasMorePages?: boolean | null, lastItem?: number | null, lastPage?: number | null, perPage?: number | null, total?: number | null } | null } | null };
 
 export type TemplatesConfigsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -293,78 +293,78 @@ export type CreateTemplateMutationVariables = Exact<{
 }>;
 
 
-export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate?: { __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null } | null };
+export type CreateTemplateMutation = { __typename?: 'Mutation', createTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UpdateTemplateMutationVariables = Exact<{
   input: UpdateTemplateInput;
 }>;
 
 
-export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null } | null };
+export type UpdateTemplateMutation = { __typename?: 'Mutation', updateTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type DeleteTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate?: { __typename?: 'Template', id?: string | null, name?: string | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null } | null };
+export type DeleteTemplateMutation = { __typename?: 'Mutation', deleteTemplate?: { __typename?: 'Template', id: number, name: string, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type SuspendTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null } | null };
+export type SuspendTemplateMutation = { __typename?: 'Mutation', suspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type UnsuspendTemplateMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null } | null };
+export type UnsuspendTemplateMutation = { __typename?: 'Mutation', unsuspendTemplate?: { __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any, category?: { __typename?: 'TemplateCategory', id: number, name: string } | null, preSuspensionCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null } | null };
 
 export type MainTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, subCategories?: Array<{ __typename?: 'TemplateCategory', id?: number | null, name?: string | null }> | null } | null };
+export type MainTemplateCategoryQuery = { __typename?: 'Query', mainTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, specialType?: string | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, subCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> | null } | null };
 
 export type SuspensionTemplateCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspensionTemplateCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, subCategories?: Array<{ __typename?: 'TemplateCategory', id?: number | null, name?: string | null }> | null } | null };
+export type SuspensionTemplateCategoryQuery = { __typename?: 'Query', suspensionTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, specialType?: string | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, subCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> | null } | null };
 
 export type TemplateCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories?: Array<{ __typename?: 'TemplateCategory', id?: number | null, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null } | null, templates?: Array<{ __typename?: 'Template', id?: string | null, name?: string | null, description?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null }> | null }> | null };
+export type TemplateCategoriesQuery = { __typename?: 'Query', templateCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, specialType?: string | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null, templates?: Array<{ __typename?: 'Template', id: number, name: string, description?: string | null, order: number, createdAt: any, updatedAt: any }> | null }> | null };
 
 export type TemplateCategoryQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null } | null, subCategories?: Array<{ __typename?: 'TemplateCategory', id?: number | null, name?: string | null }> | null } | null };
+export type TemplateCategoryQuery = { __typename?: 'Query', templateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, specialType?: string | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number, name: string } | null, subCategories?: Array<{ __typename?: 'TemplateCategory', id: number, name: string }> | null } | null };
 
 export type CreateTemplateCategoryMutationVariables = Exact<{
   input: TemplateCategoryCreateInput;
 }>;
 
 
-export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null } | null } | null };
+export type CreateTemplateCategoryMutation = { __typename?: 'Mutation', createTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, specialType?: string | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } | null };
 
 export type DeleteTemplateCategoryMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null } | null } | null };
+export type DeleteTemplateCategoryMutation = { __typename?: 'Mutation', deleteTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } | null };
 
 export type UpdateTemplateCategoryMutationVariables = Exact<{
   input: TemplateCategoryUpdateInput;
 }>;
 
 
-export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory?: { __typename?: 'TemplateCategory', id?: number | null, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id?: number | null } | null } | null };
+export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name: string, description?: string | null, specialType?: string | null, order?: number | null, createdAt: any, updatedAt: any, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } | null };
 
 
 export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;

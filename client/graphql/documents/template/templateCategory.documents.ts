@@ -1,13 +1,7 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
-import {
-    MutationCreateTemplateCategoryArgs,
-    MutationDeleteTemplateCategoryArgs,
-    MutationUpdateTemplateCategoryArgs,
-    QueryTemplateCategoryArgs,
-    TemplateCategory,
-} from "../../generated/gql/graphql";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const mainTemplateCategoryQueryDocument: TypedDocumentNode<TemplateCategory> = gql`
+export const mainTemplateCategoryQueryDocument: TypedDocumentNode<Graphql.MainTemplateCategoryQuery> = gql`
     query mainTemplateCategory {
         mainTemplateCategory {
             id
@@ -29,7 +23,7 @@ export const mainTemplateCategoryQueryDocument: TypedDocumentNode<TemplateCatego
     }
 `;
 
-export const suspenionTemplateCategoryQueryDocument: TypedDocumentNode<TemplateCategory> = gql`
+export const suspenionTemplateCategoryQueryDocument: TypedDocumentNode<Graphql.SuspensionTemplateCategoryQuery> = gql`
     query suspensionTemplateCategory {
         suspensionTemplateCategory {
             id
@@ -51,36 +45,35 @@ export const suspenionTemplateCategoryQueryDocument: TypedDocumentNode<TemplateC
     }
 `;
 
-export const templateCategoriesQueryDocument: TypedDocumentNode<TemplateCategory[]> =
-    gql`
-        query templateCategories {
-            templateCategories {
+export const templateCategoriesQueryDocument: TypedDocumentNode<Graphql.TemplateCategoriesQuery> = gql`
+    query templateCategories {
+        templateCategories {
+            id
+            name
+            description
+            specialType
+            parentCategory {
+                id
+            }
+            order
+            templates {
                 id
                 name
                 description
-                specialType
-                parentCategory {
-                    id
-                }
+                # imageUrl
                 order
-                templates {
-                    id
-                    name
-                    description
-                    # imageUrl
-                    order
-                    createdAt
-                    updatedAt
-                }
                 createdAt
                 updatedAt
             }
+            createdAt
+            updatedAt
         }
-    `;
+    }
+`;
 
 export const templateCategoryQueryDocument: TypedDocumentNode<
-    TemplateCategory,
-    QueryTemplateCategoryArgs
+    Graphql.TemplateCategoryQuery,
+    Graphql.TemplateCategoryQueryVariables
 > = gql`
     query templateCategory($id: Int!) {
         templateCategory(id: $id) {
@@ -104,8 +97,8 @@ export const templateCategoryQueryDocument: TypedDocumentNode<
 `;
 
 export const createTemplateCategoryMutationDocument: TypedDocumentNode<
-    TemplateCategory,
-    MutationCreateTemplateCategoryArgs
+    Graphql.CreateTemplateCategoryMutation,
+    Graphql.CreateTemplateCategoryMutationVariables
 > = gql`
     mutation createTemplateCategory($input: TemplateCategoryCreateInput!) {
         createTemplateCategory(input: $input) {
@@ -124,8 +117,8 @@ export const createTemplateCategoryMutationDocument: TypedDocumentNode<
 `;
 
 export const deleteTemplateCategoryMutationDocument: TypedDocumentNode<
-    TemplateCategory,
-    MutationDeleteTemplateCategoryArgs
+    Graphql.DeleteTemplateCategoryMutation,
+    Graphql.DeleteTemplateCategoryMutationVariables
 > = gql`
     mutation deleteTemplateCategory($id: Int!) {
         deleteTemplateCategory(id: $id) {
@@ -139,8 +132,8 @@ export const deleteTemplateCategoryMutationDocument: TypedDocumentNode<
 `;
 
 export const updateTemplateCategoryMutationDocument: TypedDocumentNode<
-    TemplateCategory,
-    MutationUpdateTemplateCategoryArgs
+    Graphql.UpdateTemplateCategoryMutation,
+    Graphql.UpdateTemplateCategoryMutationVariables
 > = gql`
     mutation updateTemplateCategory($input: TemplateCategoryUpdateInput!) {
         updateTemplateCategory(input: $input) {

@@ -1,10 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useCallback, useMemo } from "react";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { ApolloLink } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
 import * as Document from "@/client/graphql/documents";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 type TemplateGraphQLContextType = {
     /**
@@ -12,25 +12,25 @@ type TemplateGraphQLContextType = {
      * @param variables - The template query variables
      */
     templateQuery: (
-        variables: Graphql.QueryTemplateArgs,
-    ) => Promise<Graphql.Template>;
+        variables: Graphql.TemplateQueryVariables,
+    ) => Promise<Graphql.TemplateQuery>;
 
     /**
      * Query to get paginated templates
      * @param variables - The templates query variables
      */
     paginatedTemplatesQuery: (
-        variables: Graphql.QueryTemplatesArgs,
-    ) => Promise<Graphql.PaginatedTemplatesResponse>;
+        variables: Graphql.TemplatesQueryVariables,
+    ) => Promise<Graphql.TemplatesQuery>;
 
-    templateConfigQuery: () => Promise<Graphql.TemplatesConfigs>;
+    templateConfigQuery: () => Promise<Graphql.TemplatesConfigsQuery>;
 
     /**
      * Mutation to create a new template
      * @param variables - The creation template variables
      */
     createTemplateMutation: (
-        variables: Graphql.MutationCreateTemplateArgs,
+        variables: Graphql.CreateTemplateMutationVariables,
     ) => Promise<ApolloLink.Result<Graphql.CreateTemplateMutation>>;
 
     /**
@@ -62,7 +62,7 @@ type TemplateGraphQLContextType = {
      * @param variables - The template ID to restore
      */
     unsuspendTemplateMutation: (
-        variables: Graphql.MutationUnsuspendTemplateArgs,
+        variables: Graphql.UnsuspendTemplateMutationVariables,
     ) => Promise<ApolloLink.Result<Graphql.UnsuspendTemplateMutation>>;
 };
 
@@ -137,291 +137,315 @@ export const TemplateGraphQLProvider: React.FC<{
     // Create template mutation
     const [mutateCreate] = useMutation(Document.createTemplateQueryDocument, {
         update(cache, { data }) {
-            if (!data) return;
+            if (!data?.createTemplate) return;
+            const createTemplate = data.createTemplate;
 
-            const templateCategories = cache.readQuery<
-                Graphql.TemplateCategory[]
-            >({
-                query: Document.templateCategoriesQueryDocument,
-            });
+            const existingData =
+                cache.readQuery<Graphql.TemplateCategoriesQuery>({
+                    query: Graphql.TemplateCategoriesDocument,
+                });
 
-            if (!templateCategories) return;
+            if (!existingData?.templateCategories) return;
 
-            const categoryToUpdate = templateCategories.find(
-                (category) => category.id === data.category?.id,
+            const categoryToUpdate = existingData.templateCategories.find(
+                (category) => category.id === createTemplate?.category?.id,
             );
 
             if (!categoryToUpdate) return;
 
-            const updatedCategories = templateCategories.map((category) => {
-                if (category.id === categoryToUpdate.id) {
-                    return {
-                        ...category,
-                        templates: [...(category.templates || []), data],
-                    };
-                }
-                return category;
-            });
+            const updatedCategories = existingData.templateCategories.map(
+                (category) => {
+                    if (category.id === categoryToUpdate.id) {
+                        const templates: Graphql.Template[] = [
+                            ...(category.templates || []),
+                            createTemplate,
+                        ];
+                        // Prevent duplicates
+                        return {
+                            ...category,
+                            templates: templates,
+                        };
+                    }
+                    return category;
+                },
+            );
 
             cache.writeQuery({
-                query: Document.templateCategoriesQueryDocument,
-                data: updatedCategories,
+                query: Graphql.TemplateCategoriesDocument,
+                data: {
+                    templateCategories: updatedCategories,
+                },
             });
         },
     });
 
     // Update template mutation
-    const [mutateUpdate] = useMutation(Document.updateTemplateMutationDocument, {
-        update(cache, { data }) {
-            if (!data) return;
+    const [mutateUpdate] = useMutation(
+        Document.updateTemplateMutationDocument,
+        {
+            update(cache, { data }) {
+                if (!data?.updateTemplate) return;
 
-            const updatedTemplate = data;
+                const updatedTemplate = data.updateTemplate;
 
-            const templateCategories = cache.readQuery<
-                Graphql.TemplateCategory[]
-            >({
-                query: Document.templateCategoriesQueryDocument,
-            });
+                const existingData =
+                    cache.readQuery<Graphql.TemplateCategoriesQuery>({
+                        query: Graphql.TemplateCategoriesDocument,
+                    });
 
-            if (!templateCategories) return;
+                if (!existingData?.templateCategories) return;
 
-            // Find the template in its original category to preserve all fields
-            let existingTemplate: Partial<Graphql.Template> | null = null;
-            let oldCategoryId: number | null | undefined = null;
-            templateCategories.forEach((category) => {
-                if (!category.templates) return;
-                const found = category.templates.find(
-                    (t) => t.id === updatedTemplate.id,
+                // Find the template in its original category to preserve all fields
+                let existingTemplate: Partial<Graphql.Template> | null = null;
+                let oldCategoryId: number | null | undefined = null;
+                existingData.templateCategories.forEach((category) => {
+                    if (!category.templates) return;
+                    const found = category.templates.find(
+                        (t) => t.id === updatedTemplate.id,
+                    );
+                    if (found) {
+                        existingTemplate = found;
+                        oldCategoryId = category.id;
+                    }
+                });
+
+                const updatedCategories = existingData.templateCategories.map(
+                    (category) => {
+                        const templates = category.templates || [];
+
+                        // If this is the new category, and it's different from the old one
+                        if (
+                            category.id === updatedTemplate.category?.id &&
+                            oldCategoryId !== category.id
+                        ) {
+                            return {
+                                ...category,
+                                templates: [
+                                    ...templates,
+                                    {
+                                        ...existingTemplate,
+                                        ...updatedTemplate,
+                                    },
+                                ],
+                            };
+                        }
+
+                        // If this is the old category and template is moving to a new one
+                        if (
+                            oldCategoryId === category.id &&
+                            updatedTemplate.category?.id !== category.id
+                        ) {
+                            return {
+                                ...category,
+                                templates: templates.filter(
+                                    (t) => t.id !== updatedTemplate.id,
+                                ),
+                            };
+                        }
+
+                        // If the template is staying in the same category, just update it
+                        if (category.id === updatedTemplate.category?.id) {
+                            return {
+                                ...category,
+                                templates: templates.map((template) => {
+                                    if (template.id === updatedTemplate.id) {
+                                        return {
+                                            ...template,
+                                            ...updatedTemplate,
+                                        };
+                                    }
+                                    return template;
+                                }),
+                            };
+                        }
+
+                        return category;
+                    },
                 );
-                if (found) {
-                    existingTemplate = found;
-                    oldCategoryId = category.id;
-                }
-            });
 
-            const updatedCategories = templateCategories.map((category) => {
-                const templates = category.templates || [];
-
-                    // If this is the new category, and it's different from the old one
-                    if (
-                        category.id === updatedTemplate.category?.id &&
-                        oldCategoryId !== category.id
-                    ) {
-                        return {
-                            ...category,
-                            templates: [
-                                ...templates,
-                                {
-                                    ...existingTemplate,
-                                    ...data,
-                                },
-                            ],
-                        };
-                    }
-
-                    // If this is the old category and template is moving to a new one
-                    if (
-                        oldCategoryId === category.id &&
-                        updatedTemplate.category?.id !== category.id
-                    ) {
-                        return {
-                            ...category,
-                            templates: templates.filter(
-                                (t) => t.id !== updatedTemplate.id,
-                            ),
-                        };
-                    }
-
-                    // If the template is staying in the same category, just update it
-                    if (category.id === updatedTemplate.category?.id) {
-                        return {
-                            ...category,
-                            templates: templates.map((template) => {
-                                if (template.id === updatedTemplate.id) {
-                                    return {
-                                        ...template,
-                                        ...data,
-                                    };
-                                }
-                                return template;
-                            }),
-                        };
-                    }
-
-                    return category;
-                },
-            );
-
-            cache.writeQuery({
-                query: Graphql.TemplateCategoriesDocument,
-                data: {
-                    templateCategories: updatedCategories,
-                },
-            });
+                cache.writeQuery({
+                    query: Graphql.TemplateCategoriesDocument,
+                    data: {
+                        templateCategories: updatedCategories,
+                    },
+                });
+            },
         },
-    });
+    );
 
     // Delete template mutation
-    const [mutateDelete] = Graphql.useDeleteTemplateMutation({
-        update(cache, { data }) {
-            if (!data?.deleteTemplate) return;
+    const [mutateDelete] = useMutation(
+        Document.deleteTemplateMutationDocument,
+        {
+            update(cache, { data }) {
+                if (!data?.deleteTemplate) return;
 
-            const deletedTemplate = data.deleteTemplate;
+                const deletedTemplate = data.deleteTemplate;
 
-            const existingData =
-                cache.readQuery<Graphql.TemplateCategoriesQuery>({
-                    query: Graphql.TemplateCategoriesDocument,
-                });
+                const existingData =
+                    cache.readQuery<Graphql.TemplateCategoriesQuery>({
+                        query: Graphql.TemplateCategoriesDocument,
+                    });
 
-            if (!existingData?.templateCategories) return;
+                if (!existingData?.templateCategories) return;
 
-            const updatedCategories = existingData.templateCategories.map(
-                (category) => {
-                    if (!category.templates) return category;
-
-                    return {
-                        ...category,
-                        templates: category.templates.filter(
-                            (template: { id: number }) =>
-                                template.id !== deletedTemplate.id,
-                        ),
-                    };
-                },
-            );
-
-            cache.writeQuery({
-                query: Graphql.TemplateCategoriesDocument,
-                data: {
-                    templateCategories: updatedCategories,
-                },
-            });
-        },
-    });
-
-    // Move to deletion category mutation
-    const [mutateSuspendTemplate] = Graphql.useSuspendTemplateMutation({
-        update(cache, { data }) {
-            if (!data?.suspendTemplate) return;
-
-            const suspendedTemplate = data.suspendTemplate;
-
-            const existingData =
-                cache.readQuery<Graphql.TemplateCategoriesQuery>({
-                    query: Graphql.TemplateCategoriesDocument,
-                });
-
-            if (!existingData?.templateCategories) return;
-
-            // Find the template in its original category to preserve all fields
-            let existingTemplate: Partial<Graphql.Template> | null = null;
-            existingData.templateCategories.forEach((category) => {
-                if (!category.templates) return;
-                const found = category.templates.find(
-                    (t) => t.id === suspendedTemplate.id,
-                );
-                if (found) existingTemplate = found;
-            });
-
-            const updatedCategories = existingData.templateCategories.map(
-                (category) => {
-                    if (!category.templates) return category;
-
-                    if (category.categorySpecialType === "Suspension") {
-                        return {
-                            ...category,
-                            templates: [
-                                ...category.templates,
-                                // Merge existing template data with update data
-                                {
-                                    ...existingTemplate,
-                                    ...data.suspendTemplate,
-                                },
-                            ],
-                        };
-                    }
-                    return {
-                        ...category,
-                        templates: category.templates.filter(
-                            (template: { id: number }) =>
-                                template.id !== suspendedTemplate.id,
-                        ),
-                    };
-                },
-            );
-
-            cache.writeQuery({
-                query: Graphql.TemplateCategoriesDocument,
-                data: {
-                    templateCategories: updatedCategories,
-                },
-            });
-        },
-    });
-
-    // Restore template mutation
-    const [mutateUnsuspendTemplate] = Graphql.useUnsuspendTemplateMutation({
-        update(cache, { data }) {
-            if (!data?.unsuspendTemplate) return;
-
-            const unsuspendedTemplate = data.unsuspendTemplate;
-
-            const existingData =
-                cache.readQuery<Graphql.TemplateCategoriesQuery>({
-                    query: Graphql.TemplateCategoriesDocument,
-                });
-
-            if (!existingData?.templateCategories) return;
-
-            // Find the template in deletion category to preserve all fields
-            let existingTemplate: Partial<Graphql.Template> | null | undefined =
-                null;
-            const suspensionCategory = existingData.templateCategories.find(
-                (cat) => cat.categorySpecialType === "Suspension",
-            );
-            if (suspensionCategory?.templates) {
-                existingTemplate = suspensionCategory.templates.find(
-                    (t) => t.id === unsuspendedTemplate.id,
-                );
-            }
-
-            const updatedCategories = existingData.templateCategories.map(
-                (category) => {
-                    if (!category.templates) return category;
-
-                    if (category.id === unsuspendedTemplate.category.id) {
-                        return {
-                            ...category,
-                            templates: [
-                                ...category.templates,
-                                // Merge existing template data with update data
-                                {
-                                    ...existingTemplate,
-                                    ...unsuspendedTemplate,
-                                },
-                            ],
-                        };
-                    }
-                    if (category.categorySpecialType === "Suspension") {
+                const updatedCategories = existingData.templateCategories.map(
+                    (category) => {
+                        if (!category.templates) return category;
                         return {
                             ...category,
                             templates: category.templates.filter(
-                                (template: { id: number }) =>
-                                    template.id !== unsuspendedTemplate.id,
+                                (template) =>
+                                    template.id !== deletedTemplate.id,
                             ),
                         };
-                    }
-                    return category;
-                },
-            );
+                    },
+                );
 
-            cache.writeQuery({
-                query: Graphql.TemplateCategoriesDocument,
-                data: {
-                    templateCategories: updatedCategories,
-                },
-            });
+                cache.writeQuery({
+                    query: Graphql.TemplateCategoriesDocument,
+                    data: {
+                        templateCategories: updatedCategories,
+                    },
+                });
+            },
         },
-    });
+    );
+
+    // Move to deletion category mutation
+    const [mutateSuspendTemplate] = useMutation(
+        Document.suspendTemplateMutationDocument,
+        {
+            update(cache, { data }) {
+                if (!data?.suspendTemplate) return;
+
+                const suspendedTemplate = data.suspendTemplate;
+
+                const existingData =
+                    cache.readQuery<Graphql.TemplateCategoriesQuery>({
+                        query: Graphql.TemplateCategoriesDocument,
+                    });
+
+                if (!existingData?.templateCategories) return;
+
+                // Find the template in its original category to preserve all fields
+                let existingTemplate: Partial<Graphql.Template> | null = null;
+                existingData.templateCategories.forEach((category) => {
+                    if (!category.templates) return;
+                    const found = category.templates.find(
+                        (t) => t.id === suspendedTemplate.id,
+                    );
+                    if (found) existingTemplate = found;
+                });
+
+                const updatedCategories = existingData.templateCategories.map(
+                    (category) => {
+                        if (!category.templates) return category;
+
+                        if (category.specialType === "Suspension") {
+                            return {
+                                ...category,
+                                templates: [
+                                    ...category.templates,
+                                    // Merge existing template data with update data
+                                    {
+                                        ...existingTemplate,
+                                        ...suspendedTemplate,
+                                    },
+                                ],
+                            };
+                        }
+                        const templates: Graphql.Template[] =
+                            category.templates.filter(
+                                (template) =>
+                                    template.id !== suspendedTemplate.id,
+                            );
+                        return {
+                            ...category,
+                            templates: templates,
+                        };
+                    },
+                );
+
+                cache.writeQuery({
+                    query: Graphql.TemplateCategoriesDocument,
+                    data: {
+                        templateCategories: updatedCategories,
+                    },
+                });
+            },
+        },
+    );
+
+    // Restore template mutation
+    const [mutateUnsuspendTemplate] = useMutation(
+        Document.unsuspendTemplateMutationDocument,
+        {
+            update(cache, { data }) {
+                if (!data?.unsuspendTemplate) return;
+
+                const unsuspendedTemplate = data.unsuspendTemplate;
+
+                const existingData =
+                    cache.readQuery<Graphql.TemplateCategoriesQuery>({
+                        query: Graphql.TemplateCategoriesDocument,
+                    });
+
+                if (!existingData?.templateCategories) return;
+
+                // Find the template in deletion category to preserve all fields
+                let existingTemplate:
+                    | Partial<Graphql.Template>
+                    | null
+                    | undefined = null;
+                const suspensionCategory = existingData.templateCategories.find(
+                    (cat) => cat.specialType === "Suspension",
+                );
+                if (suspensionCategory?.templates) {
+                    existingTemplate = suspensionCategory.templates.find(
+                        (t) => t.id === unsuspendedTemplate.id,
+                    );
+                }
+
+                const updatedCategories = existingData.templateCategories.map(
+                    (category) => {
+                        if (!category.templates) return category;
+
+                        if (category.id === unsuspendedTemplate.category?.id) {
+                            return {
+                                ...category,
+                                templates: [
+                                    ...category.templates,
+                                    // Merge existing template data with update data
+                                    {
+                                        ...existingTemplate,
+                                        ...unsuspendedTemplate,
+                                    },
+                                ],
+                            };
+                        }
+                        if (category.specialType === "Suspension") {
+                            return {
+                                ...category,
+                                templates: category.templates.filter(
+                                    (template) =>
+                                        template.id !== unsuspendedTemplate.id,
+                                ),
+                            };
+                        }
+                        return category;
+                    },
+                );
+
+                cache.writeQuery({
+                    query: Graphql.TemplateCategoriesDocument,
+                    data: {
+                        templateCategories: updatedCategories,
+                    },
+                });
+            },
+        },
+    );
 
     // Wrapper functions for mutations
     const createTemplateMutation = useCallback(

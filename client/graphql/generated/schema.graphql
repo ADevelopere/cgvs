@@ -77,26 +77,26 @@ type RefreshTokenResponse {
 
 type Template {
   category: TemplateCategory
-  createdAt: DateTime
+  createdAt: DateTime!
   description: String
-  id: ID
-  name: String
-  order: Int
+  id: Int!
+  name: String!
+  order: Int!
   preSuspensionCategory: TemplateCategory
-  updatedAt: DateTime
+  updatedAt: DateTime!
 }
 
 type TemplateCategory {
-  createdAt: DateTime
+  createdAt: DateTime!
   description: String
-  id: Int
-  name: String
+  id: Int!
+  name: String!
   order: Int
   parentCategory: TemplateCategory
   specialType: String
   subCategories: [TemplateCategory!]
   templates: [Template!]
-  updatedAt: DateTime
+  updatedAt: DateTime!
 }
 
 input TemplateCategoryCreateInput {
@@ -143,7 +143,7 @@ type User {
   createdAt: DateTime
   email: String
   emailVerifiedAt: DateTime
-  id: ID
+  id: Int
   name: String
   updatedAt: DateTime
 }

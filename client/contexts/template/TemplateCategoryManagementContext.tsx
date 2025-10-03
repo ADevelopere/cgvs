@@ -9,12 +9,7 @@ import React, {
     useCallback,
 } from "react";
 
-import {
-    Template,
-    TemplateCategory,
-    UpdateTemplateMutationVariables,
-    useTemplateCategoriesQuery,
-} from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 import { CircularProgress } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
@@ -22,7 +17,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     buildCategoryHierarchy,
@@ -38,19 +33,21 @@ import logger from "@/utils/logger";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { TemplateManagementTabType } from "./TemplateManagementContext";
+import { templateCategoriesQueryDocument } from "@/client/graphql/documents";
+import { useQuery } from "@apollo/client/react";
 
 // Helper function to find a category in a hierarchical tree by ID
 const findCategoryInTreeById = (
-    categories: TemplateCategory[],
+    categories: Graphql.TemplateCategory[],
     categoryId: number,
-): TemplateCategory | null => {
+): Graphql.TemplateCategory | null => {
     for (const category of categories) {
         if (category.id === categoryId) {
             return category;
         }
-        if (category.childCategories && category.childCategories.length > 0) {
+        if (category.subCategories && category.subCategories.length > 0) {
             const foundInChildren = findCategoryInTreeById(
-                category.childCategories,
+                category.subCategories,
                 categoryId,
             );
             if (foundInChildren) {
@@ -78,34 +75,36 @@ type TemplateCategoryManagementContextType = {
      * An array containing all the template categories fetched from the backend.
      * This list is populated by `fetchCategories` and updated dynamically when categories are added, updated, or deleted.
      */
-    allTemplates: Template[];
+    allTemplates: Graphql.Template[];
     /**
      * An array containing all the regular template categories (excluding the deleted category).
      * This list is populated by `fetchCategories` and updated dynamically when categories are added, updated, or deleted.
      */
-    regularCategories: TemplateCategory[];
+    regularCategories: Graphql.TemplateCategory[];
     /**
      * Represents the special deleted category (special_type='deleted') that holds trashed templates.
      * This is a single category object that serves as a parent for all deleted templates.
      */
-    suspensionCategory: TemplateCategory | null;
+    suspensionCategory: Graphql.TemplateCategory | null;
     /**
      * Represents the currently selected template category.
      * When a category is selected, its associated templates are displayed. It's `null` if no category is currently selected.
      */
-    currentCategory: TemplateCategory | null;
+    currentCategory: Graphql.TemplateCategory | null;
 
     /**
      * A function to programmatically set the `currentCategory`.
      * This directly changes the selected category without user interaction checks (like unsaved changes warnings).
      */
-    setCurrentCategory: (category: TemplateCategory | null) => void;
+    setCurrentCategory: (category: Graphql.TemplateCategory | null) => void;
     /**
      * Attempts to change the `currentCategory` to the provided category.
      * If a new template is currently being added, it will prompt the user for confirmation before switching, preventing accidental data loss.
      * Returns a promise resolving to `true` if the switch happened immediately, or `false` if a confirmation dialog was shown.
      */
-    trySelectCategory: (category: TemplateCategory | null) => Promise<boolean>;
+    trySelectCategory: (
+        category: Graphql.TemplateCategory | null,
+    ) => Promise<boolean>;
     /**
      * A boolean flag indicating if the confirmation dialog (warning about switching categories while adding a template) is currently visible.
      * `true` if the dialog is open, `false` otherwise.
@@ -132,7 +131,7 @@ type TemplateCategoryManagementContextType = {
      * This modifies the category's name in the backend and updates the corresponding category in the local `categories` state.
      */
     updateCategory: (
-        category: TemplateCategory,
+        category: Graphql.TemplateCategory,
         parentCategoryId?: number | null,
     ) => void;
     /**
@@ -150,12 +149,12 @@ type TemplateCategoryManagementContextType = {
      * Represents the currently selected template within the `currentCategory`.
      * It's `null` if no template is currently selected.
      */
-    currentTemplate: Template | null;
+    currentTemplate: Graphql.Template | null;
     /**
      * A function to programmatically set the `currentTemplate`.
      * This directly changes the selected template.
      */
-    setCurrentTemplate: (template: Template | null) => void;
+    setCurrentTemplate: (template: Graphql.Template | null) => void;
     // template mutations
     /**
      * Creates a new template with the specified name within the given category ID.
@@ -167,8 +166,8 @@ type TemplateCategoryManagementContextType = {
      * This modifies the template's name in the backend and updates the corresponding template in the local `templates` and `categories` states.
      */
     updateTemplate: (
-        input: UpdateTemplateMutationVariables,
-    ) => Promise<Template | null>;
+        input: Graphql.UpdateTemplateMutationVariables,
+    ) => Promise<Graphql.Template | null>;
 
     /**
      * Deletes a template identified by its ID.
@@ -207,7 +206,7 @@ type TemplateCategoryManagementContextType = {
      */
     setOnNewTemplateCancel: (callback: (() => void) | undefined) => void;
 
-    templateToManage?: Template;
+    templateToManage?: Graphql.Template;
     templateManagementTab: TemplateManagementTabType;
     setTemplateManagementTab: (tab: TemplateManagementTabType) => void;
     manageTemplate: (templateId: number) => void;
@@ -240,7 +239,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     const router = useRouter();
     const [templateToManage, setTemplateToManage] = useState<
-        Template | undefined
+        Graphql.Template | undefined
     >(undefined);
 
     const [templateManagementTab, setTemplateManagementTab] =
@@ -251,17 +250,16 @@ export const TemplateCategoryManagementProvider: React.FC<{
         loading: apolloLoading,
         error: apolloError,
         refetch: refetchCategoriesQuery,
-    } = useTemplateCategoriesQuery();
+    } = useQuery(templateCategoriesQueryDocument);
 
     const [currentCategoryState, setCurrentCategoryState] =
-        useState<TemplateCategory | null>(null);
+        useState<Graphql.TemplateCategory | null>(null);
 
-    const [currentTemplate, setCurrentTemplate] = useState<Template | null>(
-        null,
-    );
+    const [currentTemplate, setCurrentTemplate] =
+        useState<Graphql.Template | null>(null);
     const [isSwitchWarningOpen, setIsSwitchWarningOpen] = useState(false);
     const [pendingCategory, setPendingCategory] =
-        useState<TemplateCategory | null>(null);
+        useState<Graphql.TemplateCategory | null>(null);
     const [isAddingTemplate, setIsAddingTemplate] = useState(false);
     const [onNewTemplateCancel, setOnNewTemplateCancel] = useState<
         (() => void) | undefined
@@ -281,10 +279,10 @@ export const TemplateCategoryManagementProvider: React.FC<{
         if (!apolloCategoryData?.templateCategories) {
             return [];
         }
-        const mapped = mapTemplateCategories({
-            templateCategories: apolloCategoryData.templateCategories,
-        });
-        const allTemplates = mapped.flatMap((category) => {
+        const templateCategories =
+            apolloCategoryData.templateCategories as Graphql.TemplateCategory[];
+
+        const allTemplates = templateCategories.flatMap((category) => {
             if (category.templates) {
                 return category.templates.map((template) => ({
                     ...template,
@@ -372,7 +370,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     }, [refetchCategoriesQuery, messages]);
 
     const setCurrentCategory = useCallback(
-        (category: TemplateCategory | null) => {
+        (category: Graphql.TemplateCategory | null) => {
             setCurrentCategoryState(category);
             setCurrentTemplate(null); // Reset template when category changes
         },
@@ -428,7 +426,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     const updateCategory = useCallback(
         async (
-            category: TemplateCategory,
+            category: Graphql.TemplateCategory,
             parentCategoryId?: number | null,
         ) => {
             try {
@@ -589,7 +587,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     );
 
     const updateTemplate = useCallback(
-        async (variables: UpdateTemplateMutationVariables) => {
+        async (variables: Graphql.UpdateTemplateMutationVariables) => {
             try {
                 const templateToUpdate = templatesForCurrentCategory.find(
                     (temp) => temp.id === variables.input.id,
@@ -740,7 +738,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     // Category switching logic
     const trySelectCategory = useCallback(
-        async (category: TemplateCategory | null): Promise<boolean> => {
+        async (category: Graphql.TemplateCategory | null): Promise<boolean> => {
             if (isAddingTemplate) {
                 setIsSwitchWarningOpen(true);
                 setPendingCategory(category);
