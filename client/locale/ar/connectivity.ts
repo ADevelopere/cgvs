@@ -1,6 +1,6 @@
 import ConnectivityTranslations from "../components/Connectivity";
 
-const connectivity: ConnectivityTranslations = {
+export const connectivity: ConnectivityTranslations = {
     serverConnectionLost: "فقد الاتصال بالخادم",
     checkNetworkConnection: "يرجى التحقق من اتصال الشبكة",
     retry: "إعادة المحاولة",
@@ -11,5 +11,3 @@ const connectivity: ConnectivityTranslations = {
     lastChecked: "آخر فحص",
     clickToRetry: "انقر لإعادة المحاولة",
 };
-
-export default connectivity;

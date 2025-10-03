@@ -1,7 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { db } from "@/server/db/drizzleDb";
 import { UserPothosObject } from "./auth.pothos";
-import logger from "@/utils/logger";
+import { findAllUsers, findUserById } from "./user.repository";
 
 gqlSchemaBuilder.queryFields((t) => ({
     me: t.field({
@@ -15,16 +14,24 @@ gqlSchemaBuilder.queryFields((t) => ({
                 return null;
             }
 
-            try {
-                return await db.query.users.findFirst({
-                    where: {
-                        id: ctx.user.id,
-                    },
-                });
-            } catch (err) {
-                logger.error(err);
-                return null;
-            }
+            return await findUserById(ctx.user.id);
         },
+    }),
+
+    user: t.field({
+        type: UserPothosObject,
+        nullable: true,
+        authScopes: {
+            loggedIn: true,
+        },
+        args: {
+            id: t.arg.int({ required: true }),
+        },
+        resolve: async (_parent, args) => await findUserById(args.id),
+    }),
+
+    users: t.field({
+        type: [UserPothosObject],
+        resolve: async () => await findAllUsers(),
     }),
 }));

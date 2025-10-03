@@ -1,4 +1,4 @@
-type StudentTranslations = {
+export type StudentTranslations = {
     [key: string]: string;
 
     studentManagement: string;
@@ -57,5 +57,3 @@ type StudentTranslations = {
     studentCreatedSuccess: string;
     studentCreateError: string;
 };
-
-export default StudentTranslations;

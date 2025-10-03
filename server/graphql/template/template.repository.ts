@@ -1,5 +1,9 @@
 import { db } from "@/server/db/drizzleDb";
-import { templateCategories, templates } from "@/server/db/schema";
+import {
+    templateCategories,
+    templates,
+    templatesConfigs,
+} from "@/server/db/schema";
 import { count, eq, inArray, max } from "drizzle-orm";
 import {
     TemplateSelectType,
@@ -7,6 +11,7 @@ import {
     TemplateInsertInput,
     TemplateCreateInput,
     TemplateUpdateInput,
+    TemplatesConfigSelectType,
 } from "./template.types";
 import logger from "@/utils/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
@@ -310,4 +315,13 @@ export const unsuspendTemplateById = async (
         .returning();
 
     return updatedTemplate;
+};
+
+export const allTemplatesConfigs = async (): Promise<
+    TemplatesConfigSelectType[]
+> => {
+    return await db
+        .select()
+        .from(templatesConfigs)
+        .then((res) => res);
 };

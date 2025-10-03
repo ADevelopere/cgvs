@@ -1,6 +1,6 @@
 import StorageTranslations from "../components/Storage";
 
-const arStorageTranslations: StorageTranslations = {
+export const storage: StorageTranslations = {
     uploading: {
         cancelAllUploads: "إلغاء جميع التحميلات",
         cancelAllUploadsMessage:
@@ -179,15 +179,19 @@ const arStorageTranslations: StorageTranslations = {
         renameDialogCancel: "إلغاء",
         renameDialogEmpty: "الاسم لا يمكن أن يكون فارغاً",
         renameDialogInvalid: "الاسم يحتوي على أحرف غير صالحة",
-        renameDialogFailedToRename: "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
-        renameDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        renameDialogFailedToRename:
+            "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
+        renameDialogUnexpectedError:
+            "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
         //rename dialog end
 
         // Delete dialog
-        deleteDialogFailedToDelete: "فشل في حذف العنصر. يرجى المحاولة مرة أخرى.",
-        deleteDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        deleteDialogFailedToDelete:
+            "فشل في حذف العنصر. يرجى المحاولة مرة أخرى.",
+        deleteDialogUnexpectedError:
+            "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
         // Delete dialog end
-        
+
         // Move to dialog
         moveDialogTitle: "نقل العناصر",
         moveDialogSelectDestination: "اختر مجلد الوجهة",
@@ -216,7 +220,7 @@ const arStorageTranslations: StorageTranslations = {
         filePickerDialogUnexpectedError: "حدث خطأ غير متوقع",
         selecting: "جاري الاختيار...",
         // File picker dialog end
-        
+
         contentType: "نوع المحتوى",
         path: "المسار",
         md5Hash: "تشفير MD5",
@@ -276,18 +280,18 @@ const arStorageTranslations: StorageTranslations = {
         orClickToSelect: "أو انقر لاختيار الملفات",
         clickToSelectFiles: "انقر لاختيار الملفات",
         uploading: "جاري التحميل",
-        
+
         // File validation messages
         invalidFileType: 'نوع الملف غير صالح: "%{fileName}"',
         fileTooLarge: 'الملف "%{fileName}" كبير جداً. الحد الأقصى: %{maxSize}',
-        tooManyFiles: 'عدد كبير من الملفات: %{count}. الحد الأقصى: %{maxFiles}',
-        
+        tooManyFiles: "عدد كبير من الملفات: %{count}. الحد الأقصى: %{maxFiles}",
+
         // Upload feedback
         filesSelected: "تم اختيار %{count} ملف",
         startingUpload: "بدء التحميل...",
         uploadSuccess: "تم تحميل %{count} ملف بنجاح",
         uploadFailed: "فشل التحميل: %{error}",
-        
+
         // Dropzone states
         dropzoneActive: "منطقة الإفلات نشطة",
         dropzoneInactive: "منطقة الإفلات غير نشطة",
@@ -296,4 +300,4 @@ const arStorageTranslations: StorageTranslations = {
     },
 };
 
-export default arStorageTranslations;
+export default storage;

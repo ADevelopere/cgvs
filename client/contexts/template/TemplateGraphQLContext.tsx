@@ -1,8 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useCallback, useMemo } from "react";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { ApolloLink } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
+import * as Document from "@/client/graphql/documents";
 
 type TemplateGraphQLContextType = {
     /**
@@ -11,7 +13,7 @@ type TemplateGraphQLContextType = {
      */
     templateQuery: (
         variables: Graphql.QueryTemplateArgs,
-    ) => Promise<Graphql.TemplateQuery>;
+    ) => Promise<Graphql.Template>;
 
     /**
      * Query to get paginated templates
@@ -19,16 +21,16 @@ type TemplateGraphQLContextType = {
      */
     paginatedTemplatesQuery: (
         variables: Graphql.QueryTemplatesArgs,
-    ) => Promise<Graphql.TemplatesQuery>;
+    ) => Promise<Graphql.PaginatedTemplatesResponse>;
 
-    templateConfigQuery: () => Promise<Graphql.TemplateConfigQuery>;
+    templateConfigQuery: () => Promise<Graphql.TemplatesConfigs>;
 
     /**
      * Mutation to create a new template
      * @param variables - The creation template variables
      */
     createTemplateMutation: (
-        variables: Graphql.CreateTemplateMutationVariables,
+        variables: Graphql.MutationCreateTemplateArgs,
     ) => Promise<ApolloLink.Result<Graphql.CreateTemplateMutation>>;
 
     /**
@@ -60,7 +62,7 @@ type TemplateGraphQLContextType = {
      * @param variables - The template ID to restore
      */
     unsuspendTemplateMutation: (
-        variables: Graphql.UnsuspendTemplateMutationVariables,
+        variables: Graphql.MutationUnsuspendTemplateArgs,
     ) => Promise<ApolloLink.Result<Graphql.UnsuspendTemplateMutation>>;
 };
 
@@ -82,18 +84,24 @@ export const TemplateGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Template queries
-    const templateQueryRef = Graphql.useTemplateQuery({
+    const templateQueryRef = useQuery(Document.templateQueryDocument, {
         skip: true,
         variables: { id: 0 }, // Provide a default/dummy value
     });
 
-    const templatesQueryRef = Graphql.useTemplatesQuery({
-        skip: true,
-    });
+    const templatesQueryRef = useQuery(
+        Document.paginatedTemplatesQueryDocument,
+        {
+            skip: true,
+        },
+    );
 
-    const templateConfigQueryRef = Graphql.useTemplateConfigQuery({
-        skip: true,
-    });
+    const templateConfigQueryRef = useQuery(
+        Document.templatesConfigsQueryDocument,
+        {
+            skip: true,
+        },
+    );
 
     // Template query wrapper functions
     const templateQuery = useCallback(
@@ -127,65 +135,60 @@ export const TemplateGraphQLProvider: React.FC<{
     }, [templateConfigQueryRef]);
 
     // Create template mutation
-    const [mutateCreate] = Graphql.useCreateTemplateMutation({
+    const [mutateCreate] = useMutation(Document.createTemplateQueryDocument, {
         update(cache, { data }) {
-            if (!data?.createTemplate) return;
+            if (!data) return;
 
-            const existingData =
-                cache.readQuery<Graphql.TemplateCategoriesQuery>({
-                    query: Graphql.TemplateCategoriesDocument,
-                });
+            const templateCategories = cache.readQuery<
+                Graphql.TemplateCategory[]
+            >({
+                query: Document.templateCategoriesQueryDocument,
+            });
 
-            if (!existingData?.templateCategories) return;
+            if (!templateCategories) return;
 
-            const categoryToUpdate = existingData.templateCategories.find(
-                (category) => category.id === data.createTemplate.category.id,
+            const categoryToUpdate = templateCategories.find(
+                (category) => category.id === data.category?.id,
             );
 
             if (!categoryToUpdate) return;
 
-            const updatedCategories = existingData.templateCategories.map(
-                (category) => {
-                    if (category.id === categoryToUpdate.id) {
-                        return {
-                            ...category,
-                            templates: [
-                                ...(category.templates || []),
-                                data.createTemplate,
-                            ],
-                        };
-                    }
-                    return category;
-                },
-            );
+            const updatedCategories = templateCategories.map((category) => {
+                if (category.id === categoryToUpdate.id) {
+                    return {
+                        ...category,
+                        templates: [...(category.templates || []), data],
+                    };
+                }
+                return category;
+            });
 
             cache.writeQuery({
-                query: Graphql.TemplateCategoriesDocument,
-                data: {
-                    templateCategories: updatedCategories,
-                },
+                query: Document.templateCategoriesQueryDocument,
+                data: updatedCategories,
             });
         },
     });
 
     // Update template mutation
-    const [mutateUpdate] = Graphql.useUpdateTemplateMutation({
+    const [mutateUpdate] = useMutation(Document.updateTemplateMutationDocument, {
         update(cache, { data }) {
-            if (!data?.updateTemplate) return;
+            if (!data) return;
 
-            const updatedTemplate = data.updateTemplate;
+            const updatedTemplate = data;
 
-            const existingData =
-                cache.readQuery<Graphql.TemplateCategoriesQuery>({
-                    query: Graphql.TemplateCategoriesDocument,
-                });
+            const templateCategories = cache.readQuery<
+                Graphql.TemplateCategory[]
+            >({
+                query: Document.templateCategoriesQueryDocument,
+            });
 
-            if (!existingData?.templateCategories) return;
+            if (!templateCategories) return;
 
             // Find the template in its original category to preserve all fields
             let existingTemplate: Partial<Graphql.Template> | null = null;
-            let oldCategoryId: number | null = null;
-            existingData.templateCategories.forEach((category) => {
+            let oldCategoryId: number | null | undefined = null;
+            templateCategories.forEach((category) => {
                 if (!category.templates) return;
                 const found = category.templates.find(
                     (t) => t.id === updatedTemplate.id,
@@ -196,13 +199,12 @@ export const TemplateGraphQLProvider: React.FC<{
                 }
             });
 
-            const updatedCategories = existingData.templateCategories.map(
-                (category) => {
-                    const templates = category.templates || [];
+            const updatedCategories = templateCategories.map((category) => {
+                const templates = category.templates || [];
 
                     // If this is the new category, and it's different from the old one
                     if (
-                        category.id === updatedTemplate.category.id &&
+                        category.id === updatedTemplate.category?.id &&
                         oldCategoryId !== category.id
                     ) {
                         return {
@@ -211,7 +213,7 @@ export const TemplateGraphQLProvider: React.FC<{
                                 ...templates,
                                 {
                                     ...existingTemplate,
-                                    ...data.updateTemplate,
+                                    ...data,
                                 },
                             ],
                         };
@@ -220,7 +222,7 @@ export const TemplateGraphQLProvider: React.FC<{
                     // If this is the old category and template is moving to a new one
                     if (
                         oldCategoryId === category.id &&
-                        updatedTemplate.category.id !== category.id
+                        updatedTemplate.category?.id !== category.id
                     ) {
                         return {
                             ...category,
@@ -231,14 +233,14 @@ export const TemplateGraphQLProvider: React.FC<{
                     }
 
                     // If the template is staying in the same category, just update it
-                    if (category.id === updatedTemplate.category.id) {
+                    if (category.id === updatedTemplate.category?.id) {
                         return {
                             ...category,
                             templates: templates.map((template) => {
                                 if (template.id === updatedTemplate.id) {
                                     return {
                                         ...template,
-                                        ...data.updateTemplate,
+                                        ...data,
                                     };
                                 }
                                 return template;

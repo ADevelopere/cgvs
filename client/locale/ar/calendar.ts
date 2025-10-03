@@ -1,6 +1,6 @@
 import CalendarTranslations from "../components/Calendar";
 
-const calendar: CalendarTranslations = {
+export const calendar: CalendarTranslations = {
   theGregorian: "الميلادي",
   theHijri: "الهجري",
 
@@ -55,5 +55,3 @@ const calendar: CalendarTranslations = {
   november: "نوفمبر",
   december: "ديسمبر",
 };
-
-export default calendar;

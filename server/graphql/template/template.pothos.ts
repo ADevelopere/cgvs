@@ -4,6 +4,9 @@ import {
     TemplatePothosDefintion,
     TemplateCreateInput,
     TemplateUpdateInput,
+    TemplatesConfigPothosDefinition,
+    TemplatesConfigsKeyValues,
+    TemplatesConfigsPothosDefinition,
 } from "./template.types";
 import { PageInfoObject } from "../pagintaion/pagination.objects";
 import { TemplateCategoryPothosObject } from "../templateCategory/templateCategory.pothos";
@@ -88,5 +91,29 @@ export const PaginatedTemplatesResponsePothosObject = gqlSchemaBuilder
         fields: (t) => ({
             data: t.expose("data", { type: [TemplatePothosObject] }),
             pageInfo: t.expose("pageInfo", { type: PageInfoObject }),
+        }),
+    });
+
+export const TemplatesConfigsKeyPothosObject = gqlSchemaBuilder.enumType(
+    "TemplatesConfigsKey",
+    {
+        values: TemplatesConfigsKeyValues,
+    },
+);
+
+export const TemplatesConfigPothosObject = gqlSchemaBuilder
+    .objectRef<TemplatesConfigPothosDefinition>("TemplatesConfig")
+    .implement({
+        fields: (t) => ({
+            key: t.expose("key", { type: TemplatesConfigsKeyPothosObject }),
+            value: t.exposeString("value"),
+        }),
+    });
+
+export const TemplatesConfigsPothosObject = gqlSchemaBuilder
+    .objectRef<TemplatesConfigsPothosDefinition>("TemplatesConfigs")
+    .implement({
+        fields: (t) => ({
+            configs: t.expose("configs", { type: [TemplatesConfigPothosObject] }),
         }),
     });

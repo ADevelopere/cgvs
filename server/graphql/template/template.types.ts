@@ -1,8 +1,11 @@
 import { FileInfo } from "@/services/storage.types";
 import { TemplateCategoryPothosDefintion } from "../templateCategory/templateCategory.types";
 import { PageInfo } from "../pagintaion/pagintaion.types";
-import { templates } from "@/server/db/schema";
-import { OmitIdRelationFields } from "../gqlHelper";
+import {
+    templates,
+    templatesConfigs,
+    templatesConfigsKeyEnum,
+} from "@/server/db/schema";
 
 export type TemplateSelectType = typeof templates.$inferSelect;
 export type TemplateInsertInput = typeof templates.$inferInsert;
@@ -17,8 +20,6 @@ export type TemplatePothosDefintion = TemplateSelectType & {
     // driven
     imageUrl?: string | null;
 };
-
-export type Template = OmitIdRelationFields<TemplatePothosDefintion>;
 
 export type TemplateCreateInput = {
     name: string;
@@ -42,4 +43,16 @@ export type PaginatedTemplatesResponseSelectType = {
 export type PaginatedTemplatesResponse = {
     data: TemplatePothosDefintion[];
     pageInfo: PageInfo;
+};
+
+export type TemplatesConfigsKey =
+    (typeof templatesConfigsKeyEnum.enumValues)[number];
+export const TemplatesConfigsKeyValues = templatesConfigsKeyEnum.enumValues;
+
+export type TemplatesConfigSelectType = typeof templatesConfigs.$inferSelect;
+export type TemplatesCongigInsertInput = typeof templatesConfigs.$inferInsert;
+export type TemplatesConfigPothosDefinition = TemplatesConfigSelectType;
+
+export type TemplatesConfigsPothosDefinition = {
+    configs: TemplatesConfigSelectType[];
 };

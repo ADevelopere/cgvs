@@ -1,6 +1,6 @@
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import AppLanguage from "@/locale/AppLanguage";
-import translations, { Translations } from "@/locale/translations";
+import AppLanguage from "@/client/locale/AppLanguage";
+import translations, { Translations } from "@/client/locale/translations";
 import { useMemo } from "react";
 
 

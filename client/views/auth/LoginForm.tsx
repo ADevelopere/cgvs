@@ -18,10 +18,9 @@ import {
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
 import isValidEmail from "@/utils/email";
-import useAppTranslation from "@/locale/useAppTranslation";
-import AuthTranslations from "@/locale/components/Auth";
+import useAppTranslation from "@/client/locale/useAppTranslation";
+import AuthTranslations from "@/client/locale/components/Auth";
 import { useRouter } from "next/navigation";
-
 
 const LoginForm: React.FC = () => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");

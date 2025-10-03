@@ -1,4 +1,4 @@
-type ErrorTranslations = {
+export type ErrorTranslations = {
     [key: string]: string;
     componentError: string;
     unexpectedError: string;
@@ -7,5 +7,3 @@ type ErrorTranslations = {
     backToHome: string;
     tryAgain: string;
 };
-
-export default ErrorTranslations;

@@ -5,7 +5,6 @@ import {
     sessions,
     passwordResetTokens,
 } from "@/server/db/schema";
-import { OmitIdRelationFields } from "../gqlHelper";
 import { PageInfo } from "../pagintaion/pagintaion.types";
 
 export type UserSelectType = typeof users.$inferSelect;
@@ -17,7 +16,6 @@ export type UserPothosDefintion = UserSelectType & {
     sessions?: SessionsPothosDefintion[];
 };
 
-export type User = OmitIdRelationFields<UserPothosDefintion>;
 
 export type UserCreateInput = {
     name: string;
@@ -51,7 +49,6 @@ export type RolePothosDefintion = RoleSelectType & {
     userRoles?: UserRolePothosDefintion[];
 };
 
-export type Role = OmitIdRelationFields<RolePothosDefintion>;
 
 // user roles
 export type UserRoleSelectType = typeof roles.$inferSelect;
@@ -62,7 +59,6 @@ export type UserRolePothosDefintion = UserRoleSelectType & {
     role?: RolePothosDefintion;
 };
 
-export type UserRole = OmitIdRelationFields<UserRolePothosDefintion>;
 
 // sessions
 export type SessionsSelectType = typeof sessions.$inferSelect;
@@ -72,7 +68,6 @@ export type SessionsPothosDefintion = SessionsSelectType & {
     user?: UserPothosDefintion;
 };
 
-export type Session = OmitIdRelationFields<SessionsPothosDefintion>;
 
 // password reset tokens
 export type PasswordResetTokenSelectType =
@@ -81,9 +76,6 @@ export type PasswordResetTokenInsertInput =
     typeof passwordResetTokens.$inferInsert;
 
 export type PasswordResetTokenPothosDefintion = PasswordResetTokenSelectType;
-
-export type PasswordResetToken =
-    OmitIdRelationFields<PasswordResetTokenPothosDefintion>;
 
 // login
 export type LoginInput = {

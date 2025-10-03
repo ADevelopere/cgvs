@@ -1,4 +1,4 @@
-type TemplateVariableTranslation = {
+export type TemplateVariableTranslation = {
     name: string;
     description: string;
     minimumLength: string;
@@ -46,5 +46,3 @@ type TemplateVariableTranslation = {
     // edit/create modal
     editVariable: string;
 };
-
-export default TemplateVariableTranslation;

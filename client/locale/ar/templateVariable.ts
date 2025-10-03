@@ -1,6 +1,6 @@
 import TemplateVariableTranslation from "../components/TemplateVariable";
 
-const templateVariable: TemplateVariableTranslation = {
+export const templateVariable: TemplateVariableTranslation = {
     name: "الإسم",
     description: "الوصف",
     minimumLength: "الحد الأدنى للطول",
@@ -50,5 +50,3 @@ const templateVariable: TemplateVariableTranslation = {
     // edit/create modal
     editVariable: "تعديل متغير",
 };
-
-export default templateVariable;

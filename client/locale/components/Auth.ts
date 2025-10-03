@@ -1,4 +1,4 @@
-type AuthTranslations = {
+export type AuthTranslations = {
     [key: string]: string;
 
     siteTitle: string;
@@ -84,6 +84,4 @@ type AuthTranslations = {
     checkingAuthentication: string;
     invalidLoginResponse: string;
     signinFailed: string;
-}
-
-export default AuthTranslations;
+};

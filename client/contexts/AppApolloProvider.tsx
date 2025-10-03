@@ -19,8 +19,8 @@ import {
 import { ApolloProvider } from "@apollo/client/react";
 import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import ConnectivityTranslations from "@/locale/components/Connectivity";
-import useAppTranslation from "@/locale/useAppTranslation";
+import { ConnectivityTranslations } from "@/client/locale/components/Connectivity";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 
 export type NetworkConnectivityContextType = {
     isConnected: boolean;

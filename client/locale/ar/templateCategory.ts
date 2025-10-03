@@ -1,6 +1,6 @@
 import TemplateCategoryTranslation from "../components/TemplateCategory";
 
-const templateCategory: TemplateCategoryTranslation = {
+export const templateCategory: TemplateCategoryTranslation = {
     // Management and navigation
     templateCategoriesManagement: "إدارة الفئات",
     theDeleted: "المحذوفة",
@@ -160,5 +160,3 @@ const templateCategory: TemplateCategoryTranslation = {
     recommendedImageSize: "حجم الصورة الموصى به",
     uploadImage: "رفع الصورة",
 };
-
-export default templateCategory;

@@ -1,4 +1,4 @@
-type LanguageTranslations = {
+export type LanguageTranslations = {
     [key: string]: string;
     languageSettings: string;
     ar: string;
@@ -6,5 +6,3 @@ type LanguageTranslations = {
     en: string;
     id: string;
 };
-
-export default LanguageTranslations;

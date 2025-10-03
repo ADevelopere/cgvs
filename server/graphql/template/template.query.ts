@@ -1,16 +1,15 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-    PaginationArgsObject,
-} from "../pagintaion/pagination.objects";
+import { PaginationArgsObject } from "../pagintaion/pagination.objects";
 import {
     PaginatedTemplatesResponsePothosObject,
     TemplatePothosObject,
+    TemplatesConfigsPothosObject,
 } from "./template.pothos";
 import {
+    allTemplatesConfigs,
     findTemplateByIdOrThrow,
     findTemplatesPaginated,
 } from "./template.repository";
-
 
 gqlSchemaBuilder.queryFields((t) => ({
     template: t.field({
@@ -30,5 +29,15 @@ gqlSchemaBuilder.queryFields((t) => ({
             }),
         },
         resolve: async (_, args) => findTemplatesPaginated(args.pagination),
+    }),
+
+    templatesConfigs: t.field({
+        type: TemplatesConfigsPothosObject,
+        resolve: async () => {
+            const conf = await allTemplatesConfigs();
+            return {
+                configs: conf,
+            };
+        },
     }),
 }));
