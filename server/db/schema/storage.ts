@@ -19,7 +19,7 @@ export const fileUsages = pgTable("file_usage", {
     usageType: varchar("usage_type", { length: 100 }).notNull(),
     referenceId: bigint("reference_id", { mode: "bigint" }).notNull(),
     referenceTable: varchar("reference_table", { length: 100 }).notNull(),
-    created: timestamp("created", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull(),
 });
 
 export const storageDirectories = pgTable("storage_directory", {

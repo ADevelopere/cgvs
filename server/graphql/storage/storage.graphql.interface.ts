@@ -5,24 +5,24 @@
  */
 
 import {
-    ListFilesInput,
+    FilesListInput,
     StorageObjectList,
-    FileInfo,
-    DirectoryInfo,
+    FileInfoServerType,
+    DirectoryInfoServerType,
     StorageStats,
-    CheckFileUsageInput,
+    FileUsageCheckInput,
     FileUsageResult,
-    RenameFileInput,
+    FileRenameInput,
     FileOperationResult,
-    GenerateUploadSignedUrlInput,
-    CreateFolderInput,
-    MoveStorageItemsInput,
+    UploadSignedUrlGenerateInput,
+    FolderCreateInput,
+    StorageItemsMoveInput,
     BulkOperationResult,
-    CopyStorageItemsInput,
-    DeleteItemsInput,
-    UpdateDirectoryPermissionsInput,
-    SetStorageItemProtectionInput
-} from './storage.types';
+    StorageItemsCopyInput,
+    ItemsDeleteInput,
+    DirectoryPermissionsUpdateInput,
+    StorageItemProtectionUpdateInput
+} from '../../storage/storage.types';
 
 /**
  * Storage Query Interface
@@ -32,17 +32,17 @@ export interface StorageQueryOperations {
     /**
      * List files and folders with pagination and filtering
      */
-    listFiles(input: ListFilesInput): Promise<StorageObjectList>;
+    listFiles(input: FilesListInput): Promise<StorageObjectList>;
 
     /**
      * Get file information by path
      */
-    fileInfo(path: string): Promise<FileInfo | undefined>;
+    fileInfo(path: string): Promise<FileInfoServerType | undefined>;
 
     /**
      * Get folder information by path
      */
-    folderInfo(path: string): Promise<DirectoryInfo>;
+    folderInfo(path: string): Promise<DirectoryInfoServerType>;
 
     /**
      * Search files with filters
@@ -62,12 +62,12 @@ export interface StorageQueryOperations {
     /**
      * Fetch immediate children directories for lazy loading directory tree
      */
-    directoryChildren(path?: string): Promise<DirectoryInfo[]>;
+    directoryChildren(path?: string): Promise<DirectoryInfoServerType[]>;
 
     /**
      * Check if a file is currently in use
      */
-    fileUsage(input: CheckFileUsageInput): Promise<FileUsageResult>;
+    fileUsage(input: FileUsageCheckInput): Promise<FileUsageResult>;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface StorageMutationOperations {
     /**
      * Rename a file
      */
-    renameFile(input: RenameFileInput): Promise<FileOperationResult>;
+    renameFile(input: FileRenameInput): Promise<FileOperationResult>;
 
     /**
      * Delete a single file
@@ -88,37 +88,37 @@ export interface StorageMutationOperations {
     /**
      * Generate a signed URL for file upload
      */
-    generateUploadSignedUrl(input: GenerateUploadSignedUrlInput): Promise<string>;
+    generateUploadSignedUrl(input: UploadSignedUrlGenerateInput): Promise<string>;
 
     /**
      * Create a new folder
      */
-    createFolder(input: CreateFolderInput): Promise<FileOperationResult>;
+    createFolder(input: FolderCreateInput): Promise<FileOperationResult>;
 
     /**
      * Move multiple files/folders to a new location
      */
-    moveStorageItems(input: MoveStorageItemsInput): Promise<BulkOperationResult>;
+    moveStorageItems(input: StorageItemsMoveInput): Promise<BulkOperationResult>;
 
     /**
      * Copy multiple files/folders to a new location
      */
-    copyStorageItems(input: CopyStorageItemsInput): Promise<BulkOperationResult>;
+    copyStorageItems(input: StorageItemsCopyInput): Promise<BulkOperationResult>;
 
     /**
      * Delete multiple files/folders
      */
-    deleteStorageItems(input: DeleteItemsInput): Promise<BulkOperationResult>;
+    deleteStorageItems(input: ItemsDeleteInput): Promise<BulkOperationResult>;
 
     /**
      * Update directory permissions
      */
-    updateDirectoryPermissions(input: UpdateDirectoryPermissionsInput): Promise<FileOperationResult>;
+    updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput): Promise<FileOperationResult>;
 
     /**
      * Set protection for files or directories
      */
-    setStorageItemProtection(input: SetStorageItemProtectionInput): Promise<FileOperationResult>;
+    setStorageItemProtection(input: StorageItemProtectionUpdateInput): Promise<FileOperationResult>;
 }
 
 /**

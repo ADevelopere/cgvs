@@ -6,9 +6,9 @@ import {
 } from "@/server/db/schema";
 import { count, eq, inArray, max } from "drizzle-orm";
 import {
-    TemplateSelectType,
+    TemplateEntity,
     PaginatedTemplatesResponseSelectType,
-    TemplateInsertInput,
+    TemplateEntityInput,
     TemplateCreateInput,
     TemplateUpdateInput,
     TemplatesConfigSelectType,
@@ -25,7 +25,7 @@ import {
 
 export const findTemplateByIdOrThrow = async (
     id: number,
-): Promise<TemplateSelectType> => {
+): Promise<TemplateEntity> => {
     try {
         return await db
             .select()
@@ -52,7 +52,7 @@ export const templatesTotalCount = async (): Promise<number> => {
 export const findTemplates = async (opts: {
     limit: number;
     offset: number;
-}): Promise<TemplateSelectType[]> => {
+}): Promise<TemplateEntity[]> => {
     return await db
         .select()
         .from(templates)
@@ -63,14 +63,14 @@ export const findTemplates = async (opts: {
 
 export const loadTemplatesByIds = async (
     ids: number[],
-): Promise<(TemplateSelectType | Error)[]> => {
+): Promise<(TemplateEntity | Error)[]> => {
     if (ids.length === 0) return [];
     const filteredTemplates = await db
         .select()
         .from(templates)
         .where(inArray(templates.id, ids));
 
-    const templateList: (TemplateSelectType | Error)[] = ids.map((id) => {
+    const templateList: (TemplateEntity | Error)[] = ids.map((id) => {
         const matchingTemplate = filteredTemplates.find((c) => c.id === id);
         if (!matchingTemplate) return new Error(`Template ${id} not found`);
         return matchingTemplate;
@@ -80,7 +80,7 @@ export const loadTemplatesByIds = async (
 
 export const loadTemplatesForTemplateCategories = async (
     templateCategoryIds: number[],
-): Promise<TemplateSelectType[][]> => {
+): Promise<TemplateEntity[][]> => {
     if (templateCategoryIds.length === 0) return [];
     const templatesList = await db
         .select()
@@ -146,7 +146,7 @@ export const findTemplateMaxOrderByCategoryId = async (
 
 export const createTemplate = async (
     input: TemplateCreateInput,
-): Promise<TemplateSelectType> => {
+): Promise<TemplateEntity> => {
     const { name, description, categoryId } = input;
 
     // Validate name length
@@ -193,7 +193,7 @@ export const createTemplate = async (
 
 export const updateTemplate = async (
     input: TemplateUpdateInput,
-): Promise<TemplateSelectType> => {
+): Promise<TemplateEntity> => {
     const {
         id,
         name,
@@ -226,7 +226,7 @@ export const updateTemplate = async (
     // TODO: Add image file handling
     // This would require implementing storage service
 
-    const updateData: Partial<TemplateInsertInput> = {
+    const updateData: Partial<TemplateEntityInput> = {
         name: name,
         categoryId: newCategoryId,
         updatedAt: new Date(),
@@ -245,7 +245,7 @@ export const updateTemplate = async (
 
 export const deleteTemplateById = async (
     id: number,
-): Promise<TemplateSelectType> => {
+): Promise<TemplateEntity> => {
     const existingTemplate = await findTemplateByIdOrThrow(id);
 
     // todo: check dependancies before delete
@@ -259,7 +259,7 @@ export const deleteTemplateById = async (
 
 export const suspendTemplateById = async (
     id: number,
-): Promise<TemplateSelectType> => {
+): Promise<TemplateEntity> => {
     // Find existing template
     const existingTemplate = await findTemplateByIdOrThrow(id);
 
@@ -286,7 +286,7 @@ export const suspendTemplateById = async (
 
 export const unsuspendTemplateById = async (
     id: number,
-): Promise<TemplateSelectType> => {
+): Promise<TemplateEntity> => {
     // Find existing template
     const existingTemplate = await findTemplateByIdOrThrow(id);
 
