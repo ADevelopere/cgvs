@@ -11,6 +11,7 @@ import {
     findTemplatesPaginated,
 } from "./template.repository";
 
+
 gqlSchemaBuilder.queryFields((t) => ({
     template: t.field({
         type: TemplatePothosObject,
