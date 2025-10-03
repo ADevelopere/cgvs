@@ -15,7 +15,7 @@ import { useTableRowsContext } from "../Table/TableRowsContext";
 import {
     TABLE_CHECKBOX_CONTAINER_SIZE,
     TABLE_CHECKBOX_WIDTH,
-} from "@/constants/tableConstants";
+} from "@/client/constants/tableConstants";
 
 // use to prevent creating a new function reference on every render,
 // which would break the memoization of ColumnHeaderCell.

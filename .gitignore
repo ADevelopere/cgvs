@@ -68,3 +68,5 @@ out/
 /generated/
 /prisma/generated/
 /.next/
+
+schemaGenerate.graphql

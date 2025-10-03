@@ -17,7 +17,7 @@ import ResizeHandle from "./ResizeHandle";
 import { useTableStyles } from "@/client/theme/styles";
 import { EditableColumn, PinPosition } from "@/types/table.type";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/constants/tableConstants";
+import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
 
 export interface ColumnHeaderProps {
     column: EditableColumn;
