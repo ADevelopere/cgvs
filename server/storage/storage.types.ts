@@ -1,6 +1,20 @@
-// Storage Types and Interfaces
+import {
+    storageFiles,
+    fileUsages,
+    storageDirectories,
+} from "@/server/db/schema/storage";
 
-export interface DirectoryPermissions {
+// Type aliases to match Kotlin entities
+export type FileEntity = typeof storageFiles.$inferSelect;
+export type FileEntityInput = typeof storageFiles.$inferInsert;
+
+export type DirectoryEntity = typeof storageDirectories.$inferSelect;
+export type DirectoryEntityInput = typeof storageDirectories.$inferInsert;
+
+export type FileUsageEntity = typeof fileUsages.$inferSelect;
+export type FileUsageEntityInput = typeof fileUsages.$inferInsert;
+
+export interface DirectoryPermissionsServerType {
     allowUploads: boolean;
     allowDelete: boolean;
     allowMove: boolean;
@@ -9,7 +23,7 @@ export interface DirectoryPermissions {
     allowMoveFiles: boolean;
 }
 
-export interface FileUsageInfo {
+export interface FileUsageInfoServerType {
     id: bigint;
     filePath: string;
     usageType: string;
@@ -18,10 +32,11 @@ export interface FileUsageInfo {
     created: Date;
 }
 
-export interface DirectoryInfo {
+// info from db, and storage service
+export interface DirectoryInfoServerType {
     path: string;
     isProtected: boolean;
-    permissions: DirectoryPermissions;
+    permissions: DirectoryPermissionsServerType;
     protectChildren: boolean;
     created: Date;
     lastModified: Date;
@@ -32,7 +47,7 @@ export interface DirectoryInfo {
     name: string;
 }
 
-export interface FileInfo {
+export interface FileInfoServerType {
     path: string;
     isProtected: boolean;
     directoryPath: string;
@@ -44,14 +59,14 @@ export interface FileInfo {
     isFromBucket: boolean;
     url: string;
     mediaLink?: string;
-    fileType: FileType;
+    fileType: FileTypeServerType;
     isPublic: boolean;
     isInUse: boolean;
-    usages: FileUsageInfo[];
+    usages: FileUsageInfoServerType[];
     name: string;
 }
 
-export interface BucketFile {
+export interface BucketFileServerType {
     path: string;
     directoryPath: string;
     size: bigint;
@@ -61,40 +76,40 @@ export interface BucketFile {
     lastModified: Date;
     url: string;
     mediaLink?: string;
-    fileType: FileType;
+    fileType: FileTypeServerType;
     isPublic: boolean;
 }
 
-export interface BucketDirectory {
+export interface BucketDirectoryServerType {
     path: string;
     created: Date;
     lastModified: Date;
     isPublic: boolean;
 }
 
-export enum FileType {
+export enum FileTypeServerType {
     IMAGE = "IMAGE",
-    VIDEO = "VIDEO", 
+    VIDEO = "VIDEO",
     AUDIO = "AUDIO",
     DOCUMENT = "DOCUMENT",
     ARCHIVE = "ARCHIVE",
-    OTHER = "OTHER"
+    OTHER = "OTHER",
 }
 
-export enum FileSortField {
+export enum FileSortFieldServerType {
     NAME = "NAME",
     SIZE = "SIZE",
     TYPE = "TYPE",
     CREATED = "CREATED",
-    MODIFIED = "MODIFIED"
+    MODIFIED = "MODIFIED",
 }
 
-export enum SortDirection {
+export enum SortDirectionServerType {
     ASC = "ASC",
-    DESC = "DESC"
+    DESC = "DESC",
 }
 
-export enum ContentType {
+export enum ContentTypeServerType {
     JPEG = "image/jpeg",
     PNG = "image/png",
     GIF = "image/gif",
@@ -109,92 +124,92 @@ export enum ContentType {
     RAR = "application/vnd.rar",
     MP4 = "video/mp4",
     MP3 = "audio/mpeg",
-    WAV = "audio/wav"
+    WAV = "audio/wav",
 }
 
-export enum UploadLocation {
+export enum UploadLocationServerType {
     PUBLIC = "public",
     TEMPLATE_COVERS = "public/templateCover",
     CERTIFICATES = "public/certificates",
-    PROFILE_PICTURES = "public/profiles"
+    PROFILE_PICTURES = "public/profiles",
 }
 
 // Input types
-export interface CreateFolderInput {
+export interface FolderCreateInput {
     path: string;
-    permissions?: DirectoryPermissions;
+    permissions?: DirectoryPermissionsServerType;
     protected?: boolean;
     protectChildren?: boolean;
 }
 
-export interface UpdateDirectoryPermissionsInput {
+export interface DirectoryPermissionsUpdateInput {
     path: string;
-    permissions: DirectoryPermissions;
+    permissions: DirectoryPermissionsServerType;
 }
 
-export interface SetStorageItemProtectionInput {
+export interface StorageItemProtectionUpdateInput {
     path: string;
     isProtected: boolean;
     protectChildren?: boolean;
 }
 
-export interface MoveStorageItemsInput {
+export interface StorageItemsMoveInput {
     sourcePaths: string[];
     destinationPath: string;
 }
 
-export interface CopyStorageItemsInput {
+export interface StorageItemsCopyInput {
     sourcePaths: string[];
     destinationPath: string;
 }
 
-export interface DeleteItemsInput {
+export interface ItemsDeleteInput {
     paths: string[];
     force?: boolean;
 }
 
-export interface CheckFileUsageInput {
+export interface FileUsageCheckInput {
     filePath: string;
 }
 
-export interface RegisterFileUsageInput {
+export interface FileUsageRegisterInput {
     filePath: string;
     usageType: string;
     referenceId: bigint;
     referenceTable: string;
 }
 
-export interface RenameFileInput {
+export interface FileRenameInput {
     currentPath: string;
     newName: string;
 }
 
-export interface ListFilesInput {
+export interface FilesListInput {
     path?: string;
     limit?: number;
     offset?: number;
     searchTerm?: string;
     fileType?: string;
-    sortBy?: FileSortField;
-    sortDirection?: SortDirection;
+    sortBy?: FileSortFieldServerType;
+    sortDirection?: SortDirectionServerType;
 }
 
-export interface GenerateUploadSignedUrlInput {
+export interface UploadSignedUrlGenerateInput {
     fileName: string;
-    contentType: ContentType;
-    location: UploadLocation;
+    contentType: ContentTypeServerType;
+    location: UploadLocationServerType;
 }
 
 // Result types
 export interface FileOperationResult {
     success: boolean;
     message: string;
-    data?: FileInfo | DirectoryInfo | null;
+    data?: FileInfoServerType | DirectoryInfoServerType | null;
 }
 
 export interface FileUsageResult {
     isInUse: boolean;
-    usages: FileUsageInfo[];
+    usages: FileUsageInfoServerType[];
     canDelete: boolean;
     deleteBlockReason?: string;
 }
@@ -210,18 +225,18 @@ export interface BulkOperationResult {
 export interface FileUploadResult {
     success: boolean;
     message: string;
-    data?: FileInfo | null;
+    data?: FileInfoServerType | null;
 }
 
 export interface StorageStats {
     totalFiles: number;
     totalSize: bigint;
-    fileTypeBreakdown: Array<{ type: FileType; count: number; size: bigint }>;
+    fileTypeBreakdown: Array<{ type: FileTypeServerType; count: number; size: bigint }>;
     directoryCount: number;
 }
 
 export interface StorageObjectList {
-    items: Array<FileInfo | DirectoryInfo>;
+    items: Array<FileInfoServerType | DirectoryInfoServerType>;
     totalCount: number;
     hasMore: boolean;
     offset: number;

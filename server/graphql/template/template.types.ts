@@ -1,4 +1,3 @@
-import { FileInfo } from "@/services/storage.types";
 import { TemplateCategoryPothosDefintion } from "../templateCategory/templateCategory.types";
 import { PageInfo } from "../pagintaion/pagintaion.types";
 import {
@@ -7,13 +6,13 @@ import {
     templatesConfigsKeyEnum,
 } from "@/server/db/schema";
 
-export type TemplateSelectType = typeof templates.$inferSelect;
-export type TemplateInsertInput = typeof templates.$inferInsert;
+export type TemplateEntity = typeof templates.$inferSelect;
+export type TemplateEntityInput = typeof templates.$inferInsert;
 
-export type TemplatePothosDefintion = TemplateSelectType & {
+export type TemplatePothosDefintion = TemplateEntity & {
     //relations
     category?: TemplateCategoryPothosDefintion;
-    imageFile?: FileInfo | null;
+    // imageFile?: FileInfo | null;
     preSuspensionCategory?: TemplateCategoryPothosDefintion | null;
     // variables
     // recipientGroups
@@ -36,7 +35,7 @@ export type TemplateUpdateInput = {
 };
 
 export type PaginatedTemplatesResponseSelectType = {
-    data: TemplateSelectType[];
+    data: TemplateEntity[];
     pageInfo: PageInfo;
 };
 
