@@ -44,12 +44,12 @@ export const templates = pgTable("template", {
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
 });
 
-export const templatesConfigKeyEnum = pgEnum("template_config_key", [
+export const templatesConfigsKeyEnum = pgEnum("template_config_key", [
     "MAX_BACKGROUND_SIZE",
     "ALLOWED_FILE_TYPES",
 ]);
 
-export const templatesConfig = pgTable("templates_config", {
-    key: templatesConfigKeyEnum("key").primaryKey(),
+export const templatesConfigs = pgTable("templates_config", {
+    key: templatesConfigsKeyEnum("key").primaryKey(),
     value: text("value").notNull(),
 });

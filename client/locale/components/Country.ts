@@ -1,4 +1,4 @@
-type CountryTranslations = {
+export type CountryTranslations = {
     [key: string]: string;
     selectCountry: string;
 
@@ -249,6 +249,4 @@ type CountryTranslations = {
     ZA: string;
     ZM: string;
     ZW: string;
-}
-
-export default CountryTranslations;
+};

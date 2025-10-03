@@ -1,6 +1,6 @@
 import StudentTranslations from "../components/Student";
 
-const student: StudentTranslations = {
+export const student: StudentTranslations = {
     studentManagement: "إدارة الطلاب",
 
     // header columns, same as column id values
@@ -57,5 +57,3 @@ const student: StudentTranslations = {
     studentCreatedSuccess: "تم إنشاء الطالب بنجاح!",
     studentCreateError: "حدث خطأ أثناء إنشاء الطالب",
 };
-
-export default student;

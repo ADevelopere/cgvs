@@ -20,6 +20,7 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@google-cloud/storage": "^7.17.1",
+        "@graphql-codegen/cli": "^6.0.0",
         "@mui/icons-material": "^7.3.2",
         "@mui/lab": "^7.0.0-beta.17",
         "@mui/material": "^7.3.2",
@@ -47,6 +48,7 @@
         "drizzle-kit": "1.0.0-beta.1-f92627f",
         "drizzle-orm": "1.0.0-beta.1-f92627f",
         "eslint-plugin-drizzle": "^0.2.3",
+        "graphql": "^16.11.0",
         "graphql-scalars": "^1.24.2",
         "html-to-image": "^1.11.13",
         "jose": "^6.1.0",
@@ -74,6 +76,7 @@
         "@eslint/eslintrc": "^3.3.1",
         "@faker-js/faker": "^10.0.0",
         "@graphql-eslint/eslint-plugin": "^4.4.0",
+        "@parcel/watcher": "^2.5.1",
         "@storybook/nextjs": "^9.1.8",
         "@storybook/nextjs-vite": "^9.1.8",
         "@types/bcryptjs": "^3.0.0",
@@ -87,6 +90,6 @@
         "storybook": "^9.1.8",
         "ts-node": "^10.9.2",
         "tsx": "^4.20.6",
-        "typescript": "^5.9.2"
+        "typescript": "^5.9.3"
     }
 }

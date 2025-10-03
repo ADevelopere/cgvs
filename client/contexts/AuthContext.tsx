@@ -1,14 +1,10 @@
 "use client";
 
-import {
-    useLoginMutation,
-    useLogoutMutation,
-    useRefreshTokenMutation,
-    LoginMutationVariables,
-    User,
-} from "@/graphql/generated/types";
-import AuthTranslations from "@/locale/components/Auth";
-import useAppTranslation from "@/locale/useAppTranslation";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as Document from "@/client/graphql/documents";
+
+import { AuthTranslations } from "@/client/locale/components/Auth";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useAuthToken } from "./AppApolloProvider";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
@@ -21,6 +17,7 @@ import React, {
     useRef,
     useState,
 } from "react";
+import { useMutation } from "@apollo/client/react";
 
 // A simple UI for the initial loading state
 const LoadingUI: React.FC<{
@@ -59,12 +56,12 @@ const LoadingUI: React.FC<{
 
 // The shape of the authentication context
 export type AuthContextType = {
-    user: User | null;
+    user: Graphql.User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
     login: (
-        credentials: LoginMutationVariables,
+        credentials: Graphql.MutationLoginArgs,
         redirectUrl?: string | null,
     ) => Promise<boolean>;
     logout: () => void;
@@ -77,11 +74,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");
     const { updateAuthToken, clearAuthToken } = useAuthToken();
-    const [loginMutation] = useLoginMutation();
-    const [logoutMutation] = useLogoutMutation();
-    const [refreshTokenMutation] = useRefreshTokenMutation();
+    const [loginMutation] = useMutation(Document.loginMutationDocument);
+    const [logoutMutation] = useMutation(Document.logoutMutationDocument);
+    const [refreshTokenMutation] = useMutation(
+        Document.refreshTokenMutationDocument,
+    );
 
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<Graphql.User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -92,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             const { data } = await refreshTokenMutation();
             if (data?.refreshToken?.token && data.refreshToken.user) {
                 updateAuthToken(data.refreshToken.token);
-                setUser(data.refreshToken.user as User);
+                setUser(data.refreshToken.user);
                 setIsAuthenticated(true);
             } else {
                 setIsAuthenticated(false);
@@ -116,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const login = useCallback(
         async (
-            credentials: LoginMutationVariables,
+            credentials: Graphql.MutationLoginArgs,
             redirectUrl: string | null = null,
         ): Promise<boolean> => {
             setError(null);
@@ -139,7 +138,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 return false;
             }
         },
-        [loginMutation, strings.invalidLoginResponse, strings.signinFailed, updateAuthToken],
+        [
+            loginMutation,
+            strings.invalidLoginResponse,
+            strings.signinFailed,
+            updateAuthToken,
+        ],
     );
 
     useEffect(() => {

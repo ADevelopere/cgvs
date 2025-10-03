@@ -19,7 +19,7 @@ type StorageUploadingTranslations = {
     cancel: string;
     fileAlreadyExists: string;
     failedGenerateSignedUrl: string;
-    uploadCancelled: string; 
+    uploadCancelled: string;
     uploadFailedWithStatus: string; // %{status}
     uploadFailed: string;
     uploadCompleted: string;
@@ -176,7 +176,7 @@ export type StorageManagementUITranslations = {
     deleteDialogFailedToDelete: string;
     deleteDialogUnexpectedError: string;
     // Delete dialog end
-    
+
     // Move to dialog
     moveDialogTitle: string;
     moveDialogSelectDestination: string;
@@ -205,7 +205,7 @@ export type StorageManagementUITranslations = {
     filePickerDialogUnexpectedError: string;
     selecting: string;
     // File picker dialog end
-    
+
     contentType: string;
     path: string;
     md5Hash: string;
@@ -266,18 +266,18 @@ type StorageDropzoneTranslations = {
     orClickToSelect: string;
     clickToSelectFiles: string;
     uploading: string;
-    
+
     // File validation messages
     invalidFileType: string; // %{fileName}
     fileTooLarge: string; // %{fileName}, %{maxSize}
     tooManyFiles: string; // %{count}, %{maxFiles}
-    
+
     // Upload feedback
     filesSelected: string; // %{count}
     startingUpload: string;
     uploadSuccess: string; // %{count}
     uploadFailed: string; // %{error}
-    
+
     // Dropzone states
     dropzoneActive: string;
     dropzoneInactive: string;
@@ -285,7 +285,7 @@ type StorageDropzoneTranslations = {
     releaseToUpload: string;
 };
 
-type StorageTranslations = {
+export type StorageTranslations = {
     [key: string]:
         | string
         | undefined
@@ -299,5 +299,3 @@ type StorageTranslations = {
     ui: StorageManagementUITranslations;
     dropzone: StorageDropzoneTranslations;
 };
-
-export default StorageTranslations;

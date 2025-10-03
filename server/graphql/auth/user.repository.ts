@@ -1,10 +1,7 @@
 import { db } from "@/server/db/drizzleDb";
 import { users } from "@/server/db/schema";
 import { count, eq, inArray } from "drizzle-orm";
-import {
-    UserSelectType,
-    PaginatedUsersResponseSelectType,
-} from "./auth.types";
+import { UserSelectType, PaginatedUsersResponseSelectType } from "./auth.types";
 import logger from "@/utils/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
@@ -30,9 +27,29 @@ export const findUserByIdOrThrow = async (
     }
 };
 
+export const findUserById = async (
+    id: number,
+): Promise<UserSelectType | null> => {
+    try {
+        return await db
+            .select()
+            .from(users)
+            .where(eq(users.id, id))
+            .then((res) => {
+                return res[0];
+            });
+    } catch {
+        return null;
+    }
+};
+
 export const usersTotalCount = async (): Promise<number> => {
     const [{ total }] = await db.select({ total: count() }).from(users);
     return total;
+};
+
+export const findAllUsers = async (): Promise<UserSelectType[]> => {
+    return await db.select().from(users);
 };
 
 export const findUsers = async (opts: {

@@ -3,7 +3,6 @@ import {
     templatecategorySpecialTypeEnum,
 } from "@/server/db/schema";
 import { TemplatePothosDefintion } from "../template/template.types";
-import { OmitIdRelationFields } from "../gqlHelper";
 
 export type TemplateSpecialCategoryType =
     (typeof templatecategorySpecialTypeEnum.enumValues)[number];
@@ -17,9 +16,6 @@ export type TemplateCategoryPothosDefintion = TemplateCategorySelectType & {
     parentCategory?: TemplateCategoryPothosDefintion | null;
     subCategories?: TemplateCategoryPothosDefintion[];
 };
-
-export type TemplateCategory =
-    OmitIdRelationFields<TemplateCategoryPothosDefintion>;
 
 export type TemplateCategoryCreateInput = {
     name: string;

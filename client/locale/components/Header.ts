@@ -1,6 +1,6 @@
-type HeaderTranslations = {
+export type HeaderTranslations = {
     [key: string]: string;
-    
+
     home: string;
     about: string;
     contact: string;
@@ -20,6 +20,4 @@ type HeaderTranslations = {
     profile: string;
     preferences: string;
     logout: string;
-}
-
-export default HeaderTranslations;
+};

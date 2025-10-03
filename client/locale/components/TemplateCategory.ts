@@ -1,4 +1,4 @@
-type TemplateCategoryTranslation = {
+export type TemplateCategoryTranslation = {
     templateCategoriesManagement: string;
     theDeleted: string;
     toggleCategoriesPane: string;
@@ -21,7 +21,7 @@ type TemplateCategoryTranslation = {
     noCategories: string;
     noTemplates: string;
     noDeletedTemplates: string;
-    
+
     // Form and button actions
     selectCategory: string;
     selectParentCategory: string;
@@ -35,13 +35,13 @@ type TemplateCategoryTranslation = {
     manage: string;
     manageButton: string;
     manageTemplateButtonTitle: string;
-    
+
     // Sorting options
     nameAsc: string;
     nameDesc: string;
     idAsc: string;
     idDesc: string;
-    
+
     // Action buttons
     cancel: string;
     add: string;
@@ -50,7 +50,7 @@ type TemplateCategoryTranslation = {
     retry: string;
     refresh: string;
     filter: string;
-    
+
     // Success messages
     categoryAddedSuccessfully: string;
     categoryHiddenSuccessfully: string;
@@ -63,7 +63,7 @@ type TemplateCategoryTranslation = {
     templateUpdatedSuccessfully: string;
     templateDeletedSuccessfully: string;
     templateRestoredSuccessfully: string;
-    
+
     // Error messages
     categoryAddFailed: string;
     errorLoadingCategories: string;
@@ -75,7 +75,7 @@ type TemplateCategoryTranslation = {
     templateDeleteFailed: string;
     templateRestoreFailed: string;
     errorRestoringTemplate: string;
-    
+
     // Validation messages
     nameTooShort: string;
     nameTooLong: string;
@@ -142,7 +142,7 @@ type TemplateCategoryTranslation = {
     columnCreated: string;
     columnActions: string;
     createdLabel: string;
-    
+
     // List view actions
     buttonManage: string;
 
@@ -157,5 +157,3 @@ type TemplateCategoryTranslation = {
     recommendedImageSize: string;
     uploadImage: string;
 };
-
-export default TemplateCategoryTranslation;

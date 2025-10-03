@@ -1,4 +1,4 @@
-type ConnectivityTranslations = {
+export type ConnectivityTranslations = {
     [key: string]: string;
 
     serverConnectionLost: string;
@@ -10,6 +10,4 @@ type ConnectivityTranslations = {
     checkingConnection: string;
     lastChecked: string;
     clickToRetry: string;
-}
-
-export default ConnectivityTranslations;
+};

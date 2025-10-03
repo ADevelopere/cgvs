@@ -1,26 +1,24 @@
 import HeaderTranslations from "../components/Header";
 
-const header: HeaderTranslations = {
-  home: "الرئيسية",
-  programs: "البرامج",
-  about: "حول",
-  contact: "اتصل بنا",
-  
-  menu: "القائمة",
-  close: "إغلاق",
-  language: "اللغة",
-  logoAlt: "شعار",
+export const header: HeaderTranslations = {
+    home: "الرئيسية",
+    programs: "البرامج",
+    about: "حول",
+    contact: "اتصل بنا",
 
-  theme: "المظهر",
-  themeLight: "نهار",
-  themeDark: "ليل",
-  themeSystem: "النظام",
-  themeSettings: "إعدادات المظهر",
+    menu: "القائمة",
+    close: "إغلاق",
+    language: "اللغة",
+    logoAlt: "شعار",
 
-  userMenu: "قائمة المستخدم",
-  profile: "الملف الشخصي",
-  preferences: "التفضيلات",
-  logout: "تسجيل الخروج",
+    theme: "المظهر",
+    themeLight: "نهار",
+    themeDark: "ليل",
+    themeSystem: "النظام",
+    themeSettings: "إعدادات المظهر",
+
+    userMenu: "قائمة المستخدم",
+    profile: "الملف الشخصي",
+    preferences: "التفضيلات",
+    logout: "تسجيل الخروج",
 };
-
-export default header;
