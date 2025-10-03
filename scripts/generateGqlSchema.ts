@@ -7,7 +7,7 @@ import logger from "@/utils/logger";
 
 // Use the standard printSchema function
 const schemaAsString = printSchema(graphQLSchema);
-const outputPath = path.join(process.cwd(), "schemaGenerate.graphql");
+const outputPath = path.join(process.cwd(), "schemaGenerated.graphql");
 
 fs.writeFileSync(outputPath, schemaAsString);
 
