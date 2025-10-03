@@ -1,5 +1,5 @@
-import { TemplateManagementProvider } from '@/contexts/template/TemplateManagementContext';
-import TemplateManagement from '@/views/templates/management/TemplateManagement';
+import { TemplateManagementProvider } from '@/client/contexts/template/TemplateManagementContext';
+import TemplateManagement from '@/client/views/templates/management/TemplateManagement';
 
 const TemplateManagementPage = () => {
     return (

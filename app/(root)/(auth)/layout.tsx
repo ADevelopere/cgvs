@@ -1,5 +1,5 @@
-import ProtectedRoute from "@/components/ProtectedRoute";
-import StorageProvider from "@/views/storage/StorageProvider";
+import ProtectedRoute from "@/client/components/ProtectedRoute";
+import StorageProvider from "@/client/views/storage/StorageProvider";
 
 export default function RootLayout({
     children,

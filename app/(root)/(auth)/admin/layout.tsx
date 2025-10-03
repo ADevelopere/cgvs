@@ -9,15 +9,15 @@ import {
     Storage as StorageIcon,
 } from "@mui/icons-material";
 import { HomeIcon } from "lucide-react";
-import { NavigationProvider } from "@/contexts/NavigationContext";
-import DashboardLayout from "@/views/dashboard/layout/DashboardLayout";
-import DashboardEndActions from "@/views/dashboard/layout/DashboardEndActions";
-import { TemplateCategoryManagementProvider } from "@/contexts/template/TemplateCategoryManagementContext";
-import { DashboardLayoutProvider } from "@/contexts/DashboardLayoutContext";
-import { Navigation, Title } from "@/contexts/adminLayout.types";
-import { TemplateCategoryGraphQLProvider } from "@/contexts/template/TemplateCategoryGraphQLContext";
-import { TemplateGraphQLProvider } from "@/contexts/template/TemplateGraphQLContext";
-import StudentProvider from "@/contexts/student/StudentProvider";
+import { NavigationProvider } from "@/client/contexts/NavigationContext";
+import DashboardLayout from "@/client/views/dashboard/layout/DashboardLayout";
+import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndActions";
+import { TemplateCategoryManagementProvider } from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { DashboardLayoutProvider } from "@/client/contexts/DashboardLayoutContext";
+import { Navigation, Title } from "@/client/contexts/adminLayout.types";
+import { TemplateCategoryGraphQLProvider } from "@/client/contexts/template/TemplateCategoryGraphQLContext";
+import { TemplateGraphQLProvider } from "@/client/contexts/template/TemplateGraphQLContext";
+import StudentProvider from "@/client/contexts/student/StudentProvider";
 
 const NAVIGATION: Navigation = [
     {

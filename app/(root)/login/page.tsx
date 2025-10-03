@@ -1,6 +1,6 @@
 "use client";
 
-import LoginForm from "@/views/auth/LoginForm";
+import LoginForm from "@/client/views/auth/LoginForm";
 import { Container } from "@mui/material";
 import type React from "react";
 

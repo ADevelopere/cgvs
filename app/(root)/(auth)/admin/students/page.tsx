@@ -1,4 +1,4 @@
-import StudentTable from "@/views/student/StudentTable";
+import StudentTable from "@/client/views/student/StudentTable";
 
 export default function StudentsPage() {
     return <StudentTable />;

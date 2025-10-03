@@ -1,4 +1,4 @@
-import ClientProviders from "@/components/ClientProviders";
+import ClientProviders from "@/client/components/ClientProviders";
 
 export default function RootLayout({
     children,
