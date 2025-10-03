@@ -1,18 +1,11 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
-import {
-    PaginatedTemplatesResponse,
-    QueryTemplateArgs,
-    QueryTemplatesArgs,
-    Template,
-    TemplatesConfigs,
-    MutationCreateTemplateArgs,
-    MutationUpdateTemplateArgs,
-    MutationDeleteTemplateArgs,
-    MutationSuspendTemplateArgs,
-    MutationUnsuspendTemplateArgs,
-} from "../../generated/gql/graphql";
 
-export const templateQueryDocument: TypedDocumentNode<Template, QueryTemplateArgs> = gql`
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
+export const templateQueryDocument: TypedDocumentNode<
+    Graphql.TemplateQuery,
+    Graphql.TemplateQueryVariables
+> = gql`
     query template($id: Int!) {
         template(id: $id) {
             id
@@ -36,8 +29,8 @@ export const templateQueryDocument: TypedDocumentNode<Template, QueryTemplateArg
 `;
 
 export const paginatedTemplatesQueryDocument: TypedDocumentNode<
-    PaginatedTemplatesResponse,
-    QueryTemplatesArgs
+    Graphql.TemplatesQuery,
+    Graphql.TemplatesQueryVariables
 > = gql`
     query templates($pagination: PaginationArgs) {
         templates(pagination: $pagination) {
@@ -72,7 +65,7 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
     }
 `;
 
-export const templatesConfigsQueryDocument: TypedDocumentNode<TemplatesConfigs> = gql`
+export const templatesConfigsQueryDocument: TypedDocumentNode<Graphql.TemplatesConfigsQuery> = gql`
     query TemplatesConfigs {
         templatesConfigs {
             configs {
@@ -84,8 +77,8 @@ export const templatesConfigsQueryDocument: TypedDocumentNode<TemplatesConfigs> 
 `;
 
 export const createTemplateQueryDocument: TypedDocumentNode<
-    Template,
-    MutationCreateTemplateArgs
+    Graphql.CreateTemplateMutation,
+    Graphql.CreateTemplateMutationVariables
 > = gql`
     mutation createTemplate($input: TemplateCreateInput!) {
         createTemplate(input: $input) {
@@ -109,8 +102,8 @@ export const createTemplateQueryDocument: TypedDocumentNode<
 `;
 
 export const updateTemplateMutationDocument: TypedDocumentNode<
-    Template,
-    MutationUpdateTemplateArgs
+    Graphql.UpdateTemplateMutation,
+    Graphql.UpdateTemplateMutationVariables
 > = gql`
     mutation updateTemplate($input: UpdateTemplateInput!) {
         updateTemplate(input: $input) {
@@ -134,8 +127,8 @@ export const updateTemplateMutationDocument: TypedDocumentNode<
 `;
 
 export const deleteTemplateMutationDocument: TypedDocumentNode<
-    Template,
-    MutationDeleteTemplateArgs
+    Graphql.DeleteTemplateMutation,
+    Graphql.DeleteTemplateMutationVariables
 > = gql`
     mutation deleteTemplate($id: Int!) {
         deleteTemplate(id: $id) {
@@ -150,8 +143,8 @@ export const deleteTemplateMutationDocument: TypedDocumentNode<
 `;
 
 export const suspendTemplateMutationDocument: TypedDocumentNode<
-    Template,
-    MutationSuspendTemplateArgs
+    Graphql.SuspendTemplateMutation,
+    Graphql.SuspendTemplateMutationVariables
 > = gql`
     mutation suspendTemplate($id: Int!) {
         suspendTemplate(id: $id) {
@@ -175,8 +168,8 @@ export const suspendTemplateMutationDocument: TypedDocumentNode<
 `;
 
 export const unsuspendTemplateMutationDocument: TypedDocumentNode<
-    Template,
-    MutationUnsuspendTemplateArgs
+    Graphql.UnsuspendTemplateMutation,
+    Graphql.UnsuspendTemplateMutationVariables
 > = gql`
     mutation unsuspendTemplate($id: Int!) {
         unsuspendTemplate(id: $id) {

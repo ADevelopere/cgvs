@@ -19,12 +19,18 @@ export const TemplatePothosObject = gqlSchemaBuilder
     })
     .implement({
         fields: (t) => ({
-            id: t.exposeID("id"),
-            name: t.exposeString("name"),
+            id: t.exposeInt("id", { nullable: false }),
+            name: t.exposeString("name", { nullable: false }),
             description: t.exposeString("description", { nullable: true }),
-            order: t.exposeInt("order"),
-            createdAt: t.expose("createdAt", { type: "DateTime" }),
-            updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+            order: t.exposeInt("order", { nullable: false }),
+            createdAt: t.expose("createdAt", {
+                type: "DateTime",
+                nullable: false,
+            }),
+            updatedAt: t.expose("updatedAt", {
+                type: "DateTime",
+                nullable: false,
+            }),
             // imageUrl: t.string({
             //     nullable: true,
             //     resolve: async ({ id: templateId }) => {
@@ -114,6 +120,8 @@ export const TemplatesConfigsPothosObject = gqlSchemaBuilder
     .objectRef<TemplatesConfigsPothosDefinition>("TemplatesConfigs")
     .implement({
         fields: (t) => ({
-            configs: t.expose("configs", { type: [TemplatesConfigPothosObject] }),
+            configs: t.expose("configs", {
+                type: [TemplatesConfigPothosObject],
+            }),
         }),
     });

@@ -20,7 +20,7 @@ export const UserPothosObject = gqlSchemaBuilder.loadableObject<
     load: async (ids: number[]) => loadUsersByIds(ids),
     sort: (user) => user.id,
     fields: (t) => ({
-        id: t.exposeID("id"),
+        id: t.exposeInt("id"),
         name: t.exposeString("name"),
         email: t.exposeString("email"),
         emailVerifiedAt: t.expose("emailVerifiedAt", {

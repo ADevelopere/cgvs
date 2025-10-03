@@ -12,12 +12,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
-import {
-    Template,
-    TemplateConfig,
-    TemplateConfigQuery,
-    useTemplateQuery,
-} from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import {
     mapSingleTemplate,
@@ -25,6 +20,8 @@ import {
 } from "@/utils/template/template-mappers";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
+import { useQuery } from "@apollo/client/react";
+import * as Document from "@/client/graphql/documents";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -37,9 +34,11 @@ export interface TabError {
     message: string;
 }
 
-const defaultConfig: TemplateConfig = {
-    maxBackgroundSize: 5125048, // Default 2MB in KB
-    allowedFileTypes: ["image/jpeg", "image/png"],
+const defaultConfig: Graphql.TemplatesConfigs = {
+    configs: [
+        { key: "MAX_BACKGROUND_SIZE", value: "5125048" },
+        { key: "ALLOWED_FILE_TYPES", value: '["image/jpeg", "image/png"]' },
+    ],
 };
 
 interface TemplateManagementContextType {
@@ -48,8 +47,8 @@ interface TemplateManagementContextType {
     loadedTabs: TemplateManagementTabType[];
     error: string | undefined;
     tabErrors: Record<TemplateManagementTabType, TabError | undefined>;
-    config: TemplateConfig;
-    template: Template | undefined;
+    config: Graphql.TemplatesConfigs;
+    template: Graphql.Template | undefined;
     loading: boolean;
     changeTab: (tab: TemplateManagementTabType) => void;
     setTabLoaded: (tab: TemplateManagementTabType) => void;
@@ -68,17 +67,22 @@ export const TemplateManagementProvider: React.FC<{
     const searchParams = useSearchParams();
     const params = useParams<{ id: string }>();
     const id = params?.id;
-    const { allTemplates, templateToManage, templateManagementTab, setTemplateManagementTab } = useTemplateCategoryManagement();
+    const {
+        allTemplates,
+        templateToManage,
+        templateManagementTab,
+        setTemplateManagementTab,
+    } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
     const { setNavigation } = useDashboardLayout();
 
-    const { data: apolloTemplateData } = useTemplateQuery({
+    const { data: apolloTemplateData } = useQuery(Document.templateQueryDocument, {
         variables: { id: id ? parseInt(id, 10) : 0 },
         skip: !id,
         fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
     });
 
-    const [config, setConfig] = useState<TemplateConfig>(defaultConfig);
+    const [config, setConfig] = useState<Graphql.TemplatesConfigs>(defaultConfig);
 
     const [activeTab, setActiveTab] =
         useState<TemplateManagementTabType>("basic");
@@ -98,24 +102,26 @@ export const TemplateManagementProvider: React.FC<{
         preview: undefined,
     });
 
-    const [template, settemplate] = useState<Template | undefined>(
+    const [template, settemplate] = useState<Graphql.Template | undefined>(
         templateToManage,
     );
 
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const tab = (searchParams.get("tab") ?? templateManagementTab) as TemplateManagementTabType;
+        const tab = (searchParams.get("tab") ??
+            templateManagementTab) as TemplateManagementTabType;
         setActiveTab(tab);
     }, [searchParams, templateManagementTab]);
 
     const changeTab = useCallback(
         (tab: TemplateManagementTabType) => {
-        setActiveTab(tab);
-        setTemplateManagementTab(tab);
-        },[setTemplateManagementTab]
-    )
-    
+            setActiveTab(tab);
+            setTemplateManagementTab(tab);
+        },
+        [setTemplateManagementTab],
+    );
+
     const handleSetTabLoaded = useCallback((tab: TemplateManagementTabType) => {
         setLoadedTabs((prevTabs) =>
             prevTabs.includes(tab) ? prevTabs : [...prevTabs, tab],
@@ -146,7 +152,7 @@ export const TemplateManagementProvider: React.FC<{
         const fetchTemplate = async () => {
             setLoading(true);
             try {
-                let template: Template | undefined | null = undefined;
+                let template: Graphql.Template | undefined | null = undefined;
                 // First set from templateToManage if available
                 if (templateToManage) {
                     template = templateToManage;
@@ -196,7 +202,7 @@ export const TemplateManagementProvider: React.FC<{
 
     const fetchConfig = useCallback(async () => {
         try {
-            const data: TemplateConfigQuery = await templateConfigQuery();
+            const data: Graphql.TemplatesConfigsQuery = await templateConfigQuery();
             if (data) {
                 const config = mapTemplateConfig(data) ?? defaultConfig;
                 setConfig(config);
