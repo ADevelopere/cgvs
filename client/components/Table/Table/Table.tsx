@@ -10,7 +10,7 @@ import ColumnVisibilityPanel from "./ColumnVisibilityPanel";
 import { useTableContext } from "./TableContext";
 import { useTableColumnContext } from "./TableColumnContext";
 import { useTableRowsContext } from "./TableRowsContext";
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/constants/tableConstants";
+import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 import TableBody from "../TableBody/TableBody";
 // Define column interface

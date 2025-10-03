@@ -13,7 +13,7 @@ import { useStudentFilter } from "@/client/contexts/student/StudentFilterContext
 import { useStudentTableManagement } from "@/client/contexts/student/StudentTableManagementContext";
 import CreateStudentRow from "./CreateStudentRow";
 import { loadFromLocalStorage } from "@/utils/localStorage";
-import { ROWS_PER_PAGE_OPTIONS } from "@/constants/tableConstants";
+import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 
 const StudentManagementDashboardTitle: React.FC = () => {
     const strings = useAppTranslation("studentTranslations");

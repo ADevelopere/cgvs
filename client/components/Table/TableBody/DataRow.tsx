@@ -5,7 +5,7 @@ import { getCellValue } from "./DataCell.util";
 import {
     TABLE_CHECKBOX_CONTAINER_SIZE,
     TABLE_CHECKBOX_WIDTH,
-} from "@/constants/tableConstants";
+} from "@/client/constants/tableConstants";
 import { useTableStyles } from "@/client/theme/styles";
 import DataCell from "./DataCell";
 import { EditableColumn } from "@/types/table.type";
