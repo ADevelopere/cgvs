@@ -12,11 +12,11 @@ import {
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/utils/dateUtils";
-import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import Image from "next/image";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface CardViewProps {
     templates: Template[];
@@ -79,9 +79,7 @@ const CardView: React.FC<CardViewProps> = ({ templates }) => {
                             <Button
                                 size="small"
                                 startIcon={<SettingsIcon />}
-                                onClick={() =>
-                                    manageTemplate(template.id)
-                                }
+                                onClick={() => manageTemplate(template.id)}
                             >
                                 {strings.manage}
                             </Button>

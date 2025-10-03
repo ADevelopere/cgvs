@@ -11,11 +11,11 @@ import {
     Box,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Template } from "@/graphql/generated/types";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import Image from "next/image";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface GridViewProps {
     templates: Template[];

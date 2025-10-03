@@ -12,14 +12,14 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
-import { TemplateCategory } from "@/graphql/generated/types";
 import { Folder } from "lucide-react";
 import { TreeView } from "@/client/components/treeView/TreeView";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";
+import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 
 const drawerWidth = 240;
 
@@ -90,8 +90,9 @@ const RenderCategoryItem: React.FC<{
                 onClick(category);
             }}
         >
-            {category.childCategories &&
-                category.childCategories.length > 0 && <Folder />}
+            {category.subCategories && category.subCategories.length > 0 && (
+                <Folder />
+            )}
             <Typography
                 sx={{
                     minWidth: "max-content",

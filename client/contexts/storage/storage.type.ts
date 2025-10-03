@@ -1,5 +1,3 @@
-import * as Graphql from "@/graphql/generated/types";
-
 export type StorageQueryParams = {
     path: string; // This will be relative to 'public/' (e.g., "templateCover" instead of "public/templateCover")
     limit: number;
@@ -177,8 +175,3 @@ export type StorageManagementUIContextType = {
     setFocusedItem: (path: string | null) => void;
     exitSearchMode: () => void;
 };
-
-// Re-export GraphQL types for convenience
-export type StorageStats = Graphql.StorageStats;
-export type FileInfo = Graphql.FileInfo;
-export type DirectoryInfo = Graphql.DirectoryInfo;

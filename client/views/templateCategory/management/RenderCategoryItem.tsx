@@ -18,9 +18,9 @@ import {
 } from "@mui/material";
 import EditableTypography from "@/client/components/input/EditableTypography";
 import { EditIcon, Ungroup, FolderPlus } from "lucide-react";
-import useAppTranslation from "@/locale/useAppTranslation";
-import { TemplateCategory } from "@/graphql/generated/types";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useState } from "react";
+import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 
 type RenderCategoryItemProps = {
     category: TemplateCategory;
@@ -148,7 +148,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
                             }}
                             color="error"
                             disabled={
-                                !!category.categorySpecialType ||
+                                !!category.specialType ||
                                 (category.templates?.length ?? 0) > 0
                             }
                         >
