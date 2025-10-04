@@ -2,6 +2,50 @@ import { STORAGE_CONFIG } from "./disk/storage.service.interface";
 import * as StorageTypes from "../storage/storage.types";
 import { SortDirectionServerType } from "../graphql/base/sort.pothos";
 
+// Mapping functions for GraphQL enums to actual values
+export const CONTENT_TYPE_MAP: Record<StorageTypes.ContentTypeServerType, string> = {
+    [StorageTypes.ContentTypeServerType.JPEG]: "image/jpeg",
+    [StorageTypes.ContentTypeServerType.PNG]: "image/png",
+    [StorageTypes.ContentTypeServerType.GIF]: "image/gif",
+    [StorageTypes.ContentTypeServerType.WEBP]: "image/webp",
+    [StorageTypes.ContentTypeServerType.PDF]: "application/pdf",
+    [StorageTypes.ContentTypeServerType.DOC]: "application/msword",
+    [StorageTypes.ContentTypeServerType.DOCX]: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    [StorageTypes.ContentTypeServerType.XLS]: "application/vnd.ms-excel",
+    [StorageTypes.ContentTypeServerType.XLSX]: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    [StorageTypes.ContentTypeServerType.TXT]: "text/plain",
+    [StorageTypes.ContentTypeServerType.ZIP]: "application/zip",
+    [StorageTypes.ContentTypeServerType.RAR]: "application/vnd.rar",
+    [StorageTypes.ContentTypeServerType.MP4]: "video/mp4",
+    [StorageTypes.ContentTypeServerType.MP3]: "audio/mpeg",
+    [StorageTypes.ContentTypeServerType.WAV]: "audio/wav",
+};
+
+export const UPLOAD_LOCATION_MAP: Record<StorageTypes.UploadLocationPath, string> = {
+    [StorageTypes.UploadLocationPath.TEMPLATE_COVERS]: "public/templateCover",
+};
+
+// Reverse mapping for content types
+export const REVERSE_CONTENT_TYPE_MAP: Record<string, StorageTypes.ContentTypeServerType> = Object.entries(CONTENT_TYPE_MAP).reduce(
+    (acc, [key, value]) => {
+        acc[value] = key as StorageTypes.ContentTypeServerType;
+        return acc;
+    },
+    {} as Record<string, StorageTypes.ContentTypeServerType>
+);
+
+export const contentTypeEnumToMimeType = (enumValue: StorageTypes.ContentTypeServerType): string => {
+    return CONTENT_TYPE_MAP[enumValue];
+};
+
+export const mimeTypeToContentTypeEnum = (mimeType: string): StorageTypes.ContentTypeServerType | null => {
+    return REVERSE_CONTENT_TYPE_MAP[mimeType] || null;
+};
+
+export const uploadLocationEnumToPath = (enumValue: StorageTypes.UploadLocationPath): string => {
+    return UPLOAD_LOCATION_MAP[enumValue];
+};
+
 const PATH_PATTERN = /^[a-zA-Z0-9._/\- ()]+$/;
 export const validatePath = (path: string): Promise<string | null> => {
     let err: string | null = null;
