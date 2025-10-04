@@ -20,7 +20,7 @@ import { useTemplateManagement } from "@/client/contexts/template/TemplateManage
 import TagInput from "@/client/components/input/TagInput";
 import { mapToCreateSelectTemplateVariableInput } from "@/utils/templateVariable/select-template-variable-mappers";
 import { isSelectVariableDifferent } from "@/utils/templateVariable/templateVariable";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 
 type SelectTemplateVariableFormProps = {
     editingVariableID?: number;

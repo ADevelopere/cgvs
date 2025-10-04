@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import {
     Box,
     Typography,

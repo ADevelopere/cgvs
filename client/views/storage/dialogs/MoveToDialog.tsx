@@ -33,7 +33,7 @@ import {
 import { useStorageManagementCore } from "@/client/contexts/storage/StorageManagementCoreContext";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
 import { DirectoryTreeNode, StorageItem } from "@/client/contexts/storage/storage.type";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 export interface MoveToDialogProps {
     open: boolean;
     onClose: () => void;

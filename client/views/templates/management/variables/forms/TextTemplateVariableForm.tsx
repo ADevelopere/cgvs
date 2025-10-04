@@ -16,7 +16,7 @@ import type {
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/text-template-variable-mappers";
 import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 
 type TextTemplateVariableFormProps = {
     editingVariableID?: number;

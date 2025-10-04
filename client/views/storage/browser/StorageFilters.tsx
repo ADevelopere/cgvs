@@ -19,8 +19,8 @@ import {
     Category as CategoryIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import useAppTranslation from "@/locale/useAppTranslation";
-import * as Graphql from "@/graphql/generated/types";
+import useAppTranslation from "@/client/locale/useAppTranslation";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Type-safe file type mapping
 const FILE_TYPE: Record<Graphql.FileType, Graphql.FileType> = {

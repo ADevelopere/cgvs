@@ -1,5 +1,7 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
+export type StorageItem = Graphql.DirectoryInfo | Graphql.FileInfo;
+
 // Directory tree node for lazy loading
 export type DirectoryTreeNode = {
     id: string;
@@ -19,7 +21,7 @@ export type StorageManagementCoreContextType = {
 
     // Data Fetching
     fetchList: (params: Graphql.FilesListInput) => Promise<{
-        items: Graphql.StorageObject[];
+        items: StorageItem[];
         pagination: Graphql.PageInfo;
     } | null>;
     fetchDirectoryChildren: (
@@ -38,7 +40,7 @@ export type StorageManagementCoreContextType = {
     search: (
         query: string,
         path?: string,
-    ) => Promise<{ items: Graphql.StorageObject[]; totalCount: number } | null>;
+    ) => Promise<{ items: StorageItem[]; totalCount: number } | null>;
 };
 
 // UI context types for the StorageManagementUIContext
@@ -47,7 +49,7 @@ export type ClipboardOperation = "copy" | "cut";
 
 export type Clipboard = {
     operation: ClipboardOperation;
-    items: Graphql.StorageObject[];
+    items: StorageItem[];
 };
 
 export type LoadingStates = {
@@ -80,7 +82,7 @@ export type OperationErrors = {
 
 export type StorageManagementUIContextType = {
     // Data State
-    items: Graphql.StorageObject[];
+    items: StorageItem[];
     pagination: Graphql.PageInfo | null;
     directoryTree: DirectoryTreeNode[];
     expandedNodes: Set<string>;
@@ -97,7 +99,7 @@ export type StorageManagementUIContextType = {
     // UI Interaction State
     viewMode: ViewMode;
     searchMode: boolean;
-    searchResults: Graphql.StorageObject[];
+    searchResults: StorageItem[];
     clipboard: Clipboard | null;
 
     // Local UI State
@@ -137,11 +139,11 @@ export type StorageManagementUIContextType = {
     // Local Sorting
     setSortBy: (field: string) => void;
     setSortDirection: (direction: Graphql.SortDirection) => void;
-    getSortedItems: () => Graphql.StorageObject[];
+    getSortedItems: () => StorageItem[];
 
     // Clipboard Operations
-    copyItems: (items: Graphql.StorageObject[]) => void;
-    cutItems: (items: Graphql.StorageObject[]) => void;
+    copyItems: (items: StorageItem[]) => void;
+    cutItems: (items: StorageItem[]) => void;
     pasteItems: () => Promise<boolean>;
 
     // File Operations (UI Layer)

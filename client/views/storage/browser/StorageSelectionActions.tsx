@@ -20,7 +20,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 import { useStorageManagementUI } from '@/client/contexts/storage/StorageManagementUIContext';
-import useAppTranslation from '@/locale/useAppTranslation';
+import useAppTranslation from '@/client/locale/useAppTranslation';
 import { StorageItem } from '@/client/contexts/storage/storage.type';
 import DeleteConfirmationDialog from '../dialogs/DeleteConfirmationDialog';
 import MoveToDialog from '../dialogs/MoveToDialog';

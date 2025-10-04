@@ -5,7 +5,7 @@ import FileTypeIcon from "./FileTypeIcon";
 import { StorageItem } from "@/client/contexts/storage/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
 
 interface StorageItemListRowProps {

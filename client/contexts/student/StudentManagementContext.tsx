@@ -8,7 +8,7 @@ import {
     useMemo,
     useState,
 } from "react";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStudentGraphQL } from "./StudentGraphQLContext";
 import { PaginationInfo, Student } from "@/graphql/generated/types";
 import { mapSingleStudent } from "@/utils/student/student-mappers";

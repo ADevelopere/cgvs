@@ -30,16 +30,16 @@ import {
     ViewList as ListViewIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
 import { useUploadDropzone } from "@/client/views/storage/dropzone/useUploadDropzone";
-import { StorageManagementUITranslations } from "@/locale/components/Storage";
+import { StorageManagementUITranslations } from "@/client/locale/components/Storage";
 import {
     StorageItem as StorageItemType,
-    StorageQueryParams,
     ViewMode,
 } from "@/client/contexts/storage/storage.type";
+import { FilesListInput } from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
 const StorageToolbar: React.FC<{
@@ -49,7 +49,7 @@ const StorageToolbar: React.FC<{
     sortBy: string;
     sortDirection: "ASC" | "DESC";
     translations: StorageManagementUITranslations;
-    params: StorageQueryParams;
+    params: FilesListInput;
     setViewMode: (mode: ViewMode) => void;
     setSortBy: (field: string) => void;
     setSortDirection: (direction: "ASC" | "DESC") => void;

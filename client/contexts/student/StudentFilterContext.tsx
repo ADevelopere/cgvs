@@ -9,7 +9,7 @@ import React, {
     useState,
     useEffect,
 } from "react";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
     DateFilterOperation,
     TextFilterOperation,
