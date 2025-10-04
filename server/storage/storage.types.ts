@@ -127,12 +127,25 @@ export enum ContentTypeServerType {
     WAV = "audio/wav",
 }
 
-export enum UploadLocationServerType {
-    PUBLIC = "public",
+export enum UploadLocationPath {
     TEMPLATE_COVERS = "public/templateCover",
-    CERTIFICATES = "public/certificates",
-    PROFILE_PICTURES = "public/profiles",
 }
+
+export type UploadLocationServerType = {
+    path: UploadLocationPath;
+    allowedContentTypes: ContentTypeServerType[];
+};
+
+export const UploadLocations: UploadLocationServerType[] = [
+    {
+        path: UploadLocationPath.TEMPLATE_COVERS,
+        allowedContentTypes: [
+            ContentTypeServerType.JPEG,
+            ContentTypeServerType.PNG,
+            ContentTypeServerType.WEBP,
+        ],
+    },
+];
 
 // Input types
 export interface FolderCreateInput {
@@ -195,9 +208,10 @@ export interface FilesListInput {
 }
 
 export interface UploadSignedUrlGenerateInput {
-    fileName: string;
+    path: string;
     contentType: ContentTypeServerType;
-    location: UploadLocationServerType;
+    fileSize: number;
+    contentMd5: string;
 }
 
 // Result types
@@ -231,7 +245,11 @@ export interface FileUploadResult {
 export interface StorageStats {
     totalFiles: number;
     totalSize: bigint;
-    fileTypeBreakdown: Array<{ type: FileTypeServerType; count: number; size: bigint }>;
+    fileTypeBreakdown: Array<{
+        type: FileTypeServerType;
+        count: number;
+        size: bigint;
+    }>;
     directoryCount: number;
 }
 
@@ -248,3 +266,13 @@ export interface StorageObject {
     name: string;
     isProtected: boolean;
 }
+
+export type BlobMetadata = {
+    name?: string;
+    size?: number | string;
+    contentType?: string;
+    timeCreated?: string;
+    updated?: string;
+    mediaLink?: string;
+    md5Hash?: string;
+};

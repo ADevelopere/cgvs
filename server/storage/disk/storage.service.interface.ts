@@ -25,10 +25,8 @@ export interface StorageService {
      */
     uploadFile(
         path: string,
+        contentType: StorageTypes.ContentTypeServerType,
         buffer: Buffer,
-        contentType?: StorageTypes.ContentTypeServerType,
-        originalFilename?: string,
-        location?: StorageTypes.UploadLocationServerType,
     ): Promise<StorageTypes.FileUploadResult>;
 
     /**
@@ -110,18 +108,6 @@ export interface StorageService {
     deleteItems(
         input: StorageTypes.ItemsDeleteInput,
     ): Promise<StorageTypes.BulkOperationResult>;
-
-    // Helper methods for internal use
-    blobToFileInfo(blob: unknown): StorageTypes.BucketFileServerType;
-    blobToDirectoryInfo(blob: unknown): StorageTypes.BucketDirectoryServerType;
-    combineFileData(
-        bucketFile: StorageTypes.BucketFileServerType,
-        dbEntity?: unknown,
-    ): StorageTypes.FileInfoServerType;
-    combineDirectoryData(
-        bucketDir: StorageTypes.BucketDirectoryServerType,
-        dbEntity?: unknown,
-    ): StorageTypes.DirectoryInfoServerType;
 }
 
 /**

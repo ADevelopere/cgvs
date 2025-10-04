@@ -40,6 +40,16 @@ export const filesByIds = async (
         .from(storageFiles)
         .where(inArray(storageFiles.id, ids));
 };
+
+export const filesByPaths = async (
+    paths: string[],
+): Promise<StorageTypes.FileEntity[]> => {
+    if (paths.length === 0) return [];
+    return await db
+        .select()
+        .from(storageFiles)
+        .where(inArray(storageFiles.path, paths));
+};
 export const createFile = async (
     path: string,
     isProtected: boolean = false,
@@ -56,7 +66,7 @@ export const createFile = async (
 };
 
 export const updateFile = async (
-    file: StorageTypes.FileEntity,
+    file: StorageTypes.FileEntityInput,
 ): Promise<StorageTypes.FileEntity | undefined> => {
     const [updatedFile] = await db
         .update(storageFiles)
@@ -101,6 +111,16 @@ export const directoriesByParentPath = async (
             .where(sql`${storageDirectories.path} LIKE ${parentPath + "/%"}`);
     }
     return await db.select().from(storageDirectories);
+};
+
+export const directoriesByPaths = async (
+    paths: string[],
+): Promise<StorageTypes.DirectoryEntity[]> => {
+    if (paths.length === 0) return [];
+    return await db
+        .select()
+        .from(storageDirectories)
+        .where(inArray(storageDirectories.path, paths));
 };
 
 export const createDirectory = async (
