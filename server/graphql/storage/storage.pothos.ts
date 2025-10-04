@@ -143,3 +143,239 @@ export const ListFileInputPothosObject = gqlSchemaBuilder
             }),
         }),
     });
+
+// File type breakdown for storage stats
+export const FileTypeBreakdownPothosObject = gqlSchemaBuilder
+    .objectRef<{
+        type: StorageTypes.FileTypeServerType;
+        count: number;
+        size: bigint;
+    }>("FileTypeBreakdown")
+    .implement({
+        fields: (t) => ({
+            type: t.expose("type", { type: FileTypePothosObject }),
+            count: t.exposeInt("count"),
+            size: t.field({
+                type: "String",
+                resolve: (breakdown) => breakdown.size.toString(),
+            }),
+        }),
+    });
+
+// Storage stats object
+export const StorageStatsPothosObject = gqlSchemaBuilder
+    .objectRef<StorageTypes.StorageStats>("StorageStats")
+    .implement({
+        fields: (t) => ({
+            totalFiles: t.exposeInt("totalFiles"),
+            totalSize: t.field({
+                type: "String",
+                resolve: (stats) => stats.totalSize.toString(),
+            }),
+            fileTypeBreakdown: t.field({
+                type: [FileTypeBreakdownPothosObject],
+                resolve: (stats) => stats.fileTypeBreakdown,
+            }),
+            directoryCount: t.exposeInt("directoryCount"),
+        }),
+    });
+
+// File usage result object
+export const FileUsageResultPothosObject = gqlSchemaBuilder
+    .objectRef<StorageTypes.FileUsageResult>("FileUsageResult")
+    .implement({
+        fields: (t) => ({
+            isInUse: t.exposeBoolean("isInUse"),
+            usages: t.expose("usages", { type: [FileUsageInfoPothosObject] }),
+            canDelete: t.exposeBoolean("canDelete"),
+            deleteBlockReason: t.exposeString("deleteBlockReason", {
+                nullable: true,
+            }),
+        }),
+    });
+
+// Check file usage input
+export const FileUsageCheckInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.FileUsageCheckInput>("FileUsageCheckInput")
+    .implement({
+        fields: (t) => ({
+            path: t.string({ required: true }),
+        }),
+    });
+
+// File operation result object
+export const FileOperationResultPothosObject = gqlSchemaBuilder
+    .objectRef<StorageTypes.FileOperationResult>("FileOperationResult")
+    .implement({
+        fields: (t) => ({
+            success: t.exposeBoolean("success"),
+            message: t.exposeString("message"),
+            data: t.field({
+                type: StorageItemPothosObject,
+                nullable: true,
+                resolve: (result) => result.data || null,
+            }),
+        }),
+    });
+
+// Bulk operation failure object
+export const BulkOperationFailurePothosObject = gqlSchemaBuilder
+    .objectRef<{ path: string; error: string }>("BulkOperationFailure")
+    .implement({
+        fields: (t) => ({
+            path: t.exposeString("path"),
+            error: t.exposeString("error"),
+        }),
+    });
+
+// todo: make separate type for failures
+// Bulk operation result object
+export const BulkOperationResultPothosObject = gqlSchemaBuilder
+    .objectRef<StorageTypes.BulkOperationResult>("BulkOperationResult")
+    .implement({
+        fields: (t) => ({
+            success: t.exposeBoolean("success"),
+            message: t.exposeString("message"),
+            successCount: t.exposeInt("successCount"),
+            failureCount: t.exposeInt("failureCount"),
+            failures: t.field({
+                type: [BulkOperationFailurePothosObject],
+                resolve: (result) => result.failures,
+            }),
+            successfulItems: t.expose("successfulItems", {
+                type: [StorageItemPothosObject],
+            }),
+        }),
+    });
+
+// File rename input
+export const FileRenameInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.FileRenameInput>("FileRenameInput")
+    .implement({
+        fields: (t) => ({
+            currentPath: t.string({ required: true }),
+            newName: t.string({ required: true }),
+        }),
+    });
+
+// Content type enum
+export const ContentTypePothosObject = gqlSchemaBuilder.enumType(
+    "ContentType",
+    {
+        values: Object.values(StorageTypes.ContentTypeServerType),
+    },
+);
+
+// Upload location enum
+export const UploadLocationPathPothosObject = gqlSchemaBuilder.enumType(
+    "UploadLocationPath",
+    {
+        values: Object.values(StorageTypes.UploadLocationPath),
+    },
+);
+
+// Generate upload signed URL input
+export const GenerateUploadSignedUrlInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.UploadSignedUrlGenerateInput>(
+        "UploadSignedUrlGenerateInput",
+    )
+    .implement({
+        fields: (t) => ({
+            path: t.string({ required: true }),
+            fileSize: t.int({ required: true }),
+            contentType: t.field({
+                type: ContentTypePothosObject,
+                required: true,
+            }),
+            contentMd5: t.string({ required: true }),
+        }),
+    });
+
+// Directory permissions input
+export const DirectoryPermissionsInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.DirectoryPermissionsServerType>(
+        "DirectoryPermissionsInput",
+    )
+    .implement({
+        fields: (t) => ({
+            allowUploads: t.boolean({ required: true }),
+            allowDelete: t.boolean({ required: true }),
+            allowMove: t.boolean({ required: true }),
+            allowCreateSubDirs: t.boolean({ required: true }),
+            allowDeleteFiles: t.boolean({ required: true }),
+            allowMoveFiles: t.boolean({ required: true }),
+        }),
+    });
+
+// Create folder input
+export const FolderCreateInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.FolderCreateInput>("FolderCreateInput")
+    .implement({
+        fields: (t) => ({
+            path: t.string({ required: true }),
+            permissions: t.field({
+                type: DirectoryPermissionsInputPothosObject,
+                required: false,
+            }),
+            protected: t.boolean({ required: false }),
+            protectChildren: t.boolean({ required: false }),
+        }),
+    });
+
+// Move storage items input
+export const StorageItemsMoveInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.StorageItemsMoveInput>("StorageItemsMoveInput")
+    .implement({
+        fields: (t) => ({
+            sourcePaths: t.stringList({ required: true }),
+            destinationPath: t.string({ required: true }),
+        }),
+    });
+
+// Copy storage items input
+export const StorageItemsCopyInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.StorageItemsCopyInput>("StorageItemsCopyInput")
+    .implement({
+        fields: (t) => ({
+            sourcePaths: t.stringList({ required: true }),
+            destinationPath: t.string({ required: true }),
+        }),
+    });
+
+// Delete items input
+export const StorageItemsDeleteInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.StorageItemsDeleteInput>("StorageItemsDeleteInput")
+    .implement({
+        fields: (t) => ({
+            paths: t.stringList({ required: true }),
+            force: t.boolean({ required: false }),
+        }),
+    });
+
+// Update directory permissions input
+export const DirectoryPermissionsUpdateInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.DirectoryPermissionsUpdateInput>(
+        "DirectoryPermissionsUpdateInput",
+    )
+    .implement({
+        fields: (t) => ({
+            path: t.string({ required: true }),
+            permissions: t.field({
+                type: DirectoryPermissionsInputPothosObject,
+                required: true,
+            }),
+        }),
+    });
+
+// Set storage item protection input
+export const StorageItemProtectionUpdateInputPothosObject = gqlSchemaBuilder
+    .inputRef<StorageTypes.StorageItemProtectionUpdateInput>(
+        "StorageItemProtectionUpdateInput",
+    )
+    .implement({
+        fields: (t) => ({
+            path: t.string({ required: true }),
+            isProtected: t.boolean({ required: true }),
+            protectChildren: t.boolean({ required: false }),
+        }),
+    });

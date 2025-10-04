@@ -19,7 +19,7 @@ import {
     StorageItemsMoveInput,
     BulkOperationResult,
     StorageItemsCopyInput,
-    ItemsDeleteInput,
+    StorageItemsDeleteInput,
     DirectoryPermissionsUpdateInput,
     StorageItemProtectionUpdateInput
 } from '../../storage/storage.types';
@@ -108,7 +108,7 @@ export interface StorageMutationOperations {
     /**
      * Delete multiple files/folders
      */
-    deleteStorageItems(input: ItemsDeleteInput): Promise<BulkOperationResult>;
+    deleteStorageItems(input: StorageItemsDeleteInput): Promise<BulkOperationResult>;
 
     /**
      * Update directory permissions

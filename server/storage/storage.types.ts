@@ -146,9 +146,9 @@ export const UploadLocations: UploadLocationServerType[] = [
 // Input types
 export interface FolderCreateInput {
     path: string;
-    permissions?: DirectoryPermissionsServerType;
-    protected?: boolean;
-    protectChildren?: boolean;
+    permissions?: DirectoryPermissionsServerType | null;
+    protected?: boolean | null;
+    protectChildren?: boolean | null;
 }
 
 export interface DirectoryPermissionsUpdateInput {
@@ -159,7 +159,7 @@ export interface DirectoryPermissionsUpdateInput {
 export interface StorageItemProtectionUpdateInput {
     path: string;
     isProtected: boolean;
-    protectChildren?: boolean;
+    protectChildren?: boolean | null;
 }
 
 export interface StorageItemsMoveInput {
@@ -172,13 +172,13 @@ export interface StorageItemsCopyInput {
     destinationPath: string;
 }
 
-export interface ItemsDeleteInput {
+export interface StorageItemsDeleteInput {
     paths: string[];
-    force?: boolean;
+    force?: boolean | null;
 }
 
 export interface FileUsageCheckInput {
-    filePath: string;
+    path: string;
 }
 
 export interface FileUsageRegisterInput {
