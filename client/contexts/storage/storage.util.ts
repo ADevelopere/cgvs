@@ -1,7 +1,28 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-
+import CryptoJS from "crypto-js";
 
 import { extToContentType, mimeToContentType } from "./storage.constant";
+
+/**
+ * Generate MD5 hash from file content
+ */
+export const generateFileMD5 = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const arrayBuffer = event.target?.result as ArrayBuffer;
+                const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+                const hash = CryptoJS.MD5(wordArray).toString();
+                resolve(hash);
+            } catch (error) {
+                reject(error instanceof Error ? error : new Error('Failed to generate MD5 hash'));
+            }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsArrayBuffer(file);
+    });
+};
 
 export const inferContentType = (file: File): Graphql.ContentType => {
     // Try to map from MIME type
@@ -85,6 +106,7 @@ export const getAcceptAttribute = (
             case "TXT":
                 acceptValues.push("text/plain", ".txt", ".text");
                 break;
+            // will be added:
             // case "OTF":
             //     acceptValues.push("font/otf", ".otf");
             //     break;

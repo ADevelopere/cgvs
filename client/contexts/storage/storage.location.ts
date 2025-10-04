@@ -4,7 +4,7 @@ import { mimeToContentType } from "./storage.constant";
 
 // Define location metadata for frontend usage
 export type LocationInfo = {
-    key: Graphql.UploadLocation;
+    key: Graphql.UploadLocationPath;
     label: string;
     description: string;
     path: string;
@@ -13,9 +13,9 @@ export type LocationInfo = {
 };
 
 // Location definitions - this should match the backend UploadLocation enum
-export const UPLOAD_LOCATIONS: Record<Graphql.UploadLocation, LocationInfo> = {
-    TEMPLATE_COVER: {
-        key: "TEMPLATE_COVER",
+export const UPLOAD_LOCATIONS: Record<Graphql.UploadLocationPath, LocationInfo> = {
+    TEMPLATE_COVERS: {
+        key: "TEMPLATE_COVERS",
         label: "Template Covers",
         description: "Cover images for certificate templates",
         path: "public/templateCover",
@@ -27,7 +27,7 @@ export const UPLOAD_LOCATIONS: Record<Graphql.UploadLocation, LocationInfo> = {
 
 // Helper functions
 export const getLocationInfo = (
-    location: Graphql.UploadLocation,
+    location: Graphql.UploadLocationPath,
 ): LocationInfo => {
     return UPLOAD_LOCATIONS[location];
 };
@@ -65,7 +65,7 @@ export const getUploadLocationOptions = (): LocationInfo[] => {
  * @param fileType ContentType or MIME type string
  */
 export const isFileTypeAllowed = (
-    location: Graphql.UploadLocation,
+    location: Graphql.UploadLocationPath,
     fileType: string,
 ): boolean => {
     const locationInfo = getLocationInfo(location);
@@ -92,7 +92,7 @@ export const isFileTypeAllowed = (
 // Get the appropriate upload location for a given path
 export const getUploadLocationForPath = (
     path: string,
-): Graphql.UploadLocation | null => {
+): Graphql.UploadLocationPath | null => {
     const locationInfo = getLocationByPath(path);
     return locationInfo?.key || null;
 };

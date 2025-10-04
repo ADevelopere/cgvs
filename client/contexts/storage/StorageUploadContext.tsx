@@ -10,14 +10,14 @@ import React, {
 } from "react";
 import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import { inferContentType, getFileKey } from "./storage.util";
+import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import useAppTranslation from "@/client/locale/useAppTranslation";
 import logger from "@/utils/logger";
 
 export type UploadFileState = {
-    file: File;
+    file: File; 
     status: "pending" | "uploading" | "success" | "error";
     progress: number;
     error?: string;
@@ -27,7 +27,7 @@ export type UploadFileState = {
 
 export type UploadBatchState = {
     files: Map<string, UploadFileState>;
-    location: Graphql.UploadLocation;
+    location: Graphql.UploadLocationPath;
     targetPath: string;
     isUploading: boolean;
     completedCount: number;
@@ -88,7 +88,7 @@ export const StorageUploadProvider: React.FC<{
     const uploadSingleFile = useCallback(
         async (
             file: File,
-            location: Graphql.UploadLocation,
+            location: Graphql.UploadLocationPath,
             targetPath: string,
         ): Promise<void> => {
             const fileKey = getFileKey(file);
@@ -155,11 +155,15 @@ export const StorageUploadProvider: React.FC<{
                     }
                 } catch {}
 
+                // Generate MD5 hash for the file
+                const contentMd5 = await generateFileMD5(file);
+
                 const signedUrlRes = await gql.generateUploadSignedUrl({
                     input: {
-                        fileName: file.name,
+                        path: getStoragePath(targetPath) + "/" + file.name,
                         contentType,
-                        location,
+                        fileSize: file.size,
+                        contentMd5,
                     },
                 });
 
