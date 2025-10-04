@@ -106,35 +106,37 @@ export enum FileSortFieldServerType {
 }
 
 export enum ContentTypeServerType {
-    JPEG = "image/jpeg",
-    PNG = "image/png",
-    GIF = "image/gif",
-    WEBP = "image/webp",
-    PDF = "application/pdf",
-    DOC = "application/msword",
-    DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    XLS = "application/vnd.ms-excel",
-    XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    TXT = "text/plain",
-    ZIP = "application/zip",
-    RAR = "application/vnd.rar",
-    MP4 = "video/mp4",
-    MP3 = "audio/mpeg",
-    WAV = "audio/wav",
+    JPEG = "JPEG",
+    PNG = "PNG",
+    GIF = "GIF",
+    WEBP = "WEBP",
+    PDF = "PDF",
+    DOC = "DOC",
+    DOCX = "DOCX",
+    XLS = "XLS",
+    XLSX = "XLSX",
+    TXT = "TXT",
+    ZIP = "ZIP",
+    RAR = "RAR",
+    MP4 = "MP4",
+    MP3 = "MP3",
+    WAV = "WAV",
 }
 
 export enum UploadLocationPath {
-    TEMPLATE_COVERS = "public/templateCover",
+    TEMPLATE_COVERS = "TEMPLATE_COVERS",
 }
 
 export type UploadLocationServerType = {
     path: UploadLocationPath;
     allowedContentTypes: ContentTypeServerType[];
+    actualPath: string; // The actual file system path
 };
 
 export const UploadLocations: UploadLocationServerType[] = [
     {
         path: UploadLocationPath.TEMPLATE_COVERS,
+        actualPath: "public/templateCover",
         allowedContentTypes: [
             ContentTypeServerType.JPEG,
             ContentTypeServerType.PNG,
