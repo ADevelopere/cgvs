@@ -352,7 +352,7 @@ class GcpAdapter implements StorageService {
         }
 
         // Sort items
-        const sortedItems = this.sortItems(
+        const sortedItems = StorageUtils.sortItems(
             filteredItems,
             input.sortBy || StorageTypes.FileSortFieldServerType.NAME,
             input.sortDirection || StorageTypes.SortDirectionServerType.ASC,
@@ -508,7 +508,7 @@ class GcpAdapter implements StorageService {
                 metadata,
                 gcpBaseUrl,
             );
-            
+
             const fileInfo = StorageUtils.combineFileData(
                 bucketFile,
                 fileEntity,
@@ -530,14 +530,47 @@ class GcpAdapter implements StorageService {
 
     async deleteFile(path: string): Promise<StorageTypes.FileOperationResult> {
         try {
-            // Check if file is in use
-            const usageCheck = await StorageDbService.checkFileUsage({
-                filePath: path,
+            StorageUtils.validatePath(path).then((err) => {
+                if (err) {
+                    const result: StorageTypes.FileOperationResult = {
+                        success: false,
+                        message: err,
+                    };
+                    return result;
+                }
             });
-            if (usageCheck.isInUse) {
+
+            // Check permissions and protection
+            // Check if file is in use
+            await StorageDbService.checkFileUsage({
+                filePath: path,
+            }).then((usageCheck) => {
+                if (usageCheck.isInUse) {
+                    return {
+                        success: false,
+                        message:
+                            usageCheck.deleteBlockReason || "File is in use",
+                    };
+                }
+            });
+
+            // Check if the file is protected
+            const dbFile = await StorageDbService.fileByPath(path);
+            if (dbFile?.isProtected === true) {
                 return {
                     success: false,
-                    message: usageCheck.deleteBlockReason || "File is in use",
+                    message: "File is protected from deletion",
+                };
+            }
+
+            // Check parent directory permissions
+            const parentPath = path.substring(0, path.lastIndexOf("/"));
+            const parentDir =
+                await StorageDbService.directoryByPath(parentPath);
+            if (parentDir && !parentDir.allowDeleteFiles) {
+                return {
+                    success: false,
+                    message: "File deletion not allowed in this directory",
                 };
             }
 
@@ -546,7 +579,9 @@ class GcpAdapter implements StorageService {
             await file.delete();
 
             // Delete from database
-            await StorageDbService.deleteFile(path);
+            try {
+                await StorageDbService.deleteFile(path);
+            } catch {}
 
             return {
                 success: true,
@@ -593,13 +628,13 @@ class GcpAdapter implements StorageService {
 
     async fileInfoByPath(
         path: string,
-    ): Promise<StorageTypes.FileInfoServerType | undefined> {
+    ): Promise<StorageTypes.FileInfoServerType | null> {
         try {
             const file = this.bucket.file(path);
             const [exists] = await file.exists();
 
             if (!exists) {
-                return undefined;
+                return null;
             }
 
             const [metadata] = await file.getMetadata();
@@ -612,24 +647,24 @@ class GcpAdapter implements StorageService {
             return StorageUtils.combineFileData(bucketFile, dbFile);
         } catch (error) {
             logger.error(`Failed to get file info: ${path}`, error);
-            return undefined;
+            return null;
         }
     }
 
     async fileInfoByDbFileId(
         id: bigint,
-    ): Promise<StorageTypes.FileInfoServerType | undefined> {
+    ): Promise<StorageTypes.FileInfoServerType | null> {
         try {
             const dbFile = await StorageDbService.fileById(id);
             if (!dbFile) {
-                return undefined;
+                return null;
             }
 
             const file = this.bucket.file(dbFile.path);
             const [exists] = await file.exists();
 
             if (!exists) {
-                return undefined;
+                return null;
             }
 
             const [metadata] = await file.getMetadata();
@@ -641,7 +676,7 @@ class GcpAdapter implements StorageService {
             return StorageUtils.combineFileData(bucketFile, dbFile);
         } catch (error) {
             logger.error(`Failed to get file info by id: ${id}`, error);
-            return undefined;
+            return null;
         }
     }
 
@@ -757,25 +792,150 @@ class GcpAdapter implements StorageService {
         let successCount = 0;
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
+        const successfulItems: Array<
+            | StorageTypes.FileInfoServerType
+            | StorageTypes.DirectoryInfoServerType
+        > = [];
 
-        for (const sourcePath of input.sourcePaths) {
-            try {
-                const fileName = StorageUtils.extractFileName(sourcePath);
-                const destPath = `${input.destinationPath}/${fileName}`;
-
-                // Copy file
+        // Batch check if all source files exist in bucket
+        const sourceExistenceChecks = await Promise.all(
+            input.sourcePaths.map(async (sourcePath) => {
                 const sourceFile = this.bucket.file(sourcePath);
-                const destFile = this.bucket.file(destPath);
-                await sourceFile.copy(destFile);
+                const [exists] = await sourceFile.exists();
+                return { path: sourcePath, exists };
+            })
+        );
 
-                // Delete original
+        // Filter out non-existent sources
+        const validSources = sourceExistenceChecks.filter(check => {
+            if (!check.exists) {
+                failureCount++;
+                failures.push({
+                    path: check.path,
+                    error: "Source path not found",
+                });
+                return false;
+            }
+            return true;
+        }).map(check => check.path);
+
+        if (validSources.length === 0) {
+            return {
+                success: failureCount === 0,
+                message: "No valid source files to move",
+                successCount,
+                failureCount,
+                failures,
+                successfulItems,
+            };
+        }
+
+        // Batch load DB entities for source paths and directories
+        const sourceDirectories = [...new Set(validSources.map(path => 
+            path.substring(0, path.lastIndexOf('/'))
+        ))];
+        
+        const [dbFiles, dbDirectories, dbSourceDirs, dbDestDir] = await Promise.all([
+            StorageDbService.filesByPaths(validSources),
+            StorageDbService.directoriesByPaths(validSources),
+            StorageDbService.directoriesByPaths(sourceDirectories),
+            StorageDbService.directoryByPath(input.destinationPath)
+        ]);
+
+        // Create lookup maps for O(1) access - fix the map creation
+        const dbFileMap = new Map();
+        dbFiles.forEach(file => {
+            if (file) {
+                dbFileMap.set(file.path, file);
+            }
+        });
+
+        const dbDirectoryMap = new Map();
+        dbDirectories.forEach(dir => {
+            if (dir) {
+                dbDirectoryMap.set(dir.path, dir);
+            }
+        });
+
+        const dbSourceDirMap = new Map();
+        dbSourceDirs.forEach(dir => {
+            if (dir) {
+                dbSourceDirMap.set(dir.path, dir);
+            }
+        });
+
+        // Check destination directory permissions once
+        if (dbDestDir && !dbDestDir.allowUploads) {
+            return {
+                success: false,
+                message: "Uploads not allowed to destination directory",
+                successCount: 0,
+                failureCount: validSources.length,
+                failures: validSources.map(path => ({
+                    path,
+                    error: "Uploads not allowed to destination directory"
+                })),
+                successfulItems,
+            };
+        }
+
+        // Process each valid source
+        for (const sourcePath of validSources) {
+            try {
+                // Check permissions for source directory
+                const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf('/'));
+                const dbSourceDir = dbSourceDirMap.get(sourceDir);
+                if (dbSourceDir && !dbSourceDir.allowMove) {
+                    failureCount++;
+                    failures.push({
+                        path: sourcePath,
+                        error: `Move not allowed from directory: ${sourceDir}`,
+                    });
+                    continue;
+                }
+
+                // Perform the move in bucket (copy then delete)
+                const fileName = StorageUtils.extractFileName(sourcePath);
+                const newPath = `${input.destinationPath.replace(/\/$/, "")}/${fileName}`;
+
+                const sourceFile = this.bucket.file(sourcePath);
+                const destFile = this.bucket.file(newPath);
+                await sourceFile.copy(destFile);
                 await sourceFile.delete();
 
-                // Update database
-                const dbFile = await StorageDbService.fileByPath(sourcePath);
+                // Update DB records - check if it's a file or directory and update accordingly
+                const dbFile = dbFileMap.get(sourcePath);
+                const dbDirectory = dbDirectoryMap.get(sourcePath);
+
                 if (dbFile) {
-                    const updatedFile = { ...dbFile, path: destPath };
-                    await StorageDbService.updateFile(updatedFile);
+                    // Update file entity path
+                    await StorageDbService.updateFile({
+                        id: dbFile.id,
+                        path: newPath,
+                        isProtected: dbFile.isProtected
+                    });
+                    
+                    // Get the updated file info for successful items
+                    const fileInfo = await this.fileInfoByPath(newPath);
+                    if (fileInfo) {
+                        successfulItems.push(fileInfo);
+                    }
+                } else if (dbDirectory) {
+                    // Update directory entity path
+                    await StorageDbService.updateDirectory({
+                        ...dbDirectory,
+                        path: newPath
+                    });
+                    
+                    // Get the updated directory info for successful items
+                    const dirInfo = await this.directoryInfoByPath(newPath);
+                    successfulItems.push(dirInfo);
+                } else {
+                    // No DB entity, get info from bucket
+                    const fileInfo = await this.fileInfoByPath(newPath);
+                    if (fileInfo) {
+                        successfulItems.push(fileInfo);
+                    }
                 }
 
                 successCount++;
@@ -798,6 +958,7 @@ class GcpAdapter implements StorageService {
             successCount,
             failureCount,
             failures,
+            successfulItems,
         };
     }
 
@@ -807,19 +968,76 @@ class GcpAdapter implements StorageService {
         let successCount = 0;
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
+        const successfulItems: Array<
+            | StorageTypes.FileInfoServerType
+            | StorageTypes.DirectoryInfoServerType
+        > = [];
 
-        for (const sourcePath of input.sourcePaths) {
+        // Batch check if all source files exist in bucket
+        const sourceExistenceChecks = await Promise.all(
+            input.sourcePaths.map(async (sourcePath) => {
+                const sourceFile = this.bucket.file(sourcePath);
+                const [exists] = await sourceFile.exists();
+                return { path: sourcePath, exists };
+            })
+        );
+
+        // Filter out non-existent sources
+        const validSources = sourceExistenceChecks.filter(check => {
+            if (!check.exists) {
+                failureCount++;
+                failures.push({
+                    path: check.path,
+                    error: "Source path not found",
+                });
+                return false;
+            }
+            return true;
+        }).map(check => check.path);
+
+        if (validSources.length === 0) {
+            return {
+                success: failureCount === 0,
+                message: "No valid source files to copy",
+                successCount,
+                failureCount,
+                failures,
+                successfulItems,
+            };
+        }
+
+        // Check destination directory permissions once
+        const dbDestDir = await StorageDbService.directoryByPath(input.destinationPath);
+        if (dbDestDir && !dbDestDir.allowUploads) {
+            return {
+                success: false,
+                message: "Uploads not allowed to destination directory",
+                successCount: 0,
+                failureCount: validSources.length,
+                failures: validSources.map(path => ({
+                    path,
+                    error: "Uploads not allowed to destination directory"
+                })),
+                successfulItems,
+            };
+        }
+
+        // Process each valid source
+        for (const sourcePath of validSources) {
             try {
                 const fileName = StorageUtils.extractFileName(sourcePath);
-                const destPath = `${input.destinationPath}/${fileName}`;
+                const destPath = `${input.destinationPath.replace(/\/$/, "")}/${fileName}`;
 
-                // Copy file
+                // Copy file in bucket
                 const sourceFile = this.bucket.file(sourcePath);
                 const destFile = this.bucket.file(destPath);
                 await sourceFile.copy(destFile);
 
-                // Create database entry for copied file
-                await StorageDbService.createFile(destPath, false);
+                // Don't create DB entities as requested - just get file info from bucket
+                const fileInfo = await this.fileInfoByPath(destPath);
+                if (fileInfo) {
+                    successfulItems.push(fileInfo);
+                }
 
                 successCount++;
             } catch (error) {
@@ -841,6 +1059,7 @@ class GcpAdapter implements StorageService {
             successCount,
             failureCount,
             failures,
+            successfulItems,
         };
     }
 
@@ -850,27 +1069,128 @@ class GcpAdapter implements StorageService {
         let successCount = 0;
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
+        const successfulItems: Array<
+            | StorageTypes.FileInfoServerType
+            | StorageTypes.DirectoryInfoServerType
+        > = [];
 
+        // Batch load DB entities for all paths and their parent directories
+        const parentDirectories = [...new Set(input.paths.map(path => 
+            path.substring(0, path.lastIndexOf('/'))
+        ))];
+
+        const [dbFiles, dbDirectories, dbParentDirs, usageChecks] = await Promise.all([
+            StorageDbService.filesByPaths(input.paths),
+            StorageDbService.directoriesByPaths(input.paths),
+            StorageDbService.directoriesByPaths(parentDirectories),
+            // Batch check file usage if not force delete
+            input.force ? Promise.resolve([]) : Promise.all(
+                input.paths.map(path => 
+                    StorageDbService.checkFileUsage({ filePath: path })
+                        .then(result => ({ path, ...result }))
+                        .catch(() => ({ path, isInUse: false, deleteBlockReason: null }))
+                )
+            )
+        ]);
+
+        // Create lookup maps for O(1) access
+        const dbFileMap = new Map();
+        dbFiles.forEach(file => {
+            if (file) {
+                dbFileMap.set(file.path, file);
+            }
+        });
+
+        const dbDirectoryMap = new Map();
+        dbDirectories.forEach(dir => {
+            if (dir) {
+                dbDirectoryMap.set(dir.path, dir);
+            }
+        });
+
+        const dbParentDirMap = new Map();
+        dbParentDirs.forEach(dir => {
+            if (dir) {
+                dbParentDirMap.set(dir.path, dir);
+            }
+        });
+
+        const usageCheckMap = new Map();
+        usageChecks.forEach(check => {
+            usageCheckMap.set(check.path, check);
+        });
+
+        // Process each path
         for (const path of input.paths) {
             try {
                 // Check if file is in use (unless force delete)
                 if (!input.force) {
-                    const usageCheck = await StorageDbService.checkFileUsage({
-                        filePath: path,
-                    });
-                    if (usageCheck.isInUse) {
-                        throw new Error(
-                            usageCheck.deleteBlockReason || "File is in use",
-                        );
+                    const usageCheck = usageCheckMap.get(path);
+                    if (usageCheck?.isInUse) {
+                        failureCount++;
+                        failures.push({
+                            path,
+                            error: usageCheck.deleteBlockReason || "File is currently in use",
+                        });
+                        continue;
                     }
                 }
+
+                // Check if file/directory is protected
+                const dbFile = dbFileMap.get(path);
+                const dbDirectory = dbDirectoryMap.get(path);
+
+                if (dbFile?.isProtected === true || dbDirectory?.isProtected === true) {
+                    failureCount++;
+                    failures.push({
+                        path,
+                        error: "Item is protected from deletion",
+                    });
+                    continue;
+                }
+
+                // Check parent directory permissions
+                const parentPath = path.substring(0, path.lastIndexOf('/'));
+                const parentDir = dbParentDirMap.get(parentPath);
+                if (parentDir) {
+                    const isFile = dbFile != null;
+                    const canDelete = isFile ? parentDir.allowDeleteFiles : parentDir.allowDelete;
+                    if (!canDelete) {
+                        failureCount++;
+                        failures.push({
+                            path,
+                            error: "Deletion not allowed in parent directory",
+                        });
+                        continue;
+                    }
+                }
+
+                // Get entity before deleting for the result
+                const fileEntity = await this.fileInfoByPath(path);
+                const folderEntity = fileEntity ? null : await this.directoryInfoByPath(path);
 
                 // Delete from bucket
                 const file = this.bucket.file(path);
                 await file.delete();
 
                 // Delete from database
-                await StorageDbService.deleteFile(path);
+                if (dbFile) {
+                    await StorageDbService.deleteFile(path);
+                    if (fileEntity) {
+                        successfulItems.push(fileEntity);
+                    }
+                } else if (dbDirectory) {
+                    await StorageDbService.deleteDirectory(path);
+                    if (folderEntity) {
+                        successfulItems.push(folderEntity);
+                    }
+                } else if (fileEntity) {
+                    // No DB entity, just add file to successful items
+                    successfulItems.push(fileEntity);
+                } else if (folderEntity) {
+                    // No DB entity, just add folder to successful items
+                    successfulItems.push(folderEntity);
+                }
 
                 successCount++;
             } catch (error) {
@@ -892,53 +1212,8 @@ class GcpAdapter implements StorageService {
             successCount,
             failureCount,
             failures,
+            successfulItems,
         };
-    }
-
-    private sortItems(
-        items: Array<
-            | StorageTypes.FileInfoServerType
-            | StorageTypes.DirectoryInfoServerType
-        >,
-        sortBy: StorageTypes.FileSortFieldServerType,
-        direction: StorageTypes.SortDirectionServerType,
-    ): Array<
-        StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
-    > {
-        const sorted = [...items].sort((a, b) => {
-            let comparison = 0;
-
-            switch (sortBy) {
-                case StorageTypes.FileSortFieldServerType.NAME:
-                    comparison = a.name.localeCompare(b.name);
-                    break;
-                case StorageTypes.FileSortFieldServerType.SIZE: {
-                    const sizeA = "size" in a ? Number(a.size) : 0;
-                    const sizeB = "size" in b ? Number(b.size) : 0;
-                    comparison = sizeA - sizeB;
-                    break;
-                }
-                case StorageTypes.FileSortFieldServerType.TYPE: {
-                    const typeA = "fileType" in a ? a.fileType : "DIRECTORY";
-                    const typeB = "fileType" in b ? b.fileType : "DIRECTORY";
-                    comparison = typeA.localeCompare(typeB);
-                    break;
-                }
-                case StorageTypes.FileSortFieldServerType.CREATED:
-                    comparison = a.created.getTime() - b.created.getTime();
-                    break;
-                case StorageTypes.FileSortFieldServerType.MODIFIED:
-                    comparison =
-                        a.lastModified.getTime() - b.lastModified.getTime();
-                    break;
-            }
-
-            return direction === StorageTypes.SortDirectionServerType.ASC
-                ? comparison
-                : -comparison;
-        });
-
-        return sorted;
     }
 }
 

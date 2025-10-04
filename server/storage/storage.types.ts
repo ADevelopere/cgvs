@@ -234,6 +234,7 @@ export interface BulkOperationResult {
     successCount: number;
     failureCount: number;
     failures: Array<{ path: string; error: string }>;
+    successfulItems: Array<FileInfoServerType | DirectoryInfoServerType>;
 }
 
 export interface FileUploadResult {

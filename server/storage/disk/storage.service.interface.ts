@@ -67,14 +67,14 @@ export interface StorageService {
      */
     fileInfoByPath(
         path: string,
-    ): Promise<StorageTypes.FileInfoServerType | undefined>;
+    ): Promise<StorageTypes.FileInfoServerType | null>;
 
     /**
      * Get file information by database file ID
      */
     fileInfoByDbFileId(
         id: bigint,
-    ): Promise<StorageTypes.FileInfoServerType | undefined>;
+    ): Promise<StorageTypes.FileInfoServerType | null>;
 
     /**
      * Get storage statistics
