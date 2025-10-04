@@ -19,6 +19,7 @@ import {
     LoadingStates,
     OperationErrors,
     QueueStates,
+    StorageItem,
 } from "./storage.type";
 import useAppTranslation from "@/client/locale/useAppTranslation";
 
@@ -43,7 +44,7 @@ export const StorageManagementUIProvider: React.FC<{
     const { ui: translations } = useAppTranslation("storageTranslations");
 
     // State Management
-    const [items, setItems] = useState<Graphql.StorageObject[]>([]);
+    const [items, setItems] = useState<StorageItem[]>([]);
     const [pagination, setPagination] = useState<Graphql.PageInfo | null>(null);
     const [directoryTree, setDirectoryTree] = useState<DirectoryTreeNode[]>([]);
     const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -68,7 +69,7 @@ export const StorageManagementUIProvider: React.FC<{
     // UI Interaction State
     const [viewMode, setViewMode] = useState<ViewMode>("grid");
     const [searchMode, setSearchMode] = useState<boolean>(false);
-    const [searchResults, setSearchResults] = useState<Graphql.StorageObject[]>([]);
+    const [searchResults, setSearchResults] = useState<StorageItem[]>([]);
     const [clipboard, setClipboard] = useState<Clipboard | null>(null);
 
     // Local UI State
@@ -207,7 +208,8 @@ export const StorageManagementUIProvider: React.FC<{
     useEffect(() => {
         if (
             !isInitialMount.current &&
-            JSON.stringify(prevQueryParams.current) === JSON.stringify(queryParams)
+            JSON.stringify(prevQueryParams.current) ===
+                JSON.stringify(queryParams)
         ) {
             return;
         }
@@ -606,9 +608,12 @@ export const StorageManagementUIProvider: React.FC<{
     );
 
     // Parameter Management
-    const setParams = useCallback((partial: Partial<Graphql.FilesListInput>) => {
-        setQueryParams((prev) => ({ ...prev, ...partial }));
-    }, []);
+    const setParams = useCallback(
+        (partial: Partial<Graphql.FilesListInput>) => {
+            setQueryParams((prev) => ({ ...prev, ...partial }));
+        },
+        [],
+    );
 
     const search = useCallback(
         async (term: string) => {
@@ -647,14 +652,15 @@ export const StorageManagementUIProvider: React.FC<{
 
     const setSortField = useCallback(
         (field?: Graphql.FileSortField) => {
-            setParams({ sortField: field, offset: 0 });
+            setParams({ sortBy: field, offset: 0 });
         },
         [setParams],
     );
 
     const setPage = useCallback(
         (page: number) => {
-            setParams({ offset: page * queryParams.limit });
+            const limit = queryParams.limit || 50; // Default to 50 if limit is null/undefined
+            setParams({ offset: page * limit });
         },
         [setParams, queryParams.limit],
     );
@@ -667,7 +673,7 @@ export const StorageManagementUIProvider: React.FC<{
     );
 
     // Local Sorting
-    const getSortedItems = useCallback((): Graphql.StorageObject[] => {
+    const getSortedItems = useCallback((): StorageItem[] => {
         const currentItems = searchMode ? searchResults : items;
 
         return [...currentItems].sort((a, b) => {
@@ -679,8 +685,22 @@ export const StorageManagementUIProvider: React.FC<{
                     bValue = b.name;
                     break;
                 case "size":
-                    aValue = "size" in a ? a.size : 0;
-                    bValue = "size" in b ? b.size : 0;
+                    // FileInfo has size, DirectoryInfo has totalSize
+                    if (a.__typename === "FileInfo") {
+                        aValue = (a).size;
+                    } else if (a.__typename === "DirectoryInfo") {
+                        aValue = (a).totalSize || 0;
+                    } else {
+                        aValue = 0;
+                    }
+
+                    if (b.__typename === "FileInfo") {
+                        bValue = (b).size;
+                    } else if (b.__typename === "DirectoryInfo") {
+                        bValue = (b).totalSize || 0;
+                    } else {
+                        bValue = 0;
+                    }
                     break;
                 case "lastModified":
                     aValue =
