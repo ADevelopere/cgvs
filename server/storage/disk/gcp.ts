@@ -1,8 +1,18 @@
-import { Storage } from "@google-cloud/storage";
+import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import logger from "@/utils/logger";
 import * as StorageTypes from "../storage.types";
-import { StorageService } from "./storage.service.interface";
+import {
+    StorageService,
+    StorageValidationError,
+    STORAGE_CONFIG,
+} from "./storage.service.interface";
+import * as StorageDbService from "../db/storage-db.service";
+import * as StorageUtils from "../storage.utils";
+
+type GcsApiResponse = {
+    prefixes?: string[];
+};
 
 const bucketName = process.env.GCP_BUCKET_NAME;
 const projectId = process.env.GCP_PROJECT_ID;
@@ -52,4 +62,887 @@ export async function createGcpStorage(): Promise<Storage> {
     });
 }
 
-class gcpAdapter implements StorageService {}
+class GcpAdapter implements StorageService {
+    private readonly storage: Storage;
+    private readonly bucket: Bucket;
+
+    constructor(storage: Storage) {
+        if (!bucketName) {
+            throw new Error("GCP_BUCKET_NAME environment variable is required");
+        }
+        this.storage = storage;
+        this.bucket = storage.bucket(bucketName);
+    }
+
+    async fileExists(path: string): Promise<boolean> {
+        try {
+            const file = this.bucket.file(path);
+            const [exists] = await file.exists();
+            return exists;
+        } catch (error) {
+            logger.error(`Error checking file existence: ${path}`, error);
+            return false;
+        }
+    }
+
+    async generateUploadSignedUrl(
+        input: StorageTypes.UploadSignedUrlGenerateInput,
+    ): Promise<string> {
+        StorageUtils.validateUpload(input.path, input.fileSize).then((err) => {
+            if (err) throw new StorageValidationError(err);
+        });
+
+        const file = this.bucket.file(input.path);
+
+        if (!file.signer) {
+            throw new Error("Signer is not available for the file.");
+        }
+
+        const [url] = await file.signer.getSignedUrl({
+            version: "v4",
+            expires:
+                Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000,
+            contentType: input.contentType,
+            method: "PUT",
+            contentMd5: input.contentMd5,
+        });
+
+        return url;
+    }
+
+    async uploadFile(
+        path: string,
+        contentType: StorageTypes.ContentTypeServerType,
+        buffer: Buffer,
+    ): Promise<StorageTypes.FileUploadResult> {
+        try {
+            const fileSize = buffer.byteLength;
+
+            StorageUtils.validateUpload(path, fileSize).then((err) => {
+                if (err)
+                    return {
+                        success: false,
+                        message: err,
+                        data: null,
+                    };
+            });
+
+            // Check if the directory exists in DB and get permissions
+            const directoryPath = path.substring(0, path.lastIndexOf("/"));
+
+            // Check if the directory exists in DB and get permissions
+            const dbDirectory =
+                await StorageDbService.directoryByPath(directoryPath);
+
+            if (dbDirectory) {
+                // Directory exists in DB, check permissions
+                if (!dbDirectory.allowUploads) {
+                    return {
+                        success: false,
+                        message: "Uploads not allowed in this directory",
+                        data: null,
+                    };
+                }
+            } else {
+                // Directory not in DB, check if it exists in bucket (default permissions apply)
+                let bucketDirExists = false;
+                try {
+                    const folderBlob = `${directoryPath}/`;
+                    const file = this.bucket.file(folderBlob);
+                    const [exists] = await file.exists();
+                    bucketDirExists = exists;
+                } catch {
+                    bucketDirExists = false;
+                }
+
+                if (!bucketDirExists && directoryPath.length > 0) {
+                    return {
+                        success: false,
+                        message: "Directory does not exist",
+                        data: null,
+                    };
+                }
+            }
+
+            const file = this.bucket.file(path);
+            await file.save(buffer, {
+                contentType: contentType,
+            });
+
+            // Create file entity in database
+            const fileEntity = await StorageDbService.createFile(path, false);
+
+            const [metadata] = await file.getMetadata();
+            const bucketFile = StorageUtils.blobToFileInfo(
+                metadata,
+                gcpBaseUrl,
+            );
+            const fileInfo = StorageUtils.combineFileData(
+                bucketFile,
+                fileEntity,
+            );
+
+            return {
+                success: true,
+                message: "File uploaded successfully",
+                data: fileInfo,
+            };
+        } catch (error) {
+            logger.error(`Failed to upload file: ${path}`, error);
+            return {
+                success: false,
+                message: `Failed to upload file: ${error instanceof Error ? error.message : String(error)}`,
+                data: null,
+            };
+        }
+    }
+
+    async listFiles(
+        input: StorageTypes.FilesListInput,
+    ): Promise<StorageTypes.StorageObjectList> {
+        const prefix =
+            input.path && input.path.length > 0
+                ? `${input.path.replace(/\/$/, "")}/`
+                : "";
+        const delimiter = "/";
+
+        // Single API call to get both files and directories
+        const response: GetFilesResponse = await this.bucket.getFiles({
+            prefix,
+            delimiter,
+            autoPaginate: false,
+        });
+
+        const [files] = response;
+        const apiResponse = response[2] as GcsApiResponse | undefined;
+
+        const items: Array<
+            | StorageTypes.FileInfoServerType
+            | StorageTypes.DirectoryInfoServerType
+        > = [];
+
+        // Collect all file paths for batch DB query
+        const filePaths: string[] = [];
+        const validFiles = files.filter((file) => file.name !== prefix); // Skip folder markers
+
+        for (const file of validFiles) {
+            filePaths.push(file.name);
+        }
+
+        // Collect all directory paths for batch DB query
+        const dirPaths: string[] = [];
+        if (apiResponse?.prefixes) {
+            for (const dirPrefix of apiResponse.prefixes) {
+                const dirPath = dirPrefix.replace(/\/$/, "");
+                dirPaths.push(dirPath);
+            }
+        }
+
+        // Batch database queries
+        const [dbFiles, dbDirectories] = await Promise.all([
+            filePaths.length > 0
+                ? StorageDbService.filesByPaths(filePaths)
+                : [],
+            dirPaths.length > 0
+                ? StorageDbService.directoriesByPaths(dirPaths)
+                : [],
+        ]);
+
+        // Create lookup maps for O(1) access
+        const dbFileMap = new Map();
+        dbFiles.forEach((dbFile) => {
+            if (dbFile) {
+                dbFileMap.set(dbFile.path, dbFile);
+            }
+        });
+
+        const dbDirMap = new Map();
+        dbDirectories.forEach((dbDir) => {
+            if (dbDir) {
+                dbDirMap.set(dbDir.path, dbDir);
+            }
+        });
+
+        // Create folder file count map for efficient lookup
+        const folderFileCountMap = new Map<string, number>();
+        if (apiResponse?.prefixes) {
+            // Count files in each directory from the already fetched files
+            for (const file of files) {
+                for (const dirPrefix of apiResponse.prefixes) {
+                    if (
+                        file.name.startsWith(dirPrefix) &&
+                        file.name !== dirPrefix
+                    ) {
+                        const dirPath = dirPrefix.replace(/\/$/, "");
+                        folderFileCountMap.set(
+                            dirPath,
+                            (folderFileCountMap.get(dirPath) || 0) + 1,
+                        );
+                    }
+                }
+            }
+
+            // For more accurate count, we still need individual folder queries
+            // But we can do them in parallel
+            const folderCountPromises = dirPaths.map(async (dirPath) => {
+                const dirPrefix = `${dirPath}/`;
+                const [folderFiles] = await this.bucket.getFiles({
+                    prefix: dirPrefix,
+                });
+                return { dirPath, count: folderFiles.length };
+            });
+
+            const folderCounts = await Promise.all(folderCountPromises);
+            folderCounts.forEach(({ dirPath, count }) => {
+                folderFileCountMap.set(dirPath, count);
+            });
+        }
+
+        // Process files
+        for (const file of validFiles) {
+            const bucketFile = StorageUtils.blobToFileInfo(
+                file.metadata,
+                gcpBaseUrl,
+            );
+            const dbFile = dbFileMap.get(file.name);
+            const fileInfo = StorageUtils.combineFileData(bucketFile, dbFile);
+            items.push(fileInfo);
+        }
+
+        // Process directories (prefixes)
+        if (apiResponse?.prefixes) {
+            for (const dirPrefix of apiResponse.prefixes) {
+                const dirPath = dirPrefix.replace(/\/$/, "");
+                const dbDir = dbDirMap.get(dirPath);
+
+                const bucketDir: StorageTypes.BucketDirectoryServerType = {
+                    path: dirPath,
+                    created: new Date(),
+                    lastModified: new Date(),
+                    isPublic: dirPath.startsWith("public"),
+                };
+
+                const fileCount = folderFileCountMap.get(dirPath) || 0;
+                const dirInfo = StorageUtils.combineDirectoryData(
+                    bucketDir,
+                    dbDir,
+                    fileCount,
+                );
+                items.push(dirInfo);
+            }
+        }
+
+        // Apply search filter
+        let filteredItems = items;
+        if (input.searchTerm && input.searchTerm.length > 0) {
+            const searchLower = input.searchTerm.toLowerCase();
+            filteredItems = items.filter((item) =>
+                item.name.toLowerCase().includes(searchLower),
+            );
+        }
+
+        // Apply file type filter
+        if (input.fileType) {
+            filteredItems = filteredItems.filter((item) => {
+                if ("fileType" in item) {
+                    return item.fileType === input.fileType;
+                }
+                return false;
+            });
+        }
+
+        // Sort items
+        const sortedItems = this.sortItems(
+            filteredItems,
+            input.sortBy || StorageTypes.FileSortFieldServerType.NAME,
+            input.sortDirection || StorageTypes.SortDirectionServerType.ASC,
+        );
+
+        // Apply pagination
+        const totalCount = sortedItems.length;
+        const offset = input.offset || 0;
+        const limit = input.limit || 50;
+        const paginatedItems = sortedItems.slice(offset, offset + limit);
+        const hasMore = offset + limit < totalCount;
+
+        return {
+            items: paginatedItems,
+            totalCount,
+            hasMore,
+            offset,
+            limit,
+        };
+    }
+
+    async createFolder(
+        input: StorageTypes.FolderCreateInput,
+    ): Promise<StorageTypes.FileOperationResult> {
+        try {
+            StorageUtils.validatePath(input.path).then((err) => {
+                if (err) throw new StorageValidationError(err);
+            });
+
+            const fullPath = input.path.replace(/\/$/, "").replace(/^\//, "");
+
+            // Check parent directory permissions
+            const parentPath = fullPath.substring(0, fullPath.lastIndexOf("/"));
+            if (parentPath.length > 0) {
+                const parentDir =
+                    await StorageDbService.directoryByPath(parentPath);
+                if (parentDir && !parentDir.allowCreateSubDirs) {
+                    return {
+                        success: false,
+                        message:
+                            "Creating subdirectories not allowed in parent directory",
+                    };
+                }
+            }
+
+            // Create folder marker in bucket
+            const folderPath = `${fullPath}/`;
+            const file = this.bucket.file(folderPath);
+            await file.save("", {
+                contentType: "application/x-directory",
+            });
+
+            // Only save folder in DB if custom permissions are provided
+            const hasCustomPermissions =
+                input.permissions != null ||
+                input.protected === true ||
+                input.protectChildren === true;
+
+            let newDirectoryInfo: StorageTypes.DirectoryInfoServerType;
+
+            if (hasCustomPermissions) {
+                try {
+                    const directoryEntity =
+                        await StorageDbService.createDirectory(input);
+
+                    const bucketDir: StorageTypes.BucketDirectoryServerType = {
+                        path: fullPath,
+                        created: new Date(),
+                        lastModified: new Date(),
+                        isPublic: fullPath.startsWith("public"),
+                    };
+
+                    newDirectoryInfo = StorageUtils.combineDirectoryData(
+                        bucketDir,
+                        directoryEntity,
+                    );
+                } catch (error) {
+                    // If DB operation fails, still return success since folder was created in bucket
+                    logger.warn(
+                        `Failed to save folder permissions in DB: ${error instanceof Error ? error.message : String(error)}`,
+                    );
+                    newDirectoryInfo =
+                        StorageUtils.createDirectoryFromPath(fullPath);
+                }
+            } else {
+                newDirectoryInfo =
+                    StorageUtils.createDirectoryFromPath(fullPath);
+            }
+
+            return {
+                success: true,
+                message: "Folder created successfully",
+                data: newDirectoryInfo,
+            };
+        } catch (error) {
+            logger.error(`Failed to create folder: ${input.path}`, error);
+            return {
+                success: false,
+                message: `Failed to create folder: ${error instanceof Error ? error.message : String(error)}`,
+            };
+        }
+    }
+
+    async renameFile(
+        input: StorageTypes.FileRenameInput,
+    ): Promise<StorageTypes.FileOperationResult> {
+        try {
+            StorageUtils.validatePath(input.currentPath).then((err) => {
+                if (err) {
+                    const result: StorageTypes.FileOperationResult = {
+                        success: false,
+                        message: err,
+                    };
+                    return result;
+                }
+            });
+
+            StorageUtils.validateFileName(input.newName).then((err) => {
+                if (err) {
+                    const result: StorageTypes.FileOperationResult = {
+                        success: false,
+                        message: err,
+                    };
+                    return result;
+                }
+            });
+
+            const directoryPath = StorageUtils.extractDirectoryPath(
+                input.currentPath,
+            );
+
+            const newPath = `${directoryPath}/${input.newName}`;
+
+            // Copy to new location
+            const sourceFile = this.bucket.file(input.currentPath);
+            const destFile = this.bucket.file(newPath);
+            await sourceFile.move(destFile);
+
+            // Update database
+            let fileEntity: StorageTypes.FileEntity | undefined;
+            try {
+                const dbFile = await StorageDbService.fileByPath(
+                    input.currentPath,
+                );
+                if (dbFile) {
+                    const updatedFile = { ...dbFile, path: newPath };
+                    fileEntity = await StorageDbService.updateFile(updatedFile);
+                }
+            } catch {}
+
+            const [metadata] = await destFile.getMetadata();
+            const bucketFile = StorageUtils.blobToFileInfo(
+                metadata,
+                gcpBaseUrl,
+            );
+            
+            const fileInfo = StorageUtils.combineFileData(
+                bucketFile,
+                fileEntity,
+            );
+
+            return {
+                success: true,
+                message: "File renamed successfully",
+                data: fileInfo,
+            };
+        } catch (error) {
+            logger.error(`Failed to rename file: ${input.currentPath}`, error);
+            return {
+                success: false,
+                message: `Failed to rename file: ${error instanceof Error ? error.message : String(error)}`,
+            };
+        }
+    }
+
+    async deleteFile(path: string): Promise<StorageTypes.FileOperationResult> {
+        try {
+            // Check if file is in use
+            const usageCheck = await StorageDbService.checkFileUsage({
+                filePath: path,
+            });
+            if (usageCheck.isInUse) {
+                return {
+                    success: false,
+                    message: usageCheck.deleteBlockReason || "File is in use",
+                };
+            }
+
+            // Delete from bucket
+            const file = this.bucket.file(path);
+            await file.delete();
+
+            // Delete from database
+            await StorageDbService.deleteFile(path);
+
+            return {
+                success: true,
+                message: "File deleted successfully",
+            };
+        } catch (error) {
+            logger.error(`Failed to delete file: ${path}`, error);
+            return {
+                success: false,
+                message: `Failed to delete file: ${error instanceof Error ? error.message : String(error)}`,
+            };
+        }
+    }
+
+    async directoryInfoByPath(
+        path: string,
+    ): Promise<StorageTypes.DirectoryInfoServerType> {
+        // Check database first
+        const dbDirectory = await StorageDbService.directoryByPath(path);
+
+        // Check bucket
+        const folderPath = `${path}/`;
+        const [files] = await this.bucket.getFiles({
+            prefix: folderPath,
+            maxResults: 1,
+        });
+
+        const folderExists = files.length > 0;
+
+        if (!folderExists && !dbDirectory) {
+            // Return default entity
+            return StorageUtils.createDirectoryFromPath(path);
+        }
+
+        const bucketDir: StorageTypes.BucketDirectoryServerType = {
+            path,
+            created: new Date(),
+            lastModified: new Date(),
+            isPublic: path.startsWith("public"),
+        };
+
+        return StorageUtils.combineDirectoryData(bucketDir, dbDirectory);
+    }
+
+    async fileInfoByPath(
+        path: string,
+    ): Promise<StorageTypes.FileInfoServerType | undefined> {
+        try {
+            const file = this.bucket.file(path);
+            const [exists] = await file.exists();
+
+            if (!exists) {
+                return undefined;
+            }
+
+            const [metadata] = await file.getMetadata();
+            const bucketFile = StorageUtils.blobToFileInfo(
+                metadata,
+                gcpBaseUrl,
+            );
+            const dbFile = await StorageDbService.fileByPath(path);
+
+            return StorageUtils.combineFileData(bucketFile, dbFile);
+        } catch (error) {
+            logger.error(`Failed to get file info: ${path}`, error);
+            return undefined;
+        }
+    }
+
+    async fileInfoByDbFileId(
+        id: bigint,
+    ): Promise<StorageTypes.FileInfoServerType | undefined> {
+        try {
+            const dbFile = await StorageDbService.fileById(id);
+            if (!dbFile) {
+                return undefined;
+            }
+
+            const file = this.bucket.file(dbFile.path);
+            const [exists] = await file.exists();
+
+            if (!exists) {
+                return undefined;
+            }
+
+            const [metadata] = await file.getMetadata();
+            const bucketFile = StorageUtils.blobToFileInfo(
+                metadata,
+                gcpBaseUrl,
+            );
+
+            return StorageUtils.combineFileData(bucketFile, dbFile);
+        } catch (error) {
+            logger.error(`Failed to get file info by id: ${id}`, error);
+            return undefined;
+        }
+    }
+
+    async storageStatistics(path?: string): Promise<StorageTypes.StorageStats> {
+        try {
+            const prefix = path ? `${path}/` : "";
+            const [files] = await this.bucket.getFiles({ prefix });
+
+            let totalSize = BigInt(0);
+            const fileTypeMap = new Map<
+                StorageTypes.FileTypeServerType,
+                { count: number; size: bigint }
+            >();
+
+            for (const file of files) {
+                const size = BigInt(file.metadata.size || 0);
+                totalSize += size;
+
+                const fileType = StorageUtils.getFileTypeFromContentType(
+                    file.metadata.contentType,
+                );
+                const current = fileTypeMap.get(fileType) || {
+                    count: 0,
+                    size: BigInt(0),
+                };
+                fileTypeMap.set(fileType, {
+                    count: current.count + 1,
+                    size: current.size + size,
+                });
+            }
+
+            const fileTypeBreakdown = Array.from(fileTypeMap.entries()).map(
+                ([type, data]) => ({
+                    type,
+                    count: data.count,
+                    size: data.size,
+                }),
+            );
+
+            // Count directories
+            const response: GetFilesResponse = await this.bucket.getFiles({
+                prefix,
+                delimiter: "/",
+            });
+            const apiResponse = response[2] as GcsApiResponse | undefined;
+            const directoryCount = apiResponse?.prefixes?.length || 0;
+
+            return {
+                totalFiles: files.length,
+                totalSize,
+                fileTypeBreakdown,
+                directoryCount,
+            };
+        } catch (error) {
+            logger.error("Failed to get storage statistics", error);
+            return {
+                totalFiles: 0,
+                totalSize: BigInt(0),
+                fileTypeBreakdown: [],
+                directoryCount: 0,
+            };
+        }
+    }
+
+    async fetchDirectoryChildren(
+        path?: string,
+    ): Promise<StorageTypes.DirectoryInfoServerType[]> {
+        const searchPath =
+            !path || path.length === 0 ? "public" : path.replace(/\/$/, "");
+        const prefix = searchPath.length > 0 ? `${searchPath}/` : "";
+
+        // Get directories from database
+        const dbDirectories =
+            await StorageDbService.directoriesByParentPath(searchPath);
+        const dbDirectoriesByPath = new Map(
+            dbDirectories.map((dir) => [dir.path, dir]),
+        );
+
+        // Get directories from bucket
+        const responseData: GetFilesResponse = await this.bucket.getFiles({
+            prefix,
+            delimiter: "/",
+            autoPaginate: false,
+        });
+
+        const directories: StorageTypes.DirectoryInfoServerType[] = [];
+        const apiResponse = responseData[2] as GcsApiResponse | undefined;
+
+        if (apiResponse?.prefixes) {
+            for (const dirPrefix of apiResponse.prefixes) {
+                const dirPath = dirPrefix.replace(/\/$/, "");
+                const dbDir = dbDirectoriesByPath.get(dirPath);
+
+                const bucketDir: StorageTypes.BucketDirectoryServerType = {
+                    path: dirPath,
+                    created: new Date(),
+                    lastModified: new Date(),
+                    isPublic: dirPath.startsWith("public"),
+                };
+
+                directories.push(
+                    StorageUtils.combineDirectoryData(bucketDir, dbDir),
+                );
+            }
+        }
+
+        return directories;
+    }
+
+    async moveItems(
+        input: StorageTypes.StorageItemsMoveInput,
+    ): Promise<StorageTypes.BulkOperationResult> {
+        let successCount = 0;
+        let failureCount = 0;
+        const failures: Array<{ path: string; error: string }> = [];
+
+        for (const sourcePath of input.sourcePaths) {
+            try {
+                const fileName = StorageUtils.extractFileName(sourcePath);
+                const destPath = `${input.destinationPath}/${fileName}`;
+
+                // Copy file
+                const sourceFile = this.bucket.file(sourcePath);
+                const destFile = this.bucket.file(destPath);
+                await sourceFile.copy(destFile);
+
+                // Delete original
+                await sourceFile.delete();
+
+                // Update database
+                const dbFile = await StorageDbService.fileByPath(sourcePath);
+                if (dbFile) {
+                    const updatedFile = { ...dbFile, path: destPath };
+                    await StorageDbService.updateFile(updatedFile);
+                }
+
+                successCount++;
+            } catch (error) {
+                failureCount++;
+                failures.push({
+                    path: sourcePath,
+                    error:
+                        error instanceof Error ? error.message : String(error),
+                });
+            }
+        }
+
+        return {
+            success: failureCount === 0,
+            message:
+                failureCount === 0
+                    ? "All items moved successfully"
+                    : `${successCount} items moved, ${failureCount} failed`,
+            successCount,
+            failureCount,
+            failures,
+        };
+    }
+
+    async copyItems(
+        input: StorageTypes.StorageItemsCopyInput,
+    ): Promise<StorageTypes.BulkOperationResult> {
+        let successCount = 0;
+        let failureCount = 0;
+        const failures: Array<{ path: string; error: string }> = [];
+
+        for (const sourcePath of input.sourcePaths) {
+            try {
+                const fileName = StorageUtils.extractFileName(sourcePath);
+                const destPath = `${input.destinationPath}/${fileName}`;
+
+                // Copy file
+                const sourceFile = this.bucket.file(sourcePath);
+                const destFile = this.bucket.file(destPath);
+                await sourceFile.copy(destFile);
+
+                // Create database entry for copied file
+                await StorageDbService.createFile(destPath, false);
+
+                successCount++;
+            } catch (error) {
+                failureCount++;
+                failures.push({
+                    path: sourcePath,
+                    error:
+                        error instanceof Error ? error.message : String(error),
+                });
+            }
+        }
+
+        return {
+            success: failureCount === 0,
+            message:
+                failureCount === 0
+                    ? "All items copied successfully"
+                    : `${successCount} items copied, ${failureCount} failed`,
+            successCount,
+            failureCount,
+            failures,
+        };
+    }
+
+    async deleteItems(
+        input: StorageTypes.ItemsDeleteInput,
+    ): Promise<StorageTypes.BulkOperationResult> {
+        let successCount = 0;
+        let failureCount = 0;
+        const failures: Array<{ path: string; error: string }> = [];
+
+        for (const path of input.paths) {
+            try {
+                // Check if file is in use (unless force delete)
+                if (!input.force) {
+                    const usageCheck = await StorageDbService.checkFileUsage({
+                        filePath: path,
+                    });
+                    if (usageCheck.isInUse) {
+                        throw new Error(
+                            usageCheck.deleteBlockReason || "File is in use",
+                        );
+                    }
+                }
+
+                // Delete from bucket
+                const file = this.bucket.file(path);
+                await file.delete();
+
+                // Delete from database
+                await StorageDbService.deleteFile(path);
+
+                successCount++;
+            } catch (error) {
+                failureCount++;
+                failures.push({
+                    path,
+                    error:
+                        error instanceof Error ? error.message : String(error),
+                });
+            }
+        }
+
+        return {
+            success: failureCount === 0,
+            message:
+                failureCount === 0
+                    ? "All items deleted successfully"
+                    : `${successCount} items deleted, ${failureCount} failed`,
+            successCount,
+            failureCount,
+            failures,
+        };
+    }
+
+    private sortItems(
+        items: Array<
+            | StorageTypes.FileInfoServerType
+            | StorageTypes.DirectoryInfoServerType
+        >,
+        sortBy: StorageTypes.FileSortFieldServerType,
+        direction: StorageTypes.SortDirectionServerType,
+    ): Array<
+        StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
+    > {
+        const sorted = [...items].sort((a, b) => {
+            let comparison = 0;
+
+            switch (sortBy) {
+                case StorageTypes.FileSortFieldServerType.NAME:
+                    comparison = a.name.localeCompare(b.name);
+                    break;
+                case StorageTypes.FileSortFieldServerType.SIZE: {
+                    const sizeA = "size" in a ? Number(a.size) : 0;
+                    const sizeB = "size" in b ? Number(b.size) : 0;
+                    comparison = sizeA - sizeB;
+                    break;
+                }
+                case StorageTypes.FileSortFieldServerType.TYPE: {
+                    const typeA = "fileType" in a ? a.fileType : "DIRECTORY";
+                    const typeB = "fileType" in b ? b.fileType : "DIRECTORY";
+                    comparison = typeA.localeCompare(typeB);
+                    break;
+                }
+                case StorageTypes.FileSortFieldServerType.CREATED:
+                    comparison = a.created.getTime() - b.created.getTime();
+                    break;
+                case StorageTypes.FileSortFieldServerType.MODIFIED:
+                    comparison =
+                        a.lastModified.getTime() - b.lastModified.getTime();
+                    break;
+            }
+
+            return direction === StorageTypes.SortDirectionServerType.ASC
+                ? comparison
+                : -comparison;
+        });
+
+        return sorted;
+    }
+}
+
+export async function createGcpAdapter(): Promise<StorageService> {
+    const storage = await createGcpStorage();
+    return new GcpAdapter(storage);
+}
