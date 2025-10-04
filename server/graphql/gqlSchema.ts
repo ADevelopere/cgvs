@@ -8,6 +8,7 @@ import "@/server/graphql/templateCategory/templateCategory.query";
 import "@/server/graphql/templateCategory/templateCategory.mutation";
 
 import "@/server/graphql/storage/storage.query";
+import "@/server/graphql/storage/storage.mutation";
 
 import { gqlSchemaBuilder } from "./gqlSchemaBuilder";
 

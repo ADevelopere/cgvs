@@ -269,8 +269,8 @@ export const checkFileUsage = async (
     input: StorageTypes.FileUsageCheckInput,
 ): Promise<StorageTypes.FileUsageResult> => {
     try {
-        const isInUse = await isFileInUse(input.filePath);
-        const usages = isInUse ? await getFileUsages(input.filePath) : [];
+        const isInUse = await isFileInUse(input.path);
+        const usages = isInUse ? await getFileUsages(input.path) : [];
 
         return {
             isInUse,

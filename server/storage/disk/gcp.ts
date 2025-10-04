@@ -557,7 +557,7 @@ class GcpAdapter implements StorageService {
             // Check permissions and protection
             // Check if file is in use
             await StorageDbService.checkFileUsage({
-                filePath: path,
+                path: path,
             }).then((usageCheck) => {
                 if (usageCheck.isInUse) {
                     return {
@@ -1094,7 +1094,7 @@ class GcpAdapter implements StorageService {
     }
 
     async deleteItems(
-        input: StorageTypes.ItemsDeleteInput,
+        input: StorageTypes.StorageItemsDeleteInput,
     ): Promise<StorageTypes.BulkOperationResult> {
         let successCount = 0;
         let failureCount = 0;
@@ -1124,7 +1124,7 @@ class GcpAdapter implements StorageService {
                     : Promise.all(
                           input.paths.map((path) =>
                               StorageDbService.checkFileUsage({
-                                  filePath: path,
+                                  path: path,
                               })
                                   .then((result) => ({ path, ...result }))
                                   .catch(() => ({

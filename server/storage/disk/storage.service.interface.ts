@@ -79,13 +79,13 @@ export interface StorageService {
     /**
      * Get storage statistics
      */
-    storageStatistics(path?: string): Promise<StorageTypes.StorageStats>;
+    storageStatistics(path?: string | null): Promise<StorageTypes.StorageStats>;
 
     /**
      * Fetch immediate directory children for lazy loading
      */
     fetchDirectoryChildren(
-        path?: string,
+        path?: string | null,
     ): Promise<StorageTypes.DirectoryInfoServerType[]>;
 
     /**
@@ -106,7 +106,7 @@ export interface StorageService {
      * Delete multiple items
      */
     deleteItems(
-        input: StorageTypes.ItemsDeleteInput,
+        input: StorageTypes.StorageItemsDeleteInput,
     ): Promise<StorageTypes.BulkOperationResult>;
 }
 
