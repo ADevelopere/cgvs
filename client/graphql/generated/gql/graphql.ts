@@ -20,6 +20,171 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type BulkOperationFailure = {
+  __typename?: 'BulkOperationFailure';
+  error?: Maybe<Scalars['String']['output']>;
+  path?: Maybe<Scalars['String']['output']>;
+};
+
+export type BulkOperationResult = {
+  __typename?: 'BulkOperationResult';
+  failureCount?: Maybe<Scalars['Int']['output']>;
+  failures?: Maybe<Array<BulkOperationFailure>>;
+  message?: Maybe<Scalars['String']['output']>;
+  success?: Maybe<Scalars['Boolean']['output']>;
+  successCount?: Maybe<Scalars['Int']['output']>;
+  successfulItems?: Maybe<Array<StorageObject>>;
+};
+
+export type ContentType =
+  | 'DOC'
+  | 'DOCX'
+  | 'GIF'
+  | 'JPEG'
+  | 'MP3'
+  | 'MP4'
+  | 'PDF'
+  | 'PNG'
+  | 'RAR'
+  | 'TXT'
+  | 'WAV'
+  | 'WEBP'
+  | 'XLS'
+  | 'XLSX'
+  | 'ZIP';
+
+export type DirectoryInfo = StorageObject & {
+  __typename?: 'DirectoryInfo';
+  created?: Maybe<Scalars['DateTime']['output']>;
+  fileCount?: Maybe<Scalars['Int']['output']>;
+  folderCount?: Maybe<Scalars['Int']['output']>;
+  isFromBucket?: Maybe<Scalars['Boolean']['output']>;
+  isProtected: Scalars['Boolean']['output'];
+  lastModified?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  permissions?: Maybe<DirectoryPermissions>;
+  protectChildren?: Maybe<Scalars['Boolean']['output']>;
+  totalSize?: Maybe<Scalars['Int']['output']>;
+};
+
+export type DirectoryPermissions = {
+  __typename?: 'DirectoryPermissions';
+  allowCreateSubDirs?: Maybe<Scalars['Boolean']['output']>;
+  allowDelete?: Maybe<Scalars['Boolean']['output']>;
+  allowDeleteFiles?: Maybe<Scalars['Boolean']['output']>;
+  allowMove?: Maybe<Scalars['Boolean']['output']>;
+  allowMoveFiles?: Maybe<Scalars['Boolean']['output']>;
+  allowUploads?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type DirectoryPermissionsInput = {
+  allowCreateSubDirs: Scalars['Boolean']['input'];
+  allowDelete: Scalars['Boolean']['input'];
+  allowDeleteFiles: Scalars['Boolean']['input'];
+  allowMove: Scalars['Boolean']['input'];
+  allowMoveFiles: Scalars['Boolean']['input'];
+  allowUploads: Scalars['Boolean']['input'];
+};
+
+export type DirectoryPermissionsUpdateInput = {
+  path: Scalars['String']['input'];
+  permissions: DirectoryPermissionsInput;
+};
+
+export type FileInfo = StorageObject & {
+  __typename?: 'FileInfo';
+  contentType?: Maybe<Scalars['String']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  directoryPath?: Maybe<Scalars['String']['output']>;
+  fileType?: Maybe<FileType>;
+  isFromBucket?: Maybe<Scalars['Boolean']['output']>;
+  isInUse?: Maybe<Scalars['Boolean']['output']>;
+  isProtected: Scalars['Boolean']['output'];
+  isPublic?: Maybe<Scalars['Boolean']['output']>;
+  lastModified?: Maybe<Scalars['DateTime']['output']>;
+  md5Hash?: Maybe<Scalars['String']['output']>;
+  mediaLink?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  size?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+  usages?: Maybe<Array<FileUsageInfo>>;
+};
+
+export type FileOperationResult = {
+  __typename?: 'FileOperationResult';
+  data?: Maybe<StorageObject>;
+  message?: Maybe<Scalars['String']['output']>;
+  success?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type FileRenameInput = {
+  currentPath: Scalars['String']['input'];
+  newName: Scalars['String']['input'];
+};
+
+export type FileSortField =
+  | 'CREATED'
+  | 'MODIFIED'
+  | 'NAME'
+  | 'SIZE'
+  | 'TYPE';
+
+export type FileType =
+  | 'ARCHIVE'
+  | 'AUDIO'
+  | 'DOCUMENT'
+  | 'IMAGE'
+  | 'OTHER'
+  | 'VIDEO';
+
+export type FileTypeBreakdown = {
+  __typename?: 'FileTypeBreakdown';
+  count?: Maybe<Scalars['Int']['output']>;
+  size?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<FileType>;
+};
+
+export type FileUsageCheckInput = {
+  path: Scalars['String']['input'];
+};
+
+export type FileUsageInfo = {
+  __typename?: 'FileUsageInfo';
+  created?: Maybe<Scalars['DateTime']['output']>;
+  filePath?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  referenceId?: Maybe<Scalars['String']['output']>;
+  referenceTable?: Maybe<Scalars['String']['output']>;
+  usageType?: Maybe<Scalars['String']['output']>;
+};
+
+export type FileUsageResult = {
+  __typename?: 'FileUsageResult';
+  canDelete?: Maybe<Scalars['Boolean']['output']>;
+  deleteBlockReason?: Maybe<Scalars['String']['output']>;
+  isInUse?: Maybe<Scalars['Boolean']['output']>;
+  usages?: Maybe<Array<FileUsageInfo>>;
+};
+
+export type FilesListInput = {
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  path: Scalars['String']['input'];
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<FileSortField>;
+  sortDirection?: InputMaybe<SortDirection>;
+};
+
+export type FolderCreateInput = {
+  path: Scalars['String']['input'];
+  permissions?: InputMaybe<DirectoryPermissionsInput>;
+  protectChildren?: InputMaybe<Scalars['Boolean']['input']>;
+  protected?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -34,17 +199,36 @@ export type LoginResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  copyStorageItems?: Maybe<BulkOperationResult>;
+  createFolder?: Maybe<FileOperationResult>;
   createTemplate?: Maybe<Template>;
   createTemplateCategory?: Maybe<TemplateCategory>;
+  deleteFile?: Maybe<FileOperationResult>;
+  deleteStorageItems?: Maybe<BulkOperationResult>;
   deleteTemplate?: Maybe<Template>;
   deleteTemplateCategory?: Maybe<TemplateCategory>;
+  generateUploadSignedUrl?: Maybe<Scalars['String']['output']>;
   login?: Maybe<LoginResponse>;
   logout?: Maybe<Scalars['Boolean']['output']>;
+  moveStorageItems?: Maybe<BulkOperationResult>;
   refreshToken?: Maybe<RefreshTokenResponse>;
+  renameFile?: Maybe<FileOperationResult>;
+  setStorageItemProtection?: Maybe<FileOperationResult>;
   suspendTemplate?: Maybe<Template>;
   unsuspendTemplate?: Maybe<Template>;
+  updateDirectoryPermissions?: Maybe<FileOperationResult>;
   updateTemplate?: Maybe<Template>;
   updateTemplateCategory?: Maybe<TemplateCategory>;
+};
+
+
+export type MutationCopyStorageItemsArgs = {
+  input: StorageItemsCopyInput;
+};
+
+
+export type MutationCreateFolderArgs = {
+  input: FolderCreateInput;
 };
 
 
@@ -58,6 +242,16 @@ export type MutationCreateTemplateCategoryArgs = {
 };
 
 
+export type MutationDeleteFileArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteStorageItemsArgs = {
+  input: StorageItemsDeleteInput;
+};
+
+
 export type MutationDeleteTemplateArgs = {
   id: Scalars['Int']['input'];
 };
@@ -68,8 +262,28 @@ export type MutationDeleteTemplateCategoryArgs = {
 };
 
 
+export type MutationGenerateUploadSignedUrlArgs = {
+  input: UploadSignedUrlGenerateInput;
+};
+
+
 export type MutationLoginArgs = {
   input: LoginInput;
+};
+
+
+export type MutationMoveStorageItemsArgs = {
+  input: StorageItemsMoveInput;
+};
+
+
+export type MutationRenameFileArgs = {
+  input: FileRenameInput;
+};
+
+
+export type MutationSetStorageItemProtectionArgs = {
+  input: StorageItemProtectionUpdateInput;
 };
 
 
@@ -80,6 +294,11 @@ export type MutationSuspendTemplateArgs = {
 
 export type MutationUnsuspendTemplateArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateDirectoryPermissionsArgs = {
+  input: DirectoryPermissionsUpdateInput;
 };
 
 
@@ -120,8 +339,15 @@ export type PaginationArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  directoryChildren?: Maybe<Array<DirectoryInfo>>;
+  fileInfo?: Maybe<FileInfo>;
+  fileUsage?: Maybe<FileUsageResult>;
+  folderInfo?: Maybe<DirectoryInfo>;
+  listFiles?: Maybe<StorageObjectList>;
   mainTemplateCategory?: Maybe<TemplateCategory>;
   me?: Maybe<User>;
+  searchFiles?: Maybe<StorageObjectList>;
+  storageStats?: Maybe<StorageStats>;
   suspensionTemplateCategory?: Maybe<TemplateCategory>;
   template?: Maybe<Template>;
   templateCategories?: Maybe<Array<TemplateCategory>>;
@@ -130,6 +356,44 @@ export type Query = {
   templatesConfigs?: Maybe<TemplatesConfigs>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
+};
+
+
+export type QueryDirectoryChildrenArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFileInfoArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+export type QueryFileUsageArgs = {
+  input: FileUsageCheckInput;
+};
+
+
+export type QueryFolderInfoArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+export type QueryListFilesArgs = {
+  input: FilesListInput;
+};
+
+
+export type QuerySearchFilesArgs = {
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  folder?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  searchTerm: Scalars['String']['input'];
+};
+
+
+export type QueryStorageStatsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -156,6 +420,54 @@ export type RefreshTokenResponse = {
   __typename?: 'RefreshTokenResponse';
   token?: Maybe<Scalars['String']['output']>;
   user?: Maybe<User>;
+};
+
+export type SortDirection =
+  | 'ASC'
+  | 'DESC';
+
+export type StorageItemProtectionUpdateInput = {
+  isProtected: Scalars['Boolean']['input'];
+  path: Scalars['String']['input'];
+  protectChildren?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type StorageItemsCopyInput = {
+  destinationPath: Scalars['String']['input'];
+  sourcePaths: Array<Scalars['String']['input']>;
+};
+
+export type StorageItemsDeleteInput = {
+  force?: InputMaybe<Scalars['Boolean']['input']>;
+  paths: Array<Scalars['String']['input']>;
+};
+
+export type StorageItemsMoveInput = {
+  destinationPath: Scalars['String']['input'];
+  sourcePaths: Array<Scalars['String']['input']>;
+};
+
+export type StorageObject = {
+  isProtected: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
+export type StorageObjectList = {
+  __typename?: 'StorageObjectList';
+  hasMore: Scalars['Boolean']['output'];
+  items?: Maybe<Array<StorageObject>>;
+  limit: Scalars['Int']['output'];
+  offset: Scalars['Int']['output'];
+  totalCount: Scalars['Int']['output'];
+};
+
+export type StorageStats = {
+  __typename?: 'StorageStats';
+  directoryCount?: Maybe<Scalars['Int']['output']>;
+  fileTypeBreakdown?: Maybe<Array<FileTypeBreakdown>>;
+  totalFiles?: Maybe<Scalars['Int']['output']>;
+  totalSize?: Maybe<Scalars['String']['output']>;
 };
 
 export type Template = {
@@ -225,6 +537,16 @@ export type UpdateTemplateInput = {
   name: Scalars['String']['input'];
 };
 
+export type UploadLocationPath =
+  | 'TEMPLATE_COVERS';
+
+export type UploadSignedUrlGenerateInput = {
+  contentMd5: Scalars['String']['input'];
+  contentType: ContentType;
+  fileSize: Scalars['Int']['input'];
+  path: Scalars['String']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -268,6 +590,151 @@ export type RefreshTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken?: { __typename?: 'RefreshTokenResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null } | null };
+
+export type DirectoryChildrenQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type DirectoryChildrenQuery = { __typename?: 'Query', directoryChildren?: Array<{ __typename?: 'DirectoryInfo', created?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }> | null };
+
+export type FileInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size?: string | null, url?: string | null, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null } | null };
+
+export type FileUsageQueryVariables = Exact<{
+  input: FileUsageCheckInput;
+}>;
+
+
+export type FileUsageQuery = { __typename?: 'Query', fileUsage?: { __typename?: 'FileUsageResult', canDelete?: boolean | null, deleteBlockReason?: string | null, isInUse?: boolean | null, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null } | null };
+
+export type FolderInfoQueryVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type FolderInfoQuery = { __typename?: 'Query', folderInfo?: { __typename?: 'DirectoryInfo', created?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null } | null };
+
+export type ListFilesQueryVariables = Exact<{
+  input: FilesListInput;
+}>;
+
+
+export type ListFilesQuery = { __typename?: 'Query', listFiles?: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items?: Array<
+      | { __typename?: 'DirectoryInfo', created?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }
+      | { __typename?: 'FileInfo', contentType?: string | null, created?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size?: string | null, url?: string | null, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
+    > | null } | null };
+
+export type SearchFilesQueryVariables = Exact<{
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  folder?: InputMaybe<Scalars['String']['input']>;
+  limit: Scalars['Int']['input'];
+  searchTerm: Scalars['String']['input'];
+}>;
+
+
+export type SearchFilesQuery = { __typename?: 'Query', searchFiles?: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items?: Array<
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+    > | null } | null };
+
+export type StorageStatsQueryVariables = Exact<{
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type StorageStatsQuery = { __typename?: 'Query', storageStats?: { __typename?: 'StorageStats', totalFiles?: number | null, directoryCount?: number | null, totalSize?: string | null, fileTypeBreakdown?: Array<{ __typename?: 'FileTypeBreakdown', count?: number | null, type?: FileType | null }> | null } | null };
+
+export type CopyStorageItemsMutationVariables = Exact<{
+  input: StorageItemsCopyInput;
+}>;
+
+
+export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems?: { __typename?: 'BulkOperationResult', message?: string | null, success?: boolean | null, failureCount?: number | null, successCount?: number | null, failures?: Array<{ __typename?: 'BulkOperationFailure', error?: string | null, path?: string | null }> | null, successfulItems?: Array<
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+    > | null } | null };
+
+export type CreateFolderMutationVariables = Exact<{
+  input: FolderCreateInput;
+}>;
+
+
+export type CreateFolderMutation = { __typename?: 'Mutation', createFolder?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+     | null } | null };
+
+export type DeleteFileMutationVariables = Exact<{
+  path: Scalars['String']['input'];
+}>;
+
+
+export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+     | null } | null };
+
+export type DeleteStorageItemsMutationVariables = Exact<{
+  input: StorageItemsDeleteInput;
+}>;
+
+
+export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems?: { __typename?: 'BulkOperationResult', message?: string | null, success?: boolean | null, failureCount?: number | null, successCount?: number | null, failures?: Array<{ __typename?: 'BulkOperationFailure', error?: string | null, path?: string | null }> | null, successfulItems?: Array<
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+    > | null } | null };
+
+export type GenerateUploadSignedUrlMutationVariables = Exact<{
+  input: UploadSignedUrlGenerateInput;
+}>;
+
+
+export type GenerateUploadSignedUrlMutation = { __typename?: 'Mutation', generateUploadSignedUrl?: string | null };
+
+export type MoveStorageItemsMutationVariables = Exact<{
+  input: StorageItemsMoveInput;
+}>;
+
+
+export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems?: { __typename?: 'BulkOperationResult', message?: string | null, success?: boolean | null, failureCount?: number | null, successCount?: number | null, failures?: Array<{ __typename?: 'BulkOperationFailure', error?: string | null, path?: string | null }> | null, successfulItems?: Array<
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+    > | null } | null };
+
+export type RenameFileMutationVariables = Exact<{
+  input: FileRenameInput;
+}>;
+
+
+export type RenameFileMutation = { __typename?: 'Mutation', renameFile?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+     | null } | null };
+
+export type SetStorageItemProtectionMutationVariables = Exact<{
+  input: StorageItemProtectionUpdateInput;
+}>;
+
+
+export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+     | null } | null };
+
+export type UpdateDirectoryPermissionsMutationVariables = Exact<{
+  input: DirectoryPermissionsUpdateInput;
+}>;
+
+
+export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
+      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+     | null } | null };
 
 export type TemplateQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -373,6 +840,22 @@ export const UsersDocument = {"kind":"Document","definitions":[{"kind":"Operatio
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
 export const RefreshTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RefreshTokenMutation, RefreshTokenMutationVariables>;
+export const DirectoryChildrenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"directoryChildren"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"directoryChildren"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"fileCount"}},{"kind":"Field","name":{"kind":"Name","value":"folderCount"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allowCreateSubDirs"}},{"kind":"Field","name":{"kind":"Name","value":"allowDelete"}},{"kind":"Field","name":{"kind":"Name","value":"allowDeleteFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowMove"}},{"kind":"Field","name":{"kind":"Name","value":"allowMoveFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowUploads"}}]}},{"kind":"Field","name":{"kind":"Name","value":"protectChildren"}},{"kind":"Field","name":{"kind":"Name","value":"totalSize"}}]}}]}}]} as unknown as DocumentNode<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>;
+export const FileInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fileInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contentType"}},{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"directoryPath"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"md5Hash"}},{"kind":"Field","name":{"kind":"Name","value":"mediaLink"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}}]} as unknown as DocumentNode<FileInfoQuery, FileInfoQueryVariables>;
+export const FileUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fileUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FileUsageCheckInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}}]} as unknown as DocumentNode<FileUsageQuery, FileUsageQueryVariables>;
+export const FolderInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"folderInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folderInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"fileCount"}},{"kind":"Field","name":{"kind":"Name","value":"folderCount"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allowCreateSubDirs"}},{"kind":"Field","name":{"kind":"Name","value":"allowDelete"}},{"kind":"Field","name":{"kind":"Name","value":"allowDeleteFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowMove"}},{"kind":"Field","name":{"kind":"Name","value":"allowMoveFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowUploads"}}]}},{"kind":"Field","name":{"kind":"Name","value":"protectChildren"}},{"kind":"Field","name":{"kind":"Name","value":"totalSize"}}]}}]}}]} as unknown as DocumentNode<FolderInfoQuery, FolderInfoQueryVariables>;
+export const ListFilesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"listFiles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FilesListInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listFiles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasMore"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DirectoryInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"fileCount"}},{"kind":"Field","name":{"kind":"Name","value":"folderCount"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allowCreateSubDirs"}},{"kind":"Field","name":{"kind":"Name","value":"allowDelete"}},{"kind":"Field","name":{"kind":"Name","value":"allowDeleteFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowMove"}},{"kind":"Field","name":{"kind":"Name","value":"allowMoveFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowUploads"}}]}},{"kind":"Field","name":{"kind":"Name","value":"protectChildren"}},{"kind":"Field","name":{"kind":"Name","value":"totalSize"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FileInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contentType"}},{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"directoryPath"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"md5Hash"}},{"kind":"Field","name":{"kind":"Name","value":"mediaLink"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"created"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]} as unknown as DocumentNode<ListFilesQuery, ListFilesQueryVariables>;
+export const SearchFilesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchFiles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fileType"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"folder"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchFiles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"fileType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fileType"}}},{"kind":"Argument","name":{"kind":"Name","value":"folder"},"value":{"kind":"Variable","name":{"kind":"Name","value":"folder"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"searchTerm"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasMore"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]} as unknown as DocumentNode<SearchFilesQuery, SearchFilesQueryVariables>;
+export const StorageStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"storageStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageStats"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileTypeBreakdown"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalFiles"}},{"kind":"Field","name":{"kind":"Name","value":"directoryCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalSize"}}]}}]}}]} as unknown as DocumentNode<StorageStatsQuery, StorageStatsQueryVariables>;
+export const CopyStorageItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"copyStorageItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StorageItemsCopyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"copyStorageItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"failureCount"}},{"kind":"Field","name":{"kind":"Name","value":"failures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"successCount"}},{"kind":"Field","name":{"kind":"Name","value":"successfulItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]} as unknown as DocumentNode<CopyStorageItemsMutation, CopyStorageItemsMutationVariables>;
+export const CreateFolderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFolder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FolderCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFolder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<CreateFolderMutation, CreateFolderMutationVariables>;
+export const DeleteFileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteFile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<DeleteFileMutation, DeleteFileMutationVariables>;
+export const DeleteStorageItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteStorageItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StorageItemsDeleteInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteStorageItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"failureCount"}},{"kind":"Field","name":{"kind":"Name","value":"failures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"successCount"}},{"kind":"Field","name":{"kind":"Name","value":"successfulItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteStorageItemsMutation, DeleteStorageItemsMutationVariables>;
+export const GenerateUploadSignedUrlDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"generateUploadSignedUrl"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UploadSignedUrlGenerateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generateUploadSignedUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<GenerateUploadSignedUrlMutation, GenerateUploadSignedUrlMutationVariables>;
+export const MoveStorageItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"moveStorageItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StorageItemsMoveInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"moveStorageItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"failureCount"}},{"kind":"Field","name":{"kind":"Name","value":"failures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"successCount"}},{"kind":"Field","name":{"kind":"Name","value":"successfulItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]} as unknown as DocumentNode<MoveStorageItemsMutation, MoveStorageItemsMutationVariables>;
+export const RenameFileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"renameFile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FileRenameInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"renameFile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<RenameFileMutation, RenameFileMutationVariables>;
+export const SetStorageItemProtectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"setStorageItemProtection"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StorageItemProtectionUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setStorageItemProtection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<SetStorageItemProtectionMutation, SetStorageItemProtectionMutationVariables>;
+export const UpdateDirectoryPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateDirectoryPermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DirectoryPermissionsUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDirectoryPermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateDirectoryPermissionsMutation, UpdateDirectoryPermissionsMutationVariables>;
 export const TemplateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"template"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"template"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"preSuspensionCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<TemplateQuery, TemplateQueryVariables>;
 export const TemplatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"templates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"templates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preSuspensionCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"firstItem"}},{"kind":"Field","name":{"kind":"Name","value":"hasMorePages"}},{"kind":"Field","name":{"kind":"Name","value":"lastItem"}},{"kind":"Field","name":{"kind":"Name","value":"lastPage"}},{"kind":"Field","name":{"kind":"Name","value":"perPage"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]}}]} as unknown as DocumentNode<TemplatesQuery, TemplatesQueryVariables>;
 export const TemplatesConfigsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TemplatesConfigs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"templatesConfigs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"configs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<TemplatesConfigsQuery, TemplatesConfigsQueryVariables>;

@@ -34,9 +34,28 @@ export interface FileUsageInfoServerType {
 }
 
 // info from db, and storage service
-export interface DirectoryInfoServerType {
+
+export class StorageObject {
     path: string;
+    name: string;
     isProtected: boolean;
+
+    constructor(path: string, name: string, isProtected: boolean) {
+        this.path = path;
+        this.name = name;
+        this.isProtected = isProtected;
+    }
+}
+
+export interface StorageObjectList {
+    items: Array<FileInfoServerType | DirectoryInfoServerType>;
+    totalCount: number;
+    hasMore: boolean;
+    offset: number;
+    limit: number;
+}
+
+export class DirectoryInfoServerType extends StorageObject {
     permissions: DirectoryPermissionsServerType;
     protectChildren: boolean;
     created: Date;
@@ -45,12 +64,33 @@ export interface DirectoryInfoServerType {
     fileCount: number;
     folderCount: number;
     totalSize: number;
-    name: string;
+
+    constructor(
+        path: string,
+        name: string,
+        isProtected: boolean,
+        permissions: DirectoryPermissionsServerType,
+        protectChildren: boolean,
+        created: Date,
+        lastModified: Date,
+        isFromBucket: boolean,
+        fileCount: number,
+        folderCount: number,
+        totalSize: number,
+    ) {
+        super(path, name, isProtected);
+        this.permissions = permissions;
+        this.protectChildren = protectChildren;
+        this.created = created;
+        this.lastModified = lastModified;
+        this.isFromBucket = isFromBucket;
+        this.fileCount = fileCount;
+        this.folderCount = folderCount;
+        this.totalSize = totalSize;
+    }
 }
 
-export interface FileInfoServerType {
-    path: string;
-    isProtected: boolean;
+export class FileInfoServerType extends StorageObject {
     directoryPath: string;
     size: bigint;
     contentType?: string;
@@ -64,7 +104,40 @@ export interface FileInfoServerType {
     isPublic: boolean;
     isInUse: boolean;
     usages: FileUsageInfoServerType[];
-    name: string;
+
+    constructor(
+        path: string,
+        name: string,
+        isProtected: boolean,
+        directoryPath: string,
+        size: bigint,
+        contentType: string | undefined,
+        md5Hash: string | undefined,
+        created: Date,
+        lastModified: Date,
+        isFromBucket: boolean,
+        url: string,
+        mediaLink: string | undefined,
+        fileType: FileTypeServerType,
+        isPublic: boolean,
+        isInUse: boolean,
+        usages: FileUsageInfoServerType[],
+    ) {
+        super(path, name, isProtected);
+        this.directoryPath = directoryPath;
+        this.size = size;
+        this.contentType = contentType;
+        this.md5Hash = md5Hash;
+        this.created = created;
+        this.lastModified = lastModified;
+        this.isFromBucket = isFromBucket;
+        this.url = url;
+        this.mediaLink = mediaLink;
+        this.fileType = fileType;
+        this.isPublic = isPublic;
+        this.isInUse = isInUse;
+        this.usages = usages;
+    }
 }
 
 export interface BucketFileServerType {
@@ -250,20 +323,6 @@ export interface StorageStats {
         size: bigint;
     }>;
     directoryCount: number;
-}
-
-export interface StorageObjectList {
-    items: Array<FileInfoServerType | DirectoryInfoServerType>;
-    totalCount: number;
-    hasMore: boolean;
-    offset: number;
-    limit: number;
-}
-
-export interface StorageObject {
-    path: string;
-    name: string;
-    isProtected: boolean;
 }
 
 export type BlobMetadata = {

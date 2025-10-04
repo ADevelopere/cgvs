@@ -9,16 +9,9 @@ import React, {
 } from "react";
 import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import useAppTranslation from "@/locale/useAppTranslation";
-import * as Graphql from "@/graphql/generated/types";
-import {
-    StorageQueryParams,
-    StorageItem,
-    PaginationInfo,
-    DirectoryTreeNode,
-    StorageStats,
-    StorageManagementCoreContextType,
-} from "./storage.type";
+import useAppTranslation from "@/client/locale/useAppTranslation";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { DirectoryTreeNode, StorageManagementCoreContextType } from "./storage.type";
 
 const StorageManagementCoreContext = createContext<
     StorageManagementCoreContextType | undefined
@@ -42,7 +35,7 @@ export const StorageManagementCoreProvider: React.FC<{
     const { management: translations } = useAppTranslation(
         "storageTranslations",
     );
-    const [stats, setStats] = useState<StorageStats | null>(null);
+    const [stats, setStats] = useState<Graphql.StorageStats | null>(null);
 
     // Helper function to transform GraphQL DirectoryInfo to DirectoryTreeNode
     const transformDirectoryToTreeNode = useCallback(
@@ -75,13 +68,13 @@ export const StorageManagementCoreProvider: React.FC<{
     // Data Fetching Functions
     const fetchList = useCallback(
         async (
-            params: StorageQueryParams,
+            params: Graphql.FilesListInput,
         ): Promise<{
-            items: StorageItem[];
-            pagination: PaginationInfo;
+            items: Graphql.StorageObject[];
+            pagination: Graphql.PageInfo;
         } | null> => {
             try {
-                const input: Graphql.ListFilesInput = {
+                const input: Graphql.FilesListInput = {
                     path: params.path,
                     limit: params.limit,
                     offset: params.offset,
@@ -95,16 +88,16 @@ export const StorageManagementCoreProvider: React.FC<{
                     return null;
                 }
 
-                const pagination: PaginationInfo = {
-                    hasMore: result.listFiles.hasMore,
-                    limit: result.listFiles.limit,
-                    offset: result.listFiles.offset,
-                    totalCount: result.listFiles.totalCount,
+                const pagination: Graphql.PageInfo = {
+                    hasMorePages: result.listFiles.hasMore,
+                    total: result.listFiles.totalCount,
+                    perPage: result.listFiles.limit,
+                    firstItem: result.listFiles.offset,
                 };
 
                 // Transform StorageEntity[] to StorageItem[]
-                const items: StorageItem[] = result.listFiles
-                    .items as StorageItem[];
+                const items: Graphql.StorageObject[] = result.listFiles
+                    .items as Graphql.StorageObject[];
 
                 return { items, pagination };
             } catch {
@@ -136,7 +129,7 @@ export const StorageManagementCoreProvider: React.FC<{
     );
 
     const fetchStats = useCallback(
-        async (path?: string): Promise<StorageStats | null> => {
+        async (path?: string): Promise<Graphql.StorageStats | null> => {
             try {
                 const result = await storageGraphQL.getStorageStats({ path });
 
@@ -214,14 +207,18 @@ export const StorageManagementCoreProvider: React.FC<{
                 });
 
                 if (result.deleteStorageItems) {
-                    const { successCount, failureCount, errors } =
+                    const { successCount, failureCount, failures } =
                         result.deleteStorageItems;
 
-                    if (failureCount === 0) {
+                    const safeSuccessCount = successCount ?? 0;
+                    const safeFailureCount = failureCount ?? 0;
+                    const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
+
+                    if (safeFailureCount === 0) {
                         showNotification(
                             translations.successfullyDeleted.replace(
                                 "%{count}",
-                                `${successCount} ${successCount === 1 ? translations.item : translations.items}`,
+                                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`,
                             ),
                             "success",
                         );
@@ -231,16 +228,16 @@ export const StorageManagementCoreProvider: React.FC<{
                             translations.deletedPartial
                                 .replace(
                                     "%{successCount}",
-                                    successCount.toString(),
+                                    safeSuccessCount.toString(),
                                 )
                                 .replace(
                                     "%{failureCount}",
-                                    failureCount.toString(),
+                                    safeFailureCount.toString(),
                                 )
-                                .replace("%{errors}", errors.join(", ")),
+                                .replace("%{errors}", errorMessages.join(", ")),
                             "warning",
                         );
-                        return successCount > 0; // Partial success
+                        return safeSuccessCount > 0; // Partial success
                     }
                 } else {
                     showNotification(translations.failedToDeleteItems, "error");
@@ -276,14 +273,18 @@ export const StorageManagementCoreProvider: React.FC<{
                 });
 
                 if (result.moveStorageItems) {
-                    const { successCount, failureCount, errors } =
+                    const { successCount, failureCount, failures } =
                         result.moveStorageItems;
 
-                    if (failureCount === 0) {
+                    const safeSuccessCount = successCount ?? 0;
+                    const safeFailureCount = failureCount ?? 0;
+                    const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
+
+                    if (safeFailureCount === 0) {
                         showNotification(
                             translations.successfullyMoved.replace(
                                 "%{count}",
-                                `${successCount} ${successCount === 1 ? translations.item : translations.items}`,
+                                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`,
                             ),
                             "success",
                         );
@@ -293,16 +294,16 @@ export const StorageManagementCoreProvider: React.FC<{
                             translations.movedPartial
                                 .replace(
                                     "%{successCount}",
-                                    successCount.toString(),
+                                    safeSuccessCount.toString(),
                                 )
                                 .replace(
                                     "%{failureCount}",
-                                    failureCount.toString(),
+                                    safeFailureCount.toString(),
                                 )
-                                .replace("%{errors}", errors.join(", ")),
+                                .replace("%{errors}", errorMessages.join(", ")),
                             "warning",
                         );
-                        return successCount > 0; // Partial success
+                        return safeSuccessCount > 0; // Partial success
                     }
                 } else {
                     showNotification(translations.failedToMoveItems, "error");
@@ -338,14 +339,18 @@ export const StorageManagementCoreProvider: React.FC<{
                 });
 
                 if (result.copyStorageItems) {
-                    const { successCount, failureCount, errors } =
+                    const { successCount, failureCount, failures } =
                         result.copyStorageItems;
 
-                    if (failureCount === 0) {
+                    const safeSuccessCount = successCount ?? 0;
+                    const safeFailureCount = failureCount ?? 0;
+                    const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
+
+                    if (safeFailureCount === 0) {
                         showNotification(
                             translations.successfullyCopied.replace(
                                 "%{count}",
-                                `${successCount} ${successCount === 1 ? translations.item : translations.items}`,
+                                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`,
                             ),
                             "success",
                         );
@@ -355,16 +360,16 @@ export const StorageManagementCoreProvider: React.FC<{
                             translations.copiedPartial
                                 .replace(
                                     "%{successCount}",
-                                    successCount.toString(),
+                                    safeSuccessCount.toString(),
                                 )
                                 .replace(
                                     "%{failureCount}",
-                                    failureCount.toString(),
+                                    safeFailureCount.toString(),
                                 )
-                                .replace("%{errors}", errors.join(", ")),
+                                .replace("%{errors}", errorMessages.join(", ")),
                             "warning",
                         );
-                        return successCount > 0; // Partial success
+                        return safeSuccessCount > 0; // Partial success
                     }
                 } else {
                     showNotification(translations.failedToCopyItems, "error");
@@ -429,7 +434,7 @@ export const StorageManagementCoreProvider: React.FC<{
             query: string,
             path?: string,
         ): Promise<{
-            items: StorageItem[];
+            items: Graphql.StorageObject[];
             totalCount: number;
         } | null> => {
             try {
@@ -444,8 +449,8 @@ export const StorageManagementCoreProvider: React.FC<{
                 }
 
                 // Transform search results to StorageItem[]
-                const items: StorageItem[] = result.searchFiles
-                    .items as StorageItem[];
+                const items: Graphql.StorageObject[] = result.searchFiles
+                    .items as Graphql.StorageObject[];
 
                 return {
                     items,

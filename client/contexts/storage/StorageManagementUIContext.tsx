@@ -10,11 +10,8 @@ import React, {
     useRef,
 } from "react";
 import { useStorageManagementCore } from "./StorageManagementCoreContext";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
-    StorageQueryParams,
-    StorageItem,
-    PaginationInfo,
     DirectoryTreeNode,
     StorageManagementUIContextType,
     ViewMode,
@@ -23,7 +20,7 @@ import {
     OperationErrors,
     QueueStates,
 } from "./storage.type";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 
 const StorageManagementUIContext = createContext<
     StorageManagementUIContextType | undefined
@@ -46,8 +43,8 @@ export const StorageManagementUIProvider: React.FC<{
     const { ui: translations } = useAppTranslation("storageTranslations");
 
     // State Management
-    const [items, setItems] = useState<StorageItem[]>([]);
-    const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+    const [items, setItems] = useState<Graphql.StorageObject[]>([]);
+    const [pagination, setPagination] = useState<Graphql.PageInfo | null>(null);
     const [directoryTree, setDirectoryTree] = useState<DirectoryTreeNode[]>([]);
     const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
     const [prefetchedNodes, setPrefetchedNodes] = useState<Set<string>>(
@@ -55,7 +52,7 @@ export const StorageManagementUIProvider: React.FC<{
     );
 
     // Query Parameters
-    const [queryParams, setQueryParams] = useState<StorageQueryParams>({
+    const [queryParams, setQueryParams] = useState<Graphql.FilesListInput>({
         path: "",
         limit: 50,
         offset: 0,
@@ -71,7 +68,7 @@ export const StorageManagementUIProvider: React.FC<{
     // UI Interaction State
     const [viewMode, setViewMode] = useState<ViewMode>("grid");
     const [searchMode, setSearchMode] = useState<boolean>(false);
-    const [searchResults, setSearchResults] = useState<StorageItem[]>([]);
+    const [searchResults, setSearchResults] = useState<Graphql.StorageObject[]>([]);
     const [clipboard, setClipboard] = useState<Clipboard | null>(null);
 
     // Local UI State
@@ -103,7 +100,7 @@ export const StorageManagementUIProvider: React.FC<{
     // Track if this is the initial mount or subsequent navigation
     const isInitialMount = useRef(true);
     const lastNavigationRequest = useRef<string | null>(null);
-    const prevQueryParams = useRef<StorageQueryParams>(queryParams);
+    const prevQueryParams = useRef<Graphql.FilesListInput>(queryParams);
 
     // Helper function to update loading state
     const updateLoading = useCallback(
@@ -609,7 +606,7 @@ export const StorageManagementUIProvider: React.FC<{
     );
 
     // Parameter Management
-    const setParams = useCallback((partial: Partial<StorageQueryParams>) => {
+    const setParams = useCallback((partial: Partial<Graphql.FilesListInput>) => {
         setQueryParams((prev) => ({ ...prev, ...partial }));
     }, []);
 
@@ -670,7 +667,7 @@ export const StorageManagementUIProvider: React.FC<{
     );
 
     // Local Sorting
-    const getSortedItems = useCallback((): StorageItem[] => {
+    const getSortedItems = useCallback((): Graphql.StorageObject[] => {
         const currentItems = searchMode ? searchResults : items;
 
         return [...currentItems].sort((a, b) => {
@@ -711,11 +708,11 @@ export const StorageManagementUIProvider: React.FC<{
     }, [searchMode, searchResults, items, sortBy, sortDirection]);
 
     // Clipboard Operations
-    const copyItems = useCallback((items: StorageItem[]) => {
+    const copyItems = useCallback((items: Graphql.StorageObject[]) => {
         setClipboard({ operation: "copy", items });
     }, []);
 
-    const cutItems = useCallback((items: StorageItem[]) => {
+    const cutItems = useCallback((items: Graphql.StorageObject[]) => {
         setClipboard({ operation: "cut", items });
     }, []);
 

@@ -43,35 +43,23 @@ export const FileUsageInfoPothosObject = gqlSchemaBuilder
         }),
     });
 
-// Directory info
-export const DirectoryInfoPothosObject = gqlSchemaBuilder
-    .objectRef<StorageTypes.DirectoryInfoServerType>("DirectoryInfo")
+const StorageItemPothosInterface = gqlSchemaBuilder
+    .interfaceRef<StorageTypes.StorageObject>("StorageObject")
     .implement({
         fields: (t) => ({
-            path: t.exposeString("path"),
-            name: t.exposeString("name"),
-            isProtected: t.exposeBoolean("isProtected"),
-            permissions: t.expose("permissions", {
-                type: DirectoryPermissionsPothosObject,
-            }),
-            protectChildren: t.exposeBoolean("protectChildren"),
-            created: t.expose("created", { type: "DateTime" }),
-            lastModified: t.expose("lastModified", { type: "DateTime" }),
-            isFromBucket: t.exposeBoolean("isFromBucket"),
-            fileCount: t.exposeInt("fileCount"),
-            folderCount: t.exposeInt("folderCount"),
-            totalSize: t.exposeInt("totalSize"),
+            path: t.exposeString("path", { nullable: false }),
+            name: t.exposeString("name", { nullable: false }),
+            isProtected: t.exposeBoolean("isProtected", { nullable: false }),
         }),
     });
 
-// File info
-export const FileInfoPothosObject = gqlSchemaBuilder
-    .objectRef<StorageTypes.FileInfoServerType>("FileInfo")
-    .implement({
+export const FileInfoPothosObject = gqlSchemaBuilder.objectType(
+    StorageTypes.FileInfoServerType,
+    {
+        name: "FileInfo",
+        interfaces: [StorageItemPothosInterface],
+        isTypeOf: (item) => item instanceof StorageTypes.FileInfoServerType,
         fields: (t) => ({
-            path: t.exposeString("path"),
-            name: t.exposeString("name"),
-            isProtected: t.exposeBoolean("isProtected"),
             directoryPath: t.exposeString("directoryPath"),
             size: t.field({
                 type: "String",
@@ -89,20 +77,28 @@ export const FileInfoPothosObject = gqlSchemaBuilder
             isInUse: t.exposeBoolean("isInUse"),
             usages: t.expose("usages", { type: [FileUsageInfoPothosObject] }),
         }),
-    });
+    },
+);
 
-// Union type for storage items (file or directory)
-export const StorageItemPothosObject = gqlSchemaBuilder.unionType(
-    "StorageItem",
+export const DirectoryInfoPothosObject = gqlSchemaBuilder.objectType(
+    StorageTypes.DirectoryInfoServerType,
     {
-        types: [FileInfoPothosObject, DirectoryInfoPothosObject],
-        resolveType: (item) => {
-            // If it has 'size' property, it's a file
-            if ("size" in item) {
-                return FileInfoPothosObject;
-            }
-            return DirectoryInfoPothosObject;
-        },
+        name: "DirectoryInfo",
+        interfaces: [StorageItemPothosInterface],
+        isTypeOf: (item) =>
+            item instanceof StorageTypes.DirectoryInfoServerType,
+        fields: (t) => ({
+            permissions: t.expose("permissions", {
+                type: DirectoryPermissionsPothosObject,
+            }),
+            protectChildren: t.exposeBoolean("protectChildren"),
+            created: t.expose("created", { type: "DateTime" }),
+            lastModified: t.expose("lastModified", { type: "DateTime" }),
+            isFromBucket: t.exposeBoolean("isFromBucket"),
+            fileCount: t.exposeInt("fileCount"),
+            folderCount: t.exposeInt("folderCount"),
+            totalSize: t.exposeInt("totalSize"),
+        }),
     },
 );
 
@@ -110,11 +106,11 @@ export const StorageObjectListPothosObject = gqlSchemaBuilder
     .objectRef<StorageTypes.StorageObjectList>("StorageObjectList")
     .implement({
         fields: (t) => ({
-            items: t.expose("items", { type: [StorageItemPothosObject] }),
-            totalCount: t.exposeInt("totalCount"),
-            hasMore: t.exposeBoolean("hasMore"),
-            offset: t.exposeInt("offset"),
-            limit: t.exposeInt("limit"),
+            items: t.expose("items", { type: [StorageItemPothosInterface] }),
+            totalCount: t.exposeInt("totalCount", { nullable: false }),
+            hasMore: t.exposeBoolean("hasMore", { nullable: false }),
+            offset: t.exposeInt("offset", { nullable: false }),
+            limit: t.exposeInt("limit", { nullable: false }),
         }),
     });
 
@@ -211,7 +207,7 @@ export const FileOperationResultPothosObject = gqlSchemaBuilder
             success: t.exposeBoolean("success"),
             message: t.exposeString("message"),
             data: t.field({
-                type: StorageItemPothosObject,
+                type: StorageItemPothosInterface,
                 nullable: true,
                 resolve: (result) => result.data || null,
             }),
@@ -243,7 +239,7 @@ export const BulkOperationResultPothosObject = gqlSchemaBuilder
                 resolve: (result) => result.failures,
             }),
             successfulItems: t.expose("successfulItems", {
-                type: [StorageItemPothosObject],
+                type: [StorageItemPothosInterface],
             }),
         }),
     });

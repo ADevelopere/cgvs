@@ -1,7 +1,6 @@
-import { StorageQueryParams } from "./storage.type";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const STORAGE_DEFAULT_PARAMS: StorageQueryParams = {
+export const STORAGE_DEFAULT_PARAMS: Graphql.FilesListInput = {
     path: "", // Start at the root of the public directory (showing predefined locations)
     limit: 50,
     offset: 0,
@@ -12,14 +11,12 @@ export const mimeToContentType: Record<string, Graphql.ContentType> = {
     "image/png": "PNG",
     "image/gif": "GIF",
     "image/webp": "WEBP",
-    "image/svg+xml": "SVG",
     "application/pdf": "PDF",
-    "application/json": "JSON",
-    "text/plain": "TEXT",
-    "font/otf": "OTF",
-    "font/ttf": "TTF",
-    "font/woff": "WOFF",
-    "font/woff2": "WOFF2",
+    "text/plain": "TXT",
+    // "font/otf": "OTF",
+    // "font/ttf": "TTF",
+    // "font/woff": "WOFF",
+    // "font/woff2": "WOFF2",
 };
 
 export const extToContentType: Record<string, Graphql.ContentType> = {
@@ -29,13 +26,11 @@ export const extToContentType: Record<string, Graphql.ContentType> = {
     png: "PNG",
     gif: "GIF",
     webp: "WEBP",
-    svg: "SVG",
     pdf: "PDF",
-    json: "JSON",
-    txt: "TEXT",
-    text: "TEXT", // Additional text extension
-    otf: "OTF",
-    ttf: "TTF",
-    woff: "WOFF",
-    woff2: "WOFF2",
+    txt: "TXT",
+    text: "TXT", // Additional text extension
+    // otf: "OTF",
+    // ttf: "TTF",
+    // woff: "WOFF",
+    // woff2: "WOFF2",
 };

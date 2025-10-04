@@ -1,4 +1,6 @@
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
+
 import { extToContentType, mimeToContentType } from "./storage.constant";
 
 export const inferContentType = (file: File): Graphql.ContentType => {
@@ -15,7 +17,7 @@ export const inferContentType = (file: File): Graphql.ContentType => {
     }
 
     // Default fallback
-    return "TEXT";
+    return "TXT";
 };
 
 export const getFileKey = (file: File): string =>
@@ -77,30 +79,24 @@ export const getAcceptAttribute = (
             case "GIF":
                 acceptValues.push("image/gif", ".gif");
                 break;
-            case "SVG":
-                acceptValues.push("image/svg+xml", ".svg");
-                break;
             case "PDF":
                 acceptValues.push("application/pdf", ".pdf");
                 break;
-            case "JSON":
-                acceptValues.push("application/json", ".json");
-                break;
-            case "TEXT":
+            case "TXT":
                 acceptValues.push("text/plain", ".txt", ".text");
                 break;
-            case "OTF":
-                acceptValues.push("font/otf", ".otf");
-                break;
-            case "TTF":
-                acceptValues.push("font/ttf", ".ttf");
-                break;
-            case "WOFF":
-                acceptValues.push("font/woff", ".woff");
-                break;
-            case "WOFF2":
-                acceptValues.push("font/woff2", ".woff2");
-                break;
+            // case "OTF":
+            //     acceptValues.push("font/otf", ".otf");
+            //     break;
+            // case "TTF":
+            //     acceptValues.push("font/ttf", ".ttf");
+            //     break;
+            // case "WOFF":
+            //     acceptValues.push("font/woff", ".woff");
+            //     break;
+            // case "WOFF2":
+            //     acceptValues.push("font/woff2", ".woff2");
+            //     break;
             default: {
                 // Fallback to generic mapping
                 const mimeTypes = contentTypesToMimeTypes([contentType]);

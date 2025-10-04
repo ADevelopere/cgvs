@@ -1,22 +1,4 @@
-export type StorageQueryParams = {
-    path: string; // This will be relative to 'public/' (e.g., "templateCover" instead of "public/templateCover")
-    limit: number;
-    offset: number;
-    searchTerm?: string;
-    fileType?: Graphql.FileType;
-    sortField?: Graphql.FileSortField;
-};
-
-// Union type for storage items (files and folders)
-export type StorageItem = Graphql.FileInfo | Graphql.DirectoryInfo;
-
-// Pagination information
-export type PaginationInfo = {
-    hasMore: boolean;
-    limit: number;
-    offset: number;
-    totalCount: number;
-};
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Directory tree node for lazy loading
 export type DirectoryTreeNode = {
@@ -36,9 +18,10 @@ export type StorageManagementCoreContextType = {
     stats: Graphql.StorageStats | null;
 
     // Data Fetching
-    fetchList: (
-        params: StorageQueryParams,
-    ) => Promise<{ items: StorageItem[]; pagination: PaginationInfo } | null>;
+    fetchList: (params: Graphql.FilesListInput) => Promise<{
+        items: Graphql.StorageObject[];
+        pagination: Graphql.PageInfo;
+    } | null>;
     fetchDirectoryChildren: (
         path?: string,
     ) => Promise<DirectoryTreeNode[] | null>;
@@ -55,7 +38,7 @@ export type StorageManagementCoreContextType = {
     search: (
         query: string,
         path?: string,
-    ) => Promise<{ items: StorageItem[]; totalCount: number } | null>;
+    ) => Promise<{ items: Graphql.StorageObject[]; totalCount: number } | null>;
 };
 
 // UI context types for the StorageManagementUIContext
@@ -64,7 +47,7 @@ export type ClipboardOperation = "copy" | "cut";
 
 export type Clipboard = {
     operation: ClipboardOperation;
-    items: StorageItem[];
+    items: Graphql.StorageObject[];
 };
 
 export type LoadingStates = {
@@ -97,14 +80,14 @@ export type OperationErrors = {
 
 export type StorageManagementUIContextType = {
     // Data State
-    items: StorageItem[];
-    pagination: PaginationInfo | null;
+    items: Graphql.StorageObject[];
+    pagination: Graphql.PageInfo | null;
     directoryTree: DirectoryTreeNode[];
     expandedNodes: Set<string>;
     prefetchedNodes: Set<string>;
 
     // Query Parameters
-    params: StorageQueryParams;
+    params: Graphql.FilesListInput;
 
     // Selection State
     selectedItems: string[];
@@ -114,7 +97,7 @@ export type StorageManagementUIContextType = {
     // UI Interaction State
     viewMode: ViewMode;
     searchMode: boolean;
-    searchResults: StorageItem[];
+    searchResults: Graphql.StorageObject[];
     clipboard: Clipboard | null;
 
     // Local UI State
@@ -132,7 +115,10 @@ export type StorageManagementUIContextType = {
     refresh: () => Promise<void>;
     expandDirectoryNode: (path: string) => void;
     collapseDirectoryNode: (path: string) => void;
-    prefetchDirectoryChildren: (path: string, refresh?: boolean) => Promise<void>;
+    prefetchDirectoryChildren: (
+        path: string,
+        refresh?: boolean,
+    ) => Promise<void>;
 
     // Selection Management
     toggleSelect: (path: string) => void;
@@ -141,7 +127,7 @@ export type StorageManagementUIContextType = {
     selectRange: (fromPath: string, toPath: string) => void;
 
     // Parameter Management
-    setParams: (partial: Partial<StorageQueryParams>) => void;
+    setParams: (partial: Partial<Graphql.FilesListInput>) => void;
     search: (term: string) => Promise<void>;
     setFilterType: (type?: Graphql.FileType) => void;
     setSortField: (field?: Graphql.FileSortField) => void;
@@ -151,11 +137,11 @@ export type StorageManagementUIContextType = {
     // Local Sorting
     setSortBy: (field: string) => void;
     setSortDirection: (direction: Graphql.SortDirection) => void;
-    getSortedItems: () => StorageItem[];
+    getSortedItems: () => Graphql.StorageObject[];
 
     // Clipboard Operations
-    copyItems: (items: StorageItem[]) => void;
-    cutItems: (items: StorageItem[]) => void;
+    copyItems: (items: Graphql.StorageObject[]) => void;
+    cutItems: (items: Graphql.StorageObject[]) => void;
     pasteItems: () => Promise<boolean>;
 
     // File Operations (UI Layer)
