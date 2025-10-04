@@ -2,8 +2,8 @@ import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { StorageItem as StorageItemType } from "@/client/contexts/storage/storage.type";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
+import { StorageItem as StorageItemType } from "@/client/contexts/storage/storage.type";
 interface StorageItemProps {
     item: StorageItemType;
 }

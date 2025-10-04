@@ -14,7 +14,7 @@ import type {
     NumberTemplateVariable,
 } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { isNumberVariableDifferent } from "@/utils/templateVariable/templateVariable";
 
 type NumberTemplateVariableFormProps = {

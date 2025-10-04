@@ -12,7 +12,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import FolderIcon from "@mui/icons-material/Folder";
 import Typography from "@mui/material/Typography";
 import { useDebouncedCallback } from "use-debounce";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import Button from "@mui/material/Button";
 import RefreshIcon from "@mui/icons-material/Refresh";
 

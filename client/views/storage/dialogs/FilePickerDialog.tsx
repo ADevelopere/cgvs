@@ -33,10 +33,10 @@ import {
 } from "@/client/contexts/storage/StorageManagementCoreContext";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
-import useAppTranslation from "@/locale/useAppTranslation";
-import { FileInfo } from "@/graphql/generated/types";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { StorageItem as StorageItemType } from "@/client/contexts/storage/storage.type";
 import { StorageGraphQLProvider } from "@/client/contexts/storage/StorageGraphQLContext";
+import { FileInfo } from "@/client/graphql/generated/gql/graphql";
 
 export interface FilePickerDialogProps {
     open: boolean;

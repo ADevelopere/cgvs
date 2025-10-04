@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo } from "react";
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
     TextTemplateVariableGraphQLProvider,
     useTextTemplateVariableGraphQL,

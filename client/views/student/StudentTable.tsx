@@ -3,7 +3,7 @@
 import type React from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import { People } from "@mui/icons-material";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { useStudentManagement } from "@/client/contexts/student/StudentManagementContext";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { useEffect, useMemo, useRef, useState } from "react";

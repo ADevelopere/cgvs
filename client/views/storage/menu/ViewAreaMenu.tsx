@@ -19,7 +19,7 @@ import {
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
 import { useStorageManagementCore } from "@/client/contexts/storage/StorageManagementCoreContext";
 import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import logger from "@/utils/logger";
 
 export interface ViewAreaMenuProps {

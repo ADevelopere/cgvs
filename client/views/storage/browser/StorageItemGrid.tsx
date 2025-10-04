@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
-import FilePreview from './FilePreview';
-import { StorageItem } from '@/client/contexts/storage/storage.type';
-import FileMenu from '../menu/FileMenu';
-import FolderMenu from '../menu/FolderMenu';
-import * as Graphql from '@/graphql/generated/types';
-import { useStorageManagementUI } from '@/client/contexts/storage/StorageManagementUIContext';
+import React, { useState } from "react";
+import { Card, CardContent, Typography, Box } from "@mui/material";
+import FilePreview from "./FilePreview";
+import FileMenu from "../menu/FileMenu";
+import FolderMenu from "../menu/FolderMenu";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
+import { StorageItem } from "@/client/contexts/storage/storage.type";
 
 interface StorageItemGridProps {
-    item: StorageItem;
+        item: StorageItem;
     isSelected: boolean;
     isCut: boolean;
     onClick?: (event: React.MouseEvent) => void;
@@ -16,10 +16,11 @@ interface StorageItemGridProps {
     onContextMenu?: (event: React.MouseEvent) => void;
 }
 
-function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
+function isDirectoryItem(
+    item: StorageItem,
+): item is Graphql.DirectoryInfo {
     return item.__typename === "DirectoryInfo";
 }
-
 
 /**
  * Renders a single "card" in the grid view using Material-UI Card components.
@@ -34,14 +35,17 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     onContextMenu,
 }) => {
     const isDirectory = React.useMemo(() => isDirectoryItem(item), [item]);
-    
-    const [contextMenuPosition, setContextMenuPosition] = useState<{
-        top: number;
-        left: number;
-    } | undefined>(undefined);
+
+    const [contextMenuPosition, setContextMenuPosition] = useState<
+        | {
+              top: number;
+              left: number;
+          }
+        | undefined
+    >(undefined);
     const [contextMenuOpen, setContextMenuOpen] = useState(false);
     const { focusedItem } = useStorageManagementUI();
-    
+
     const isFocused = focusedItem === item.path;
 
     // Global context menu management to close this menu when others open
@@ -52,10 +56,13 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
         };
 
         // Listen for context menu events globally
-        document.addEventListener('contextmenu', handleGlobalContextMenu);
-        
+        document.addEventListener("contextmenu", handleGlobalContextMenu);
+
         return () => {
-            document.removeEventListener('contextmenu', handleGlobalContextMenu);
+            document.removeEventListener(
+                "contextmenu",
+                handleGlobalContextMenu,
+            );
         };
     }, []);
 
@@ -63,9 +70,9 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
         event.stopPropagation(); // Prevent view area context menu from opening
-        
+
         handleCloseContextMenu();
-        
+
         // Small delay to ensure previous menu is closed
         setTimeout(() => {
             setContextMenuPosition({
@@ -74,7 +81,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
             });
             setContextMenuOpen(true);
         }, 0);
-        
+
         // Call the parent's context menu handler if provided
         if (onContextMenu) {
             onContextMenu(event);
@@ -95,25 +102,29 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
                 data-storage-item="true"
                 className="storage-item"
                 sx={{
-                    cursor: 'pointer',
-                    backgroundColor: isSelected ? 'action.selected' : 'background.paper',
-                    transition: 'all 0.2s ease-in-out',
+                    cursor: "pointer",
+                    backgroundColor: isSelected
+                        ? "action.selected"
+                        : "background.paper",
+                    transition: "all 0.2s ease-in-out",
                     opacity: isCut ? 0.5 : 1,
-                    '&:hover': {
-                        backgroundColor: isSelected ? 'action.selected' : 'action.hover',
-                        transform: 'translateY(-2px)',
+                    "&:hover": {
+                        backgroundColor: isSelected
+                            ? "action.selected"
+                            : "action.hover",
+                        transform: "translateY(-2px)",
                         boxShadow: 2,
                     },
                     border: isSelected ? 1 : 0,
-                    borderColor: isSelected ? 'primary.main' : 'transparent',
+                    borderColor: isSelected ? "primary.main" : "transparent",
                     height: 200,
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: "flex",
+                    flexDirection: "column",
                     // Add focus indicator
                     ...(isFocused && {
-                        outline: '2px solid',
-                        outlineColor: 'primary.main',
-                        outlineOffset: '2px',
+                        outline: "2px solid",
+                        outlineColor: "primary.main",
+                        outlineOffset: "2px",
                     }),
                 }}
             >
@@ -123,15 +134,15 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
                 </Box>
 
                 {/* Content Area */}
-                <CardContent 
-                    sx={{ 
-                        pt: 0, 
-                        pb: 1, 
+                <CardContent
+                    sx={{
+                        pt: 0,
+                        pb: 1,
                         px: 1,
                         flexGrow: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        '&:last-child': {
+                        display: "flex",
+                        alignItems: "center",
+                        "&:last-child": {
                             pb: 1,
                         },
                     }}
@@ -141,15 +152,15 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
                         component="div"
                         sx={{
                             fontWeight: isDirectory ? 500 : 400,
-                            textAlign: 'center',
-                            wordBreak: 'break-word',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            display: '-webkit-box',
+                            textAlign: "center",
+                            wordBreak: "break-word",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            display: "-webkit-box",
                             WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
+                            WebkitBoxOrient: "vertical",
                             lineHeight: 1.3,
-                            width: '100%',
+                            width: "100%",
                         }}
                         title={item.name}
                     >

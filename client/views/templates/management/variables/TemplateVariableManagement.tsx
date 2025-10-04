@@ -27,7 +27,7 @@ import type {
     TemplateVariableType,
 } from "@/graphql/generated/types";
 import TemplateVariableModal from "./TemplateVariableModal";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import TemplateVariableTranslation from "@/locale/components/TemplateVariable";
 
 interface ContentProps {

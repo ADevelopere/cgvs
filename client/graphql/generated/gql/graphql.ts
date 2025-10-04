@@ -107,8 +107,8 @@ export type FileInfo = StorageObject & {
   mediaLink?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
-  size?: Maybe<Scalars['String']['output']>;
-  url?: Maybe<Scalars['String']['output']>;
+  size: Scalars['Int']['output'];
+  url: Scalars['String']['output'];
   usages?: Maybe<Array<FileUsageInfo>>;
 };
 
@@ -603,7 +603,7 @@ export type FileInfoQueryVariables = Exact<{
 }>;
 
 
-export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size?: string | null, url?: string | null, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null } | null };
+export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, created?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null } | null };
 
 export type FileUsageQueryVariables = Exact<{
   input: FileUsageCheckInput;
@@ -626,7 +626,7 @@ export type ListFilesQueryVariables = Exact<{
 
 export type ListFilesQuery = { __typename?: 'Query', listFiles?: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items?: Array<
       | { __typename?: 'DirectoryInfo', created?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }
-      | { __typename?: 'FileInfo', contentType?: string | null, created?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size?: string | null, url?: string | null, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
+      | { __typename?: 'FileInfo', contentType?: string | null, created?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', created?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
     > | null } | null };
 
 export type SearchFilesQueryVariables = Exact<{

@@ -1,6 +1,6 @@
 "use client";
 
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
     createContext,
     useCallback,

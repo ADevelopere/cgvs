@@ -22,7 +22,7 @@ import { useStudentFilter } from "@/client/contexts/student/StudentFilterContext
 import { TextFilterOperation } from "@/types/filters";
 import { useStudentTableManagement } from "@/client/contexts/student/StudentTableManagementContext";
 import { CreateStudentInput } from "@/graphql/generated/types";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import {
     TextFieldComponent,
     DateFieldComponent,

@@ -12,7 +12,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
 import type { CreateDateTemplateVariableInput, DateTemplateVariable } from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { mapToCreateDateTemplateVariableInput } from "@/utils/templateVariable/date-template-variable-mappers";
 import { isDateVariableDifferent } from "@/utils/templateVariable/templateVariable";
 

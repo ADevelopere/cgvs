@@ -18,7 +18,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { TemplateVariableType } from "@/graphql/generated/types";
 import SelectTemplateVariableForm from "./forms/SelectTemplateVariableForm";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 
 interface TemplateVariableModalProps {
     open: boolean;
