@@ -257,3 +257,48 @@ export const createDirectoryFromPath = (
         name: extractFileName(path),
     };
 };
+
+export const sortItems = (
+    items: Array<
+        StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
+    >,
+    sortBy: StorageTypes.FileSortFieldServerType,
+    direction: StorageTypes.SortDirectionServerType,
+): Array<
+    StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
+> => {
+    const sorted = [...items].sort((a, b) => {
+        let comparison = 0;
+
+        switch (sortBy) {
+            case StorageTypes.FileSortFieldServerType.NAME:
+                comparison = a.name.localeCompare(b.name);
+                break;
+            case StorageTypes.FileSortFieldServerType.SIZE: {
+                const sizeA = "size" in a ? Number(a.size) : 0;
+                const sizeB = "size" in b ? Number(b.size) : 0;
+                comparison = sizeA - sizeB;
+                break;
+            }
+            case StorageTypes.FileSortFieldServerType.TYPE: {
+                const typeA = "fileType" in a ? a.fileType : "DIRECTORY";
+                const typeB = "fileType" in b ? b.fileType : "DIRECTORY";
+                comparison = typeA.localeCompare(typeB);
+                break;
+            }
+            case StorageTypes.FileSortFieldServerType.CREATED:
+                comparison = a.created.getTime() - b.created.getTime();
+                break;
+            case StorageTypes.FileSortFieldServerType.MODIFIED:
+                comparison =
+                    a.lastModified.getTime() - b.lastModified.getTime();
+                break;
+        }
+
+        return direction === StorageTypes.SortDirectionServerType.ASC
+            ? comparison
+            : -comparison;
+    });
+
+    return sorted;
+};
