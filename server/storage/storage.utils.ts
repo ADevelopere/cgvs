@@ -1,5 +1,6 @@
 import { STORAGE_CONFIG } from "./disk/storage.service.interface";
 import * as StorageTypes from "../storage/storage.types";
+import { SortDirectionServerType } from "../graphql/base/sort.pothos";
 
 const PATH_PATTERN = /^[a-zA-Z0-9._/\- ()]+$/;
 export const validatePath = (path: string): Promise<string | null> => {
@@ -263,7 +264,7 @@ export const sortItems = (
         StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
     >,
     sortBy: StorageTypes.FileSortFieldServerType,
-    direction: StorageTypes.SortDirectionServerType,
+    direction: SortDirectionServerType,
 ): Array<
     StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
 > => {
@@ -295,7 +296,7 @@ export const sortItems = (
                 break;
         }
 
-        return direction === StorageTypes.SortDirectionServerType.ASC
+        return direction === SortDirectionServerType.ASC
             ? comparison
             : -comparison;
     });

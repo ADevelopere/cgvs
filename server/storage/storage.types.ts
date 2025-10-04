@@ -3,6 +3,7 @@ import {
     fileUsages,
     storageDirectories,
 } from "@/server/db/schema/storage";
+import { SortDirectionServerType } from "../graphql/base/sort.pothos";
 
 // Type aliases to match Kotlin entities
 export type FileEntity = typeof storageFiles.$inferSelect;
@@ -104,11 +105,6 @@ export enum FileSortFieldServerType {
     MODIFIED = "MODIFIED",
 }
 
-export enum SortDirectionServerType {
-    ASC = "ASC",
-    DESC = "DESC",
-}
-
 export enum ContentTypeServerType {
     JPEG = "image/jpeg",
     PNG = "image/png",
@@ -198,13 +194,13 @@ export interface FileRenameInput {
 }
 
 export interface FilesListInput {
-    path?: string;
-    limit?: number;
-    offset?: number;
-    searchTerm?: string;
-    fileType?: string;
-    sortBy?: FileSortFieldServerType;
-    sortDirection?: SortDirectionServerType;
+    path: string;
+    limit?: number | null;
+    offset?: number | null;
+    searchTerm?: string | null;
+    fileType?: string | null;
+    sortBy?: FileSortFieldServerType | null;
+    sortDirection?: SortDirectionServerType | null;
 }
 
 export interface UploadSignedUrlGenerateInput {
