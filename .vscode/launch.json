@@ -5,13 +5,16 @@
       "type": "node",
       "request": "launch",
       "name": "Next.js: Debug",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "debug"],
       "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
       "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/.next/**/*.js"]
+      "outFiles": ["${workspaceFolder}/.next/**/*.js"],
+      "env": {
+        "NODE_OPTIONS": "--inspect=9229"
+      }
     },
     {
       "type": "chrome",
