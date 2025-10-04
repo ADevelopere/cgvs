@@ -26,10 +26,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                 return;
             }
 
-            if (requireAdmin && user && !user.isAdmin) {
-                router.push("/unauthorized");
-                return;
-            }
+            // todo: Uncomment this when we have user roles
+            // if (requireAdmin && user && !user.isAdmin) {
+            //     router.push("/unauthorized");
+            //     return;
+            // }
         }
     }, [isAuthenticated, user, isLoading, requireAdmin, router, redirectTo]);
 
@@ -55,9 +56,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         return null; // Will redirect in useEffect
     }
 
-    if (requireAdmin && user && !user.isAdmin) {
-        return null; // Will redirect in useEffect
-    }
+    // todo: Uncomment this when we have user roles
+    // if (requireAdmin && user && !user.isAdmin) {
+    //     return null; // Will redirect in useEffect
+    // }
 
     return <>{children}</>;
 };
