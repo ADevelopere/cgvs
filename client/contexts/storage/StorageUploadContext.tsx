@@ -12,8 +12,8 @@ import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { inferContentType, getFileKey } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
-import * as Graphql from "@/graphql/generated/types";
-import useAppTranslation from "@/locale/useAppTranslation";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import logger from "@/utils/logger";
 
 export type UploadFileState = {

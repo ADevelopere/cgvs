@@ -1,3 +1,35 @@
+type BulkOperationFailure {
+  error: String
+  path: String
+}
+
+type BulkOperationResult {
+  failureCount: Int
+  failures: [BulkOperationFailure!]
+  message: String
+  success: Boolean
+  successCount: Int
+  successfulItems: [StorageObject!]
+}
+
+enum ContentType {
+  DOC
+  DOCX
+  GIF
+  JPEG
+  MP3
+  MP4
+  PDF
+  PNG
+  RAR
+  TXT
+  WAV
+  WEBP
+  XLS
+  XLSX
+  ZIP
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -7,6 +39,133 @@ scalar Date
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+type DirectoryInfo implements StorageObject {
+  created: DateTime
+  fileCount: Int
+  folderCount: Int
+  isFromBucket: Boolean
+  isProtected: Boolean!
+  lastModified: DateTime
+  name: String!
+  path: String!
+  permissions: DirectoryPermissions
+  protectChildren: Boolean
+  totalSize: Int
+}
+
+type DirectoryPermissions {
+  allowCreateSubDirs: Boolean
+  allowDelete: Boolean
+  allowDeleteFiles: Boolean
+  allowMove: Boolean
+  allowMoveFiles: Boolean
+  allowUploads: Boolean
+}
+
+input DirectoryPermissionsInput {
+  allowCreateSubDirs: Boolean!
+  allowDelete: Boolean!
+  allowDeleteFiles: Boolean!
+  allowMove: Boolean!
+  allowMoveFiles: Boolean!
+  allowUploads: Boolean!
+}
+
+input DirectoryPermissionsUpdateInput {
+  path: String!
+  permissions: DirectoryPermissionsInput!
+}
+
+type FileInfo implements StorageObject {
+  contentType: String
+  created: DateTime
+  directoryPath: String
+  fileType: FileType
+  isFromBucket: Boolean
+  isInUse: Boolean
+  isProtected: Boolean!
+  isPublic: Boolean
+  lastModified: DateTime
+  md5Hash: String
+  mediaLink: String
+  name: String!
+  path: String!
+  size: String
+  url: String
+  usages: [FileUsageInfo!]
+}
+
+type FileOperationResult {
+  data: StorageObject
+  message: String
+  success: Boolean
+}
+
+input FileRenameInput {
+  currentPath: String!
+  newName: String!
+}
+
+enum FileSortField {
+  CREATED
+  MODIFIED
+  NAME
+  SIZE
+  TYPE
+}
+
+enum FileType {
+  ARCHIVE
+  AUDIO
+  DOCUMENT
+  IMAGE
+  OTHER
+  VIDEO
+}
+
+type FileTypeBreakdown {
+  count: Int
+  size: String
+  type: FileType
+}
+
+input FileUsageCheckInput {
+  path: String!
+}
+
+type FileUsageInfo {
+  created: DateTime
+  filePath: String
+  id: String
+  referenceId: String
+  referenceTable: String
+  usageType: String
+}
+
+type FileUsageResult {
+  canDelete: Boolean
+  deleteBlockReason: String
+  isInUse: Boolean
+  usages: [FileUsageInfo!]
+}
+
+input FilesListInput {
+  fileType: String
+  limit: Int
+  offset: Int
+  path: String!
+  searchTerm: String
+  sortBy: FileSortField
+  sortDirection: SortDirection
+}
+
+input FolderCreateInput {
+  path: String!
+  permissions: DirectoryPermissionsInput
+  protectChildren: Boolean
+  protected: Boolean
+}
 
 input LoginInput {
   email: String!
@@ -20,15 +179,24 @@ type LoginResponse {
 }
 
 type Mutation {
+  copyStorageItems(input: StorageItemsCopyInput!): BulkOperationResult
+  createFolder(input: FolderCreateInput!): FileOperationResult
   createTemplate(input: TemplateCreateInput!): Template
   createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory
+  deleteFile(path: String!): FileOperationResult
+  deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory
+  generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
   login(input: LoginInput!): LoginResponse
   logout: Boolean
+  moveStorageItems(input: StorageItemsMoveInput!): BulkOperationResult
   refreshToken: RefreshTokenResponse
+  renameFile(input: FileRenameInput!): FileOperationResult
+  setStorageItemProtection(input: StorageItemProtectionUpdateInput!): FileOperationResult
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
+  updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory
 }
@@ -58,8 +226,35 @@ input PaginationArgs {
 }
 
 type Query {
+  directoryChildren(
+    """Parent directory path (empty or null for root level)"""
+    path: String
+  ): [DirectoryInfo!]
+  fileInfo(path: String!): FileInfo
+  fileUsage(input: FileUsageCheckInput!): FileUsageResult
+  folderInfo(path: String!): DirectoryInfo
+  listFiles(input: FilesListInput!): StorageObjectList
   mainTemplateCategory: TemplateCategory
   me: User
+  searchFiles(
+    """File type filter (optional)"""
+    fileType: String
+
+    """
+    Folder to search in (optional, searches entire bucket if not specified)
+    """
+    folder: String
+
+    """Maximum number of results"""
+    limit: Int = 50
+    searchTerm: String!
+  ): StorageObjectList
+  storageStats(
+    """
+    Folder path to get stats for (optional, gets stats for entire bucket if not specified)
+    """
+    path: String
+  ): StorageStats
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]
@@ -73,6 +268,53 @@ type Query {
 type RefreshTokenResponse {
   token: String
   user: User
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+input StorageItemProtectionUpdateInput {
+  isProtected: Boolean!
+  path: String!
+  protectChildren: Boolean
+}
+
+input StorageItemsCopyInput {
+  destinationPath: String!
+  sourcePaths: [String!]!
+}
+
+input StorageItemsDeleteInput {
+  force: Boolean
+  paths: [String!]!
+}
+
+input StorageItemsMoveInput {
+  destinationPath: String!
+  sourcePaths: [String!]!
+}
+
+interface StorageObject {
+  isProtected: Boolean!
+  name: String!
+  path: String!
+}
+
+type StorageObjectList {
+  hasMore: Boolean!
+  items: [StorageObject!]
+  limit: Int!
+  offset: Int!
+  totalCount: Int!
+}
+
+type StorageStats {
+  directoryCount: Int
+  fileTypeBreakdown: [FileTypeBreakdown!]
+  totalFiles: Int
+  totalSize: String
 }
 
 type Template {
@@ -137,6 +379,17 @@ input UpdateTemplateInput {
   description: String
   id: Int!
   name: String!
+}
+
+enum UploadLocationPath {
+  TEMPLATE_COVERS
+}
+
+input UploadSignedUrlGenerateInput {
+  contentMd5: String!
+  contentType: ContentType!
+  fileSize: Int!
+  path: String!
 }
 
 type User {

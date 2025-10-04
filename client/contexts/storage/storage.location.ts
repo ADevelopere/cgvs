@@ -1,4 +1,5 @@
-import * as Graphql from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
 import { mimeToContentType } from "./storage.constant";
 
 // Define location metadata for frontend usage

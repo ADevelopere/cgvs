@@ -1,10 +1,10 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useMemo } from "react";
-import * as Graphql from "@/graphql/generated/types";
-import { ApolloClient, ErrorLike, OperationVariables } from "@apollo/client";
-import * as ApolloReact from "@apollo/client/react";
-import logger from "@/utils/logger";
+import React, { createContext, useContext, useMemo } from "react";
+import { useMutation, useLazyQuery } from "@apollo/client/react";
+import * as Document from "@/client/graphql/documents";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { useQueryWrapper, useMutationWrapper } from "@/client/graphql/utils";
 
 type StorageGraphQLContextType = {
     // Queries
@@ -74,89 +74,60 @@ export const useStorageGraphQL = () => {
     return context;
 };
 
-function useQueryWrapper<T, V extends OperationVariables>(
-    useLazyQueryHook: (
-        baseOptions?: ApolloReact.useLazyQuery.Options<T, V>,
-    ) => ApolloReact.useLazyQuery.ResultTuple<T, V>,
-) {
-    const [execute] = useLazyQueryHook({ fetchPolicy: "network-only" });
-    return useCallback(
-        async (variables: V) => {
-            const result = await execute({ variables }).catch((err) => {
-                logger.warn("Error executing query:", err);
-                throw err;
-            });
-            if (result.error) {
-                logger.warn("Error executing query:", result.error);
-                throw result.error;
-            }
-            if (!result.data) {
-                throw new Error("No data returned from query");
-            }
-            return result.data;
-        },
-        [execute],
-    );
-}
-
-function useMutationWrapper<T, V extends OperationVariables>(
-    useMutationHook: (
-        baseOptions?: ApolloReact.useMutation.Options<T, V>,
-    ) => ApolloReact.useMutation.ResultTuple<T, V>,
-) {
-    const [mutate] = useMutationHook();
-    return useCallback(
-        async (variables: V) => {
-            const result: ApolloClient.MutateResult<T> = await mutate({
-                variables,
-            });
-            const error: ErrorLike | undefined = result.error;
-            if (error) {
-                logger.warn("Error executing mutation:", error);
-                throw new Error(error.message);
-            }
-            if (!result.data) {
-                throw new Error("No data returned from mutation");
-            }
-            return result.data;
-        },
-        [mutate],
-    );
-}
-
 export const StorageGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const checkFileUsage = useQueryWrapper(Graphql.useFileUsageLazyQuery);
-    const fetchDirectoryChildren = useQueryWrapper(
-        Graphql.useDirectoryChildrenLazyQuery,
+    const checkFileUsage = useQueryWrapper(
+        useLazyQuery(Document.fileUsageQueryDocument, { fetchPolicy: "network-only" }),
     );
-    const getFileInfo = useQueryWrapper(Graphql.useFileInfoLazyQuery);
-    const getFolderInfo = useQueryWrapper(Graphql.useFolderInfoLazyQuery);
-    const getStorageStats = useQueryWrapper(Graphql.useStorageStatsLazyQuery);
-    const listFiles = useQueryWrapper(Graphql.useListFilesLazyQuery);
-    const searchFiles = useQueryWrapper(Graphql.useSearchFilesLazyQuery);
+
+    const fetchDirectoryChildren = useQueryWrapper(
+        useLazyQuery(Document.directoryChildrenQueryDocument, { fetchPolicy: "network-only" }),
+    );
+
+    const getFileInfo = useQueryWrapper(
+        useLazyQuery(Document.fileInfoQueryDocument, { fetchPolicy: "network-only" }),
+    );
+
+    const getFolderInfo = useQueryWrapper(
+        useLazyQuery(Document.folderInfoQueryDocument, { fetchPolicy: "network-only" }),
+    );
+    const getStorageStats = useQueryWrapper(
+        useLazyQuery(Document.storageStatsQueryDocument, { fetchPolicy: "network-only" }),
+    );
+    const listFiles = useQueryWrapper(
+        useLazyQuery(Document.listFilesQueryDocument, { fetchPolicy: "network-only" }),
+    );
+    const searchFiles = useQueryWrapper(
+        useLazyQuery(Document.searchFilesQueryDocument, { fetchPolicy: "network-only" }),
+    );
 
     const copyStorageItems = useMutationWrapper(
-        Graphql.useCopyStorageItemsMutation,
+        useMutation(Document.copyStorageItemsMutationDocument),
     );
-    const createFolder = useMutationWrapper(Graphql.useCreateFolderMutation);
-    const deleteFile = useMutationWrapper(Graphql.useDeleteFileMutation);
+    const createFolder = useMutationWrapper(
+        useMutation(Document.createFolderMutationDocument),
+    );
+    const deleteFile = useMutationWrapper(
+        useMutation(Document.deleteFileMutationDocument),
+    );
     const deleteStorageItems = useMutationWrapper(
-        Graphql.useDeleteStorageItemsMutation,
+        useMutation(Document.deleteStorageItemsMutationDocument),
     );
     const generateUploadSignedUrl = useMutationWrapper(
-        Graphql.useGenerateUploadSignedUrlMutation,
+        useMutation(Document.generateUploadSignedUrlMutationDocument),
     );
     const moveStorageItems = useMutationWrapper(
-        Graphql.useMoveStorageItemsMutation,
+        useMutation(Document.moveStorageItemsMutationDocument),
     );
-    const renameFile = useMutationWrapper(Graphql.useRenameFileMutation);
+    const renameFile = useMutationWrapper(
+        useMutation(Document.renameFileMutationDocument),
+    );
     const setStorageItemProtection = useMutationWrapper(
-        Graphql.useSetStorageItemProtectionMutation,
+        useMutation(Document.setStorageItemProtectionMutationDocument),
     );
     const updateDirectoryPermissions = useMutationWrapper(
-        Graphql.useUpdateDirectoryPermissionsMutation,
+        useMutation(Document.updateDirectoryPermissionsMutationDocument),
     );
 
     const contextValue: StorageGraphQLContextType = useMemo(
