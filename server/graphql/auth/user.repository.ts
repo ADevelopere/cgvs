@@ -1,14 +1,14 @@
 import { db } from "@/server/db/drizzleDb";
 import { users } from "@/server/db/schema";
 import { count, eq, inArray } from "drizzle-orm";
-import { UserSelectType, PaginatedUsersResponseSelectType } from "./auth.types";
+import { UserEntity, PaginatedUsersResponseSelectType } from "./auth.types";
 import logger from "@/utils/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
 
 export const findUserByIdOrThrow = async (
     id: number,
-): Promise<UserSelectType> => {
+): Promise<UserEntity> => {
     try {
         return await db
             .select()
@@ -29,7 +29,7 @@ export const findUserByIdOrThrow = async (
 
 export const findUserById = async (
     id: number,
-): Promise<UserSelectType | null> => {
+): Promise<UserEntity | null> => {
     try {
         return await db
             .select()
@@ -43,19 +43,35 @@ export const findUserById = async (
     }
 };
 
+export const findUserByEmail = async (
+    email: string,
+): Promise<UserEntity | null> => {
+    try {
+        return await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))
+            .then((res) => {
+                return res[0];
+            });
+    } catch {
+        return null;
+    }
+};
+
 export const usersTotalCount = async (): Promise<number> => {
     const [{ total }] = await db.select({ total: count() }).from(users);
     return total;
 };
 
-export const findAllUsers = async (): Promise<UserSelectType[]> => {
+export const findAllUsers = async (): Promise<UserEntity[]> => {
     return await db.select().from(users);
 };
 
 export const findUsers = async (opts: {
     limit: number;
     offset: number;
-}): Promise<UserSelectType[]> => {
+}): Promise<UserEntity[]> => {
     return await db
         .select()
         .from(users)
@@ -66,14 +82,14 @@ export const findUsers = async (opts: {
 
 export const loadUsersByIds = async (
     ids: number[],
-): Promise<(UserSelectType | Error)[]> => {
+): Promise<(UserEntity | Error)[]> => {
     if (ids.length === 0) return [];
     const filteredUsers = await db
         .select()
         .from(users)
         .where(inArray(users.id, ids));
 
-    const userList: (UserSelectType | Error)[] = ids.map((id) => {
+    const userList: (UserEntity | Error)[] = ids.map((id) => {
         const matchingUser = filteredUsers.find((c) => c.id === id);
         if (!matchingUser) return new Error(`User ${id} not found`);
         return matchingUser;
@@ -153,7 +169,7 @@ export const findUsersPaginated = async (
 //     return updatedUser;
 // };
 
-export const deleteUserById = async (id: number): Promise<UserSelectType> => {
+export const deleteUserById = async (id: number): Promise<UserEntity> => {
     const existingUser = await findUserByIdOrThrow(id);
 
     // Delete the user

@@ -1,7 +1,4 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { db } from "@/server/db/drizzleDb";
-import { sessions } from "@/server/db/schema/users";
-import { eq } from "drizzle-orm";
 import { comparePassword } from "@/server/graphql/auth/password";
 import {
     generateAccessToken,
@@ -15,7 +12,9 @@ import {
     LoginResponsePothosObject,
     RefreshTokenResponsePothosObject,
 } from "./auth.pothos";
-import { UserSelectType } from "./auth.types";
+import { UserEntity, SessionEntity } from "./auth.types";
+import { createSession, validateSession, deleteSessionsByUserId, updateSession, findSessionByUserId } from "./session.repository";
+import { findUserByEmail, findUserById } from "./user.repository";
 import logger from "@/utils/logger";
 
 gqlSchemaBuilder.mutationFields((t) => ({
@@ -27,13 +26,9 @@ gqlSchemaBuilder.mutationFields((t) => ({
         resolve: async (_parent, args) => {
             const { email, password } = args.input;
 
-            let user: UserSelectType | undefined;
+            let user: UserEntity | null;
             try {
-                user = await db.query.users.findFirst({
-                    where: {
-                        email,
-                    },
-                });
+                user = await findUserByEmail(email);
             } catch (err) {
                 logger.error(err);
                 return null;
@@ -64,9 +59,9 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 user.email,
             );
 
-            // Store session in database
+            // Create session in database
             const sessionId = randomUUID();
-            await db.insert(sessions).values({
+            await createSession({
                 id: sessionId,
                 userId: user.id,
                 payload: JSON.stringify({ refreshToken }),
@@ -84,47 +79,46 @@ gqlSchemaBuilder.mutationFields((t) => ({
     refreshToken: t.field({
         type: RefreshTokenResponsePothosObject,
         resolve: async (_parent, _args, ctx) => {
-            // Try to get refresh token from context (it should be passed by the client)
+            // Try to get session ID from context (from cookie)
+            const sessionId = ctx.sessionId;
             const refreshToken = ctx.refreshToken;
 
-            if (!refreshToken) {
-                throw new GraphQLError("Refresh token not provided", {
+            if (!sessionId && !refreshToken) {
+                throw new GraphQLError("No authentication session found", {
                     extensions: { code: "UNAUTHENTICATED" },
                 });
             }
 
-            // Verify refresh token
-            const payload = await verifyToken(refreshToken);
+            let session: SessionEntity | null = null;
+            let user: UserEntity | null = null;
 
-            if (!payload || payload.type !== "refresh") {
-                throw new GraphQLError("Invalid refresh token", {
+            // First try to validate using session ID (cookie-based)
+            if (sessionId) {
+                session = await validateSession(sessionId);
+                if (session?.userId) {
+                    const foundUser = await findUserById(session.userId);
+                    user = foundUser || null;
+                }
+            }
+
+            // If session validation failed, try refresh token
+            if (!user && refreshToken) {
+                const payload = await verifyToken(refreshToken);
+                if (payload && payload.type === "refresh") {
+                    const foundUser = await findUserById(payload.userId);
+                    user = foundUser || null;
+                    
+                    // Find session by user ID
+                    if (user) {
+                        const foundSession = await findSessionByUserId(user.id);
+                        session = foundSession || null;
+                    }
+                }
+            }
+
+            if (!user || !session) {
+                throw new GraphQLError("Invalid session or refresh token", {
                     extensions: { code: "INVALID_TOKEN" },
-                });
-            }
-
-            // Find user
-            const user = await db.query.users.findFirst({
-                where: {
-                    id: payload.userId,
-                },
-            });
-
-            if (!user) {
-                throw new GraphQLError("User not found", {
-                    extensions: { code: "USER_NOT_FOUND" },
-                });
-            }
-
-            // Verify session exists
-            const session = await db.query.sessions.findFirst({
-                where: {
-                    userId: user.id,
-                },
-            });
-
-            if (!session) {
-                throw new GraphQLError("Session not found", {
-                    extensions: { code: "SESSION_NOT_FOUND" },
                 });
             }
 
@@ -135,10 +129,10 @@ gqlSchemaBuilder.mutationFields((t) => ({
             );
 
             // Update session activity
-            await db
-                .update(sessions)
-                .set({ lastActivity: Math.floor(Date.now() / 1000) })
-                .where(eq(sessions.id, session.id));
+            await updateSession({
+                ...session,
+                lastActivity: Math.floor(Date.now() / 1000),
+            });
 
             return {
                 token: newAccessToken,
@@ -158,7 +152,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
             }
 
             // Delete all sessions for the user
-            await db.delete(sessions).where(eq(sessions.userId, ctx.user.id));
+            await deleteSessionsByUserId(ctx.user.id);
 
             return true;
         },

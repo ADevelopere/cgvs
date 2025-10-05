@@ -7,13 +7,13 @@ import {
 } from "@/server/db/schema";
 import { PageInfo } from "../pagintaion/pagintaion.types";
 
-export type UserSelectType = typeof users.$inferSelect;
-export type UserInsertInput = typeof users.$inferInsert;
+export type UserEntity = typeof users.$inferSelect;
+export type UserEntityInput = typeof users.$inferInsert;
 
-export type UserPothosDefintion = UserSelectType & {
+export type UserPothosDefintion = UserEntity & {
     roles?: RolePothosDefintion[];
     userRoles?: UserRolePothosDefintion[];
-    sessions?: SessionsPothosDefintion[];
+    sessions?: SessionPothosDefintion[];
 };
 
 
@@ -31,7 +31,7 @@ export type UserUpdateInput = {
 };
 
 export type PaginatedUsersResponseSelectType = {
-    data: UserSelectType[];
+    data: UserEntity[];
     pageInfo: PageInfo;
 };
 
@@ -41,30 +41,30 @@ export type PaginatedUsersResponse = {
 };
 
 // roles
-export type RoleSelectType = typeof userRoles.$inferSelect;
-export type RoleInsertInput = typeof userRoles.$inferInsert;
+export type RoleEntity = typeof userRoles.$inferSelect;
+export type RoleEntityInput = typeof userRoles.$inferInsert;
 
-export type RolePothosDefintion = RoleSelectType & {
+export type RolePothosDefintion = RoleEntity & {
     users: UserPothosDefintion[];
     userRoles?: UserRolePothosDefintion[];
 };
 
 
 // user roles
-export type UserRoleSelectType = typeof roles.$inferSelect;
-export type UserRoleInsertInput = typeof roles.$inferInsert;
+export type UserRoleEntity = typeof roles.$inferSelect;
+export type UserRoleEntityInput = typeof roles.$inferInsert;
 
-export type UserRolePothosDefintion = UserRoleSelectType & {
+export type UserRolePothosDefintion = UserRoleEntity & {
     user?: UserPothosDefintion;
     role?: RolePothosDefintion;
 };
 
 
 // sessions
-export type SessionsSelectType = typeof sessions.$inferSelect;
-export type SessionsInsertInput = typeof sessions.$inferInsert;
+export type SessionEntity = typeof sessions.$inferSelect;
+export type SessionEntityInput = typeof sessions.$inferInsert;
 
-export type SessionsPothosDefintion = SessionsSelectType & {
+export type SessionPothosDefintion = SessionEntity & {
     user?: UserPothosDefintion;
 };
 
