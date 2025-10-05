@@ -23,7 +23,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             input: t.arg({ type: LoginInputPothosObject, required: true }),
         },
-        resolve: async (_parent, args) => {
+        resolve: async (_parent, args, ctx) => {
             const { email, password } = args.input;
 
             let user: UserEntity | null;
@@ -64,13 +64,34 @@ gqlSchemaBuilder.mutationFields((t) => ({
             await createSession({
                 id: sessionId,
                 userId: user.id,
-                payload: JSON.stringify({ refreshToken }),
+                payload: JSON.stringify({ 
+                    createdAt: new Date().toISOString(),
+                    // Store session metadata only, not sensitive tokens
+                }),
                 lastActivity: Math.floor(Date.now() / 1000),
             });
 
+            // Set httpOnly cookies for session and refresh token
+            if (ctx.cookies) {
+                ctx.cookies.set("cgvs_session_id", sessionId, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 24 * 7, // 7 days
+                    path: "/",
+                });
+                
+                ctx.cookies.set("cgvs_refresh_token", refreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 24 * 7, // 7 days
+                    path: "/",
+                });
+            }
+
             return {
                 token: accessToken,
-                refreshToken,
                 user,
             };
         },
@@ -122,8 +143,12 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 });
             }
 
-            // Generate new access token
+            // Generate new tokens (token rotation for security)
             const newAccessToken = await generateAccessToken(
+                user.id,
+                user.email,
+            );
+            const newRefreshToken = await generateRefreshToken(
                 user.id,
                 user.email,
             );
@@ -133,6 +158,26 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 ...session,
                 lastActivity: Math.floor(Date.now() / 1000),
             });
+
+            // Refresh the cookies with new refresh token (token rotation)
+            if (ctx.cookies && session.id) {
+                ctx.cookies.set("cgvs_session_id", session.id, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 24 * 7, // 7 days
+                    path: "/",
+                });
+                
+                // Rotate refresh token for enhanced security
+                ctx.cookies.set("cgvs_refresh_token", newRefreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 24 * 7, // 7 days
+                    path: "/",
+                });
+            }
 
             return {
                 token: newAccessToken,
@@ -146,13 +191,19 @@ gqlSchemaBuilder.mutationFields((t) => ({
         authScopes: {
             loggedIn: true,
         },
-        resolve: async (parent, args, ctx) => {
+        resolve: async (_parent, _args, ctx) => {
             if (!ctx.user) {
                 return false;
             }
 
             // Delete all sessions for the user
             await deleteSessionsByUserId(ctx.user.id);
+
+            // Clear authentication cookies
+            if (ctx.cookies) {
+                ctx.cookies.delete("cgvs_session_id");
+                ctx.cookies.delete("cgvs_refresh_token");
+            }
 
             return true;
         },

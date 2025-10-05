@@ -1,4 +1,5 @@
 import { db } from "@/server/db/drizzleDb";
+import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 
 export type BaseContext = {
     user?: {
@@ -7,6 +8,7 @@ export type BaseContext = {
     roles: string[];
     refreshToken?: string;
     sessionId?: string;
+    cookies?: ResponseCookies;
 };
 
 export type AuthContexts = {

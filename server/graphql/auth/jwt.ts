@@ -1,7 +1,12 @@
 import { SignJWT, jwtVerify, type JWTPayload as JoseJWTPayload } from 'jose';
 
+// Validate JWT_SECRET is set in production
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET must be set in production environment');
+}
+
 const JWT_SECRET = process.env.JWT_SECRET ?? 'your-secret-key-change-this-in-production';
-const JWT_ACCESS_TOKEN_EXPIRY = '60m'; // 15 minutes
+const JWT_ACCESS_TOKEN_EXPIRY = '15m'; // 15 minutes
 const JWT_REFRESH_TOKEN_EXPIRY = '7d'; // 7 days
 
 const secret = new TextEncoder().encode(JWT_SECRET);

@@ -48,7 +48,6 @@ export const LoginResponsePothosObject = gqlSchemaBuilder
     .implement({
         fields: (t) => ({
             token: t.exposeString("token"),
-            refreshToken: t.exposeString("refreshToken"),
             // user: t.expose("user", { type: UserPothosObject }),
             user: t.loadable({
                 type: UserPothosObject,

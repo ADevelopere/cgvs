@@ -86,7 +86,6 @@ export type LoginInput = {
 export type LoginResponse = {
     user: UserPothosDefintion;
     token: string;
-    refreshToken: string;
 };
 
 export type RefreshTokenResponse = {

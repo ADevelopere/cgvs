@@ -75,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const strings: AuthTranslations = useAppTranslation("authTranslations");
     const { 
         updateAuthToken, 
-        updateRefreshToken, 
         clearAuthData 
     } = useAuthToken();
     const [loginMutation] = useMutation(Document.loginMutationDocument);
@@ -138,14 +137,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 if (data?.login?.token && data.login.user) {
                     updateAuthToken(data.login.token);
                     
-                    // Handle refresh token if available (check for the field)
-                    if ('refreshToken' in data.login && typeof data.login.refreshToken === 'string') {
-                        updateRefreshToken(data.login.refreshToken);
-                    }
-                    
-                    // Note: Session ID would typically be set via httpOnly cookies
-                    // by the server, not managed client-side. This depends on your
-                    // chosen authentication strategy.
+                    // Note: Refresh token and session ID are set via httpOnly cookies
+                    // by the server automatically. They are NOT in the response body
+                    // for security reasons (prevents XSS attacks).
                     
                     // Perform a hard redirect to break any race conditions and ensure a clean state.
                     window.location.href = redirectUrl || "/admin/dashboard";
@@ -165,7 +159,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             strings.invalidLoginResponse,
             strings.signinFailed,
             updateAuthToken,
-            updateRefreshToken,
         ],
     );
 
