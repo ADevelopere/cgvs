@@ -1,34 +1,26 @@
 /**
  * Authentication utilities for client-side session management
+ * 
+ * SECURITY NOTE: Only access tokens are stored in localStorage.
+ * Refresh tokens and session IDs are handled via httpOnly cookies for security.
  */
 
 // Types for authentication data
 export interface AuthTokens {
     accessToken?: string;
-    refreshToken?: string;
-    sessionId?: string;
 }
 
 // Local storage keys
 const AUTH_STORAGE_KEYS = {
     ACCESS_TOKEN: 'cgsv_access_token',
-    REFRESH_TOKEN: 'cgsv_refresh_token',
-    SESSION_ID: 'cgsv_session_id',
 } as const;
 
 /**
  * Store authentication tokens in localStorage
- * Note: In production, consider using httpOnly cookies for refresh tokens
  */
 export const storeAuthTokens = (tokens: AuthTokens): void => {
     if (tokens.accessToken) {
         localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken);
-    }
-    if (tokens.refreshToken) {
-        localStorage.setItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
-    }
-    if (tokens.sessionId) {
-        localStorage.setItem(AUTH_STORAGE_KEYS.SESSION_ID, tokens.sessionId);
     }
 };
 
@@ -42,8 +34,6 @@ export const getStoredAuthTokens = (): AuthTokens => {
 
     return {
         accessToken: localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN) || undefined,
-        refreshToken: localStorage.getItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN) || undefined,
-        sessionId: localStorage.getItem(AUTH_STORAGE_KEYS.SESSION_ID) || undefined,
     };
 };
 
@@ -56,8 +46,6 @@ export const clearStoredAuthTokens = (): void => {
     }
 
     localStorage.removeItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
-    localStorage.removeItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
-    localStorage.removeItem(AUTH_STORAGE_KEYS.SESSION_ID);
 };
 
 /**
@@ -65,7 +53,7 @@ export const clearStoredAuthTokens = (): void => {
  */
 export const hasStoredAuthTokens = (): boolean => {
     const tokens = getStoredAuthTokens();
-    return Boolean(tokens.accessToken || tokens.refreshToken);
+    return Boolean(tokens.accessToken);
 };
 
 /**

@@ -30,13 +30,8 @@ export type NetworkConnectivityContextType = {
     checkConnectivity: () => Promise<boolean>;
     setConnected: (connected: boolean) => void;
     notifyIfDisconnected: () => void;
-    // Auth token and session management
     authToken: string | null;
-    refreshToken: string | null;
-    sessionId: string | null;
     updateAuthToken: (token: string) => void;
-    updateRefreshToken: (token: string) => void;
-    updateSessionId: (sessionId: string) => void;
     clearAuthData: () => void;
 };
 
@@ -58,20 +53,12 @@ export const useNetworkConnectivity = (): NetworkConnectivityContextType => {
 export const useAuthToken = () => {
     const { 
         authToken, 
-        refreshToken, 
-        sessionId, 
         updateAuthToken, 
-        updateRefreshToken, 
-        updateSessionId, 
         clearAuthData 
     } = useNetworkConnectivity();
     return { 
         authToken, 
-        refreshToken, 
-        sessionId, 
         updateAuthToken, 
-        updateRefreshToken, 
-        updateSessionId, 
         clearAuthData 
     };
 };
@@ -89,22 +76,18 @@ export const AppApolloProvider: React.FC<{
         "connectivityTranslations",
     );
 
-    // Initialize auth state from localStorage
+    // Initialize auth state from localStorage (only access token)
     const initialAuthTokens = initializeAuthFromStorage();
     
     const [isConnected, setIsConnected] = useState(true); // Start optimistically
     const [isChecking, setIsChecking] = useState(false);
     const [lastChecked, setLastChecked] = useState<Date | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(initialAuthTokens.accessToken || null);
-    const [refreshToken, setRefreshToken] = useState<string | null>(initialAuthTokens.refreshToken || null);
-    const [sessionId, setSessionId] = useState<string | null>(initialAuthTokens.sessionId || null);
 
     // Use refs to track status to avoid dependency issues
     const isConnectedRef = useRef(true);
     const isCheckingRef = useRef(false);
     const authTokenRef = useRef<string | null>(initialAuthTokens.accessToken || null);
-    const refreshTokenRef = useRef<string | null>(initialAuthTokens.refreshToken || null);
-    const sessionIdRef = useRef<string | null>(initialAuthTokens.sessionId || null);
     const initialCheckDoneRef = useRef(false);
     const lastCheckTimeRef = useRef(0); // Track last check time to prevent spam
 
@@ -198,26 +181,11 @@ export const AppApolloProvider: React.FC<{
         storeAuthTokens({ accessToken: token });
     }, []);
 
-    const updateRefreshToken = useCallback((token: string) => {
-        setRefreshToken(token);
-        refreshTokenRef.current = token;
-        storeAuthTokens({ refreshToken: token });
-    }, []);
-
-    const updateSessionId = useCallback((id: string) => {
-        setSessionId(id);
-        sessionIdRef.current = id;
-        storeAuthTokens({ sessionId: id });
-    }, []);
-
     const clearAuthData = useCallback(() => {
         setAuthToken(null);
-        setRefreshToken(null);
-        setSessionId(null);
         authTokenRef.current = null;
-        refreshTokenRef.current = null;
-        sessionIdRef.current = null;
         clearStoredAuthTokens();
+        // Note: httpOnly cookies are cleared by the server on logout
     }, []);
 
     // Create Apollo client with simple configuration
@@ -229,23 +197,14 @@ export const AppApolloProvider: React.FC<{
 
         // Auth link to add token to requests
         const authLink = new ApolloLink((operation, forward) => {
-            // Get tokens from refs to access current values
+            // Get access token from ref to access current value
+            // Note: refreshToken and sessionId are handled via httpOnly cookies
             const token = authTokenRef.current;
-            const refreshToken = refreshTokenRef.current;
-            const sessionId = sessionIdRef.current;
 
             const headers: Record<string, string> = {};
             
             if (token) {
                 headers.authorization = `Bearer ${token}`;
-            }
-            
-            if (refreshToken) {
-                headers['x-refresh-token'] = refreshToken;
-            }
-            
-            if (sessionId) {
-                headers['x-session-id'] = sessionId;
             }
 
             operation.setContext({ headers });
@@ -398,11 +357,7 @@ export const AppApolloProvider: React.FC<{
             setConnected,
             notifyIfDisconnected,
             authToken,
-            refreshToken,
-            sessionId,
             updateAuthToken,
-            updateRefreshToken,
-            updateSessionId,
             clearAuthData,
         }),
         [
@@ -413,11 +368,7 @@ export const AppApolloProvider: React.FC<{
             setConnected,
             notifyIfDisconnected,
             authToken,
-            refreshToken,
-            sessionId,
             updateAuthToken,
-            updateRefreshToken,
-            updateSessionId,
             clearAuthData,
         ],
     );
