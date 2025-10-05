@@ -6,7 +6,7 @@ import { headers, cookies } from "next/headers";
  * Create GraphQL context from Next.js request
  * This extracts authentication information from headers and cookies
  */
-export async function createGraphQLContext(): Promise<BaseContext & { refreshToken?: string }> {
+export async function createGraphQLContext(): Promise<BaseContext & { refreshToken?: string; sessionId?: string }> {
     const headersList = await headers();
     const cookieStore = await cookies();
     
@@ -18,6 +18,11 @@ export async function createGraphQLContext(): Promise<BaseContext & { refreshTok
     const refreshToken = 
         cookieStore.get("cgvs_refresh_token")?.value || 
         headersList.get("x-refresh-token") || 
+        undefined;
+
+    // Extract session ID from cookie (similar to Ktor approach)
+    const sessionId = 
+        cookieStore.get("cgvs_session_id")?.value ||
         undefined;
 
     let userId: number | null = null;
@@ -36,5 +41,6 @@ export async function createGraphQLContext(): Promise<BaseContext & { refreshTok
     return {
         ...baseContext,
         refreshToken,
+        sessionId,
     };
 }

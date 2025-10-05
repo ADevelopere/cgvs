@@ -73,7 +73,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");
-    const { updateAuthToken, clearAuthToken } = useAuthToken();
+    const { 
+        updateAuthToken, 
+        updateRefreshToken, 
+        clearAuthData 
+    } = useAuthToken();
     const [loginMutation] = useMutation(Document.loginMutationDocument);
     const [logoutMutation] = useMutation(Document.logoutMutationDocument);
     const [refreshTokenMutation] = useMutation(
@@ -93,25 +97,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 updateAuthToken(data.refreshToken.token);
                 setUser(data.refreshToken.user);
                 setIsAuthenticated(true);
+                
+                // Note: In a session-based system, the session ID would typically
+                // be managed via httpOnly cookies, not client-side state.
+                // This is here for completeness but may not be needed depending
+                // on your cookie strategy.
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
+                clearAuthData();
             }
         } catch {
             setIsAuthenticated(false);
             setUser(null);
+            clearAuthData();
         }
-    }, [refreshTokenMutation, updateAuthToken]);
+    }, [refreshTokenMutation, updateAuthToken, clearAuthData]);
 
     const logout = useCallback(async () => {
         try {
             await logoutMutation();
         } finally {
-            clearAuthToken();
+            clearAuthData();
             // Perform a hard redirect to ensure all state is cleared.
             window.location.href = "/login";
         }
-    }, [logoutMutation, clearAuthToken]);
+    }, [logoutMutation, clearAuthData]);
 
     const login = useCallback(
         async (
@@ -126,6 +137,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 if (data?.login?.token && data.login.user) {
                     updateAuthToken(data.login.token);
+                    
+                    // Handle refresh token if available (check for the field)
+                    if ('refreshToken' in data.login && typeof data.login.refreshToken === 'string') {
+                        updateRefreshToken(data.login.refreshToken);
+                    }
+                    
+                    // Note: Session ID would typically be set via httpOnly cookies
+                    // by the server, not managed client-side. This depends on your
+                    // chosen authentication strategy.
+                    
                     // Perform a hard redirect to break any race conditions and ensure a clean state.
                     window.location.href = redirectUrl || "/admin/dashboard";
                     return true;
@@ -134,6 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     return false;
                 }
             } catch {
+                // Log error for debugging without using console
                 setError(strings.invalidLoginResponse);
                 return false;
             }
@@ -143,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             strings.invalidLoginResponse,
             strings.signinFailed,
             updateAuthToken,
+            updateRefreshToken,
         ],
     );
 

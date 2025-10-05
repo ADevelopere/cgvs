@@ -6,6 +6,7 @@ export type BaseContext = {
     };
     roles: string[];
     refreshToken?: string;
+    sessionId?: string;
 };
 
 export type AuthContexts = {

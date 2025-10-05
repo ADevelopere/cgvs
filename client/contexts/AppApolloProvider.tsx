@@ -21,6 +21,7 @@ import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { ConnectivityTranslations } from "@/client/locale/components/Connectivity";
 import useAppTranslation from "@/client/locale/useAppTranslation";
+import { initializeAuthFromStorage, storeAuthTokens, clearStoredAuthTokens } from "@/client/utils/auth";
 
 export type NetworkConnectivityContextType = {
     isConnected: boolean;
@@ -29,10 +30,14 @@ export type NetworkConnectivityContextType = {
     checkConnectivity: () => Promise<boolean>;
     setConnected: (connected: boolean) => void;
     notifyIfDisconnected: () => void;
-    // Auth token management
+    // Auth token and session management
     authToken: string | null;
+    refreshToken: string | null;
+    sessionId: string | null;
     updateAuthToken: (token: string) => void;
-    clearAuthToken: () => void;
+    updateRefreshToken: (token: string) => void;
+    updateSessionId: (sessionId: string) => void;
+    clearAuthData: () => void;
 };
 
 const NetworkConnectivityContext = createContext<
@@ -51,9 +56,24 @@ export const useNetworkConnectivity = (): NetworkConnectivityContextType => {
 
 // Convenience functions for global access to auth token management
 export const useAuthToken = () => {
-    const { authToken, updateAuthToken, clearAuthToken } =
-        useNetworkConnectivity();
-    return { authToken, updateAuthToken, clearAuthToken };
+    const { 
+        authToken, 
+        refreshToken, 
+        sessionId, 
+        updateAuthToken, 
+        updateRefreshToken, 
+        updateSessionId, 
+        clearAuthData 
+    } = useNetworkConnectivity();
+    return { 
+        authToken, 
+        refreshToken, 
+        sessionId, 
+        updateAuthToken, 
+        updateRefreshToken, 
+        updateSessionId, 
+        clearAuthData 
+    };
 };
 
 // Configuration
@@ -69,15 +89,22 @@ export const AppApolloProvider: React.FC<{
         "connectivityTranslations",
     );
 
+    // Initialize auth state from localStorage
+    const initialAuthTokens = initializeAuthFromStorage();
+    
     const [isConnected, setIsConnected] = useState(true); // Start optimistically
     const [isChecking, setIsChecking] = useState(false);
     const [lastChecked, setLastChecked] = useState<Date | null>(null);
-    const [authToken, setAuthToken] = useState<string | null>(null);
+    const [authToken, setAuthToken] = useState<string | null>(initialAuthTokens.accessToken || null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(initialAuthTokens.refreshToken || null);
+    const [sessionId, setSessionId] = useState<string | null>(initialAuthTokens.sessionId || null);
 
     // Use refs to track status to avoid dependency issues
     const isConnectedRef = useRef(true);
     const isCheckingRef = useRef(false);
-    const authTokenRef = useRef<string | null>(null);
+    const authTokenRef = useRef<string | null>(initialAuthTokens.accessToken || null);
+    const refreshTokenRef = useRef<string | null>(initialAuthTokens.refreshToken || null);
+    const sessionIdRef = useRef<string | null>(initialAuthTokens.sessionId || null);
     const initialCheckDoneRef = useRef(false);
     const lastCheckTimeRef = useRef(0); // Track last check time to prevent spam
 
@@ -168,11 +195,29 @@ export const AppApolloProvider: React.FC<{
     const updateAuthToken = useCallback((token: string) => {
         setAuthToken(token);
         authTokenRef.current = token;
+        storeAuthTokens({ accessToken: token });
     }, []);
 
-    const clearAuthToken = useCallback(() => {
+    const updateRefreshToken = useCallback((token: string) => {
+        setRefreshToken(token);
+        refreshTokenRef.current = token;
+        storeAuthTokens({ refreshToken: token });
+    }, []);
+
+    const updateSessionId = useCallback((id: string) => {
+        setSessionId(id);
+        sessionIdRef.current = id;
+        storeAuthTokens({ sessionId: id });
+    }, []);
+
+    const clearAuthData = useCallback(() => {
         setAuthToken(null);
+        setRefreshToken(null);
+        setSessionId(null);
         authTokenRef.current = null;
+        refreshTokenRef.current = null;
+        sessionIdRef.current = null;
+        clearStoredAuthTokens();
     }, []);
 
     // Create Apollo client with simple configuration
@@ -184,14 +229,26 @@ export const AppApolloProvider: React.FC<{
 
         // Auth link to add token to requests
         const authLink = new ApolloLink((operation, forward) => {
-            // Get token from ref to access current value
+            // Get tokens from refs to access current values
             const token = authTokenRef.current;
+            const refreshToken = refreshTokenRef.current;
+            const sessionId = sessionIdRef.current;
 
-            operation.setContext({
-                headers: {
-                    authorization: token ? `Bearer ${token}` : "",
-                },
-            });
+            const headers: Record<string, string> = {};
+            
+            if (token) {
+                headers.authorization = `Bearer ${token}`;
+            }
+            
+            if (refreshToken) {
+                headers['x-refresh-token'] = refreshToken;
+            }
+            
+            if (sessionId) {
+                headers['x-session-id'] = sessionId;
+            }
+
+            operation.setContext({ headers });
 
             return forward(operation);
         });
@@ -341,8 +398,12 @@ export const AppApolloProvider: React.FC<{
             setConnected,
             notifyIfDisconnected,
             authToken,
+            refreshToken,
+            sessionId,
             updateAuthToken,
-            clearAuthToken,
+            updateRefreshToken,
+            updateSessionId,
+            clearAuthData,
         }),
         [
             isConnected,
@@ -352,8 +413,12 @@ export const AppApolloProvider: React.FC<{
             setConnected,
             notifyIfDisconnected,
             authToken,
+            refreshToken,
+            sessionId,
             updateAuthToken,
-            clearAuthToken,
+            updateRefreshToken,
+            updateSessionId,
+            clearAuthData,
         ],
     );
 
