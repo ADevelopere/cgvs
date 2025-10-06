@@ -3,7 +3,7 @@ import {
     fileUsages,
     storageDirectories,
 } from "@/server/db/schema/storage";
-import { OrderDirectionServerType } from "../graphql/enum/enum.pothos";
+import { OrderSortDirection } from "../lib";
 
 // Type aliases to match Kotlin entities
 export type FileEntity = typeof storageFiles.$inferSelect;
@@ -30,7 +30,7 @@ export interface FileUsageInfoServerType {
     usageType: string;
     referenceId: bigint;
     referenceTable: string;
-    created: Date;
+    createdAt: Date;
 }
 
 // info from db, and storage service
@@ -58,7 +58,7 @@ export interface StorageObjectList {
 export class DirectoryInfoServerType extends StorageObject {
     permissions: DirectoryPermissionsServerType;
     protectChildren: boolean;
-    created: Date;
+    createdAt: Date;
     lastModified: Date;
     isFromBucket: boolean;
     fileCount: number;
@@ -71,7 +71,7 @@ export class DirectoryInfoServerType extends StorageObject {
         isProtected: boolean,
         permissions: DirectoryPermissionsServerType,
         protectChildren: boolean,
-        created: Date,
+        createdAt: Date,
         lastModified: Date,
         isFromBucket: boolean,
         fileCount: number,
@@ -81,7 +81,7 @@ export class DirectoryInfoServerType extends StorageObject {
         super(path, name, isProtected);
         this.permissions = permissions;
         this.protectChildren = protectChildren;
-        this.created = created;
+        this.createdAt = createdAt;
         this.lastModified = lastModified;
         this.isFromBucket = isFromBucket;
         this.fileCount = fileCount;
@@ -95,7 +95,7 @@ export class FileInfoServerType extends StorageObject {
     size: bigint;
     contentType?: string;
     md5Hash?: string;
-    created: Date;
+    createdAt: Date;
     lastModified: Date;
     isFromBucket: boolean;
     url: string;
@@ -113,7 +113,7 @@ export class FileInfoServerType extends StorageObject {
         size: bigint,
         contentType: string | undefined,
         md5Hash: string | undefined,
-        created: Date,
+        createdAt: Date,
         lastModified: Date,
         isFromBucket: boolean,
         url: string,
@@ -128,7 +128,7 @@ export class FileInfoServerType extends StorageObject {
         this.size = size;
         this.contentType = contentType;
         this.md5Hash = md5Hash;
-        this.created = created;
+        this.createdAt = createdAt;
         this.lastModified = lastModified;
         this.isFromBucket = isFromBucket;
         this.url = url;
@@ -146,7 +146,7 @@ export interface BucketFileServerType {
     size: bigint;
     contentType?: string;
     md5Hash?: string;
-    created: Date;
+    createdAt: Date;
     lastModified: Date;
     url: string;
     mediaLink?: string;
@@ -156,7 +156,7 @@ export interface BucketFileServerType {
 
 export interface BucketDirectoryServerType {
     path: string;
-    created: Date;
+    createdAt: Date;
     lastModified: Date;
     isPublic: boolean;
 }
@@ -275,7 +275,7 @@ export interface FilesListInput {
     searchTerm?: string | null;
     fileType?: string | null;
     sortBy?: FileSortFieldServerType | null;
-    sortDirection?: OrderDirectionServerType | null;
+    sortDirection?: OrderSortDirection | null;
 }
 
 export interface UploadSignedUrlGenerateInput {

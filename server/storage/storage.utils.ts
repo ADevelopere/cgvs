@@ -175,7 +175,7 @@ export const blobToFileInfo = (
     const path = blob.name || "";
     const size = BigInt(blob.size || 0);
     const contentType = blob.contentType;
-    const created = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
+    const createdAt = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
     const lastModified = blob.updated ? new Date(blob.updated) : new Date();
     const url = `${baseUrl}${path}`;
     const mediaLink = blob.mediaLink;
@@ -188,7 +188,7 @@ export const blobToFileInfo = (
         size,
         contentType,
         md5Hash: blob.md5Hash,
-        created,
+        createdAt,
         lastModified,
         url,
         mediaLink,
@@ -201,13 +201,13 @@ export const blobToDirectoryInfo = (
     blob: StorageTypes.BlobMetadata,
 ): StorageTypes.BucketDirectoryServerType => {
     const path = (blob.name || "").replace(/\/$/, "");
-    const created = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
+    const createdAt = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
     const lastModified = blob.updated ? new Date(blob.updated) : new Date();
     const isPublic = path.startsWith("public");
 
     return {
         path,
-        created,
+        createdAt,
         lastModified,
         isPublic,
     };
@@ -236,19 +236,19 @@ export const combineDirectoryData = (
               allowMoveFiles: true,
           };
 
-    return {
-        path: bucketDir.path,
-        isProtected: dbEntity?.isProtected || false,
+    return new StorageTypes.DirectoryInfoServerType(
+        bucketDir.path,
+        extractFileName(bucketDir.path),
+        dbEntity?.isProtected || false,
         permissions,
-        protectChildren: dbEntity?.protectChildren || false,
-        created: bucketDir.created,
-        lastModified: bucketDir.lastModified,
-        isFromBucket: true,
+        dbEntity?.protectChildren || false,
+        bucketDir.createdAt,
+        bucketDir.lastModified,
+        true,
         fileCount,
-        folderCount: 0,
-        totalSize: 0,
-        name: extractFileName(bucketDir.path),
-    };
+        0,
+        0,
+    );
 };
 
 export const combineFileData = (
@@ -258,32 +258,34 @@ export const combineFileData = (
     const usages: StorageTypes.FileUsageInfoServerType[] = [];
     const isProtected = dbEntity?.isProtected || false;
 
-    return {
-        path: bucketFile.path,
+    return new StorageTypes.FileInfoServerType(
+        bucketFile.path,
+        extractFileName(bucketFile.path),
         isProtected,
-        directoryPath: bucketFile.directoryPath,
-        size: bucketFile.size,
-        contentType: bucketFile.contentType,
-        md5Hash: bucketFile.md5Hash,
-        created: bucketFile.created,
-        lastModified: bucketFile.lastModified,
-        isFromBucket: true,
-        url: bucketFile.url,
-        mediaLink: bucketFile.mediaLink,
-        fileType: bucketFile.fileType,
-        isPublic: bucketFile.isPublic,
-        isInUse: false,
+        bucketFile.directoryPath,
+        bucketFile.size,
+        bucketFile.contentType,
+        bucketFile.md5Hash,
+        bucketFile.createdAt,
+        bucketFile.lastModified,
+        true,
+        bucketFile.url,
+        bucketFile.mediaLink,
+        bucketFile.fileType,
+        bucketFile.isPublic,
+        false,
         usages,
-        name: extractFileName(bucketFile.path),
-    };
+    );
 };
 
 export const createDirectoryFromPath = (
     path: string,
 ): StorageTypes.DirectoryInfoServerType => {
-    return {
+    return new StorageTypes.DirectoryInfoServerType(
         path,
-        permissions: {
+        extractFileName(path),
+        false,
+        {
             allowUploads: true,
             allowDelete: true,
             allowMove: true,
@@ -291,16 +293,14 @@ export const createDirectoryFromPath = (
             allowDeleteFiles: true,
             allowMoveFiles: true,
         },
-        isProtected: false,
-        protectChildren: false,
-        created: new Date(),
-        lastModified: new Date(),
-        isFromBucket: true,
-        fileCount: 0,
-        folderCount: 0,
-        totalSize: 0,
-        name: extractFileName(path),
-    };
+        false,
+        new Date(),
+        new Date(),
+        true,
+        0,
+        0,
+        0,
+    );
 };
 
 export const sortItems = (
@@ -332,7 +332,7 @@ export const sortItems = (
                 break;
             }
             case StorageTypes.FileSortFieldServerType.CREATED:
-                comparison = a.created.getTime() - b.created.getTime();
+                comparison = a.createdAt.getTime() - b.createdAt.getTime();
                 break;
             case StorageTypes.FileSortFieldServerType.MODIFIED:
                 comparison =

@@ -39,7 +39,7 @@ export const FileUsageInfoPothosObject = gqlSchemaBuilder
                 resolve: (usageInfo) => usageInfo.referenceId.toString(),
             }),
             referenceTable: t.exposeString("referenceTable"),
-            created: t.expose("created", { type: "DateTime" }),
+            createdAt: t.expose("createdAt", { type: "DateTime" }),
         }),
     });
 
@@ -58,7 +58,7 @@ export const FileInfoPothosObject = gqlSchemaBuilder.objectType(
     {
         name: "FileInfo",
         interfaces: [StorageItemPothosInterface],
-        isTypeOf: (item) => item instanceof StorageTypes.FileInfoServerType,
+        isTypeOf: (item) => typeof item === 'object' && item !== null && "size" in item,
         fields: (t) => ({
             directoryPath: t.exposeString("directoryPath"),
             size: t.field({
@@ -68,7 +68,7 @@ export const FileInfoPothosObject = gqlSchemaBuilder.objectType(
             }),
             contentType: t.exposeString("contentType", { nullable: true }),
             md5Hash: t.exposeString("md5Hash", { nullable: true }),
-            created: t.expose("created", { type: "DateTime" }),
+            createdAt: t.expose("createdAt", { type: "DateTime" }),
             lastModified: t.expose("lastModified", { type: "DateTime" }),
             isFromBucket: t.exposeBoolean("isFromBucket"),
             url: t.exposeString("url", { nullable: false }),
@@ -86,14 +86,13 @@ export const DirectoryInfoPothosObject = gqlSchemaBuilder.objectType(
     {
         name: "DirectoryInfo",
         interfaces: [StorageItemPothosInterface],
-        isTypeOf: (item) =>
-            item instanceof StorageTypes.DirectoryInfoServerType,
+        isTypeOf: (item) => typeof item === 'object' && item !== null && !("size" in item),
         fields: (t) => ({
             permissions: t.expose("permissions", {
                 type: DirectoryPermissionsPothosObject,
             }),
             protectChildren: t.exposeBoolean("protectChildren"),
-            created: t.expose("created", { type: "DateTime" }),
+            createdAt: t.expose("createdAt", { type: "DateTime" }),
             lastModified: t.expose("lastModified", { type: "DateTime" }),
             isFromBucket: t.exposeBoolean("isFromBucket"),
             fileCount: t.exposeInt("fileCount"),

@@ -9,7 +9,6 @@ export type PageInfo = {
     total: number;
 };
 
-
 export class PaginationArgs {
     public static readonly DEFAULT_COUNT = 10;
     public static readonly MAX_COUNT = 5000;
@@ -52,19 +51,19 @@ export class PaginationArgs {
         this.maxCount = maxCount ?? PaginationArgs.MAX_COUNT;
     }
 
-    perPage(): number {
+    get perPage(): number {
         return Math.min(
             this.first ?? this.defaultCount ?? PaginationArgs.DEFAULT_COUNT,
             this.maxCount ?? PaginationArgs.MAX_COUNT,
         );
     }
 
-    currentPage(): number {
+    get currentPage(): number {
         return this.page ?? 1;
     }
 
-    offset(): number {
-        return this.skip ?? (this.currentPage() - 1) * this.perPage();
+    get offset(): number {
+        return this.skip ?? (this.currentPage - 1) * this.perPage;
     }
 }
 
@@ -79,17 +78,17 @@ export function buildPageInfoFromArgs(
 ): PageInfo {
     if (args) {
         const lastPage =
-            total > 0 ? Math.floor((total - 1) / args.perPage()) + 1 : 1;
-        const firstItem = count > 0 ? args.offset() + 1 : null;
-        const lastItem = count > 0 ? args.offset() + count : null;
+            total > 0 ? Math.floor((total - 1) / args.perPage) + 1 : 1;
+        const firstItem = count > 0 ? args.offset + 1 : null;
+        const lastItem = count > 0 ? args.offset + count : null;
         return {
             count,
-            currentPage: args.currentPage(),
+            currentPage: args.currentPage,
             firstItem,
-            hasMorePages: args.currentPage() < lastPage,
+            hasMorePages: args.currentPage < lastPage,
             lastItem,
             lastPage,
-            perPage: args.perPage(),
+            perPage: args.perPage,
             total,
         };
     } else {
