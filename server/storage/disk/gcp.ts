@@ -9,7 +9,7 @@ import {
 } from "./storage.service.interface";
 import * as StorageDbService from "../db/storage-db.service";
 import * as StorageUtils from "../storage.utils";
-import { OrderDirectionServerType } from "@/server/graphql/enum/enum.pothos";
+import { OrderSortDirection } from "@/server/lib";
 
 type GcsApiResponse = {
     prefixes?: string[];
@@ -331,7 +331,7 @@ class GcpAdapter implements StorageService {
 
                 const bucketDir: StorageTypes.BucketDirectoryServerType = {
                     path: dirPath,
-                    created: new Date(),
+                    createdAt: new Date(),
                     lastModified: new Date(),
                     isPublic: dirPath.startsWith("public"),
                 };
@@ -369,7 +369,7 @@ class GcpAdapter implements StorageService {
         const sortedItems = StorageUtils.sortItems(
             filteredItems,
             input.sortBy || StorageTypes.FileSortFieldServerType.NAME,
-            input.sortDirection || OrderDirectionServerType.ASC,
+            input.sortDirection || OrderSortDirection.ASC,
         );
 
         // Apply pagination
@@ -434,7 +434,7 @@ class GcpAdapter implements StorageService {
 
                     const bucketDir: StorageTypes.BucketDirectoryServerType = {
                         path: fullPath,
-                        created: new Date(),
+                        createdAt: new Date(),
                         lastModified: new Date(),
                         isPublic: fullPath.startsWith("public"),
                     };
@@ -632,7 +632,7 @@ class GcpAdapter implements StorageService {
 
         const bucketDir: StorageTypes.BucketDirectoryServerType = {
             path,
-            created: new Date(),
+            createdAt: new Date(),
             lastModified: new Date(),
             isPublic: path.startsWith("public"),
         };
@@ -788,7 +788,7 @@ class GcpAdapter implements StorageService {
 
                 const bucketDir: StorageTypes.BucketDirectoryServerType = {
                     path: dirPath,
-                    created: new Date(),
+                    createdAt: new Date(),
                     lastModified: new Date(),
                     isPublic: dirPath.startsWith("public"),
                 };

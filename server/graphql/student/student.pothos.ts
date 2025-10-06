@@ -112,7 +112,7 @@ export const PartialStudentUpdateInputPothosObject = gqlSchemaBuilder
 
 export const StudentsWithFiltersPothosObject = gqlSchemaBuilder
     .objectRef<StTypes.StudentsWithFiltersResponse>(
-        "PaginatedTemplatesResponse",
+        "StudentsWithFiltersResponse",
     )
     .implement({
         fields: (t) => ({

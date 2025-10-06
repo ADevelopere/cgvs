@@ -10,6 +10,9 @@ import "@/server/graphql/templateCategory/templateCategory.mutation";
 import "@/server/graphql/storage/storage.query";
 import "@/server/graphql/storage/storage.mutation";
 
+import "@/server/graphql/student/student.query";
+import "@/server/graphql/student/student.mutation";
+
 import { gqlSchemaBuilder } from "./gqlSchemaBuilder";
 
 import { DateResolver, DateTimeResolver } from "graphql-scalars";
