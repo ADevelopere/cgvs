@@ -34,7 +34,7 @@ export type TemplateUpdateInput = {
     imagePath?: bigint | null;
 };
 
-export type PaginatedTemplatesResponseSelectType = {
+export type PaginatedTemplatesEntityResponse = {
     data: TemplateEntity[];
     pageInfo: PageInfo;
 };

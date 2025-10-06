@@ -1,7 +1,7 @@
 import SchemaBuilder from "@pothos/core";
 import AddGraphQL from "@pothos/plugin-add-graphql";
 import ErrorsPlugin from "@pothos/plugin-errors";
-import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
+import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 import WithInputPlugin from "@pothos/plugin-with-input";
 import DataloaderPlugin from "@pothos/plugin-dataloader";
 import DrizzlePlugin from "@pothos/plugin-drizzle";
@@ -10,6 +10,8 @@ import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import logger from "@/utils/logger";
 import { AuthContexts, BaseContext } from "./gqlContext";
+import { PhoneNumber } from "../lib/phoneNumber";
+import { Email } from "../lib/email";
 
 export interface PothosTypes {
     DrizzleRelations: DrizzleRelations;
@@ -23,6 +25,8 @@ export interface PothosTypes {
     Scalars: {
         DateTime: { Input: Date; Output: Date | string };
         Date: { Input: Date; Output: Date | string };
+        PhoneNumber: { Input: PhoneNumber; Output: PhoneNumber | string };
+        Email: { Input: Email; Output: Email | string };
     };
 }
 

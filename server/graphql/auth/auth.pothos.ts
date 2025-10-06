@@ -37,7 +37,10 @@ export const LoginInputPothosObject = gqlSchemaBuilder
     .inputRef<LoginInput>("LoginInput")
     .implement({
         fields: (t) => ({
-            email: t.string({ required: true }),
+            email: t.field({
+                type: "Email",
+                required: true,
+            }),
             password: t.string({ required: true }),
         }),
     });

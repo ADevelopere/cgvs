@@ -1,6 +1,6 @@
 import { STORAGE_CONFIG } from "./disk/storage.service.interface";
 import * as StorageTypes from "../storage/storage.types";
-import { SortDirectionServerType } from "../graphql/base/sort.pothos";
+import { OrderSortDirection } from "../lib";
 
 // Mapping functions for GraphQL enums to actual values
 export const CONTENT_TYPE_MAP: Record<StorageTypes.ContentTypeServerType, string> = {
@@ -308,7 +308,7 @@ export const sortItems = (
         StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
     >,
     sortBy: StorageTypes.FileSortFieldServerType,
-    direction: SortDirectionServerType,
+    direction: OrderSortDirection,
 ): Array<
     StorageTypes.FileInfoServerType | StorageTypes.DirectoryInfoServerType
 > => {
@@ -340,7 +340,7 @@ export const sortItems = (
                 break;
         }
 
-        return direction === SortDirectionServerType.ASC
+        return direction === OrderSortDirection.ASC
             ? comparison
             : -comparison;
     });
