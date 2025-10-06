@@ -67,7 +67,9 @@ export const loadStudetnsByIds = async (
         (id) => {
             const s = foundStudents.find((c) => c.id === id);
             if (!s) return new Error(`Student ${id} not found`);
-            return mapStudentEntityToPothosDefintion(s);
+            return mapStudentEntityToPothosDefintion(
+                s,
+            ) as StTypes.StudentPothosDefintion;
         },
     );
     return studentList;
@@ -136,16 +138,19 @@ export const partiallyUpdateStudent = async (
 
 export const fetchStudentsWithFilters = async (
     paginationArgs: PaginationArgs | null,
-    orderBy: StTypes.StudentsOrderByClause[] | null,
-    filters: StTypes.StudentFilterArgs | null,
+    filters?: StTypes.StudentFilterArgs | null,
+    orderBy?: StTypes.StudentsOrderByClause[] | null,
 ): Promise<StTypes.StudentsWithFiltersResponse> => {
     const total = await countAllStudents();
     let query = db.select().from(students).$dynamic();
     query = applyStudentFilters(query, filters);
     query = applyStudentOrdering(query, orderBy);
     query = queryWithPagination(query, paginationArgs);
-    const items: StTypes.StudentPothosDefintion[] = (await query).map((s) =>
-        StTypes.mapStudentEntityToPothosDefintion(s),
+    const items: StTypes.StudentPothosDefintion[] = (await query).map(
+        (s) =>
+            StTypes.mapStudentEntityToPothosDefintion(
+                s,
+            ) as StTypes.StudentPothosDefintion,
     );
     const pageInfo = buildPageInfoFromArgs(paginationArgs, items.length, total);
     return {

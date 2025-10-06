@@ -26,22 +26,27 @@ export type StudentPothosDefintion = {
 };
 
 export const mapStudentEntityToPothosDefintion = (
-    entity: StudentEntity,
-): StudentPothosDefintion => ({
-    id: entity.id,
-    name: entity.name,
-    email: entity.email ? new Email(entity.email) : null,
-    phoneNumber: entity.phoneNumber
-        ? new PhoneNumber(entity.phoneNumber)
-        : null,
-    nationality: entity.nationality
-        ? (entity.nationality as CountryCode)
-        : null,
-    gender: entity.gender ? (entity.gender as Gender) : null,
-    dateOfBirth: entity.dateOfBirth,
-    createdAt: entity.createdAt,
-    updatedAt: entity.updatedAt,
-});
+    entity: StudentEntity | null | undefined,
+): StudentPothosDefintion | null => {
+    if (!entity) {
+        return null;
+    }
+    return {
+        id: entity.id,
+        name: entity.name,
+        email: entity.email ? new Email(entity.email) : null,
+        phoneNumber: entity.phoneNumber
+            ? new PhoneNumber(entity.phoneNumber)
+            : null,
+        nationality: entity.nationality
+            ? (entity.nationality as CountryCode)
+            : null,
+        gender: entity.gender ? (entity.gender as Gender) : null,
+        dateOfBirth: entity.dateOfBirth,
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt,
+    };
+};
 
 export type StudentCreateInput = {
     name: string;
@@ -118,7 +123,7 @@ export type StudentFilterArgs = {
  */
 export type StudentsOrderByClause = {
     column: StudentsOrderByColumn;
-    order: OrderSortDirection;
+    order?: OrderSortDirection | null;
 };
 
 export enum StudentsOrderByColumn {

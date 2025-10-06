@@ -5,7 +5,9 @@ import { loadStudetnsByIds } from "./student.repository";
 import {
     CountryCodePothosObject,
     GenderPothosObject,
+    OrderSortDirectionPothosObject,
 } from "../enum/enum.pothos";
+import { OrderSortDirection } from "@/server/lib";
 
 export const StudentPothosObject = gqlSchemaBuilder
     .loadableObjectRef<StTypes.StudentPothosDefintion, number>("Student", {
@@ -134,7 +136,7 @@ export const StudentFilterArgsPothosObject = gqlSchemaBuilder
 
             email: t.string(),
             emailNotContains: t.string(),
-            emailEquals: t.field({ type: "Email" }),
+            emailEquals: t.field({ type: "Email", required: false }),
             emailNotEquals: t.string(),
             emailStartsWith: t.string(),
             emailEndsWith: t.string(),
@@ -166,5 +168,28 @@ export const StudentFilterArgsPothosObject = gqlSchemaBuilder
             birthDateOnOrBefore: t.field({ type: "DateTime" }),
             birthDateIsEmpty: t.boolean(),
             birthDateIsNotEmpty: t.boolean(),
+        }),
+    });
+
+export const StudentsOrderByColumnPothosObject = gqlSchemaBuilder.enumType(
+    "StudentsOrderByColumn",
+    {
+        values: Object.values(StTypes.StudentsOrderByColumn),
+    },
+);
+
+export const StudentsOrderByClausePothosObject = gqlSchemaBuilder
+    .inputRef<StTypes.StudentsOrderByClause>("StudentsOrderByClause")
+    .implement({
+        fields: (t) => ({
+            column: t.field({
+                type: StudentsOrderByColumnPothosObject,
+                required: true,
+            }),
+            order: t.field({
+                type: OrderSortDirectionPothosObject,
+                required: false,
+                defaultValue: OrderSortDirection.ASC,
+            }),
         }),
     });

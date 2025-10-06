@@ -1,6 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as StorageTypes from "../../storage/storage.types";
-import { SortDirectionPothosObject } from "../enum/enum.pothos";
+import { OrderSortDirectionPothosObject } from "../enum/enum.pothos";
 
 // File type enum
 export const FileTypePothosObject = gqlSchemaBuilder.enumType("FileType", {
@@ -131,7 +131,7 @@ export const ListFileInputPothosObject = gqlSchemaBuilder
             searchTerm: t.string({ required: false }),
             fileType: t.string({ required: false }),
             sortDirection: t.field({
-                type: SortDirectionPothosObject,
+                type: OrderSortDirectionPothosObject,
                 required: false,
             }),
             sortBy: t.field({

@@ -1,23 +1,20 @@
 import { OrderSortDirection, Gender, CountryCode } from "@/server/lib";
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 
-const OrderSortDirectionValues = Object.values(OrderSortDirection);
-export const SortDirectionPothosObject = gqlSchemaBuilder.enumType(
-    "SortDirection",
+export const OrderSortDirectionPothosObject = gqlSchemaBuilder.enumType(
+    "OrderSortDirection",
     {
-        values: OrderSortDirectionValues,
+        values: Object.values(OrderSortDirection),
     },
 );
 
-const GenderValues = Object.values(Gender);
 export const GenderPothosObject = gqlSchemaBuilder.enumType("Gender", {
-    values: GenderValues,
+    values: Object.values(Gender),
 });
 
-const CountryCodeValues = Object.values(CountryCode);
 export const CountryCodePothosObject = gqlSchemaBuilder.enumType(
     "CountryCode",
     {
-        values: CountryCodeValues,
+        values: Object.values(CountryCode),
     },
 );
