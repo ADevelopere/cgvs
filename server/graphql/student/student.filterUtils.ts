@@ -20,7 +20,7 @@ import { PgSelect } from "drizzle-orm/pg-core";
 
 export function applyStudentFilters<T extends PgSelect>(
     qb: T,
-    args: StTypes.StudentFilterArgs | null,
+    args?: StTypes.StudentFilterArgs | null,
 ) {
     if (!args) return qb;
     // Full-text search TODO: implement when tsvector is available
@@ -164,7 +164,7 @@ export function applyStudentFilters<T extends PgSelect>(
 
 export function applyStudentOrdering<T extends PgSelect>(
     qb: T,
-    orderBy: StudentsOrderByClause[] | null,
+    orderBy?: StudentsOrderByClause[] | null,
 ) {
     if (!orderBy || orderBy.length === 0) return qb;
 

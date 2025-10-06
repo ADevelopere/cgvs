@@ -10,8 +10,7 @@ import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import logger from "@/utils/logger";
 import { AuthContexts, BaseContext } from "./gqlContext";
-import { PhoneNumber } from "../lib/phoneNumber";
-import { Email } from "../lib/email";
+import { PhoneNumber, Email } from "../lib";
 
 export interface PothosTypes {
     DrizzleRelations: DrizzleRelations;
@@ -24,9 +23,9 @@ export interface PothosTypes {
     AuthContexts: AuthContexts;
     Scalars: {
         DateTime: { Input: Date; Output: Date | string };
-        Date: { Input: Date; Output: Date | string };
-        PhoneNumber: { Input: PhoneNumber; Output: PhoneNumber | string };
-        Email: { Input: Email; Output: Email | string };
+        Date: { Input: Date; Output: Date };
+        PhoneNumber: { Input: PhoneNumber; Output: PhoneNumber };
+        Email: { Input: Email; Output: Email| string };
     };
 }
 

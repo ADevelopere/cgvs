@@ -1,52 +1,47 @@
-import { SortDirectionPothosObject } from "../enum/enum.pothos";
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { PaginationArgsObject } from "../pagintaion/pagination.objects";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
-import {
-    StudentFilterArgsPothosObject,
-    StudentPothosObject,
-    StudentsWithFiltersPothosObject,
-} from "./student.pothos";
+import * as StPothos from "./student.pothos";
 import {
     fetchStudentsWithFilters,
     findStudentById,
 } from "./student.repository";
-import { mapStudentEntityToPothosDefintion } from "./student.types";
+import * as StTypes from "./student.types";
 
 gqlSchemaBuilder.queryFields((t) => ({
     student: t.field({
-        type: StudentPothosObject,
+        type: StPothos.StudentPothosObject,
         nullable: true,
         args: {
             id: t.arg.int({ required: true }),
         },
         resolve: async (_query, args) =>
             await findStudentById(args.id).then((s) =>
-                mapStudentEntityToPothosDefintion(s),
+                StTypes.mapStudentEntityToPothosDefintion(s),
             ),
     }),
 
     students: t.field({
-        type: StudentsWithFiltersPothosObject,
+        type: StPothos.StudentsWithFiltersPothosObject,
         args: {
             paginationArgs: t.arg({
                 type: PaginationArgsObject,
                 required: false,
             }),
             orderBy: t.arg({
-                type: SortDirectionPothosObject,
+                type: [StPothos.StudentsOrderByClausePothosObject],
                 required: false,
             }),
             filterArgs: t.arg({
-                type: StudentFilterArgsPothosObject,
+                type: StPothos.StudentFilterArgsPothosObject,
                 required: false,
             }),
         },
-        resolve: (_, args) =>
+        resolve: async (_, args) =>
             await fetchStudentsWithFilters(
-                new PaginationArgs({...args.paginationArgs}),
+                new PaginationArgs({ ...args.paginationArgs }),
+                args.filterArgs as unknown as StTypes.StudentFilterArgs,
                 args.orderBy,
-                args.filterArgs,
             ),
     }),
 }));
