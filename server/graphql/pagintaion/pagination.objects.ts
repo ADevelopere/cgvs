@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { PageInfo, PaginationArgs } from "./pagintaion.types";
+import { PageInfo } from "./pagintaion.types";
 
 const PageInfoRef = gqlSchemaBuilder.objectRef<PageInfo>("PageInfo");
 
@@ -19,6 +19,14 @@ export const PageInfoObject = PageInfoRef.implement({
 export const PaginationArgsDefault = {
     first: 10,
     maxCount: 100,
+};
+
+type PaginationArgs = {
+    first: number | null;
+    skip: number | null;
+    last: number | null;
+    page: number | null;
+    maxCount: number | null;
 };
 
 const PaginationArgsRef =

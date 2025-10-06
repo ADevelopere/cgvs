@@ -6,6 +6,7 @@ import {
     passwordResetTokens,
 } from "@/server/db/schema";
 import { PageInfo } from "../pagintaion/pagintaion.types";
+import { Email } from "@/server/lib/email";
 
 export type UserEntity = typeof users.$inferSelect;
 export type UserEntityInput = typeof users.$inferInsert;
@@ -19,14 +20,14 @@ export type UserPothosDefintion = UserEntity & {
 
 export type UserCreateInput = {
     name: string;
-    email: string;
+    email: Email;
     password: string;
 };
 
 export type UserUpdateInput = {
     id: number;
     name: string;
-    email: string;
+    email: Email;
     password: string;
 };
 
@@ -79,7 +80,7 @@ export type PasswordResetTokenPothosDefintion = PasswordResetTokenSelectType;
 
 // login
 export type LoginInput = {
-    email: string;
+    email: Email;
     password: string;
 };
 

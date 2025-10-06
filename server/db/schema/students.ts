@@ -3,11 +3,8 @@ import {
     serial,
     varchar,
     timestamp,
-    pgEnum,
 } from "drizzle-orm/pg-core";
-
-export const genderEnum = pgEnum("gender", ["MALE", "FEMALE", "OTHER"]);
-export const countryCodeEnum = pgEnum("cuntry_code", ["EG", "US"]);
+import { countryCodeEnum, genderEnum } from "./enums";
 
 export const students = pgTable("student", {
     id: serial("id").primaryKey(),

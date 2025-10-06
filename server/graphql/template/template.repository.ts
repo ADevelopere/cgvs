@@ -7,7 +7,7 @@ import {
 import { count, eq, inArray, max } from "drizzle-orm";
 import {
     TemplateEntity,
-    PaginatedTemplatesResponseSelectType,
+    PaginatedTemplatesEntityResponse,
     TemplateEntityInput,
     TemplateCreateInput,
     TemplateUpdateInput,
@@ -23,9 +23,9 @@ import {
     findTemplateCategoryById,
 } from "../templateCategory/templateCategory.repository";
 
-export const findTemplateByIdOrThrow = async (
+export const findTemplateById = async (
     id: number,
-): Promise<TemplateEntity> => {
+): Promise<TemplateEntity | null> => {
     try {
         return await db
             .select()
@@ -34,10 +34,25 @@ export const findTemplateByIdOrThrow = async (
             .then((res) => {
                 const t = res[0];
                 if (!t) {
-                    throw new Error(`Template with ID ${id} does not exist.`);
+                    return null;
                 }
                 return t;
             });
+    } catch {
+        return null;
+    }
+};
+
+export const findTemplateByIdOrThrow = async (
+    id: number,
+): Promise<TemplateEntity> => {
+    try {
+        return await findTemplateById(id).then((t) => {
+            if (!t) {
+                throw new Error(`Template with ID ${id} does not exist.`);
+            }
+            return t;
+        });
     } catch (e) {
         logger.error("findTemplateByIdOrThrow error:", e);
         throw e;
@@ -95,7 +110,7 @@ export const loadTemplatesForTemplateCategories = async (
 
 export const findTemplatesPaginated = async (
     paginationArgs?: PaginationArgs | null,
-): Promise<PaginatedTemplatesResponseSelectType> => {
+): Promise<PaginatedTemplatesEntityResponse> => {
     const { first, skip, page, maxCount } = paginationArgs ?? {};
 
     const total = await templatesTotalCount();
@@ -117,7 +132,7 @@ export const findTemplatesPaginated = async (
     const lastPage = Math.ceil(total / perPage);
     const hasMorePages = currentPage < lastPage;
 
-    const result: PaginatedTemplatesResponseSelectType = {
+    const result: PaginatedTemplatesEntityResponse = {
         data: templates,
         pageInfo: {
             count: length,

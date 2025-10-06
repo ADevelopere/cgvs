@@ -9,7 +9,7 @@ import {
 } from "./storage.service.interface";
 import * as StorageDbService from "../db/storage-db.service";
 import * as StorageUtils from "../storage.utils";
-import { SortDirectionServerType } from "@/server/graphql/base/sort.pothos";
+import { OrderDirectionServerType } from "@/server/graphql/enum/enum.pothos";
 
 type GcsApiResponse = {
     prefixes?: string[];
@@ -369,7 +369,7 @@ class GcpAdapter implements StorageService {
         const sortedItems = StorageUtils.sortItems(
             filteredItems,
             input.sortBy || StorageTypes.FileSortFieldServerType.NAME,
-            input.sortDirection || SortDirectionServerType.ASC,
+            input.sortDirection || OrderDirectionServerType.ASC,
         );
 
         // Apply pagination

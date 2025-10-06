@@ -7,7 +7,7 @@ import {
 } from "./template.pothos";
 import {
     allTemplatesConfigs,
-    findTemplateByIdOrThrow,
+    findTemplateById,
     findTemplatesPaginated,
 } from "./template.repository";
 
@@ -18,7 +18,7 @@ gqlSchemaBuilder.queryFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_query, args) => findTemplateByIdOrThrow(args.id),
+        resolve: async (_query, args) => findTemplateById(args.id),
     }),
 
     templates: t.field({

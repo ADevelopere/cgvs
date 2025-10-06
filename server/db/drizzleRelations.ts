@@ -37,30 +37,30 @@ export const relations = defineRelations(schema, (r) => ({
             to: r.users.id,
         }),
     },
-    // certificates: {
-    //     template: r.one.templates({
-    //         from: r.certificates.templateId,
-    //         to: r.templates.id,
-    //     }),
-    //     student: r.one.students({
-    //         from: r.certificates.studentId,
-    //         to: r.students.id,
-    //     }),
-    //     templateRecipientGroup: r.one.templateRecipientGroups({
-    //         from: r.certificates.templateRecipientGroupId,
-    //         to: r.templateRecipientGroups.id,
-    //     }),
-    // },
-    // students: {
-    //     recipientGroupItems: r.many.templateRecipientGroupItems({
-    //         from: r.students.id,
-    //         to: r.templateRecipientGroupItems.studentId,
-    //     }),
-    //     certificates: r.many.certificates({
-    //         from: r.students.id,
-    //         to: r.certificates.studentId,
-    //     }),
-    // },
+    certificates: {
+        template: r.one.templates({
+            from: r.certificates.templateId,
+            to: r.templates.id,
+        }),
+        student: r.one.students({
+            from: r.certificates.studentId,
+            to: r.students.id,
+        }),
+        templateRecipientGroup: r.one.templateRecipientGroups({
+            from: r.certificates.templateRecipientGroupId,
+            to: r.templateRecipientGroups.id,
+        }),
+    },
+    students: {
+        recipientGroupItems: r.many.templateRecipientGroupItems({
+            from: r.students.id,
+            to: r.templateRecipientGroupItems.studentId,
+        }),
+        certificates: r.many.certificates({
+            from: r.students.id,
+            to: r.certificates.studentId,
+        }),
+    },
     templates: {
         category: r.one.templateCategories({
             from: r.templates.categoryId,
@@ -72,22 +72,22 @@ export const relations = defineRelations(schema, (r) => ({
             to: r.templateCategories.id,
             alias: "preSuspensionCategory",
         }),
-        // certificates: r.many.certificates({
-        //     from: r.templates.id,
-        //     to: r.certificates.templateId,
-        // }),
-        // recipientGroups: r.many.templateRecipientGroups({
-        //     from: r.templates.id,
-        //     to: r.templateRecipientGroups.templateId,
-        // }),
-        // templateVariables: r.many.templateVariableBases({
-        //     from: r.templates.id,
-        //     to: r.templateVariableBases.templateId,
-        // }),
-        // elements: r.many.templateElements({
-        //     from: r.templates.id,
-        //     to: r.templateElements.templateId,
-        // }),
+        certificates: r.many.certificates({
+            from: r.templates.id,
+            to: r.certificates.templateId,
+        }),
+        recipientGroups: r.many.templateRecipientGroups({
+            from: r.templates.id,
+            to: r.templateRecipientGroups.templateId,
+        }),
+        templateVariables: r.many.templateVariableBases({
+            from: r.templates.id,
+            to: r.templateVariableBases.templateId,
+        }),
+        elements: r.many.templateElements({
+            from: r.templates.id,
+            to: r.templateElements.templateId,
+        }),
     },
     templateCategories: {
         parentCategory: r.one.templateCategories({
