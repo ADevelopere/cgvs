@@ -7,6 +7,9 @@ import "@/server/graphql/template/template.mutation";
 import "@/server/graphql/templateCategory/templateCategory.query";
 import "@/server/graphql/templateCategory/templateCategory.mutation";
 
+import "@/server/graphql/templateVariable/templateVariable.query";
+import "@/server/graphql/templateVariable/templateVariable.mutation";
+
 import "@/server/graphql/storage/storage.query";
 import "@/server/graphql/storage/storage.mutation";
 

@@ -340,3 +340,7 @@ export const allTemplatesConfigs = async (): Promise<
         .from(templatesConfigs)
         .then((res) => res);
 };
+
+export const templateExistsById = async (id: number): Promise<boolean> => {
+    return (await db.$count(templates, eq(templates.id, id))) > 0;
+};

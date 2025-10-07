@@ -2,35 +2,40 @@ import * as Db from "@/server/db/schema";
 import { TemplatePothosDefintion } from "../template/template.types";
 
 // entity types
-export type TemplateVariableEntity =
-    typeof Db.templateVariableBases.$inferSelect;
+type TemplateVariableEntity = typeof Db.templateVariableBases.$inferSelect;
 
 export type TemplateVariableEntityInput =
     typeof Db.templateVariableBases.$inferInsert;
 
-export type TemplateTextVariableEntity =
-    typeof Db.templateTextVariables.$inferSelect;
+type TemplateTextVariableEntity = typeof Db.templateTextVariables.$inferSelect;
 export type TemplateTextVariableEntityInput =
     typeof Db.templateTextVariables.$inferInsert;
 
-export type TemplateNumberVariableEntity =
-    typeof Db.nemplateNumberVariables.$inferSelect;
+type TemplateNumberVariableEntity =
+    typeof Db.templateNumberVariables.$inferSelect;
 export type TemplateNumberVariableEntityInput =
-    typeof Db.nemplateNumberVariables.$inferInsert;
+    typeof Db.templateNumberVariables.$inferInsert;
 
-export type TemplateDateVariableEntity =
-    typeof Db.templateDateVariables.$inferSelect;
+type TemplateDateVariableEntity = typeof Db.templateDateVariables.$inferSelect;
 export type TemplateDateVariableEntityInput =
     typeof Db.templateDateVariables.$inferInsert;
 
-export type TemplateSelectVariableEntity =
+type TemplateSelectVariableEntity =
     typeof Db.templateSelectVariables.$inferSelect;
 export type TemplateSelectVariableEntityInput =
     typeof Db.templateSelectVariables.$inferInsert;
 
+export enum TemplateVariableType {
+    TEXT = "TEXT",
+    NUMBER = "NUMBER",
+    DATE = "DATE",
+    SELECT = "SELECT",
+}
+
 // Pothos defintion
 export type TemplateVariablePothosDefinition = TemplateVariableEntity & {
-    template: TemplatePothosDefintion;
+    type: TemplateVariableType;
+    template?: TemplatePothosDefintion | null;
 };
 
 export type TemplateTextVariablePothosDefinition =
@@ -50,23 +55,30 @@ export type TemplateSelectVariablePothosDefinition = Omit<
         options: string[];
     };
 
+export type TemplateVariablePothosUnion =
+    | TemplateTextVariablePothosDefinition
+    | TemplateNumberVariablePothosDefinition
+    | TemplateDateVariablePothosDefinition
+    | TemplateSelectVariablePothosDefinition;
+
 // Create and update inputs
-type TemplateVariableCreateInput = {
+export type TemplateVariableCreateInput = {
     templateId: number;
     name: string;
+    required: boolean;
     description?: string | null;
-    required?: boolean | null;
+    previewValue?: string | null;
 };
 
-type TemplateVariableUpdateInput = {
+export type TemplateVariableUpdateInput = {
     id: number;
     name: string;
+    required: boolean;
     description?: string | null;
-    required?: boolean | null;
+    previewValue?: string | null;
 };
 
 type TemplateTextVariableProps = {
-    previewValue: string;
     minLength?: number | null;
     maxLength?: number | null;
     pattern?: string | null;
@@ -78,16 +90,16 @@ export type TextTemplaeVariableUpdateInput = TemplateVariableUpdateInput &
     TemplateTextVariableProps;
 
 type TemplateNumberVariableProps = {
-    previewValue: number;
+    previewValue?: number | null;
     minValue?: number | null;
     maxValue?: number | null;
     decimalPlaces?: number | null;
 };
 
-export type TemplateNumberVariableCreateInput = TemplateVariableCreateInput &
+export type TemplateNumberVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
     TemplateNumberVariableProps;
 
-export type TemplateNumberVariableUpdateInput = TemplateVariableUpdateInput &
+export type TemplateNumberVariableUpdateInput = Omit<TemplateVariableUpdateInput, "previewValue"> &
     TemplateNumberVariableProps;
 
 type TemplateDateVariableProps = {
@@ -96,15 +108,14 @@ type TemplateDateVariableProps = {
     maxDate?: Date | null;
     format?: string | null;
 };
-export type TemplateDateVariableCreateInput = TemplateVariableCreateInput &
+export type TemplateDateVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
     TemplateDateVariableProps;
 
-export type TemplateDateVariableUpdateInput = TemplateVariableUpdateInput &
+export type TemplateDateVariableUpdateInput = Omit<TemplateVariableUpdateInput, "previewValue"> &
     TemplateDateVariableProps;
 
 type TemplateSelectVariableProps = {
-    previewValue: string | null;
-    options: string[];
+    options?: string[] | null;
     multiple?: boolean | null;
 };
 

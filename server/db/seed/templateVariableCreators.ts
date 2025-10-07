@@ -6,7 +6,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
     templateVariableBases,
     templateTextVariables,
-    nemplateNumberVariables,
+    templateNumberVariables,
     templateDateVariables,
     templateSelectVariables,
 } from "../schema/templateVariables";
@@ -138,7 +138,7 @@ export async function createAcademicVariables(
         })
         .returning();
 
-    await db.insert(nemplateNumberVariables).values({
+    await db.insert(templateNumberVariables).values({
         id: gpaBase.id,
         previewValue: "4.50",
         minValue: "0.00",
@@ -198,7 +198,7 @@ export async function createProfessionalVariables(
         })
         .returning();
 
-    await db.insert(nemplateNumberVariables).values({
+    await db.insert(templateNumberVariables).values({
         id: durationBase.id,
         previewValue: "40",
         minValue: "1",
@@ -363,7 +363,7 @@ export async function createVolunteerVariables(
         })
         .returning();
 
-    await db.insert(nemplateNumberVariables).values({
+    await db.insert(templateNumberVariables).values({
         id: hoursBase.id,
         previewValue: "100",
         minValue: "1",

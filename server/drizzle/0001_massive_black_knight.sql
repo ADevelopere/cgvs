@@ -97,27 +97,31 @@ CREATE TABLE "templates_config" (
 	"value" text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "date_template_variable" (
+CREATE TABLE "template_date_variable" (
 	"id" integer PRIMARY KEY NOT NULL,
 	"min_date" timestamp (3),
 	"max_date" timestamp (3),
-	"format" varchar(50),
-	"preview_value" timestamp (3)
+	"format" varchar(50)
 );
 --> statement-breakpoint
-CREATE TABLE "number_template_variable" (
+CREATE TABLE "template_number_variable" (
 	"id" integer PRIMARY KEY NOT NULL,
 	"min_value" numeric,
 	"max_value" numeric,
-	"decimal_places" integer,
-	"preview_value" numeric
+	"decimal_places" integer
 );
 --> statement-breakpoint
-CREATE TABLE "select_template_variable" (
+CREATE TABLE "template_select_variable" (
 	"id" integer PRIMARY KEY NOT NULL,
 	"options" json,
-	"multiple" boolean,
-	"preview_value" varchar(255)
+	"multiple" boolean
+);
+--> statement-breakpoint
+CREATE TABLE "template_text_variable" (
+	"id" integer PRIMARY KEY NOT NULL,
+	"min_length" integer,
+	"max_length" integer,
+	"pattern" varchar(255)
 );
 --> statement-breakpoint
 CREATE TABLE "template_variable_base" (
@@ -128,16 +132,9 @@ CREATE TABLE "template_variable_base" (
 	"type" "template_variable_type" NOT NULL,
 	"required" boolean DEFAULT false NOT NULL,
 	"order" integer NOT NULL,
+	"preview_value" varchar(255),
 	"created_at" timestamp (3) NOT NULL,
 	"updated_at" timestamp (3) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "text_template_variable" (
-	"id" integer PRIMARY KEY NOT NULL,
-	"min_length" integer,
-	"max_length" integer,
-	"pattern" varchar(255),
-	"preview_value" varchar(255)
 );
 --> statement-breakpoint
 CREATE TABLE "recipient_group_item_variable_value" (
@@ -261,7 +258,7 @@ CREATE INDEX "sessions_last_activity_index" ON "sessions" USING btree ("lastActi
 CREATE INDEX "idx_students_name_fts" ON "student" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
 CREATE INDEX "idx_students_name_trgm" ON "student" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
 CREATE UNIQUE INDEX "template_category_special_type_key" ON "TemplateCategory" USING btree ("special_type");--> statement-breakpoint
-CREATE UNIQUE INDEX "template_variable_base_template_id_name_key" ON "template_variable_base" USING btree ("template_id","name");--> statement-breakpoint
+CREATE UNIQUE INDEX "template_base_variable_template_id_name_key" ON "template_variable_base" USING btree ("template_id","name");--> statement-breakpoint
 CREATE UNIQUE INDEX "rgiv_group_item_variable_unique" ON "recipient_group_item_variable_value" USING btree ("template_recipient_group_item_id","templateVariableId");--> statement-breakpoint
 CREATE INDEX "rgiv_value_idx" ON "recipient_group_item_variable_value" USING btree ("value_indexed");--> statement-breakpoint
 CREATE UNIQUE INDEX "trgi_student_group_unique" ON "template_recipient_group_item" USING btree ("student_id","template_recipient_group_id");

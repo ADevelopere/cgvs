@@ -1,5 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { PaginationArgsObject } from "../pagintaion/pagination.objects";
+import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import {
     PaginatedTemplatesResponsePothosObject,
     TemplatePothosObject,
@@ -28,7 +29,7 @@ gqlSchemaBuilder.queryFields((t) => ({
                 type: PaginationArgsObject,
             }),
         },
-        resolve: async (_, args) => findTemplatesPaginated(args.pagination),
+        resolve: async (_, args) => findTemplatesPaginated(new PaginationArgs({ ...args.pagination })),
     }),
 
     templatesConfigs: t.field({

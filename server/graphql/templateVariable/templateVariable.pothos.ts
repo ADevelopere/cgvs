@@ -24,6 +24,7 @@ export const TemplateVariablePothosInterface = gqlSchemaBuilder
                 type: TemplateVariableTypePothosEnum,
                 nullable: true,
             }),
+            previewValue: t.exposeString("previewValue"),
             createdAt: t.expose("createdAt", { type: "DateTime" }),
             updatedAt: t.expose("updatedAt", { type: "DateTime" }),
         }),
@@ -52,7 +53,6 @@ export const TemplateTextVariablePothosObjectType = gqlSchemaBuilder
             minLength: t.exposeInt("minLength", { nullable: true }),
             maxLength: t.exposeInt("maxLength", { nullable: true }),
             pattern: t.exposeString("pattern", { nullable: true }),
-            previewValue: t.exposeString("previewValue"),
         }),
     });
 
@@ -68,10 +68,9 @@ export const TemplateNumberVariablePothosObjectType = gqlSchemaBuilder
             "type" in item &&
             item.type === "NUMBER",
         fields: (t) => ({
-            minValue: t.exposeString("minValue", { nullable: true }),
-            maxValue: t.exposeString("maxValue", { nullable: true }),
+            minValue: t.exposeFloat("minValue", { nullable: true }),
+            maxValue: t.exposeFloat("maxValue", { nullable: true }),
             decimalPlaces: t.exposeInt("decimalPlaces", { nullable: true }),
-            previewValue: t.exposeString("previewValue"),
         }),
     });
 
@@ -90,7 +89,6 @@ export const TemplateDateVariablePothosObjectType = gqlSchemaBuilder
             minDate: t.expose("minDate", { type: "DateTime", nullable: true }),
             maxDate: t.expose("maxDate", { type: "DateTime", nullable: true }),
             format: t.exposeString("format", { nullable: true }),
-            previewValue: t.expose("previewValue", { type: "DateTime" }),
         }),
     });
 
@@ -108,7 +106,6 @@ export const TemplateSelectVariablePothosObjectType = gqlSchemaBuilder
         fields: (t) => ({
             options: t.expose("options", { type: ["String"] }),
             multiple: t.exposeBoolean("multiple", { nullable: true }),
-            previewValue: t.exposeString("previewValue", { nullable: true }),
         }),
     });
 
@@ -122,7 +119,7 @@ export const TemplateTextVariableCreateInputPothosObject = gqlSchemaBuilder
             templateId: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.string({ required: true }),
             minLength: t.int({ required: false }),
             maxLength: t.int({ required: false }),
@@ -139,7 +136,7 @@ export const TemplateTextVariableUpdateInputPothosObject = gqlSchemaBuilder
             id: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.string({ required: true }),
             minLength: t.int({ required: false }),
             maxLength: t.int({ required: false }),
@@ -156,7 +153,7 @@ export const TemplateNumberVariableCreateInputPothosObject = gqlSchemaBuilder
             templateId: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.float({ required: true }),
             minValue: t.float({ required: false }),
             maxValue: t.float({ required: false }),
@@ -173,7 +170,7 @@ export const TemplateNumberVariableUpdateInputPothosObject = gqlSchemaBuilder
             id: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.float({ required: true }),
             minValue: t.float({ required: false }),
             maxValue: t.float({ required: false }),
@@ -190,7 +187,7 @@ export const TemplateDateVariableCreateInputPothosObject = gqlSchemaBuilder
             templateId: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.field({ type: "DateTime", required: true }),
             minDate: t.field({ type: "DateTime", required: false }),
             maxDate: t.field({ type: "DateTime", required: false }),
@@ -207,7 +204,7 @@ export const TemplateDateVariableUpdateInputPothosObject = gqlSchemaBuilder
             id: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.field({ type: "DateTime", required: true }),
             minDate: t.field({ type: "DateTime", required: false }),
             maxDate: t.field({ type: "DateTime", required: false }),
@@ -224,7 +221,7 @@ export const TemplateSelectVariableCreateInputPothosObject = gqlSchemaBuilder
             templateId: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.string({ required: false }),
             options: t.stringList({ required: true }),
             multiple: t.boolean({ required: false }),
@@ -240,11 +237,9 @@ export const TemplateSelectVariableUpdateInputPothosObject = gqlSchemaBuilder
             id: t.int({ required: true }),
             name: t.string({ required: true }),
             description: t.string({ required: false }),
-            required: t.boolean({ required: false }),
+            required: t.boolean({ required: true, defaultValue: false }),
             previewValue: t.string({ required: false }),
             options: t.stringList({ required: true }),
             multiple: t.boolean({ required: false }),
         }),
     });
-
-
