@@ -14,7 +14,7 @@ export type StudentEntityInput = typeof students.$inferInsert;
 export type StudentPothosDefintion = {
     id: number;
     name: string;
-    email?: Email | null;
+    email?: string | null;
     phoneNumber?: PhoneNumber | null;
     dateOfBirth?: Date | null;
     gender?: Gender | null;
@@ -34,7 +34,7 @@ export const mapStudentEntityToPothosDefintion = (
     return {
         id: entity.id,
         name: entity.name,
-        email: entity.email ? new Email(entity.email) : null,
+        email: entity.email,
         phoneNumber: entity.phoneNumber
             ? new PhoneNumber(entity.phoneNumber)
             : null,

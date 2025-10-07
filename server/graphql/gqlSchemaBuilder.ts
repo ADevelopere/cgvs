@@ -25,7 +25,7 @@ export interface PothosTypes {
         DateTime: { Input: Date; Output: Date | string };
         Date: { Input: Date; Output: Date };
         PhoneNumber: { Input: PhoneNumber; Output: PhoneNumber };
-        Email: { Input: Email; Output: Email| string };
+        Email: { Input: Email; Output: Email };
     };
 }
 

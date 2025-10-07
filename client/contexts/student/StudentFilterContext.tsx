@@ -23,8 +23,8 @@ import logger from "@/utils/logger";
 // Helper function to map table column IDs to GraphQL OrderStudentsByColumn enum values
 const mapColumnIdToGraphQLColumn = (
     columnId: string,
-): Graphql.OrderStudentsByColumn | null => {
-    const columnMap: Record<string, Graphql.OrderStudentsByColumn> = {
+): Graphql.StudentsOrderByColumn | null => {
+    const columnMap: Record<string, Graphql.StudentsOrderByColumn> = {
         id: "ID",
         name: "NAME",
         email: "EMAIL",
@@ -57,7 +57,9 @@ type ApplyFiltersParams =
 type StudentFilterAndSortContextType = {
     filters: Record<string, FilterClause<unknown, unknown> | null>;
     applyFilters: (params: ApplyFiltersParams) => void;
-    setSearchFilter: (filterClause: FilterClause<unknown, unknown> | null) => void;
+    setSearchFilter: (
+        filterClause: FilterClause<unknown, unknown> | null,
+    ) => void;
     setColumnFilter: (
         filterClause: FilterClause<unknown, unknown> | null,
         columnId: string,
@@ -65,7 +67,7 @@ type StudentFilterAndSortContextType = {
     clearFilter: (columnId: keyof Graphql.Student) => void;
     clearAllFilters: () => void;
     updateSort: (
-        orderByClause: { column: string; order: Graphql.SortDirection }[],
+        orderByClause: { column: string; order: Graphql.OrderSortDirection }[],
     ) => void;
 };
 
@@ -84,7 +86,7 @@ export const StudentFilterAndSortProvider: React.FC<{
 
     // This effect syncs the activeFilters state with the query parameters
     useEffect(() => {
-        const newFilterArgs: Partial<Graphql.StudentFilterArgsInput> = {};
+        const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
         Object.values(activeFilters).forEach((filterClause) => {
             if (!filterClause) return;
@@ -93,7 +95,7 @@ export const StudentFilterAndSortProvider: React.FC<{
             const columnDef = getColumnDef(columnId);
             if (!columnDef) return;
 
-            let mappedFilter: Partial<Graphql.StudentFilterArgsInput> = {};
+            let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
             if (columnDef.type === "text" || columnDef.type === "phone") {
                 mappedFilter = mapTextFilter(
                     columnId,
@@ -180,9 +182,14 @@ export const StudentFilterAndSortProvider: React.FC<{
     );
 
     const updateSort = useCallback(
-        (orderByClause: { column: string; order: Graphql.SortDirection }[]) => {
+        (
+            orderByClause: {
+                column: string;
+                order: Graphql.OrderSortDirection;
+            }[],
+        ) => {
             // Convert generic OrderByClause to GraphQL-specific OrderStudentsByClauseInput
-            const graphqlOrderBy: Graphql.OrderStudentsByClauseInput[] =
+            const graphqlOrderBy: Graphql.StudentsOrderByClause[] =
                 orderByClause
                     .map((clause) => {
                         const graphqlColumn = mapColumnIdToGraphQLColumn(
@@ -194,15 +201,14 @@ export const StudentFilterAndSortProvider: React.FC<{
                             );
                             return null;
                         }
-                        return {
+                        const retult: Graphql.StudentsOrderByClause = {
                             column: graphqlColumn,
                             order: clause.order,
                         };
+                        return retult;
                     })
                     .filter(
-                        (
-                            clause,
-                        ): clause is Graphql.OrderStudentsByClauseInput =>
+                        (clause): clause is Graphql.StudentsOrderByClause =>
                             clause !== null,
                     );
 

@@ -10,15 +10,14 @@ import {
 } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStudentGraphQL } from "./StudentGraphQLContext";
-import { PaginationInfo, Student } from "@/graphql/generated/types";
 import { mapSingleStudent } from "@/utils/student/student-mappers";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
 type StudentManagementContextType = {
     // States
-    students: Student[];
+    students: Graphql.Student[];
     selectedStudents: number[];
-    paginationInfo: PaginationInfo | null | undefined;
+    paginationInfo: Graphql.PageInfo | null | undefined;
     queryParams: Graphql.StudentsQueryVariables;
     loading: boolean;
 
@@ -27,7 +26,7 @@ type StudentManagementContextType = {
         variables: Graphql.CreateStudentMutationVariables,
     ) => Promise<boolean>;
     partialUpdateStudent: (
-        variables: Graphql.PartialUpdateStudentMutationVariables,
+        variables: Graphql.PartiallyUpdateStudentMutationVariables,
     ) => Promise<boolean>;
     deleteStudent: (id: number) => Promise<boolean>;
 
@@ -65,10 +64,10 @@ export const StudentManagementProvider: React.FC<{
 }> = ({ children }) => {
     const notifications = useNotifications();
 
-    const [students, setStudents] = useState<Student[]>([]);
+    const [students, setStudents] = useState<Graphql.Student[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
     const [paginationInfo, setPaginationInfo] = useState<
-        PaginationInfo | null | undefined
+        Graphql.PageInfo | null | undefined
     >(null);
     const [queryParams, setQueryParams] =
         useState<Graphql.StudentsQueryVariables>(DEFAULT_QUERY_PARAMS);
@@ -89,9 +88,9 @@ export const StudentManagementProvider: React.FC<{
             try {
                 const result: Graphql.StudentsQuery =
                     await studentsQuery(queryParams);
-                if (result.students) {
+                if (result.students?.data) {
                     setStudents(result.students.data);
-                    setPaginationInfo(result.students.paginationInfo);
+                    setPaginationInfo(result.students.pageInfo);
                 }
             } catch {
                 notifications.show("Failed to fetch students", {
@@ -151,11 +150,11 @@ export const StudentManagementProvider: React.FC<{
 
     const handlePartialUpdateStudent = useCallback(
         async (
-            variables: Graphql.PartialUpdateStudentMutationVariables,
+            variables: Graphql.PartiallyUpdateStudentMutationVariables,
         ): Promise<boolean> => {
             try {
                 const result = await partialUpdateStudentMutation(variables);
-                if (result.data?.partialUpdateStudent) {
+                if (result.data?.partiallyUpdateStudent) {
                     const updatedStudent = mapSingleStudent(result.data);
                     if (updatedStudent) {
                         setStudents((prev) =>

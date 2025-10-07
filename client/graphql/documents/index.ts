@@ -1,3 +1,4 @@
-export * from "./auth";
-export * from "./storage";
+export * from "./auth.documents";
+export * from "./storage.documents";
 export * from "./template";
+export * from "./student.documents";

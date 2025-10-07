@@ -1,4 +1,4 @@
-import { Gender } from "@/graphql/generated/types";
+import { Gender } from "@/client/graphql/generated/gql/graphql";
 
 // Base props for all field components
 export interface BaseFieldProps<T = unknown> {

@@ -20,7 +20,7 @@ export const getColumnDef = (
 // Since filters are now grouped in filterArgs, this function helps clear the appropriate filter fields
 export const getFilterKeysForColumn = (
     columnId: keyof Graphql.Student,
-): (keyof Graphql.StudentFilterArgsInput)[] => {
+): (keyof Graphql.StudentFilterArgs)[] => {
     switch (columnId) {
         case "name":
             return [
@@ -92,10 +92,10 @@ export const getQueryParamKeysForColumn =
 // Define mappings for text operations to camelCase filter field names
 export const textOperationConfig: {
     [key in TextFilterOperation]?: {
-        // Field name in StudentFilterArgsInput (camelCase)
+        // Field name in StudentFilterArgs (camelCase)
         fieldName: (
             columnId: keyof Graphql.Student,
-        ) => keyof Graphql.StudentFilterArgsInput;
+        ) => keyof Graphql.StudentFilterArgs;
         // Function to format the value if needed (e.g., add wildcards)
         formatValue?: (val: string) => string;
         // Does this operation require a boolean value instead of string?
@@ -107,7 +107,7 @@ export const textOperationConfig: {
             // Map to base field name
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "name",
                 email: "email",
@@ -115,7 +115,7 @@ export const textOperationConfig: {
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
         formatValue: (val) => `%${val}%`,
@@ -124,14 +124,14 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameNotContains",
                 email: "emailNotContains",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
         formatValue: (val) => `%${val}%`,
@@ -140,14 +140,14 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameEquals",
                 email: "emailEquals",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
     },
@@ -155,14 +155,14 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameNotEquals",
                 email: "emailNotEquals",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
     },
@@ -170,14 +170,14 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameStartsWith",
                 email: "emailStartsWith",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
         formatValue: (val) => `${val}%`,
@@ -186,14 +186,14 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameEndsWith",
                 email: "emailEndsWith",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
         formatValue: (val) => `%${val}`,
@@ -202,14 +202,14 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameIsEmpty",
                 email: "emailIsEmpty",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
         isBooleanOp: true,
@@ -218,27 +218,27 @@ export const textOperationConfig: {
         fieldName: (columnId) => {
             const fieldMap: Record<
                 string,
-                keyof Graphql.StudentFilterArgsInput
+                keyof Graphql.StudentFilterArgs
             > = {
                 name: "nameIsNotEmpty",
                 email: "emailIsNotEmpty",
             };
             return (
                 fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgsInput)
+                (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
         isBooleanOp: true,
     },
 };
 
-// Helper to map a single text filter operation to StudentFilterArgsInput
+// Helper to map a single text filter operation to StudentFilterArgs
 export const mapTextFilter = (
     columnId: keyof Graphql.Student,
     op: TextFilterOperation,
     value: string | boolean,
-): Partial<Graphql.StudentFilterArgsInput> => {
-    const filterArgs: Partial<Graphql.StudentFilterArgsInput> = {};
+): Partial<Graphql.StudentFilterArgs> => {
+    const filterArgs: Partial<Graphql.StudentFilterArgs> = {};
     const config = textOperationConfig[op];
 
     // If operation is not configured, return empty params
@@ -307,13 +307,13 @@ export const formatDate = (
     }
 };
 
-// Helper to map a single date filter operation to StudentFilterArgsInput
+// Helper to map a single date filter operation to StudentFilterArgs
 export const mapDateFilter = (
     columnId: keyof Graphql.Student,
     op: DateFilterOperation,
     value: DateFilterValue | string | boolean,
-): Partial<Graphql.StudentFilterArgsInput> => {
-    const filterArgs: Partial<Graphql.StudentFilterArgsInput> = {};
+): Partial<Graphql.StudentFilterArgs> => {
+    const filterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
     // Handle boolean operations (isEmpty, isNotEmpty)
     if (
@@ -321,7 +321,7 @@ export const mapDateFilter = (
         op === DateFilterOperation.isNotEmpty
     ) {
         // Map columnId to the appropriate boolean field
-        const fieldMap: Record<string, keyof Graphql.StudentFilterArgsInput> = {
+        const fieldMap: Record<string, keyof Graphql.StudentFilterArgs> = {
             dateOfBirth:
                 op === DateFilterOperation.isEmpty
                     ? "birthDateIsEmpty"
@@ -350,12 +350,12 @@ export const mapDateFilter = (
         // Map columnId to from/to field names
         const fromFieldMap: Record<
             string,
-            keyof Graphql.StudentFilterArgsInput
+            keyof Graphql.StudentFilterArgs
         > = {
             dateOfBirth: "birthDateFrom",
             createdAt: "createdAtFrom",
         };
-        const toFieldMap: Record<string, keyof Graphql.StudentFilterArgsInput> =
+        const toFieldMap: Record<string, keyof Graphql.StudentFilterArgs> =
             {
                 dateOfBirth: "birthDateTo",
                 createdAt: "createdAtTo",
@@ -379,7 +379,7 @@ export const mapDateFilter = (
     // Handle single date operations
     const operationFieldMap: Record<
         string,
-        Record<DateFilterOperation, keyof Graphql.StudentFilterArgsInput>
+        Record<DateFilterOperation, keyof Graphql.StudentFilterArgs>
     > = {
         dateOfBirth: {
             [DateFilterOperation.is]: "birthDate",

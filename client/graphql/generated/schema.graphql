@@ -30,6 +30,255 @@ enum ContentType {
   ZIP
 }
 
+enum CountryCode {
+  AD
+  AE
+  AF
+  AG
+  AI
+  AL
+  AM
+  AO
+  AQ
+  AR
+  AS
+  AT
+  AU
+  AW
+  AX
+  AZ
+  BA
+  BB
+  BD
+  BE
+  BF
+  BG
+  BH
+  BI
+  BJ
+  BL
+  BM
+  BN
+  BO
+  BR
+  BS
+  BT
+  BV
+  BW
+  BY
+  BZ
+  CA
+  CC
+  CD
+  CF
+  CG
+  CH
+  CI
+  CK
+  CL
+  CM
+  CN
+  CO
+  CR
+  CU
+  CV
+  CW
+  CX
+  CY
+  CZ
+  DE
+  DJ
+  DK
+  DM
+  DO
+  DZ
+  EC
+  EE
+  EG
+  EH
+  ER
+  ES
+  ET
+  FI
+  FJ
+  FK
+  FM
+  FO
+  FR
+  GA
+  GB
+  GD
+  GE
+  GF
+  GG
+  GH
+  GI
+  GL
+  GM
+  GN
+  GP
+  GQ
+  GR
+  GS
+  GT
+  GU
+  GW
+  GY
+  HK
+  HM
+  HN
+  HR
+  HT
+  HU
+  ID
+  IE
+  IM
+  IN
+  IO
+  IQ
+  IR
+  IS
+  IT
+  JE
+  JM
+  JO
+  JP
+  KE
+  KG
+  KH
+  KI
+  KM
+  KN
+  KP
+  KR
+  KW
+  KY
+  KZ
+  LA
+  LB
+  LC
+  LI
+  LK
+  LR
+  LS
+  LT
+  LU
+  LV
+  LY
+  MA
+  MC
+  MD
+  ME
+  MF
+  MG
+  MH
+  MK
+  ML
+  MM
+  MN
+  MO
+  MP
+  MQ
+  MR
+  MS
+  MT
+  MU
+  MV
+  MW
+  MX
+  MY
+  MZ
+  NA
+  NC
+  NE
+  NF
+  NG
+  NI
+  NL
+  NO
+  NP
+  NR
+  NU
+  NZ
+  OM
+  PA
+  PE
+  PF
+  PG
+  PH
+  PK
+  PL
+  PM
+  PN
+  PR
+  PS
+  PT
+  PW
+  PY
+  QA
+  RE
+  RO
+  RS
+  RU
+  RW
+  SA
+  SB
+  SC
+  SD
+  SE
+  SG
+  SH
+  SI
+  SJ
+  SK
+  SL
+  SM
+  SN
+  SO
+  SR
+  SS
+  ST
+  SV
+  SX
+  SY
+  SZ
+  TC
+  TD
+  TF
+  TG
+  TH
+  TJ
+  TK
+  TL
+  TM
+  TN
+  TO
+  TR
+  TV
+  TW
+  TZ
+  UA
+  UG
+  US
+  UY
+  UZ
+  VA
+  VC
+  VE
+  VG
+  VI
+  VN
+  VU
+  WF
+  WS
+  XK
+  YE
+  YT
+  ZA
+  ZM
+  ZW
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -41,7 +290,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type DirectoryInfo implements StorageObject {
-  created: DateTime
+  createdAt: DateTime
   fileCount: Int
   folderCount: Int
   isFromBucket: Boolean
@@ -77,9 +326,12 @@ input DirectoryPermissionsUpdateInput {
   permissions: DirectoryPermissionsInput!
 }
 
+"""A type representing a validated email address"""
+scalar Email
+
 type FileInfo implements StorageObject {
   contentType: String
-  created: DateTime
+  createdAt: DateTime
   directoryPath: String
   fileType: FileType
   isFromBucket: Boolean
@@ -135,7 +387,7 @@ input FileUsageCheckInput {
 }
 
 type FileUsageInfo {
-  created: DateTime
+  createdAt: DateTime
   filePath: String
   id: String
   referenceId: String
@@ -157,7 +409,7 @@ input FilesListInput {
   path: String!
   searchTerm: String
   sortBy: FileSortField
-  sortDirection: SortDirection
+  sortDirection: OrderSortDirection
 }
 
 input FolderCreateInput {
@@ -167,13 +419,18 @@ input FolderCreateInput {
   protected: Boolean
 }
 
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+}
+
 input LoginInput {
-  email: String!
+  email: Email!
   password: String!
 }
 
 type LoginResponse {
-  refreshToken: String
   token: String
   user: User
 }
@@ -181,16 +438,19 @@ type LoginResponse {
 type Mutation {
   copyStorageItems(input: StorageItemsCopyInput!): BulkOperationResult
   createFolder(input: FolderCreateInput!): FileOperationResult
+  createStudent(input: StudentCreateInput!): Student
   createTemplate(input: TemplateCreateInput!): Template
   createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory
   deleteFile(path: String!): FileOperationResult
   deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
+  deleteStudent(id: Int!): Student
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory
   generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
   login(input: LoginInput!): LoginResponse
   logout: Boolean
   moveStorageItems(input: StorageItemsMoveInput!): BulkOperationResult
+  partiallyUpdateStudent(input: PartialStudentUpdateInput!): Student
   refreshToken: RefreshTokenResponse
   renameFile(input: FileRenameInput!): FileOperationResult
   setStorageItemProtection(input: StorageItemProtectionUpdateInput!): FileOperationResult
@@ -199,6 +459,11 @@ type Mutation {
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory
+}
+
+enum OrderSortDirection {
+  ASC
+  DESC
 }
 
 type PageInfo {
@@ -224,6 +489,19 @@ input PaginationArgs {
   page: Int
   skip: Int
 }
+
+input PartialStudentUpdateInput {
+  dateOfBirth: DateTime
+  email: Email
+  gender: Gender
+  id: Int!
+  name: String
+  nationality: CountryCode
+  phoneNumber: PhoneNumber
+}
+
+"""A type representing a validated phone number"""
+scalar PhoneNumber
 
 type Query {
   directoryChildren(
@@ -255,6 +533,8 @@ type Query {
     """
     path: String
   ): StorageStats
+  student(id: Int!): Student
+  students(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs): StudentsWithFiltersResponse
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]
@@ -268,11 +548,6 @@ type Query {
 type RefreshTokenResponse {
   token: String
   user: User
-}
-
-enum SortDirection {
-  ASC
-  DESC
 }
 
 input StorageItemProtectionUpdateInput {
@@ -315,6 +590,89 @@ type StorageStats {
   fileTypeBreakdown: [FileTypeBreakdown!]
   totalFiles: Int
   totalSize: String
+}
+
+type Student {
+  createdAt: DateTime!
+  dateOfBirth: DateTime
+  email: String
+  gender: Gender
+  id: Int!
+  name: String!
+  nationality: CountryCode
+  phoneNumber: PhoneNumber
+  updatedAt: DateTime!
+}
+
+input StudentCreateInput {
+  dateOfBirth: DateTime
+  email: Email
+  gender: Gender
+  name: String!
+  nationality: CountryCode
+  phoneNumber: PhoneNumber
+}
+
+input StudentFilterArgs {
+  birthDate: DateTime
+  birthDateAfter: DateTime
+  birthDateBefore: DateTime
+  birthDateFrom: DateTime
+  birthDateIsEmpty: Boolean
+  birthDateIsNotEmpty: Boolean
+  birthDateNot: DateTime
+  birthDateOnOrAfter: DateTime
+  birthDateOnOrBefore: DateTime
+  birthDateTo: DateTime
+  createdAt: DateTime
+  createdAtAfter: DateTime
+  createdAtBefore: DateTime
+  createdAtFrom: DateTime
+  createdAtIsEmpty: Boolean
+  createdAtIsNotEmpty: Boolean
+  createdAtNot: DateTime
+  createdAtOnOrAfter: DateTime
+  createdAtOnOrBefore: DateTime
+  createdAtTo: DateTime
+  email: String
+  emailEndsWith: String
+  emailEquals: Email
+  emailIsEmpty: Boolean
+  emailIsNotEmpty: Boolean
+  emailNotContains: String
+  emailNotEquals: String
+  emailStartsWith: String
+  gender: Gender
+  name: String
+  nameEndsWith: String
+  nameEquals: String
+  nameIsEmpty: Boolean
+  nameIsNotEmpty: Boolean
+  nameNotContains: String
+  nameNotEquals: String
+  nameStartsWith: String
+  nationality: CountryCode
+  phoneNumber: PhoneNumber
+}
+
+input StudentsOrderByClause {
+  column: StudentsOrderByColumn!
+  order: OrderSortDirection = ASC
+}
+
+enum StudentsOrderByColumn {
+  CREATED_AT
+  DATE_OF_BIRTH
+  EMAIL
+  GENDER
+  ID
+  NAME
+  UPDATED_AT
+}
+
+type StudentsWithFiltersResponse {
+  data: [Student!]
+  pageInfo: PageInfo
 }
 
 type Template {

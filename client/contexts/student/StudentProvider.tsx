@@ -2,7 +2,7 @@ import { StudentFilterAndSortProvider } from "@/client/contexts/student/StudentF
 import { StudentGraphQLProvider } from "@/client/contexts/student/StudentGraphQLContext";
 import { StudentManagementProvider } from "@/client/contexts/student/StudentManagementContext";
 import { StudentTableManagementProvider } from "@/client/contexts/student/StudentTableManagementContext";
-import { TableLocaleProvider } from "@/locale/table/TableLocaleContext";
+import { TableLocaleProvider } from "@/client/locale/table/TableLocaleContext";
 
 // Next.js layout component: receives children as prop
 const StudentProvider = ({ children }: { children: React.ReactNode }) => {

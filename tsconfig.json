@@ -33,6 +33,7 @@
         "./*"
       ]
     },
+    "types": [],
     /* Experimental Options */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

@@ -3,17 +3,13 @@
 import { EditableColumn } from "@/types/table.type";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useStudentManagement } from "./StudentManagementContext";
-import {
-    Gender,
-    CountryCode,
-    PartialUpdateStudentInput,
-} from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import validator from "validator";
 import {
     isValidCountryCode,
     isValidPhoneNumber,
 } from "@/utils/student/validators";
-import useAppTranslation from "@/locale/useAppTranslation";
+import useAppTranslation from "@/client/locale/useAppTranslation";
 import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 
 interface StudentTableManagementContextType {
@@ -147,7 +143,7 @@ export const StudentTableManagementProvider: React.FC<{
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value: any,
         ): Promise<void> => {
-            const input: PartialUpdateStudentInput = {
+            const input: Graphql.PartialStudentUpdateInput= {
                 id: rowId,
                 [columnId]: value,
             };
@@ -160,10 +156,10 @@ export const StudentTableManagementProvider: React.FC<{
                         : null;
                     break;
                 case "gender":
-                    input.gender = value as Gender;
+                    input.gender = value as Graphql.Gender;
                     break;
                 case "nationality":
-                    input.nationality = value as CountryCode;
+                    input.nationality = value as Graphql.CountryCode;
                     break;
             }
 

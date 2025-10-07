@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
 import { GenderFieldProps } from "./types";
-import { Gender } from "@/graphql/generated/types";
 import { createStyledTextField } from "./StyledBaseField";
+import { Gender } from "@/client/graphql/generated/gql/graphql";
 
 const GenderFieldComponent: React.FC<GenderFieldProps> = ({
     value,
