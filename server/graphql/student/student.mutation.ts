@@ -1,10 +1,18 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
+    PartialStudentUpdateInputPothosObject,
     StudentCreateInputPothosObject,
     StudentPothosObject,
 } from "./student.pothos";
-import { createStudent } from "./student.repository";
-import { mapStudentEntityToPothosDefintion } from "./student.types";
+import {
+    createStudent,
+    deleteStudentById,
+    partiallyUpdateStudent,
+} from "./student.repository";
+import {
+    mapStudentEntityToPothosDefintion,
+    PartialStudentUpdateInput,
+} from "./student.types";
 import * as StTypes from "./student.types";
 
 gqlSchemaBuilder.mutationFields((t) => ({
@@ -22,5 +30,30 @@ gqlSchemaBuilder.mutationFields((t) => ({
             const student = await createStudent(input);
             return mapStudentEntityToPothosDefintion(student);
         },
+    }),
+
+    partiallyUpdateStudent: t.field({
+        type: StudentPothosObject,
+        args: {
+            input: t.arg({
+                type: PartialStudentUpdateInputPothosObject,
+                required: true,
+            }),
+        },
+        resolve: async (_query, args) =>
+            await partiallyUpdateStudent(
+                args.input as PartialStudentUpdateInput,
+            ).then((s) => mapStudentEntityToPothosDefintion(s)),
+    }),
+
+    deleteStudent: t.field({
+        type: StudentPothosObject,
+        args: {
+            id: t.arg.int({ required: true }),
+        },
+        resolve: async (_query, args) =>
+            await deleteStudentById(args.id).then((s) =>
+                mapStudentEntityToPothosDefintion(s),
+            ),
     }),
 }));

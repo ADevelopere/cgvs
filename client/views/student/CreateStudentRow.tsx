@@ -21,7 +21,6 @@ import { useStudentManagement } from "@/client/contexts/student/StudentManagemen
 import { useStudentFilter } from "@/client/contexts/student/StudentFilterContext";
 import { TextFilterOperation } from "@/types/filters";
 import { useStudentTableManagement } from "@/client/contexts/student/StudentTableManagementContext";
-import { CreateStudentInput } from "@/graphql/generated/types";
 import useAppTranslation from "@/client/locale/useAppTranslation";
 import {
     TextFieldComponent,
@@ -39,6 +38,7 @@ import {
     _StyledPaper,
 } from "./components/CreateStudentRow.styles";
 import { HammerIcon } from "lucide-react";
+import { StudentCreateInput } from "@/client/graphql/generated/gql/graphql";
 
 const MemoizedTextField = React.memo(TextFieldComponent);
 const MemoizedDateField = React.memo(DateFieldComponent);
@@ -46,7 +46,7 @@ const MemoizedGenderField = React.memo(GenderFieldComponent);
 const MemoizedCountryField = React.memo(CountryFieldComponent);
 const MemoizedPhoneField = React.memo(PhoneFieldComponent);
 
-const initialStudentState: CreateStudentInput = {
+const initialStudentState: StudentCreateInput = {
     name: "",
 };
 
@@ -61,7 +61,7 @@ const CreateStudentRow = () => {
 
     // Form state
     const [newStudent, setNewStudent] =
-        useState<CreateStudentInput>(initialStudentState);
+        useState<StudentCreateInput>(initialStudentState);
     // fieldValidity: string (field) -> string | null (error message, null if valid)
     const [fieldValidity, setFieldValidity] = useState<
         Record<string, string | null>

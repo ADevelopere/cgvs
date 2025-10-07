@@ -7,7 +7,7 @@ export const directoryChildrenQueryDocument: TypedDocumentNode<
 > = gql`
     query directoryChildren($path: String) {
         directoryChildren(path: $path) {
-            created
+            createdAt
             fileCount
             folderCount
             isFromBucket
@@ -36,7 +36,7 @@ export const fileInfoQueryDocument: TypedDocumentNode<
     query fileInfo($path: String!) {
         fileInfo(path: $path) {
             contentType
-            created
+            createdAt
             directoryPath
             fileType
             isFromBucket
@@ -51,7 +51,7 @@ export const fileInfoQueryDocument: TypedDocumentNode<
             size
             url
             usages {
-                created
+                createdAt
                 filePath
                 id
                 referenceId
@@ -72,7 +72,7 @@ export const fileUsageQueryDocument: TypedDocumentNode<
             deleteBlockReason
             isInUse
             usages {
-                created
+                createdAt
                 filePath
                 id
                 referenceId
@@ -89,7 +89,7 @@ export const folderInfoQueryDocument: TypedDocumentNode<
 > = gql`
     query folderInfo($path: String!) {
         folderInfo(path: $path) {
-            created
+            createdAt
             fileCount
             folderCount
             isFromBucket
@@ -123,7 +123,7 @@ export const listFilesQueryDocument: TypedDocumentNode<
                 path
                 isProtected
                 ... on DirectoryInfo {
-                    created
+                    createdAt
                     fileCount
                     folderCount
                     isFromBucket
@@ -144,7 +144,7 @@ export const listFilesQueryDocument: TypedDocumentNode<
                 }
                 ... on FileInfo {
                     contentType
-                    created
+                    createdAt
                     directoryPath
                     fileType
                     isFromBucket
@@ -159,7 +159,7 @@ export const listFilesQueryDocument: TypedDocumentNode<
                     size
                     url
                     usages {
-                        created
+                        createdAt
                         filePath
                         id
                         referenceId

@@ -4,8 +4,8 @@ import Image from "next/image";
 import countries, { CountryType } from "@/utils/country";
 import useAppTranslation from "@/client/locale/useAppTranslation";
 import { BaseFieldProps } from "./types";
-import { CountryCode } from "@/graphql/generated/types";
 import { createStyledTextField } from "./StyledBaseField";
+import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 
 const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
     value,

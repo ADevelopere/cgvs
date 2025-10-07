@@ -18,11 +18,10 @@ export const StudentPothosObject = gqlSchemaBuilder
         fields: (t) => ({
             id: t.exposeInt("id", { nullable: false }),
             name: t.exposeString("name", { nullable: false }),
-            email: t.expose("email", {
-                type: "Email",
+            email: t.exposeString("email", {
                 nullable: true,
             }),
-            PhoneNumber: t.expose("phoneNumber", {
+            phoneNumber: t.expose("phoneNumber", {
                 type: "PhoneNumber",
                 nullable: true,
             }),
@@ -86,7 +85,7 @@ export const PartialStudentUpdateInputPothosObject = gqlSchemaBuilder
     .implement({
         fields: (t) => ({
             id: t.int({ required: true }),
-            name: t.string({ required: true }),
+            name: t.string({ required: false }),
             email: t.field({
                 type: "Email",
                 required: false,

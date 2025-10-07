@@ -85,10 +85,10 @@ export const countAllStudents = async (): Promise<number> => {
 
 export const deleteStudentById = async (
     id: number,
-): Promise<StTypes.StudentEntity | Error> => {
+): Promise<StTypes.StudentEntity> => {
     const existingStudent = await findStudentById(id);
     if (!existingStudent) {
-        return new Error(`Student ${id} not found`);
+        throw new Error(`Student ${id} not found`);
     }
     await db.delete(students).where(eq(students.id, id));
     return existingStudent;
@@ -96,10 +96,10 @@ export const deleteStudentById = async (
 
 export const partiallyUpdateStudent = async (
     input: StTypes.PartialStudentUpdateInput,
-): Promise<StTypes.StudentEntity | Error> => {
+): Promise<StTypes.StudentEntity> => {
     const existingStudent = await findStudentById(input.id);
     if (!existingStudent) {
-        return new Error(`Student ${input.id} not found`);
+        throw new Error(`Student ${input.id} not found`);
     }
 
     if (input.name) {

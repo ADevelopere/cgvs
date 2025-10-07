@@ -51,6 +51,28 @@ const eslintConfig = [{
         "no-console": "error",
     },
 }, {
+    // Prevent server imports in client code
+    files: ["client/**/*.ts", "client/**/*.tsx"],
+    rules: {
+        "no-restricted-imports": ["error", {
+            patterns: [{
+                group: ["**/server/**", "@/server/**"],
+                message: "Client code cannot import from server directories. Keep server-side code separate from client-side code."
+            }]
+        }]
+    }
+}, {
+    // Prevent client imports in server code
+    files: ["server/**/*.ts", "server/**/*.tsx"],
+    rules: {
+        "no-restricted-imports": ["error", {
+            patterns: [{
+                group: ["**/client/**", "@/client/**"],
+                message: "Server code cannot import from client directories. Keep client-side code separate from server-side code."
+            }]
+        }]
+    }
+}, {
     files: [".storybook/**/*.ts", ".storybook/**/*.tsx"],
     languageOptions: {
         parser: tsEslintParser,
