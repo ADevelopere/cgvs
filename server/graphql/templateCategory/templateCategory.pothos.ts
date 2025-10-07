@@ -26,12 +26,12 @@ export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
     sort: (c) => c.id,
     fields: (t) => ({
         id: t.exposeInt("id", { nullable: false }),
-        name: t.exposeString("name", { nullable: false }),
+        name: t.exposeString("name", { nullable: true }),
         description: t.exposeString("description", { nullable: true }),
         order: t.exposeInt("order", { nullable: true }),
         specialType: t.exposeString("specialType", { nullable: true }),
-        createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),
-        updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: false }),
+        createdAt: t.expose("createdAt", { type: "DateTime", nullable: true }),
+        updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: true }),
     }),
 });
 

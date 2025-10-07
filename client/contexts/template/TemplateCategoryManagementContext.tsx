@@ -22,12 +22,9 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     buildCategoryHierarchy,
     getSerializableTemplateCategory,
-    mapTemplateCategories,
-    mapTemplateCategory,
 } from "@/utils/template/template-category-mapper";
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
-import { mapSingleTemplate } from "@/utils/template/template-mappers";
 import { useRouter } from "next/navigation";
 import logger from "@/utils/logger";
 import { useDashboardLayout } from "../DashboardLayoutContext";
@@ -269,10 +266,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         if (!apolloCategoryData?.templateCategories) {
             return [];
         }
-        const mapped = mapTemplateCategories({
-            templateCategories: apolloCategoryData.templateCategories,
-        });
-        return buildCategoryHierarchy(mapped);
+        return buildCategoryHierarchy(apolloCategoryData.templateCategories);
     }, [apolloCategoryData]);
 
     const allTemplatesFromCache = useMemo(() => {
@@ -298,7 +292,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     const regularCategoriesFromCache = useMemo(() => {
         const regularCategories = allCategoriesFromCache.filter(
-            (cat) => cat.categorySpecialType !== "Suspension",
+            (cat) => cat.specialType !== "Suspension",
         );
         return regularCategories;
     }, [allCategoriesFromCache]);
@@ -306,7 +300,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const suspensionCategoryFromCache = useMemo(() => {
         const suspensionCategory =
             allCategoriesFromCache.find(
-                (cat) => cat.categorySpecialType === "Suspension",
+                (cat) => cat.specialType === "Suspension",
             ) || null;
         return suspensionCategory;
     }, [allCategoriesFromCache]);
@@ -314,7 +308,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const sortedRegularCategories = useMemo(() => {
         return [...regularCategoriesFromCache].sort((a, b) => {
             const modifier = categorySortConfig.order === "asc" ? 1 : -1;
-            if (categorySortConfig.sortBy === "name") {
+            if (categorySortConfig.sortBy === "name" && a.name && b.name) {
                 return modifier * a.name.localeCompare(b.name);
             }
             return modifier * (Number(a.id) - Number(b.id));
@@ -388,12 +382,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
                     // The cache is updated by the mutation's `update` function.
                     // The useEffect for currentCategoryState will sync if it becomes current.
                     // For now, we map and set. A more robust way is to find it from the updated allCategoriesFromCache.
-                    const newCategoryObject = mapTemplateCategory({
-                        createTemplateCategory: newCategoryData,
-                    });
-                    if (newCategoryObject) {
-                        setCurrentCategory(newCategoryObject);
-                    }
+
+                    setCurrentCategory(newCategoryData);
                     notifications.show(messages.categoryAddedSuccessfully, {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -430,6 +420,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
             parentCategoryId?: number | null,
         ) => {
             try {
+                if (!category.name) {
+                    throw new Error(messages.categoryNameRequired);
+                }
                 const response = await updateTemplateCategoryMutation({
                     input: {
                         id: category.id,
@@ -525,7 +518,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
         return unsortedTemplates.sort((a, b) => {
             const modifier = templateSortConfig.order === "asc" ? 1 : -1;
-            if (templateSortConfig.sortBy === "name") {
+            if (templateSortConfig.sortBy === "name" && a.name && b.name) {
                 return modifier * a.name.localeCompare(b.name);
             }
             return modifier * (Number(a.id) - Number(b.id));
@@ -551,17 +544,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 // Cache updated by Apollo. currentCategoryState.templates should reflect this.
                 const newTemplateData = response.data?.createTemplate;
                 if (newTemplateData) {
-                    const newTemplate = mapSingleTemplate({
-                        createTemplate: newTemplateData,
-                    });
-                    if (newTemplate) {
-                        setCurrentTemplate(newTemplate);
-                    }
+                    setCurrentTemplate(newTemplateData);
                     notifications.show(messages.templateAddedSuccessfully, {
                         severity: "success",
                         autoHideDuration: 3000,
                     });
-                    return newTemplate;
+                    return newTemplateData;
                 } else {
                     throw new Error(messages.templateAddFailed);
                 }
@@ -589,26 +577,17 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const updateTemplate = useCallback(
         async (variables: Graphql.UpdateTemplateMutationVariables) => {
             try {
-                const templateToUpdate = templatesForCurrentCategory.find(
-                    (temp) => temp.id === variables.input.id,
-                );
                 const response = await updateTemplateMutation(variables);
                 // Cache updated by Apollo.
                 const updatedTemplateData = response.data?.updateTemplate;
                 if (updatedTemplateData) {
-                    const updatedTemplate = mapSingleTemplate(
-                        { updateTemplate: updatedTemplateData },
-                        templateToUpdate || undefined,
-                    );
-                    if (updatedTemplate) {
-                        setCurrentTemplate(updatedTemplate);
-                    }
+                    setCurrentTemplate(updatedTemplateData);
                     notifications.show(messages.templateUpdatedSuccessfully, {
                         severity: "success",
                         autoHideDuration: 3000,
                     });
 
-                    return updatedTemplate;
+                    return updatedTemplateData;
                 } else {
                     throw new Error(messages.templateUpdateFailed);
                 }

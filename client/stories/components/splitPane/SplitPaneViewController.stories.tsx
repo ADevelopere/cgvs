@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import { Box, Typography, Paper, List, ListItem, ListItemText, Button, TextField } from "@mui/material";
 import {
   commonStoryArgTypes,
   CommonStoryArgTypesProps,
   defaultStoryArgs,
-} from "@/stories/argTypes";
+} from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import SplitPaneViewController from "@/client/components/splitPane/SplitPaneViewController";
-import useStoryTheme from "@/stories/useStoryTheme";
+import useStoryTheme from "@/client/stories/useStoryTheme";
 
 export default {
   title: "Components/SplitPane/SplitPaneViewController",

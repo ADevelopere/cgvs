@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
 
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import { Box } from "@mui/material";
 import {
   commonStoryArgTypes,
   CommonStoryArgTypesProps,
   defaultStoryArgs,
-} from "@/stories/argTypes";
+} from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import CountrySelect, { CountrySelectProps } from "@/client/components/input/CountrySelect";
 import countries from "@/utils/country";

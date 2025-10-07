@@ -677,26 +677,26 @@ type StudentsWithFiltersResponse {
 
 type Template {
   category: TemplateCategory
-  createdAt: DateTime!
+  createdAt: DateTime
   description: String
   id: Int!
-  name: String!
-  order: Int!
+  name: String
+  order: Int
   preSuspensionCategory: TemplateCategory
-  updatedAt: DateTime!
+  updatedAt: DateTime
 }
 
 type TemplateCategory {
-  createdAt: DateTime!
+  createdAt: DateTime
   description: String
   id: Int!
-  name: String!
+  name: String
   order: Int
   parentCategory: TemplateCategory
   specialType: String
   subCategories: [TemplateCategory!]
   templates: [Template!]
-  updatedAt: DateTime!
+  updatedAt: DateTime
 }
 
 input TemplateCategoryCreateInput {

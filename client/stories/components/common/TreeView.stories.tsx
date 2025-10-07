@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import { Box, Typography, Chip } from "@mui/material";
 import {
     commonStoryArgTypes,
     CommonStoryArgTypesProps,
     defaultStoryArgs,
-} from "@/stories/argTypes";
+} from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import { TreeView, BaseTreeItem } from "@/client/components/treeView/TreeView";
-import useStoryTheme from "@/stories/useStoryTheme";
+import useStoryTheme from "@/client/stories/useStoryTheme";
 
 export default {
     title: "Components/Common/TreeView",

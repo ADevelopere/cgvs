@@ -1,4 +1,4 @@
-import TemplateCategoryTranslation from "../components/TemplateCategory";
+import { TemplateCategoryTranslation } from "../components";
 
 export const templateCategory: TemplateCategoryTranslation = {
     // Management and navigation
@@ -84,6 +84,7 @@ export const templateCategory: TemplateCategoryTranslation = {
     templateRestoreFailed: "فشل استعادة القالب",
     templateMoveToDeletionFailed: "فشل نقل القالب إلى سلة المحذوفات",
     errorRestoringTemplate: "فشل في استعادة القالب:",
+    categoryNameRequired: "اسم الفئة مطلوبة",
 
     // Validation messages
     nameTooShort: "يجب أن يكون اسم الفئة 3 أحرف على الأقل",

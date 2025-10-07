@@ -1,4 +1,4 @@
-import StorageTranslations from "../components/Storage";
+import { StorageTranslations } from "../components";
 
 export const storage: StorageTranslations = {
     uploading: {

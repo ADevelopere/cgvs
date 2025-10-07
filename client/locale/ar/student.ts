@@ -1,4 +1,4 @@
-import StudentTranslations from "../components/Student";
+import { StudentTranslations } from "../components";
 
 export const student: StudentTranslations = {
     studentManagement: "إدارة الطلاب",

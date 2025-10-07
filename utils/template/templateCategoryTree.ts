@@ -1,11 +1,11 @@
-import { Template, TemplateCategory } from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Function to recursively update a category in a tree
 export const updateCategoryInTree = (
-    categories: TemplateCategory[],
-    categoryToUpdate: TemplateCategory,
+    categories:Graphql. TemplateCategory[],
+    categoryToUpdate: Graphql.TemplateCategory,
     parentCategoryId?: number,
-): TemplateCategory[] => {
+): Graphql.TemplateCategory[] => {
     return categories.map((cat) => {
         // If this is the category we're updating
         if (cat.id === categoryToUpdate.id) {
@@ -14,13 +14,13 @@ export const updateCategoryInTree = (
 
         // If this category used to be the parent of our updated category
         if (
-            cat.childCategories?.some(
+            cat.subCategories?.some(
                 (child) => child.id === categoryToUpdate.id,
             )
         ) {
             return {
                 ...cat,
-                childCategories: cat.childCategories.filter(
+                subCategories: cat.subCategories.filter(
                     (child) => child.id !== categoryToUpdate.id,
                 ),
             };
@@ -30,19 +30,19 @@ export const updateCategoryInTree = (
         if (cat.id === parentCategoryId) {
             return {
                 ...cat,
-                childCategories: [
-                    ...(cat.childCategories || []),
+                subCategories: [
+                    ...(cat.subCategories || []),
                     categoryToUpdate,
                 ],
             };
         }
 
         // If this category has children, recursively update them
-        if (cat.childCategories?.length) {
+        if (cat.subCategories?.length) {
             return {
                 ...cat,
-                childCategories: updateCategoryInTree(
-                    cat.childCategories,
+                subCategories: updateCategoryInTree(
+                    cat.subCategories,
                     categoryToUpdate,
                     parentCategoryId,
                 ),
@@ -55,13 +55,13 @@ export const updateCategoryInTree = (
 
 // Function to recursively update a template in the category tree
 export const updateTemplateInCategoryTree = (
-    categories: TemplateCategory[],
-    templateToUpdate: Template,
+    categories: Graphql.TemplateCategory[],
+    templateToUpdate: Graphql.Template,
     targetCategoryId?: number,
-): TemplateCategory[] => {
+): Graphql.TemplateCategory[] => {
     return categories.map((cat) => {
         // If this is the target category for the template
-        if (cat.id === targetCategoryId || (!targetCategoryId && cat.id === templateToUpdate.category.id)) {
+        if (cat.id === targetCategoryId || (!targetCategoryId && cat.id === templateToUpdate.category?.id)) {
             // If the category already has templates array, update/add the template
             if (cat.templates) {
                 const templateIndex = cat.templates.findIndex(t => t.id === templateToUpdate.id);
@@ -90,7 +90,7 @@ export const updateTemplateInCategoryTree = (
         }
 
         // If this is the source category and template is being moved to a different category
-        if (cat.id === templateToUpdate.category.id && targetCategoryId && targetCategoryId !== cat.id) {
+        if (cat.id === templateToUpdate.category?.id && targetCategoryId && targetCategoryId !== cat.id) {
             return {
                 ...cat,
                 templates: cat.templates?.filter(t => t.id !== templateToUpdate.id) || [],
@@ -98,11 +98,11 @@ export const updateTemplateInCategoryTree = (
         }
 
         // If this category has children, recursively update them
-        if (cat.childCategories?.length) {
+        if (cat.subCategories?.length) {
             return {
                 ...cat,
-                childCategories: updateTemplateInCategoryTree(
-                    cat.childCategories,
+                subCategories: updateTemplateInCategoryTree(
+                    cat.subCategories,
                     templateToUpdate,
                     targetCategoryId,
                 ),

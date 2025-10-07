@@ -1,4 +1,4 @@
-import GenderTranslations from "../components/Gender";
+import { GenderTranslations } from "../components";
 
 export const gender: GenderTranslations = {
     title: "الجنس",

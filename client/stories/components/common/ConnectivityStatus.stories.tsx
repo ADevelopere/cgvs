@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import { Box, Toolbar, IconButton, Tooltip, useTheme } from "@mui/material";
 import { Wifi, WifiOff, Sync } from "@mui/icons-material";
 import {
     commonStoryArgTypes,
     CommonStoryArgTypesProps,
     defaultStoryArgs,
-} from "@/stories/argTypes";
+} from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
-import useStoryTheme from "@/stories/useStoryTheme";
+import useStoryTheme from "@/client/stories/useStoryTheme";
 import { NetworkConnectivityContextType } from "@/client/contexts/AppApolloProvider";
-import useAppTranslation from "@/locale/useAppTranslation";
-import ConnectivityTranslations from "@/locale/components/Connectivity";
+import useAppTranslation from "@/client/locale/useAppTranslation";
+import {ConnectivityTranslations} from "@/client/locale/components";
 
 // Mock NetworkConnectivityContext
 const MockNetworkConnectivityContext = createContext<
@@ -49,7 +49,7 @@ const MockNetworkConnectivityProvider: React.FC<{
                 // eslint-disable-next-line no-console
                 console.log("Mock updateAuthToken called with:", token);
             },
-            clearAuthToken: () => {
+            clearAuthData: () => {
                 // eslint-disable-next-line no-console
                 console.log("Mock clearAuthToken called");
             },

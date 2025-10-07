@@ -1,4 +1,4 @@
-import AuthTranslations from "../components/Auth";
+import { AuthTranslations } from "../components";
 
 export const auth: AuthTranslations = {
     siteTitle: "cgvs",

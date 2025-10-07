@@ -1,4 +1,4 @@
-import AppLanguage from "@/locale/AppLanguage";
+import AppLanguage from "@/client/locale/AppLanguage";
 import ThemeMode from "@/client/theme/ThemeMode";
 
 export type CommonStoryArgTypesProps = {

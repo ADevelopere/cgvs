@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
 import { action } from "@storybook/addon-actions";
 
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import {
     commonStoryArgTypes,
     CommonStoryArgTypesProps,
     defaultStoryArgs,
-} from "@/stories/argTypes";
-import useStoryTheme from "@/stories/useStoryTheme";
+} from "@/client/stories/argTypes";
+import useStoryTheme from "@/client/stories/useStoryTheme";
 
 import Table from "@/client/components/Table/Table/Table";
 import withTableContexts, { TableDecoratorConfig } from "./tableDecorator";

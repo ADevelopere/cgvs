@@ -11,6 +11,7 @@ import {
 import { PageInfoObject } from "../pagintaion/pagination.objects";
 import { TemplateCategoryPothosObject } from "../templateCategory/templateCategory.pothos";
 import { loadTemplatesByIds } from "./template.repository";
+import { getStorageService } from "@/server/storage/storage.service";
 
 export const TemplatePothosObject = gqlSchemaBuilder
     .loadableObjectRef<TemplatePothosDefintion, number>("Template", {
@@ -20,33 +21,29 @@ export const TemplatePothosObject = gqlSchemaBuilder
     .implement({
         fields: (t) => ({
             id: t.exposeInt("id", { nullable: false }),
-            name: t.exposeString("name", { nullable: false }),
+            name: t.exposeString("name", { nullable: true }),
             description: t.exposeString("description", { nullable: true }),
-            order: t.exposeInt("order", { nullable: false }),
+            order: t.exposeInt("order", { nullable: true }),
             createdAt: t.expose("createdAt", {
                 type: "DateTime",
-                nullable: false,
+                nullable: true,
             }),
             updatedAt: t.expose("updatedAt", {
                 type: "DateTime",
-                nullable: false,
+                nullable: true,
             }),
-            // imageUrl: t.string({
-            //     nullable: true,
-            //     resolve: async ({ id: templateId }) => {
-            //         const template = await findTemplateByIdOrThrow(templateId);
-            //         if (template.imageFileId) {
-            //             const file = await db
-            //                 .select()
-            //                 .from(storageFiles)
-            //                 .where(eq(storageFiles.id, template.imageFileId))
-            //                 .then((res) => res[0]);
-
-            //             return file?.path || null;
-            //         }
-            //         return null;
-            //     },
-            // }),
+            imageUrl: t.string({
+                nullable: true,
+                resolve: async (template) => {
+                    if (template.imageFileId) {
+                        const imageFileInfo = await (
+                            await getStorageService()
+                        ).fileInfoByDbFileId(template.imageFileId);
+                        return imageFileInfo?.url;
+                    }
+                    return null;
+                },
+            }),
         }),
     });
 

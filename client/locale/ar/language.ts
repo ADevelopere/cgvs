@@ -1,4 +1,4 @@
-import LanguageTranslations from "../components/Language";
+import { LanguageTranslations } from "../components";
 
 export const language: LanguageTranslations = {
     languageSettings: "إعدادات اللغة",
