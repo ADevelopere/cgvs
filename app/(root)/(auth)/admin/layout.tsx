@@ -83,9 +83,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
                 <TemplateCategoryGraphQLProvider>
                     <TemplateGraphQLProvider>
                         <TemplateCategoryManagementProvider>
-                            {/* <StudentProvider> */}
-                            <DashboardLayout>{children}</DashboardLayout>
-                            {/* </StudentProvider> */}
+                            <StudentProvider>
+                                <DashboardLayout>{children}</DashboardLayout>
+                            </StudentProvider>
                         </TemplateCategoryManagementProvider>
                     </TemplateGraphQLProvider>
                 </TemplateCategoryGraphQLProvider>

@@ -17,21 +17,22 @@ import {
 } from "drizzle-orm";
 import * as StTypes from "./student.types";
 import { PgSelect } from "drizzle-orm/pg-core";
+import { fullTextSearch } from "@/server/db/query.extentions";
 
 export function applyStudentFilters<T extends PgSelect>(
     qb: T,
     args?: StTypes.StudentFilterArgs | null,
 ) {
     if (!args) return qb;
-    // Full-text search TODO: implement when tsvector is available
-    //         val ftsLang = "simple" // Use "simple" for language-agnostic, or "english", "arabic" etc.
+    const ftsLang = "simple"; // Use "simple" for language-agnostic, or "english", "arabic" etc.
 
     // Name filters
-    // args.name?.let {
-    //     if (it.isNotBlank()) {
-    //         andWhere { TsVector(Students.name, ftsLang) matches TsQuery(it, ftsLang) }
-    //     }
-    // }
+    if (args.name) {
+        const ftsCondition = fullTextSearch(students.name, args.name, ftsLang);
+        if (ftsCondition) {
+            qb = qb.where(ftsCondition);
+        }
+    }
     if (args.nameNotContains) {
         qb = qb.where(notLike(students.name, `%${args.nameNotContains}%`));
     }
@@ -55,8 +56,8 @@ export function applyStudentFilters<T extends PgSelect>(
     }
 
     // Email filters
-    if (args.email && args.email.trim() !== "") {
-        qb = qb.where(like(students.email, `%${args.email}%`));
+    if (args.email) {
+        qb = qb.where(like(students.email, `%${args.email}`));
     }
     if (args.emailNotContains) {
         qb = qb.where(notLike(students.email, `%${args.emailNotContains}%`));

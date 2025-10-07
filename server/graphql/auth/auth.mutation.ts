@@ -28,7 +28,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
 
             let user: UserEntity | null;
             try {
-                user = await findUserByEmail(email);
+                user = await findUserByEmail(email.value);
             } catch (err) {
                 logger.error(err);
                 return null;
