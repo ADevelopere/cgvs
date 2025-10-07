@@ -1,30 +1,30 @@
 import type {
-    CreateSelectTemplateVariableMutation,
-    UpdateSelectTemplateVariableMutation,
+    CreateTemplateSelectVariableMutation,
+    UpdateTemplateSelectVariableMutation,
     DeleteTemplateVariableMutation,
-    SelectTemplateVariable,
-    UpdateSelectTemplateVariableInput,
+    TemplateSelectVariable,
+    UpdateTemplateSelectVariableInput,
     Template,
-    CreateSelectTemplateVariableInput,
+    CreateTemplateSelectVariableInput,
 } from "@/graphql/generated/types";
 
-export type SelectTemplateVariableSource =
-    | CreateSelectTemplateVariableMutation
-    | UpdateSelectTemplateVariableMutation
+export type TemplateSelectVariableSource =
+    | CreateTemplateSelectVariableMutation
+    | UpdateTemplateSelectVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialSelectTemplateVariable = Partial<SelectTemplateVariable> & {
+type PartialTemplateSelectVariable = Partial<TemplateSelectVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a select template variable from any source to a consistent SelectTemplateVariable type
+ * Maps a select template variable from any source to a consistent TemplateSelectVariable type
  */
-const mapSelectTemplateVariable = (
-    variable: PartialSelectTemplateVariable | null | undefined,
-    previousVariable?: SelectTemplateVariable | null,
-): SelectTemplateVariable | null => {
+const mapTemplateSelectVariable = (
+    variable: PartialTemplateSelectVariable | null | undefined,
+    previousVariable?: TemplateSelectVariable | null,
+): TemplateSelectVariable | null => {
     if (!variable) {
         return null;
     }
@@ -56,62 +56,62 @@ const mapSelectTemplateVariable = (
             variable.updatedAt ?? previousVariable?.updatedAt ?? new Date(),
         multiple: variable.multiple ?? previousVariable?.multiple ?? false,
         options: variable.options ?? previousVariable?.options ?? [],
-    } as SelectTemplateVariable;
+    } as TemplateSelectVariable;
 };
 
 /**
- * Maps a creation select template variable mutation result to a SelectTemplateVariable
+ * Maps a creation select template variable mutation result to a TemplateSelectVariable
  */
-const mapCreateSelectTemplateVariable = (
-    source: CreateSelectTemplateVariableMutation,
-): SelectTemplateVariable | null => {
-    return mapSelectTemplateVariable(
-        source.createSelectTemplateVariable as PartialSelectTemplateVariable,
+const mapCreateTemplateSelectVariable = (
+    source: CreateTemplateSelectVariableMutation,
+): TemplateSelectVariable | null => {
+    return mapTemplateSelectVariable(
+        source.createTemplateSelectVariable as PartialTemplateSelectVariable,
     );
 };
 
 /**
- * Maps an update select template variable mutation result to a SelectTemplateVariable
+ * Maps an update select template variable mutation result to a TemplateSelectVariable
  */
-const mapUpdateSelectTemplateVariable = (
-    source: UpdateSelectTemplateVariableMutation,
-    previousVariable?: SelectTemplateVariable,
-): SelectTemplateVariable | null => {
-    return mapSelectTemplateVariable(
-        source.updateSelectTemplateVariable as PartialSelectTemplateVariable,
+const mapUpdateTemplateSelectVariable = (
+    source: UpdateTemplateSelectVariableMutation,
+    previousVariable?: TemplateSelectVariable,
+): TemplateSelectVariable | null => {
+    return mapTemplateSelectVariable(
+        source.updateTemplateSelectVariable as PartialTemplateSelectVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps a delete template variable mutation result to a SelectTemplateVariable
+ * Maps a delete template variable mutation result to a TemplateSelectVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: SelectTemplateVariable,
-): SelectTemplateVariable | null => {
-    return mapSelectTemplateVariable(
-        source.deleteTemplateVariable as PartialSelectTemplateVariable,
+    previousVariable?: TemplateSelectVariable,
+): TemplateSelectVariable | null => {
+    return mapTemplateSelectVariable(
+        source.deleteTemplateVariable as PartialTemplateSelectVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps any select template variable source to a single SelectTemplateVariable or null
+ * Maps any select template variable source to a single TemplateSelectVariable or null
  */
-export const mapSingleSelectTemplateVariable = (
-    source: SelectTemplateVariableSource | undefined | null,
-    previousVariable?: SelectTemplateVariable,
-): SelectTemplateVariable | null => {
+export const mapSingleTemplateSelectVariable = (
+    source: TemplateSelectVariableSource | undefined | null,
+    previousVariable?: TemplateSelectVariable,
+): TemplateSelectVariable | null => {
     if (!source) {
         return null;
     }
 
-    if ("createSelectTemplateVariable" in source) {
-        return mapCreateSelectTemplateVariable(source);
+    if ("createTemplateSelectVariable" in source) {
+        return mapCreateTemplateSelectVariable(source);
     }
-    if ("updateSelectTemplateVariable" in source) {
-        return mapUpdateSelectTemplateVariable(source, previousVariable);
+    if ("updateTemplateSelectVariable" in source) {
+        return mapUpdateTemplateSelectVariable(source, previousVariable);
     }
     if ("deleteTemplateVariable" in source) {
         return mapDeleteTemplateVariable(source, previousVariable);
@@ -121,11 +121,11 @@ export const mapSingleSelectTemplateVariable = (
 };
 
 /**
- * Maps a SelectTemplateVariable to a SelectTemplateVariableInput
+ * Maps a TemplateSelectVariable to a TemplateSelectVariableInput
  */
-export const mapSelectTemplateVariableToInput = (
-    variable: SelectTemplateVariable,
-): UpdateSelectTemplateVariableInput => {
+export const mapTemplateSelectVariableToInput = (
+    variable: TemplateSelectVariable,
+): UpdateTemplateSelectVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
@@ -137,9 +137,9 @@ export const mapSelectTemplateVariableToInput = (
     };
 };
 
-export const mapToCreateSelectTemplateVariableInput = (
-    source: SelectTemplateVariable | null | undefined,
-): CreateSelectTemplateVariableInput => {
+export const mapToCreateTemplateSelectVariableInput = (
+    source: TemplateSelectVariable | null | undefined,
+): CreateTemplateSelectVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description,

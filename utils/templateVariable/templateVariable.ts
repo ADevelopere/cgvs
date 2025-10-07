@@ -1,12 +1,12 @@
 import type {
-    TextTemplateVariable,
-    NumberTemplateVariable,
-    DateTemplateVariable,
-    SelectTemplateVariable,
-    UpdateTextTemplateVariableInput,
-    UpdateNumberTemplateVariableInput,
-    UpdateDateTemplateVariableInput,
-    UpdateSelectTemplateVariableInput,
+    TemplateTextVariable,
+    TemplateNumberVariable,
+    TemplateDateVariable,
+    TemplateSelectVariable,
+    UptemplateDateTextVariableInput,
+    UpdateTemplateNumberVariableInput,
+    UptemplateDateDateVariableInput,
+    UpdateTemplateSelectVariableInput,
 } from "@/graphql/generated/types";
 
 /**
@@ -66,8 +66,8 @@ function isDifferent<T>(
  * Checks if a text variable's temporary value is different from the original
  */
 export function isTextVariableDifferent(
-    original: TextTemplateVariable,
-    temporary: Partial<UpdateTextTemplateVariableInput>,
+    original: TemplateTextVariable,
+    temporary: Partial<UptemplateDateTextVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) {
         return true;
@@ -98,8 +98,8 @@ export function isTextVariableDifferent(
  * Checks if a number variable's temporary value is different from the original
  */
 export function isNumberVariableDifferent(
-    original: NumberTemplateVariable,
-    temporary: Partial<UpdateNumberTemplateVariableInput>,
+    original: TemplateNumberVariable,
+    temporary: Partial<UpdateTemplateNumberVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
@@ -118,8 +118,8 @@ export function isNumberVariableDifferent(
  * Checks if a date variable's temporary value is different from the original
  */
 export function isDateVariableDifferent(
-    original: DateTemplateVariable,
-    temporary: Partial<UpdateDateTemplateVariableInput>,
+    original: TemplateDateVariable,
+    temporary: Partial<UptemplateDateDateVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
@@ -137,8 +137,8 @@ export function isDateVariableDifferent(
  * Checks if a select variable's temporary value is different from the original
  */
 export function isSelectVariableDifferent(
-    original: SelectTemplateVariable,
-    temporary: Partial<UpdateSelectTemplateVariableInput>,
+    original: TemplateSelectVariable,
+    temporary: Partial<UpdateTemplateSelectVariableInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;

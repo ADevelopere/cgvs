@@ -5,10 +5,10 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
     templateVariableBases,
-    textTemplateVariables,
-    numberTemplateVariables,
-    dateTemplateVariables,
-    selectTemplateVariables,
+    templateTextVariables,
+    nemplateNumberVariables,
+    templateDateVariables,
+    templateSelectVariables,
 } from "../schema/templateVariables";
 import type { templates } from "../schema/templates";
 
@@ -37,7 +37,7 @@ export async function createBaseVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: studentNameBase.id,
         previewValue: "محمد أحمد العتيبي",
         minLength: 3,
@@ -60,7 +60,7 @@ export async function createBaseVariables(
         })
         .returning();
 
-    await db.insert(dateTemplateVariables).values({
+    await db.insert(templateDateVariables).values({
         id: issueDateBase.id,
         previewValue: now,
         minDate: null,
@@ -83,7 +83,7 @@ export async function createBaseVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: refNumberBase.id,
         previewValue: "CERT2024",
         minLength: 8,
@@ -115,7 +115,7 @@ export async function createAcademicVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: majorBase.id,
         previewValue: "علوم الحاسب",
         minLength: 3,
@@ -138,7 +138,7 @@ export async function createAcademicVariables(
         })
         .returning();
 
-    await db.insert(numberTemplateVariables).values({
+    await db.insert(nemplateNumberVariables).values({
         id: gpaBase.id,
         previewValue: "4.50",
         minValue: "0.00",
@@ -170,7 +170,7 @@ export async function createProfessionalVariables(
         })
         .returning();
 
-    await db.insert(selectTemplateVariables).values({
+    await db.insert(templateSelectVariables).values({
         id: fieldBase.id,
         previewValue: "تقنية المعلومات",
         options: [
@@ -198,7 +198,7 @@ export async function createProfessionalVariables(
         })
         .returning();
 
-    await db.insert(numberTemplateVariables).values({
+    await db.insert(nemplateNumberVariables).values({
         id: durationBase.id,
         previewValue: "40",
         minValue: "1",
@@ -230,7 +230,7 @@ export async function createAttendanceVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: eventBase.id,
         previewValue: "مؤتمر التقنية السنوي",
         minLength: 5,
@@ -253,7 +253,7 @@ export async function createAttendanceVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: locationBase.id,
         previewValue: "الرياض",
         minLength: 3,
@@ -285,7 +285,7 @@ export async function createAppreciationVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: reasonBase.id,
         previewValue: "التفوق الأكاديمي والإنجاز المتميز",
         minLength: 10,
@@ -308,7 +308,7 @@ export async function createAppreciationVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: levelBase.id,
         previewValue: "ممتاز",
         minLength: null,
@@ -340,7 +340,7 @@ export async function createVolunteerVariables(
         })
         .returning();
 
-    await db.insert(textTemplateVariables).values({
+    await db.insert(templateTextVariables).values({
         id: typeBase.id,
         previewValue: "تطوع في الأعمال الخيرية",
         minLength: 5,
@@ -363,7 +363,7 @@ export async function createVolunteerVariables(
         })
         .returning();
 
-    await db.insert(numberTemplateVariables).values({
+    await db.insert(nemplateNumberVariables).values({
         id: hoursBase.id,
         previewValue: "100",
         minValue: "1",

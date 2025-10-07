@@ -58,7 +58,8 @@ export const FileInfoPothosObject = gqlSchemaBuilder.objectType(
     {
         name: "FileInfo",
         interfaces: [StorageItemPothosInterface],
-        isTypeOf: (item) => typeof item === 'object' && item !== null && "size" in item,
+        isTypeOf: (item) =>
+            typeof item === "object" && item !== null && "size" in item,
         fields: (t) => ({
             directoryPath: t.exposeString("directoryPath"),
             size: t.field({
@@ -86,7 +87,8 @@ export const DirectoryInfoPothosObject = gqlSchemaBuilder.objectType(
     {
         name: "DirectoryInfo",
         interfaces: [StorageItemPothosInterface],
-        isTypeOf: (item) => typeof item === 'object' && item !== null && !("size" in item),
+        isTypeOf: (item) =>
+            typeof item === "object" && item !== null && !("size" in item),
         fields: (t) => ({
             permissions: t.expose("permissions", {
                 type: DirectoryPermissionsPothosObject,

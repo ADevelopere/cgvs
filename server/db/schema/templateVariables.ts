@@ -40,7 +40,7 @@ export const templateVariableBases = pgTable(
     ],
 );
 
-export const textTemplateVariables = pgTable("text_template_variable", {
+export const templateTextVariables = pgTable("text_template_variable", {
     id: integer("id").primaryKey(),
     minLength: integer("min_length"),
     maxLength: integer("max_length"),
@@ -48,7 +48,7 @@ export const textTemplateVariables = pgTable("text_template_variable", {
     previewValue: varchar("preview_value", { length: 255 }),
 });
 
-export const numberTemplateVariables = pgTable("number_template_variable", {
+export const nemplateNumberVariables = pgTable("number_template_variable", {
     id: integer("id").primaryKey(),
     minValue: decimal("min_value"),
     maxValue: decimal("max_value"),
@@ -56,7 +56,7 @@ export const numberTemplateVariables = pgTable("number_template_variable", {
     previewValue: decimal("preview_value"),
 });
 
-export const dateTemplateVariables = pgTable("date_template_variable", {
+export const templateDateVariables = pgTable("date_template_variable", {
     id: integer("id").primaryKey(),
     minDate: timestamp("min_date", { precision: 3 }),
     maxDate: timestamp("max_date", { precision: 3 }),
@@ -64,7 +64,7 @@ export const dateTemplateVariables = pgTable("date_template_variable", {
     previewValue: timestamp("preview_value", { precision: 3 }),
 });
 
-export const selectTemplateVariables = pgTable("select_template_variable", {
+export const templateSelectVariables = pgTable("select_template_variable", {
     id: integer("id").primaryKey(),
     options: json("options"),
     multiple: boolean("multiple"),

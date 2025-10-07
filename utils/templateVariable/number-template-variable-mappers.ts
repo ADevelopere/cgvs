@@ -1,30 +1,30 @@
 import type {
-    CreateNumberTemplateVariableMutation,
-    UpdateNumberTemplateVariableMutation,
+    CreateTemplateNumberVariableMutation,
+    UpdateTemplateNumberVariableMutation,
     DeleteTemplateVariableMutation,
-    NumberTemplateVariable,
-    UpdateNumberTemplateVariableInput,
+    TemplateNumberVariable,
+    UpdateTemplateNumberVariableInput,
     Template,
-    CreateNumberTemplateVariableInput,
+    CreateTemplateNumberVariableInput,
 } from "@/graphql/generated/types";
 
-export type NumberTemplateVariableSource =
-    | CreateNumberTemplateVariableMutation
-    | UpdateNumberTemplateVariableMutation
+export type TemplateNumberVariableSource =
+    | CreateTemplateNumberVariableMutation
+    | UpdateTemplateNumberVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialNumberTemplateVariable = Partial<NumberTemplateVariable> & {
+type PartialTemplateNumberVariable = Partial<TemplateNumberVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a number template variable from any source to a consistent NumberTemplateVariable type
+ * Maps a number template variable from any source to a consistent TemplateNumberVariable type
  */
-const mapNumberTemplateVariable = (
-    variable: PartialNumberTemplateVariable | null | undefined,
-    previousVariable?: NumberTemplateVariable | null,
-): NumberTemplateVariable | null => {
+const mapTemplateNumberVariable = (
+    variable: PartialTemplateNumberVariable | null | undefined,
+    previousVariable?: TemplateNumberVariable | null,
+): TemplateNumberVariable | null => {
     if (!variable) {
         return null;
     }
@@ -58,62 +58,62 @@ const mapNumberTemplateVariable = (
         maxValue: variable.maxValue ?? previousVariable?.maxValue ?? null,
         decimalPlaces:
             variable.decimalPlaces ?? previousVariable?.decimalPlaces ?? null,
-    } as NumberTemplateVariable;
+    } as TemplateNumberVariable;
 };
 
 /**
- * Maps a creation number template variable mutation result to a NumberTemplateVariable
+ * Maps a creation number template variable mutation result to a TemplateNumberVariable
  */
-const mapCreateNumberTemplateVariable = (
-    source: CreateNumberTemplateVariableMutation,
-): NumberTemplateVariable | null => {
-    return mapNumberTemplateVariable(
-        source.createNumberTemplateVariable as PartialNumberTemplateVariable,
+const mapCreateTemplateNumberVariable = (
+    source: CreateTemplateNumberVariableMutation,
+): TemplateNumberVariable | null => {
+    return mapTemplateNumberVariable(
+        source.createTemplateNumberVariable as PartialTemplateNumberVariable,
     );
 };
 
 /**
- * Maps an update number template variable mutation result to a NumberTemplateVariable
+ * Maps an update number template variable mutation result to a TemplateNumberVariable
  */
-const mapUpdateNumberTemplateVariable = (
-    source: UpdateNumberTemplateVariableMutation,
-    previousVariable?: NumberTemplateVariable,
-): NumberTemplateVariable | null => {
-    return mapNumberTemplateVariable(
-        source.updateNumberTemplateVariable as PartialNumberTemplateVariable,
+const mapUpdateTemplateNumberVariable = (
+    source: UpdateTemplateNumberVariableMutation,
+    previousVariable?: TemplateNumberVariable,
+): TemplateNumberVariable | null => {
+    return mapTemplateNumberVariable(
+        source.updateTemplateNumberVariable as PartialTemplateNumberVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps a delete template variable mutation result to a NumberTemplateVariable
+ * Maps a delete template variable mutation result to a TemplateNumberVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: NumberTemplateVariable,
-): NumberTemplateVariable | null => {
-    return mapNumberTemplateVariable(
-        source.deleteTemplateVariable as PartialNumberTemplateVariable,
+    previousVariable?: TemplateNumberVariable,
+): TemplateNumberVariable | null => {
+    return mapTemplateNumberVariable(
+        source.deleteTemplateVariable as PartialTemplateNumberVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps any number template variable source to a single NumberTemplateVariable or null
+ * Maps any number template variable source to a single TemplateNumberVariable or null
  */
-export const mapSingleNumberTemplateVariable = (
-    source: NumberTemplateVariableSource | undefined | null,
-    previousVariable?: NumberTemplateVariable,
-): NumberTemplateVariable | null => {
+export const mapSingleTemplateNumberVariable = (
+    source: TemplateNumberVariableSource | undefined | null,
+    previousVariable?: TemplateNumberVariable,
+): TemplateNumberVariable | null => {
     if (!source) {
         return null;
     }
 
-    if ("createNumberTemplateVariable" in source) {
-        return mapCreateNumberTemplateVariable(source);
+    if ("createTemplateNumberVariable" in source) {
+        return mapCreateTemplateNumberVariable(source);
     }
-    if ("updateNumberTemplateVariable" in source) {
-        return mapUpdateNumberTemplateVariable(source, previousVariable);
+    if ("updateTemplateNumberVariable" in source) {
+        return mapUpdateTemplateNumberVariable(source, previousVariable);
     }
     if ("deleteTemplateVariable" in source) {
         return mapDeleteTemplateVariable(source, previousVariable);
@@ -123,11 +123,11 @@ export const mapSingleNumberTemplateVariable = (
 };
 
 /**
- * Maps a NumberTemplateVariable to a NumberTemplateVariableInput
+ * Maps a TemplateNumberVariable to a TemplateNumberVariableInput
  */
-export const mapNumberTemplateVariableToInput = (
-    variable: NumberTemplateVariable,
-): UpdateNumberTemplateVariableInput => {
+export const mapTemplateNumberVariableToInput = (
+    variable: TemplateNumberVariable,
+): UpdateTemplateNumberVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
@@ -140,9 +140,9 @@ export const mapNumberTemplateVariableToInput = (
     };
 };
 
-export const mapToCreateNumberTemplateVariableInput = (
-    source: NumberTemplateVariable | null | undefined,
-): CreateNumberTemplateVariableInput => {
+export const mapToCreateTemplateNumberVariableInput = (
+    source: TemplateNumberVariable | null | undefined,
+): CreateTemplateNumberVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description ?? null,
