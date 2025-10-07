@@ -1,6 +1,6 @@
 {
-  "id": "53a4d655-92e7-417e-994c-1c1a6eb1eb94",
-  "prevId": "551e33ba-de1e-4484-a266-01d91024544c",
+  "id": "e47f9d1f-147f-4ebf-b4a3-058cdf08dfdc",
+  "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -646,8 +646,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.date_template_variable": {
-      "name": "date_template_variable",
+    "public.template_date_variable": {
+      "name": "template_date_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -673,12 +673,6 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
-        },
-        "preview_value": {
-          "name": "preview_value",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},
@@ -689,8 +683,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.number_template_variable": {
-      "name": "number_template_variable",
+    "public.template_number_variable": {
+      "name": "template_number_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -716,12 +710,6 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
-        },
-        "preview_value": {
-          "name": "preview_value",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},
@@ -732,8 +720,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.select_template_variable": {
-      "name": "select_template_variable",
+    "public.template_select_variable": {
+      "name": "template_select_variable",
       "schema": "",
       "columns": {
         "id": {
@@ -753,9 +741,40 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.template_text_variable": {
+      "name": "template_text_variable",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
         },
-        "preview_value": {
-          "name": "preview_value",
+        "min_length": {
+          "name": "min_length",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_length": {
+          "name": "max_length",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pattern": {
+          "name": "pattern",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
@@ -817,6 +836,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "preview_value": {
+          "name": "preview_value",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp (3)",
@@ -831,8 +856,8 @@
         }
       },
       "indexes": {
-        "template_variable_base_template_id_name_key": {
-          "name": "template_variable_base_template_id_name_key",
+        "template_base_variable_template_id_name_key": {
+          "name": "template_base_variable_template_id_name_key",
           "columns": [
             {
               "expression": "template_id",
@@ -853,49 +878,6 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.text_template_variable": {
-      "name": "text_template_variable",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "min_length": {
-          "name": "min_length",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "max_length": {
-          "name": "max_length",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "pattern": {
-          "name": "pattern",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "preview_value": {
-          "name": "preview_value",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

@@ -12,6 +12,8 @@ import { PageInfoObject } from "../pagintaion/pagination.objects";
 import { TemplateCategoryPothosObject } from "../templateCategory/templateCategory.pothos";
 import { loadTemplatesByIds } from "./template.repository";
 import { getStorageService } from "@/server/storage/storage.service";
+import { TemplateVariablePothosInterface } from "../templateVariable/templateVariable.pothos";
+import { loadTemplateVariablesForTemplates } from "../templateVariable/templateVariable.repository";
 
 export const TemplatePothosObject = gqlSchemaBuilder
     .loadableObjectRef<TemplatePothosDefintion, number>("Template", {
@@ -60,9 +62,14 @@ gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
             TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
         resolve: (template) => template.preSuspensionCategoryId,
     }),
+    variables: t.loadableList({
+        type: TemplateVariablePothosInterface,
+        load: (ids: number[]) => loadTemplateVariablesForTemplates(ids),
+        resolve: (template) => template.id,
+    }),
+    
     // TODO
     // imageFile: FileInfo | null;
-    // variables
     // recipientGroups
     // driven
 }));

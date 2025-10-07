@@ -110,6 +110,12 @@ export const relations = defineRelations(schema, (r) => ({
             alias: "preSuspensionTemplates",
         }),
     },
+    templateVariableBases: {
+        template: r.one.templates({
+            from: r.templateVariableBases.templateId,
+            to: r.templates.id,
+        }),
+    },
     // templateRecipientGroups: {
     //     template: r.one.templates({
     //         from: r.templateRecipientGroups.templateId,
