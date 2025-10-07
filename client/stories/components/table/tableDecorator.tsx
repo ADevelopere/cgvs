@@ -1,11 +1,11 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { TableLocaleProvider } from "@/locale/table/TableLocaleContext";
+import { TableLocaleProvider } from "@/client/locale/table/TableLocaleContext";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import { EditableColumn, LoadMoreParams } from "@/types/table.type";
 import { PaginationInfo } from "@/graphql/generated/types";
-import { SupportedLocale } from "@/locale/table/tableLocale.types";
+import { SupportedLocale } from "@/client/locale/table/tableLocale.types";
 import { FilterClause } from "@/types/filters";
 
 export interface TableDecoratorConfig {

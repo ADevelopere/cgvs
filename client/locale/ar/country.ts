@@ -1,4 +1,4 @@
-import CountryTranslations from "../components/Country";
+import { CountryTranslations } from "../components";
 
 export const country: CountryTranslations = {
     selectCountry: "اختر البلد",

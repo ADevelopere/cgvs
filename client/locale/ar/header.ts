@@ -1,4 +1,4 @@
-import HeaderTranslations from "../components/Header";
+import { HeaderTranslations } from "../components";
 
 export const header: HeaderTranslations = {
     home: "الرئيسية",

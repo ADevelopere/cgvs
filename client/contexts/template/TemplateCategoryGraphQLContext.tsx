@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useCallback } from "react";
-import { mapTemplateCategory } from "@/utils/template/template-category-mapper";
 import { ApolloLink } from "@apollo/client";
 import * as Document from "@/client/graphql/documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -114,6 +113,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         {
             update(cache, { data }) {
                 if (!data?.updateTemplateCategory) return;
+                const updatedCategory = data.updateTemplateCategory;
                 const updateTemplateCategory = data.updateTemplateCategory;
                 const existingData =
                     cache.readQuery<Graphql.TemplateCategoriesQuery>({
@@ -121,9 +121,6 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
                     });
 
                 if (!existingData?.templateCategories) return;
-
-                const updatedCategory = mapTemplateCategory(data);
-                if (!updatedCategory) return;
 
                 const updatedData = existingData.templateCategories.map(
                     (category) =>

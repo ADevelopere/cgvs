@@ -1,4 +1,4 @@
-import ConnectivityTranslations from "../components/Connectivity";
+import { ConnectivityTranslations } from "../components";
 
 export const connectivity: ConnectivityTranslations = {
     serverConnectionLost: "فقد الاتصال بالخادم",

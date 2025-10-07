@@ -1,4 +1,4 @@
-import TemplateVariableTranslation from "../components/TemplateVariable";
+import { TemplateVariableTranslation } from "../components";
 
 export const templateVariable: TemplateVariableTranslation = {
     name: "الإسم",

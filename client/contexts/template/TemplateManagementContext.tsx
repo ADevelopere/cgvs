@@ -14,10 +14,6 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
-import {
-    mapSingleTemplate,
-    mapTemplateConfig,
-} from "@/utils/template/template-mappers";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
@@ -76,13 +72,17 @@ export const TemplateManagementProvider: React.FC<{
     const { templateConfigQuery } = useTemplateGraphQL();
     const { setNavigation } = useDashboardLayout();
 
-    const { data: apolloTemplateData } = useQuery(Document.templateQueryDocument, {
-        variables: { id: id ? parseInt(id, 10) : 0 },
-        skip: !id,
-        fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
-    });
+    const { data: apolloTemplateData } = useQuery(
+        Document.templateQueryDocument,
+        {
+            variables: { id: id ? parseInt(id, 10) : 0 },
+            skip: !id,
+            fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
+        },
+    );
 
-    const [config, setConfig] = useState<Graphql.TemplatesConfigs>(defaultConfig);
+    const [config, setConfig] =
+        useState<Graphql.TemplatesConfigs>(defaultConfig);
 
     const [activeTab, setActiveTab] =
         useState<TemplateManagementTabType>("basic");
@@ -169,10 +169,7 @@ export const TemplateManagementProvider: React.FC<{
 
                 // Finally, if we have Apollo data with additional fields, use that
                 if (apolloTemplateData?.template) {
-                    const t = mapSingleTemplate(apolloTemplateData);
-                    if (t) {
-                        template = t;
-                    }
+                    template = apolloTemplateData.template;
                 }
                 if (template) {
                     settemplate(template);
@@ -202,10 +199,10 @@ export const TemplateManagementProvider: React.FC<{
 
     const fetchConfig = useCallback(async () => {
         try {
-            const data: Graphql.TemplatesConfigsQuery = await templateConfigQuery();
-            if (data) {
-                const config = mapTemplateConfig(data) ?? defaultConfig;
-                setConfig(config);
+            const data: Graphql.TemplatesConfigsQuery =
+                await templateConfigQuery();
+            if (data.templatesConfigs) {
+                setConfig(data.templatesConfigs);
             } else {
                 setError("Failed to fetch template config");
                 setTabErrors((prev) => ({

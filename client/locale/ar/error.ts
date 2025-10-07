@@ -1,4 +1,4 @@
-import ErrorTranslations from "../components/Error";
+import { ErrorTranslations } from "../components";
 
 export const error: ErrorTranslations = {
     componentError: "خطأ في المكون",

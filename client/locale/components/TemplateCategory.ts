@@ -75,6 +75,7 @@ export type TemplateCategoryTranslation = {
     templateDeleteFailed: string;
     templateRestoreFailed: string;
     errorRestoringTemplate: string;
+    categoryNameRequired: string;
 
     // Validation messages
     nameTooShort: string;

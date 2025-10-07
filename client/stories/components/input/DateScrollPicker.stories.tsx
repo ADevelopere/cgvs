@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
 
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import { Box } from "@mui/material";
 import moment from "moment-hijri";
 import {
   commonStoryArgTypes,
   CommonStoryArgTypesProps,
   defaultStoryArgs,
-} from "@/stories/argTypes";
+} from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import DateScrollPicker, { DateScrollPickerProps } from "@/client/components/input/DateScrollPicker";
 import Calendar from "@/types/Calendar";

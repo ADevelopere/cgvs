@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Meta, StoryFn } from "@storybook/nextjs";
-import withGlobalStyles from "@/stories/Decorators";
+import withGlobalStyles from "@/client/stories/Decorators";
 import { 
   Box, 
   Typography, 
@@ -20,10 +20,10 @@ import {
   commonStoryArgTypes,
   CommonStoryArgTypesProps,
   defaultStoryArgs,
-} from "@/stories/argTypes";
+} from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
-import useStoryTheme from "@/stories/useStoryTheme";
+import useStoryTheme from "@/client/stories/useStoryTheme";
 import { Edit, Delete, Folder, Code, Eye, Settings } from "lucide-react";
 
 export default {
