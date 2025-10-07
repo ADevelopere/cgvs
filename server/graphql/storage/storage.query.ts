@@ -4,7 +4,6 @@ import {
     getStorageService,
 } from "../../storage/storage.service";
 import { checkFileUsage } from "@/server/storage/db/storage-db.service";
-import logger from "@/utils/logger";
 
 gqlSchemaBuilder.queryFields((t) => ({
     listFiles: t.field({
@@ -102,9 +101,7 @@ gqlSchemaBuilder.queryFields((t) => ({
         resolve: async (_parent, { path }) => {
             const storageService = await getStorageService();
             const children = await storageService.fetchDirectoryChildren(path);
-            logger.debug("directoryChildren query, ", children);
-            // Map createdAt to created for GraphQL schema compatibility
-            return children.map((item) => item);
+            return children;
         },
     }),
 

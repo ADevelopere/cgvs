@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1759447221871,
-      "tag": "0000_living_kronos",
+      "when": 1759804257783,
+      "tag": "0000_curly_pride",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759804276597,
+      "tag": "0001_clear_earthquake",
       "breakpoints": true
     }
   ]

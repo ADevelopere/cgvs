@@ -97,28 +97,32 @@ export const textOperationConfig: {
             columnId: keyof Graphql.Student,
         ) => keyof Graphql.StudentFilterArgs;
         // Function to format the value if needed (e.g., add wildcards)
-        formatValue?: (val: string) => string;
+    formatValue?: (val: string, columnId: keyof Graphql.Student) => string;
         // Does this operation require a boolean value instead of string?
         isBooleanOp?: boolean;
     };
 } = {
     [TextFilterOperation.contains]: {
-        fieldName: (columnId) => {
-            // Map to base field name
-            const fieldMap: Record<
-                string,
-                keyof Graphql.StudentFilterArgs
-            > = {
-                name: "name",
-                email: "email",
-                phoneNumber: "phoneNumber",
-            };
-            return (
-                fieldMap[columnId as string] ||
-                (columnId as keyof Graphql.StudentFilterArgs)
-            );
-        },
-        formatValue: (val) => `%${val}%`,
+            fieldName: (columnId) => {
+                // Map to base field name
+                const fieldMap: Record<
+                    string,
+                    keyof Graphql.StudentFilterArgs
+                > = {
+                    name: "name",
+                    email: "email",
+                    phoneNumber: "phoneNumber",
+                };
+                return (
+                    fieldMap[columnId as string] ||
+                    (columnId as keyof Graphql.StudentFilterArgs)
+                );
+            },
+            formatValue: (val, columnId) => {
+                // For name, use raw value (for FTS)
+                if (columnId === "name") return val;
+                return `%${val}%`;
+            },
     },
     [TextFilterOperation.notContains]: {
         fieldName: (columnId) => {
@@ -282,9 +286,11 @@ export const mapTextFilter = (
     } else {
         // Format string value if a format function exists, otherwise use raw value
         const stringValue = value as string; // Type assertion is safe due to earlier check
-        (filterArgs as any)[fieldName] = config.formatValue
-            ? config.formatValue(stringValue)
-            : stringValue;
+        if (config.formatValue) {
+            (filterArgs as any)[fieldName] = config.formatValue(stringValue, columnId);
+        } else {
+            (filterArgs as any)[fieldName] = stringValue;
+        }
     }
 
     return filterArgs;

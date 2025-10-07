@@ -15,7 +15,7 @@
 // Load environment variables from .env file BEFORE any other imports
 import { config } from "dotenv";
 import { resolve } from "path";
-config({ path: resolve(__dirname, "../.env") });
+config({ path: resolve(__dirname, "../../../.env") });
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {

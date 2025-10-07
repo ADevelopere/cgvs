@@ -1,10 +1,10 @@
 import validator from "validator";
 
 export class Email {
-    public readonly value: string | null | undefined;
+    public readonly value: string;
 
-    constructor(value?: string | null) {
-        if (value && !validator.isEmail(value)) {
+    constructor(value?: string) {
+        if (!value || !validator.isEmail(value)) {
             throw new Error(`Invalid email address: ${value}`);
         }
         this.value = value;

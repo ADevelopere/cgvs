@@ -10,7 +10,6 @@ import {
 } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStudentGraphQL } from "./StudentGraphQLContext";
-import { mapSingleStudent } from "@/utils/student/student-mappers";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
 type StudentManagementContextType = {
@@ -122,7 +121,7 @@ export const StudentManagementProvider: React.FC<{
             try {
                 const result = await createStudentMutation(variables);
                 if (result.data?.createStudent) {
-                    const newStudent = mapSingleStudent(result.data);
+                    const newStudent = result.data.createStudent;
                     if (newStudent) {
                         setStudents((prev) => [newStudent, ...prev]);
                         notifications.show("Student created successfully", {
@@ -155,7 +154,7 @@ export const StudentManagementProvider: React.FC<{
             try {
                 const result = await partialUpdateStudentMutation(variables);
                 if (result.data?.partiallyUpdateStudent) {
-                    const updatedStudent = mapSingleStudent(result.data);
+                    const updatedStudent = result.data.partiallyUpdateStudent
                     if (updatedStudent) {
                         setStudents((prev) =>
                             prev.map((student) =>
