@@ -1,29 +1,29 @@
 import type {
-    CreateDateTemplateVariableMutation,
-    UpdateDateTemplateVariableMutation,
+    CreateTemplateDateVariableMutation,
+    UptemplateDateDateVariableMutation,
     DeleteTemplateVariableMutation,
-    DateTemplateVariable,
-    UpdateDateTemplateVariableInput,
-    CreateDateTemplateVariableInput,
+    TemplateDateVariable,
+    UptemplateDateDateVariableInput,
+    CreateTemplateDateVariableInput,
 } from "@/graphql/generated/types";
 
-export type DateTemplateVariableSource =
-    | CreateDateTemplateVariableMutation
-    | UpdateDateTemplateVariableMutation
+export type TemplateDateVariableSource =
+    | CreateTemplateDateVariableMutation
+    | UptemplateDateDateVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialDateTemplateVariable = Partial<DateTemplateVariable> & {
+type PartialTemplateDateVariable = Partial<TemplateDateVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a date template variable from any source to a consistent DateTemplateVariable type
+ * Maps a date template variable from any source to a consistent TemplateDateVariable type
  */
-const mapDateTemplateVariable = (
-    variable: PartialDateTemplateVariable | null | undefined,
-    previousVariable?: DateTemplateVariable | null,
-): DateTemplateVariable | null => {
+const mapTemplateDateVariable = (
+    variable: PartialTemplateDateVariable | null | undefined,
+    previousVariable?: TemplateDateVariable | null,
+): TemplateDateVariable | null => {
     if (!variable) {
         return null;
     }
@@ -45,62 +45,62 @@ const mapDateTemplateVariable = (
         minDate: variable.minDate ?? previousVariable?.minDate ?? null,
         maxDate: variable.maxDate ?? previousVariable?.maxDate ?? null,
         format: variable.format ?? previousVariable?.format ?? null,
-    } as DateTemplateVariable;
+    } as TemplateDateVariable;
 };
 
 /**
- * Maps a creation date template variable mutation result to a DateTemplateVariable
+ * Maps a creation date template variable mutation result to a TemplateDateVariable
  */
-const mapCreateDateTemplateVariable = (
-    source: CreateDateTemplateVariableMutation,
-): DateTemplateVariable | null => {
-    return mapDateTemplateVariable(
-        source.createDateTemplateVariable as PartialDateTemplateVariable,
+const mapCreateTemplateDateVariable = (
+    source: CreateTemplateDateVariableMutation,
+): TemplateDateVariable | null => {
+    return mapTemplateDateVariable(
+        source.createTemplateDateVariable as PartialTemplateDateVariable,
     );
 };
 
 /**
- * Maps an update date template variable mutation result to a DateTemplateVariable
+ * Maps an update date template variable mutation result to a TemplateDateVariable
  */
-const mapUpdateDateTemplateVariable = (
-    source: UpdateDateTemplateVariableMutation,
-    previousVariable?: DateTemplateVariable,
-): DateTemplateVariable | null => {
-    return mapDateTemplateVariable(
-        source.updateDateTemplateVariable as PartialDateTemplateVariable,
+const mapUptemplateDateDateVariable = (
+    source: UptemplateDateDateVariableMutation,
+    previousVariable?: TemplateDateVariable,
+): TemplateDateVariable | null => {
+    return mapTemplateDateVariable(
+        source.uptemplateDateDateVariable as PartialTemplateDateVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps a delete template variable mutation result to a DateTemplateVariable
+ * Maps a delete template variable mutation result to a TemplateDateVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: DateTemplateVariable,
-): DateTemplateVariable | null => {
-    return mapDateTemplateVariable(
-        source.deleteTemplateVariable as PartialDateTemplateVariable,
+    previousVariable?: TemplateDateVariable,
+): TemplateDateVariable | null => {
+    return mapTemplateDateVariable(
+        source.deleteTemplateVariable as PartialTemplateDateVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps any date template variable source to a single DateTemplateVariable or null
+ * Maps any date template variable source to a single TemplateDateVariable or null
  */
-export const mapSingleDateTemplateVariable = (
-    source: DateTemplateVariableSource | undefined | null,
-    previousVariable?: DateTemplateVariable,
-): DateTemplateVariable | null => {
+export const mapSingleTemplateDateVariable = (
+    source: TemplateDateVariableSource | undefined | null,
+    previousVariable?: TemplateDateVariable,
+): TemplateDateVariable | null => {
     if (!source) {
         return null;
     }
 
-    if ("createDateTemplateVariable" in source) {
-        return mapCreateDateTemplateVariable(source);
+    if ("createTemplateDateVariable" in source) {
+        return mapCreateTemplateDateVariable(source);
     }
-    if ("updateDateTemplateVariable" in source) {
-        return mapUpdateDateTemplateVariable(source, previousVariable);
+    if ("uptemplateDateDateVariable" in source) {
+        return mapUptemplateDateDateVariable(source, previousVariable);
     }
     if ("deleteTemplateVariable" in source) {
         return mapDeleteTemplateVariable(source, previousVariable);
@@ -110,11 +110,11 @@ export const mapSingleDateTemplateVariable = (
 };
 
 /**
- * Maps a DateTemplateVariable to a DateTemplateVariableInput
+ * Maps a TemplateDateVariable to a TemplateDateVariableInput
  */
-export const mapDateTemplateVariableToInput = (
-    variable: DateTemplateVariable,
-): UpdateDateTemplateVariableInput => {
+export const mapTemplateDateVariableToInput = (
+    variable: TemplateDateVariable,
+): UptemplateDateDateVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
@@ -127,9 +127,9 @@ export const mapDateTemplateVariableToInput = (
     };
 };
 
-export const mapToCreateDateTemplateVariableInput = (
-    source: DateTemplateVariable | null | undefined,
-): CreateDateTemplateVariableInput => {
+export const mapToCreateTemplateDateVariableInput = (
+    source: TemplateDateVariable | null | undefined,
+): CreateTemplateDateVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description ?? null,

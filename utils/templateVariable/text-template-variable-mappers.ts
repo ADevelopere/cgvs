@@ -1,30 +1,30 @@
 import type {
-    CreateTextTemplateVariableMutation,
-    UpdateTextTemplateVariableMutation,
+    CreateTemplateTextVariableMutation,
+    UptemplateDateTextVariableMutation,
     DeleteTemplateVariableMutation,
-    TextTemplateVariable,
-    UpdateTextTemplateVariableInput,
+    TemplateTextVariable,
+    UptemplateDateTextVariableInput,
     Template,
-    CreateTextTemplateVariableInput,
+    CreateTemplateTextVariableInput,
 } from "@/graphql/generated/types";
 
-export type TextTemplateVariableSource =
-    | CreateTextTemplateVariableMutation
-    | UpdateTextTemplateVariableMutation
+export type TemplateTextVariableSource =
+    | CreateTemplateTextVariableMutation
+    | UptemplateDateTextVariableMutation
     | DeleteTemplateVariableMutation;
 
-type PartialTextTemplateVariable = Partial<TextTemplateVariable> & {
+type PartialTemplateTextVariable = Partial<TemplateTextVariable> & {
     id: string;
     name: string;
 };
 
 /**
- * Maps a text template variable from any source to a consistent TextTemplateVariable type
+ * Maps a text template variable from any source to a consistent TemplateTextVariable type
  */
-const mapTextTemplateVariable = (
-    variable: PartialTextTemplateVariable | null | undefined,
-    previousVariable?: TextTemplateVariable | null,
-): TextTemplateVariable | null => {
+const mapTemplateTextVariable = (
+    variable: PartialTemplateTextVariable | null | undefined,
+    previousVariable?: TemplateTextVariable | null,
+): TemplateTextVariable | null => {
     if (!variable) {
         return null;
     }
@@ -56,62 +56,62 @@ const mapTextTemplateVariable = (
             variable.updatedAt ?? previousVariable?.updatedAt ?? new Date(),
         minLength: variable.minLength ?? previousVariable?.minLength ?? null,
         maxLength: variable.maxLength ?? previousVariable?.maxLength ?? null,
-    } as TextTemplateVariable;
+    } as TemplateTextVariable;
 };
 
 /**
- * Maps a creation text template variable mutation result to a TextTemplateVariable
+ * Maps a creation text template variable mutation result to a TemplateTextVariable
  */
-const mapCreateTextTemplateVariable = (
-    source: CreateTextTemplateVariableMutation,
-): TextTemplateVariable | null => {
-    return mapTextTemplateVariable(
-        source.createTextTemplateVariable as PartialTextTemplateVariable,
+const mapCreateTemplateTextVariable = (
+    source: CreateTemplateTextVariableMutation,
+): TemplateTextVariable | null => {
+    return mapTemplateTextVariable(
+        source.createTemplateTextVariable as PartialTemplateTextVariable,
     );
 };
 
 /**
- * Maps an update text template variable mutation result to a TextTemplateVariable
+ * Maps an update text template variable mutation result to a TemplateTextVariable
  */
-const mapUpdateTextTemplateVariable = (
-    source: UpdateTextTemplateVariableMutation,
-    previousVariable?: TextTemplateVariable,
-): TextTemplateVariable | null => {
-    return mapTextTemplateVariable(
-        source.updateTextTemplateVariable as PartialTextTemplateVariable,
+const mapUptemplateDateTextVariable = (
+    source: UptemplateDateTextVariableMutation,
+    previousVariable?: TemplateTextVariable,
+): TemplateTextVariable | null => {
+    return mapTemplateTextVariable(
+        source.uptemplateDateTextVariable as PartialTemplateTextVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps a delete template variable mutation result to a TextTemplateVariable
+ * Maps a delete template variable mutation result to a TemplateTextVariable
  */
 const mapDeleteTemplateVariable = (
     source: DeleteTemplateVariableMutation,
-    previousVariable?: TextTemplateVariable,
-): TextTemplateVariable | null => {
-    return mapTextTemplateVariable(
-        source.deleteTemplateVariable as PartialTextTemplateVariable,
+    previousVariable?: TemplateTextVariable,
+): TemplateTextVariable | null => {
+    return mapTemplateTextVariable(
+        source.deleteTemplateVariable as PartialTemplateTextVariable,
         previousVariable,
     );
 };
 
 /**
- * Maps any text template variable source to a single TextTemplateVariable or null
+ * Maps any text template variable source to a single TemplateTextVariable or null
  */
-export const mapSingleTextTemplateVariable = (
-    source: TextTemplateVariableSource | undefined | null,
-    previousVariable?: TextTemplateVariable,
-): TextTemplateVariable | null => {
+export const mapSingleTemplateTextVariable = (
+    source: TemplateTextVariableSource | undefined | null,
+    previousVariable?: TemplateTextVariable,
+): TemplateTextVariable | null => {
     if (!source) {
         return null;
     }
 
-    if ("createTextTemplateVariable" in source) {
-        return mapCreateTextTemplateVariable(source);
+    if ("createTemplateTextVariable" in source) {
+        return mapCreateTemplateTextVariable(source);
     }
-    if ("updateTextTemplateVariable" in source) {
-        return mapUpdateTextTemplateVariable(source, previousVariable);
+    if ("uptemplateDateTextVariable" in source) {
+        return mapUptemplateDateTextVariable(source, previousVariable);
     }
     if ("deleteTemplateVariable" in source) {
         return mapDeleteTemplateVariable(source, previousVariable);
@@ -121,11 +121,11 @@ export const mapSingleTextTemplateVariable = (
 };
 
 /**
- * Maps a TextTemplateVariable to a TextTemplateVariableInput
+ * Maps a TemplateTextVariable to a TemplateTextVariableInput
  */
-export const mapTextTemplateVariableToInput = (
-    variable: TextTemplateVariable,
-): UpdateTextTemplateVariableInput => {
+export const mapTemplateTextVariableToInput = (
+    variable: TemplateTextVariable,
+): UptemplateDateTextVariableInput => {
     return {
         id: variable.id,
         name: variable.name,
@@ -137,9 +137,9 @@ export const mapTextTemplateVariableToInput = (
     };
 };
 
-export const mapToCreateTextTemplateVariableInput = (
-    source: TextTemplateVariable | null | undefined,
-): CreateTextTemplateVariableInput => {
+export const mapToCreateTemplateTextVariableInput = (
+    source: TemplateTextVariable | null | undefined,
+): CreateTemplateTextVariableInput => {
     return {
         name: source?.name ?? "",
         description: source?.description,
