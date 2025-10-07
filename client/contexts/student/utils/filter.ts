@@ -96,33 +96,26 @@ export const textOperationConfig: {
         fieldName: (
             columnId: keyof Graphql.Student,
         ) => keyof Graphql.StudentFilterArgs;
-        // Function to format the value if needed (e.g., add wildcards)
-    formatValue?: (val: string, columnId: keyof Graphql.Student) => string;
         // Does this operation require a boolean value instead of string?
         isBooleanOp?: boolean;
     };
 } = {
     [TextFilterOperation.contains]: {
-            fieldName: (columnId) => {
-                // Map to base field name
-                const fieldMap: Record<
-                    string,
-                    keyof Graphql.StudentFilterArgs
-                > = {
-                    name: "name",
-                    email: "email",
-                    phoneNumber: "phoneNumber",
-                };
-                return (
-                    fieldMap[columnId as string] ||
-                    (columnId as keyof Graphql.StudentFilterArgs)
-                );
-            },
-            formatValue: (val, columnId) => {
-                // For name, use raw value (for FTS)
-                if (columnId === "name") return val;
-                return `%${val}%`;
-            },
+        fieldName: (columnId) => {
+            // Map to base field name
+            const fieldMap: Record<
+                string,
+                keyof Graphql.StudentFilterArgs
+            > = {
+                name: "name",
+                email: "email",
+                phoneNumber: "phoneNumber",
+            };
+            return (
+                fieldMap[columnId as string] ||
+                (columnId as keyof Graphql.StudentFilterArgs)
+            );
+        },
     },
     [TextFilterOperation.notContains]: {
         fieldName: (columnId) => {
@@ -138,7 +131,6 @@ export const textOperationConfig: {
                 (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
-        formatValue: (val) => `%${val}%`,
     },
     [TextFilterOperation.equals]: {
         fieldName: (columnId) => {
@@ -184,7 +176,6 @@ export const textOperationConfig: {
                 (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
-        formatValue: (val) => `${val}%`,
     },
     [TextFilterOperation.endsWith]: {
         fieldName: (columnId) => {
@@ -200,7 +191,6 @@ export const textOperationConfig: {
                 (columnId as keyof Graphql.StudentFilterArgs)
             );
         },
-        formatValue: (val) => `%${val}`,
     },
     [TextFilterOperation.isEmpty]: {
         fieldName: (columnId) => {
@@ -265,7 +255,7 @@ export const mapTextFilter = (
     // Handle special case: phoneNumber might only support CONTAINS
     if (columnId === "phoneNumber") {
         if (op === TextFilterOperation.contains && typeof value === "string") {
-            filterArgs.phoneNumber = `%${value}%`;
+            filterArgs.phoneNumber = value; // Raw value, server will add wildcards
         } else if (op !== TextFilterOperation.contains) {
             logger.warn(
                 `Operation ${op} might not be supported for phoneNumber.`,
@@ -284,13 +274,8 @@ export const mapTextFilter = (
             (filterArgs as any)[fieldName] = true;
         }
     } else {
-        // Format string value if a format function exists, otherwise use raw value
-        const stringValue = value as string; // Type assertion is safe due to earlier check
-        if (config.formatValue) {
-            (filterArgs as any)[fieldName] = config.formatValue(stringValue, columnId);
-        } else {
-            (filterArgs as any)[fieldName] = stringValue;
-        }
+        // Pass raw string value - server will handle wildcards
+        (filterArgs as any)[fieldName] = value as string;
     }
 
     return filterArgs;
