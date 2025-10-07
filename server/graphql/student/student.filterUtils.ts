@@ -55,9 +55,9 @@ export function applyStudentFilters<T extends PgSelect>(
         qb = qb.where(not(eq(students.name, "")));
     }
 
-    // Email filters
+    // Email filters (contains)
     if (args.email) {
-        qb = qb.where(like(students.email, `%${args.email}`));
+        qb = qb.where(like(students.email, `%${args.email}%`));
     }
     if (args.emailNotContains) {
         qb = qb.where(notLike(students.email, `%${args.emailNotContains}%`));
@@ -81,9 +81,9 @@ export function applyStudentFilters<T extends PgSelect>(
         qb = qb.where(not(isNull(students.email)));
     }
 
-    // Phone number filter
+    // Phone number filter (contains)
     if (args.phoneNumber?.number) {
-        qb = qb.where(eq(students.phoneNumber, args.phoneNumber.number));
+        qb = qb.where(like(students.phoneNumber, `%${args.phoneNumber.number}%`));
     }
 
     // Gender filter
