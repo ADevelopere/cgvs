@@ -1,5 +1,4 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
-
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 export const templateQueryDocument: TypedDocumentNode<

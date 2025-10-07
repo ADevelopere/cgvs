@@ -460,11 +460,16 @@ export type Mutation = {
   createStudent?: Maybe<Student>;
   createTemplate?: Maybe<Template>;
   createTemplateCategory?: Maybe<TemplateCategory>;
+  createTemplateDateVariable?: Maybe<TemplateDateVariable>;
+  createTemplateNumberVariable?: Maybe<TemplateNumberVariable>;
+  createTemplateSelectVariable?: Maybe<TemplateSelectVariable>;
+  createTemplateTextVariable?: Maybe<TemplateTextVariable>;
   deleteFile?: Maybe<FileOperationResult>;
   deleteStorageItems?: Maybe<BulkOperationResult>;
   deleteStudent?: Maybe<Student>;
   deleteTemplate?: Maybe<Template>;
   deleteTemplateCategory?: Maybe<TemplateCategory>;
+  deleteTemplateVariable?: Maybe<TemplateVariable>;
   generateUploadSignedUrl?: Maybe<Scalars['String']['output']>;
   login?: Maybe<LoginResponse>;
   logout?: Maybe<Scalars['Boolean']['output']>;
@@ -478,6 +483,10 @@ export type Mutation = {
   updateDirectoryPermissions?: Maybe<FileOperationResult>;
   updateTemplate?: Maybe<Template>;
   updateTemplateCategory?: Maybe<TemplateCategory>;
+  updateTemplateDateVariable?: Maybe<TemplateDateVariable>;
+  updateTemplateNumberVariable?: Maybe<TemplateNumberVariable>;
+  updateTemplateSelectVariable?: Maybe<TemplateSelectVariable>;
+  updateTemplateTextVariable?: Maybe<TemplateTextVariable>;
 };
 
 
@@ -506,6 +515,26 @@ export type MutationCreateTemplateCategoryArgs = {
 };
 
 
+export type MutationCreateTemplateDateVariableArgs = {
+  input: TemplateDateVariableCreateInput;
+};
+
+
+export type MutationCreateTemplateNumberVariableArgs = {
+  input: TemplateNumberVariableCreateInput;
+};
+
+
+export type MutationCreateTemplateSelectVariableArgs = {
+  input: TemplateSelectVariableCreateInput;
+};
+
+
+export type MutationCreateTemplateTextVariableArgs = {
+  input: TemplateTextVariableCreateInput;
+};
+
+
 export type MutationDeleteFileArgs = {
   path: Scalars['String']['input'];
 };
@@ -527,6 +556,11 @@ export type MutationDeleteTemplateArgs = {
 
 
 export type MutationDeleteTemplateCategoryArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteTemplateVariableArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -583,6 +617,26 @@ export type MutationUpdateTemplateArgs = {
 
 export type MutationUpdateTemplateCategoryArgs = {
   input: TemplateCategoryUpdateInput;
+};
+
+
+export type MutationUpdateTemplateDateVariableArgs = {
+  input: TemplateDateVariableUpdateInput;
+};
+
+
+export type MutationUpdateTemplateNumberVariableArgs = {
+  input: TemplateNumberVariableUpdateInput;
+};
+
+
+export type MutationUpdateTemplateSelectVariableArgs = {
+  input: TemplateSelectVariableUpdateInput;
+};
+
+
+export type MutationUpdateTemplateTextVariableArgs = {
+  input: TemplateTextVariableUpdateInput;
 };
 
 export type OrderSortDirection =
@@ -642,6 +696,8 @@ export type Query = {
   template?: Maybe<Template>;
   templateCategories?: Maybe<Array<TemplateCategory>>;
   templateCategory?: Maybe<TemplateCategory>;
+  templateVariable?: Maybe<TemplateVariable>;
+  templateVariablesByTemplateId?: Maybe<Array<TemplateVariable>>;
   templates?: Maybe<PaginatedTemplatesResponse>;
   templatesConfigs?: Maybe<TemplatesConfigs>;
   user?: Maybe<User>;
@@ -706,6 +762,16 @@ export type QueryTemplateArgs = {
 
 export type QueryTemplateCategoryArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryTemplateVariableArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryTemplateVariablesByTemplateIdArgs = {
+  templateId: Scalars['Int']['input'];
 };
 
 
@@ -858,10 +924,12 @@ export type Template = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   order?: Maybe<Scalars['Int']['output']>;
   preSuspensionCategory?: Maybe<TemplateCategory>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  variables?: Maybe<Array<TemplateVariable>>;
 };
 
 export type TemplateCategory = {
@@ -896,6 +964,178 @@ export type TemplateCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
+
+export type TemplateDateVariable = TemplateVariable & {
+  __typename?: 'TemplateDateVariable';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  format?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  maxDate?: Maybe<Scalars['DateTime']['output']>;
+  minDate?: Maybe<Scalars['DateTime']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  order?: Maybe<Scalars['Int']['output']>;
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+  template?: Maybe<Template>;
+  type?: Maybe<TemplateVariableType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TemplateDateVariableCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  maxDate?: InputMaybe<Scalars['DateTime']['input']>;
+  minDate?: InputMaybe<Scalars['DateTime']['input']>;
+  name: Scalars['String']['input'];
+  previewValue: Scalars['DateTime']['input'];
+  required?: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type TemplateDateVariableUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  maxDate?: InputMaybe<Scalars['DateTime']['input']>;
+  minDate?: InputMaybe<Scalars['DateTime']['input']>;
+  name: Scalars['String']['input'];
+  previewValue: Scalars['DateTime']['input'];
+  required?: Scalars['Boolean']['input'];
+};
+
+export type TemplateNumberVariable = TemplateVariable & {
+  __typename?: 'TemplateNumberVariable';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  decimalPlaces?: Maybe<Scalars['Int']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  maxValue?: Maybe<Scalars['Float']['output']>;
+  minValue?: Maybe<Scalars['Float']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  order?: Maybe<Scalars['Int']['output']>;
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+  template?: Maybe<Template>;
+  type?: Maybe<TemplateVariableType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TemplateNumberVariableCreateInput = {
+  decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  maxValue?: InputMaybe<Scalars['Float']['input']>;
+  minValue?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  previewValue: Scalars['Float']['input'];
+  required?: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type TemplateNumberVariableUpdateInput = {
+  decimalPlaces?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  maxValue?: InputMaybe<Scalars['Float']['input']>;
+  minValue?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  previewValue: Scalars['Float']['input'];
+  required?: Scalars['Boolean']['input'];
+};
+
+export type TemplateSelectVariable = TemplateVariable & {
+  __typename?: 'TemplateSelectVariable';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  multiple?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  options?: Maybe<Array<Scalars['String']['output']>>;
+  order?: Maybe<Scalars['Int']['output']>;
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+  template?: Maybe<Template>;
+  type?: Maybe<TemplateVariableType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TemplateSelectVariableCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  multiple?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  options: Array<Scalars['String']['input']>;
+  previewValue?: InputMaybe<Scalars['String']['input']>;
+  required?: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type TemplateSelectVariableUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  multiple?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  options: Array<Scalars['String']['input']>;
+  previewValue?: InputMaybe<Scalars['String']['input']>;
+  required?: Scalars['Boolean']['input'];
+};
+
+export type TemplateTextVariable = TemplateVariable & {
+  __typename?: 'TemplateTextVariable';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  maxLength?: Maybe<Scalars['Int']['output']>;
+  minLength?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  order?: Maybe<Scalars['Int']['output']>;
+  pattern?: Maybe<Scalars['String']['output']>;
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+  template?: Maybe<Template>;
+  type?: Maybe<TemplateVariableType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TemplateTextVariableCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  maxLength?: InputMaybe<Scalars['Int']['input']>;
+  minLength?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  pattern?: InputMaybe<Scalars['String']['input']>;
+  previewValue: Scalars['String']['input'];
+  required?: Scalars['Boolean']['input'];
+  templateId: Scalars['Int']['input'];
+};
+
+export type TemplateTextVariableUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  maxLength?: InputMaybe<Scalars['Int']['input']>;
+  minLength?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  pattern?: InputMaybe<Scalars['String']['input']>;
+  previewValue: Scalars['String']['input'];
+  required?: Scalars['Boolean']['input'];
+};
+
+export type TemplateVariable = {
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  order?: Maybe<Scalars['Int']['output']>;
+  previewValue?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+  template?: Maybe<Template>;
+  type?: Maybe<TemplateVariableType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TemplateVariableType =
+  | 'DATE'
+  | 'NUMBER'
+  | 'SELECT'
+  | 'TEXT';
 
 export type TemplatesConfig = {
   __typename?: 'TemplatesConfig';
@@ -1252,6 +1492,74 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 
 export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory?: { __typename?: 'TemplateCategory', id: number, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } | null };
 
+export type CreateTemplateTextVariableMutationVariables = Exact<{
+  input: TemplateTextVariableCreateInput;
+}>;
+
+
+export type CreateTemplateTextVariableMutation = { __typename?: 'Mutation', createTemplateTextVariable?: { __typename?: 'TemplateTextVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, minLength?: number | null, maxLength?: number | null, pattern?: string | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type CreateTemplateNumberVariableMutationVariables = Exact<{
+  input: TemplateNumberVariableCreateInput;
+}>;
+
+
+export type CreateTemplateNumberVariableMutation = { __typename?: 'Mutation', createTemplateNumberVariable?: { __typename?: 'TemplateNumberVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type CreateTemplateDateVariableMutationVariables = Exact<{
+  input: TemplateDateVariableCreateInput;
+}>;
+
+
+export type CreateTemplateDateVariableMutation = { __typename?: 'Mutation', createTemplateDateVariable?: { __typename?: 'TemplateDateVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, minDate?: any | null, maxDate?: any | null, format?: string | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type CreateTemplateSelectVariableMutationVariables = Exact<{
+  input: TemplateSelectVariableCreateInput;
+}>;
+
+
+export type CreateTemplateSelectVariableMutation = { __typename?: 'Mutation', createTemplateSelectVariable?: { __typename?: 'TemplateSelectVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, options?: Array<string> | null, multiple?: boolean | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type UpdateTemplateTextVariableMutationVariables = Exact<{
+  input: TemplateTextVariableUpdateInput;
+}>;
+
+
+export type UpdateTemplateTextVariableMutation = { __typename?: 'Mutation', updateTemplateTextVariable?: { __typename?: 'TemplateTextVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, minLength?: number | null, maxLength?: number | null, pattern?: string | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type UpdateTemplateNumberVariableMutationVariables = Exact<{
+  input: TemplateNumberVariableUpdateInput;
+}>;
+
+
+export type UpdateTemplateNumberVariableMutation = { __typename?: 'Mutation', updateTemplateNumberVariable?: { __typename?: 'TemplateNumberVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, minValue?: number | null, maxValue?: number | null, decimalPlaces?: number | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type UpdateTemplateDateVariableMutationVariables = Exact<{
+  input: TemplateDateVariableUpdateInput;
+}>;
+
+
+export type UpdateTemplateDateVariableMutation = { __typename?: 'Mutation', updateTemplateDateVariable?: { __typename?: 'TemplateDateVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, minDate?: any | null, maxDate?: any | null, format?: string | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type UpdateTemplateSelectVariableMutationVariables = Exact<{
+  input: TemplateSelectVariableUpdateInput;
+}>;
+
+
+export type UpdateTemplateSelectVariableMutation = { __typename?: 'Mutation', updateTemplateSelectVariable?: { __typename?: 'TemplateSelectVariable', id?: number | null, name?: string | null, description?: string | null, type?: TemplateVariableType | null, required?: boolean | null, order?: number | null, options?: Array<string> | null, multiple?: boolean | null, previewValue?: string | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null } | null };
+
+export type DeleteTemplateVariableMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTemplateVariableMutation = { __typename?: 'Mutation', deleteTemplateVariable?:
+    | { __typename?: 'TemplateDateVariable', id?: number | null, name?: string | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'TemplateNumberVariable', id?: number | null, name?: string | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'TemplateSelectVariable', id?: number | null, name?: string | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'TemplateTextVariable', id?: number | null, name?: string | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+   | null };
+
 
 export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
 export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"user"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
@@ -1295,3 +1603,12 @@ export const TemplateCategoryDocument = {"kind":"Document","definitions":[{"kind
 export const CreateTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateCategoryCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"specialType"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
 export const DeleteTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
 export const UpdateTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateCategoryUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"specialType"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
+export const CreateTemplateTextVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTemplateTextVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateTextVariableCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateTextVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"minLength"}},{"kind":"Field","name":{"kind":"Name","value":"maxLength"}},{"kind":"Field","name":{"kind":"Name","value":"pattern"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateTextVariableMutation, CreateTemplateTextVariableMutationVariables>;
+export const CreateTemplateNumberVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTemplateNumberVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateNumberVariableCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateNumberVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"minValue"}},{"kind":"Field","name":{"kind":"Name","value":"maxValue"}},{"kind":"Field","name":{"kind":"Name","value":"decimalPlaces"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateNumberVariableMutation, CreateTemplateNumberVariableMutationVariables>;
+export const CreateTemplateDateVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTemplateDateVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateDateVariableCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateDateVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"minDate"}},{"kind":"Field","name":{"kind":"Name","value":"maxDate"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateDateVariableMutation, CreateTemplateDateVariableMutationVariables>;
+export const CreateTemplateSelectVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTemplateSelectVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateSelectVariableCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateSelectVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"options"}},{"kind":"Field","name":{"kind":"Name","value":"multiple"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateSelectVariableMutation, CreateTemplateSelectVariableMutationVariables>;
+export const UpdateTemplateTextVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateTextVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateTextVariableUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateTextVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"minLength"}},{"kind":"Field","name":{"kind":"Name","value":"maxLength"}},{"kind":"Field","name":{"kind":"Name","value":"pattern"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateTextVariableMutation, UpdateTemplateTextVariableMutationVariables>;
+export const UpdateTemplateNumberVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateNumberVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateNumberVariableUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateNumberVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"minValue"}},{"kind":"Field","name":{"kind":"Name","value":"maxValue"}},{"kind":"Field","name":{"kind":"Name","value":"decimalPlaces"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateNumberVariableMutation, UpdateTemplateNumberVariableMutationVariables>;
+export const UpdateTemplateDateVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateDateVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateDateVariableUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateDateVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"minDate"}},{"kind":"Field","name":{"kind":"Name","value":"maxDate"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateDateVariableMutation, UpdateTemplateDateVariableMutationVariables>;
+export const UpdateTemplateSelectVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateSelectVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateSelectVariableUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateSelectVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"options"}},{"kind":"Field","name":{"kind":"Name","value":"multiple"}},{"kind":"Field","name":{"kind":"Name","value":"previewValue"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateSelectVariableMutation, UpdateTemplateSelectVariableMutationVariables>;
+export const DeleteTemplateVariableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteTemplateVariable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTemplateVariable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteTemplateVariableMutation, DeleteTemplateVariableMutationVariables>;

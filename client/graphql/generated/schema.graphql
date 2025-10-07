@@ -441,11 +441,16 @@ type Mutation {
   createStudent(input: StudentCreateInput!): Student
   createTemplate(input: TemplateCreateInput!): Template
   createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory
+  createTemplateDateVariable(input: TemplateDateVariableCreateInput!): TemplateDateVariable
+  createTemplateNumberVariable(input: TemplateNumberVariableCreateInput!): TemplateNumberVariable
+  createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
+  createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
   deleteFile(path: String!): FileOperationResult
   deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
   deleteStudent(id: Int!): Student
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory
+  deleteTemplateVariable(id: Int!): TemplateVariable
   generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
   login(input: LoginInput!): LoginResponse
   logout: Boolean
@@ -459,6 +464,10 @@ type Mutation {
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
   updateTemplate(input: UpdateTemplateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory
+  updateTemplateDateVariable(input: TemplateDateVariableUpdateInput!): TemplateDateVariable
+  updateTemplateNumberVariable(input: TemplateNumberVariableUpdateInput!): TemplateNumberVariable
+  updateTemplateSelectVariable(input: TemplateSelectVariableUpdateInput!): TemplateSelectVariable
+  updateTemplateTextVariable(input: TemplateTextVariableUpdateInput!): TemplateTextVariable
 }
 
 enum OrderSortDirection {
@@ -539,6 +548,8 @@ type Query {
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]
   templateCategory(id: Int!): TemplateCategory
+  templateVariable(id: Int!): TemplateVariable
+  templateVariablesByTemplateId(templateId: Int!): [TemplateVariable!]
   templates(pagination: PaginationArgs): PaginatedTemplatesResponse
   templatesConfigs: TemplatesConfigs
   user(id: Int!): User
@@ -680,10 +691,12 @@ type Template {
   createdAt: DateTime
   description: String
   id: Int!
+  imageUrl: String
   name: String
   order: Int
   preSuspensionCategory: TemplateCategory
   updatedAt: DateTime
+  variables: [TemplateVariable!]
 }
 
 type TemplateCategory {
@@ -716,6 +729,175 @@ input TemplateCreateInput {
   categoryId: Int!
   description: String
   name: String!
+}
+
+type TemplateDateVariable implements TemplateVariable {
+  createdAt: DateTime
+  description: String
+  format: String
+  id: Int
+  maxDate: DateTime
+  minDate: DateTime
+  name: String
+  order: Int
+  previewValue: String
+  required: Boolean
+  template: Template
+  type: TemplateVariableType
+  updatedAt: DateTime
+}
+
+input TemplateDateVariableCreateInput {
+  description: String
+  format: String
+  maxDate: DateTime
+  minDate: DateTime
+  name: String!
+  previewValue: DateTime!
+  required: Boolean! = false
+  templateId: Int!
+}
+
+input TemplateDateVariableUpdateInput {
+  description: String
+  format: String
+  id: Int!
+  maxDate: DateTime
+  minDate: DateTime
+  name: String!
+  previewValue: DateTime!
+  required: Boolean! = false
+}
+
+type TemplateNumberVariable implements TemplateVariable {
+  createdAt: DateTime
+  decimalPlaces: Int
+  description: String
+  id: Int
+  maxValue: Float
+  minValue: Float
+  name: String
+  order: Int
+  previewValue: String
+  required: Boolean
+  template: Template
+  type: TemplateVariableType
+  updatedAt: DateTime
+}
+
+input TemplateNumberVariableCreateInput {
+  decimalPlaces: Int
+  description: String
+  maxValue: Float
+  minValue: Float
+  name: String!
+  previewValue: Float!
+  required: Boolean! = false
+  templateId: Int!
+}
+
+input TemplateNumberVariableUpdateInput {
+  decimalPlaces: Int
+  description: String
+  id: Int!
+  maxValue: Float
+  minValue: Float
+  name: String!
+  previewValue: Float!
+  required: Boolean! = false
+}
+
+type TemplateSelectVariable implements TemplateVariable {
+  createdAt: DateTime
+  description: String
+  id: Int
+  multiple: Boolean
+  name: String
+  options: [String!]
+  order: Int
+  previewValue: String
+  required: Boolean
+  template: Template
+  type: TemplateVariableType
+  updatedAt: DateTime
+}
+
+input TemplateSelectVariableCreateInput {
+  description: String
+  multiple: Boolean
+  name: String!
+  options: [String!]!
+  previewValue: String
+  required: Boolean! = false
+  templateId: Int!
+}
+
+input TemplateSelectVariableUpdateInput {
+  description: String
+  id: Int!
+  multiple: Boolean
+  name: String!
+  options: [String!]!
+  previewValue: String
+  required: Boolean! = false
+}
+
+type TemplateTextVariable implements TemplateVariable {
+  createdAt: DateTime
+  description: String
+  id: Int
+  maxLength: Int
+  minLength: Int
+  name: String
+  order: Int
+  pattern: String
+  previewValue: String
+  required: Boolean
+  template: Template
+  type: TemplateVariableType
+  updatedAt: DateTime
+}
+
+input TemplateTextVariableCreateInput {
+  description: String
+  maxLength: Int
+  minLength: Int
+  name: String!
+  pattern: String
+  previewValue: String!
+  required: Boolean! = false
+  templateId: Int!
+}
+
+input TemplateTextVariableUpdateInput {
+  description: String
+  id: Int!
+  maxLength: Int
+  minLength: Int
+  name: String!
+  pattern: String
+  previewValue: String!
+  required: Boolean! = false
+}
+
+interface TemplateVariable {
+  createdAt: DateTime
+  description: String
+  id: Int
+  name: String
+  order: Int
+  previewValue: String
+  required: Boolean
+  template: Template
+  type: TemplateVariableType
+  updatedAt: DateTime
+}
+
+enum TemplateVariableType {
+  DATE
+  NUMBER
+  SELECT
+  TEXT
 }
 
 type TemplatesConfig {
