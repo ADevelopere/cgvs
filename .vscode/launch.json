@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Next.js: Debug",
+      "name": "Server",
       "runtimeExecutable": "bun",
       "runtimeArgs": ["run", "debug"],
       "cwd": "${workspaceFolder}",
@@ -19,7 +19,7 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Next.js: Debug with Chrome",
+      "name": "Client",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"
     }
