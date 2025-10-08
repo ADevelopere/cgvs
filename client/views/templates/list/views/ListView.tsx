@@ -59,84 +59,92 @@ const ListView: React.FC<ListViewProps> = ({ templates }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {templates.map((template) => (
-                        <TableRow key={template.id}>
-                            <TableCell>
-                                <Box
-                                    sx={{
-                                        width: "auto",
-                                        height: { xs: "32px", sm: "40px" },
-                                        aspectRatio: "1/1",
-                                        position: "relative",
-                                        overflow: "hidden",
-                                        borderRadius: 1,
-                                        display: "flex",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <Avatar
-                                        variant="rounded"
-                                        src={
-                                            template.imageUrl ||
-                                            TEMPLATE_IMAGE_PLACEHOLDER_URL
-                                        }
-                                        alt={template.name}
+                    {templates.map((template) => {
+                        if (!template.name) {
+                            throw new Error("Template name is required");
+                        }
+
+                        return (
+                            <TableRow key={template.id}>
+                                <TableCell>
+                                    <Box
                                         sx={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                        }}
-                                    />
-                                </Box>
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    maxWidth: { xs: "120px", sm: "150px" },
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                }}
-                            >
-                                {template.name}
-                            </TableCell>
-                            {!isMobile && (
-                                <>
-                                    <TableCell
-                                        sx={{
-                                            maxWidth: { sm: "300px" },
+                                            width: "auto",
+                                            height: { xs: "32px", sm: "40px" },
+                                            aspectRatio: "1/1",
+                                            position: "relative",
                                             overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            whiteSpace: "nowrap",
+                                            borderRadius: 1,
+                                            display: "flex",
+                                            alignItems: "center",
                                         }}
                                     >
-                                        {template.description}
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{
-                                            minWidth: { sm: "120px" },
-                                        }}
-                                    >
-                                        {formatDate(template.createdAt)}
-                                    </TableCell>
-                                </>
-                            )}
-                            <TableCell>
-                                <Button
-                                    size="medium"
-                                    startIcon={<SettingsIcon />}
-                                    onClick={() => manageTemplate(template.id)}
+                                        <Avatar
+                                            variant="rounded"
+                                            src={
+                                                template.imageUrl ||
+                                                TEMPLATE_IMAGE_PLACEHOLDER_URL
+                                            }
+                                            alt={template.name}
+                                            sx={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    </Box>
+                                </TableCell>
+                                <TableCell
                                     sx={{
-                                        minWidth: { sm: "100px" },
-                                        justifyContent: "start",
+                                        maxWidth: { xs: "120px", sm: "150px" },
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
                                     }}
                                 >
-                                    {!isMobile
-                                        ? strings.buttonManage
-                                        : undefined}
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                                    {template.name}
+                                </TableCell>
+                                {!isMobile && (
+                                    <>
+                                        <TableCell
+                                            sx={{
+                                                maxWidth: { sm: "300px" },
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            {template.description}
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                minWidth: { sm: "120px" },
+                                            }}
+                                        >
+                                            {formatDate(template.createdAt)}
+                                        </TableCell>
+                                    </>
+                                )}
+                                <TableCell>
+                                    <Button
+                                        size="medium"
+                                        startIcon={<SettingsIcon />}
+                                        onClick={() =>
+                                            manageTemplate(template.id)
+                                        }
+                                        sx={{
+                                            minWidth: { sm: "100px" },
+                                            justifyContent: "start",
+                                        }}
+                                    >
+                                        {!isMobile
+                                            ? strings.buttonManage
+                                            : undefined}
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
                 </TableBody>
             </Table>
         </TableContainer>

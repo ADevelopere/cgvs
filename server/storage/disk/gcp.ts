@@ -9,7 +9,7 @@ import {
 } from "./storage.service.interface";
 import * as StorageDbService from "../db/storage-db.service";
 import * as StorageUtils from "../storage.utils";
-import { OrderSortDirection } from "@/server/lib";
+import { OrderSortDirection } from "@/lib/enum";
 
 type GcsApiResponse = {
     prefixes?: string[];
@@ -29,10 +29,10 @@ function cleanGcsPath(path: string, addTrailingSlash = false): string {
     if (!path || path.length === 0) {
         return "";
     }
-    
+
     // Remove leading slashes and trailing slashes
     const cleaned = path.replace(/^\/+/, "").replace(/\/$/, "");
-    
+
     // Add trailing slash if requested and path is not empty
     return addTrailingSlash && cleaned.length > 0 ? `${cleaned}/` : cleaned;
 }
@@ -118,7 +118,9 @@ class GcpAdapter implements StorageService {
             version: "v4",
             expires:
                 Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000,
-            contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
+            contentType: StorageUtils.contentTypeEnumToMimeType(
+                input.contentType,
+            ),
             method: "PUT",
             contentMd5: input.contentMd5,
         });
@@ -182,7 +184,8 @@ class GcpAdapter implements StorageService {
 
             const file = this.bucket.file(path);
             await file.save(buffer, {
-                contentType: StorageUtils.contentTypeEnumToMimeType(contentType),
+                contentType:
+                    StorageUtils.contentTypeEnumToMimeType(contentType),
             });
 
             // Create file entity in database
@@ -759,9 +762,8 @@ class GcpAdapter implements StorageService {
         path?: string,
     ): Promise<StorageTypes.DirectoryInfoServerType[]> {
         // Clean path, default to "public" if empty
-        const searchPath = !path || path.length === 0 
-            ? "public" 
-            : cleanGcsPath(path);
+        const searchPath =
+            !path || path.length === 0 ? "public" : cleanGcsPath(path);
         const prefix = cleanGcsPath(searchPath, true);
 
         // Get directories from database

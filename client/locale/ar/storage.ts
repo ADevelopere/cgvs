@@ -96,7 +96,7 @@ export const storage: StorageTranslations = {
         name: "الاسم",
         size: "الحجم",
         lastModified: "آخر تعديل",
-        created: "تاريخ الإنشاء",
+        createdAt: "تاريخ الإنشاء",
 
         // Empty states and messages
         emptyFolder: "هذا المجلد فارغ",

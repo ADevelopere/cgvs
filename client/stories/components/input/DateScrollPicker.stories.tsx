@@ -11,7 +11,7 @@ import {
 } from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import DateScrollPicker, { DateScrollPickerProps } from "@/client/components/input/DateScrollPicker";
-import Calendar from "@/types/Calendar";
+import { Calendar } from "@/lib/enum";
 import useStoryTheme from "../../useStoryTheme";
 
 export default {

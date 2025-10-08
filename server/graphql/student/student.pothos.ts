@@ -7,7 +7,7 @@ import {
     GenderPothosObject,
     OrderSortDirectionPothosObject,
 } from "../enum/enum.pothos";
-import { OrderSortDirection } from "@/server/lib";
+import { OrderSortDirection } from "@/lib/enum";
 
 export const StudentPothosObject = gqlSchemaBuilder
     .loadableObjectRef<StTypes.StudentPothosDefintion, number>("Student", {

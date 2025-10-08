@@ -280,7 +280,7 @@ export const checkFileUsage = async (
                 usageType: usage.usageType,
                 referenceId: usage.referenceId,
                 referenceTable: usage.referenceTable,
-                created: usage.createdAt,
+                createdAt: usage.createdAt,
             })),
             canDelete: !isInUse,
             deleteBlockReason: isInUse

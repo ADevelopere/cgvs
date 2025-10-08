@@ -1,12 +1,7 @@
 import React from "react";
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-
-enum Gender {
-    MALE,
-    FEMALE,
-    OTHER,
-}
+import { Gender } from "@/lib/enum";
 
 /**
  * Props for the GenderSelector component.

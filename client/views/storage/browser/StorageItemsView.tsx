@@ -324,7 +324,7 @@ const ListView: React.FC<{
                                 }
                                 onClick={() => handleTableSort("created")}
                             >
-                                {translations.created}
+                                {translations.createdAt}
                             </TableSortLabel>
                         </TableCell>
                         <TableCell sx={{ width: "5%" }}>

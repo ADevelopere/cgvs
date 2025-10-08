@@ -1,4 +1,4 @@
-import Calendar from "@/types/Calendar";
+import { Calendar } from "@/lib/enum";
 import moment from "moment-hijri";
 import { matchIsValidTel } from "mui-tel-input";
 import countries, { CountryType } from "../country";

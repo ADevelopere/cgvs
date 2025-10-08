@@ -1,12 +1,7 @@
 import { students } from "@/server/db/schema";
 import { PageInfo } from "../pagintaion/pagintaion.types";
-import {
-    PhoneNumber,
-    Email,
-    CountryCode,
-    Gender,
-    OrderSortDirection,
-} from "@/server/lib";
+import { PhoneNumber, Email } from "@/server/lib";
+import { CountryCode, Gender, OrderSortDirection } from "@/lib/enum";
 
 export type StudentEntity = typeof students.$inferSelect;
 export type StudentEntityInput = typeof students.$inferInsert;

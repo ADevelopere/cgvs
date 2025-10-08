@@ -167,7 +167,7 @@ export const createTemplateDateVariable = async (
 ): Promise<TmvTypes.TemplateDateVariablePothosDefinition> => {
     const baseInput: TmvTypes.TemplateVariableCreateInput = {
         ...input,
-        previewValue: input.previewValue.toString(),
+        previewValue: input.previewValue?.toString(),
     };
 
     await checkCreateInput(baseInput);

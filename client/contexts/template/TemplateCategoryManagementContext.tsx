@@ -224,8 +224,6 @@ export const useTemplateCategoryManagement = () => {
 
 const categorySortConfig = { sortBy: "order", order: "asc" };
 
-const templateSortConfig = { sortBy: "order", order: "asc" };
-
 export const TemplateCategoryManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
@@ -506,25 +504,6 @@ export const TemplateCategoryManagementProvider: React.FC<{
         ],
     );
 
-    const templatesForCurrentCategory = useMemo(() => {
-        if (!currentCategoryState?.templates) return [];
-        const unsortedTemplates = Array.isArray(currentCategoryState.templates)
-            ? [...currentCategoryState.templates]
-            : [];
-
-        unsortedTemplates.forEach((template) => {
-            template.category = currentCategoryState;
-        });
-
-        return unsortedTemplates.sort((a, b) => {
-            const modifier = templateSortConfig.order === "asc" ? 1 : -1;
-            if (templateSortConfig.sortBy === "name" && a.name && b.name) {
-                return modifier * a.name.localeCompare(b.name);
-            }
-            return modifier * (Number(a.id) - Number(b.id));
-        });
-    }, [currentCategoryState]);
-
     const {
         createTemplateMutation,
         updateTemplateMutation,
@@ -609,13 +588,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
                 return null;
             }
         },
-        [
-            updateTemplateMutation,
-            templatesForCurrentCategory,
-            setCurrentTemplate,
-            notifications,
-            messages,
-        ],
+        [updateTemplateMutation, setCurrentTemplate, notifications, messages],
     );
 
     const suspendTemplate = useCallback(

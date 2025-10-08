@@ -14,7 +14,7 @@ interface TemplateRow {
     id: number;
     name: string;
     createdAt: string;
-    imageUrl: string | null;
+    imageUrl?: string | null;
 }
 
 const SuspenstionTemplatesCategory: React.FC = () => {
@@ -98,14 +98,18 @@ const SuspenstionTemplatesCategory: React.FC = () => {
         },
     ];
 
-    const rows: TemplateRow[] = templates.map((template) => ({
-        id: template.id,
-        name: template.name,
-        createdAt: template.createdAt,
-        // todo
-        // imageUrl: template.imageUrl ?? null,
-        imageUrl:  null,
-    }));
+    const rows: TemplateRow[] = templates.map((template) => {
+        if (!template.name) {
+            throw new Error("Template name is required");
+        }
+        return {
+            id: template.id,
+            name: template.name,
+            createdAt: template.createdAt,
+            // todo
+            imageUrl: template.imageUrl,
+        };
+    });
 
     const appBarHeight = useAppBarHeight();
 

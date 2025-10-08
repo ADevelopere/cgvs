@@ -318,8 +318,8 @@ const FileMenu: React.FC<FileMenuProps> = ({
                             {formatDate(file.lastModified)}
                         </div>
                         <div style={{ marginBottom: theme.spacing(2) }}>
-                            <strong>{translations.created}:</strong>{" "}
-                            {formatDate(file.created)}
+                            <strong>{translations.createdAt}:</strong>{" "}
+                            {formatDate(file.createdAt)}
                         </div>
                         <div style={{ marginBottom: theme.spacing(2) }}>
                             <strong>{translations.path}:</strong> {file.path}

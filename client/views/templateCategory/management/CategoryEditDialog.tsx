@@ -42,7 +42,7 @@ const CategoryEditDialog: React.FC<Props> = ({
     const [error, setError] = useState("");
 
     useEffect(() => {
-        if (category) {
+        if (category?.name) {
             setName(category.name);
             setDescription(category.description ?? "");
             setParentId(category.parentCategory?.id ?? null);
@@ -118,13 +118,20 @@ const CategoryEditDialog: React.FC<Props> = ({
                             value={
                                 availableParentCategories.find(
                                     (c) => c.id === parentId,
-                                ) || null
+                                ) || undefined
                             }
                             onChange={(_, newValue) =>
                                 setParentId(newValue?.id ?? null)
                             }
                             options={availableParentCategories}
-                            getOptionLabel={(option) => option.name}
+                            getOptionLabel={(option) => {
+                                if (!option.name) {
+                                    throw new Error(
+                                        "Category name is required",
+                                    );
+                                }
+                                return option.name;
+                            }}
                             noOptionsText={strings.noCategories}
                             renderInput={(params) => (
                                 <TextField
