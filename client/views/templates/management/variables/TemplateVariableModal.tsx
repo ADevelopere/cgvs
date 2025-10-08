@@ -11,14 +11,14 @@ import {
 } from "@mui/material";
 import { X } from "lucide-react";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import NumberTemplateVariableForm from "./forms/NumberTemplateVariableForm";
-import DateTemplateVariableForm from "./forms/DateTemplateVariableForm";
-import TextTemplateVariableForm from "./forms/TextTemplateVariableForm";
+import NumberTemplateVariableForm from "./forms/TemplateNumberVariableForm";
+import DateTemplateVariableForm from "./forms/TemplateDateVariableForm";
+import TextTemplateVariableForm from "./forms/TemplateTextVariableForm";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { TemplateVariableType } from "@/graphql/generated/types";
-import SelectTemplateVariableForm from "./forms/SelectTemplateVariableForm";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import SelectTemplateVariableForm from "./forms/TemplateSelectVariableForm";
+import { useAppTranslation } from "@/client/locale";
+import { TemplateVariableType } from "@/client/graphql/generated/gql/graphql";
 
 interface TemplateVariableModalProps {
     open: boolean;

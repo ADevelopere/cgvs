@@ -21,7 +21,7 @@ import {
     formatCellValue,
     formatInputValue,
 } from "./DataCell.util";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { CountryCode } from "@/graphql/generated/types";
 
 // Props for the main component

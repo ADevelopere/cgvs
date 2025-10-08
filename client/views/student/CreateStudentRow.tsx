@@ -21,7 +21,7 @@ import { useStudentManagement } from "@/client/contexts/student/StudentManagemen
 import { useStudentFilter } from "@/client/contexts/student/StudentFilterContext";
 import { TextFilterOperation } from "@/types/filters";
 import { useStudentTableManagement } from "@/client/contexts/student/StudentTableManagementContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import {
     TextFieldComponent,
     DateFieldComponent,

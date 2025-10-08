@@ -20,7 +20,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { ConnectivityTranslations } from "@/client/locale/components/Connectivity";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { initializeAuthFromStorage, storeAuthTokens, clearStoredAuthTokens } from "@/client/utils/auth";
 
 export type NetworkConnectivityContextType = {

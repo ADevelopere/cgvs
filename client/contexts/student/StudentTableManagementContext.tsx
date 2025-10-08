@@ -9,7 +9,7 @@ import {
     isValidCountryCode,
     isValidPhoneNumber,
 } from "@/utils/student/validators";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 
 interface StudentTableManagementContextType {

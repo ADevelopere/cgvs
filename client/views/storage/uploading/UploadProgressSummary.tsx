@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { Box, Typography, Button, useTheme, Collapse } from "@mui/material";
 
 export interface UploadProgressSummaryProps {

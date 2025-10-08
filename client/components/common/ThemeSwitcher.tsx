@@ -15,7 +15,7 @@ import {
 } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import ThemeMode from "@/client/theme/ThemeMode";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 
 const ThemeSwitcher: React.FC = () => {
     const { setThemeMode, themeMode, isDark } = useAppTheme();

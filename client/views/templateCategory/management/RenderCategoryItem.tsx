@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import EditableTypography from "@/client/components/input/EditableTypography";
 import { EditIcon, Ungroup, FolderPlus } from "lucide-react";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { useState } from "react";
 import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 

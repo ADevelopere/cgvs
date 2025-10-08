@@ -23,6 +23,85 @@ export const templateQueryDocument: TypedDocumentNode<
                 id
                 name
             }
+
+            variables {
+                id
+                name
+                description
+                order
+                required
+                previewValue
+                type
+                createdAt
+                updatedAt
+                ... on TemplateDateVariable {
+                    createdAt
+                    description
+                    format
+                    id
+                    maxDate
+                    minDate
+                    name
+                    order
+                    previewValue
+                    required
+                    template {
+                        id
+                    }
+                    type
+                    updatedAt
+                }
+                ... on TemplateNumberVariable {
+                    createdAt
+                    decimalPlaces
+                    description
+                    id
+                    maxValue
+                    minValue
+                    name
+                    order
+                    previewValue
+                    required
+                    template {
+                        id
+                    }
+                    type
+                    updatedAt
+                }
+                ... on TemplateSelectVariable {
+                    createdAt
+                    description
+                    id
+                    multiple
+                    name
+                    options
+                    order
+                    previewValue
+                    required
+                    template {
+                        id
+                    }
+                    type
+                    updatedAt
+                }
+                ... on TemplateTextVariable {
+                    createdAt
+                    description
+                    id
+                    maxLength
+                    minLength
+                    name
+                    order
+                    pattern
+                    previewValue
+                    required
+                    template {
+                        id
+                    }
+                    type
+                    updatedAt
+                }
+            }
         }
     }
 `;
@@ -47,6 +126,86 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
                     id
                     name
                 }
+                
+                variables {
+                    id
+                    name
+                    description
+                    order
+                    required
+                    previewValue
+                    type
+                    createdAt
+                    updatedAt
+                    ... on TemplateDateVariable {
+                        createdAt
+                        description
+                        format
+                        id
+                        maxDate
+                        minDate
+                        name
+                        order
+                        previewValue
+                        required
+                        template {
+                            id
+                        }
+                        type
+                        updatedAt
+                    }
+                    ... on TemplateNumberVariable {
+                        createdAt
+                        decimalPlaces
+                        description
+                        id
+                        maxValue
+                        minValue
+                        name
+                        order
+                        previewValue
+                        required
+                        template {
+                            id
+                        }
+                        type
+                        updatedAt
+                    }
+                    ... on TemplateSelectVariable {
+                        createdAt
+                        description
+                        id
+                        multiple
+                        name
+                        options
+                        order
+                        previewValue
+                        required
+                        template {
+                            id
+                        }
+                        type
+                        updatedAt
+                    }
+                    ... on TemplateTextVariable {
+                        createdAt
+                        description
+                        id
+                        maxLength
+                        minLength
+                        name
+                        order
+                        pattern
+                        previewValue
+                        required
+                        template {
+                            id
+                        }
+                        type
+                        updatedAt
+                    }
+                }
+
                 createdAt
                 updatedAt
             }
@@ -104,7 +263,7 @@ export const updateTemplateMutationDocument: TypedDocumentNode<
     Graphql.UpdateTemplateMutation,
     Graphql.UpdateTemplateMutationVariables
 > = gql`
-    mutation updateTemplate($input: UpdateTemplateInput!) {
+    mutation updateTemplate($input: TemplateUpdateInput!) {
         updateTemplate(input: $input) {
             id
             name

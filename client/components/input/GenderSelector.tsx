@@ -6,7 +6,7 @@ import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 
 // Local/project-specific module imports
 import Gender from "@/types/Gender";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 
 /**
  * Props for the GenderSelector component.

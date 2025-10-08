@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import countries, { CountryType } from "@/utils/country";
 import CountryTranslations from "@/client/locale/components/Country";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 
 // Type definition for the component props
 export type CountrySelectProps = {

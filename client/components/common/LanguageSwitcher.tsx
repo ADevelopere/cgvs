@@ -13,7 +13,7 @@ import {
 } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import AppLanguage from "@/client/locale/AppLanguage";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 
 const LanguageSwitcher: React.FC = () => {
     const strings = useAppTranslation("languageTranslations");

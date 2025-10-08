@@ -16,7 +16,7 @@ import {
     Logout as LogoutIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { useRouter } from "next/navigation";
 
 const UserMenu: React.FC = () => {

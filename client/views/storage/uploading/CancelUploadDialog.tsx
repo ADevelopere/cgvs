@@ -10,7 +10,7 @@ import {
     Button,
     useTheme,
 } from "@mui/material";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { CancelTarget } from "./UploadProgressUIContext";
 
 export interface CancelUploadDialogProps {

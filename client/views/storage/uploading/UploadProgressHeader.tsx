@@ -1,4 +1,4 @@
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
 import {
     ExpandMore as ExpandMoreIcon,

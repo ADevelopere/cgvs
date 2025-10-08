@@ -18,7 +18,7 @@ import {
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
 import isValidEmail from "@/utils/email";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { AuthTranslations } from "@/client/locale/components";
 import { useRouter } from "next/navigation";
 

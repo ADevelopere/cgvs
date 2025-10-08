@@ -11,7 +11,7 @@ import {
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import useStoryTheme from "@/client/stories/useStoryTheme";
 import { NetworkConnectivityContextType } from "@/client/contexts/AppApolloProvider";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import {ConnectivityTranslations} from "@/client/locale/components";
 
 // Mock NetworkConnectivityContext

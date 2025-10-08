@@ -12,27 +12,27 @@ import {
     Button,
 } from "@mui/material";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import type {
-    CreateSelectTemplateVariableInput,
-    SelectTemplateVariable,
-} from "@/graphql/generated/types";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import TagInput from "@/client/components/input/TagInput";
-import { mapToCreateSelectTemplateVariableInput } from "@/utils/templateVariable/select-template-variable-mappers";
+import { mapToTemplateSelectVariableCreateInput } from "@/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/utils/templateVariable/templateVariable";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
+import {
+    TemplateSelectVariable,
+    TemplateSelectVariableCreateInput,
+} from "@/client/graphql/generated/gql/graphql";
 
-type SelectTemplateVariableFormProps = {
+type TemplateSelectVariableFormProps = {
     editingVariableID?: number;
     onDispose: () => void;
 };
 
-const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
+const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
     const { template } = useTemplateManagement();
-    const editingVariable: SelectTemplateVariable | null = useMemo(() => {
+    const editingVariable: TemplateSelectVariable | null = useMemo(() => {
         if (!template?.variables || !editingVariableID) return null;
 
         return (
@@ -40,15 +40,15 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
         );
     }, [template, editingVariableID]);
 
-    const { createSelectTemplateVariable, updateSelectTemplateVariable } =
+    const { createTemplateSelectVariable, updateTemplateSelectVariable } =
         useTemplateVariableManagement();
 
     const strings = useAppTranslation("templateVariableTranslations");
 
-    const [state, setState] = useState<CreateSelectTemplateVariableInput>(
+    const [state, setState] = useState<TemplateSelectVariableCreateInput>(
         () => {
             if (editingVariable) {
-                return mapToCreateSelectTemplateVariableInput(editingVariable);
+                return mapToTemplateSelectVariableCreateInput(editingVariable);
             }
             return {
                 name: "",
@@ -61,7 +61,7 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
     );
 
     const handleChange = useCallback(
-        (field: keyof CreateSelectTemplateVariableInput) =>
+        (field: keyof TemplateSelectVariableCreateInput) =>
             (event: React.ChangeEvent<HTMLInputElement>) => {
                 const value =
                     event.target.type === "checkbox"
@@ -97,7 +97,7 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
         let success = false;
 
         if (editingVariableID) {
-            success = await updateSelectTemplateVariable({
+            success = await updateTemplateSelectVariable({
                 input: {
                     ...state,
                     id: editingVariableID,
@@ -108,7 +108,7 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
                 onDispose();
             }
         } else {
-            success = await createSelectTemplateVariable({
+            success = await createTemplateSelectVariable({
                 input: {
                     ...state,
                 },
@@ -121,8 +121,8 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
     }, [
         state,
         editingVariableID,
-        createSelectTemplateVariable,
-        updateSelectTemplateVariable,
+        createTemplateSelectVariable,
+        updateTemplateSelectVariable,
         onDispose,
     ]);
 
@@ -189,13 +189,15 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
             <FormControlLabel
                 control={
                     <Checkbox
-                        checked={state.multiple}
+                        checked={state.multiple ?? false}
                         onChange={handleChange("multiple")}
                     />
                 }
-                label={strings?.allowMultipleSelection ?? "Allow Multiple Selection"}
+                label={
+                    strings?.allowMultipleSelection ??
+                    "Allow Multiple Selection"
+                }
             />
-
 
             <FormControlLabel
                 control={
@@ -221,4 +223,4 @@ const SelectTemplateVariableForm: React.FC<SelectTemplateVariableFormProps> = ({
     );
 };
 
-export default SelectTemplateVariableForm;
+export default TemplateSelectVariableForm;

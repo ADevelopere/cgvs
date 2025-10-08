@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { CloudUpload as UploadIcon } from "@mui/icons-material";
 import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import logger from "@/utils/logger";
 
 export interface UploadDropzoneProps {

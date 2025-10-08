@@ -6,52 +6,50 @@ import * as Document from "@/client/graphql/documents";
 import { ApolloLink } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
-type TemplateNumberVariableGraphQLContextType = {
+type TemplateDateVariableGraphQLContextType = {
     /**
-     * Mutation to create a new number template variable
-     * @param variables - The creation number template variable variables
+     * Mutation to create a new date template variable
+     * @param variables - The creation date template variable variables
      */
-    createTemplateNumberVariableMutation: (
-        variables: Graphql.CreateTemplateNumberVariableMutationVariables,
-    ) => Promise<
-        ApolloLink.Result<Graphql.CreateTemplateNumberVariableMutation>
-    >;
+    createTemplateDateVariableMutation: (
+        variables: Graphql.CreateTemplateDateVariableMutationVariables,
+    ) => Promise<ApolloLink.Result<Graphql.CreateTemplateDateVariableMutation>>;
 
     /**
-     * Mutation to update an existing number template variable
-     * @param variables - The update number template variable variables
+     * Mutation to update an existing date template variable
+     * @param variables - The update date template variable variables
      */
-    updateTemplateNumberVariableMutation: (
-        variables: Graphql.UpdateTemplateNumberVariableMutationVariables,
-    ) => Promise<
-        ApolloLink.Result<Graphql.UpdateTemplateNumberVariableMutation>
-    >;
+    updateTemplateDateVariableMutation: (
+        variables: Graphql.UpdateTemplateDateVariableMutationVariables,
+    ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateDateVariableMutation>>;
 };
 
-const TemplateNumberVariableGraphQLContext = createContext<
-    TemplateNumberVariableGraphQLContextType | undefined
+const TemplateDateVariableGraphQLContext = createContext<
+    TemplateDateVariableGraphQLContextType | undefined
 >(undefined);
 
-export const useTemplateNumberVariableGraphQL = () => {
-    const context = useContext(TemplateNumberVariableGraphQLContext);
+export const useTemplateDateVariableGraphQL = () => {
+    const context = useContext(TemplateDateVariableGraphQLContext);
     if (!context) {
         throw new Error(
-            "useTemplateNumberVariableGraphQL must be used within a TemplateNumberVariableGraphQLProvider",
+            "useTemplateDateVariableGraphQL must be used within a TemplateDateVariableGraphQLProvider",
         );
     }
     return context;
 };
 
-export const TemplateNumberVariableGraphQLProvider: React.FC<{
+export const TemplateDateVariableGraphQLProvider: React.FC<{
     children: React.ReactNode;
     templateId: number;
 }> = ({ children, templateId }) => {
-    // Create number template variable mutation
+    // Create date template variable mutation
     const [mutateCreate] = useMutation(
-        Document.createTemplateNumberVariableMutationDocument,
+        Document.createTemplateDateVariableMutationDocument,
         {
             update(cache, { data }) {
-                if (!data?.createTemplateNumberVariable) return;
+                if (!data?.createTemplateDateVariable) return;
+                const createdTemplateDateVariable =
+                    data.createTemplateDateVariable;
 
                 const existingData = cache.readQuery<Graphql.TemplateQuery>({
                     query: Graphql.TemplateDocument,
@@ -69,7 +67,7 @@ export const TemplateNumberVariableGraphQLProvider: React.FC<{
                             ...existingData.template,
                             variables: [
                                 ...existingData.template.variables,
-                                data.createTemplateNumberVariable,
+                                createdTemplateDateVariable,
                             ],
                         },
                     },
@@ -78,14 +76,14 @@ export const TemplateNumberVariableGraphQLProvider: React.FC<{
         },
     );
 
-    // Update number template variable mutation
+    // Update date template variable mutation
     const [mutateUpdate] = useMutation(
-        Document.updateTemplateNumberVariableMutationDocument,
+        Document.updateTemplateDateVariableMutationDocument,
         {
             update(cache, { data }) {
-                if (!data?.updateTemplateNumberVariable) return;
-                const updatedTemplateNumberVariable =
-                    data.updateTemplateNumberVariable;
+                if (!data?.updateTemplateDateVariable) return;
+                const updatedTemplateDateVariable =
+                    data.updateTemplateDateVariable;
 
                 const existingData = cache.readQuery<Graphql.TemplateQuery>({
                     query: Graphql.TemplateDocument,
@@ -97,8 +95,8 @@ export const TemplateNumberVariableGraphQLProvider: React.FC<{
                 // Update the variable in the template's variables array
                 const updatedVariables = existingData.template.variables.map(
                     (variable) =>
-                        variable.id === updatedTemplateNumberVariable.id
-                            ? updatedTemplateNumberVariable
+                        variable.id === updatedTemplateDateVariable.id
+                            ? updatedTemplateDateVariable
                             : variable,
                 );
 
@@ -116,35 +114,34 @@ export const TemplateNumberVariableGraphQLProvider: React.FC<{
         },
     );
 
-    const createTemplateNumberVariableMutation = useCallback(
-        (variables: Graphql.CreateTemplateNumberVariableMutationVariables) => {
+    const createTemplateDateVariableMutation = useCallback(
+        (variables: Graphql.CreateTemplateDateVariableMutationVariables) => {
             return mutateCreate({ variables });
         },
         [mutateCreate],
     );
 
-    const updateTemplateNumberVariableMutation = useCallback(
-        (variables: Graphql.UpdateTemplateNumberVariableMutationVariables) => {
+    const updateTemplateDateVariableMutation = useCallback(
+        (variables: Graphql.UpdateTemplateDateVariableMutationVariables) => {
             return mutateUpdate({ variables });
         },
         [mutateUpdate],
     );
 
-
     const contextValue = useMemo(
         () => ({
-            createTemplateNumberVariableMutation,
-            updateTemplateNumberVariableMutation,
+            createTemplateDateVariableMutation,
+            updateTemplateDateVariableMutation,
         }),
         [
-            createTemplateNumberVariableMutation,
-            updateTemplateNumberVariableMutation,
+            createTemplateDateVariableMutation,
+            updateTemplateDateVariableMutation,
         ],
     );
 
     return (
-        <TemplateNumberVariableGraphQLContext.Provider value={contextValue}>
+        <TemplateDateVariableGraphQLContext.Provider value={contextValue}>
             {children}
-        </TemplateNumberVariableGraphQLContext.Provider>
+        </TemplateDateVariableGraphQLContext.Provider>
     );
 };
