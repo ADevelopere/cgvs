@@ -1,23 +1,17 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-    PaginatedTemplatesResponse,
-    TemplatePothosDefintion,
-    TemplateCreateInput,
-    TemplateUpdateInput,
-    TemplatesConfigPothosDefinition,
-    TemplatesConfigsKeyValues,
-    TemplatesConfigsPothosDefinition,
-} from "./template.types";
 import { PageInfoObject } from "../pagintaion/pagination.objects";
+import * as Types from "./template.types";
+import { TemplateRepository } from "./template.repository";
 import { TemplateCategoryPothosObject } from "../templateCategory/templateCategory.pothos";
-import { getStorageService } from "@/server/storage/storage.service";
 import { TemplateVariablePothosInterface } from "../templateVariable/templateVariable.pothos";
 import { TemplateVariableRepository as TmvRepo } from "../templateVariable/templateVariable.repository";
-
-import { TemplateRepository } from "./template.repository";
+import { TemplateRecipientGroupPothosObject } from "../recipientGroup/recipientGroup.pothos";
+import { TemplateRecipientGroupRepository } from "../recipientGroup/recipientGroup.repository";
+import { FileInfoPothosObject } from "../storage/storage.pothos";
+import { getStorageService } from "@/server/storage/storage.service";
 
 export const TemplatePothosObject = gqlSchemaBuilder
-    .loadableObjectRef<TemplatePothosDefintion, number>("Template", {
+    .loadableObjectRef<Types.TemplatePothosDefintion, number>("Template", {
         load: async (ids: number[]) => TemplateRepository.loadByIds(ids),
         sort: (t) => t.id,
     })
@@ -57,26 +51,38 @@ gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
             TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
         resolve: (template) => template.categoryId,
     }),
+
     preSuspensionCategory: t.loadable({
         type: TemplateCategoryPothosObject,
         load: (ids: number[], ctx) =>
             TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
         resolve: (template) => template.preSuspensionCategoryId,
     }),
+
     variables: t.loadableList({
         type: TemplateVariablePothosInterface,
         load: (ids: number[]) => TmvRepo.loadForTemplates(ids),
         resolve: (template) => template.id,
     }),
 
-    // TODO
-    // imageFile: FileInfo | null;
-    // recipientGroups
-    // driven
+    imageFile: t.field({
+        type: FileInfoPothosObject,
+        resolve: async (template) => {
+            if (!template.imageFileId) return null;
+            const s = await getStorageService();
+            return await s.fileInfoByDbFileId(template.imageFileId);
+        },
+    }),
+    recipientGroups: t.loadableList({
+        type: TemplateRecipientGroupPothosObject,
+        load: (ids: number[]) =>
+            TemplateRecipientGroupRepository.loadForTemplates(ids),
+        resolve: (template) => template.id,
+    }),
 }));
 
 export const TemplateCreateInputPothosObject = gqlSchemaBuilder
-    .inputRef<TemplateCreateInput>("TemplateCreateInput")
+    .inputRef<Types.TemplateCreateInput>("TemplateCreateInput")
     .implement({
         fields: (t) => ({
             name: t.string({ required: true }),
@@ -86,7 +92,7 @@ export const TemplateCreateInputPothosObject = gqlSchemaBuilder
     });
 
 export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
-    .inputRef<TemplateUpdateInput>("TemplateUpdateInput")
+    .inputRef<Types.TemplateUpdateInput>("TemplateUpdateInput")
     .implement({
         fields: (t) => ({
             id: t.int({ required: true }),
@@ -97,7 +103,7 @@ export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
     });
 
 export const PaginatedTemplatesResponsePothosObject = gqlSchemaBuilder
-    .objectRef<PaginatedTemplatesResponse>("PaginatedTemplatesResponse")
+    .objectRef<Types.PaginatedTemplatesResponse>("PaginatedTemplatesResponse")
     .implement({
         fields: (t) => ({
             data: t.expose("data", { type: [TemplatePothosObject] }),
@@ -108,12 +114,12 @@ export const PaginatedTemplatesResponsePothosObject = gqlSchemaBuilder
 export const TemplatesConfigsKeyPothosObject = gqlSchemaBuilder.enumType(
     "TemplatesConfigsKey",
     {
-        values: TemplatesConfigsKeyValues,
+        values: Types.TemplatesConfigsKeyValues,
     },
 );
 
 export const TemplatesConfigPothosObject = gqlSchemaBuilder
-    .objectRef<TemplatesConfigPothosDefinition>("TemplatesConfig")
+    .objectRef<Types.TemplatesConfigPothosDefinition>("TemplatesConfig")
     .implement({
         fields: (t) => ({
             key: t.expose("key", { type: TemplatesConfigsKeyPothosObject }),
@@ -122,7 +128,7 @@ export const TemplatesConfigPothosObject = gqlSchemaBuilder
     });
 
 export const TemplatesConfigsPothosObject = gqlSchemaBuilder
-    .objectRef<TemplatesConfigsPothosDefinition>("TemplatesConfigs")
+    .objectRef<Types.TemplatesConfigsPothosDefinition>("TemplatesConfigs")
     .implement({
         fields: (t) => ({
             configs: t.expose("configs", {

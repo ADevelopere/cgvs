@@ -135,4 +135,15 @@ export namespace TemplateRecipientGroupRepository {
             throw new Error("Failed to delete recipient group.");
         }
     };
+
+    export const loadForTemplates = async (
+        templateIds: number[],
+    ): Promise<TrgTypes.TemplateRecipientGroupPothosDefinition[][]> => {
+        if (templateIds.length === 0) return [];
+
+        const allGroups = await Promise.all(
+            templateIds.map((id) => findAllByTemplateId(id)),
+        );
+        return allGroups;
+    };
 }
