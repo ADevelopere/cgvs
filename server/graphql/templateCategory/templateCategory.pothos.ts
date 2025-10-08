@@ -4,10 +4,7 @@ import {
     TemplateCategoryPothosDefintion,
     TemplateCategoryUpdateInput,
 } from "./templateCategory.types";
-import {
-    loadSubTemplateCategoriesForCategories,
-    loadTemplateCategoriesByIds,
-} from "./templateCategory.repository";
+import { TemplateCategoryRepository } from "./templateCategory.repository";
 import { TemplatePothosObject } from "../template/template.pothos";
 import { TemplateRepository } from "../template/template.repository";
 
@@ -22,7 +19,8 @@ export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
     [], // Interfaces
     typeof TemplateCategoryObjectRef // NameOrRef
 >(TemplateCategoryObjectRef, {
-    load: async (ids: number[]) => await loadTemplateCategoriesByIds(ids),
+    load: async (ids: number[]) =>
+        await TemplateCategoryRepository.loadByIds(ids),
     sort: (c) => c.id,
     fields: (t) => ({
         id: t.exposeInt("id", { nullable: false }),
@@ -38,7 +36,7 @@ export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
 gqlSchemaBuilder.objectFields(TemplateCategoryPothosObject, (t) => ({
     templates: t.loadableList({
         type: TemplatePothosObject,
-        load: (ids: number[]) => TemplateRepository.loadTemplateCategories(ids),
+        load: (ids: number[]) => TemplateRepository.loadForTemplateCategories(ids),
         resolve: (templateCategory) => templateCategory.id,
     }),
     parentCategory: t.loadable({
@@ -49,7 +47,8 @@ gqlSchemaBuilder.objectFields(TemplateCategoryPothosObject, (t) => ({
     }),
     subCategories: t.loadableList({
         type: TemplateCategoryPothosObject,
-        load: (ids: number[]) => loadSubTemplateCategoriesForCategories(ids),
+        load: (ids: number[]) =>
+            TemplateCategoryRepository.loadSubForParents(ids),
         resolve: (parentTemplateCategory) => parentTemplateCategory.id,
     }),
 }));

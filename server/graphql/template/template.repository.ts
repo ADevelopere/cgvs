@@ -17,11 +17,7 @@ import logger from "@/lib/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
 import { validateTemplateName } from "./template.utils";
-import {
-    findMainTemplateCategory,
-    findSuspensionTemplateCategory,
-    findTemplateCategoryById,
-} from "../templateCategory/templateCategory.repository";
+import { TemplateCategoryRepository } from "../templateCategory/templateCategory.repository";
 
 export namespace TemplateRepository {
     export const findById = async (
@@ -44,7 +40,7 @@ export namespace TemplateRepository {
         }
     };
 
-    export const findTemplateByIdOrThrow = async (
+    export const findByIdOrThrow = async (
         id: number,
     ): Promise<TemplateEntity> => {
         try {
@@ -60,12 +56,12 @@ export namespace TemplateRepository {
         }
     };
 
-    export const templatesTotalCount = async (): Promise<number> => {
+    export const totalCount = async (): Promise<number> => {
         const [{ total }] = await db.select({ total: count() }).from(templates);
         return total;
     };
 
-    export const findTemplates = async (opts: {
+    export const findAll = async (opts: {
         limit: number;
         offset: number;
     }): Promise<TemplateEntity[]> => {
@@ -94,7 +90,7 @@ export namespace TemplateRepository {
         return templateList;
     };
 
-    export const loadTemplateCategories = async (
+    export const loadForTemplateCategories = async (
         templateCategoryIds: number[],
     ): Promise<TemplateEntity[][]> => {
         if (templateCategoryIds.length === 0) return [];
@@ -116,7 +112,7 @@ export namespace TemplateRepository {
     ): Promise<PaginatedTemplatesEntityResponse> => {
         const { first, skip, page, maxCount } = paginationArgs ?? {};
 
-        const total = await templatesTotalCount();
+        const total = await totalCount();
 
         // Figure out pagination
         const perPage = Math.min(
@@ -126,7 +122,7 @@ export namespace TemplateRepository {
         const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
         const offset = (currentPage - 1) * perPage;
 
-        const templates = await findTemplates({
+        const templates = await findAll({
             limit: perPage,
             offset,
         });
@@ -152,7 +148,7 @@ export namespace TemplateRepository {
         return result;
     };
 
-    export const findTemplateMaxOrderByCategoryId = async (
+    export const findMaxOrderInCategory = async (
         categoryId: number,
     ): Promise<number> => {
         const [{ maxOrder }] = await db
@@ -162,7 +158,7 @@ export namespace TemplateRepository {
         return maxOrder ?? 0;
     };
 
-    export const createTemplate = async (
+    export const create = async (
         input: TemplateCreateInput,
     ): Promise<TemplateEntity> => {
         const { name, description, categoryId } = input;
@@ -173,8 +169,7 @@ export namespace TemplateRepository {
                 "Template name must be between 3 and 255 characters long.",
             );
         }
-        const newOrder =
-            (await findTemplateMaxOrderByCategoryId(categoryId)) + 1;
+        const newOrder = (await findMaxOrderInCategory(categoryId)) + 1;
 
         const category = await db
             .select({
@@ -210,7 +205,7 @@ export namespace TemplateRepository {
         return newTemplate;
     };
 
-    export const updateTemplate = async (
+    export const update = async (
         input: TemplateUpdateInput,
     ): Promise<TemplateEntity> => {
         const {
@@ -221,13 +216,14 @@ export namespace TemplateRepository {
             //  _imagePath
         } = input;
         // Find existing template
-        const existingTemplate = await findTemplateByIdOrThrow(id);
+        const existingTemplate = await findByIdOrThrow(id);
         validateTemplateName(existingTemplate.name);
 
         const currentCategoryId = existingTemplate.categoryId;
         if (currentCategoryId != newCategoryId) {
             // Validate category exists if provided
-            const category = await findTemplateCategoryById(newCategoryId);
+            const category =
+                await TemplateCategoryRepository.findById(newCategoryId);
             if (!category) {
                 throw new Error(
                     `Category with ID ${newCategoryId} does not exist.`,
@@ -262,10 +258,8 @@ export namespace TemplateRepository {
         return updatedTemplate;
     };
 
-    export const deleteTemplateById = async (
-        id: number,
-    ): Promise<TemplateEntity> => {
-        const existingTemplate = await findTemplateByIdOrThrow(id);
+    export const deleteById = async (id: number): Promise<TemplateEntity> => {
+        const existingTemplate = await findByIdOrThrow(id);
 
         // todo: check dependancies before delete
 
@@ -276,13 +270,12 @@ export namespace TemplateRepository {
         return existingTemplate;
     };
 
-    export const suspendTemplateById = async (
-        id: number,
-    ): Promise<TemplateEntity> => {
+    export const suspendById = async (id: number): Promise<TemplateEntity> => {
         // Find existing template
-        const existingTemplate = await findTemplateByIdOrThrow(id);
+        const existingTemplate = await findByIdOrThrow(id);
 
-        const suspensionCategory = await findSuspensionTemplateCategory();
+        const suspensionCategory =
+            await TemplateCategoryRepository.findTemplatesSuspensionCategory();
 
         const suspensionCategoryId = suspensionCategory.id;
 
@@ -303,22 +296,25 @@ export namespace TemplateRepository {
         return updatedTemplate;
     };
 
-    export const unsuspendTemplateById = async (
+    export const unsuspendById = async (
         id: number,
     ): Promise<TemplateEntity> => {
         // Find existing template
-        const existingTemplate = await findTemplateByIdOrThrow(id);
+        const existingTemplate = await findByIdOrThrow(id);
 
-        const suspensionCategoryId = (await findSuspensionTemplateCategory())
-            .id;
-        const mainCategoryId = (await findMainTemplateCategory()).id;
+        const suspensionCategoryId = (
+            await TemplateCategoryRepository.findTemplatesSuspensionCategory()
+        ).id;
+        const mainCategoryId = (
+            await TemplateCategoryRepository.findTemplatesMainCategory()
+        ).id;
 
         // Validate it is suspended
         if (existingTemplate.categoryId !== suspensionCategoryId) {
             throw new Error(`Template with ID ${id} is not suspended.`);
         }
 
-        const preSuspensionCategory = await findTemplateCategoryById(
+        const preSuspensionCategory = await TemplateCategoryRepository.findById(
             existingTemplate.preSuspensionCategoryId,
         );
 
@@ -350,4 +346,3 @@ export namespace TemplateRepository {
         return (await db.$count(templates, eq(templates.id, id))) > 0;
     };
 }
-

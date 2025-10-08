@@ -4,11 +4,7 @@ import {
     TemplateCategoryPothosObject,
     TemplateCategoryUpdateInputPothosObject,
 } from "./templateCategory.pothos";
-import {
-    createTemplateCategory,
-    deleteTemplateCategoryById,
-    updateTemplateCategory,
-} from "./templateCategory.repository";
+import { TemplateCategoryRepository } from "./templateCategory.repository";
 
 gqlSchemaBuilder.mutationFields((t) => ({
     createTemplateCategory: t.field({
@@ -19,7 +15,8 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) => createTemplateCategory(args.input),
+        resolve: async (_, args) =>
+            TemplateCategoryRepository.create(args.input),
     }),
 
     updateTemplateCategory: t.field({
@@ -30,7 +27,8 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) => updateTemplateCategory(args.input),
+        resolve: async (_, args) =>
+            TemplateCategoryRepository.update(args.input),
     }),
 
     deleteTemplateCategory: t.field({
@@ -38,6 +36,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => deleteTemplateCategoryById(args.id),
+        resolve: async (_, args) =>
+            TemplateCategoryRepository.deleteById(args.id),
     }),
 }));

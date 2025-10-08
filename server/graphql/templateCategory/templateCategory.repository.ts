@@ -9,195 +9,128 @@ import {
 } from "./templateCategory.types";
 import { validateTemplateCategoryName } from "./templateCategory.utils";
 
-export const findTemplateCategoryById = async (
-    id?: number | null,
-): Promise<TemplateCategorySelectType | null> => {
-    if (!id) return null;
-    const category = await db
-        .select()
-        .from(templateCategories)
-        .where(eq(templateCategories.id, id))
-        .then((res) => res[0]);
-    return category || null;
-};
-
-export const findAllTemplateCategories = async (): Promise<
-    TemplateCategorySelectType[]
-> => {
-    return db
-        .select()
-        .from(templateCategories)
-        .orderBy(templateCategories.order);
-};
-
-export const loadTemplateCategoriesByIds = async (
-    ids: number[],
-): Promise<(TemplateCategorySelectType | Error)[]> => {
-    if (ids.length === 0) return [];
-    const filteredCategories = await db
-        .select()
-        .from(templateCategories)
-        .where(inArray(templateCategories.id, ids));
-
-    const categories: (TemplateCategorySelectType | Error)[] = ids.map((id) => {
-        const matchingCategory: TemplateCategorySelectType | undefined =
-            filteredCategories.find((c) => c.id === id);
-        if (!matchingCategory)
-            return new Error(`TemplateCategory ${id} not found`);
-        return matchingCategory;
-    });
-    return categories;
-};
-
-export const loadSubTemplateCategoriesForCategories = async (
-    parentCategoryIds: number[],
-): Promise<TemplateCategorySelectType[][]> => {
-    if (parentCategoryIds.length === 0) return [];
-    const subCategories = await db
-        .select()
-        .from(templateCategories)
-        .where(inArray(templateCategories.parentCategoryId, parentCategoryIds))
-        .orderBy(templateCategories.order);
-
-    return parentCategoryIds.map((parentId) =>
-        subCategories.filter((cat) => cat.parentCategoryId === parentId),
-    );
-};
-
-export const findMainTemplateCategory =
-    async (): Promise<TemplateCategorySelectType> => {
+export namespace TemplateCategoryRepository {
+    export const findById = async (
+        id?: number | null,
+    ): Promise<TemplateCategorySelectType | null> => {
+        if (!id) return null;
         const category = await db
             .select()
             .from(templateCategories)
-            .where(eq(templateCategories.specialType, "Main"))
+            .where(eq(templateCategories.id, id))
             .then((res) => res[0]);
-        if (!category) {
-            throw new Error("Main category not found.");
-        }
-        return category;
+        return category || null;
     };
 
-export const findSuspensionTemplateCategory =
-    async (): Promise<TemplateCategorySelectType> => {
-        const category = await db
+    export const findAll = async (): Promise<
+        TemplateCategorySelectType[]
+    > => {
+        return db
             .select()
             .from(templateCategories)
-            .where(eq(templateCategories.specialType, "Suspension"))
-            .then((res) => res[0]);
-        if (!category) {
-            throw new Error("Suspension category not found.");
-        }
-        return category;
+            .orderBy(templateCategories.order);
     };
 
-export const createTemplateCategory = async (
-    input: TemplateCategoryCreateInput,
-): Promise<TemplateCategorySelectType> => {
-    validateTemplateCategoryName(input.name);
+    export const loadByIds = async (
+        ids: number[],
+    ): Promise<(TemplateCategorySelectType | Error)[]> => {
+        if (ids.length === 0) return [];
+        const filteredCategories = await db
+            .select()
+            .from(templateCategories)
+            .where(inArray(templateCategories.id, ids));
 
-    let newOrder: number;
-
-    // Validate parent category ID if provided
-    if (input.parentCategoryId != null) {
-        const parentCategoryId = input.parentCategoryId;
-        if (parentCategoryId <= 0) {
-            throw new Error("Parent category ID must be a positive integer.");
-        }
-
-        // Check if the parent category exists
-        const existingParentCategory =
-            await findTemplateCategoryById(parentCategoryId);
-        if (!existingParentCategory) {
-            throw new Error(
-                `Parent category with ID ${input.parentCategoryId} does not exist.`,
-            );
-        }
-
-        // Validate not suspension category
-        if (existingParentCategory.specialType === "Suspension") {
-            throw new Error(
-                "Cannot create a category under the suspension category.",
-            );
-        }
-
-        // Find the new category order by getting the max order of the parent category
-        const maxOrderResult =
-            await findTemplateCategoryMaxOrderByParentCategoryId(
-                parentCategoryId,
-            );
-        newOrder = maxOrderResult + 1;
-    } else {
-        // For root categories (no parent)
-        const maxOrderResult =
-            await findTemplateCategoryMaxOrderByParentCategoryId(null);
-        newOrder = maxOrderResult + 1;
-    }
-
-    const inputData: TemplateCategoryInsertInput = {
-        name: input.name,
-        description: input.description,
-        parentCategoryId: input.parentCategoryId,
-        order: newOrder,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        const categories: (TemplateCategorySelectType | Error)[] = ids.map(
+            (id) => {
+                const matchingCategory: TemplateCategorySelectType | undefined =
+                    filteredCategories.find((c) => c.id === id);
+                if (!matchingCategory)
+                    return new Error(`TemplateCategory ${id} not found`);
+                return matchingCategory;
+            },
+        );
+        return categories;
     };
 
-    // Create the category
-    const [category] = await db
-        .insert(templateCategories)
-        .values(inputData)
-        .returning();
+    export const loadSubForParents = async (
+        parentCategoryIds: number[],
+    ): Promise<TemplateCategorySelectType[][]> => {
+        if (parentCategoryIds.length === 0) return [];
+        const subCategories = await db
+            .select()
+            .from(templateCategories)
+            .where(
+                inArray(templateCategories.parentCategoryId, parentCategoryIds),
+            )
+            .orderBy(templateCategories.order);
 
-    if (!category) {
-        throw new Error("Failed to create category.");
-    }
+        return parentCategoryIds.map((parentId) =>
+            subCategories.filter((cat) => cat.parentCategoryId === parentId),
+        );
+    };
 
-    return category;
-};
+    export const findTemplatesMainCategory =
+        async (): Promise<TemplateCategorySelectType> => {
+            const category = await db
+                .select()
+                .from(templateCategories)
+                .where(eq(templateCategories.specialType, "Main"))
+                .then((res) => res[0]);
+            if (!category) {
+                throw new Error("Main category not found.");
+            }
+            return category;
+        };
 
-export const updateTemplateCategory = async (
-    input: TemplateCategoryUpdateInput,
-): Promise<TemplateCategorySelectType> => {
-    const existingCategory = await findTemplateCategoryById(input.id);
-    if (!existingCategory) {
-        throw new Error(`Category with ID ${input.id} does not exist.`);
-    }
+    export const findTemplatesSuspensionCategory =
+        async (): Promise<TemplateCategorySelectType> => {
+            const category = await db
+                .select()
+                .from(templateCategories)
+                .where(eq(templateCategories.specialType, "Suspension"))
+                .then((res) => res[0]);
+            if (!category) {
+                throw new Error("Suspension category not found.");
+            }
+            return category;
+        };
 
-    validateTemplateCategoryName(input.name);
+    export const create = async (
+        input: TemplateCategoryCreateInput,
+    ): Promise<TemplateCategorySelectType> => {
+        validateTemplateCategoryName(input.name);
 
-    const newParentCategoryId = input.parentCategoryId;
+        let newOrder: number;
 
-    // Validate parent category ID if provided
-    if (newParentCategoryId) {
-        // Check if the parent category exists
-        const existingParentCategory =
-            await findTemplateCategoryById(newParentCategoryId);
-        if (!existingParentCategory) {
-            throw new Error(
-                `Parent category with ID ${newParentCategoryId} does not exist.`,
-            );
-        }
+        // Validate parent category ID if provided
+        if (input.parentCategoryId != null) {
+            const parentCategoryId = input.parentCategoryId;
+            if (parentCategoryId <= 0) {
+                throw new Error(
+                    "Parent category ID must be a positive integer.",
+                );
+            }
 
-        // Validate not suspension category
-        if (existingParentCategory.specialType === "Suspension") {
-            throw new Error(
-                "Cannot set the parent category to the suspension category.",
-            );
-        }
+            // Check if the parent category exists
+            const existingParentCategory =
+                await findById(parentCategoryId);
+            if (!existingParentCategory) {
+                throw new Error(
+                    `Parent category with ID ${input.parentCategoryId} does not exist.`,
+                );
+            }
 
-        // check if the parent category is not the same as the current category
-        if (newParentCategoryId === existingCategory.id) {
-            throw new Error("A category cannot be its own parent.");
-        }
-    }
+            // Validate not suspension category
+            if (existingParentCategory.specialType === "Suspension") {
+                throw new Error(
+                    "Cannot create a category under the suspension category.",
+                );
+            }
 
-    let newOrder = existingCategory.order;
-    if (existingCategory.parentCategoryId !== newParentCategoryId) {
-        // Parent category changed, need to recalculate order
-        if (newParentCategoryId != null) {
+            // Find the new category order by getting the max order of the parent category
             const maxOrderResult =
                 await findTemplateCategoryMaxOrderByParentCategoryId(
-                    newParentCategoryId,
+                    parentCategoryId,
                 );
             newOrder = maxOrderResult + 1;
         } else {
@@ -206,87 +139,162 @@ export const updateTemplateCategory = async (
                 await findTemplateCategoryMaxOrderByParentCategoryId(null);
             newOrder = maxOrderResult + 1;
         }
-    }
 
-    const inputData: TemplateCategoryInsertInput = {
-        name: input.name,
-        description: input.description,
-        parentCategoryId: input.parentCategoryId,
-        order: newOrder,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        const inputData: TemplateCategoryInsertInput = {
+            name: input.name,
+            description: input.description,
+            parentCategoryId: input.parentCategoryId,
+            order: newOrder,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Create the category
+        const [category] = await db
+            .insert(templateCategories)
+            .values(inputData)
+            .returning();
+
+        if (!category) {
+            throw new Error("Failed to create category.");
+        }
+
+        return category;
     };
 
-    const [updatedCategory] = await db
-        .update(templateCategories)
-        .set(inputData)
-        .where(eq(templateCategories.id, input.id))
-        .returning();
+    export const update = async (
+        input: TemplateCategoryUpdateInput,
+    ): Promise<TemplateCategorySelectType> => {
+        const existingCategory = await findById(input.id);
+        if (!existingCategory) {
+            throw new Error(`Category with ID ${input.id} does not exist.`);
+        }
 
-    return updatedCategory;
-};
+        validateTemplateCategoryName(input.name);
 
-export const deleteTemplateCategoryById = async (
-    id: number,
-): Promise<TemplateCategorySelectType> => {
-    const existingCategory = await findTemplateCategoryById(id);
+        const newParentCategoryId = input.parentCategoryId;
 
-    if (!existingCategory) {
-        throw new Error(`Category with ID ${id} does not exist.`);
-    }
+        // Validate parent category ID if provided
+        if (newParentCategoryId) {
+            // Check if the parent category exists
+            const existingParentCategory =
+                await findById(newParentCategoryId);
+            if (!existingParentCategory) {
+                throw new Error(
+                    `Parent category with ID ${newParentCategoryId} does not exist.`,
+                );
+            }
 
-    // Prevent deletion of special categories
-    if (existingCategory.specialType === "Main") {
-        throw new Error("Cannot delete the main category.");
-    } else if (existingCategory.specialType === "Suspension") {
-        throw new Error("Cannot delete the suspension category.");
-    }
+            // Validate not suspension category
+            if (existingParentCategory.specialType === "Suspension") {
+                throw new Error(
+                    "Cannot set the parent category to the suspension category.",
+                );
+            }
 
-    // Check if the category has sub-categories
-    const subCategoryCountResult = await db
-        .select({ count: count() })
-        .from(templateCategories)
-        .where(eq(templateCategories.parentCategoryId, id))
-        .then((res) => res[0]);
+            // check if the parent category is not the same as the current category
+            if (newParentCategoryId === existingCategory.id) {
+                throw new Error("A category cannot be its own parent.");
+            }
+        }
 
-    if (subCategoryCountResult.count > 0) {
-        throw new Error(
-            "Cannot delete category with existing sub-categories. Please remove or reassign sub-categories first.",
-        );
-    }
+        let newOrder = existingCategory.order;
+        if (existingCategory.parentCategoryId !== newParentCategoryId) {
+            // Parent category changed, need to recalculate order
+            if (newParentCategoryId != null) {
+                const maxOrderResult =
+                    await findTemplateCategoryMaxOrderByParentCategoryId(
+                        newParentCategoryId,
+                    );
+                newOrder = maxOrderResult + 1;
+            } else {
+                // For root categories (no parent)
+                const maxOrderResult =
+                    await findTemplateCategoryMaxOrderByParentCategoryId(null);
+                newOrder = maxOrderResult + 1;
+            }
+        }
 
-    // Check if the category has templates
-    const templateCountResult = await db
-        .select({ count: count() })
-        .from(templates)
-        .where(eq(templates.categoryId, id))
-        .then((res) => res[0]);
+        const inputData: TemplateCategoryInsertInput = {
+            name: input.name,
+            description: input.description,
+            parentCategoryId: input.parentCategoryId,
+            order: newOrder,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
 
-    if (templateCountResult.count > 0) {
-        throw new Error(
-            "Cannot delete category with existing templates. Please remove or reassign templates first.",
-        );
-    }
+        const [updatedCategory] = await db
+            .update(templateCategories)
+            .set(inputData)
+            .where(eq(templateCategories.id, input.id))
+            .returning();
 
-    // Proceed to delete the category
-    const [deletedCategory] = await db
-        .delete(templateCategories)
-        .where(eq(templateCategories.id, id))
-        .returning();
+        return updatedCategory;
+    };
 
-    return deletedCategory;
-};
+    export const deleteById = async (
+        id: number,
+    ): Promise<TemplateCategorySelectType> => {
+        const existingCategory = await findById(id);
 
-export const findTemplateCategoryMaxOrderByParentCategoryId = async (
-    categoryId: number | null,
-): Promise<number> => {
-    const [{ maxOrder }] = await db
-        .select({ maxOrder: max(templateCategories.order) })
-        .from(templateCategories)
-        .where(
-            categoryId === null
-                ? isNull(templateCategories.parentCategoryId)
-                : eq(templateCategories.parentCategoryId, categoryId),
-        );
-    return maxOrder ?? 0;
-};
+        if (!existingCategory) {
+            throw new Error(`Category with ID ${id} does not exist.`);
+        }
+
+        // Prevent deletion of special categories
+        if (existingCategory.specialType === "Main") {
+            throw new Error("Cannot delete the main category.");
+        } else if (existingCategory.specialType === "Suspension") {
+            throw new Error("Cannot delete the suspension category.");
+        }
+
+        // Check if the category has sub-categories
+        const subCategoryCountResult = await db
+            .select({ count: count() })
+            .from(templateCategories)
+            .where(eq(templateCategories.parentCategoryId, id))
+            .then((res) => res[0]);
+
+        if (subCategoryCountResult.count > 0) {
+            throw new Error(
+                "Cannot delete category with existing sub-categories. Please remove or reassign sub-categories first.",
+            );
+        }
+
+        // Check if the category has templates
+        const templateCountResult = await db
+            .select({ count: count() })
+            .from(templates)
+            .where(eq(templates.categoryId, id))
+            .then((res) => res[0]);
+
+        if (templateCountResult.count > 0) {
+            throw new Error(
+                "Cannot delete category with existing templates. Please remove or reassign templates first.",
+            );
+        }
+
+        // Proceed to delete the category
+        const [deletedCategory] = await db
+            .delete(templateCategories)
+            .where(eq(templateCategories.id, id))
+            .returning();
+
+        return deletedCategory;
+    };
+
+    export const findTemplateCategoryMaxOrderByParentCategoryId = async (
+        categoryId: number | null,
+    ): Promise<number> => {
+        const [{ maxOrder }] = await db
+            .select({ maxOrder: max(templateCategories.order) })
+            .from(templateCategories)
+            .where(
+                categoryId === null
+                    ? isNull(templateCategories.parentCategoryId)
+                    : eq(templateCategories.parentCategoryId, categoryId),
+            );
+        return maxOrder ?? 0;
+    };
+}

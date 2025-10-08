@@ -49,6 +49,7 @@ const eslintConfig = [{
     rules: {
         ...tsEslintRecommended.rules,
         "no-console": "error",
+            "@typescript-eslint/no-namespace": "off",
     },
 }, {
     // Prevent server imports in client code
