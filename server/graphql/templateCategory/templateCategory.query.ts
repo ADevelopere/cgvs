@@ -1,10 +1,7 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { TemplateCategoryPothosObject } from "./templateCategory.pothos";
 import {
-    findAllTemplateCategories,
-    findMainTemplateCategory,
-    findSuspensionTemplateCategory,
-    findTemplateCategoryById,
+     TemplateCategoryRepository
 } from "./templateCategory.repository";
 
 gqlSchemaBuilder.queryFields((t) => ({
@@ -14,21 +11,21 @@ gqlSchemaBuilder.queryFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_query, args) => findTemplateCategoryById(args.id),
+        resolve: async (_query, args) =>  TemplateCategoryRepository.findById(args.id),
     }),
 
     templateCategories: t.field({
         type: [TemplateCategoryPothosObject],
-        resolve: async () => findAllTemplateCategories(),
+        resolve: async () =>  TemplateCategoryRepository.findAll(),
     }),
 
     mainTemplateCategory: t.field({
         type: TemplateCategoryPothosObject,
-        resolve: async () => findMainTemplateCategory(),
+        resolve: async () =>  TemplateCategoryRepository.findTemplatesMainCategory(),
     }),
 
     suspensionTemplateCategory: t.field({
         type: TemplateCategoryPothosObject,
-        resolve: async () => findSuspensionTemplateCategory(),
+        resolve: async () =>  TemplateCategoryRepository.findTemplatesSuspensionCategory(),
     }),
 }));

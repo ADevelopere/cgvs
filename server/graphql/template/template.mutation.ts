@@ -13,7 +13,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             input: t.arg({ type: TemplateCreateInputPothosObject, required: true }),
         },
-        resolve: async (_, args) => TemplateRepository.createTemplate(args.input),
+        resolve: async (_, args) => TemplateRepository.create(args.input),
     }),
 
     updateTemplate: t.field({
@@ -22,7 +22,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             input: t.arg({ type: TemplateUpdateInputPothosObject, required: true }),
         },
-        resolve: async (_, args) => TemplateRepository.updateTemplate(args.input),
+        resolve: async (_, args) => TemplateRepository.update(args.input),
     }),
 
     deleteTemplate: t.field({
@@ -31,7 +31,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => TemplateRepository.deleteTemplateById(args.id),
+        resolve: async (_, args) => TemplateRepository.deleteById(args.id),
     }),
 
     suspendTemplate: t.field({
@@ -40,7 +40,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => TemplateRepository.suspendTemplateById(args.id),
+        resolve: async (_, args) => TemplateRepository.suspendById(args.id),
     }),
 
     unsuspendTemplate: t.field({
@@ -49,6 +49,6 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => TemplateRepository.unsuspendTemplateById(args.id),
+        resolve: async (_, args) => TemplateRepository.unsuspendById(args.id),
     }),
 }));
