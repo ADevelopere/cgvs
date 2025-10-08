@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { loadFromLocalStorage } from "@/utils/localStorage";
+import { loadFromLocalStorage } from "@/client/utils/localStorage";
 
 interface CountryDetectionResult {
     countryCode: string;
