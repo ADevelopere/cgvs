@@ -2,10 +2,7 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { PaginationArgsObject } from "../pagintaion/pagination.objects";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import * as StPothos from "./student.pothos";
-import {
-    fetchStudentsWithFilters,
-    findStudentById,
-} from "./student.repository";
+import { StudentRepository } from "./student.repository";
 import * as StTypes from "./student.types";
 
 gqlSchemaBuilder.queryFields((t) => ({
@@ -16,7 +13,7 @@ gqlSchemaBuilder.queryFields((t) => ({
             id: t.arg.int({ required: true }),
         },
         resolve: async (_query, args) =>
-            await findStudentById(args.id).then((s) =>
+            await StudentRepository.findById(args.id).then((s) =>
                 StTypes.mapStudentEntityToPothosDefintion(s),
             ),
     }),
@@ -38,7 +35,7 @@ gqlSchemaBuilder.queryFields((t) => ({
             }),
         },
         resolve: async (_, args) =>
-            await fetchStudentsWithFilters(
+            await StudentRepository.fetchWithFilters(
                 new PaginationArgs({ ...args.paginationArgs }),
                 args.filterArgs as unknown as StTypes.StudentFilterArgs,
                 args.orderBy,

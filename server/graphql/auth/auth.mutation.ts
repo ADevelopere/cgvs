@@ -13,8 +13,8 @@ import {
     RefreshTokenResponsePothosObject,
 } from "./auth.pothos";
 import { UserEntity, SessionEntity } from "./auth.types";
-import { createSession, validateSession, deleteSessionsByUserId, updateSession, findSessionByUserId } from "./session.repository";
-import { findUserByEmail, findUserById } from "./user.repository";
+import { SessionRepository } from "./session.repository";
+import { UserRepository } from "./user.repository";
 import logger from "@/lib/logger";
 
 gqlSchemaBuilder.mutationFields((t) => ({
@@ -28,7 +28,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
 
             let user: UserEntity | null;
             try {
-                user = await findUserByEmail(email.value);
+                user = await UserRepository.findUserByEmail(email.value);
             } catch (err) {
                 logger.error(err);
                 return null;
@@ -61,7 +61,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
 
             // Create session in database
             const sessionId = randomUUID();
-            await createSession({
+            await SessionRepository.create({
                 id: sessionId,
                 userId: user.id,
                 payload: JSON.stringify({
@@ -115,9 +115,11 @@ gqlSchemaBuilder.mutationFields((t) => ({
 
             // First try to validate using session ID (cookie-based)
             if (sessionId) {
-                session = await validateSession(sessionId);
+                session = await SessionRepository.validate(sessionId);
                 if (session?.userId) {
-                    const foundUser = await findUserById(session.userId);
+                    const foundUser = await UserRepository.findById(
+                        session.userId,
+                    );
                     user = foundUser || null;
                 }
             }
@@ -126,12 +128,15 @@ gqlSchemaBuilder.mutationFields((t) => ({
             if (!user && refreshToken) {
                 const payload = await verifyToken(refreshToken);
                 if (payload && payload.type === "refresh") {
-                    const foundUser = await findUserById(payload.userId);
+                    const foundUser = await UserRepository.findById(
+                        payload.userId,
+                    );
                     user = foundUser || null;
 
                     // Find session by user ID
                     if (user) {
-                        const foundSession = await findSessionByUserId(user.id);
+                        const foundSession =
+                            await SessionRepository.findByUserId(user.id);
                         session = foundSession || null;
                     }
                 }
@@ -154,7 +159,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
             );
 
             // Update session activity
-            await updateSession({
+            await SessionRepository.update({
                 ...session,
                 lastActivity: Math.floor(Date.now() / 1000),
             });
@@ -197,7 +202,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
             }
 
             // Delete all sessions for the user
-            await deleteSessionsByUserId(ctx.user.id);
+            await SessionRepository.deleteByUserId(ctx.user.id);
 
             // Clear authentication cookies
             if (ctx.cookies) {

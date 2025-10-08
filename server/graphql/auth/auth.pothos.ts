@@ -5,7 +5,7 @@ import {
     RefreshTokenResponse,
     UserPothosDefintion,
 } from "./auth.types";
-import { loadUsersByIds } from "./user.repository";
+import { UserRepository } from "./user.repository";
 
 const UserPothosObjectRef =
     gqlSchemaBuilder.objectRef<UserPothosDefintion>("User");
@@ -17,7 +17,7 @@ export const UserPothosObject = gqlSchemaBuilder.loadableObject<
     [], // Interfaces
     typeof UserPothosObjectRef // NameOrRef
 >(UserPothosObjectRef, {
-    load: async (ids: number[]) => loadUsersByIds(ids),
+    load: async (ids: number[]) => UserRepository.loadByIds(ids),
     sort: (user) => user.id,
     fields: (t) => ({
         id: t.exposeInt("id"),

@@ -1,6 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as TmvPothos from "./templateVariable.pothos";
-import * as TmvRepo from "./templateVariable.repository";
+import { TemplateVariableRepository as TmvRepo } from "./templateVariable.repository";
 
 gqlSchemaBuilder.queryFields((t) => ({
     templateVariable: t.field({
@@ -9,7 +9,7 @@ gqlSchemaBuilder.queryFields((t) => ({
             id: t.arg.int({ required: true }),
         },
         resolve: async (_parent, { id }) => {
-            return await TmvRepo.findTemplateVariableById(id);
+            return await TmvRepo.findById(id);
         },
     }),
 
@@ -19,6 +19,6 @@ gqlSchemaBuilder.queryFields((t) => ({
             templateId: t.arg.int({ required: true }),
         },
         resolve: async (_parent, args) =>
-            await TmvRepo.findTemplateVariablesByTemplateId(args.templateId),
+            await TmvRepo.findByTemplateId(args.templateId),
     }),
 }));

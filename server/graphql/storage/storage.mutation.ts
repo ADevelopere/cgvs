@@ -1,7 +1,7 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as StoragePothos from "./storage.pothos";
 import { getStorageService } from "../../storage/storage.service";
-import * as StorageDbService from "../../storage/db/storage-db.service";
+import { StorageDbRepository } from "../../storage/db/storage-db.service";
 
 gqlSchemaBuilder.mutationFields((t) => ({
     renameFile: t.field({
@@ -108,7 +108,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
             }),
         },
         resolve: async (_parent, { input }) => {
-            return await StorageDbService.updateDirectoryPermissions(input);
+            return await StorageDbRepository.updateDirectoryPermissions(input);
         },
     }),
 
@@ -121,7 +121,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
             }),
         },
         resolve: async (_parent, { input }) => {
-            return await StorageDbService.setProtection(input);
+            return await StorageDbRepository.setProtection(input);
         },
     }),
 }));

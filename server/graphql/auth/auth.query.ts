@@ -1,6 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { UserPothosObject } from "./auth.pothos";
-import { findAllUsers, findUserById } from "./user.repository";
+import { UserRepository } from "./user.repository";
 
 gqlSchemaBuilder.queryFields((t) => ({
     me: t.field({
@@ -14,7 +14,7 @@ gqlSchemaBuilder.queryFields((t) => ({
                 return null;
             }
 
-            return await findUserById(ctx.user.id);
+            return await UserRepository.findById(ctx.user.id);
         },
     }),
 
@@ -27,11 +27,12 @@ gqlSchemaBuilder.queryFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_parent, args) => await findUserById(args.id),
+        resolve: async (_parent, args) =>
+            await UserRepository.findById(args.id),
     }),
 
     users: t.field({
         type: [UserPothosObject],
-        resolve: async () => await findAllUsers(),
+        resolve: async () => await UserRepository.findAll(),
     }),
 }));

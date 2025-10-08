@@ -1,9 +1,7 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as StoragePothos from "./storage.pothos";
-import {
-    getStorageService,
-} from "../../storage/storage.service";
-import { checkFileUsage } from "@/server/storage/db/storage-db.service";
+import { getStorageService } from "../../storage/storage.service";
+import { StorageDbRepository } from "@/server/storage/db/storage-db.service";
 
 gqlSchemaBuilder.queryFields((t) => ({
     listFiles: t.field({
@@ -113,6 +111,7 @@ gqlSchemaBuilder.queryFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_parent, { input }) => await checkFileUsage(input),
+        resolve: async (_parent, { input }) =>
+            await StorageDbRepository.checkFileUsage(input),
     }),
 }));
