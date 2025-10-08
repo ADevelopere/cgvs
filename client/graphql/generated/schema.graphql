@@ -462,7 +462,7 @@ type Mutation {
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
-  updateTemplate(input: UpdateTemplateInput!): Template
+  updateTemplate(input: TemplateUpdateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory
   updateTemplateDateVariable(input: TemplateDateVariableUpdateInput!): TemplateDateVariable
   updateTemplateNumberVariable(input: TemplateNumberVariableUpdateInput!): TemplateNumberVariable
@@ -753,7 +753,7 @@ input TemplateDateVariableCreateInput {
   maxDate: DateTime
   minDate: DateTime
   name: String!
-  previewValue: DateTime!
+  previewValue: DateTime
   required: Boolean! = false
   templateId: Int!
 }
@@ -765,7 +765,7 @@ input TemplateDateVariableUpdateInput {
   maxDate: DateTime
   minDate: DateTime
   name: String!
-  previewValue: DateTime!
+  previewValue: DateTime
   required: Boolean! = false
 }
 
@@ -791,7 +791,7 @@ input TemplateNumberVariableCreateInput {
   maxValue: Float
   minValue: Float
   name: String!
-  previewValue: Float!
+  previewValue: Float
   required: Boolean! = false
   templateId: Int!
 }
@@ -803,7 +803,7 @@ input TemplateNumberVariableUpdateInput {
   maxValue: Float
   minValue: Float
   name: String!
-  previewValue: Float!
+  previewValue: Float
   required: Boolean! = false
 }
 
@@ -864,7 +864,7 @@ input TemplateTextVariableCreateInput {
   minLength: Int
   name: String!
   pattern: String
-  previewValue: String!
+  previewValue: String
   required: Boolean! = false
   templateId: Int!
 }
@@ -876,8 +876,15 @@ input TemplateTextVariableUpdateInput {
   minLength: Int
   name: String!
   pattern: String
-  previewValue: String!
+  previewValue: String
   required: Boolean! = false
+}
+
+input TemplateUpdateInput {
+  categoryId: Int!
+  description: String
+  id: Int!
+  name: String!
 }
 
 interface TemplateVariable {
@@ -912,13 +919,6 @@ type TemplatesConfigs {
 enum TemplatesConfigsKey {
   ALLOWED_FILE_TYPES
   MAX_BACKGROUND_SIZE
-}
-
-input UpdateTemplateInput {
-  categoryId: Int!
-  description: String
-  id: Int!
-  name: String!
 }
 
 enum UploadLocationPath {

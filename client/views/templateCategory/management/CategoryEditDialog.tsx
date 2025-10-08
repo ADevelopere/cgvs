@@ -11,7 +11,7 @@ import {
     Autocomplete,
     Box,
 } from "@mui/material";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 
 interface Props {

@@ -4,7 +4,7 @@ import React from "react";
 import { IconButton, Tooltip, useTheme } from "@mui/material";
 import { Wifi, WifiOff, Sync } from "@mui/icons-material";
 import { useNetworkConnectivity } from "@/client/contexts/AppApolloProvider";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import ConnectivityTranslations from "@/client/locale/components/Connectivity";
 
 const ConnectivityStatus: React.FC = () => {

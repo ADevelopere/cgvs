@@ -13,7 +13,7 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/utils/dateUtils";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import Image from "next/image";
 import { Template } from "@/client/graphql/generated/gql/graphql";

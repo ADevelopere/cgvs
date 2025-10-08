@@ -1,13 +1,4 @@
-import type {
-    TemplateTextVariable,
-    TemplateNumberVariable,
-    TemplateDateVariable,
-    TemplateSelectVariable,
-    UptemplateDateTextVariableInput,
-    UpdateTemplateNumberVariableInput,
-    UptemplateDateDateVariableInput,
-    UpdateTemplateSelectVariableInput,
-} from "@/graphql/generated/types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Helper function to check if two potentially undefined values are different.
@@ -66,8 +57,8 @@ function isDifferent<T>(
  * Checks if a text variable's temporary value is different from the original
  */
 export function isTextVariableDifferent(
-    original: TemplateTextVariable,
-    temporary: Partial<UptemplateDateTextVariableInput>,
+    original: Graphql.TemplateTextVariable,
+    temporary: Partial<Graphql.TemplateTextVariableUpdateInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) {
         return true;
@@ -78,7 +69,7 @@ export function isTextVariableDifferent(
     if (isDifferent(temporary.required, original.required)) {
         return true;
     }
-    if (isDifferent(temporary.previewValue, original.textPreviewValue)) {
+    if (isDifferent(temporary.previewValue, original.previewValue)) {
         return true;
     }
     if (isDifferent(temporary.minLength, original.minLength)) {
@@ -98,13 +89,18 @@ export function isTextVariableDifferent(
  * Checks if a number variable's temporary value is different from the original
  */
 export function isNumberVariableDifferent(
-    original: TemplateNumberVariable,
-    temporary: Partial<UpdateTemplateNumberVariableInput>,
+    original: Graphql.TemplateNumberVariable,
+    temporary: Partial<Graphql.TemplateNumberVariableUpdateInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
     if (isDifferent(temporary.required, original.required)) return true;
-    if (isDifferent(temporary.previewValue, original.numberPreviewValue))
+    if (
+        isDifferent(
+            temporary.previewValue,
+            original.previewValue as number | null | undefined,
+        )
+    )
         return true;
     if (isDifferent(temporary.minValue, original.minValue)) return true;
     if (isDifferent(temporary.maxValue, original.maxValue)) return true;
@@ -118,14 +114,13 @@ export function isNumberVariableDifferent(
  * Checks if a date variable's temporary value is different from the original
  */
 export function isDateVariableDifferent(
-    original: TemplateDateVariable,
-    temporary: Partial<UptemplateDateDateVariableInput>,
+    original: Graphql.TemplateDateVariable,
+    temporary: Partial<Graphql.TemplateDateVariableUpdateInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
     if (isDifferent(temporary.required, original.required)) return true;
-    if (isDifferent(temporary.previewValue, original.datePreviewValue))
-        return true;
+    if (isDifferent(temporary.previewValue, original.previewValue)) return true;
     if (isDifferent(temporary.minDate, original.minDate)) return true;
     if (isDifferent(temporary.maxDate, original.maxDate)) return true;
     if (isDifferent(temporary.format, original.format)) return true;
@@ -137,14 +132,13 @@ export function isDateVariableDifferent(
  * Checks if a select variable's temporary value is different from the original
  */
 export function isSelectVariableDifferent(
-    original: TemplateSelectVariable,
-    temporary: Partial<UpdateTemplateSelectVariableInput>,
+    original: Graphql.TemplateSelectVariable,
+    temporary: Partial<Graphql.TemplateSelectVariableUpdateInput>,
 ): boolean {
     if (isDifferent(temporary.name, original.name)) return true;
     if (isDifferent(temporary.description, original.description)) return true;
     if (isDifferent(temporary.required, original.required)) return true;
-    if (isDifferent(temporary.previewValue, original.selectPreviewValue))
-        return true;
+    if (isDifferent(temporary.previewValue, original.previewValue)) return true;
     if (isDifferent(temporary.multiple, original.multiple)) return true;
 
     // Special handling for options since it's an array

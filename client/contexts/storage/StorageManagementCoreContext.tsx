@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { DirectoryTreeNode, StorageManagementCoreContextType } from "./storage.type";
 

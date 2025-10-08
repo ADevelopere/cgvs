@@ -21,9 +21,10 @@ import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import Image from "next/image";
+import { FileInfo, TemplateUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 type FormDataType = {
     name: string;
@@ -65,22 +66,20 @@ const BasicInfoTab: React.FC = () => {
             setFormData({
                 name: template.name ?? "",
                 description: template.description ?? "",
-                // todo
-                // imageUrl: template.imageUrl,
+                imageUrl: template.imageUrl,
             });
         }
     }, [template]);
 
     useEffect(() => {
-        if (!template) {
+        if (!template?.name) {
             setUnsavedChangesRef.current(false);
             return;
         }
         const originalData: FormDataType = {
             name: template.name,
             description: template.description,
-            // todo
-            // imageUrl: template.imageUrl,
+            imageUrl: template.imageUrl,
         };
 
         const currentData = formData;
@@ -130,12 +129,13 @@ const BasicInfoTab: React.FC = () => {
         setSaving(true);
         setError(null);
 
-        const input: UpdateTemplateInput = {
+        const input: TemplateUpdateInput = {
             id: template.id,
             name: formData.name,
             description: formData.description,
             categoryId: template.category.id,
-            imagePath: formData.imagePath,
+            // todo
+            // imagePath: formData.imagePath,
         };
 
         const updatedTemplate = await updateTemplate({
@@ -149,9 +149,9 @@ const BasicInfoTab: React.FC = () => {
         setSaving(false);
     }, [
         formData.description,
-        formData.imagePath,
+        // formData.imagePath,
         formData.name,
-        template?.category.id,
+        template?.category?.id,
         template?.id,
         updateTemplate,
     ]);

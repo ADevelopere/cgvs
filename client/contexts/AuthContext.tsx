@@ -4,7 +4,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
 
 import { AuthTranslations } from "@/client/locale/components/Auth";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { useAuthToken } from "./AppApolloProvider";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";

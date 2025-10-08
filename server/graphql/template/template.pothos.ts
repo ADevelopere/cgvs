@@ -85,7 +85,7 @@ export const TemplateCreateInputPothosObject = gqlSchemaBuilder
     });
 
 export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
-    .inputRef<TemplateUpdateInput>("UpdateTemplateInput")
+    .inputRef<TemplateUpdateInput>("TemplateUpdateInput")
     .implement({
         fields: (t) => ({
             id: t.int({ required: true }),

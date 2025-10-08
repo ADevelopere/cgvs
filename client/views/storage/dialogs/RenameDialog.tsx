@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
 import { StorageItem } from "@/client/contexts/storage/storage.type";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 
 export interface RenameDialogProps {
     open: boolean;

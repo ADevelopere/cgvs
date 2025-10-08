@@ -20,37 +20,37 @@ type TemplateVariableManagementContextType = {
     loading: boolean;
 
     // Creation mutations for different variable types
-    createTextTemplateVariable: (
-        variables: Graphql.CreateTextTemplateVariableMutationVariables,
+    createTemplateTextVariable: (
+        variables: Graphql.CreateTemplateTextVariableMutationVariables,
     ) => Promise<boolean>;
 
-    createNumberTemplateVariable: (
-        variables: Graphql.CreateNumberTemplateVariableMutationVariables,
+    createTemplateNumberVariable: (
+        variables: Graphql.CreateTemplateNumberVariableMutationVariables,
     ) => Promise<boolean>;
 
-    createDateTemplateVariable: (
-        variables: Graphql.CreateDateTemplateVariableMutationVariables,
+    createTemplateDateVariable: (
+        variables: Graphql.CreateTemplateDateVariableMutationVariables,
     ) => Promise<boolean>;
 
-    createSelectTemplateVariable: (
-        variables: Graphql.CreateSelectTemplateVariableMutationVariables,
+    createTemplateSelectVariable: (
+        variables: Graphql.CreateTemplateSelectVariableMutationVariables,
     ) => Promise<boolean>;
 
     // Update mutations for different variable types
-    updateTextTemplateVariable: (
-        variables: Graphql.UpdateTextTemplateVariableMutationVariables,
+    updateTemplateTextVariable: (
+        variables: Graphql.UpdateTemplateTextVariableMutationVariables,
     ) => Promise<boolean>;
 
-    updateNumberTemplateVariable: (
-        variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
+    updateTemplateNumberVariable: (
+        variables: Graphql.UpdateTemplateNumberVariableMutationVariables,
     ) => Promise<boolean>;
 
-    updateDateTemplateVariable: (
-        variables: Graphql.UpdateDateTemplateVariableMutationVariables,
+    updateTemplateDateVariable: (
+        variables: Graphql.UpdateTemplateDateVariableMutationVariables,
     ) => Promise<boolean>;
 
-    updateSelectTemplateVariable: (
-        variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
+    updateTemplateSelectVariable: (
+        variables: Graphql.UpdateTemplateSelectVariableMutationVariables,
     ) => Promise<boolean>;
 
     // Delete mutation (common for all types)
@@ -79,32 +79,32 @@ const ManagementProvider: React.FC<{
     const [loading, setLoading] = useState(false);
 
     const {
-        createTextTemplateVariableMutation,
-        updateTextTemplateVariableMutation,
-        createNumberTemplateVariableMutation,
-        updateNumberTemplateVariableMutation,
-        createDateTemplateVariableMutation,
-        updateDateTemplateVariableMutation,
-        createSelectTemplateVariableMutation,
-        updateSelectTemplateVariableMutation,
+        createTemplateTextVariableMutation,
+        updateTemplateTextVariableMutation,
+        createTemplateNumberVariableMutation,
+        updateTemplateNumberVariableMutation,
+        createTemplateDateVariableMutation,
+        updateTemplateDateVariableMutation,
+        createTemplateSelectVariableMutation,
+        updateTemplateSelectVariableMutation,
         deleteTemplateVariableMutation,
     } = useTemplateVariableGraphQL();
 
     // Text template variable handlers
-    const handleCreateTextTemplateVariable = useCallback(
+    const handleCreateTemplateTextVariable = useCallback(
         async (
-            variables: Graphql.CreateTextTemplateVariableMutationVariables,
+            variables: Graphql.CreateTemplateTextVariableMutationVariables,
         ): Promise<boolean> => {
             logger.log("Creating text variable", variables);
             setLoading(true);
             try {
-                const result = await createTextTemplateVariableMutation({
+                const result = await createTemplateTextVariableMutation({
                     input: {
                         ...variables.input,
                     },
                 });
 
-                if (result.data?.createTextTemplateVariable) {
+                if (result.data?.createTemplateTextVariable) {
                     notifications.show("Text variable created successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -127,18 +127,18 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createTextTemplateVariableMutation, notifications],
+        [createTemplateTextVariableMutation, notifications],
     );
 
-    const handleUpdateTextTemplateVariable = useCallback(
+    const handleUpdateTemplateTextVariable = useCallback(
         async (
-            variables: Graphql.UpdateTextTemplateVariableMutationVariables,
+            variables: Graphql.UpdateTemplateTextVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
                 const result =
-                    await updateTextTemplateVariableMutation(variables);
-                if (result.data?.updateTextTemplateVariable) {
+                    await updateTemplateTextVariableMutation(variables);
+                if (result.data?.updateTemplateTextVariable) {
                     notifications.show("Text variable updated successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -161,22 +161,22 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [notifications, updateTextTemplateVariableMutation],
+        [notifications, updateTemplateTextVariableMutation],
     );
 
     // Number template variable handlers
-    const handleCreateNumberTemplateVariable = useCallback(
+    const handleCreateTemplateNumberVariable = useCallback(
         async (
-            variables: Graphql.CreateNumberTemplateVariableMutationVariables,
+            variables: Graphql.CreateTemplateNumberVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createNumberTemplateVariableMutation({
+                const result = await createTemplateNumberVariableMutation({
                     input: {
                         ...variables.input,
                     },
                 });
-                if (result.data?.createNumberTemplateVariable) {
+                if (result.data?.createTemplateNumberVariable) {
                     notifications.show("Number variable created successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -199,18 +199,18 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createNumberTemplateVariableMutation, notifications],
+        [createTemplateNumberVariableMutation, notifications],
     );
 
-    const handleUpdateNumberTemplateVariable = useCallback(
+    const handleUpdateTemplateNumberVariable = useCallback(
         async (
-            variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
+            variables: Graphql.UpdateTemplateNumberVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
                 const result =
-                    await updateNumberTemplateVariableMutation(variables);
-                if (result.data?.updateNumberTemplateVariable) {
+                    await updateTemplateNumberVariableMutation(variables);
+                if (result.data?.updateTemplateNumberVariable) {
                     notifications.show("Number variable updated successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -233,22 +233,22 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [notifications, updateNumberTemplateVariableMutation],
+        [notifications, updateTemplateNumberVariableMutation],
     );
 
     // Date template variable handlers
-    const handleCreateDateTemplateVariable = useCallback(
+    const handleCreateTemplateDateVariable = useCallback(
         async (
-            variables: Graphql.CreateDateTemplateVariableMutationVariables,
+            variables: Graphql.CreateTemplateDateVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createDateTemplateVariableMutation({
+                const result = await createTemplateDateVariableMutation({
                     input: {
                         ...variables.input,
                     },
                 });
-                if (result.data?.createDateTemplateVariable) {
+                if (result.data?.createTemplateDateVariable) {
                     notifications.show("Date variable created successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -271,18 +271,18 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createDateTemplateVariableMutation, notifications],
+        [createTemplateDateVariableMutation, notifications],
     );
 
-    const handleUpdateDateTemplateVariable = useCallback(
+    const handleUpdateTemplateDateVariable = useCallback(
         async (
-            variables: Graphql.UpdateDateTemplateVariableMutationVariables,
+            variables: Graphql.UpdateTemplateDateVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
                 const result =
-                    await updateDateTemplateVariableMutation(variables);
-                if (result.data?.updateDateTemplateVariable) {
+                    await updateTemplateDateVariableMutation(variables);
+                if (result.data?.updateTemplateDateVariable) {
                     notifications.show("Date variable updated successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -305,22 +305,22 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [notifications, updateDateTemplateVariableMutation],
+        [notifications, updateTemplateDateVariableMutation],
     );
 
     // Select template variable handlers
-    const handleCreateSelectTemplateVariable = useCallback(
+    const handleCreateTemplateSelectVariable = useCallback(
         async (
-            variables: Graphql.CreateSelectTemplateVariableMutationVariables,
+            variables: Graphql.CreateTemplateSelectVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
-                const result = await createSelectTemplateVariableMutation({
+                const result = await createTemplateSelectVariableMutation({
                     input: {
                         ...variables.input,
                     },
                 });
-                if (result.data?.createSelectTemplateVariable) {
+                if (result.data?.createTemplateSelectVariable) {
                     notifications.show("Select variable created successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -343,18 +343,18 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [createSelectTemplateVariableMutation, notifications],
+        [createTemplateSelectVariableMutation, notifications],
     );
 
-    const handleUpdateSelectTemplateVariable = useCallback(
+    const handleUpdateTemplateSelectVariable = useCallback(
         async (
-            variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
+            variables: Graphql.UpdateTemplateSelectVariableMutationVariables,
         ): Promise<boolean> => {
             setLoading(true);
             try {
                 const result =
-                    await updateSelectTemplateVariableMutation(variables);
-                if (result.data?.updateSelectTemplateVariable) {
+                    await updateTemplateSelectVariableMutation(variables);
+                if (result.data?.updateTemplateSelectVariable) {
                     notifications.show("Select variable updated successfully", {
                         severity: "success",
                         autoHideDuration: 3000,
@@ -377,7 +377,7 @@ const ManagementProvider: React.FC<{
                 setLoading(false);
             }
         },
-        [notifications, updateSelectTemplateVariableMutation],
+        [notifications, updateTemplateSelectVariableMutation],
     );
 
     // Delete template variable handler
@@ -415,26 +415,26 @@ const ManagementProvider: React.FC<{
     const value: TemplateVariableManagementContextType = useMemo(
         () => ({
             loading,
-            createTextTemplateVariable: handleCreateTextTemplateVariable,
-            updateTextTemplateVariable: handleUpdateTextTemplateVariable,
-            createNumberTemplateVariable: handleCreateNumberTemplateVariable,
-            updateNumberTemplateVariable: handleUpdateNumberTemplateVariable,
-            createDateTemplateVariable: handleCreateDateTemplateVariable,
-            updateDateTemplateVariable: handleUpdateDateTemplateVariable,
-            createSelectTemplateVariable: handleCreateSelectTemplateVariable,
-            updateSelectTemplateVariable: handleUpdateSelectTemplateVariable,
+            createTemplateTextVariable: handleCreateTemplateTextVariable,
+            updateTemplateTextVariable: handleUpdateTemplateTextVariable,
+            createTemplateNumberVariable: handleCreateTemplateNumberVariable,
+            updateTemplateNumberVariable: handleUpdateTemplateNumberVariable,
+            createTemplateDateVariable: handleCreateTemplateDateVariable,
+            updateTemplateDateVariable: handleUpdateTemplateDateVariable,
+            createTemplateSelectVariable: handleCreateTemplateSelectVariable,
+            updateTemplateSelectVariable: handleUpdateTemplateSelectVariable,
             deleteTemplateVariable: handleDeleteTemplateVariable,
         }),
         [
             loading,
-            handleCreateTextTemplateVariable,
-            handleUpdateTextTemplateVariable,
-            handleCreateNumberTemplateVariable,
-            handleUpdateNumberTemplateVariable,
-            handleCreateDateTemplateVariable,
-            handleUpdateDateTemplateVariable,
-            handleCreateSelectTemplateVariable,
-            handleUpdateSelectTemplateVariable,
+            handleCreateTemplateTextVariable,
+            handleUpdateTemplateTextVariable,
+            handleCreateTemplateNumberVariable,
+            handleUpdateTemplateNumberVariable,
+            handleCreateTemplateDateVariable,
+            handleUpdateTemplateDateVariable,
+            handleCreateTemplateSelectVariable,
+            handleUpdateTemplateSelectVariable,
             handleDeleteTemplateVariable,
         ],
     );

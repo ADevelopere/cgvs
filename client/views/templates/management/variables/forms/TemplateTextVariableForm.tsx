@@ -9,27 +9,25 @@ import {
     Button,
 } from "@mui/material";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import type {
-    CreateTextTemplateVariableInput,
-    TextTemplateVariable,
-} from "@/graphql/generated/types";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import { mapToCreateTextTemplateVariableInput } from "@/utils/templateVariable/text-template-variable-mappers";
-import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
-import useAppTranslation from "@/client/locale/useAppTranslation";
 
-type TextTemplateVariableFormProps = {
+import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { mapToTemplateTextVariableCreateInput } from "@/utils/templateVariable";
+import { isTextVariableDifferent } from "@/utils/templateVariable/templateVariable";
+import { useAppTranslation } from "@/client/locale";
+import { TemplateTextVariable, TemplateTextVariableCreateInput } from "@/client/graphql/generated/gql/graphql";
+
+type TemplateTextVariableFormProps = {
     editingVariableID?: number;
     onDispose: () => void;
 };
 
-const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
+const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
     const { template } = useTemplateManagement();
 
-    const editingVariable: TextTemplateVariable | null = useMemo(() => {
+    const editingVariable: TemplateTextVariable | null = useMemo(() => {
         if (!template?.variables || !editingVariableID) return null;
 
         return (
@@ -37,14 +35,14 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
         );
     }, [template, editingVariableID]);
 
-    const { createTextTemplateVariable, updateTextTemplateVariable } =
+    const { createTemplateTextVariable, updateTemplateTextVariable } =
         useTemplateVariableManagement();
 
     const strings = useAppTranslation("templateVariableTranslations");
 
-    const [state, setState] = useState<CreateTextTemplateVariableInput>(() => {
+    const [state, setState] = useState<TemplateTextVariableCreateInput>(() => {
         if (editingVariable) {
-            return mapToCreateTextTemplateVariableInput(editingVariable);
+            return mapToTemplateTextVariableCreateInput(editingVariable);
         }
         return {
             name: "",
@@ -54,7 +52,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
     });
 
     const handleChange = useCallback(
-        (field: keyof CreateTextTemplateVariableInput) =>
+        (field: keyof TemplateTextVariableCreateInput) =>
             (event: React.ChangeEvent<HTMLInputElement>) => {
                 const value =
                     event.target.type === "checkbox"
@@ -90,7 +88,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
         let success = false;
 
         if (editingVariableID) {
-            success = await updateTextTemplateVariable({
+            success = await updateTemplateTextVariable({
                 input: {
                     ...state,
                     id: editingVariableID,
@@ -101,7 +99,7 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
                 onDispose();
             }
         } else {
-            success = await createTextTemplateVariable({
+            success = await createTemplateTextVariable({
                 input: {
                     ...state,
                 },
@@ -114,8 +112,8 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
     }, [
         state,
         editingVariableID,
-        createTextTemplateVariable,
-        updateTextTemplateVariable,
+        createTemplateTextVariable,
+        updateTemplateTextVariable,
         onDispose,
     ]);
 
@@ -211,4 +209,4 @@ const TextTemplateVariableForm: React.FC<TextTemplateVariableFormProps> = ({
     );
 };
 
-export default TextTemplateVariableForm;
+export default TemplateTextVariableForm;

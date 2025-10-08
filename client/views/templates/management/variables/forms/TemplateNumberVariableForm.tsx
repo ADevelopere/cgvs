@@ -8,27 +8,32 @@ import {
     Checkbox,
     Button,
 } from "@mui/material";
-import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import type {
-    CreateNumberTemplateVariableInput,
-    NumberTemplateVariable,
-} from "@/graphql/generated/types";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
-import { isNumberVariableDifferent } from "@/utils/templateVariable/templateVariable";
+import {
+    useTemplateManagement,
+    useTemplateVariableManagement,
+} from "@/client/contexts";
+import { useAppTranslation } from "@/client/locale";
+import {
+    isNumberVariableDifferent,
+    mapToTemplateNumberVariableCreateInput,
+} from "@/utils/templateVariable";
+import {
+    TemplateNumberVariable,
+    TemplateNumberVariableCreateInput,
+} from "@/client/graphql/generated/gql/graphql";
 
-type NumberTemplateVariableFormProps = {
+type TemplateNumberVariableFormProps = {
     editingVariableID?: number;
     onDispose: () => void;
 };
 
-const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
+const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
     const { template } = useTemplateManagement();
 
-    const editingVariable: NumberTemplateVariable | null = useMemo(() => {
+    const editingVariable: TemplateNumberVariable | null = useMemo(() => {
         if (!template?.variables || !editingVariableID) return null;
 
         return (
@@ -36,24 +41,15 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
         );
     }, [template, editingVariableID]);
 
-    const { createNumberTemplateVariable, updateNumberTemplateVariable } =
+    const { createTemplateNumberVariable, updateTemplateNumberVariable } =
         useTemplateVariableManagement();
 
     const strings = useAppTranslation("templateVariableTranslations");
 
-    const [state, setState] = useState<CreateNumberTemplateVariableInput>(
+    const [state, setState] = useState<TemplateNumberVariableCreateInput>(
         () => {
             if (editingVariable) {
-                return {
-                    name: editingVariable.name,
-                    description: editingVariable.description,
-                    minValue: editingVariable.minValue,
-                    maxValue: editingVariable.maxValue,
-                    decimalPlaces: editingVariable.decimalPlaces,
-                    previewValue: editingVariable.numberPreviewValue,
-                    required: editingVariable.required,
-                    templateId: template?.id ?? 0,
-                };
+                return mapToTemplateNumberVariableCreateInput(editingVariable);
             }
             return {
                 name: "",
@@ -64,7 +60,7 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
     );
 
     const handleChange = useCallback(
-        (field: keyof CreateNumberTemplateVariableInput) =>
+        (field: keyof TemplateNumberVariableCreateInput) =>
             (event: React.ChangeEvent<HTMLInputElement>) => {
                 const value =
                     event.target.type === "checkbox"
@@ -97,14 +93,14 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
         let success = false;
 
         if (editingVariableID) {
-            success = await updateNumberTemplateVariable({
+            success = await updateTemplateNumberVariable({
                 input: {
                     id: editingVariableID,
                     ...state,
                 },
             });
         } else {
-            success = await createNumberTemplateVariable({
+            success = await createTemplateNumberVariable({
                 input: state,
             });
         }
@@ -115,8 +111,8 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
     }, [
         state,
         editingVariableID,
-        createNumberTemplateVariable,
-        updateNumberTemplateVariable,
+        createTemplateNumberVariable,
+        updateTemplateNumberVariable,
         onDispose,
     ]);
 
@@ -143,7 +139,9 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
                 value={state.name}
                 onChange={handleChange("name")}
                 error={!state.name}
-                helperText={!state.name ? strings?.required ?? "Required" : ""}
+                helperText={
+                    !state.name ? (strings?.required ?? "Required") : ""
+                }
                 required
                 fullWidth
             />
@@ -212,4 +210,4 @@ const NumberTemplateVariableForm: React.FC<NumberTemplateVariableFormProps> = ({
     );
 };
 
-export default NumberTemplateVariableForm;
+export default TemplateNumberVariableForm;

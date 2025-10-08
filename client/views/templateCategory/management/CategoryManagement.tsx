@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import {
     useTemplateCategoryManagement,
 } from "@/client/contexts/template/TemplateCategoryManagementContext";

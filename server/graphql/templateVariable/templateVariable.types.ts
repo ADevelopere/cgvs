@@ -96,22 +96,34 @@ type TemplateNumberVariableProps = {
     decimalPlaces?: number | null;
 };
 
-export type TemplateNumberVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
+export type TemplateNumberVariableCreateInput = Omit<
+    TemplateVariableCreateInput,
+    "previewValue"
+> &
     TemplateNumberVariableProps;
 
-export type TemplateNumberVariableUpdateInput = Omit<TemplateVariableUpdateInput, "previewValue"> &
+export type TemplateNumberVariableUpdateInput = Omit<
+    TemplateVariableUpdateInput,
+    "previewValue"
+> &
     TemplateNumberVariableProps;
 
 type TemplateDateVariableProps = {
-    previewValue: Date;
+    previewValue?: Date | null;
     minDate?: Date | null;
     maxDate?: Date | null;
     format?: string | null;
 };
-export type TemplateDateVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
+export type TemplateDateVariableCreateInput = Omit<
+    TemplateVariableCreateInput,
+    "previewValue"
+> &
     TemplateDateVariableProps;
 
-export type TemplateDateVariableUpdateInput = Omit<TemplateVariableUpdateInput, "previewValue"> &
+export type TemplateDateVariableUpdateInput = Omit<
+    TemplateVariableUpdateInput,
+    "previewValue"
+> &
     TemplateDateVariableProps;
 
 type TemplateSelectVariableProps = {

@@ -13,7 +13,7 @@ import {
     MoreHoriz as MoreHorizIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 interface StorageBreadcrumbProps {
     /**
      * Optional custom path override. If not provided, uses current path from context.

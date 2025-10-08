@@ -21,7 +21,7 @@ import {
     QueueStates,
     StorageItem,
 } from "./storage.type";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 
 const StorageManagementUIContext = createContext<
     StorageManagementUIContextType | undefined

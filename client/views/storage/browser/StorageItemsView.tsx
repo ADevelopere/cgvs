@@ -30,7 +30,7 @@ import {
     ViewList as ListViewIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
 import { useUploadDropzone } from "@/client/views/storage/dropzone/useUploadDropzone";

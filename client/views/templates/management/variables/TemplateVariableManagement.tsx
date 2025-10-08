@@ -22,13 +22,13 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import type {
+import TemplateVariableModal from "./TemplateVariableModal";
+import { useAppTranslation } from "@/client/locale";
+import { TemplateVariableTranslation } from "@/client/locale/components";
+import {
     TemplateVariable,
     TemplateVariableType,
-} from "@/graphql/generated/types";
-import TemplateVariableModal from "./TemplateVariableModal";
-import useAppTranslation from "@/client/locale/useAppTranslation";
-import TemplateVariableTranslation from "@/locale/components/TemplateVariable";
+} from "@/client/graphql/generated/gql/graphql";
 
 interface ContentProps {
     onOpenModal: (variable: TemplateVariable) => void;
@@ -125,7 +125,9 @@ const Content: FC<ContentProps> = ({ onOpenModal, strings }) => {
                     borderRadius: 1,
                 }}
             >
-                {template.variables.map((variable) => {
+                {template.variables.map((variable: TemplateVariable) => {
+                    if (!variable.type || !variable.id) return null;
+                    const variableId = variable.id;
                     const type = variable.type;
 
                     return (
@@ -138,7 +140,7 @@ const Content: FC<ContentProps> = ({ onOpenModal, strings }) => {
                                     aria-label={strings.delete}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleDeleteClick(variable.id);
+                                        handleDeleteClick(variableId);
                                     }}
                                 >
                                     <Trash2 size={18} />
@@ -267,6 +269,7 @@ const TemplateVariableManagement: FC = () => {
     const strings = useAppTranslation("templateVariableTranslations");
 
     const handleEdit = (variable: TemplateVariable) => {
+        if (!variable.id || !variable.type) return;
         setEditingVariableID(variable.id);
         setModalOpen(true);
         setType(variable.type);

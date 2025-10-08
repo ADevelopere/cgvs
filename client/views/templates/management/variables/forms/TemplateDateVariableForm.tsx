@@ -9,12 +9,19 @@ import {
     Button,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import type { CreateDateTemplateVariableInput, DateTemplateVariable } from "@/graphql/generated/types";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
-import useAppTranslation from "@/client/locale/useAppTranslation";
-import { mapToCreateDateTemplateVariableInput } from "@/utils/templateVariable/date-template-variable-mappers";
-import { isDateVariableDifferent } from "@/utils/templateVariable/templateVariable";
+import {
+    useTemplateVariableManagement,
+    useTemplateManagement,
+} from "@/client/contexts";
+import { useAppTranslation } from "@/client/locale";
+import {
+    TemplateDateVariable,
+    TemplateDateVariableCreateInput,
+} from "@/client/graphql/generated/gql/graphql";
+import {
+    mapToTemplateDateVariableCreateInput,
+    isDateVariableDifferent,
+} from "@/utils/templateVariable";
 
 // Helper function for date validation
 const isDateValid = (dateStr: string | null): boolean => {
@@ -23,18 +30,18 @@ const isDateValid = (dateStr: string | null): boolean => {
     return !isNaN(date.getTime());
 };
 
-type DateTemplateVariableFormProps = {
+type TemplateDateVariableFormProps = {
     editingVariableID?: number;
     onDispose: () => void;
 };
 
-const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
+const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
     const { template } = useTemplateManagement();
 
-    const editingVariable: DateTemplateVariable | null = useMemo(() => {
+    const editingVariable: TemplateDateVariable | null = useMemo(() => {
         if (!template?.variables || !editingVariableID) return null;
 
         return (
@@ -42,14 +49,14 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
         );
     }, [template, editingVariableID]);
 
-    const { createDateTemplateVariable, updateDateTemplateVariable } =
+    const { createTemplateDateVariable, updateTemplateDateVariable } =
         useTemplateVariableManagement();
 
     const strings = useAppTranslation("templateVariableTranslations");
 
-    const [state, setState] = useState<CreateDateTemplateVariableInput>(() => {
+    const [state, setState] = useState<TemplateDateVariableCreateInput>(() => {
         if (editingVariable) {
-            return mapToCreateDateTemplateVariableInput(editingVariable);
+            return mapToTemplateDateVariableCreateInput(editingVariable);
         }
         return {
             name: "",
@@ -59,7 +66,7 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
     });
 
     const handleChange = useCallback(
-        (field: keyof CreateDateTemplateVariableInput) =>
+        (field: keyof TemplateDateVariableCreateInput) =>
             (event: React.ChangeEvent<HTMLInputElement>) => {
                 const value =
                     event.target.type === "checkbox"
@@ -89,14 +96,14 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
         let success = false;
 
         if (editingVariableID) {
-            success = await updateDateTemplateVariable({
+            success = await updateTemplateDateVariable({
                 input: {
                     ...state,
                     id: editingVariableID,
                 },
             });
         } else {
-            success = await createDateTemplateVariable({
+            success = await createTemplateDateVariable({
                 input: {
                     ...state,
                 },
@@ -109,8 +116,8 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
     }, [
         state,
         editingVariableID,
-        createDateTemplateVariable,
-        updateDateTemplateVariable,
+        createTemplateDateVariable,
+        updateTemplateDateVariable,
         onDispose,
     ]);
 
@@ -122,7 +129,6 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
         if (!editingVariable) {
             return true;
         }
-
 
         return isDateVariableDifferent(editingVariable, state);
     }, [editingVariableID, editingVariable, state]);
@@ -183,7 +189,8 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
                         fullWidth: true,
                         error: minDateError,
                         helperText: minDateError
-                            ? strings?.invalidDateError ?? "Invalid date format"
+                            ? (strings?.invalidDateError ??
+                              "Invalid date format")
                             : undefined,
                     },
                 }}
@@ -198,7 +205,8 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
                         fullWidth: true,
                         error: maxDateError,
                         helperText: maxDateError
-                            ? strings?.invalidDateError ?? "Invalid date format"
+                            ? (strings?.invalidDateError ??
+                              "Invalid date format")
                             : undefined,
                     },
                 }}
@@ -215,8 +223,8 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
                         fullWidth: true,
                         error: previewValueError,
                         helperText: previewValueError
-                            ? strings?.invalidDateError ??
-                              "Preview date must be within min and max dates"
+                            ? (strings?.invalidDateError ??
+                              "Preview date must be within min and max dates")
                             : undefined,
                     },
                 }}
@@ -239,11 +247,11 @@ const DateTemplateVariableForm: React.FC<DateTemplateVariableFormProps> = ({
                 disabled={hasValidationError || !hasChanges}
             >
                 {editingVariableID
-                    ? strings?.updateVariable ?? "Update Variable"
-                    : strings?.createVariable ?? "Create Variable"}
+                    ? (strings?.updateVariable ?? "Update Variable")
+                    : (strings?.createVariable ?? "Create Variable")}
             </Button>
         </Box>
     );
 };
 
-export default DateTemplateVariableForm;
+export default TemplateDateVariableForm;

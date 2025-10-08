@@ -1,7 +1,7 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const createTemplateTextVariable: TypedDocumentNode<
+export const createTemplateTextVariableMutationDocument: TypedDocumentNode<
     Graphql.CreateTemplateTextVariableMutation,
     Graphql.CreateTemplateTextVariableMutationVariables
 > = gql`
@@ -29,7 +29,7 @@ export const createTemplateTextVariable: TypedDocumentNode<
     }
 `;
 
-export const createTemplateNumberVariable: TypedDocumentNode<
+export const createTemplateNumberVariableMutationDocument: TypedDocumentNode<
     Graphql.CreateTemplateNumberVariableMutation,
     Graphql.CreateTemplateNumberVariableMutationVariables
 > = gql`
@@ -57,7 +57,7 @@ export const createTemplateNumberVariable: TypedDocumentNode<
     }
 `;
 
-export const createTemplateDateVariable: TypedDocumentNode<
+export const createTemplateDateVariableMutationDocument: TypedDocumentNode<
     Graphql.CreateTemplateDateVariableMutation,
     Graphql.CreateTemplateDateVariableMutationVariables
 > = gql`
@@ -85,7 +85,7 @@ export const createTemplateDateVariable: TypedDocumentNode<
     }
 `;
 
-export const createTemplateSelectVariable: TypedDocumentNode<
+export const createTemplateSelectVariableMutationDocument: TypedDocumentNode<
     Graphql.CreateTemplateSelectVariableMutation,
     Graphql.CreateTemplateSelectVariableMutationVariables
 > = gql`
@@ -112,7 +112,7 @@ export const createTemplateSelectVariable: TypedDocumentNode<
     }
 `;
 
-export const updateTemplateTextVariable: TypedDocumentNode<
+export const updateTemplateTextVariableMutationDocument: TypedDocumentNode<
     Graphql.UpdateTemplateTextVariableMutation,
     Graphql.UpdateTemplateTextVariableMutationVariables
 > = gql`
@@ -140,7 +140,7 @@ export const updateTemplateTextVariable: TypedDocumentNode<
     }
 `;
 
-export const updateTemplateNumberVariable: TypedDocumentNode<
+export const updateTemplateNumberVariableMutationDocument: TypedDocumentNode<
     Graphql.UpdateTemplateNumberVariableMutation,
     Graphql.UpdateTemplateNumberVariableMutationVariables
 > = gql`
@@ -168,7 +168,7 @@ export const updateTemplateNumberVariable: TypedDocumentNode<
     }
 `;
 
-export const updateTemplateDateVariable: TypedDocumentNode<
+export const updateTemplateDateVariableMutationDocument: TypedDocumentNode<
     Graphql.UpdateTemplateDateVariableMutation,
     Graphql.UpdateTemplateDateVariableMutationVariables
 > = gql`
@@ -196,7 +196,7 @@ export const updateTemplateDateVariable: TypedDocumentNode<
     }
 `;
 
-export const updateTemplateSelectVariable: TypedDocumentNode<
+export const updateTemplateSelectVariableMutationDocument: TypedDocumentNode<
     Graphql.UpdateTemplateSelectVariableMutation,
     Graphql.UpdateTemplateSelectVariableMutationVariables
 > = gql`
@@ -223,7 +223,7 @@ export const updateTemplateSelectVariable: TypedDocumentNode<
     }
 `;
 
-export const deleteTemplateVariable: TypedDocumentNode<
+export const deleteTemplateVariableMutationDocument: TypedDocumentNode<
     Graphql.DeleteTemplateVariableMutation,
     Graphql.DeleteTemplateVariableMutationVariables
 > = gql`

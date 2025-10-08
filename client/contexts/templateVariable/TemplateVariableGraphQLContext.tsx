@@ -1,89 +1,99 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as Document from "@/client/graphql/documents";
+import { ApolloLink } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import {
-    TextTemplateVariableGraphQLProvider,
-    useTextTemplateVariableGraphQL,
-} from "./TextTemplateVariableGraphQLContext";
+    TemplateTextVariableGraphQLProvider,
+    useTemplateTextVariableGraphQL,
+} from "./TemplateTextVariableGraphQLContext";
 import {
-    NumberTemplateVariableGraphQLProvider,
-    useNumberTemplateVariableGraphQL,
+    TemplateNumberVariableGraphQLProvider,
+    useTemplateNumberVariableGraphQL,
 } from "./NumberTemplateVariableGraphQLContext";
 import {
-    DateTemplateVariableGraphQLProvider,
-    useDateTemplateVariableGraphQL,
-} from "./DateTemplateVariableGraphQLContext";
+    TemplateDateVariableGraphQLProvider,
+    useTemplateDateVariableGraphQL,
+} from "./TemplateDateVariableGraphQLContext";
 import {
-    SelectTemplateVariableGraphQLProvider,
-    useSelectTemplateVariableGraphQL,
-} from "./SelectTemplateVariableGraphQLContext";
-import { ApolloLink } from "@apollo/client";
+    TemplateSelectVariableGraphQLProvider,
+    useTemplateSelectVariableGraphQL,
+} from "./TemplateSelectVariableGraphQLContext";
 
 type TemplateVariableGraphQLContextType = {
     /**
      * Mutation to create a new text template variable
      * @param variables - The creation text template variable variables
      */
-    createTextTemplateVariableMutation: (
-        variables: Graphql.CreateTextTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.CreateTextTemplateVariableMutation>>;
+    createTemplateTextVariableMutation: (
+        variables: Graphql.CreateTemplateTextVariableMutationVariables,
+    ) => Promise<ApolloLink.Result<Graphql.CreateTemplateTextVariableMutation>>;
 
     /**
      * Mutation to update an existing text template variable
      * @param variables - The update text template variable variables
      */
-    updateTextTemplateVariableMutation: (
-        variables: Graphql.UpdateTextTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.UpdateTextTemplateVariableMutation>>;
+    updateTemplateTextVariableMutation: (
+        variables: Graphql.UpdateTemplateTextVariableMutationVariables,
+    ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateTextVariableMutation>>;
 
     /**
      * Mutation to create a new number template variable
      * @param variables - The creation number template variable variables
      */
-    createNumberTemplateVariableMutation: (
-        variables: Graphql.CreateNumberTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.CreateNumberTemplateVariableMutation>>;
+    createTemplateNumberVariableMutation: (
+        variables: Graphql.CreateTemplateNumberVariableMutationVariables,
+    ) => Promise<
+        ApolloLink.Result<Graphql.CreateTemplateNumberVariableMutation>
+    >;
 
     /**
      * Mutation to update an existing number template variable
      * @param variables - The update number template variable variables
      */
-    updateNumberTemplateVariableMutation: (
-        variables: Graphql.UpdateNumberTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.UpdateNumberTemplateVariableMutation>>;
+    updateTemplateNumberVariableMutation: (
+        variables: Graphql.UpdateTemplateNumberVariableMutationVariables,
+    ) => Promise<
+        ApolloLink.Result<Graphql.UpdateTemplateNumberVariableMutation>
+    >;
 
     /**
      * Mutation to create a new date template variable
      * @param variables - The creation date template variable variables
      */
-    createDateTemplateVariableMutation: (
-        variables: Graphql.CreateDateTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.CreateDateTemplateVariableMutation>>;
+    createTemplateDateVariableMutation: (
+        variables: Graphql.CreateTemplateDateVariableMutationVariables,
+    ) => Promise<ApolloLink.Result<Graphql.CreateTemplateDateVariableMutation>>;
 
     /**
      * Mutation to update an existing date template variable
      * @param variables - The update date template variable variables
      */
-    updateDateTemplateVariableMutation: (
-        variables: Graphql.UpdateDateTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.UpdateDateTemplateVariableMutation>>;
+    updateTemplateDateVariableMutation: (
+        variables: Graphql.UpdateTemplateDateVariableMutationVariables,
+    ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateDateVariableMutation>>;
 
     /**
      * Mutation to create a new select template variable
      * @param variables - The creation select template variable variables
      */
-    createSelectTemplateVariableMutation: (
-        variables: Graphql.CreateSelectTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.CreateSelectTemplateVariableMutation>>;
+    createTemplateSelectVariableMutation: (
+        variables: Graphql.CreateTemplateSelectVariableMutationVariables,
+    ) => Promise<
+        ApolloLink.Result<Graphql.CreateTemplateSelectVariableMutation>
+    >;
 
     /**
      * Mutation to update an existing select template variable
      * @param variables - The update select template variable variables
      */
-    updateSelectTemplateVariableMutation: (
-        variables: Graphql.UpdateSelectTemplateVariableMutationVariables,
-    ) => Promise<ApolloLink.Result<Graphql.UpdateSelectTemplateVariableMutation>>;
+    updateTemplateSelectVariableMutation: (
+        variables: Graphql.UpdateTemplateSelectVariableMutationVariables,
+    ) => Promise<
+        ApolloLink.Result<Graphql.UpdateTemplateSelectVariableMutation>
+    >;
 
     /**
      * Mutation to delete a template variable
@@ -110,44 +120,90 @@ export const useTemplateVariableGraphQL = () => {
 
 export const Provider: React.FC<{
     children: React.ReactNode;
-}> = ({ children }) => {
+    templateId: number;
+}> = ({ children, templateId }) => {
     // Get functions from individual hooks
-    const textContext = useTextTemplateVariableGraphQL();
-    const numberContext = useNumberTemplateVariableGraphQL();
-    const dateContext = useDateTemplateVariableGraphQL();
-    const selectContext = useSelectTemplateVariableGraphQL();
+    const textContext = useTemplateTextVariableGraphQL();
+    const numberContext = useTemplateNumberVariableGraphQL();
+    const dateContext = useTemplateDateVariableGraphQL();
+    const selectContext = useTemplateSelectVariableGraphQL();
+
+    // Delete template variable mutation
+    const [mutateDelete] = useMutation(
+        Document.deleteTemplateVariableMutationDocument,
+        {
+            update(cache, { data }) {
+                if (!data?.deleteTemplateVariable) return;
+                const deletedTemplateVariable = data.deleteTemplateVariable;
+
+                const existingData = cache.readQuery<Graphql.TemplateQuery>({
+                    query: Graphql.TemplateDocument,
+                    variables: { id: templateId },
+                });
+
+                if (!existingData?.template?.variables) return;
+
+                // Remove the variable from the template's variables array
+                cache.writeQuery({
+                    query: Graphql.TemplateDocument,
+                    variables: { id: templateId },
+                    data: {
+                        template: {
+                            ...existingData.template,
+                            variables: existingData.template.variables.filter(
+                                (variable) =>
+                                    variable.id !== deletedTemplateVariable.id,
+                            ),
+                        },
+                    },
+                });
+            },
+        },
+    );
+
+    const deleteTemplateVariableMutation = useCallback(
+        (variables: Graphql.DeleteTemplateVariableMutationVariables) => {
+            return mutateDelete({ variables });
+        },
+        [mutateDelete],
+    );
 
     const contextValue = useMemo(
         () => ({
             // Text template variable mutations
-            createTextTemplateVariableMutation:
-                textContext.createTextTemplateVariableMutation,
-            updateTextTemplateVariableMutation:
-                textContext.updateTextTemplateVariableMutation,
+            createTemplateTextVariableMutation:
+                textContext.createTemplateTextVariableMutation,
+            updateTemplateTextVariableMutation:
+                textContext.updateTemplateTextVariableMutation,
 
             // Number template variable mutations
-            createNumberTemplateVariableMutation:
-                numberContext.createNumberTemplateVariableMutation,
-            updateNumberTemplateVariableMutation:
-                numberContext.updateNumberTemplateVariableMutation,
+            createTemplateNumberVariableMutation:
+                numberContext.createTemplateNumberVariableMutation,
+            updateTemplateNumberVariableMutation:
+                numberContext.updateTemplateNumberVariableMutation,
 
             // Date template variable mutations
-            createDateTemplateVariableMutation:
-                dateContext.createDateTemplateVariableMutation,
-            updateDateTemplateVariableMutation:
-                dateContext.updateDateTemplateVariableMutation,
+            createTemplateDateVariableMutation:
+                dateContext.createTemplateDateVariableMutation,
+            updateTemplateDateVariableMutation:
+                dateContext.updateTemplateDateVariableMutation,
 
             // Select template variable mutations
-            createSelectTemplateVariableMutation:
-                selectContext.createSelectTemplateVariableMutation,
-            updateSelectTemplateVariableMutation:
-                selectContext.updateSelectTemplateVariableMutation,
+            createTemplateSelectVariableMutation:
+                selectContext.createTemplateSelectVariableMutation,
+            updateTemplateSelectVariableMutation:
+                selectContext.updateTemplateSelectVariableMutation,
 
             // Delete mutation (available in any context, we'll take it from text)
-            deleteTemplateVariableMutation:
-                textContext.deleteTemplateVariableMutation,
+            deleteTemplateVariableMutation: deleteTemplateVariableMutation,
         }),
-        [textContext, numberContext, dateContext, selectContext],
+        [
+            textContext,
+            numberContext,
+            dateContext,
+            selectContext,
+            deleteTemplateVariableMutation,
+        ],
     );
 
     return (
@@ -162,17 +218,17 @@ const WithGraphQL: React.FC<{
     templateId: number;
 }> = ({ children, templateId }) => {
     return (
-        <TextTemplateVariableGraphQLProvider templateId={templateId}>
-            <NumberTemplateVariableGraphQLProvider templateId={templateId}>
-                <DateTemplateVariableGraphQLProvider templateId={templateId}>
-                    <SelectTemplateVariableGraphQLProvider
+        <TemplateTextVariableGraphQLProvider templateId={templateId}>
+            <TemplateNumberVariableGraphQLProvider templateId={templateId}>
+                <TemplateDateVariableGraphQLProvider templateId={templateId}>
+                    <TemplateSelectVariableGraphQLProvider
                         templateId={templateId}
                     >
-                        <Provider>{children}</Provider>
-                    </SelectTemplateVariableGraphQLProvider>
-                </DateTemplateVariableGraphQLProvider>
-            </NumberTemplateVariableGraphQLProvider>
-        </TextTemplateVariableGraphQLProvider>
+                        <Provider templateId={templateId}>{children}</Provider>
+                    </TemplateSelectVariableGraphQLProvider>
+                </TemplateDateVariableGraphQLProvider>
+            </TemplateNumberVariableGraphQLProvider>
+        </TemplateTextVariableGraphQLProvider>
     );
 };
 

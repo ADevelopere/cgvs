@@ -13,7 +13,7 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import logger from "@/utils/logger";
 
 export type UploadFileState = {

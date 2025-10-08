@@ -14,7 +14,7 @@ import { TabList as MuiTabList, TabContext } from "@mui/lab";
 import { TemplateManagementTabType } from "@/client/contexts/template/TemplateManagementContext";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { useRouter } from "next/navigation";
 interface TabListProps {
     onChange: (

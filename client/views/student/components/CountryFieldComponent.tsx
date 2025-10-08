@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { Box, useTheme, Autocomplete } from "@mui/material";
 import Image from "next/image";
 import countries, { CountryType } from "@/utils/country";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { BaseFieldProps } from "./types";
 import { createStyledTextField } from "./StyledBaseField";
 import { CountryCode } from "@/client/graphql/generated/gql/graphql";

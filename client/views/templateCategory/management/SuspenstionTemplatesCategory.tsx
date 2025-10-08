@@ -5,7 +5,7 @@ import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { formatDate } from "@/utils/dateUtils";
-import useAppTranslation from "@/client/locale/useAppTranslation";
+import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
