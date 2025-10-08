@@ -1,6 +1,5 @@
 import * as Db from "@/server/db/schema";
 import { TemplatePothosDefintion } from "../template/template.types";
-import { OmitEntityFields } from "../gqlHelper";
 
 export type TemplateRecipientGroupEntity =
     typeof Db.templateRecipientGroups.$inferSelect;
@@ -13,10 +12,16 @@ export type TemplateRecipientGroupPothosDefinition =
         // todo: items
     };
 
-export type TemplateRecipientGroupCreateInput =
-    OmitEntityFields<TemplateRecipientGroupEntityInput>;
+export type TemplateRecipientGroupCreateInput = {
+    templateId: number;
+    name: string;
+    description?: string | null;
+    date?: Date | null;
+};
 
-export type TemplateRecipientGroupUpdateInput = Omit<
-    TemplateRecipientGroupEntityInput,
-    "templateId" | "createdAt" | "updatedAt"
->;
+export type TemplateRecipientGroupUpdateInput = {
+    id: number;
+    name: string;
+    description?: string | null;
+    date?: Date | null;
+};
