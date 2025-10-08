@@ -15,7 +15,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
   const theme = useTheme();
   const { strings } = useTableLocale();
 
-  const { paginationInfo: paginatorInfo } = useTableContext();
+  const { pageInfo } = useTableContext();
 
   const {
     totalRows = 0,
@@ -89,13 +89,13 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
 
   return (
     <div style={tfStyle}>
-      {paginatorInfo ? (
-        // Render pagination controls when paginatorInfo is provided
+      {pageInfo ? (
+        // Render pagination controls when pageInfo is provided
         <TablePagination
           component="div"
-          count={paginatorInfo.total}
-          page={paginatorInfo.currentPage - 1} // Convert 1-indexed to 0-indexed
-          rowsPerPage={paginatorInfo.perPage}
+          count={pageInfo.total}
+          page={pageInfo.currentPage - 1} // Convert 1-indexed to 0-indexed
+          rowsPerPage={pageInfo.perPage}
           rowsPerPageOptions={rowsPerPageOptions}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}

@@ -34,7 +34,7 @@ const StudentManagementDashboardTitle: React.FC = () => {
 };
 
 const StudentTable: React.FC = () => {
-    const { students, paginationInfo, loading } = useStudentManagement();
+    const { students, pageInfo, loading } = useStudentManagement();
     const { setColumnFilter, updateSort, filters } = useStudentFilter();
 
     const { setDashboardSlot } = useDashboardLayout();
@@ -56,8 +56,8 @@ const StudentTable: React.FC = () => {
     const widthsInitialized = useRef(false);
 
     const maxIndexValue = useMemo(() => {
-        return paginationInfo ? paginationInfo.total : students.length;
-    }, [paginationInfo, students.length]);
+        return pageInfo ? pageInfo.total : students.length;
+    }, [pageInfo, students.length]);
 
     const indexColWidth = useMemo(() => {
         const maxDigits = maxIndexValue.toString().length;
@@ -149,7 +149,7 @@ const StudentTable: React.FC = () => {
             // Selection props
             // onSelectionChange={handleSelectionChange}
             // Pagination props
-            paginationInfo={paginationInfo}
+            pageInfo={pageInfo}
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
             rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}

@@ -645,14 +645,14 @@ export type OrderSortDirection =
 
 export type PageInfo = {
   __typename?: 'PageInfo';
-  count?: Maybe<Scalars['Int']['output']>;
-  currentPage?: Maybe<Scalars['Int']['output']>;
+  count: Scalars['Int']['output'];
+  currentPage: Scalars['Int']['output'];
   firstItem?: Maybe<Scalars['Int']['output']>;
-  hasMorePages?: Maybe<Scalars['Boolean']['output']>;
+  hasMorePages: Scalars['Boolean']['output'];
   lastItem?: Maybe<Scalars['Int']['output']>;
-  lastPage?: Maybe<Scalars['Int']['output']>;
-  perPage?: Maybe<Scalars['Int']['output']>;
-  total?: Maybe<Scalars['Int']['output']>;
+  lastPage: Scalars['Int']['output'];
+  perPage: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
 };
 
 export type PaginatedTemplatesResponse = {
@@ -1372,7 +1372,7 @@ export type StudentsQueryVariables = Exact<{
 }>;
 
 
-export type StudentsQuery = { __typename?: 'Query', students?: { __typename?: 'StudentsWithFiltersResponse', data?: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, phoneNumber?: any | null, email?: string | null, createdAt: any, updatedAt: any }> | null, pageInfo?: { __typename?: 'PageInfo', count?: number | null, currentPage?: number | null, firstItem?: number | null, hasMorePages?: boolean | null, lastItem?: number | null, lastPage?: number | null, perPage?: number | null, total?: number | null } | null } | null };
+export type StudentsQuery = { __typename?: 'Query', students?: { __typename?: 'StudentsWithFiltersResponse', data?: Array<{ __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, phoneNumber?: any | null, email?: string | null, createdAt: any, updatedAt: any }> | null, pageInfo?: { __typename?: 'PageInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } | null };
 
 export type CreateStudentMutationVariables = Exact<{
   input: StudentCreateInput;
@@ -1417,7 +1417,7 @@ export type TemplatesQuery = { __typename?: 'Query', templates?: { __typename?: 
         | { __typename?: 'TemplateNumberVariable', createdAt?: any | null, decimalPlaces?: number | null, description?: string | null, id?: number | null, maxValue?: number | null, minValue?: number | null, name?: string | null, order?: number | null, previewValue?: string | null, required?: boolean | null, type?: TemplateVariableType | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number } | null }
         | { __typename?: 'TemplateSelectVariable', createdAt?: any | null, description?: string | null, id?: number | null, multiple?: boolean | null, name?: string | null, options?: Array<string> | null, order?: number | null, previewValue?: string | null, required?: boolean | null, type?: TemplateVariableType | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number } | null }
         | { __typename?: 'TemplateTextVariable', createdAt?: any | null, description?: string | null, id?: number | null, maxLength?: number | null, minLength?: number | null, name?: string | null, order?: number | null, pattern?: string | null, previewValue?: string | null, required?: boolean | null, type?: TemplateVariableType | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number } | null }
-      > | null }> | null, pageInfo?: { __typename?: 'PageInfo', count?: number | null, currentPage?: number | null, firstItem?: number | null, hasMorePages?: boolean | null, lastItem?: number | null, lastPage?: number | null, perPage?: number | null, total?: number | null } | null } | null };
+      > | null }> | null, pageInfo?: { __typename?: 'PageInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } | null } | null };
 
 export type TemplatesConfigsQueryVariables = Exact<{ [key: string]: never; }>;
 

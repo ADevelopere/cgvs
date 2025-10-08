@@ -16,7 +16,7 @@ type StudentManagementContextType = {
     // States
     students: Graphql.Student[];
     selectedStudents: number[];
-    paginationInfo: Graphql.PageInfo | null | undefined;
+    pageInfo: Graphql.PageInfo | null | undefined;
     queryParams: Graphql.StudentsQueryVariables;
     loading: boolean;
 
@@ -65,7 +65,7 @@ export const StudentManagementProvider: React.FC<{
 
     const [students, setStudents] = useState<Graphql.Student[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
-    const [paginationInfo, setPaginationInfo] = useState<
+    const [pageInfo, setPageInfo] = useState<
         Graphql.PageInfo | null | undefined
     >(null);
     const [queryParams, setQueryParams] =
@@ -89,7 +89,7 @@ export const StudentManagementProvider: React.FC<{
                     await studentsQuery(queryParams);
                 if (result.students?.data) {
                     setStudents(result.students.data);
-                    setPaginationInfo(result.students.pageInfo);
+                    setPageInfo(result.students.pageInfo);
                 }
             } catch {
                 notifications.show("Failed to fetch students", {
@@ -239,7 +239,7 @@ export const StudentManagementProvider: React.FC<{
         () => ({
             students,
             selectedStudents,
-            paginationInfo,
+            pageInfo,
             queryParams,
             loading,
             createStudent: handleCreateStudent,
@@ -253,7 +253,7 @@ export const StudentManagementProvider: React.FC<{
         [
             students,
             selectedStudents,
-            paginationInfo,
+            pageInfo,
             queryParams,
             loading,
             handleCreateStudent,
