@@ -10,14 +10,14 @@ import {
 } from "./template.types";
 import { PageInfoObject } from "../pagintaion/pagination.objects";
 import { TemplateCategoryPothosObject } from "../templateCategory/templateCategory.pothos";
-import { loadTemplatesByIds } from "./template.repository";
 import { getStorageService } from "@/server/storage/storage.service";
 import { TemplateVariablePothosInterface } from "../templateVariable/templateVariable.pothos";
 import { loadTemplateVariablesForTemplates } from "../templateVariable/templateVariable.repository";
+import { TemplateRepository } from "./template.repository";
 
 export const TemplatePothosObject = gqlSchemaBuilder
     .loadableObjectRef<TemplatePothosDefintion, number>("Template", {
-        load: async (ids: number[]) => loadTemplatesByIds(ids),
+        load: async (ids: number[]) => TemplateRepository.loadByIds(ids),
         sort: (t) => t.id,
     })
     .implement({

@@ -4,13 +4,8 @@ import {
     TemplatePothosObject,
     TemplateUpdateInputPothosObject,
 } from "./template.pothos";
-import {
-    createTemplate,
-    updateTemplate,
-    deleteTemplateById,
-    suspendTemplateById,
-    unsuspendTemplateById,
-} from "./template.repository";
+import { TemplateRepository } from "./template.repository";
+
 
 gqlSchemaBuilder.mutationFields((t) => ({
     createTemplate: t.field({
@@ -18,7 +13,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             input: t.arg({ type: TemplateCreateInputPothosObject, required: true }),
         },
-        resolve: async (_, args) => createTemplate(args.input),
+        resolve: async (_, args) => TemplateRepository.createTemplate(args.input),
     }),
 
     updateTemplate: t.field({
@@ -27,7 +22,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             input: t.arg({ type: TemplateUpdateInputPothosObject, required: true }),
         },
-        resolve: async (_, args) => updateTemplate(args.input),
+        resolve: async (_, args) => TemplateRepository.updateTemplate(args.input),
     }),
 
     deleteTemplate: t.field({
@@ -36,7 +31,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => deleteTemplateById(args.id),
+        resolve: async (_, args) => TemplateRepository.deleteTemplateById(args.id),
     }),
 
     suspendTemplate: t.field({
@@ -45,7 +40,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => suspendTemplateById(args.id),
+        resolve: async (_, args) => TemplateRepository.suspendTemplateById(args.id),
     }),
 
     unsuspendTemplate: t.field({
@@ -54,6 +49,6 @@ gqlSchemaBuilder.mutationFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => unsuspendTemplateById(args.id),
+        resolve: async (_, args) => TemplateRepository.unsuspendTemplateById(args.id),
     }),
 }));
