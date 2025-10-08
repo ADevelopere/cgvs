@@ -476,14 +476,14 @@ enum OrderSortDirection {
 }
 
 type PageInfo {
-  count: Int
-  currentPage: Int
+  count: Int!
+  currentPage: Int!
   firstItem: Int
-  hasMorePages: Boolean
+  hasMorePages: Boolean!
   lastItem: Int
-  lastPage: Int
-  perPage: Int
-  total: Int
+  lastPage: Int!
+  perPage: Int!
+  total: Int!
 }
 
 type PaginatedTemplatesResponse {

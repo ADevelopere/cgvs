@@ -5,14 +5,14 @@ const PageInfoRef = gqlSchemaBuilder.objectRef<PageInfo>("PageInfo");
 
 export const PageInfoObject = PageInfoRef.implement({
     fields: (t) => ({
-        count: t.exposeInt("count"),
-        currentPage: t.exposeInt("currentPage"),
+        count: t.exposeInt("count", { nullable: false }),
+        currentPage: t.exposeInt("currentPage", { nullable: false }),
         firstItem: t.exposeInt("firstItem", { nullable: true }),
-        hasMorePages: t.exposeBoolean("hasMorePages"),
         lastItem: t.exposeInt("lastItem", { nullable: true }),
-        lastPage: t.exposeInt("lastPage"),
-        perPage: t.exposeInt("perPage"),
-        total: t.exposeInt("total"),
+        hasMorePages: t.exposeBoolean("hasMorePages", { nullable: false }),
+        lastPage: t.exposeInt("lastPage", { nullable: false }),
+        perPage: t.exposeInt("perPage", { nullable: false }),
+        total: t.exposeInt("total", { nullable: false }),
     }),
 });
 

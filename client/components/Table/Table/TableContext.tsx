@@ -6,7 +6,7 @@ import {
 import { TableDataProvider, TableDataProviderProps } from "./TableDataContext";
 import { TableRowsProvider, TableRowsProviderProps } from "./TableRowsContext";
 import { EditableColumn } from "@/types/table.type";
-import { PaginationInfo } from "@/graphql/generated/types";
+import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 
 export type TableContextType = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,7 +14,7 @@ export type TableContextType = {
     isLoading?: boolean;
     columns: EditableColumn[];
 
-    paginationInfo?: PaginationInfo | null;
+    pageInfo?: PageInfo | null;
     pageSize: number;
     setPageSize: (newPageSize: number) => void;
     onPageChange?: (newPage: number) => void;
@@ -40,7 +40,7 @@ type TableProviderProps = {
     rowsProps: Omit<TableRowsProviderProps, "children" | "data" | "isLoading">;
 
     // Pagination
-    paginationInfo?: PaginationInfo | null;
+    pageInfo?: PageInfo | null;
     enableRowResizing?: boolean;
     onPageChange?: (newPage: number) => void;
     onRowsPerPageChange?: (newRowsPerPage: number) => void;
@@ -56,7 +56,7 @@ export const TableProvider = ({
     dataProps,
     rowsProps,
     isLoading = false,
-    paginationInfo,
+    pageInfo,
     onPageChange,
     onRowsPerPageChange,
     rowsPerPageOptions = [10, 25, 50, 100, 200],
@@ -68,7 +68,7 @@ export const TableProvider = ({
             data,
             isLoading,
             columns,
-            paginationInfo,
+            pageInfo,
             pageSize,
             setPageSize,
             rowsPerPageOptions,
@@ -79,7 +79,7 @@ export const TableProvider = ({
         data,
         isLoading,
         columns,
-        paginationInfo,
+        pageInfo,
         rowsPerPageOptions,
         pageSize,
 

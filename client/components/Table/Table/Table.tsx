@@ -20,11 +20,7 @@ const Table: React.FC<{
     creationRow?: React.ReactNode;
 }> = ({ style, creationRow }) => {
     const { strings } = useTableLocale();
-    const {
-        paginationInfo: paginatorInfo,
-        data,
-        isLoading,
-    } = useTableContext();
+    const { pageInfo, data, isLoading } = useTableContext();
     const { visibleColumns, columnWidths } = useTableColumnContext();
     const { rowSelectionEnabled } = useTableRowsContext();
 
@@ -40,7 +36,7 @@ const Table: React.FC<{
     //     if (tableBodyRef.current) {
     //         tableBodyRef.current.scrollTop = 0;
     //     }
-    // }, [paginatorInfo?.currentPage]);
+    // }, [pageInfo?.currentPage]);
 
     // Reset scroll position when page changes
     useEffect(() => {
@@ -49,15 +45,15 @@ const Table: React.FC<{
         // if (tableScrollContainerRef.current) {
         //     tableScrollContainerRef.current.scrollTop = 0;
         // }
-    }, [paginatorInfo?.currentPage]);
+    }, [pageInfo?.currentPage]);
 
     // Calculate the index column width dynamically based on the maximum index value
     const maxIndexValue = useMemo(() => {
-        return paginatorInfo ? paginatorInfo.total : data.length;
-    }, [paginatorInfo, data.length]);
+        return pageInfo ? pageInfo.total : data.length;
+    }, [pageInfo, data.length]);
 
     const indexColWidth = useMemo(() => {
-        const maxDigits = maxIndexValue.toString().length;
+        const maxDigits = maxIndexValue?.toString().length;
         return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 10px per digit, and 20px padding
     }, [maxIndexValue]);
 
@@ -224,8 +220,8 @@ const Table: React.FC<{
                     >
                         <TableBody
                             data={data}
-                            isPaginated={!!paginatorInfo}
-                            paginationInfo={paginatorInfo}
+                            isPaginated={!!pageInfo}
+                            pageInfo={pageInfo}
                             indexColWidth={indexColWidth}
                             colSpan={colSpan}
                         />

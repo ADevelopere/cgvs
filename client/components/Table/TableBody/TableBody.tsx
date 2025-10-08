@@ -3,7 +3,7 @@ import { CircularProgress, Box } from "@mui/material";
 import DataRow from "./DataRow";
 import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableContext } from "../Table/TableContext";
-import { PaginationInfo } from "@/graphql/generated/types";
+import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 import { useTableColumnContext } from "../Table/TableColumnContext";
 import { useTableDataContext } from "../Table/TableDataContext";
 
@@ -12,7 +12,7 @@ interface TableBodyProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any[];
     isPaginated?: boolean;
-    paginationInfo?: PaginationInfo | null;
+    pageInfo?: PageInfo | null;
     indexColWidth: number;
     colSpan: number;
 }
@@ -20,7 +20,7 @@ interface TableBodyProps {
 const TableBody: React.FC<TableBodyProps> = ({
     data,
     isPaginated = false,
-    paginationInfo,
+    pageInfo,
     indexColWidth,
     colSpan,
 }) => {
@@ -132,11 +132,11 @@ const TableBody: React.FC<TableBodyProps> = ({
         <>
             {data.map((item, index) => {
                 const globalIndex =
-                    paginationInfo?.firstItem != null
-                        ? paginationInfo.firstItem + index
-                        : paginationInfo?.perPage && paginationInfo?.currentPage
-                          ? (paginationInfo.currentPage - 1) *
-                                paginationInfo.perPage +
+                    pageInfo?.firstItem != null
+                        ? pageInfo.firstItem + index
+                        : pageInfo?.perPage && pageInfo?.currentPage
+                          ? (pageInfo.currentPage - 1) *
+                                pageInfo.perPage +
                             index +
                             1
                           : index + 1;

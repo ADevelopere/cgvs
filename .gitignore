@@ -70,3 +70,5 @@ out/
 /.next/
 
 schemaGenerate.graphql
+
+tsconfig.tsbuildinfo
