@@ -23,324 +23,331 @@ import {
     findTemplateCategoryById,
 } from "../templateCategory/templateCategory.repository";
 
-export const findTemplateById = async (
-    id: number,
-): Promise<TemplateEntity | null> => {
-    try {
-        return await db
-            .select()
-            .from(templates)
-            .where(eq(templates.id, id))
-            .then((res) => {
-                const t = res[0];
+export namespace TemplateRepository {
+    export const findById = async (
+        id: number,
+    ): Promise<TemplateEntity | null> => {
+        try {
+            return await db
+                .select()
+                .from(templates)
+                .where(eq(templates.id, id))
+                .then((res) => {
+                    const t = res[0];
+                    if (!t) {
+                        return null;
+                    }
+                    return t;
+                });
+        } catch {
+            return null;
+        }
+    };
+
+    export const findTemplateByIdOrThrow = async (
+        id: number,
+    ): Promise<TemplateEntity> => {
+        try {
+            return await findById(id).then((t) => {
                 if (!t) {
-                    return null;
+                    throw new Error(`Template with ID ${id} does not exist.`);
                 }
                 return t;
             });
-    } catch {
-        return null;
-    }
-};
-
-export const findTemplateByIdOrThrow = async (
-    id: number,
-): Promise<TemplateEntity> => {
-    try {
-        return await findTemplateById(id).then((t) => {
-            if (!t) {
-                throw new Error(`Template with ID ${id} does not exist.`);
-            }
-            return t;
-        });
-    } catch (e) {
-        logger.error("findTemplateByIdOrThrow error:", e);
-        throw e;
-    }
-};
-
-export const templatesTotalCount = async (): Promise<number> => {
-    const [{ total }] = await db.select({ total: count() }).from(templates);
-    return total;
-};
-
-export const findTemplates = async (opts: {
-    limit: number;
-    offset: number;
-}): Promise<TemplateEntity[]> => {
-    return await db
-        .select()
-        .from(templates)
-        .orderBy()
-        .limit(opts.limit)
-        .offset(opts.offset);
-};
-
-export const loadTemplatesByIds = async (
-    ids: number[],
-): Promise<(TemplateEntity | Error)[]> => {
-    if (ids.length === 0) return [];
-    const filteredTemplates = await db
-        .select()
-        .from(templates)
-        .where(inArray(templates.id, ids));
-
-    const templateList: (TemplateEntity | Error)[] = ids.map((id) => {
-        const matchingTemplate = filteredTemplates.find((c) => c.id === id);
-        if (!matchingTemplate) return new Error(`Template ${id} not found`);
-        return matchingTemplate;
-    });
-    return templateList;
-};
-
-export const loadTemplatesForTemplateCategories = async (
-    templateCategoryIds: number[],
-): Promise<TemplateEntity[][]> => {
-    if (templateCategoryIds.length === 0) return [];
-    const templatesList = await db
-        .select()
-        .from(templates)
-        .where(inArray(templates.categoryId, templateCategoryIds))
-        .orderBy(templates.order);
-
-    return templateCategoryIds.map((categoryId) =>
-        templatesList.filter((template) => template.categoryId === categoryId),
-    );
-};
-
-export const findTemplatesPaginated = async (
-    paginationArgs?: PaginationArgs | null,
-): Promise<PaginatedTemplatesEntityResponse> => {
-    const { first, skip, page, maxCount } = paginationArgs ?? {};
-
-    const total = await templatesTotalCount();
-
-    // Figure out pagination
-    const perPage = Math.min(
-        first ?? PaginationArgsDefault.first,
-        maxCount ?? PaginationArgsDefault.maxCount,
-    );
-    const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
-    const offset = (currentPage - 1) * perPage;
-
-    const templates = await findTemplates({
-        limit: perPage,
-        offset,
-    });
-
-    const length = templates.length;
-    const lastPage = Math.ceil(total / perPage);
-    const hasMorePages = currentPage < lastPage;
-
-    const result: PaginatedTemplatesEntityResponse = {
-        data: templates,
-        pageInfo: {
-            count: length,
-            currentPage,
-            firstItem: length > 0 ? offset + 1 : null,
-            lastItem: length > 0 ? offset + length : null,
-            hasMorePages,
-            lastPage,
-            perPage,
-            total,
-        },
+        } catch (e) {
+            logger.error("findTemplateByIdOrThrow error:", e);
+            throw e;
+        }
     };
 
-    return result;
-};
+    export const templatesTotalCount = async (): Promise<number> => {
+        const [{ total }] = await db.select({ total: count() }).from(templates);
+        return total;
+    };
 
-export const findTemplateMaxOrderByCategoryId = async (
-    categoryId: number,
-): Promise<number> => {
-    const [{ maxOrder }] = await db
-        .select({ maxOrder: max(templates.order) })
-        .from(templates)
-        .where(eq(templates.categoryId, categoryId));
-    return maxOrder ?? 0;
-};
+    export const findTemplates = async (opts: {
+        limit: number;
+        offset: number;
+    }): Promise<TemplateEntity[]> => {
+        return await db
+            .select()
+            .from(templates)
+            .orderBy()
+            .limit(opts.limit)
+            .offset(opts.offset);
+    };
 
-export const createTemplate = async (
-    input: TemplateCreateInput,
-): Promise<TemplateEntity> => {
-    const { name, description, categoryId } = input;
+    export const loadByIds = async (
+        ids: number[],
+    ): Promise<(TemplateEntity | Error)[]> => {
+        if (ids.length === 0) return [];
+        const filteredTemplates = await db
+            .select()
+            .from(templates)
+            .where(inArray(templates.id, ids));
 
-    // Validate name length
-    if (name.length < 3 || name.length > 255) {
-        throw new Error(
-            "Template name must be between 3 and 255 characters long.",
+        const templateList: (TemplateEntity | Error)[] = ids.map((id) => {
+            const matchingTemplate = filteredTemplates.find((c) => c.id === id);
+            if (!matchingTemplate) return new Error(`Template ${id} not found`);
+            return matchingTemplate;
+        });
+        return templateList;
+    };
+
+    export const loadTemplateCategories = async (
+        templateCategoryIds: number[],
+    ): Promise<TemplateEntity[][]> => {
+        if (templateCategoryIds.length === 0) return [];
+        const templatesList = await db
+            .select()
+            .from(templates)
+            .where(inArray(templates.categoryId, templateCategoryIds))
+            .orderBy(templates.order);
+
+        return templateCategoryIds.map((categoryId) =>
+            templatesList.filter(
+                (template) => template.categoryId === categoryId,
+            ),
         );
-    }
-    const newOrder = (await findTemplateMaxOrderByCategoryId(categoryId)) + 1;
+    };
 
-    const category = await db
-        .select({
-            id: templateCategories.id,
-            specialType: templateCategories.specialType,
-        })
-        .from(templateCategories)
-        .where(eq(templateCategories.id, categoryId))
-        .then((res) => res[0]);
+    export const findAllPaginated = async (
+        paginationArgs?: PaginationArgs | null,
+    ): Promise<PaginatedTemplatesEntityResponse> => {
+        const { first, skip, page, maxCount } = paginationArgs ?? {};
 
-    // Validate category exists
-    if (!category) {
-        throw new Error(`Category with ID ${categoryId} does not exist.`);
-    }
+        const total = await templatesTotalCount();
 
-    // Validate not suspension category
-    if (category.specialType === "Suspension") {
-        throw new Error("Cannot create template in a suspension category.");
-    }
+        // Figure out pagination
+        const perPage = Math.min(
+            first ?? PaginationArgsDefault.first,
+            maxCount ?? PaginationArgsDefault.maxCount,
+        );
+        const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
+        const offset = (currentPage - 1) * perPage;
 
-    const [newTemplate] = await db
-        .insert(templates)
-        .values({
-            name,
-            description,
-            categoryId,
-            order: newOrder,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        })
-        .returning();
+        const templates = await findTemplates({
+            limit: perPage,
+            offset,
+        });
 
-    return newTemplate;
-};
+        const length = templates.length;
+        const lastPage = Math.ceil(total / perPage);
+        const hasMorePages = currentPage < lastPage;
 
-export const updateTemplate = async (
-    input: TemplateUpdateInput,
-): Promise<TemplateEntity> => {
-    const {
-        id,
-        name,
-        categoryId: newCategoryId,
-        description,
-        //  _imagePath
-    } = input;
-    // Find existing template
-    const existingTemplate = await findTemplateByIdOrThrow(id);
-    validateTemplateName(existingTemplate.name);
+        const result: PaginatedTemplatesEntityResponse = {
+            data: templates,
+            pageInfo: {
+                count: length,
+                currentPage,
+                firstItem: length > 0 ? offset + 1 : null,
+                lastItem: length > 0 ? offset + length : null,
+                hasMorePages,
+                lastPage,
+                perPage,
+                total,
+            },
+        };
 
-    const currentCategoryId = existingTemplate.categoryId;
-    if (currentCategoryId != newCategoryId) {
-        // Validate category exists if provided
-        const category = await findTemplateCategoryById(newCategoryId);
-        if (!category) {
+        return result;
+    };
+
+    export const findTemplateMaxOrderByCategoryId = async (
+        categoryId: number,
+    ): Promise<number> => {
+        const [{ maxOrder }] = await db
+            .select({ maxOrder: max(templates.order) })
+            .from(templates)
+            .where(eq(templates.categoryId, categoryId));
+        return maxOrder ?? 0;
+    };
+
+    export const createTemplate = async (
+        input: TemplateCreateInput,
+    ): Promise<TemplateEntity> => {
+        const { name, description, categoryId } = input;
+
+        // Validate name length
+        if (name.length < 3 || name.length > 255) {
             throw new Error(
-                `Category with ID ${newCategoryId} does not exist.`,
+                "Template name must be between 3 and 255 characters long.",
             );
+        }
+        const newOrder =
+            (await findTemplateMaxOrderByCategoryId(categoryId)) + 1;
+
+        const category = await db
+            .select({
+                id: templateCategories.id,
+                specialType: templateCategories.specialType,
+            })
+            .from(templateCategories)
+            .where(eq(templateCategories.id, categoryId))
+            .then((res) => res[0]);
+
+        // Validate category exists
+        if (!category) {
+            throw new Error(`Category with ID ${categoryId} does not exist.`);
         }
 
         // Validate not suspension category
         if (category.specialType === "Suspension") {
-            throw new Error(
-                "updateTemplate: Cannot move template to a suspension category.",
-            );
+            throw new Error("Cannot create template in a suspension category.");
         }
-    }
 
-    // TODO: Add image file handling
-    // This would require implementing storage service
+        const [newTemplate] = await db
+            .insert(templates)
+            .values({
+                name,
+                description,
+                categoryId,
+                order: newOrder,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            })
+            .returning();
 
-    const updateData: Partial<TemplateEntityInput> = {
-        name: name,
-        categoryId: newCategoryId,
-        updatedAt: new Date(),
-        description: description,
-        // TODO: Handle imagePath -> imageFileId conversion
+        return newTemplate;
     };
 
-    const [updatedTemplate] = await db
-        .update(templates)
-        .set(updateData)
-        .where(eq(templates.id, id))
-        .returning();
+    export const updateTemplate = async (
+        input: TemplateUpdateInput,
+    ): Promise<TemplateEntity> => {
+        const {
+            id,
+            name,
+            categoryId: newCategoryId,
+            description,
+            //  _imagePath
+        } = input;
+        // Find existing template
+        const existingTemplate = await findTemplateByIdOrThrow(id);
+        validateTemplateName(existingTemplate.name);
 
-    return updatedTemplate;
-};
+        const currentCategoryId = existingTemplate.categoryId;
+        if (currentCategoryId != newCategoryId) {
+            // Validate category exists if provided
+            const category = await findTemplateCategoryById(newCategoryId);
+            if (!category) {
+                throw new Error(
+                    `Category with ID ${newCategoryId} does not exist.`,
+                );
+            }
 
-export const deleteTemplateById = async (
-    id: number,
-): Promise<TemplateEntity> => {
-    const existingTemplate = await findTemplateByIdOrThrow(id);
+            // Validate not suspension category
+            if (category.specialType === "Suspension") {
+                throw new Error(
+                    "updateTemplate: Cannot move template to a suspension category.",
+                );
+            }
+        }
 
-    // todo: check dependancies before delete
+        // TODO: Add image file handling
+        // This would require implementing storage service
 
-    // Delete the template
-    await db.delete(templates).where(eq(templates.id, id));
-
-    // Return the template data as a simple object
-    return existingTemplate;
-};
-
-export const suspendTemplateById = async (
-    id: number,
-): Promise<TemplateEntity> => {
-    // Find existing template
-    const existingTemplate = await findTemplateByIdOrThrow(id);
-
-    const suspensionCategory = await findSuspensionTemplateCategory();
-
-    const suspensionCategoryId = suspensionCategory.id;
-
-    if (existingTemplate.categoryId === suspensionCategoryId) {
-        throw new Error(`Template with ID ${id} is already suspended.`);
-    }
-
-    const [updatedTemplate] = await db
-        .update(templates)
-        .set({
-            categoryId: suspensionCategoryId,
-            preSuspensionCategoryId: existingTemplate.categoryId,
+        const updateData: Partial<TemplateEntityInput> = {
+            name: name,
+            categoryId: newCategoryId,
             updatedAt: new Date(),
-        })
-        .where(eq(templates.id, id))
-        .returning();
+            description: description,
+            // TODO: Handle imagePath -> imageFileId conversion
+        };
 
-    return updatedTemplate;
-};
+        const [updatedTemplate] = await db
+            .update(templates)
+            .set(updateData)
+            .where(eq(templates.id, id))
+            .returning();
 
-export const unsuspendTemplateById = async (
-    id: number,
-): Promise<TemplateEntity> => {
-    // Find existing template
-    const existingTemplate = await findTemplateByIdOrThrow(id);
+        return updatedTemplate;
+    };
 
-    const suspensionCategoryId = (await findSuspensionTemplateCategory()).id;
-    const mainCategoryId = (await findMainTemplateCategory()).id;
+    export const deleteTemplateById = async (
+        id: number,
+    ): Promise<TemplateEntity> => {
+        const existingTemplate = await findTemplateByIdOrThrow(id);
 
-    // Validate it is suspended
-    if (existingTemplate.categoryId !== suspensionCategoryId) {
-        throw new Error(`Template with ID ${id} is not suspended.`);
-    }
+        // todo: check dependancies before delete
 
-    const preSuspensionCategory = await findTemplateCategoryById(
-        existingTemplate.preSuspensionCategoryId,
-    );
+        // Delete the template
+        await db.delete(templates).where(eq(templates.id, id));
 
-    const targetCategoryId = preSuspensionCategory?.id || mainCategoryId;
+        // Return the template data as a simple object
+        return existingTemplate;
+    };
 
-    const [updatedTemplate] = await db
-        .update(templates)
-        .set({
-            categoryId: targetCategoryId,
-            preSuspensionCategoryId: null,
-            updatedAt: new Date(),
-        })
-        .where(eq(templates.id, id))
-        .returning();
+    export const suspendTemplateById = async (
+        id: number,
+    ): Promise<TemplateEntity> => {
+        // Find existing template
+        const existingTemplate = await findTemplateByIdOrThrow(id);
 
-    return updatedTemplate;
-};
+        const suspensionCategory = await findSuspensionTemplateCategory();
 
-export const allTemplatesConfigs = async (): Promise<
-    TemplatesConfigSelectType[]
-> => {
-    return await db
-        .select()
-        .from(templatesConfigs)
-        .then((res) => res);
-};
+        const suspensionCategoryId = suspensionCategory.id;
 
-export const templateExistsById = async (id: number): Promise<boolean> => {
-    return (await db.$count(templates, eq(templates.id, id))) > 0;
-};
+        if (existingTemplate.categoryId === suspensionCategoryId) {
+            throw new Error(`Template with ID ${id} is already suspended.`);
+        }
+
+        const [updatedTemplate] = await db
+            .update(templates)
+            .set({
+                categoryId: suspensionCategoryId,
+                preSuspensionCategoryId: existingTemplate.categoryId,
+                updatedAt: new Date(),
+            })
+            .where(eq(templates.id, id))
+            .returning();
+
+        return updatedTemplate;
+    };
+
+    export const unsuspendTemplateById = async (
+        id: number,
+    ): Promise<TemplateEntity> => {
+        // Find existing template
+        const existingTemplate = await findTemplateByIdOrThrow(id);
+
+        const suspensionCategoryId = (await findSuspensionTemplateCategory())
+            .id;
+        const mainCategoryId = (await findMainTemplateCategory()).id;
+
+        // Validate it is suspended
+        if (existingTemplate.categoryId !== suspensionCategoryId) {
+            throw new Error(`Template with ID ${id} is not suspended.`);
+        }
+
+        const preSuspensionCategory = await findTemplateCategoryById(
+            existingTemplate.preSuspensionCategoryId,
+        );
+
+        const targetCategoryId = preSuspensionCategory?.id || mainCategoryId;
+
+        const [updatedTemplate] = await db
+            .update(templates)
+            .set({
+                categoryId: targetCategoryId,
+                preSuspensionCategoryId: null,
+                updatedAt: new Date(),
+            })
+            .where(eq(templates.id, id))
+            .returning();
+
+        return updatedTemplate;
+    };
+
+    export const allConfigs = async (): Promise<
+        TemplatesConfigSelectType[]
+    > => {
+        return await db
+            .select()
+            .from(templatesConfigs)
+            .then((res) => res);
+    };
+
+    export const existsById = async (id: number): Promise<boolean> => {
+        return (await db.$count(templates, eq(templates.id, id))) > 0;
+    };
+}
+

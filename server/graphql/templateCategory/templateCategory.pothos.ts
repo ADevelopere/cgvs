@@ -9,7 +9,7 @@ import {
     loadTemplateCategoriesByIds,
 } from "./templateCategory.repository";
 import { TemplatePothosObject } from "../template/template.pothos";
-import { loadTemplatesForTemplateCategories } from "../template/template.repository";
+import { TemplateRepository } from "../template/template.repository";
 
 const TemplateCategoryObjectRef =
     gqlSchemaBuilder.objectRef<TemplateCategoryPothosDefintion>(
@@ -38,7 +38,7 @@ export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
 gqlSchemaBuilder.objectFields(TemplateCategoryPothosObject, (t) => ({
     templates: t.loadableList({
         type: TemplatePothosObject,
-        load: (ids: number[]) => loadTemplatesForTemplateCategories(ids),
+        load: (ids: number[]) => TemplateRepository.loadTemplateCategories(ids),
         resolve: (templateCategory) => templateCategory.id,
     }),
     parentCategory: t.loadable({

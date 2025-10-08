@@ -6,11 +6,7 @@ import {
     TemplatePothosObject,
     TemplatesConfigsPothosObject,
 } from "./template.pothos";
-import {
-    allTemplatesConfigs,
-    findTemplateById,
-    findTemplatesPaginated,
-} from "./template.repository";
+import { TemplateRepository } from "./template.repository";
 
 gqlSchemaBuilder.queryFields((t) => ({
     template: t.field({
@@ -19,7 +15,7 @@ gqlSchemaBuilder.queryFields((t) => ({
         args: {
             id: t.arg.int({ required: true }),
         },
-        resolve: async (_query, args) => findTemplateById(args.id),
+        resolve: async (_query, args) => TemplateRepository.findById(args.id),
     }),
 
     templates: t.field({
@@ -29,13 +25,16 @@ gqlSchemaBuilder.queryFields((t) => ({
                 type: PaginationArgsObject,
             }),
         },
-        resolve: async (_, args) => findTemplatesPaginated(new PaginationArgs({ ...args.pagination })),
+        resolve: async (_, args) =>
+            TemplateRepository.findAllPaginated(
+                new PaginationArgs({ ...args.pagination }),
+            ),
     }),
 
     templatesConfigs: t.field({
         type: TemplatesConfigsPothosObject,
         resolve: async () => {
-            const conf = await allTemplatesConfigs();
+            const conf = await TemplateRepository.allConfigs();
             return {
                 configs: conf,
             };

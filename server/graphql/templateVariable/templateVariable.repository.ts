@@ -1,7 +1,7 @@
 import * as DB from "@/server/db";
 import { eq, max } from "drizzle-orm";
 import * as TmvTypes from "./templateVariable.types";
-import { templateExistsById } from "../template/template.repository";
+import { TemplateRepository } from "../template/template.repository";
 import { validateTemplateVariableName } from "./templateVariable.utilt";
 
 const findTemplateVariableMaxOrderByTemplateId = async (
@@ -17,7 +17,7 @@ const findTemplateVariableMaxOrderByTemplateId = async (
 const checkCreateInput = async (
     input: TmvTypes.TemplateVariableCreateInput,
 ) => {
-    templateExistsById(input.templateId).then((templateExists) => {
+    TemplateRepository.existsById(input.templateId).then((templateExists) => {
         if (!templateExists) {
             throw new Error(
                 `Template with ID ${input.templateId} does not exist.`,

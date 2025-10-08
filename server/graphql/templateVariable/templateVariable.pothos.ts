@@ -2,7 +2,7 @@ import { templateVariableTypeEnum } from "@/server/db/schema";
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import type * as TmvTypes from "./templateVariable.types";
 import { TemplatePothosObject } from "../template/template.pothos";
-import { loadTemplatesByIds } from "../template/template.repository";
+import { TemplateRepository } from "../template/template.repository";
 
 export const TemplateVariableTypePothosEnum = gqlSchemaBuilder.enumType(
     "TemplateVariableType",
@@ -33,7 +33,7 @@ export const TemplateVariablePothosInterface = gqlSchemaBuilder
 gqlSchemaBuilder.interfaceFields(TemplateVariablePothosInterface, (t) => ({
     template: t.loadable({
         type: TemplatePothosObject,
-        load: (ids: number[]) => loadTemplatesByIds(ids),
+        load: (ids: number[]) => TemplateRepository.loadByIds(ids),
         resolve: (templateVariable) => templateVariable.templateId,
     }),
 }));

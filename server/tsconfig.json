@@ -1,4 +1,16 @@
 {
     "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "composite": true
+    },
+    "include": [
+        "../next-env.d.ts",
+        "../**/*.ts",
+        "../**/*.tsx",
+        "../.next/types/**/*.ts",
+        "../.storybook/**/*.ts",
+        "../.storybook/**/*.tsx"
+    ],
     "exclude": ["../client/**/*"]
 }
