@@ -1,6 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as TmvPothos from "./templateVariable.pothos";
-import * as TmvRepo from "./templateVariable.repository";
+import { TemplateVariableRepository as TmvRepo } from "./templateVariable.repository";
 
 gqlSchemaBuilder.mutationFields((t) => ({
     createTemplateTextVariable: t.field({
@@ -11,8 +11,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.createTemplateTextVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.createTextVar(args.input),
     }),
     createTemplateNumberVariable: t.field({
         type: TmvPothos.TemplateNumberVariablePothosObjectType,
@@ -22,8 +21,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.createTemplateNumberVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.createNumberVar(args.input),
     }),
     createTemplateDateVariable: t.field({
         type: TmvPothos.TemplateDateVariablePothosObjectType,
@@ -33,8 +31,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.createTemplateDateVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.createDateVar(args.input),
     }),
     createTemplateSelectVariable: t.field({
         type: TmvPothos.TemplateSelectVariablePothosObjectType,
@@ -44,8 +41,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.createTemplateSelectVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.createSelectVar(args.input),
     }),
 
     updateTemplateTextVariable: t.field({
@@ -56,8 +52,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.updateTemplateTextVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.updateTextVar(args.input),
     }),
     updateTemplateNumberVariable: t.field({
         type: TmvPothos.TemplateNumberVariablePothosObjectType,
@@ -67,8 +62,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.updateTemplateNumberVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.updateNumberVar(args.input),
     }),
     updateTemplateDateVariable: t.field({
         type: TmvPothos.TemplateDateVariablePothosObjectType,
@@ -78,8 +72,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.updateTemplateDateVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.updateDateVar(args.input),
     }),
     updateTemplateSelectVariable: t.field({
         type: TmvPothos.TemplateSelectVariablePothosObjectType,
@@ -89,15 +82,14 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 required: true,
             }),
         },
-        resolve: async (_, args) =>
-            await TmvRepo.updateTemplateSelectVariable(args.input),
+        resolve: async (_, args) => await TmvRepo.updateSelectVar(args.input),
     }),
 
     deleteTemplateVariable: t.field({
         type: TmvPothos.TemplateVariablePothosInterface,
         args: {
-            id: t.arg.int({required: true})
+            id: t.arg.int({ required: true }),
         },
-        resolve: async (_, args) => await TmvRepo.deleteTemplateVariableById(args.id)
-    })
+        resolve: async (_, args) => await TmvRepo.deleteVarById(args.id),
+    }),
 }));

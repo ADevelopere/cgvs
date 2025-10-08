@@ -1,7 +1,7 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as StTypes from "./student.types";
 import { PageInfoObject } from "../pagintaion/pagination.objects";
-import { loadStudetnsByIds } from "./student.repository";
+import { StudentRepository } from "./student.repository";
 import {
     CountryCodePothosObject,
     GenderPothosObject,
@@ -11,7 +11,7 @@ import { OrderSortDirection } from "@/lib/enum";
 
 export const StudentPothosObject = gqlSchemaBuilder
     .loadableObjectRef<StTypes.StudentPothosDefintion, number>("Student", {
-        load: async (ids: number[]) => loadStudetnsByIds(ids),
+        load: async (ids: number[]) => StudentRepository.loadByIds(ids),
         sort: (s) => s.id,
     })
     .implement({
