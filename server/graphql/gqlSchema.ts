@@ -1,4 +1,5 @@
 import "@/server/graphql/auth";
+
 import "@/server/graphql/template";
 import "@/server/graphql/templateCategory";
 import "@/server/graphql/templateVariable";
