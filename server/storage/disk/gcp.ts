@@ -1,6 +1,6 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 import * as StorageTypes from "../storage.types";
 import {
     StorageService,

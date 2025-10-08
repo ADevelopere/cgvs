@@ -14,8 +14,8 @@ import {
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import TagInput from "@/client/components/input/TagInput";
-import { mapToTemplateSelectVariableCreateInput } from "@/utils/templateVariable";
-import { isSelectVariableDifferent } from "@/utils/templateVariable/templateVariable";
+import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
+import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
 import { useAppTranslation } from "@/client/locale";
 import {
     TemplateSelectVariable,

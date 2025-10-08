@@ -10,7 +10,7 @@ import {
 } from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import CountrySelect, { CountrySelectProps } from "@/client/components/input/CountrySelect";
-import countries from "@/utils/country";
+import countries from "@/client/lib/country";
 import useStoryTheme from "../../useStoryTheme";
 
 export default {

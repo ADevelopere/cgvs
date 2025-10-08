@@ -1,7 +1,7 @@
 import { Calendar } from "@/lib/enum";
 import moment from "moment-hijri";
 import { matchIsValidTel } from "mui-tel-input";
-import countries, { CountryType } from "../country";
+import countries, { CountryType } from "../../lib/country";
 import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 
 // Constants
@@ -66,7 +66,7 @@ export const isValidCountryCode = (countryCode: string): boolean => {
  */
 export const isValidCountry = (country: CountryType): boolean => {
     return country?.code
-        ? 
+        ?
           country.code !== "IL" as CountryCode
         : false;
 };

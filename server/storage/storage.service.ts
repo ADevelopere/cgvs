@@ -1,6 +1,6 @@
 import { StorageService } from "./disk/storage.service.interface";
 import { createGcpAdapter } from "./disk/gcp";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 /**
  * Supported storage providers
@@ -53,7 +53,7 @@ class StorageServiceFactory {
      */
     private static getStorageProvider(): StorageProvider {
         const provider = process.env.STORAGE_PROVIDER as StorageProvider;
-        
+
         if (!provider) {
             throw new Error("STORAGE_PROVIDER environment variable is required. Options: 'gcp', 'vercel', 's3', 'r2'");
         }
@@ -73,16 +73,16 @@ class StorageServiceFactory {
         switch (provider) {
             case "gcp":
                 return await createGcpAdapter();
-            
+
             case "vercel":
                 throw new Error("Vercel storage adapter not implemented yet");
-            
+
             case "s3":
                 throw new Error("S3 storage adapter not implemented yet");
-            
+
             case "r2":
                 throw new Error("R2 storage adapter not implemented yet");
-            
+
             default:
                 throw new Error(`Unsupported storage provider: ${provider}`);
         }

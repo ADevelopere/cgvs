@@ -15,7 +15,7 @@ import {
     TextFilterOperation,
     type DateFilterValue,
     type FilterClause,
-} from "@/types/filters";
+} from "@/client/types/filters";
 import { useTableContext } from "./TableContext";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 

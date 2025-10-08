@@ -3,7 +3,7 @@ import {
     NumberFilterOperation,
     DateFilterOperation,
     operationRequiresValue,
-} from "@/types/filters";
+} from "@/client/types/filters";
 
 // Labels for text filter operations
 export const textFilterOperationLabels: Record<TextFilterOperation, string> = {

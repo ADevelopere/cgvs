@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Box, useTheme, Autocomplete } from "@mui/material";
 import Image from "next/image";
-import countries, { CountryType } from "@/utils/country";
+import countries, { CountryType } from "@/client/lib/country";
 import { useAppTranslation } from "@/client/locale";
 import { BaseFieldProps } from "./types";
 import { createStyledTextField } from "./StyledBaseField";

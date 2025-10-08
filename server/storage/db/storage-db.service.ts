@@ -5,7 +5,7 @@ import {
     storageDirectories,
 } from "@/server/db/schema/storage";
 import { eq, and, sql, inArray } from "drizzle-orm";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 import * as StorageTypes from "../storage.types";
 
 // File operations

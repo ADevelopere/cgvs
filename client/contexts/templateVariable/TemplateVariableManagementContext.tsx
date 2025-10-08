@@ -13,7 +13,7 @@ import {
     TemplateVariableGraphQLProvider,
     useTemplateVariableGraphQL,
 } from "./TemplateVariableGraphQLContext";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 type TemplateVariableManagementContextType = {
     // States

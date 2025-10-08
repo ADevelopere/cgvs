@@ -1,6 +1,6 @@
 /**
  * Authentication utilities for client-side session management
- * 
+ *
  * SECURITY NOTE: Only access tokens are stored in localStorage.
  * Refresh tokens and session IDs are handled via httpOnly cookies for security.
  */
@@ -49,7 +49,7 @@ export const clearStoredAuthTokens = (): void => {
 };
 
 /**
- * Check if user appears to be authenticated based on stored tokens
+ * Check if a user appears to be authenticated based on stored tokens
  */
 export const hasStoredAuthTokens = (): boolean => {
     const tokens = getStoredAuthTokens();

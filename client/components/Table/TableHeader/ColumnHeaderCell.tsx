@@ -11,10 +11,10 @@ import {
     MoreVert,
     PushPin,
 } from "@mui/icons-material";
-import { FilterClause } from "@/types/filters";
+import { FilterClause } from "@/client/types/filters";
 import ResizeHandle from "./ResizeHandle";
 import { useTableStyles } from "@/client/theme/styles";
-import { EditableColumn, PinPosition } from "@/types/table.type";
+import { EditableColumn, PinPosition } from "@/client/types/table.type";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";

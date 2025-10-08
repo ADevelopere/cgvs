@@ -21,7 +21,7 @@ import {
 import {
     mapToTemplateDateVariableCreateInput,
     isDateVariableDifferent,
-} from "@/utils/templateVariable";
+} from "@/client/utils/templateVariable";
 
 // Helper function for date validation
 const isDateValid = (dateStr: string | null): boolean => {

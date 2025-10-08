@@ -13,7 +13,7 @@ import React, {
     useMemo,
 } from "react";
 import Resizer from "./Resizer";
-import { getStorageKey, debouncedSaveToLocalStorage, loadFromLocalStorage } from "@/utils/localStorage";
+import { getStorageKey, debouncedSaveToLocalStorage, loadFromLocalStorage } from "@/client/utils/localStorage";
 
 // Helper to remove focus so text isn't selected while dragging
 function unFocus(doc: Document, win: Window) {
@@ -194,7 +194,7 @@ const SplitPane: FC<SplitPaneProps> = ({
         secondVisible: boolean
     ) => {
         updateRatios(firstVisible, secondVisible);
-        
+
         if (firstVisible && secondVisible) {
             // Save current state when both panes are visible
             savePaneState(lastActiveRatios);
@@ -220,7 +220,7 @@ const SplitPane: FC<SplitPaneProps> = ({
 
         const totalSize =
             orientation === "vertical" ? containerWidth : containerHeight;
-            
+
         // Use current local ratios with safe defaults
         const firstRatio = paneRatios?.first ?? firstPane.preferredRatio ?? 0.5;
         const secondRatio = paneRatios?.second ?? secondPane.preferredRatio ?? 0.5;

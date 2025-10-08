@@ -17,7 +17,7 @@ import {
     DateFilterOperation,
     type DateFilterValue,
     operationRequiresValue,
-} from "@/types/filters";
+} from "@/client/types/filters";
 import { Check, Clear } from "@mui/icons-material";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 import { useTableDataContext } from "../Table/TableDataContext";

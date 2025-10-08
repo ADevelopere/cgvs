@@ -16,7 +16,7 @@ import {
     type FilterClause,
     TextFilterOperation,
     operationRequiresValue,
-} from "@/types/filters";
+} from "@/client/types/filters";
 import { Check, Clear } from "@mui/icons-material";
 import { useTableDataContext } from "../Table/TableDataContext";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";

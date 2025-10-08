@@ -14,10 +14,10 @@ import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 export type UploadFileState = {
-    file: File; 
+    file: File;
     status: "pending" | "uploading" | "success" | "error";
     progress: number;
     error?: string;

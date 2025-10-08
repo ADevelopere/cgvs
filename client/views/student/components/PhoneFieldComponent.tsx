@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Box,  styled } from "@mui/material";
 import { MuiTelInput } from "mui-tel-input";
 import { BaseFieldProps } from "./types";
-import { preferredCountries } from "@/utils/country";
+import { preferredCountries } from "@/client/lib/country";
 
 const StyledMuiTelInput = styled(MuiTelInput)(({ theme }) => ({
     '& .MuiInputBase-root': {

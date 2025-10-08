@@ -1,4 +1,4 @@
-import { BaseColumn } from "@/types/table.type";
+import { BaseColumn } from "@/client/types/table.type";
 
 export const STUDENT_TABLE_COLUMNS: BaseColumn[] = [
     {

@@ -1,6 +1,6 @@
 "use client";
 
-import { EditableColumn } from "@/types/table.type";
+import { EditableColumn } from "@/client/types/table.type";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useStudentManagement } from "./StudentManagementContext";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -8,7 +8,7 @@ import validator from "validator";
 import {
     isValidCountryCode,
     isValidPhoneNumber,
-} from "@/utils/student/validators";
+} from "@/client/utils/student/validators";
 import { useAppTranslation } from "@/client/locale";
 import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 
