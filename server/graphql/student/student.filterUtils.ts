@@ -1,5 +1,5 @@
 import { StudentsOrderByClause, StudentsOrderByColumn } from "./student.types";
-import { OrderSortDirection } from "@/server/lib/enum";
+import { OrderSortDirection } from "@/lib/enum";
 import { students } from "@/server/db/schema";
 import {
     eq,

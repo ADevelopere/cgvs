@@ -75,6 +75,10 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
         handleCloseCreateDialog();
     };
 
+    if (!category.name) {
+        throw new Error("Category name is required");
+    }
+
     return (
         <ListItem
             disablePadding

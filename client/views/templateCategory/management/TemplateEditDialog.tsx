@@ -42,6 +42,9 @@ const TemplateEditDialog: React.FC<Props> = ({
 
     useEffect(() => {
         if (template) {
+            if (!template.name) {
+                throw new Error("Template name is required");
+            }
             setName(template.name);
             setDescription(template.description ?? "");
             setCategoryId(template.category?.id);
@@ -117,7 +120,12 @@ const TemplateEditDialog: React.FC<Props> = ({
                             setCategoryId(newValue?.id ?? null)
                         }
                         options={categories}
-                        getOptionLabel={(option) => option.name}
+                        getOptionLabel={(option) => {
+                            if (!option.name) {
+                                throw new Error("Category name is required");
+                            }
+                            return option.name;
+                        }}
                         renderInput={(params) => (
                             <TextField
                                 {...params}

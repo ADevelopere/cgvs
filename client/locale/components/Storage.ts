@@ -88,7 +88,7 @@ export type StorageManagementUITranslations = {
     name: string;
     size: string;
     lastModified: string;
-    created: string;
+    createdAt: string;
 
     // Empty states and messages
     emptyFolder: string;

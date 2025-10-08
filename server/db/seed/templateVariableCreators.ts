@@ -32,6 +32,7 @@ export async function createBaseVariables(
             description: "الاسم الكامل للطالب",
             required: true,
             order: 1,
+            previewValue: "محمد أحمد العتيبي",
             createdAt: now,
             updatedAt: now,
         })
@@ -39,7 +40,6 @@ export async function createBaseVariables(
 
     await db.insert(templateTextVariables).values({
         id: studentNameBase.id,
-        previewValue: "محمد أحمد العتيبي",
         minLength: 3,
         maxLength: 100,
         pattern: null,
@@ -55,6 +55,7 @@ export async function createBaseVariables(
             description: "تاريخ إصدار الشهادة",
             required: true,
             order: 2,
+            previewValue: now.toString(),
             createdAt: now,
             updatedAt: now,
         })
@@ -62,7 +63,6 @@ export async function createBaseVariables(
 
     await db.insert(templateDateVariables).values({
         id: issueDateBase.id,
-        previewValue: now,
         minDate: null,
         maxDate: null,
         format: "Y-m-d",
@@ -78,6 +78,7 @@ export async function createBaseVariables(
             description: "الرقم المرجعي للشهادة",
             required: true,
             order: 3,
+            previewValue: "CERT2024",
             createdAt: now,
             updatedAt: now,
         })
@@ -85,7 +86,6 @@ export async function createBaseVariables(
 
     await db.insert(templateTextVariables).values({
         id: refNumberBase.id,
-        previewValue: "CERT2024",
         minLength: 8,
         maxLength: 8,
         pattern: "^[A-Z0-9]{8}$",
@@ -110,6 +110,7 @@ export async function createAcademicVariables(
             required: true,
             order: 4,
             type: "TEXT",
+            previewValue: "علوم الحاسب",
             createdAt: now,
             updatedAt: now,
         })
@@ -117,7 +118,6 @@ export async function createAcademicVariables(
 
     await db.insert(templateTextVariables).values({
         id: majorBase.id,
-        previewValue: "علوم الحاسب",
         minLength: 3,
         maxLength: 100,
         pattern: null,
@@ -133,6 +133,7 @@ export async function createAcademicVariables(
             description: "المعدل التراكمي",
             required: true,
             order: 5,
+            previewValue: "4.50",
             createdAt: now,
             updatedAt: now,
         })
@@ -140,9 +141,8 @@ export async function createAcademicVariables(
 
     await db.insert(templateNumberVariables).values({
         id: gpaBase.id,
-        previewValue: "4.50",
-        minValue: "0.00",
-        maxValue: "5.00",
+        minValue: 0.0,
+        maxValue: 5.0,
         decimalPlaces: 2,
     });
 }
@@ -165,6 +165,7 @@ export async function createProfessionalVariables(
             description: "مجال التدريب",
             required: true,
             order: 4,
+            previewValue: "تقنية المعلومات",
             createdAt: now,
             updatedAt: now,
         })
@@ -172,7 +173,6 @@ export async function createProfessionalVariables(
 
     await db.insert(templateSelectVariables).values({
         id: fieldBase.id,
-        previewValue: "تقنية المعلومات",
         options: [
             "تقنية المعلومات",
             "إدارة الأعمال",
@@ -193,6 +193,7 @@ export async function createProfessionalVariables(
             description: "عدد ساعات التدريب",
             required: true,
             order: 5,
+            previewValue: "40",
             createdAt: now,
             updatedAt: now,
         })
@@ -200,9 +201,8 @@ export async function createProfessionalVariables(
 
     await db.insert(templateNumberVariables).values({
         id: durationBase.id,
-        previewValue: "40",
-        minValue: "1",
-        maxValue: "1000",
+        minValue: 1,
+        maxValue: 1000,
         decimalPlaces: 0,
     });
 }
@@ -225,6 +225,7 @@ export async function createAttendanceVariables(
             description: "اسم المؤتمر أو ورشة العمل",
             required: true,
             order: 4,
+            previewValue: "مؤتمر التقنية السنوي",
             createdAt: now,
             updatedAt: now,
         })
@@ -232,7 +233,6 @@ export async function createAttendanceVariables(
 
     await db.insert(templateTextVariables).values({
         id: eventBase.id,
-        previewValue: "مؤتمر التقنية السنوي",
         minLength: 5,
         maxLength: 200,
         pattern: null,
@@ -248,6 +248,7 @@ export async function createAttendanceVariables(
             description: "مكان انعقاد الفعالية",
             required: true,
             order: 5,
+            previewValue: "الرياض",
             createdAt: now,
             updatedAt: now,
         })
@@ -255,7 +256,6 @@ export async function createAttendanceVariables(
 
     await db.insert(templateTextVariables).values({
         id: locationBase.id,
-        previewValue: "الرياض",
         minLength: 3,
         maxLength: 100,
         pattern: null,
@@ -280,6 +280,7 @@ export async function createAppreciationVariables(
             description: "سبب منح شهادة التقدير",
             required: true,
             order: 4,
+            previewValue: "التفوق الأكاديمي والإنجاز المتميز",
             createdAt: now,
             updatedAt: now,
         })
@@ -287,7 +288,6 @@ export async function createAppreciationVariables(
 
     await db.insert(templateTextVariables).values({
         id: reasonBase.id,
-        previewValue: "التفوق الأكاديمي والإنجاز المتميز",
         minLength: 10,
         maxLength: 500,
         pattern: null,
@@ -303,6 +303,7 @@ export async function createAppreciationVariables(
             description: "مستوى التقدير",
             required: true,
             order: 5,
+            previewValue: "ممتاز",
             createdAt: now,
             updatedAt: now,
         })
@@ -310,7 +311,6 @@ export async function createAppreciationVariables(
 
     await db.insert(templateTextVariables).values({
         id: levelBase.id,
-        previewValue: "ممتاز",
         minLength: null,
         maxLength: null,
         pattern: null,
@@ -335,6 +335,7 @@ export async function createVolunteerVariables(
             description: "وصف العمل التطوعي",
             required: true,
             order: 4,
+            previewValue: "تطوع في الأعمال الخيرية",
             createdAt: now,
             updatedAt: now,
         })
@@ -342,7 +343,6 @@ export async function createVolunteerVariables(
 
     await db.insert(templateTextVariables).values({
         id: typeBase.id,
-        previewValue: "تطوع في الأعمال الخيرية",
         minLength: 5,
         maxLength: 200,
         pattern: null,
@@ -358,6 +358,7 @@ export async function createVolunteerVariables(
             description: "إجمالي ساعات العمل التطوعي",
             required: true,
             order: 5,
+            previewValue: "100",
             createdAt: now,
             updatedAt: now,
         })
@@ -365,9 +366,8 @@ export async function createVolunteerVariables(
 
     await db.insert(templateNumberVariables).values({
         id: hoursBase.id,
-        previewValue: "100",
-        minValue: "1",
-        maxValue: "1000",
+        minValue: 1,
+        maxValue: 1000,
         decimalPlaces: 0,
     });
 }

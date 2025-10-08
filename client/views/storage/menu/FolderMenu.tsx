@@ -336,8 +336,8 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                             {formatDate(folder.lastModified)}
                         </div>
                         <div style={{ marginBottom: theme.spacing(2) }}>
-                            <strong>{translations.created}:</strong>{" "}
-                            {formatDate(folder.created)}
+                            <strong>{translations.createdAt}:</strong>{" "}
+                            {formatDate(folder.createdAt)}
                         </div>
                         {folder.isProtected && (
                             <div style={{ marginBottom: theme.spacing(2) }}>

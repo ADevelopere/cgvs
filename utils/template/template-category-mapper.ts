@@ -40,7 +40,7 @@ export const buildCategoryHierarchy = (
     return rootCategories;
 };
 
-export type SerializableTemplate = { id: number; name: string };
+export type SerializableTemplate = { id: number; name?: string | null };
 export type SerializableTemplateCategory = {
     id: number;
     name?: string | null;

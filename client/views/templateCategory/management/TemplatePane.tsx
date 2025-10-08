@@ -188,7 +188,12 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                 ? regularCategories
                                 : []
                         }
-                        getOptionLabel={(option) => option.name}
+                        getOptionLabel={(option) => {
+                            if (!option.name) {
+                                throw new Error("Category name is required");
+                            }
+                            return option.name;
+                        }}
                         sx={{ width: "100%" }}
                         renderInput={(params) => (
                             <TextField

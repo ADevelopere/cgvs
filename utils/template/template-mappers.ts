@@ -7,6 +7,11 @@ export const mapTemplateToUpdateInput = (
     if (!template.category) {
         throw new Error("Template category is required");
     }
+
+    if (!template.name) {
+        throw new Error("Template name is required");
+    }
+
     return {
         id: template.id,
         name: template.name,

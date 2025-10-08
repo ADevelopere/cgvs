@@ -1,18 +1,23 @@
 import { STORAGE_CONFIG } from "./disk/storage.service.interface";
 import * as StorageTypes from "../storage/storage.types";
-import { OrderSortDirection } from "../lib";
+import { OrderSortDirection } from "@/lib/enum";
 
 // Mapping functions for GraphQL enums to actual values
-export const CONTENT_TYPE_MAP: Record<StorageTypes.ContentTypeServerType, string> = {
+export const CONTENT_TYPE_MAP: Record<
+    StorageTypes.ContentTypeServerType,
+    string
+> = {
     [StorageTypes.ContentTypeServerType.JPEG]: "image/jpeg",
     [StorageTypes.ContentTypeServerType.PNG]: "image/png",
     [StorageTypes.ContentTypeServerType.GIF]: "image/gif",
     [StorageTypes.ContentTypeServerType.WEBP]: "image/webp",
     [StorageTypes.ContentTypeServerType.PDF]: "application/pdf",
     [StorageTypes.ContentTypeServerType.DOC]: "application/msword",
-    [StorageTypes.ContentTypeServerType.DOCX]: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    [StorageTypes.ContentTypeServerType.DOCX]:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     [StorageTypes.ContentTypeServerType.XLS]: "application/vnd.ms-excel",
-    [StorageTypes.ContentTypeServerType.XLSX]: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    [StorageTypes.ContentTypeServerType.XLSX]:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     [StorageTypes.ContentTypeServerType.TXT]: "text/plain",
     [StorageTypes.ContentTypeServerType.ZIP]: "application/zip",
     [StorageTypes.ContentTypeServerType.RAR]: "application/vnd.rar",
@@ -21,28 +26,40 @@ export const CONTENT_TYPE_MAP: Record<StorageTypes.ContentTypeServerType, string
     [StorageTypes.ContentTypeServerType.WAV]: "audio/wav",
 };
 
-export const UPLOAD_LOCATION_MAP: Record<StorageTypes.UploadLocationPath, string> = {
+export const UPLOAD_LOCATION_MAP: Record<
+    StorageTypes.UploadLocationPath,
+    string
+> = {
     [StorageTypes.UploadLocationPath.TEMPLATE_COVERS]: "public/templateCover",
 };
 
 // Reverse mapping for content types
-export const REVERSE_CONTENT_TYPE_MAP: Record<string, StorageTypes.ContentTypeServerType> = Object.entries(CONTENT_TYPE_MAP).reduce(
+export const REVERSE_CONTENT_TYPE_MAP: Record<
+    string,
+    StorageTypes.ContentTypeServerType
+> = Object.entries(CONTENT_TYPE_MAP).reduce(
     (acc, [key, value]) => {
         acc[value] = key as StorageTypes.ContentTypeServerType;
         return acc;
     },
-    {} as Record<string, StorageTypes.ContentTypeServerType>
+    {} as Record<string, StorageTypes.ContentTypeServerType>,
 );
 
-export const contentTypeEnumToMimeType = (enumValue: StorageTypes.ContentTypeServerType): string => {
+export const contentTypeEnumToMimeType = (
+    enumValue: StorageTypes.ContentTypeServerType,
+): string => {
     return CONTENT_TYPE_MAP[enumValue];
 };
 
-export const mimeTypeToContentTypeEnum = (mimeType: string): StorageTypes.ContentTypeServerType | null => {
+export const mimeTypeToContentTypeEnum = (
+    mimeType: string,
+): StorageTypes.ContentTypeServerType | null => {
     return REVERSE_CONTENT_TYPE_MAP[mimeType] || null;
 };
 
-export const uploadLocationEnumToPath = (enumValue: StorageTypes.UploadLocationPath): string => {
+export const uploadLocationEnumToPath = (
+    enumValue: StorageTypes.UploadLocationPath,
+): string => {
     return UPLOAD_LOCATION_MAP[enumValue];
 };
 
@@ -175,7 +192,9 @@ export const blobToFileInfo = (
     const path = blob.name || "";
     const size = BigInt(blob.size || 0);
     const contentType = blob.contentType;
-    const createdAt = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
+    const createdAt = blob.timeCreated
+        ? new Date(blob.timeCreated)
+        : new Date();
     const lastModified = blob.updated ? new Date(blob.updated) : new Date();
     const url = `${baseUrl}${path}`;
     const mediaLink = blob.mediaLink;
@@ -201,7 +220,9 @@ export const blobToDirectoryInfo = (
     blob: StorageTypes.BlobMetadata,
 ): StorageTypes.BucketDirectoryServerType => {
     const path = (blob.name || "").replace(/\/$/, "");
-    const createdAt = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
+    const createdAt = blob.timeCreated
+        ? new Date(blob.timeCreated)
+        : new Date();
     const lastModified = blob.updated ? new Date(blob.updated) : new Date();
     const isPublic = path.startsWith("public");
 
@@ -340,9 +361,7 @@ export const sortItems = (
                 break;
         }
 
-        return direction === OrderSortDirection.ASC
-            ? comparison
-            : -comparison;
+        return direction === OrderSortDirection.ASC ? comparison : -comparison;
     });
 
     return sorted;

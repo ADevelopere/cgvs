@@ -48,81 +48,87 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                 paddingInlineEnd: 1,
             }}
         >
-            {templates.map((template) => (
-                <ImageListItem
-                    key={template.id}
-                    sx={{
-                        // Ensure consistent item size
-                        width: "100% !important",
-                        height: "auto !important",
-                        minHeight: 200,
-                        // Add some spacing between items
-                        mb: 2,
-                        // Ensure proper border radius
-                        borderRadius: 1,
-                        overflow: "hidden",
-                    }}
-                >
-                    <Box
+            {templates.map((template) => {
+                if (!template.name) {
+                    throw new Error("Template name is required");
+                }
+                
+                return (
+                    <ImageListItem
+                        key={template.id}
                         sx={{
-                            paddingTop: "56.25%" /* 16:9 aspect ratio */,
-                            width: "100%",
-                            backgroundColor: "grey.100",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            // Ensure consistent item size
+                            width: "100% !important",
+                            height: "auto !important",
+                            minHeight: 200,
+                            // Add some spacing between items
+                            mb: 2,
+                            // Ensure proper border radius
+                            borderRadius: 1,
+                            overflow: "hidden",
                         }}
                     >
-                        <Image
-                            src={
-                                template.imageUrl ??
-                                TEMPLATE_IMAGE_PLACEHOLDER_URL
-                            }
-                            alt={template.name}
-                            layout="fill"
-                            objectFit="cover"
-                            priority={false} // Adjust priority if needed
-                        />
-                    </Box>
-                    <ImageListItemBar
-                        title={template.name}
-                        subtitle={template.description}
-                        sx={{
-                            "& .MuiImageListItemBar-title": {
-                                fontSize: { xs: "0.9rem", sm: "1rem" },
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                            },
-                            "& .MuiImageListItemBar-subtitle": {
-                                fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                            },
-                        }}
-                        actionIcon={
-                            <IconButton
-                                sx={{
-                                    color: "rgba(255, 255, 255, 0.85)",
-                                    padding: { xs: 1, sm: 1.5 },
-                                }}
-                                onClick={() => manageTemplate(template.id)}
-                                title={strings.manageTemplateButtonTitle}
-                            >
-                                <SettingsIcon
+                        <Box
+                            sx={{
+                                paddingTop: "56.25%" /* 16:9 aspect ratio */,
+                                width: "100%",
+                                backgroundColor: "grey.100",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Image
+                                src={
+                                    template.imageUrl ??
+                                    TEMPLATE_IMAGE_PLACEHOLDER_URL
+                                }
+                                alt={template.name}
+                                layout="fill"
+                                objectFit="cover"
+                                priority={false} // Adjust priority if needed
+                            />
+                        </Box>
+                        <ImageListItemBar
+                            title={template.name}
+                            subtitle={template.description}
+                            sx={{
+                                "& .MuiImageListItemBar-title": {
+                                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                },
+                                "& .MuiImageListItemBar-subtitle": {
+                                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                },
+                            }}
+                            actionIcon={
+                                <IconButton
                                     sx={{
-                                        fontSize: {
-                                            xs: "1.2rem",
-                                            sm: "1.5rem",
-                                        },
+                                        color: "rgba(255, 255, 255, 0.85)",
+                                        padding: { xs: 1, sm: 1.5 },
                                     }}
-                                />
-                            </IconButton>
-                        }
-                    />
-                </ImageListItem>
-            ))}
+                                    onClick={() => manageTemplate(template.id)}
+                                    title={strings.manageTemplateButtonTitle}
+                                >
+                                    <SettingsIcon
+                                        sx={{
+                                            fontSize: {
+                                                xs: "1.2rem",
+                                                sm: "1.5rem",
+                                            },
+                                        }}
+                                    />
+                                </IconButton>
+                            }
+                        />
+                    </ImageListItem>
+                );
+            })}
         </ImageList>
     );
 };

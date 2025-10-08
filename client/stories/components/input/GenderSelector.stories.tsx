@@ -10,8 +10,8 @@ import {
 } from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import GenderSelector, { GenderSelectorProps } from "@/client/components/input/GenderSelector";
-import Gender from "@/types/Gender";
 import useStoryTheme from "../../useStoryTheme";
+import { Gender } from "@/lib/enum";
 
 export default {
   title: "Components/Input/GenderSelector",
@@ -47,7 +47,7 @@ type GenderSelectorStoryProps = GenderSelectorProps & CommonStoryArgTypesProps;
 const Template: StoryFn<GenderSelectorStoryProps> = (
   args: GenderSelectorStoryProps,
 ) => {
-  const [gender, setGender] = useState(Gender.Not_Specified);
+  const [gender, setGender] = useState(Gender.OTHER);
   const [error, setError] = useState(false);
   useStoryTheme(args);
 
@@ -79,5 +79,5 @@ const Template: StoryFn<GenderSelectorStoryProps> = (
 export const Default = Template.bind({});
 Default.args = {
   ...defaultStoryArgs,
-  gender: Gender.Not_Specified,
+  gender: Gender.OTHER,
 };

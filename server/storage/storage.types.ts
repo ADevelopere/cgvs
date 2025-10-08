@@ -3,7 +3,7 @@ import {
     fileUsages,
     storageDirectories,
 } from "@/server/db/schema/storage";
-import { OrderSortDirection } from "../lib";
+import { OrderSortDirection } from "@/lib/enum";
 
 // Type aliases to match Kotlin entities
 export type FileEntity = typeof storageFiles.$inferSelect;
