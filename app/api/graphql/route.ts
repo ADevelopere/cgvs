@@ -2,6 +2,7 @@ import { graphQLSchema } from "@/server/graphql/gqlSchema";
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { createGraphQLContext } from "@/server/graphql/gqlContextFactory";
+import { NextRequest } from "next/server";
 
 const server = new ApolloServer({
     schema: graphQLSchema,
@@ -17,4 +18,6 @@ export async function HEAD() {
     return new Response(null, { status: 204 });
 }
 
-export { handler as GET, handler as POST };
+export async function POST(request: NextRequest) {
+    return handler(request);
+}
