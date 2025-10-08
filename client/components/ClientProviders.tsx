@@ -3,7 +3,7 @@
 import { AppThemeProvider } from "@/client/contexts/ThemeContext";
 import { NotificationsProvider } from "@toolpad/core/useNotifications";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
-import { AppApolloProvider } from "@/client/contexts/AppApolloProvider";
+import { AppApolloProvider } from "@/client/contexts";
 import { AuthProvider } from "@/client/contexts/AuthContext";
 
 if (process.env.NODE_ENV !== "production") {

@@ -11,7 +11,10 @@ import { useStorageGraphQL } from "./StorageGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { DirectoryTreeNode, StorageManagementCoreContextType } from "./storage.type";
+import {
+    DirectoryTreeNode,
+    StorageManagementCoreContextType,
+} from "./storage.type";
 
 const StorageManagementCoreContext = createContext<
     StorageManagementCoreContextType | undefined
@@ -91,8 +94,17 @@ export const StorageManagementCoreProvider: React.FC<{
                 const pagination: Graphql.PageInfo = {
                     hasMorePages: result.listFiles.hasMore,
                     total: result.listFiles.totalCount,
+                    count: result.listFiles.totalCount,
                     perPage: result.listFiles.limit,
                     firstItem: result.listFiles.offset,
+                    currentPage:
+                        Math.floor(
+                            result.listFiles.totalCount /
+                                result.listFiles.limit,
+                        ) + 1,
+                    lastPage: Math.ceil(
+                        result.listFiles.totalCount / result.listFiles.limit,
+                    ),
                 };
 
                 // Transform StorageEntity[] to StorageItem[]
@@ -212,7 +224,8 @@ export const StorageManagementCoreProvider: React.FC<{
 
                     const safeSuccessCount = successCount ?? 0;
                     const safeFailureCount = failureCount ?? 0;
-                    const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
+                    const errorMessages =
+                        failures?.map((f) => f.error).filter(Boolean) ?? [];
 
                     if (safeFailureCount === 0) {
                         showNotification(
@@ -278,7 +291,8 @@ export const StorageManagementCoreProvider: React.FC<{
 
                     const safeSuccessCount = successCount ?? 0;
                     const safeFailureCount = failureCount ?? 0;
-                    const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
+                    const errorMessages =
+                        failures?.map((f) => f.error).filter(Boolean) ?? [];
 
                     if (safeFailureCount === 0) {
                         showNotification(
@@ -344,7 +358,8 @@ export const StorageManagementCoreProvider: React.FC<{
 
                     const safeSuccessCount = successCount ?? 0;
                     const safeFailureCount = failureCount ?? 0;
-                    const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
+                    const errorMessages =
+                        failures?.map((f) => f.error).filter(Boolean) ?? [];
 
                     if (safeFailureCount === 0) {
                         showNotification(

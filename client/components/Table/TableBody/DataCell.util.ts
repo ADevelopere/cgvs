@@ -1,6 +1,6 @@
 // Helper functions (getCellValue, formatCellValue, formatInputValue) remain the same
 
-import CountryTranslations from "@/client/locale/components/Country";
+import { CountryTranslations } from "@/client/locale";
 import { EditableColumn } from "@/types/table.type";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

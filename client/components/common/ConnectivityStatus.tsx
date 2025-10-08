@@ -3,9 +3,8 @@
 import React from "react";
 import { IconButton, Tooltip, useTheme } from "@mui/material";
 import { Wifi, WifiOff, Sync } from "@mui/icons-material";
-import { useNetworkConnectivity } from "@/client/contexts/AppApolloProvider";
-import { useAppTranslation } from "@/client/locale";
-import ConnectivityTranslations from "@/client/locale/components/Connectivity";
+import { useNetworkConnectivity } from "@/client/contexts";
+import { useAppTranslation, ConnectivityTranslations } from "@/client/locale";
 
 const ConnectivityStatus: React.FC = () => {
     const { isConnected, isChecking, checkConnectivity, lastChecked } =

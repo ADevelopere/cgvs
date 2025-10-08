@@ -17,7 +17,7 @@ import {
     type FilterClause,
 } from "@/types/filters";
 import { useTableContext } from "./TableContext";
-import { SortDirection } from "@/graphql/generated/types";
+import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 
 export type TableCellEditingState = {
     isEditing: boolean;
@@ -28,13 +28,13 @@ export type TableCellEditingState = {
 
 type OrderByClause = {
     column: string;
-    order: SortDirection;
+    order: OrderSortDirection;
 };
 export type TableDataContextType = {
     // Sorting
     orderByClause: OrderByClause[];
     sort: (columnId: string) => void;
-    getSortDirection: (columnId: string) => SortDirection | null;
+    getSortDirection: (columnId: string) => OrderSortDirection | null;
 
     // Filtering
     filters: Record<string, FilterClause<unknown, unknown> | null>;
@@ -315,7 +315,7 @@ export const TableDataProvider = ({
     }, []);
 
     const getSortDirection = useCallback(
-        (columnId: string): SortDirection | null => {
+        (columnId: string): OrderSortDirection | null => {
             const clause = orderByClause.find(
                 (sortClause) => sortClause.column === columnId,
             );

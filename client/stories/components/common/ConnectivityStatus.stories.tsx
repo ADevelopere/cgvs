@@ -10,7 +10,7 @@ import {
 } from "@/client/stories/argTypes";
 import AppRouterCacheProvider from "@/client/components/appRouter/AppRouterCacheProvider";
 import useStoryTheme from "@/client/stories/useStoryTheme";
-import { NetworkConnectivityContextType } from "@/client/contexts/AppApolloProvider";
+import { NetworkConnectivityContextType } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
 import {ConnectivityTranslations} from "@/client/locale/components";
 
