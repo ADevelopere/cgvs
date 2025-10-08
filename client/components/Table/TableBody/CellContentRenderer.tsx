@@ -11,8 +11,8 @@ import {
     OutlinedTextFieldProps,
     StandardTextFieldProps,
 } from "@mui/material";
-import { EditableColumn } from "@/types/table.type";
-import countries, { preferredCountries } from "@/utils/country";
+import { EditableColumn } from "@/client/types/table.type";
+import countries, { preferredCountries } from "@/client/lib/country";
 import { MuiTelInput } from "mui-tel-input";
 import Image from "next/image";
 import { DataCellState } from "./DataCell";

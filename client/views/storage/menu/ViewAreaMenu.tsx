@@ -20,7 +20,7 @@ import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagem
 import { useStorageManagementCore } from "@/client/contexts/storage/StorageManagementCoreContext";
 import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 export interface ViewAreaMenuProps {
     anchorEl: HTMLElement | null;

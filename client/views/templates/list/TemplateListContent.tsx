@@ -19,7 +19,7 @@ import ListView from "./views/ListView";
 import GridView from "./views/GridView";
 import { useAppTranslation } from "@/client/locale";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
-import { loadFromLocalStorage } from "@/utils/localStorage";
+import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
 type ViewMode = "card" | "grid" | "list";

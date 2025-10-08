@@ -16,7 +16,7 @@ import { useAppTranslation } from "@/client/locale";
 import {
     isNumberVariableDifferent,
     mapToTemplateNumberVariableCreateInput,
-} from "@/utils/templateVariable";
+} from "@/client/utils/templateVariable";
 import {
     TemplateNumberVariable,
     TemplateNumberVariableCreateInput,

@@ -15,7 +15,7 @@ import {
 import { UserEntity, SessionEntity } from "./auth.types";
 import { createSession, validateSession, deleteSessionsByUserId, updateSession, findSessionByUserId } from "./session.repository";
 import { findUserByEmail, findUserById } from "./user.repository";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 gqlSchemaBuilder.mutationFields((t) => ({
     login: t.field({
@@ -64,7 +64,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
             await createSession({
                 id: sessionId,
                 userId: user.id,
-                payload: JSON.stringify({ 
+                payload: JSON.stringify({
                     createdAt: new Date().toISOString(),
                     // Store session metadata only, not sensitive tokens
                 }),
@@ -80,7 +80,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                     maxAge: 60 * 60 * 24 * 7, // 7 days
                     path: "/",
                 });
-                
+
                 ctx.cookies.set("cgvs_refresh_token", refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === "production",
@@ -128,7 +128,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                 if (payload && payload.type === "refresh") {
                     const foundUser = await findUserById(payload.userId);
                     user = foundUser || null;
-                    
+
                     // Find session by user ID
                     if (user) {
                         const foundSession = await findSessionByUserId(user.id);
@@ -168,7 +168,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
                     maxAge: 60 * 60 * 24 * 7, // 7 days
                     path: "/",
                 });
-                
+
                 // Rotate refresh token for enhanced security
                 ctx.cookies.set("cgvs_refresh_token", newRefreshToken, {
                     httpOnly: true,

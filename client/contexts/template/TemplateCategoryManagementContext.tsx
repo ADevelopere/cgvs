@@ -22,11 +22,11 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import {
     buildCategoryHierarchy,
     getSerializableTemplateCategory,
-} from "@/utils/template/template-category-mapper";
+} from "@/client/utils/template/template-category-mapper";
 import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { useRouter } from "next/navigation";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { TemplateManagementTabType } from "./TemplateManagementContext";

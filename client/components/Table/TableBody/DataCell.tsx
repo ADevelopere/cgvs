@@ -13,7 +13,7 @@ import {
     OutlinedTextFieldProps,
     StandardTextFieldProps,
 } from "@mui/material";
-import { EditableColumn } from "@/types/table.type";
+import { EditableColumn } from "@/client/types/table.type";
 import { TableCellEditingState } from "../Table/TableDataContext";
 import CellContentRenderer from "./CellContentRenderer";
 

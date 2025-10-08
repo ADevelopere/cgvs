@@ -18,7 +18,7 @@ import {
     Title,
     Navigation,
 } from "./adminLayout.types";
-import { loadFromLocalStorage } from "@/utils/localStorage";
+import { loadFromLocalStorage } from "@/client/utils/localStorage";
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined

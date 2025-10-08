@@ -25,7 +25,7 @@ import React, {
 } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
-import { loadFromLocalStorage } from "@/utils/localStorage";
+import { loadFromLocalStorage } from "@/client/utils/localStorage";
 
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {

@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { ApolloClient, ErrorLike, OperationVariables } from "@apollo/client";
 import * as ApolloReact from "@apollo/client/react";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 export function useQueryWrapper<T, V extends OperationVariables>(
     lazyQueryResult: ApolloReact.useLazyQuery.ResultTuple<T, V>,

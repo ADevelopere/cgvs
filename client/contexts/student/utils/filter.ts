@@ -4,9 +4,9 @@ import {
     DateFilterOperation,
     TextFilterOperation,
     DateFilterValue,
-} from "@/types/filters";
-import { EditableColumn } from "@/types/table.type";
-import logger from "@/utils/logger";
+} from "@/client/types/filters";
+import { EditableColumn } from "@/client/types/table.type";
+import logger from "@/lib/logger";
 import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 
 // Helper function to get column definition (can be outside provider)

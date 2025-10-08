@@ -15,10 +15,10 @@ import {
     TextFilterOperation,
     DateFilterValue,
     FilterClause,
-} from "@/types/filters";
+} from "@/client/types/filters";
 import { useStudentManagement } from "./StudentManagementContext";
 import { getColumnDef, mapDateFilter, mapTextFilter } from "./utils/filter";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 // Helper function to map table column IDs to GraphQL OrderStudentsByColumn enum values
 const mapColumnIdToGraphQLColumn = (

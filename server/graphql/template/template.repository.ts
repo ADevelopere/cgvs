@@ -13,7 +13,7 @@ import {
     TemplateUpdateInput,
     TemplatesConfigSelectType,
 } from "./template.types";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
 import { validateTemplateName } from "./template.utils";

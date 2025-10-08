@@ -31,7 +31,7 @@ import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
-import { loadFromLocalStorage } from "@/utils/localStorage";
+import { loadFromLocalStorage } from "@/client/utils/localStorage";
 
 // Create rtl cache
 const cacheRtl = createCache({

@@ -21,7 +21,7 @@ import { useTemplateCategoryManagement } from "@/client/contexts/template/Templa
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
 import TemplateEditDialog from "./TemplateEditDialog";
-import { mapTemplateToUpdateInput } from "@/utils/template/template-mappers";
+import { mapTemplateToUpdateInput } from "@/client/utils/template/template-mappers";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {

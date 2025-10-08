@@ -7,7 +7,7 @@ import {
     isTextFilterOperation,
     isNumberFilterOperation,
     isDateFilterOperation,
-} from "@/types/filters";
+} from "@/client/types/filters";
 
 /**
  * Get the active text filter for a column

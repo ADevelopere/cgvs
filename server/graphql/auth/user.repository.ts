@@ -2,7 +2,7 @@ import { db } from "@/server/db/drizzleDb";
 import { users } from "@/server/db/schema";
 import { count, eq, inArray } from "drizzle-orm";
 import { UserEntity, PaginatedUsersResponseSelectType } from "./auth.types";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 import { PaginationArgs } from "../pagintaion/pagintaion.types";
 import { PaginationArgsDefault } from "../pagintaion/pagination.objects";
 

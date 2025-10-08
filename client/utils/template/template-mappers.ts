@@ -1,5 +1,4 @@
-import { Template } from "@/client/graphql/generated/gql/graphql";
-import { TemplateUpdateInput } from "@/server/graphql/template/template.types";
+import { Template, TemplateUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 export const mapTemplateToUpdateInput = (
     template: Template,

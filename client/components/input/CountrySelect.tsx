@@ -5,7 +5,7 @@ import Image from "next/image";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import countries, { CountryType } from "@/utils/country";
+import countries, { CountryType } from "@/client/lib/country";
 import { CountryTranslations } from "@/client/locale";
 import { useAppTranslation } from "@/client/locale";
 

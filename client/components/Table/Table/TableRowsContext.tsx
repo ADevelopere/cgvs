@@ -8,7 +8,7 @@ import {
     useCallback,
     useMemo,
 } from "react";
-import { LoadMoreParams } from "@/types/table.type";
+import { LoadMoreParams } from "@/client/types/table.type";
 import { getSelectAllCheckboxState } from "../TableHeader/utils";
 import { useTableContext } from "./TableContext";
 import { PageInfo } from "@/client/graphql/generated/gql/graphql";

@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Box, alpha, useTheme } from "@mui/material";
 import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
-import logger from "@/utils/logger";
+import logger from "@/lib/logger";
 
 export interface FolderDropTargetProps {
     /**

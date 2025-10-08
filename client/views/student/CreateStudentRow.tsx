@@ -19,7 +19,7 @@ import {
 } from "@mui/icons-material";
 import { useStudentManagement } from "@/client/contexts/student/StudentManagementContext";
 import { useStudentFilter } from "@/client/contexts/student/StudentFilterContext";
-import { TextFilterOperation } from "@/types/filters";
+import { TextFilterOperation } from "@/client/types/filters";
 import { useStudentTableManagement } from "@/client/contexts/student/StudentTableManagementContext";
 import { useAppTranslation } from "@/client/locale";
 import {

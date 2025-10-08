@@ -11,7 +11,7 @@ import {
     Box,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/utils/templateImagePlaceHolder";
+import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
 import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import Image from "next/image";
@@ -52,7 +52,7 @@ const GridView: React.FC<GridViewProps> = ({ templates }) => {
                 if (!template.name) {
                     throw new Error("Template name is required");
                 }
-                
+
                 return (
                     <ImageListItem
                         key={template.id}
