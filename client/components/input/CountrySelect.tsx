@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import countries, { CountryType } from "@/utils/country";
-import CountryTranslations from "@/client/locale/components/Country";
+import { CountryTranslations } from "@/client/locale";
 import { useAppTranslation } from "@/client/locale";
 
 // Type definition for the component props
@@ -64,7 +64,9 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
             onBlur={onBlur}
             getOptionLabel={(option) => countryNameByCode(strings, option.code)}
             renderOption={(
-                props: React.HTMLAttributes<HTMLLIElement> & { key: string | number },
+                props: React.HTMLAttributes<HTMLLIElement> & {
+                    key: string | number;
+                },
                 option: CountryType,
             ) => {
                 // key is extracted from props to prevent it from being passed to the DOM

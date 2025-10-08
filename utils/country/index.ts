@@ -1,4 +1,4 @@
-import { CountryCode } from "@/graphql/generated/types";
+import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 import { MuiTelInputCountry } from "mui-tel-input";
 
 interface CountryType {

@@ -2,7 +2,7 @@ import Calendar from "@/types/Calendar";
 import moment from "moment-hijri";
 import { matchIsValidTel } from "mui-tel-input";
 import countries, { CountryType } from "../country";
-import { CountryCode } from "@/graphql/generated/types";
+import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 
 // Constants
 export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;

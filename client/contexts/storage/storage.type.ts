@@ -104,7 +104,7 @@ export type StorageManagementUIContextType = {
 
     // Local UI State
     sortBy: string;
-    sortDirection: Graphql.SortDirection;
+    sortDirection: Graphql.OrderSortDirection;
 
     // Operation States
     loading: LoadingStates;
@@ -138,7 +138,7 @@ export type StorageManagementUIContextType = {
 
     // Local Sorting
     setSortBy: (field: string) => void;
-    setSortDirection: (direction: Graphql.SortDirection) => void;
+    setSortDirection: (direction: Graphql.OrderSortDirection) => void;
     getSortedItems: () => StorageItem[];
 
     // Clipboard Operations

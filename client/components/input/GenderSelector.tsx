@@ -1,12 +1,12 @@
-// Standard library imports
 import React from "react";
-
-// Third-party library imports
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
-
-// Local/project-specific module imports
-import Gender from "@/types/Gender";
 import { useAppTranslation } from "@/client/locale";
+
+enum Gender {
+    MALE,
+    FEMALE,
+    OTHER,
+}
 
 /**
  * Props for the GenderSelector component.
@@ -78,10 +78,10 @@ const GenderSelector: React.FC<GenderSelectorProps> = ({
                 {/* male button */}
                 <Button
                     onClick={() => {
-                        setGender(Gender.Male);
+                        setGender(Gender.MALE);
                         setError(false);
                     }}
-                    variant={gender === Gender.Male ? "contained" : "outlined"}
+                    variant={gender === Gender.MALE ? "contained" : "outlined"}
                     sx={{ width: "50%", minWidth: 0 }}
                 >
                     {strings.male}
@@ -89,11 +89,11 @@ const GenderSelector: React.FC<GenderSelectorProps> = ({
                 {/* female button */}
                 <Button
                     onClick={() => {
-                        setGender(Gender.Female);
+                        setGender(Gender.FEMALE);
                         setError(false);
                     }}
                     variant={
-                        gender === Gender.Female ? "contained" : "outlined"
+                        gender === Gender.FEMALE ? "contained" : "outlined"
                     }
                     sx={{ width: "50%", minWidth: 0 }}
                 >

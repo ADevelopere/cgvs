@@ -22,7 +22,7 @@ import {
     formatInputValue,
 } from "./DataCell.util";
 import { useAppTranslation } from "@/client/locale";
-import { CountryCode } from "@/graphql/generated/types";
+import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 
 // Props for the main component
 type CellContentRendererProps = {

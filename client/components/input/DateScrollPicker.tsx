@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Calendar from "@/types/Calendar";
-import CalendarTranslations from "@/client/locale/components/Calendar";
+import { CalendarTranslations } from "@/client/locale";
 import { useAppTranslation } from "@/client/locale";
 
 export type DateScrollPickerProps = {

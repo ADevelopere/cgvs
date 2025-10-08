@@ -11,13 +11,13 @@ import {
     MoreVert,
     PushPin,
 } from "@mui/icons-material";
-import { SortDirection } from "@/graphql/generated/types";
 import { FilterClause } from "@/types/filters";
 import ResizeHandle from "./ResizeHandle";
 import { useTableStyles } from "@/client/theme/styles";
 import { EditableColumn, PinPosition } from "@/types/table.type";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
+import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 
 export interface ColumnHeaderProps {
     column: EditableColumn;
@@ -31,7 +31,7 @@ export interface ColumnHeaderProps {
     ) => void;
     isPinned: PinPosition;
     // New props
-    sortDirection: SortDirection | null;
+    sortDirection: OrderSortDirection | null;
     isFiltered: boolean;
     columnWidth: number;
     sort: (columnId: string) => void;

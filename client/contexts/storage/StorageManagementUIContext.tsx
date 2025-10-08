@@ -75,7 +75,7 @@ export const StorageManagementUIProvider: React.FC<{
     // Local UI State
     const [sortBy, setSortBy] = useState<string>("name");
     const [sortDirection, setSortDirection] =
-        useState<Graphql.SortDirection>("ASC");
+        useState<Graphql.OrderSortDirection>("ASC");
 
     // Operation States
     const [loading, setLoading] = useState<LoadingStates>({
