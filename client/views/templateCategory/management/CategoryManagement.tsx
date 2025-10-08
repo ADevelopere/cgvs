@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
-import { useAppBarHeight } from "@/hooks/useAppBarHeight";
+import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTranslation } from "@/client/locale";
 import {
     useTemplateCategoryManagement,
