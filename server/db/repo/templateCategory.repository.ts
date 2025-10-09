@@ -8,6 +8,7 @@ import {
     TemplateCategoryUpdateInput,
 } from "@/server/types";
 import { TemplateCategoryUtils } from "@/server/utils";
+import logger from "@/lib/logger";
 
 export namespace TemplateCategoryRepository {
     export const findById = async (
@@ -228,6 +229,59 @@ export namespace TemplateCategoryRepository {
 
         return updatedCategory;
     };
+
+    export const createMainCategoryIfNotExisting =
+        async (): Promise<TemplateCategorySelectType> => {
+            const existingMainCategory = await findTemplatesMainCategory();
+            if (existingMainCategory) return existingMainCategory;
+
+            const now = new Date();
+            const input: TemplateCategoryInsertInput = {
+                name: "قوالب غير مصنفة",
+                specialType: "Main",
+                parentCategoryId: null,
+                createdAt: now,
+                updatedAt: now,
+            };
+            try {
+                const [mainCategory] = await db
+                    .insert(templateCategories)
+                    .values(input)
+                    .returning();
+
+                return mainCategory;
+            } catch (err) {
+                logger.error(err);
+                throw new Error("Failed to create the main category");
+            }
+        };
+
+    export const createSuspensionCategoryIfNotExisting =
+        async (): Promise<TemplateCategorySelectType> => {
+            const existingSuspensionCategory =
+                await findTemplatesSuspensionCategory();
+            if (existingSuspensionCategory) return existingSuspensionCategory;
+
+            const now = new Date();
+            const input: TemplateCategoryInsertInput = {
+                name: "فئة القوالب المحذوفة",
+                specialType: "Suspension",
+                parentCategoryId: null,
+                createdAt: now,
+                updatedAt: now,
+            };
+            try {
+                const [suspensionCategory] = await db
+                    .insert(templateCategories)
+                    .values(input)
+                    .returning();
+
+                return suspensionCategory;
+            } catch (err) {
+                logger.error(err);
+                throw new Error("Failed to create the Suspension category");
+            }
+        };
 
     export const deleteById = async (
         id: number,
