@@ -16,7 +16,7 @@ import { resolve } from "path";
 import logger from "@/lib/logger";
 
 // from server/db/seed/drizzleSeed.ts
-config({ path: resolve(__dirname, "../../../.en") });
+config({ path: resolve(__dirname, "../../../.env") });
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
@@ -52,6 +52,11 @@ import {
     RecipientCreateListInput,
 } from "@/server/types";
 import { CountryCode, Gender } from "@/lib/enum";
+
+// todo: remove following and create role repositories
+import { db, pool as drizzleDbPool } from "../drizzleDb";
+import { roles, userRoles } from "../schema";
+import { eq } from "drizzle-orm";
 
 const now = new Date();
 
@@ -345,7 +350,7 @@ async function createRecipientGroupItems(
     for (const group of groups) {
         const studentCount = Math.floor(Math.random() * (50 - 10 + 1)) + 10;
         const selectedStudents = shuffledStudents.slice(0, studentCount);
-        
+
         const input: RecipientCreateListInput = {
             recipientGroupId: group.id,
             studentIds: selectedStudents.map((s) => s.id),
@@ -440,6 +445,6 @@ main()
         process.exit(1);
     })
     .finally(async () => {
-        await pool.end();
+        await drizzleDbPool.end();
         process.exit(0);
     });
