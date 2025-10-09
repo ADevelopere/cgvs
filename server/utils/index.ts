@@ -8,3 +8,5 @@ export { TemplateCategoryUtils } from "./templateCategory.utils";
 export { TemplateRecipientGroupUtils } from "./recipientGroup.utils";
 
 export { PaginationUtils } from "./pagination.utils";
+
+export { StorageUtils } from "./storage.utils";

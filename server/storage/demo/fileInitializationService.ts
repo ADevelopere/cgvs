@@ -1,9 +1,8 @@
 import logger from "@/lib/logger";
 import * as fs from "fs/promises";
 import * as path from "path";
-import type { FolderCreateInput } from "../../types/storage.types";
 import { getStorageService, type StorageService } from "../storage.service";
-import * as StorageTypes from "../../types/storage.types";
+import * as Types from "@/server/types";
 
 /**
  * Interface for FileInitializationService
@@ -22,7 +21,7 @@ export interface IFileInitializationService {
     /**
      * Create a directory if it doesn't exist
      */
-    createDirectoryIfNotExists(input: FolderCreateInput): Promise<void>;
+    createDirectoryIfNotExists(input: Types.FolderCreateInput): Promise<void>;
 
     /**
      * Upload demo template files from resources
@@ -57,7 +56,7 @@ export interface IFileInitializationService {
     /**
      * Get content type from file name
      */
-    getContentTypeFromFileName(fileName: string): StorageTypes.FileContentType;
+    getContentTypeFromFileName(fileName: string): Types.FileContentType;
 }
 
 export class FileInitializationService implements IFileInitializationService {
@@ -70,7 +69,9 @@ export class FileInitializationService implements IFileInitializationService {
     /**
      * Create a directory if it doesn't exist
      */
-    async createDirectoryIfNotExists(input: FolderCreateInput): Promise<void> {
+    async createDirectoryIfNotExists(
+        input: Types.FolderCreateInput,
+    ): Promise<void> {
         try {
             // Check if directory exists in storage
             const directoryInfo = await this.storageService.directoryInfoByPath(
@@ -115,7 +116,7 @@ export class FileInitializationService implements IFileInitializationService {
     }
 
     async createRequiredDirectories(): Promise<void> {
-        const requiredDirectories: FolderCreateInput[] = [
+        const requiredDirectories: Types.FolderCreateInput[] = [
             { path: "public", protected: true },
             { path: "public/templates", protected: true },
             { path: "public/templates/covers", protected: true },
@@ -315,7 +316,7 @@ export class FileInitializationService implements IFileInitializationService {
         }
     }
 
-    getContentTypeFromFileName(fileName: string): StorageTypes.FileContentType {
+    getContentTypeFromFileName(fileName: string): Types.FileContentType {
         const extension = fileName
             .substring(fileName.lastIndexOf(".") + 1)
             .toLowerCase();
@@ -323,15 +324,15 @@ export class FileInitializationService implements IFileInitializationService {
         switch (extension) {
             case "jpg":
             case "jpeg":
-                return StorageTypes.FileContentType.JPEG;
+                return Types.FileContentType.JPEG;
             case "png":
-                return StorageTypes.FileContentType.PNG;
+                return Types.FileContentType.PNG;
             case "gif":
-                return StorageTypes.FileContentType.GIF;
+                return Types.FileContentType.GIF;
             case "webp":
-                return StorageTypes.FileContentType.WEBP;
+                return Types.FileContentType.WEBP;
             default:
-                return StorageTypes.FileContentType.JPEG;
+                return Types.FileContentType.JPEG;
         }
     }
 }
