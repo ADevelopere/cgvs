@@ -16,7 +16,7 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 // import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
 
-const pool = new Pool({
+export const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,
     // other pool options...
