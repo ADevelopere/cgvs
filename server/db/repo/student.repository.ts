@@ -235,7 +235,7 @@ export namespace StudentRepository {
         );
     };
 
-    export const findStudentsInGroup = async (
+    export const searchStudentsRecipientInGroup = async (
         recipientGroupId: number,
         paginationArgs?: Types.PaginationArgs | null,
         orderBy?: Types.StudentsOrderByClause[] | null,
@@ -260,7 +260,7 @@ export namespace StudentRepository {
         );
     };
 
-    export const searchStudentsNotInGroup = async (
+    export const searchStudentsNotInRecipientGroup = async (
         recipientGroupId: number,
         paginationArgs?: Types.PaginationArgs | null,
         orderBy?: Types.StudentsOrderByClause[] | null,

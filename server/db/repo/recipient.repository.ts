@@ -228,4 +228,15 @@ export namespace RecipientRepository {
             where: { studentId: studentId },
         });
     };
+
+    export const loadForGroups = async (
+        groupIds: number[],
+    ): Promise<Types.RecipientEntity[][]> => {
+        if (groupIds.length === 0) return [];
+
+        const allGroups = await Promise.all(
+            groupIds.map((id) => findAllByGroupId(id)),
+        );
+        return allGroups;
+    };
 }

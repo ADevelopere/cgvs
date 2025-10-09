@@ -1,7 +1,8 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { TemplatePothosObject } from "./template.pothos";
 import * as TrgTypes from "@/server/types";
-import { TemplateRepository } from "@/server/db/repo";
+import { RecipientRepository, TemplateRepository } from "@/server/db/repo";
+import { TemplateRecipientPothosObject } from "./recipient.pothos";
 
 export const TemplateRecipientGroupPothosObject = gqlSchemaBuilder
     .objectRef<TrgTypes.RecipientGroupEntity>(
@@ -30,7 +31,11 @@ gqlSchemaBuilder.objectFields(TemplateRecipientGroupPothosObject, (t) => ({
         load: (ids: number[]) => TemplateRepository.loadByIds(ids),
         resolve: (templateGroup) => templateGroup.templateId,
     }),
-    // todo: items
+    recipients: t.loadableList({
+        type: TemplateRecipientPothosObject,
+        load: (ids: number[]) => RecipientRepository.loadForGroups(ids),
+        resolve: (group) => group.id
+    })
 }));
 
 export const TemplateRecipientGroupCreateInputPothosObject = gqlSchemaBuilder
