@@ -73,10 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const strings: AuthTranslations = useAppTranslation("authTranslations");
-    const { 
-        updateAuthToken, 
-        clearAuthData 
-    } = useAuthToken();
+    const { updateAuthToken, clearAuthData } = useAuthToken();
     const [loginMutation] = useMutation(Document.loginMutationDocument);
     const [logoutMutation] = useMutation(Document.logoutMutationDocument);
     const [refreshTokenMutation] = useMutation(
@@ -96,11 +93,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 updateAuthToken(data.refreshToken.token);
                 setUser(data.refreshToken.user);
                 setIsAuthenticated(true);
-                
-                // Note: In a session-based system, the session ID would typically
-                // be managed via httpOnly cookies, not client-side state.
-                // This is here for completeness but may not be needed depending
-                // on your cookie strategy.
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
@@ -136,11 +128,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 if (data?.login?.token && data.login.user) {
                     updateAuthToken(data.login.token);
-                    
-                    // Note: Refresh token and session ID are set via httpOnly cookies
+
+                    // Access token is stored in React context state only (memory)
+                    // Refresh token and session ID are set via httpOnly cookies
                     // by the server automatically. They are NOT in the response body
                     // for security reasons (prevents XSS attacks).
-                    
+
                     // Perform a hard redirect to break any race conditions and ensure a clean state.
                     window.location.href = redirectUrl || "/admin/dashboard";
                     return true;

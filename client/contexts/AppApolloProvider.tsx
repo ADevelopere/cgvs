@@ -21,7 +21,6 @@ import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { ConnectivityTranslations } from "@/client/locale/components/Connectivity";
 import { useAppTranslation } from "@/client/locale";
-import { initializeAuthFromStorage, storeAuthTokens, clearStoredAuthTokens } from "@/client/utils/auth";
 
 export type NetworkConnectivityContextType = {
     isConnected: boolean;
@@ -51,15 +50,12 @@ export const useNetworkConnectivity = (): NetworkConnectivityContextType => {
 
 // Convenience functions for global access to auth token management
 export const useAuthToken = () => {
-    const { 
-        authToken, 
-        updateAuthToken, 
-        clearAuthData 
-    } = useNetworkConnectivity();
-    return { 
-        authToken, 
-        updateAuthToken, 
-        clearAuthData 
+    const { authToken, updateAuthToken, clearAuthData } =
+        useNetworkConnectivity();
+    return {
+        authToken,
+        updateAuthToken,
+        clearAuthData,
     };
 };
 
@@ -76,18 +72,15 @@ export const AppApolloProvider: React.FC<{
         "connectivityTranslations",
     );
 
-    // Initialize auth state from localStorage (only access token)
-    const initialAuthTokens = initializeAuthFromStorage();
-    
     const [isConnected, setIsConnected] = useState(true); // Start optimistically
     const [isChecking, setIsChecking] = useState(false);
     const [lastChecked, setLastChecked] = useState<Date | null>(null);
-    const [authToken, setAuthToken] = useState<string | null>(initialAuthTokens.accessToken || null);
+    const [authToken, setAuthToken] = useState<string | null>(null); // Always start with no token
 
     // Use refs to track status to avoid dependency issues
     const isConnectedRef = useRef(true);
     const isCheckingRef = useRef(false);
-    const authTokenRef = useRef<string | null>(initialAuthTokens.accessToken || null);
+    const authTokenRef = useRef<string | null>(null); // Always start with no token
     const initialCheckDoneRef = useRef(false);
     const lastCheckTimeRef = useRef(0); // Track last check time to prevent spam
 
@@ -174,17 +167,16 @@ export const AppApolloProvider: React.FC<{
         }
     }, [notifications, checkConnectivity, strings]);
 
-    // Auth token management functions
+    // Auth token management functions - memory-only storage
     const updateAuthToken = useCallback((token: string) => {
         setAuthToken(token);
         authTokenRef.current = token;
-        storeAuthTokens({ accessToken: token });
     }, []);
 
     const clearAuthData = useCallback(() => {
         setAuthToken(null);
         authTokenRef.current = null;
-        clearStoredAuthTokens();
+        // No persistent storage to clear - token only exists in React state
         // Note: httpOnly cookies are cleared by the server on logout
     }, []);
 
@@ -202,7 +194,7 @@ export const AppApolloProvider: React.FC<{
             const token = authTokenRef.current;
 
             const headers: Record<string, string> = {};
-            
+
             if (token) {
                 headers.authorization = `Bearer ${token}`;
             }
