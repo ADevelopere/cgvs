@@ -2,6 +2,7 @@
  * Helper functions for generating seed data
  */
 
+import { Email, PhoneNumber } from "@/server/lib";
 import {
     arabicFirstNames,
     arabicMiddleNames,
@@ -16,9 +17,7 @@ export function generateArabicFullName(): string {
     const firstName =
         arabicFirstNames[Math.floor(Math.random() * arabicFirstNames.length)];
     const middleName =
-        arabicMiddleNames[
-            Math.floor(Math.random() * arabicMiddleNames.length)
-        ];
+        arabicMiddleNames[Math.floor(Math.random() * arabicMiddleNames.length)];
     const lastName =
         arabicLastNames[Math.floor(Math.random() * arabicLastNames.length)];
 
@@ -31,22 +30,25 @@ export function generateArabicFullName(): string {
 export function generateEmail(
     firstName: string = "",
     lastName: string = "",
-): string {
+): Email {
     const randomNum = Math.floor(Math.random() * (999 - 100 + 1) + 100);
     const firstNameSafe = `${firstName.replace(/\s/g, "")}${Math.floor(Math.random() * 9000) + 1000}`;
     const lastNameSafe = `${lastName.replace(/\s/g, "")}${Math.floor(Math.random() * 900) + 100}`;
-    const domain = emailDomains[Math.floor(Math.random() * emailDomains.length)];
-    
-    return `${firstNameSafe}.${lastNameSafe}${randomNum}@${domain}`.toLowerCase();
+    const domain =
+        emailDomains[Math.floor(Math.random() * emailDomains.length)];
+
+    return new Email(
+        `${firstNameSafe}.${lastNameSafe}${randomNum}@${domain}`.toLowerCase(),
+    );
 }
 
 /**
  * Generates a random Saudi phone number
  */
-export function generatePhoneNumber(): string {
+export function generatePhoneNumber(): PhoneNumber {
     const secondDigit = Math.floor(Math.random() * 10);
     const rest = Math.floor(Math.random() * (9999999 - 1000000 + 1) + 1000000);
-    return `+9665${secondDigit}${rest}`;
+    return new PhoneNumber(`+9665${secondDigit}${rest}`);
 }
 
 /**

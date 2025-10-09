@@ -1,7 +1,8 @@
 export { TemplateRepository } from "./template.repository";
 export { TemplateCategoryRepository } from "./templateCategory.repository";
 export { TemplateVariableRepository } from "./templateVariable.repository";
-export { TemplateRecipientGroupRepository } from "./recipientGroup.repository";
+export { RecipientGroupRepository } from "./recipientGroup.repository";
+export { RecipientRepository } from "./recipient.repository";
 
 export { StudentRepository } from "./student.repository";
 

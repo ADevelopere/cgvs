@@ -23,9 +23,7 @@ export const templateRecipientGroupItems = pgTable(
     "template_recipient_group_item",
     {
         id: serial("id").primaryKey(),
-        templateRecipientGroupId: integer(
-            "template_recipient_group_id",
-        ).notNull(),
+        recipientGroupId: integer("template_recipient_group_id").notNull(),
         studentId: integer("student_id").notNull(),
         createdAt: timestamp("created_at", { precision: 3 }).notNull(),
         updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
@@ -33,7 +31,7 @@ export const templateRecipientGroupItems = pgTable(
     (table) => [
         uniqueIndex("trgi_student_group_unique").on(
             table.studentId,
-            table.templateRecipientGroupId,
+            table.recipientGroupId,
         ),
     ],
 );

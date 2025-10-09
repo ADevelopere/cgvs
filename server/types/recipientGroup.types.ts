@@ -1,25 +1,18 @@
 import * as Db from "@/server/db/schema";
-import { TemplatePothosDefintion } from "./template.types";
 
-export type TemplateRecipientGroupEntity =
+export type RecipientGroupEntity =
     typeof Db.templateRecipientGroups.$inferSelect;
-export type TemplateRecipientGroupEntityInput =
+export type RecipientGroupEntityInput =
     typeof Db.templateRecipientGroups.$inferInsert;
 
-export type TemplateRecipientGroupPothosDefinition =
-    TemplateRecipientGroupEntity & {
-        template?: TemplatePothosDefintion;
-        // todo: items
-    };
-
-export type TemplateRecipientGroupCreateInput = {
+export type RecipientGroupCreateInput = {
     templateId: number;
     name: string;
     description?: string | null;
     date?: Date | null;
 };
 
-export type TemplateRecipientGroupUpdateInput = {
+export type RecipientGroupUpdateInput = {
     id: number;
     name: string;
     description?: string | null;

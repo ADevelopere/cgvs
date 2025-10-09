@@ -4,7 +4,7 @@ import * as TrgTypes from "@/server/types";
 import { TemplateRepository } from "@/server/db/repo";
 
 export const TemplateRecipientGroupPothosObject = gqlSchemaBuilder
-    .objectRef<TrgTypes.TemplateRecipientGroupPothosDefinition>(
+    .objectRef<TrgTypes.RecipientGroupEntity>(
         "TemplateRecipientGroup",
     )
     .implement({
@@ -34,7 +34,7 @@ gqlSchemaBuilder.objectFields(TemplateRecipientGroupPothosObject, (t) => ({
 }));
 
 export const TemplateRecipientGroupCreateInputPothosObject = gqlSchemaBuilder
-    .inputRef<TrgTypes.TemplateRecipientGroupCreateInput>(
+    .inputRef<TrgTypes.RecipientGroupCreateInput>(
         "TemplateRecipientGroupCreateInput",
     )
     .implement({
@@ -47,7 +47,7 @@ export const TemplateRecipientGroupCreateInputPothosObject = gqlSchemaBuilder
     });
 
 export const TemplateRecipientGroupUpdateInputPothosObject = gqlSchemaBuilder
-    .inputRef<TrgTypes.TemplateRecipientGroupUpdateInput>(
+    .inputRef<TrgTypes.RecipientGroupUpdateInput>(
         "TemplateRecipientGroupUpdateInput",
     )
     .implement({

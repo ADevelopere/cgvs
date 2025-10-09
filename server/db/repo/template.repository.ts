@@ -18,6 +18,7 @@ import { PaginationArgs } from "../../types/pagination.types";
 import { PaginationArgsDefault } from "../../graphql/pothos/pagination.objects";
 import { TemplateUtils } from "@/server/utils";
 import { TemplateCategoryRepository } from "./templateCategory.repository";
+import { getStorageService } from "@/server/storage/storage.service";
 
 export namespace TemplateRepository {
     export const findById = async (
@@ -190,19 +191,64 @@ export namespace TemplateRepository {
             throw new Error("Cannot create template in a suspension category.");
         }
 
-        const [newTemplate] = await db
-            .insert(templates)
-            .values({
-                name,
-                description,
-                categoryId,
-                order: newOrder,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            })
-            .returning();
+        try {
+            const [newTemplate] = await db
+                .insert(templates)
+                .values({
+                    name,
+                    description,
+                    categoryId,
+                    order: newOrder,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                })
+                .returning();
 
-        return newTemplate;
+            return newTemplate;
+        } catch (err) {
+            logger.error(err);
+            throw new Error(
+                `Failed to create template with name: ${input.name}`,
+            );
+        }
+    };
+
+    type TemplateCreateInputWithImageFileId = TemplateCreateInput & {
+        imageFileId: bigint;
+    };
+
+    export const internalCreateWithImageFileId = async (
+        input: TemplateCreateInputWithImageFileId,
+    ): Promise<TemplateEntity> => {
+        const storageService = await getStorageService();
+        const file = await storageService.fileInfoByDbFileId(input.imageFileId);
+        if (!file) {
+            throw new Error("Image file not found.");
+        }
+
+        if (
+            file.isFromBucket &&
+            file.isPublic &&
+            file.contentType === "image/jpeg"
+        ) {
+            try {
+                const template = await create({ ...input });
+                const [reult] = await db
+                    .update(templates)
+                    .set({
+                        imageFileId: input.imageFileId,
+                    })
+                    .where(eq(templates.id, template.id))
+                    .returning();
+                return reult;
+            } catch (err) {
+                logger.error(err);
+            }
+        }
+        
+        throw new Error(
+            `Failed to create template, name: ${input.name}, imageFileId: ${input.imageFileId}`,
+        );
     };
 
     export const update = async (
