@@ -117,7 +117,7 @@ export const SortByPothosObject = gqlSchemaBuilder.enumType("FileSortField", {
 });
 
 export const ListFileInputPothosObject = gqlSchemaBuilder
-    .inputRef<Types.FilesListInput>("FilesListInput")
+    .inputRef<Types.FilesListSearchInput>("FilesListInput")
     .implement({
         fields: (t) => ({
             path: t.string({ required: true }),

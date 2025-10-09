@@ -11,13 +11,7 @@
         "tsc": "tsc --noEmit",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "db:seed": "tsx server/db/seed/drizzleSeed.ts",
-        "db:generate": "drizzle-kit generate",
-        "db:migrate": "tsx server/db/migrate.ts",
-        "db:migrate:cli": "drizzle-kit migrate",
-        "db:push": "drizzle-kit push",
-        "db:studio": "drizzle-kit studio",
-        "generate:gqlSchema": "tsx scripts/generateGqlSchema.ts"
+        "generate:gqlSchema": "tsx server/graphql/generateGqlSchema.ts"
     },
     "dependencies": {
         "@apollo/client": "^4.0.6",

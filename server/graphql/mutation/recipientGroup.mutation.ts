@@ -4,7 +4,7 @@ import {
     TemplateRecipientGroupPothosObject,
     TemplateRecipientGroupUpdateInputPothosObject,
 } from "../pothos";
-import { TemplateRecipientGroupRepository as Repo } from "@/server/db/repo";
+import { RecipientGroupRepository as Repo } from "@/server/db/repo";
 
 gqlSchemaBuilder.mutationFields((t) => ({
     createTemplateRecipientGroup: t.field({

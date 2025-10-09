@@ -4,9 +4,9 @@
 
 import {
     templates,
-} from "../schema";
+} from "../../schema";
 
-import { TemplateVariableRepository } from "../repo";
+import { TemplateVariableRepository } from "../../repo";
 
 type TemplateRecord = typeof templates.$inferSelect;
 

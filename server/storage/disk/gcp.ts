@@ -220,7 +220,7 @@ class GcpAdapter implements StorageService {
     }
 
     async listFiles(
-        input: Types.FilesListInput,
+        input: Types.FilesListSearchInput,
     ): Promise<Types.StorageObjectList> {
         // Clean the input path and add trailing slash for prefix
         const prefix = cleanGcsPath(input.path || "", true);

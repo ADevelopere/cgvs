@@ -1,6 +1,7 @@
 import {
     pgTable,
     bigint,
+    bigserial,
     text,
     boolean,
     varchar,
@@ -8,13 +9,13 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const storageFiles = pgTable("storage_file", {
-    id: bigint("id", { mode: "bigint" }).primaryKey(),
+    id: bigserial("id", { mode: "bigint" }).primaryKey(),
     path: text("path").notNull().unique(),
     isProtected: boolean("is_protected").notNull().default(false),
 });
 
 export const fileUsages = pgTable("file_usage", {
-    id: bigint("id", { mode: "bigint" }).primaryKey(),
+    id: bigserial("id", { mode: "bigint" }).primaryKey(),
     filePath: varchar("file_path", { length: 1024 }).notNull(),
     usageType: varchar("usage_type", { length: 100 }).notNull(),
     referenceId: bigint("reference_id", { mode: "bigint" }).notNull(),
@@ -23,7 +24,7 @@ export const fileUsages = pgTable("file_usage", {
 });
 
 export const storageDirectories = pgTable("storage_directory", {
-    id: bigint("id", { mode: "bigint" }).primaryKey(),
+    id: bigserial("id", { mode: "bigint" }).primaryKey(),
     path: varchar("path", { length: 1024 }).notNull().unique(),
     allowUploads: boolean("allow_uploads").notNull().default(true),
     allowDelete: boolean("allow_delete").notNull().default(true),

@@ -26,16 +26,16 @@ if (!process.env.DATABASE_URL) {
 }
 
 import { createFileInitializationService } from "@/server/storage/demo/fileInitializationService";
-import { templateCategoriesData } from "./constants";
+import { templateCategoriesData } from "./seed/constants";
 import {
     generateArabicFullName,
     generateEmail,
     generatePhoneNumber,
     generateDateOfBirth,
     shuffleArray,
-} from "./generators";
+} from "./seed/generators";
 
-import { createTemplateVariables } from "./templateVariableCreators";
+import { createTemplateVariables } from "./seed/templateVariableCreators";
 import { Email } from "@/server/lib";
 import {
     UserRepository,
@@ -54,7 +54,7 @@ import {
 import { CountryCode, Gender } from "@/lib/enum";
 
 // todo: remove following and create role repositories
-import { db, pool as drizzleDbPool } from "../drizzleDb";
+import { db, drizzleDbPool as drizzleDbPool } from "../drizzleDb";
 import { roles, userRoles } from "../schema";
 import { eq } from "drizzle-orm";
 
@@ -81,31 +81,35 @@ async function createAdminUser() {
         });
     }
 
-    // Create or get admin role
-    const existingRoles = await db
-        .select()
-        .from(roles)
-        .where(eq(roles.name, "admin"))
-        .limit(1);
+    try {
+        // Create or get admin role
+        const existingRoles = await db
+            .select()
+            .from(roles)
+            .where(eq(roles.name, "admin"))
+            .limit(1);
 
-    let adminRole;
-    if (existingRoles.length === 0) {
-        [adminRole] = await db
-            .insert(roles)
-            .values({
-                id: 1,
-                name: "admin",
-            })
-            .returning();
-    } else {
-        adminRole = existingRoles[0];
+        let adminRole;
+        if (existingRoles.length === 0) {
+            [adminRole] = await db
+                .insert(roles)
+                .values({
+                    id: 1,
+                    name: "admin",
+                })
+                .returning();
+        } else {
+            adminRole = existingRoles[0];
+        }
+
+        // Assign admin role to user
+        await db.insert(userRoles).values({
+            userId: adminUser.id,
+            roleId: adminRole.id,
+        });
+    } catch {
+        logger.log("Roles already created, skipping role assignment.");
     }
-
-    // Assign admin role to user
-    await db.insert(userRoles).values({
-        userId: adminUser.id,
-        roleId: adminRole.id,
-    });
 
     logger.log("   ✅ Admin user created successfully:");
     logger.log("      Email: admin@cgvs.com");

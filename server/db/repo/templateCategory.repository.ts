@@ -70,11 +70,10 @@ export namespace TemplateCategoryRepository {
 
     export const findTemplatesMainCategory =
         async (): Promise<TemplateCategorySelectType> => {
-            const category = await db
+            const [category] = await db
                 .select()
                 .from(templateCategories)
-                .where(eq(templateCategories.specialType, "Main"))
-                .then((res) => res[0]);
+                .where(eq(templateCategories.specialType, "Main"));
             if (!category) {
                 throw new Error("Main category not found.");
             }
@@ -83,11 +82,10 @@ export namespace TemplateCategoryRepository {
 
     export const findTemplatesSuspensionCategory =
         async (): Promise<TemplateCategorySelectType> => {
-            const category = await db
+            const [category] = await db
                 .select()
                 .from(templateCategories)
-                .where(eq(templateCategories.specialType, "Suspension"))
-                .then((res) => res[0]);
+                .where(eq(templateCategories.specialType, "Suspension"));
             if (!category) {
                 throw new Error("Suspension category not found.");
             }
@@ -232,7 +230,10 @@ export namespace TemplateCategoryRepository {
 
     export const createMainCategoryIfNotExisting =
         async (): Promise<TemplateCategorySelectType> => {
-            const existingMainCategory = await findTemplatesMainCategory();
+            const [existingMainCategory] = await await db
+                .select()
+                .from(templateCategories)
+                .where(eq(templateCategories.specialType, "Main"));
             if (existingMainCategory) return existingMainCategory;
 
             const now = new Date();
@@ -258,8 +259,10 @@ export namespace TemplateCategoryRepository {
 
     export const createSuspensionCategoryIfNotExisting =
         async (): Promise<TemplateCategorySelectType> => {
-            const existingSuspensionCategory =
-                await findTemplatesSuspensionCategory();
+            const [existingSuspensionCategory] = await db
+                .select()
+                .from(templateCategories)
+                .where(eq(templateCategories.specialType, "Suspension"));
             if (existingSuspensionCategory) return existingSuspensionCategory;
 
             const now = new Date();

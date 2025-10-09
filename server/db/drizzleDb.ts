@@ -18,7 +18,7 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 // import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
 
-export const pool = new Pool({
+export const drizzleDbPool = new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,
     // other pool options...
@@ -41,7 +41,7 @@ export function clearDrizzleLogs() {
 // }
 
 // const logger = new DefaultLogger({ writer: new MyLogWriter() });
-export const db = drizzle(pool, {
+export const db = drizzle(drizzleDbPool, {
     relations,
     // logger
 });

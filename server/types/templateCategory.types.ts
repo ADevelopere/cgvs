@@ -2,7 +2,7 @@ import {
     templateCategories,
     templatecategorySpecialTypeEnum,
 } from "@/server/db/schema";
-import { TemplatePothosDefintion } from "../template/template.types";
+import { TemplatePothosDefintion } from "@/server/types";
 
 export type TemplateSpecialCategoryType =
     (typeof templatecategorySpecialTypeEnum.enumValues)[number];

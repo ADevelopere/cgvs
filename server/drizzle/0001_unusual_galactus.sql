@@ -221,7 +221,7 @@ CREATE TABLE "template_static_text_element" (
 );
 --> statement-breakpoint
 CREATE TABLE "file_usage" (
-	"id" bigint PRIMARY KEY NOT NULL,
+	"id" bigserial PRIMARY KEY NOT NULL,
 	"file_path" varchar(1024) NOT NULL,
 	"usage_type" varchar(100) NOT NULL,
 	"reference_id" bigint NOT NULL,
@@ -230,7 +230,7 @@ CREATE TABLE "file_usage" (
 );
 --> statement-breakpoint
 CREATE TABLE "storage_directory" (
-	"id" bigint PRIMARY KEY NOT NULL,
+	"id" bigserial PRIMARY KEY NOT NULL,
 	"path" varchar(1024) NOT NULL,
 	"allow_uploads" boolean DEFAULT true NOT NULL,
 	"allow_delete" boolean DEFAULT true NOT NULL,
@@ -244,7 +244,7 @@ CREATE TABLE "storage_directory" (
 );
 --> statement-breakpoint
 CREATE TABLE "storage_file" (
-	"id" bigint PRIMARY KEY NOT NULL,
+	"id" bigserial PRIMARY KEY NOT NULL,
 	"path" text NOT NULL,
 	"is_protected" boolean DEFAULT false NOT NULL,
 	CONSTRAINT "storage_file_path_unique" UNIQUE("path")
