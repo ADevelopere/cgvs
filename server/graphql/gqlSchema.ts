@@ -1,13 +1,5 @@
-import "@/server/graphql/auth";
-
-import "@/server/graphql/template";
-import "@/server/graphql/templateCategory";
-import "@/server/graphql/templateVariable";
-import "@/server/graphql/recipientGroup";
-
-import "@/server/graphql/storage";
-
-import "@/server/graphql/student";
+import "./query";
+import "./mutation";
 
 import { gqlSchemaBuilder } from "./gqlSchemaBuilder";
 
