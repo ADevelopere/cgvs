@@ -1,4 +1,4 @@
-import { Email } from "../../lib/email";
+import { Email } from "@/server/lib";
 import { GraphQLScalarType, Kind } from "graphql";
 
 // Pothos custom scalar for Email

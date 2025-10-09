@@ -1,4 +1,4 @@
-import * as StorageTypes from "../storage.types";
+import * as StorageTypes from "../../types/storage.types";
 
 type StorageProvider = "gcp";
 
@@ -25,7 +25,7 @@ export interface StorageService {
      */
     uploadFile(
         path: string,
-        contentType: StorageTypes.ContentTypeServerType,
+        contentType: StorageTypes.FileContentType,
         buffer: Buffer,
     ): Promise<StorageTypes.FileUploadResult>;
 
@@ -60,21 +60,21 @@ export interface StorageService {
      */
     directoryInfoByPath(
         path: string,
-    ): Promise<StorageTypes.DirectoryInfoServerType>;
+    ): Promise<StorageTypes.DirectoryInfo | null>;
 
     /**
      * Get file information by path
      */
     fileInfoByPath(
         path: string,
-    ): Promise<StorageTypes.FileInfoServerType | null>;
+    ): Promise<StorageTypes.FileInfo | null>;
 
     /**
      * Get file information by database file ID
      */
     fileInfoByDbFileId(
         id: bigint,
-    ): Promise<StorageTypes.FileInfoServerType | null>;
+    ): Promise<StorageTypes.FileInfo | null>;
 
     /**
      * Get storage statistics
@@ -86,7 +86,7 @@ export interface StorageService {
      */
     fetchDirectoryChildren(
         path?: string | null,
-    ): Promise<StorageTypes.DirectoryInfoServerType[]>;
+    ): Promise<StorageTypes.DirectoryInfo[]>;
 
     /**
      * Move multiple files/folders
@@ -134,8 +134,8 @@ export interface StorageUtils {
     getFileTypeFromContentType(contentType?: string): string;
     validatePath(path: string): string | null;
     validateFileType(
-        contentType: StorageTypes.ContentTypeServerType,
-        location: StorageTypes.UploadLocationServerType,
+        contentType: StorageTypes.FileContentType,
+        location: StorageTypes.UploadLocation,
     ): string | null;
     extractDirectoryPath(filePath: string): string;
     extractFileName(filePath: string): string;

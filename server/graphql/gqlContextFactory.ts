@@ -1,5 +1,5 @@
 import { BaseContext, createContext } from "./gqlContext";
-import { extractTokenFromHeader, verifyToken } from "@/server/graphql/auth/jwt";
+import { extractTokenFromHeader, verifyToken } from "@/server/lib/auth/jwt";
 import { headers, cookies } from "next/headers";
 import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 

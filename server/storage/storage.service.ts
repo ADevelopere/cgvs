@@ -136,5 +136,5 @@ export { StorageServiceFactory };
 
 // Re-export types for convenience
 export type { StorageService };
-export * from "./storage.types";
+export * from "../types/storage.types";
 export * from "./disk/storage.service.interface";
