@@ -1,6 +1,6 @@
 import { CountryCode, Gender } from "@/lib/enum";
 import { PhoneNumber } from "@/server/lib";
-import { StudentEntity, StudentPothosDefintion } from "../types";
+import { StudentEntity, StudentDto } from "../types";
 
 export namespace StudentUtils {
     export const validateName = (name: string): Promise<string | null> => {
@@ -12,9 +12,9 @@ export namespace StudentUtils {
         return Promise.resolve(null);
     };
 
-    export const mapEntityToPothosDefintion = (
+    export const mapEntityToDto = (
         entity: StudentEntity | null | undefined,
-    ): StudentPothosDefintion | null => {
+    ): StudentDto | null => {
         if (!entity) {
             return null;
         }

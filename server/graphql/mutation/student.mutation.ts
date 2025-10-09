@@ -21,7 +21,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         resolve: async (_query, args) => {
             const input = args.input as unknown as Types.StudentCreateInput;
             const student = await StudentRepository.create(input);
-            return StudentUtils.mapEntityToPothosDefintion(student);
+            return StudentUtils.mapEntityToDto(student);
         },
     }),
 
@@ -36,7 +36,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         resolve: async (_query, args) =>
             await StudentRepository.partiallyUpdate(
                 args.input as Types.PartialStudentUpdateInput,
-            ).then((s) => StudentUtils.mapEntityToPothosDefintion(s)),
+            ).then((s) => StudentUtils.mapEntityToDto(s)),
     }),
 
     deleteStudent: t.field({
@@ -46,7 +46,7 @@ gqlSchemaBuilder.mutationFields((t) => ({
         },
         resolve: async (_query, args) =>
             await StudentRepository.deleteById(args.id).then((s) =>
-                StudentUtils.mapEntityToPothosDefintion(s),
+                StudentUtils.mapEntityToDto(s),
             ),
     }),
 }));

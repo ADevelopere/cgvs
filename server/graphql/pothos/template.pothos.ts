@@ -2,8 +2,8 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as Types from "@/server/types";
 import {
     TemplateRepository,
-    TemplateVariableRepository as TmvRepo,
-    TemplateRecipientGroupRepository as TrgRepo,
+    TemplateVariableRepository,
+    RecipientGroupRepository,
 } from "@/server/db/repo";
 import {
     PageInfoObject,
@@ -65,7 +65,8 @@ gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
 
     variables: t.loadableList({
         type: TemplateVariablePothosInterface,
-        load: (ids: number[]) => TmvRepo.loadForTemplates(ids),
+        load: (ids: number[]) =>
+            TemplateVariableRepository.loadForTemplates(ids),
         resolve: (template) => template.id,
     }),
 
@@ -79,7 +80,7 @@ gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
     }),
     recipientGroups: t.loadableList({
         type: TemplateRecipientGroupPothosObject,
-        load: (ids: number[]) => TrgRepo.loadForTemplates(ids),
+        load: (ids: number[]) => RecipientGroupRepository.loadForTemplates(ids),
         resolve: (template) => template.id,
     }),
 }));

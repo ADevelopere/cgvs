@@ -10,7 +10,7 @@ import {
 import { OrderSortDirection } from "@/lib/enum";
 
 export const StudentPothosObject = gqlSchemaBuilder
-    .loadableObjectRef<Types.StudentPothosDefintion, number>("Student", {
+    .loadableObjectRef<Types.StudentDto, number>("Student", {
         load: async (ids: number[]) => StudentRepository.loadByIds(ids),
         sort: (s) => s.id,
     })

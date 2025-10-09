@@ -6,7 +6,7 @@ import { CountryCode, Gender, OrderSortDirection } from "@/lib/enum";
 export type StudentEntity = typeof students.$inferSelect;
 export type StudentEntityInput = typeof students.$inferInsert;
 
-export type StudentPothosDefintion = {
+export type StudentDto = {
     id: number;
     name: string;
     email?: string | null;
@@ -16,8 +16,6 @@ export type StudentPothosDefintion = {
     nationality?: CountryCode | null;
     createdAt: Date;
     updatedAt: Date;
-    // todo:
-    // relations,
 };
 
 
@@ -41,7 +39,7 @@ export type PartialStudentUpdateInput = {
 };
 
 export type StudentsWithFiltersResponse = {
-    data: StudentPothosDefintion[];
+    data: StudentDto[];
     pageInfo: PageInfo;
 };
 
