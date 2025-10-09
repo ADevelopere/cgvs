@@ -32,7 +32,7 @@ export interface StorageService {
     /**
      * List files and directories with pagination and filtering
      */
-    listFiles(input: Types.FilesListInput): Promise<Types.StorageObjectList>;
+    listFiles(input: Types.FilesListSearchInput): Promise<Types.StorageObjectList>;
 
     /**
      * Create a folder in cloud storage

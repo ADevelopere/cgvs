@@ -204,7 +204,7 @@ export interface FileRenameInput {
     newName: string;
 }
 
-export interface FilesListInput {
+export interface FilesListSearchInput {
     path: string;
     limit?: number | null;
     offset?: number | null;

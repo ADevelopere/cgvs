@@ -246,28 +246,44 @@ export class FileInitializationService implements IFileInitializationService {
         ];
 
         logger.info(
-            "   🔍 Checking for demo files and retrieving their database IDs...",
+            "   🔍 Checking for demo files and registering as needed...",
         );
 
         const fileIds: bigint[] = [];
+        const { StorageDbRepository } = await import("@/server/db/repo");
 
         for (const filePath of demoFiles) {
             try {
+                // First check if already in DB
+                const existingFile =
+                    await StorageDbRepository.fileByPath(filePath);
+
+                if (existingFile) {
+                    logger.info(
+                        `   ✅ Found demo file in database: ${filePath} (ID: ${existingFile.id})`,
+                    );
+                    fileIds.push(existingFile.id);
+                    continue;
+                }
+
+                // Check if exists in bucket and register it for use
                 const fileInfo =
                     await this.storageService.fileInfoByPath(filePath);
 
-                if (fileInfo?.dbId) {
+                if (fileInfo) {
+                    // File exists in bucket but not in database - register it
+                    const fileEntity = await StorageDbRepository.createFile(
+                        filePath,
+                        true, // isProtected = true for demo files
+                    );
+
                     logger.info(
-                        `   ✅ Found demo file in database: ${filePath} (ID: ${fileInfo.dbId})`,
+                        `   ✅ Registered demo file for use: ${filePath} (ID: ${fileEntity.id})`,
                     );
-                    fileIds.push(fileInfo.dbId);
-                } else if (fileInfo) {
-                    logger.warn(
-                        `   ⚠️  Demo file exists in storage but has no database ID: ${filePath}`,
-                    );
+                    fileIds.push(fileEntity.id);
                 } else {
                     logger.error(
-                        `   ❌ Demo file NOT found in storage: ${filePath}`,
+                        `   ❌ Demo file NOT found in bucket: ${filePath}`,
                     );
                 }
             } catch (error) {

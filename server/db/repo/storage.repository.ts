@@ -58,7 +58,6 @@ export namespace StorageDbRepository {
         const [file] = await db
             .insert(storageFiles)
             .values({
-                id: sql`nextval('storage_file_id_seq')`,
                 path,
                 isProtected,
             })
@@ -67,7 +66,9 @@ export namespace StorageDbRepository {
     };
 
     export const updateFile = async (
-        file: StorageTypes.FileEntityInput,
+        file: StorageTypes.FileEntityInput & {
+            id: bigint;
+        },
     ): Promise<StorageTypes.FileEntity | undefined> => {
         const [updatedFile] = await db
             .update(storageFiles)
@@ -149,7 +150,6 @@ export namespace StorageDbRepository {
         const [directory] = await db
             .insert(storageDirectories)
             .values({
-                id: sql`nextval('storage_directory_id_seq')`,
                 path: input.path,
                 allowUploads: permissions.allowUploads,
                 allowDelete: permissions.allowDelete,
@@ -233,7 +233,6 @@ export namespace StorageDbRepository {
             }
 
             await db.insert(fileUsages).values({
-                id: sql`nextval('file_usage_id_seq')`,
                 filePath: input.filePath,
                 usageType: input.usageType,
                 referenceId: input.referenceId,

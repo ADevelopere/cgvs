@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { TemplateRecipientGroupRepository } from "@/server/db/repo";
+import { RecipientGroupRepository } from "@/server/db/repo";
 import { TemplateRecipientGroupPothosObject } from "@/server/graphql/pothos";
 
 gqlSchemaBuilder.queryFields((t) => ({
@@ -9,7 +9,7 @@ gqlSchemaBuilder.queryFields((t) => ({
             templateId: t.arg.int({ required: true }),
         },
         resolve: async (_parent, args) =>
-            TemplateRecipientGroupRepository.findAllByTemplateId(
+            RecipientGroupRepository.findAllByTemplateId(
                 args.templateId,
             ),
     }),

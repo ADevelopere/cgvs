@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { printSchema } from "graphql";
 import { spawn } from "child_process";
-import { graphQLSchema } from "@/server/graphql/gqlSchema";
+import { graphQLSchema } from "./gqlSchema";
 import logger from "@/lib/logger";
 
 // Use the standard printSchema function

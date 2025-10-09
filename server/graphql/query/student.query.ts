@@ -2,6 +2,7 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { StudentRepository } from "@/server/db/repo";
 import * as Types from "@/server/types";
 import * as Pothos from "@/server/graphql/pothos";
+import { StudentUtils } from "@/server/utils";
 
 gqlSchemaBuilder.queryFields((t) => ({
     student: t.field({
@@ -12,7 +13,7 @@ gqlSchemaBuilder.queryFields((t) => ({
         },
         resolve: async (_query, args) =>
             await StudentRepository.findById(args.id).then((s) =>
-                Types.mapStudentEntityToPothosDefintion(s),
+                StudentUtils.mapEntityToDto(s),
             ),
     }),
 
