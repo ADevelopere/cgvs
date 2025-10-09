@@ -60,7 +60,7 @@ export const templateCategoriesQueryDocument: TypedDocumentNode<Graphql.Template
                 id
                 name
                 description
-                # imageUrl
+                imageUrl
                 order
                 createdAt
                 updatedAt

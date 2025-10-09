@@ -10,6 +10,7 @@ export const templateQueryDocument: TypedDocumentNode<
             id
             name
             description
+            imageUrl
             order
             createdAt
             updatedAt
@@ -116,7 +117,7 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
                 id
                 name
                 description
-                # imageUrl
+                imageUrl
                 category {
                     id
                     name
@@ -126,7 +127,7 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
                     id
                     name
                 }
-                
+
                 variables {
                     id
                     name
@@ -243,7 +244,7 @@ export const createTemplateQueryDocument: TypedDocumentNode<
             id
             name
             description
-            # imageUrl
+            imageUrl
             category {
                 id
                 name
@@ -268,7 +269,7 @@ export const updateTemplateMutationDocument: TypedDocumentNode<
             id
             name
             description
-            # imageUrl
+            imageUrl
             category {
                 id
                 name
@@ -309,7 +310,7 @@ export const suspendTemplateMutationDocument: TypedDocumentNode<
             id
             name
             description
-            # imageUrl
+            imageUrl
             category {
                 id
                 name
@@ -334,7 +335,7 @@ export const unsuspendTemplateMutationDocument: TypedDocumentNode<
             id
             name
             description
-            # imageUrl
+            imageUrl
             category {
                 id
                 name
