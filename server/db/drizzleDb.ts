@@ -1,14 +1,16 @@
 import { config } from "dotenv";
 import { resolve } from "path";
 
-config({ path: resolve(__dirname, "../../../.env") });
+config({ path: resolve(__dirname, "../../.env") });
 import logger from "@/lib/logger";
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
-    logger.error("❌ Error: DATABASE_URL is not set in environment variables");
+    logger.error("server/db/drizzleDb.ts:❌ Error: DATABASE_URL is not set in environment variables");
     logger.error("   Please check your .env file");
     process.exit(1);
+} else {
+    logger.log("server/db/drizzleDb.ts Environment variables loaded successfully");
 }
 
 import { relations } from "./drizzleRelations";

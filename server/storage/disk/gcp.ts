@@ -1,14 +1,14 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import logger from "@/lib/logger";
-import * as StorageTypes from "../../types/storage.types";
+import * as Types from "@/server/types";
 import {
     StorageService,
     StorageValidationError,
     STORAGE_CONFIG,
 } from "./storage.service.interface";
-import { StorageDbRepository } from "../../db/repo/storage.repository";
-import * as StorageUtils from "../../utils/storage.utils";
+import { StorageDbRepository } from "@/server/db/repo";
+import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
 
 type GcsApiResponse = {
@@ -102,7 +102,7 @@ class GcpAdapter implements StorageService {
     }
 
     async generateUploadSignedUrl(
-        input: StorageTypes.UploadSignedUrlGenerateInput,
+        input: Types.UploadSignedUrlGenerateInput,
     ): Promise<string> {
         StorageUtils.validateUpload(input.path, input.fileSize).then((err) => {
             if (err) throw new StorageValidationError(err);
@@ -130,9 +130,9 @@ class GcpAdapter implements StorageService {
 
     async uploadFile(
         path: string,
-        contentType: StorageTypes.FileContentType,
+        contentType: Types.FileContentType,
         buffer: Buffer,
-    ): Promise<StorageTypes.FileUploadResult> {
+    ): Promise<Types.FileUploadResult> {
         try {
             const fileSize = buffer.byteLength;
 
@@ -220,8 +220,8 @@ class GcpAdapter implements StorageService {
     }
 
     async listFiles(
-        input: StorageTypes.FilesListInput,
-    ): Promise<StorageTypes.StorageObjectList> {
+        input: Types.FilesListInput,
+    ): Promise<Types.StorageObjectList> {
         // Clean the input path and add trailing slash for prefix
         const prefix = cleanGcsPath(input.path || "", true);
         const delimiter = "/";
@@ -236,8 +236,7 @@ class GcpAdapter implements StorageService {
         const [files] = response;
         const apiResponse = response[2] as GcsApiResponse | undefined;
 
-        const items: Array<StorageTypes.FileInfo | StorageTypes.DirectoryInfo> =
-            [];
+        const items: Array<Types.FileInfo | Types.DirectoryInfo> = [];
 
         // Collect all file paths for batch DB query
         const filePaths: string[] = [];
@@ -333,7 +332,7 @@ class GcpAdapter implements StorageService {
                 const dirPath = dirPrefix.replace(/\/$/, "");
                 const dbDir = dbDirMap.get(dirPath);
 
-                const bucketDir: StorageTypes.BucketDirectory = {
+                const bucketDir: Types.BucketDirectory = {
                     path: dirPath,
                     createdAt: new Date(),
                     lastModified: new Date(),
@@ -372,7 +371,7 @@ class GcpAdapter implements StorageService {
         // Sort items
         const sortedItems = StorageUtils.sortItems(
             filteredItems,
-            input.sortBy || StorageTypes.FileSortField.NAME,
+            input.sortBy || Types.FileSortField.NAME,
             input.sortDirection || OrderSortDirection.ASC,
         );
 
@@ -393,8 +392,8 @@ class GcpAdapter implements StorageService {
     }
 
     async createFolder(
-        input: StorageTypes.FolderCreateInput,
-    ): Promise<StorageTypes.FileOperationResult> {
+        input: Types.FolderCreateInput,
+    ): Promise<Types.FileOperationResult> {
         try {
             StorageUtils.validatePath(input.path).then((err) => {
                 if (err) throw new StorageValidationError(err);
@@ -429,14 +428,14 @@ class GcpAdapter implements StorageService {
                 input.protected === true ||
                 input.protectChildren === true;
 
-            let newDirectoryInfo: StorageTypes.DirectoryInfo;
+            let newDirectoryInfo: Types.DirectoryInfo;
 
             if (hasCustomPermissions) {
                 try {
                     const directoryEntity =
                         await StorageDbRepository.createDirectory(input);
 
-                    const bucketDir: StorageTypes.BucketDirectory = {
+                    const bucketDir: Types.BucketDirectory = {
                         path: fullPath,
                         createdAt: new Date(),
                         lastModified: new Date(),
@@ -475,12 +474,12 @@ class GcpAdapter implements StorageService {
     }
 
     async renameFile(
-        input: StorageTypes.FileRenameInput,
-    ): Promise<StorageTypes.FileOperationResult> {
+        input: Types.FileRenameInput,
+    ): Promise<Types.FileOperationResult> {
         try {
             StorageUtils.validatePath(input.currentPath).then((err) => {
                 if (err) {
-                    const result: StorageTypes.FileOperationResult = {
+                    const result: Types.FileOperationResult = {
                         success: false,
                         message: err,
                     };
@@ -490,7 +489,7 @@ class GcpAdapter implements StorageService {
 
             StorageUtils.validateFileName(input.newName).then((err) => {
                 if (err) {
-                    const result: StorageTypes.FileOperationResult = {
+                    const result: Types.FileOperationResult = {
                         success: false,
                         message: err,
                     };
@@ -510,7 +509,7 @@ class GcpAdapter implements StorageService {
             await sourceFile.move(destFile);
 
             // Update database
-            let fileEntity: StorageTypes.FileEntity | undefined;
+            let fileEntity: Types.FileEntity | undefined;
             try {
                 const dbFile = await StorageDbRepository.fileByPath(
                     input.currentPath,
@@ -547,11 +546,11 @@ class GcpAdapter implements StorageService {
         }
     }
 
-    async deleteFile(path: string): Promise<StorageTypes.FileOperationResult> {
+    async deleteFile(path: string): Promise<Types.FileOperationResult> {
         try {
             StorageUtils.validatePath(path).then((err) => {
                 if (err) {
-                    const result: StorageTypes.FileOperationResult = {
+                    const result: Types.FileOperationResult = {
                         success: false,
                         message: err,
                     };
@@ -617,7 +616,7 @@ class GcpAdapter implements StorageService {
 
     async directoryInfoByPath(
         path: string,
-    ): Promise<StorageTypes.DirectoryInfo | null> {
+    ): Promise<Types.DirectoryInfo | null> {
         // Check database first
         const dbDirectory = await StorageDbRepository.directoryByPath(path);
 
@@ -634,7 +633,7 @@ class GcpAdapter implements StorageService {
             return null;
         }
 
-        const bucketDir: StorageTypes.BucketDirectory = {
+        const bucketDir: Types.BucketDirectory = {
             path,
             createdAt: new Date(),
             lastModified: new Date(),
@@ -644,7 +643,7 @@ class GcpAdapter implements StorageService {
         return StorageUtils.combineDirectoryData(bucketDir, dbDirectory);
     }
 
-    async fileInfoByPath(path: string): Promise<StorageTypes.FileInfo | null> {
+    async fileInfoByPath(path: string): Promise<Types.FileInfo | null> {
         try {
             const file = this.bucket.file(path);
             const [exists] = await file.exists();
@@ -667,9 +666,7 @@ class GcpAdapter implements StorageService {
         }
     }
 
-    async fileInfoByDbFileId(
-        id: bigint,
-    ): Promise<StorageTypes.FileInfo | null> {
+    async fileInfoByDbFileId(id: bigint): Promise<Types.FileInfo | null> {
         try {
             const dbFile = await StorageDbRepository.fileById(id);
             if (!dbFile) {
@@ -696,14 +693,14 @@ class GcpAdapter implements StorageService {
         }
     }
 
-    async storageStatistics(path?: string): Promise<StorageTypes.StorageStats> {
+    async storageStatistics(path?: string): Promise<Types.StorageStats> {
         try {
             const prefix = path ? `${path}/` : "";
             const [files] = await this.bucket.getFiles({ prefix });
 
             let totalSize = BigInt(0);
             const fileTypeMap = new Map<
-                StorageTypes.FileTypes,
+                Types.FileTypes,
                 { count: number; size: bigint }
             >();
 
@@ -759,7 +756,7 @@ class GcpAdapter implements StorageService {
 
     async fetchDirectoryChildren(
         path?: string,
-    ): Promise<StorageTypes.DirectoryInfo[]> {
+    ): Promise<Types.DirectoryInfo[]> {
         // Clean path, default to "public" if empty
         const searchPath =
             !path || path.length === 0 ? "public" : cleanGcsPath(path);
@@ -779,7 +776,7 @@ class GcpAdapter implements StorageService {
             autoPaginate: false,
         });
 
-        const directories: StorageTypes.DirectoryInfo[] = [];
+        const directories: Types.DirectoryInfo[] = [];
         const apiResponse = responseData[2] as GcsApiResponse | undefined;
 
         if (apiResponse?.prefixes) {
@@ -787,7 +784,7 @@ class GcpAdapter implements StorageService {
                 const dirPath = dirPrefix.replace(/\/$/, "");
                 const dbDir = dbDirectoriesByPath.get(dirPath);
 
-                const bucketDir: StorageTypes.BucketDirectory = {
+                const bucketDir: Types.BucketDirectory = {
                     path: dirPath,
                     createdAt: new Date(),
                     lastModified: new Date(),
@@ -804,14 +801,12 @@ class GcpAdapter implements StorageService {
     }
 
     async moveItems(
-        input: StorageTypes.StorageItemsMoveInput,
-    ): Promise<StorageTypes.BulkOperationResult> {
+        input: Types.StorageItemsMoveInput,
+    ): Promise<Types.BulkOperationResult> {
         let successCount = 0;
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
-        const successfulItems: Array<
-            StorageTypes.FileInfo | StorageTypes.DirectoryInfo
-        > = [];
+        const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
 
         // Batch check if all source files exist in bucket
         const sourceExistenceChecks = await Promise.all(
@@ -991,14 +986,12 @@ class GcpAdapter implements StorageService {
     }
 
     async copyItems(
-        input: StorageTypes.StorageItemsCopyInput,
-    ): Promise<StorageTypes.BulkOperationResult> {
+        input: Types.StorageItemsCopyInput,
+    ): Promise<Types.BulkOperationResult> {
         let successCount = 0;
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
-        const successfulItems: Array<
-            StorageTypes.FileInfo | StorageTypes.DirectoryInfo
-        > = [];
+        const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
 
         // Batch check if all source files exist in bucket
         const sourceExistenceChecks = await Promise.all(
@@ -1095,14 +1088,12 @@ class GcpAdapter implements StorageService {
     }
 
     async deleteItems(
-        input: StorageTypes.StorageItemsDeleteInput,
-    ): Promise<StorageTypes.BulkOperationResult> {
+        input: Types.StorageItemsDeleteInput,
+    ): Promise<Types.BulkOperationResult> {
         let successCount = 0;
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
-        const successfulItems: Array<
-            StorageTypes.FileInfo | StorageTypes.DirectoryInfo
-        > = [];
+        const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
 
         // Batch load DB entities for all paths and their parent directories
         const parentDirectories = [

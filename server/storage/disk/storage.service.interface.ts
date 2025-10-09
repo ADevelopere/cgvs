@@ -1,4 +1,4 @@
-import * as StorageTypes from "../../types/storage.types";
+import * as Types from "@/server/types";
 
 type StorageProvider = "gcp";
 
@@ -17,7 +17,7 @@ export interface StorageService {
      * Generate a signed URL for file upload
      */
     generateUploadSignedUrl(
-        input: StorageTypes.UploadSignedUrlGenerateInput,
+        input: Types.UploadSignedUrlGenerateInput,
     ): Promise<string>;
 
     /**
@@ -25,89 +25,81 @@ export interface StorageService {
      */
     uploadFile(
         path: string,
-        contentType: StorageTypes.FileContentType,
+        contentType: Types.FileContentType,
         buffer: Buffer,
-    ): Promise<StorageTypes.FileUploadResult>;
+    ): Promise<Types.FileUploadResult>;
 
     /**
      * List files and directories with pagination and filtering
      */
-    listFiles(
-        input: StorageTypes.FilesListInput,
-    ): Promise<StorageTypes.StorageObjectList>;
+    listFiles(input: Types.FilesListInput): Promise<Types.StorageObjectList>;
 
     /**
      * Create a folder in cloud storage
      */
     createFolder(
-        input: StorageTypes.FolderCreateInput,
-    ): Promise<StorageTypes.FileOperationResult>;
+        input: Types.FolderCreateInput,
+    ): Promise<Types.FileOperationResult>;
 
     /**
      * Rename a file or folder
      */
     renameFile(
-        input: StorageTypes.FileRenameInput,
-    ): Promise<StorageTypes.FileOperationResult>;
+        input: Types.FileRenameInput,
+    ): Promise<Types.FileOperationResult>;
 
     /**
      * Delete a single file
      */
-    deleteFile(path: string): Promise<StorageTypes.FileOperationResult>;
+    deleteFile(path: string): Promise<Types.FileOperationResult>;
 
     /**
      * Get directory information by path
      */
-    directoryInfoByPath(
-        path: string,
-    ): Promise<StorageTypes.DirectoryInfo | null>;
+    directoryInfoByPath(path: string): Promise<Types.DirectoryInfo | null>;
 
     /**
      * Get file information by path
      */
-    fileInfoByPath(
-        path: string,
-    ): Promise<StorageTypes.FileInfo | null>;
+    fileInfoByPath(path: string): Promise<Types.FileInfo | null>;
 
     /**
      * Get file information by database file ID
      */
-    fileInfoByDbFileId(
-        id: bigint,
-    ): Promise<StorageTypes.FileInfo | null>;
+    fileInfoByDbFileId(id: bigint): Promise<Types.FileInfo | null>;
 
     /**
      * Get storage statistics
      */
-    storageStatistics(path?: string | null): Promise<StorageTypes.StorageStats>;
+    storageStatistics(path?: string | null): Promise<Types.StorageStats>;
 
     /**
      * Fetch immediate directory children for lazy loading
      */
     fetchDirectoryChildren(
         path?: string | null,
-    ): Promise<StorageTypes.DirectoryInfo[]>;
+    ): Promise<Types.DirectoryInfo[]>;
 
     /**
      * Move multiple files/folders
      */
     moveItems(
-        input: StorageTypes.StorageItemsMoveInput,
-    ): Promise<StorageTypes.BulkOperationResult>;
+        input: Types.StorageItemsMoveInput,
+    ): Promise<Types.BulkOperationResult>;
 
     /**
      * Copy multiple files/folders
      */
     copyItems(
-        input: StorageTypes.StorageItemsCopyInput,
-    ): Promise<StorageTypes.BulkOperationResult>;
+        input: Types.StorageItemsCopyInput,
+    ): Promise<Types.BulkOperationResult>;
 
     /**
      * Delete multiple items
      */
     deleteItems(
-        input: StorageTypes.StorageItemsDeleteInput,
-    ): Promise<StorageTypes.BulkOperationResult>;
+        input: Types.StorageItemsDeleteInput,
+    ): Promise<Types.BulkOperationResult>;
 }
 
 /**
@@ -134,8 +126,8 @@ export interface StorageUtils {
     getFileTypeFromContentType(contentType?: string): string;
     validatePath(path: string): string | null;
     validateFileType(
-        contentType: StorageTypes.FileContentType,
-        location: StorageTypes.UploadLocation,
+        contentType: Types.FileContentType,
+        location: Types.UploadLocation,
     ): string | null;
     extractDirectoryPath(filePath: string): string;
     extractFileName(filePath: string): string;
