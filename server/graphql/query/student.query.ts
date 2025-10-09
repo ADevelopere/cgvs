@@ -40,4 +40,56 @@ gqlSchemaBuilder.queryFields((t) => ({
                 args.orderBy,
             ),
     }),
+
+    studentsInRecipientGroup: t.field({
+        type: Pothos.StudentsWithFiltersPothosObject,
+        args: {
+            recipientGroupId: t.arg.int({ required: true }),
+            paginationArgs: t.arg({
+                type: Pothos.PaginationArgsObject,
+                required: false,
+            }),
+            orderBy: t.arg({
+                type: [Pothos.StudentsOrderByClausePothosObject],
+                required: false,
+            }),
+            filterArgs: t.arg({
+                type: Pothos.StudentFilterArgsPothosObject,
+                required: false,
+            }),
+        },
+        resolve: async (_, args) =>
+            await StudentRepository.searchStudentsRecipientInGroup(
+                args.recipientGroupId,
+                new Types.PaginationArgs({ ...args.paginationArgs }),
+                args.orderBy,
+                args.filterArgs as unknown as Types.StudentFilterArgs,
+            ),
+    }),
+
+    studentsNotInRecipientGroup: t.field({
+        type: Pothos.StudentsWithFiltersPothosObject,
+        args: {
+            recipientGroupId: t.arg.int({ required: true }),
+            paginationArgs: t.arg({
+                type: Pothos.PaginationArgsObject,
+                required: false,
+            }),
+            orderBy: t.arg({
+                type: [Pothos.StudentsOrderByClausePothosObject],
+                required: false,
+            }),
+            filterArgs: t.arg({
+                type: Pothos.StudentFilterArgsPothosObject,
+                required: false,
+            }),
+        },
+        resolve: async (_, args) =>
+            await StudentRepository.searchStudentsNotInRecipientGroup(
+                args.recipientGroupId,
+                new Types.PaginationArgs({ ...args.paginationArgs }),
+                args.orderBy,
+                args.filterArgs as unknown as Types.StudentFilterArgs,
+            ),
+    }),
 }));

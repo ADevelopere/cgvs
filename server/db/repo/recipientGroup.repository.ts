@@ -165,4 +165,21 @@ export namespace RecipientGroupRepository {
         );
         return allGroups;
     };
+
+    export const loadByIds = async (
+        ids: number[],
+    ): Promise<(Types.RecipientGroupEntity | Error)[]> => {
+        if (ids.length === 0) return [];
+        const filteredGroups = await db
+            .select()
+            .from(templateRecipientGroups)
+            .where(inArray(templateRecipientGroups.id, ids));
+
+        const groupList: (Types.RecipientGroupEntity | Error)[] = ids.map((id) => {
+            const matchingGroup = filteredGroups.find((c) => c.id === id);
+            if (!matchingGroup) return new Error(`Group with ${id} not found`);
+            return matchingGroup;
+        });
+        return groupList;
+    };
 }
