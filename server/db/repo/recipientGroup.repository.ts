@@ -1,14 +1,14 @@
 import { db } from "@/server/db/drizzleDb";
-import * as TrgTypes from "@/server/types/recipientGroup.types";
+import * as Types from "@/server/types";
 import { TemplateRecipientGroupUtils } from "@/server/utils";
 import { TemplateRepository } from "./template.repository";
 import { templateRecipientGroups } from "@/server/db";
 import { eq, inArray } from "drizzle-orm";
 
-export namespace TemplateRecipientGroupRepository {
+export namespace RecipientGroupRepository {
     export const findById = async (
         id: number,
-    ): Promise<TrgTypes.TemplateRecipientGroupEntity | null> => {
+    ): Promise<Types.RecipientGroupEntity | null> => {
         const trg = await db
             .select()
             .from(templateRecipientGroups)
@@ -30,8 +30,8 @@ export namespace TemplateRecipientGroupRepository {
     };
 
     export const create = async (
-        input: TrgTypes.TemplateRecipientGroupCreateInput,
-    ): Promise<TrgTypes.TemplateRecipientGroupEntity> => {
+        input: Types.RecipientGroupCreateInput,
+    ): Promise<Types.RecipientGroupEntity> => {
         await TemplateRecipientGroupUtils.validateName(input.name).then(
             (err) => {
                 if (err) throw new Error(err);
@@ -50,7 +50,7 @@ export namespace TemplateRecipientGroupRepository {
 
         const now = new Date();
 
-        const insertInput: TrgTypes.TemplateRecipientGroupEntityInput = {
+        const insertInput: Types.RecipientGroupEntityInput = {
             ...input,
             createdAt: now,
             updatedAt: now,
@@ -67,9 +67,24 @@ export namespace TemplateRecipientGroupRepository {
         }
     };
 
+    export const createList = async (
+        input: Types.RecipientGroupCreateInput[],
+    ): Promise<Types.RecipientGroupEntity[]> => {
+        if (input.length === 0) return [];
+
+        try {
+            const result = await Promise.all(input.map((item) => create(item)));
+            return result;
+        } catch (error) {
+            throw new Error(
+                `Failed to create recipient groups: ${error instanceof Error ? error.message : "Unknown error"}`,
+            );
+        }
+    };
+
     export const update = async (
-        input: TrgTypes.TemplateRecipientGroupUpdateInput,
-    ): Promise<TrgTypes.TemplateRecipientGroupEntity> => {
+        input: Types.RecipientGroupUpdateInput,
+    ): Promise<Types.RecipientGroupEntity> => {
         await existsById(input.id).then((exists) => {
             if (!exists) {
                 throw new Error(
@@ -101,7 +116,7 @@ export namespace TemplateRecipientGroupRepository {
 
     export const findAllByTemplateId = async (
         templateId: number,
-    ): Promise<TrgTypes.TemplateRecipientGroupEntity[]> => {
+    ): Promise<Types.RecipientGroupEntity[]> => {
         return db.query.templateRecipientGroups.findMany({
             where: {
                 templateId: templateId,
@@ -111,7 +126,7 @@ export namespace TemplateRecipientGroupRepository {
 
     export const findByIds = async (
         ids: number[],
-    ): Promise<TrgTypes.TemplateRecipientGroupPothosDefinition[]> => {
+    ): Promise<Types.RecipientGroupEntity[]> => {
         return db
             .select()
             .from(templateRecipientGroups)
@@ -120,7 +135,7 @@ export namespace TemplateRecipientGroupRepository {
 
     export const deleteById = async (
         id: number,
-    ): Promise<TrgTypes.TemplateRecipientGroupEntity> => {
+    ): Promise<Types.RecipientGroupEntity> => {
         try {
             await existsById(id).then((exists) => {
                 if (!exists) {
@@ -142,7 +157,7 @@ export namespace TemplateRecipientGroupRepository {
 
     export const loadForTemplates = async (
         templateIds: number[],
-    ): Promise<TrgTypes.TemplateRecipientGroupPothosDefinition[][]> => {
+    ): Promise<Types.RecipientGroupEntity[][]> => {
         if (templateIds.length === 0) return [];
 
         const allGroups = await Promise.all(

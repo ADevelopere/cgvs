@@ -49,6 +49,21 @@ export namespace StudentRepository {
         }
     };
 
+    export const createList = async (
+        input: Types.StudentCreateInput[],
+    ): Promise<Types.StudentEntity[]> => {
+        if (input.length === 0) return [];
+
+        try {
+            const result = await Promise.all(input.map((item) => create(item)));
+            return result;
+        } catch (error) {
+            throw new Error(
+                `Failed to create students: ${error instanceof Error ? error.message : "Unknown error"}`,
+            );
+        }
+    };
+
     export const loadByIds = async (
         ids: number[],
     ): Promise<(Types.StudentPothosDefintion | Error)[]> => {
@@ -71,8 +86,15 @@ export namespace StudentRepository {
         return studentList;
     };
 
-    export const studentExistsById = async (id: number): Promise<boolean> => {
+    export const existsById = async (id: number): Promise<boolean> => {
         return (await db.$count(students, eq(students.id, id))) > 0;
+    };
+
+    export const allExistsByIds = async (ids: number[]): Promise<boolean> => {
+        return (
+            (await db.$count(students, inArray(students.id, ids))) ===
+            ids.length
+        );
     };
 
     export const countAllStudents = async (): Promise<number> => {

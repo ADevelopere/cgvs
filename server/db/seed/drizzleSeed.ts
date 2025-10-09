@@ -11,15 +11,21 @@
  * - Recipient group items (10-50 students per group)
  */
 
-import { createFileInitializationService } from "../../storage/demo/fileInitializationService";
-import { roles, userRoles } from "../schema/users";
-import { students } from "../schema/students";
-import { templates } from "../schema/templates";
-import {
-    templateRecipientGroups,
-    templateRecipientGroupItems,
-} from "../schema/templateRecipientGroups";
-import { eq } from "drizzle-orm";
+import { config } from "dotenv";
+import { resolve } from "path";
+import logger from "@/lib/logger";
+
+// from server/db/seed/drizzleSeed.ts
+config({ path: resolve(__dirname, "../../../.en") });
+
+// Verify DATABASE_URL is loaded
+if (!process.env.DATABASE_URL) {
+    logger.error("❌ Error: DATABASE_URL is not set in environment variables");
+    logger.error("   Please check your .env file");
+    process.exit(1);
+}
+
+import { createFileInitializationService } from "@/server/storage/demo/fileInitializationService";
 import { templateCategoriesData } from "./constants";
 import {
     generateArabicFullName,
@@ -28,10 +34,24 @@ import {
     generateDateOfBirth,
     shuffleArray,
 } from "./generators";
+
 import { createTemplateVariables } from "./templateVariableCreators";
 import { Email } from "@/server/lib";
-import logger from "@/lib/logger";
-import { UserRepository, TemplateCategoryRepository } from "../repo";
+import {
+    UserRepository,
+    TemplateRepository,
+    TemplateCategoryRepository,
+    StudentRepository,
+    RecipientGroupRepository,
+    RecipientRepository,
+} from "../repo";
+import {
+    StudentCreateInput,
+    StudentEntity,
+    RecipientGroupCreateInput,
+    RecipientCreateListInput,
+} from "@/server/types";
+import { CountryCode, Gender } from "@/lib/enum";
 
 const now = new Date();
 
@@ -179,26 +199,24 @@ async function createTemplates(
         (c) => c.parentCategoryId === null && c.specialType === null,
     );
 
+    if (fileIds.length === 0) {
+        logger.error("   �� No demo files available for templates.");
+        process.exit(1);
+    }
+
     for (const category of topLevelCategories) {
         // Randomly select a file ID if available
         const randomFileId =
-            fileIds.length > 0
-                ? fileIds[Math.floor(Math.random() * fileIds.length)]
-                : null;
+            fileIds[Math.floor(Math.random() * fileIds.length)];
 
-        const [template] = await db
-            .insert(templates)
-            .values({
+        const template = await TemplateRepository.internalCreateWithImageFileId(
+            {
                 name: `نموذج ${category.name}`,
                 description: `نموذج تجريبي لـ${category.name}`,
                 categoryId: category.id,
-                order: 1,
                 imageFileId: randomFileId,
-                preSuspensionCategoryId: null,
-                createdAt: now,
-                updatedAt: now,
-            })
-            .returning();
+            },
+        );
 
         createdTemplates.push(template);
 
@@ -232,14 +250,16 @@ async function createTemplates(
 async function createStudents() {
     logger.log("🎓 Creating 1000 students...");
 
-    const genders = ["MALE", "FEMALE", "OTHER"] as const;
-    const nationalities = ["EG", "US"] as const;
+    const genders: Gender[] = Object.values(Gender);
+    const nationalities: CountryCode[] = Object.values(CountryCode);
+
     const batchSize = 100;
     const totalStudents = 1000;
 
-    for (let batch = 0; batch < totalStudents / batchSize; batch++) {
-        const studentsData = [];
+    const createdStudents: StudentEntity[] = [];
 
+    for (let batch = 0; batch < totalStudents / batchSize; batch++) {
+        const studentsData: StudentCreateInput[] = [];
         for (let i = 0; i < batchSize; i++) {
             const fullName = generateArabicFullName();
             const [firstName, , lastName] = fullName.split(" ");
@@ -262,20 +282,13 @@ async function createStudents() {
                               Math.floor(Math.random() * nationalities.length)
                           ]
                         : null,
-                createdAt: now,
-                updatedAt: now,
             });
         }
-
-        await db.insert(students).values(studentsData);
+        createdStudents.push(
+            ...(await StudentRepository.createList(studentsData)),
+        );
         logger.log(`   📝 Created ${(batch + 1) * batchSize} students...`);
     }
-
-    // Fetch all created students
-    const createdStudents = await db
-        .select()
-        .from(students)
-        .orderBy(students.createdAt);
 
     logger.log("   ✅ Created 1000 students.");
     return createdStudents;
@@ -294,7 +307,7 @@ async function createRecipientGroups(
         return [];
     }
 
-    const groupsData = [];
+    const groupsData: RecipientGroupCreateInput[] = [];
     for (const template of templatesArray) {
         for (let i = 0; i < 2; i++) {
             groupsData.push({
@@ -302,19 +315,11 @@ async function createRecipientGroups(
                 name: `مجموعة ${template.name} ${i + 1}`,
                 description: `وصف لمجموعة ${template.name} ${i + 1}`,
                 date: now,
-                createdAt: now,
-                updatedAt: now,
             });
         }
     }
 
-    await db.insert(templateRecipientGroups).values(groupsData);
-
-    // Fetch created groups
-    const createdGroups = await db
-        .select()
-        .from(templateRecipientGroups)
-        .orderBy(templateRecipientGroups.createdAt);
+    const createdGroups = await RecipientGroupRepository.createList(groupsData);
 
     logger.log(`   ✅ Created ${createdGroups.length} recipient groups.`);
     return createdGroups;
@@ -340,17 +345,15 @@ async function createRecipientGroupItems(
     for (const group of groups) {
         const studentCount = Math.floor(Math.random() * (50 - 10 + 1)) + 10;
         const selectedStudents = shuffledStudents.slice(0, studentCount);
-
-        const itemsData = selectedStudents.map((student) => ({
-            templateRecipientGroupId: group.id,
-            studentId: student.id,
-            createdAt: now,
-            updatedAt: now,
-        }));
+        
+        const input: RecipientCreateListInput = {
+            recipientGroupId: group.id,
+            studentIds: selectedStudents.map((s) => s.id),
+        };
 
         try {
-            await db.insert(templateRecipientGroupItems).values(itemsData);
-            totalItems += itemsData.length;
+            const items = await RecipientRepository.createList(input);
+            totalItems += items.length;
         } catch {
             // Skip duplicates (similar to Prisma's try/catch)
             logger.log(
