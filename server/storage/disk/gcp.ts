@@ -1,14 +1,14 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import logger from "@/lib/logger";
-import * as StorageTypes from "../storage.types";
+import * as StorageTypes from "../../types/storage.types";
 import {
     StorageService,
     StorageValidationError,
     STORAGE_CONFIG,
 } from "./storage.service.interface";
-import { StorageDbRepository } from "../db/storage-db.service";
-import * as StorageUtils from "../storage.utils";
+import { StorageDbRepository } from "../../db/repo/storage.repository";
+import * as StorageUtils from "../../utils/storage.utils";
 import { OrderSortDirection } from "@/lib/enum";
 
 type GcsApiResponse = {
@@ -130,7 +130,7 @@ class GcpAdapter implements StorageService {
 
     async uploadFile(
         path: string,
-        contentType: StorageTypes.ContentTypeServerType,
+        contentType: StorageTypes.FileContentType,
         buffer: Buffer,
     ): Promise<StorageTypes.FileUploadResult> {
         try {
@@ -236,10 +236,8 @@ class GcpAdapter implements StorageService {
         const [files] = response;
         const apiResponse = response[2] as GcsApiResponse | undefined;
 
-        const items: Array<
-            | StorageTypes.FileInfoServerType
-            | StorageTypes.DirectoryInfoServerType
-        > = [];
+        const items: Array<StorageTypes.FileInfo | StorageTypes.DirectoryInfo> =
+            [];
 
         // Collect all file paths for batch DB query
         const filePaths: string[] = [];
@@ -335,7 +333,7 @@ class GcpAdapter implements StorageService {
                 const dirPath = dirPrefix.replace(/\/$/, "");
                 const dbDir = dbDirMap.get(dirPath);
 
-                const bucketDir: StorageTypes.BucketDirectoryServerType = {
+                const bucketDir: StorageTypes.BucketDirectory = {
                     path: dirPath,
                     createdAt: new Date(),
                     lastModified: new Date(),
@@ -374,7 +372,7 @@ class GcpAdapter implements StorageService {
         // Sort items
         const sortedItems = StorageUtils.sortItems(
             filteredItems,
-            input.sortBy || StorageTypes.FileSortFieldServerType.NAME,
+            input.sortBy || StorageTypes.FileSortField.NAME,
             input.sortDirection || OrderSortDirection.ASC,
         );
 
@@ -431,14 +429,14 @@ class GcpAdapter implements StorageService {
                 input.protected === true ||
                 input.protectChildren === true;
 
-            let newDirectoryInfo: StorageTypes.DirectoryInfoServerType;
+            let newDirectoryInfo: StorageTypes.DirectoryInfo;
 
             if (hasCustomPermissions) {
                 try {
                     const directoryEntity =
                         await StorageDbRepository.createDirectory(input);
 
-                    const bucketDir: StorageTypes.BucketDirectoryServerType = {
+                    const bucketDir: StorageTypes.BucketDirectory = {
                         path: fullPath,
                         createdAt: new Date(),
                         lastModified: new Date(),
@@ -619,7 +617,7 @@ class GcpAdapter implements StorageService {
 
     async directoryInfoByPath(
         path: string,
-    ): Promise<StorageTypes.DirectoryInfoServerType> {
+    ): Promise<StorageTypes.DirectoryInfo | null> {
         // Check database first
         const dbDirectory = await StorageDbRepository.directoryByPath(path);
 
@@ -633,11 +631,10 @@ class GcpAdapter implements StorageService {
         const folderExists = files.length > 0;
 
         if (!folderExists && !dbDirectory) {
-            // Return default entity
-            return StorageUtils.createDirectoryFromPath(path);
+            return null;
         }
 
-        const bucketDir: StorageTypes.BucketDirectoryServerType = {
+        const bucketDir: StorageTypes.BucketDirectory = {
             path,
             createdAt: new Date(),
             lastModified: new Date(),
@@ -647,9 +644,7 @@ class GcpAdapter implements StorageService {
         return StorageUtils.combineDirectoryData(bucketDir, dbDirectory);
     }
 
-    async fileInfoByPath(
-        path: string,
-    ): Promise<StorageTypes.FileInfoServerType | null> {
+    async fileInfoByPath(path: string): Promise<StorageTypes.FileInfo | null> {
         try {
             const file = this.bucket.file(path);
             const [exists] = await file.exists();
@@ -674,7 +669,7 @@ class GcpAdapter implements StorageService {
 
     async fileInfoByDbFileId(
         id: bigint,
-    ): Promise<StorageTypes.FileInfoServerType | null> {
+    ): Promise<StorageTypes.FileInfo | null> {
         try {
             const dbFile = await StorageDbRepository.fileById(id);
             if (!dbFile) {
@@ -708,7 +703,7 @@ class GcpAdapter implements StorageService {
 
             let totalSize = BigInt(0);
             const fileTypeMap = new Map<
-                StorageTypes.FileTypeServerType,
+                StorageTypes.FileType,
                 { count: number; size: bigint }
             >();
 
@@ -764,7 +759,7 @@ class GcpAdapter implements StorageService {
 
     async fetchDirectoryChildren(
         path?: string,
-    ): Promise<StorageTypes.DirectoryInfoServerType[]> {
+    ): Promise<StorageTypes.DirectoryInfo[]> {
         // Clean path, default to "public" if empty
         const searchPath =
             !path || path.length === 0 ? "public" : cleanGcsPath(path);
@@ -784,7 +779,7 @@ class GcpAdapter implements StorageService {
             autoPaginate: false,
         });
 
-        const directories: StorageTypes.DirectoryInfoServerType[] = [];
+        const directories: StorageTypes.DirectoryInfo[] = [];
         const apiResponse = responseData[2] as GcsApiResponse | undefined;
 
         if (apiResponse?.prefixes) {
@@ -792,7 +787,7 @@ class GcpAdapter implements StorageService {
                 const dirPath = dirPrefix.replace(/\/$/, "");
                 const dbDir = dbDirectoriesByPath.get(dirPath);
 
-                const bucketDir: StorageTypes.BucketDirectoryServerType = {
+                const bucketDir: StorageTypes.BucketDirectory = {
                     path: dirPath,
                     createdAt: new Date(),
                     lastModified: new Date(),
@@ -815,8 +810,7 @@ class GcpAdapter implements StorageService {
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
         const successfulItems: Array<
-            | StorageTypes.FileInfoServerType
-            | StorageTypes.DirectoryInfoServerType
+            StorageTypes.FileInfo | StorageTypes.DirectoryInfo
         > = [];
 
         // Batch check if all source files exist in bucket
@@ -961,7 +955,9 @@ class GcpAdapter implements StorageService {
 
                     // Get the updated directory info for successful items
                     const dirInfo = await this.directoryInfoByPath(newPath);
-                    successfulItems.push(dirInfo);
+                    if (dirInfo) {
+                        successfulItems.push(dirInfo);
+                    }
                 } else {
                     // No DB entity, get info from bucket
                     const fileInfo = await this.fileInfoByPath(newPath);
@@ -1001,8 +997,7 @@ class GcpAdapter implements StorageService {
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
         const successfulItems: Array<
-            | StorageTypes.FileInfoServerType
-            | StorageTypes.DirectoryInfoServerType
+            StorageTypes.FileInfo | StorageTypes.DirectoryInfo
         > = [];
 
         // Batch check if all source files exist in bucket
@@ -1106,8 +1101,7 @@ class GcpAdapter implements StorageService {
         let failureCount = 0;
         const failures: Array<{ path: string; error: string }> = [];
         const successfulItems: Array<
-            | StorageTypes.FileInfoServerType
-            | StorageTypes.DirectoryInfoServerType
+            StorageTypes.FileInfo | StorageTypes.DirectoryInfo
         > = [];
 
         // Batch load DB entities for all paths and their parent directories

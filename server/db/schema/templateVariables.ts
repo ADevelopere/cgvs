@@ -10,7 +10,7 @@ import {
     uniqueIndex,
     serial,
 } from "drizzle-orm/pg-core";
-import { TemplateVariableType } from "@/server/graphql/templateVariable/templateVariable.types";
+import { TemplateVariableType } from "@/server/types/templateVariable.types";
 import { createPgEnumFromEnum } from "../enumHelpers";
 
 export const templateVariableTypeEnum = createPgEnumFromEnum(

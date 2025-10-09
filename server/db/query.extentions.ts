@@ -1,6 +1,6 @@
 import { PgSelect } from "drizzle-orm/pg-core";
 import { sql, SQL, Column } from "drizzle-orm";
-import { PaginationArgs } from "../graphql/pagintaion/pagintaion.types";
+import { PaginationArgs } from "../types/pagination.types";
 
 export function queryWithPagination<T extends PgSelect>(
     qb: T,

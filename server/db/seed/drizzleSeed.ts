@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 /**
  * Drizzle Seed Script - Generates the exact same demo data as the old Prisma seeder
- * 
+ *
  * This script creates:
  * - 1 Admin user (admin@cgvs.com)
  * - Template categories (with special types and subcategories)
@@ -12,38 +11,8 @@
  * - Recipient group items (10-50 students per group)
  */
 
-// Load environment variables from .env file BEFORE any other imports
-import { config } from "dotenv";
-import { resolve } from "path";
-config({ path: resolve(__dirname, "../../../.env") });
-
-// Verify DATABASE_URL is loaded
-if (!process.env.DATABASE_URL) {
-    console.error("❌ Error: DATABASE_URL is not set in environment variables");
-    console.error("   Please check your .env file");
-    process.exit(1);
-}
-
+import { createFileInitializationService } from "../../storage/demo/fileInitializationService";
 import * as bcrypt from "bcryptjs";
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
-import { relations } from "../drizzleRelations";
-
-// Create a new database connection specifically for seeding
-class SeedLogWriter implements LogWriter {
-    write(message: string) {
-        console.log(message);
-    }
-}
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 10,
-});
-
-const logger = new DefaultLogger({ writer: new SeedLogWriter() });
-const db = drizzle(pool, { relations, logger });
 import { users, roles, userRoles } from "../schema/users";
 import { students } from "../schema/students";
 import { templateCategories, templates } from "../schema/templates";
@@ -61,6 +30,9 @@ import {
     shuffleArray,
 } from "./generators";
 import { createTemplateVariables } from "./templateVariableCreators";
+import logger from "@/lib/logger";
+
+import {}
 
 const now = new Date();
 
@@ -70,7 +42,7 @@ const now = new Date();
  * Creates an admin user and admin role for testing authentication.
  */
 async function createAdminUser() {
-    console.log("👤 Creating admin user...");
+    logger.log("👤 Creating admin user...");
 
     // Check if admin user already exists
     const existingAdmin = await db
@@ -80,7 +52,7 @@ async function createAdminUser() {
         .limit(1);
 
     if (existingAdmin.length > 0) {
-        console.log("   ⚠️ Admin user already exists, skipping creation.");
+        logger.log("   ⚠️ Admin user already exists, skipping creation.");
         return existingAdmin[0];
     }
 
@@ -125,10 +97,10 @@ async function createAdminUser() {
         roleId: adminRole.id,
     });
 
-    console.log("   ✅ Admin user created successfully:");
-    console.log("      Email: admin@cgvs.com");
-    console.log("      Password: cgvs@123");
-    console.log("      Role: Administrator");
+    logger.log("   ✅ Admin user created successfully:");
+    logger.log("      Email: admin@cgvs.com");
+    logger.log("      Password: cgvs@123");
+    logger.log("      Role: Administrator");
     return adminUser;
 }
 
@@ -136,7 +108,7 @@ async function createAdminUser() {
  * Creates template categories, including special types and nested categories.
  */
 async function createTemplateCategories() {
-    console.log("📁 Creating template categories...");
+    logger.log("📁 Creating template categories...");
     const allCategories = [];
 
     // Create or ensure special categories exist
@@ -149,7 +121,7 @@ async function createTemplateCategories() {
     let mainCategory;
     if (existingMain.length > 0) {
         mainCategory = existingMain[0];
-        console.log("   ⚠️ Main category already exists.");
+        logger.log("   ⚠️ Main category already exists.");
     } else {
         [mainCategory] = await db
             .insert(templateCategories)
@@ -163,7 +135,7 @@ async function createTemplateCategories() {
                 updatedAt: now,
             })
             .returning();
-        console.log("   ✅ Main category created.");
+        logger.log("   ✅ Main category created.");
     }
     allCategories.push(mainCategory);
 
@@ -176,7 +148,7 @@ async function createTemplateCategories() {
     let suspensionCategory;
     if (existingSuspension.length > 0) {
         suspensionCategory = existingSuspension[0];
-        console.log("   ⚠️ Suspension category already exists.");
+        logger.log("   ⚠️ Suspension category already exists.");
     } else {
         [suspensionCategory] = await db
             .insert(templateCategories)
@@ -190,7 +162,7 @@ async function createTemplateCategories() {
                 updatedAt: now,
             })
             .returning();
-        console.log("   ✅ Suspension category created.");
+        logger.log("   ✅ Suspension category created.");
     }
     allCategories.push(suspensionCategory);
 
@@ -212,8 +184,14 @@ async function createTemplateCategories() {
         allCategories.push(parentCategory);
 
         // Create subcategories if they exist
-        if (categoryData.subcategories && categoryData.subcategories.length > 0) {
-            for (const [subIndex, sub] of categoryData.subcategories.entries()) {
+        if (
+            categoryData.subcategories &&
+            categoryData.subcategories.length > 0
+        ) {
+            for (const [
+                subIndex,
+                sub,
+            ] of categoryData.subcategories.entries()) {
                 const [subCategory] = await db
                     .insert(templateCategories)
                     .values({
@@ -232,15 +210,46 @@ async function createTemplateCategories() {
         }
     }
 
-    console.log(`   ✅ Created/verified ${allCategories.length} categories.`);
+    logger.log(`   ✅ Created/verified ${allCategories.length} categories.`);
     return allCategories;
+}
+
+/**
+ * Initializes the file system and returns demo file IDs
+ */
+async function initializeFileSystem() {
+    logger.log("📁 Initializing file system and uploading demo files...");
+
+    try {
+        const fileInitService = await createFileInitializationService();
+
+        // Initialize file system (creates directories and uploads demo files)
+        await fileInitService.initializeFileSystem();
+
+        // Get demo file IDs
+        const fileIds = await fileInitService.getDemoFileIds();
+
+        logger.log(
+            `   ✅ File system initialized with ${fileIds.length} demo files.`,
+        );
+        return { fileInitService, fileIds };
+    } catch (error) {
+        logger.error("   ❌ Error initializing file system:", error);
+        return { fileInitService: null, fileIds: [] };
+    }
 }
 
 /**
  * Creates sample templates, one for each top-level category.
  */
-async function createTemplates(categories: Awaited<ReturnType<typeof createTemplateCategories>>) {
-    console.log("📋 Creating templates...");
+async function createTemplates(
+    categories: Awaited<ReturnType<typeof createTemplateCategories>>,
+    fileIds: bigint[],
+    fileInitService: Awaited<
+        ReturnType<typeof createFileInitializationService>
+    > | null,
+) {
+    logger.log("📋 Creating templates...");
     const createdTemplates = [];
 
     // Filter for top-level categories, excluding special types
@@ -249,6 +258,12 @@ async function createTemplates(categories: Awaited<ReturnType<typeof createTempl
     );
 
     for (const category of topLevelCategories) {
+        // Randomly select a file ID if available
+        const randomFileId =
+            fileIds.length > 0
+                ? fileIds[Math.floor(Math.random() * fileIds.length)]
+                : null;
+
         const [template] = await db
             .insert(templates)
             .values({
@@ -256,7 +271,7 @@ async function createTemplates(categories: Awaited<ReturnType<typeof createTempl
                 description: `نموذج تجريبي لـ${category.name}`,
                 categoryId: category.id,
                 order: 1,
-                imageFileId: null,
+                imageFileId: randomFileId,
                 preSuspensionCategoryId: null,
                 createdAt: now,
                 updatedAt: now,
@@ -265,11 +280,25 @@ async function createTemplates(categories: Awaited<ReturnType<typeof createTempl
 
         createdTemplates.push(template);
 
+        // Register file usage if file was assigned
+        if (randomFileId && fileInitService) {
+            try {
+                await fileInitService.registerTemplateFileUsage(
+                    template.id,
+                    randomFileId,
+                );
+            } catch {
+                logger.log(
+                    `   ⚠️  Could not register file usage for template ${template.id}`,
+                );
+            }
+        }
+
         // Create variables for this template
         await createTemplateVariables(db, template, category.name, now);
     }
 
-    console.log(
+    logger.log(
         `   ✅ Created ${createdTemplates.length} templates with variables.`,
     );
     return createdTemplates;
@@ -279,7 +308,7 @@ async function createTemplates(categories: Awaited<ReturnType<typeof createTempl
  * Creates 1000 sample students with randomized data.
  */
 async function createStudents() {
-    console.log("🎓 Creating 1000 students...");
+    logger.log("🎓 Creating 1000 students...");
 
     const genders = ["MALE", "FEMALE", "OTHER"] as const;
     const nationalities = ["EG", "US"] as const;
@@ -295,18 +324,29 @@ async function createStudents() {
 
             studentsData.push({
                 name: fullName,
-                email: Math.random() < 0.7 ? generateEmail(firstName, lastName) : null,
+                email:
+                    Math.random() < 0.7
+                        ? generateEmail(firstName, lastName)
+                        : null,
                 phoneNumber: Math.random() < 0.6 ? generatePhoneNumber() : null,
                 dateOfBirth: Math.random() < 0.8 ? generateDateOfBirth() : null,
-                gender: Math.random() < 0.9 ? genders[Math.floor(Math.random() * genders.length)] : null,
-                nationality: Math.random() < 0.75 ? nationalities[Math.floor(Math.random() * nationalities.length)] : null,
+                gender:
+                    Math.random() < 0.9
+                        ? genders[Math.floor(Math.random() * genders.length)]
+                        : null,
+                nationality:
+                    Math.random() < 0.75
+                        ? nationalities[
+                              Math.floor(Math.random() * nationalities.length)
+                          ]
+                        : null,
                 createdAt: now,
                 updatedAt: now,
             });
         }
 
         await db.insert(students).values(studentsData);
-        console.log(`   📝 Created ${(batch + 1) * batchSize} students...`);
+        logger.log(`   📝 Created ${(batch + 1) * batchSize} students...`);
     }
 
     // Fetch all created students
@@ -315,7 +355,7 @@ async function createStudents() {
         .from(students)
         .orderBy(students.createdAt);
 
-    console.log("   ✅ Created 1000 students.");
+    logger.log("   ✅ Created 1000 students.");
     return createdStudents;
 }
 
@@ -325,10 +365,10 @@ async function createStudents() {
 async function createRecipientGroups(
     templatesArray: Awaited<ReturnType<typeof createTemplates>>,
 ) {
-    console.log("👥 Creating recipient groups...");
+    logger.log("👥 Creating recipient groups...");
 
     if (templatesArray.length === 0) {
-        console.log("   ⚠️ No templates available to create recipient groups.");
+        logger.log("   ⚠️ No templates available to create recipient groups.");
         return [];
     }
 
@@ -354,7 +394,7 @@ async function createRecipientGroups(
         .from(templateRecipientGroups)
         .orderBy(templateRecipientGroups.createdAt);
 
-    console.log(`   ✅ Created ${createdGroups.length} recipient groups.`);
+    logger.log(`   ✅ Created ${createdGroups.length} recipient groups.`);
     return createdGroups;
 }
 
@@ -365,10 +405,10 @@ async function createRecipientGroupItems(
     groups: Awaited<ReturnType<typeof createRecipientGroups>>,
     studentsArray: Awaited<ReturnType<typeof createStudents>>,
 ) {
-    console.log("👥 Creating recipient group items...");
+    logger.log("👥 Creating recipient group items...");
 
     if (groups.length === 0 || studentsArray.length === 0) {
-        console.log("   ⚠️ No groups or students available to create items.");
+        logger.log("   ⚠️ No groups or students available to create items.");
         return 0;
     }
 
@@ -391,63 +431,87 @@ async function createRecipientGroupItems(
             totalItems += itemsData.length;
         } catch {
             // Skip duplicates (similar to Prisma's try/catch)
-            console.log(`   ⚠️ Some items skipped for group ${group.id} (duplicates)`);
+            logger.log(
+                `   ⚠️ Some items skipped for group ${group.id} (duplicates)`,
+            );
         }
     }
 
-    console.log(`   ✅ Created ${totalItems} recipient group items.`);
+    logger.log(`   ✅ Created ${totalItems} recipient group items.`);
     return totalItems;
 }
 
 // --- Main Execution ---
 
 async function main() {
-    console.log("🌱 Starting demo data seeding...");
-    console.log("===============================\n");
+    logger.log("🌱 Starting demo data seeding...");
+    logger.log("===============================\n");
 
     try {
-        // 1. Create admin user
+        // 1. Initialize file system and get demo file IDs
+        const { fileInitService, fileIds } = await initializeFileSystem();
+        logger.log("");
+
+        if (!fileInitService) {
+            logger.log("Error initializing file system");
+            return;
+        }
+
+        if (fileIds.length === 0) {
+            logger.error("Error, no demo files");
+            return;
+        }
+
+        // 2. Create admin user
         await createAdminUser();
-        console.log("");
+        logger.log("");
 
-        // 2. Create template categories
+        // 3. Create template categories
         const categories = await createTemplateCategories();
-        console.log("");
+        logger.log("");
 
-        // 3. Create templates
-        const templatesArray = await createTemplates(categories);
-        console.log("");
+        // 4. Create templates
+        const templatesArray = await createTemplates(
+            categories,
+            fileIds,
+            fileInitService,
+        );
+        logger.log("");
 
-        // 4. Create students
+        // 5. Create students
         const studentsArray = await createStudents();
-        console.log("");
+        logger.log("");
 
-        // 5. Create recipient groups
+        // 6. Create recipient groups
         const groups = await createRecipientGroups(templatesArray);
-        console.log("");
+        logger.log("");
 
-        // 6. Create recipient group items
-        const itemsCount = await createRecipientGroupItems(groups, studentsArray);
-        console.log("");
+        // 7. Create recipient group items
+        const itemsCount = await createRecipientGroupItems(
+            groups,
+            studentsArray,
+        );
+        logger.log("");
 
-        console.log("===============================");
-        console.log("✅ Demo data seeding completed successfully!");
-        console.log("📊 Summary:");
-        console.log(`   - Admin user: admin@cgvs.com (password: cgvs@123)`);
-        console.log(`   - Categories: ${categories.length}`);
-        console.log(`   - Templates: ${templatesArray.length}`);
-        console.log(`   - Students: ${studentsArray.length}`);
-        console.log(`   - Recipient Groups: ${groups.length}`);
-        console.log(`   - Recipient Group Items: ${itemsCount}`);
+        logger.log("===============================");
+        logger.log("✅ Demo data seeding completed successfully!");
+        logger.log("📊 Summary:");
+        logger.log(`   - Admin user: admin@cgvs.com (password: cgvs@123)`);
+        logger.log(`   - Categories: ${categories.length}`);
+        logger.log(`   - Demo Files: ${fileIds.length}`);
+        logger.log(`   - Templates: ${templatesArray.length}`);
+        logger.log(`   - Students: ${studentsArray.length}`);
+        logger.log(`   - Recipient Groups: ${groups.length}`);
+        logger.log(`   - Recipient Group Items: ${itemsCount}`);
     } catch (error) {
-        console.error("❌ Error during seeding:", error);
+        logger.error("❌ Error during seeding:", error);
         throw error;
     }
 }
 
 main()
     .catch((e) => {
-        console.error("❌ Fatal error:", e);
+        logger.error("❌ Fatal error:", e);
         process.exit(1);
     })
     .finally(async () => {
