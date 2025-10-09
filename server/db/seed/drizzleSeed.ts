@@ -12,8 +12,7 @@
  */
 
 import { createFileInitializationService } from "../../storage/demo/fileInitializationService";
-import * as bcrypt from "bcryptjs";
-import { users, roles, userRoles } from "../schema/users";
+import { roles, userRoles } from "../schema/users";
 import { students } from "../schema/students";
 import { templateCategories, templates } from "../schema/templates";
 import {
@@ -31,8 +30,8 @@ import {
 } from "./generators";
 import { createTemplateVariables } from "./templateVariableCreators";
 import logger from "@/lib/logger";
-
-import {}
+import { UserRepository } from "../repo";
+import { Email } from "@/server/lib";
 
 const now = new Date();
 
@@ -45,31 +44,17 @@ async function createAdminUser() {
     logger.log("👤 Creating admin user...");
 
     // Check if admin user already exists
-    const existingAdmin = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, "admin@cgvs.com"))
-        .limit(1);
+    let adminUser = await UserRepository.findByEmail("admin@cgvs.com");
 
-    if (existingAdmin.length > 0) {
+    if (adminUser) {
         logger.log("   ⚠️ Admin user already exists, skipping creation.");
-        return existingAdmin[0];
-    }
-
-    const hashedPassword = await bcrypt.hash("cgvs@123", 12);
-
-    const [adminUser] = await db
-        .insert(users)
-        .values({
+    } else {
+        adminUser = await UserRepository.create({
             name: "System Administrator",
-            email: "admin@cgvs.com",
-            password: hashedPassword,
-            emailVerifiedAt: now,
-            rememberToken: null,
-            createdAt: now,
-            updatedAt: now,
-        })
-        .returning();
+            email: new Email("admin@cgvs.com"),
+            password: "cgvs@123",
+        });
+    }
 
     // Create or get admin role
     const existingRoles = await db

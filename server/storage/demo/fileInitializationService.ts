@@ -255,11 +255,11 @@ export class FileInitializationService implements IFileInitializationService {
                 const fileInfo =
                     await this.storageService.fileInfoByPath(filePath);
 
-                if (fileInfo?.id) {
+                if (fileInfo?.dbId) {
                     logger.info(
-                        `   ✅ Found demo file in database: ${filePath} (ID: ${fileInfo.id})`,
+                        `   ✅ Found demo file in database: ${filePath} (ID: ${fileInfo.dbId})`,
                     );
-                    fileIds.push(fileInfo.id);
+                    fileIds.push(fileInfo.dbId);
                 } else if (fileInfo) {
                     logger.warn(
                         `   ⚠️  Demo file exists in storage but has no database ID: ${filePath}`,

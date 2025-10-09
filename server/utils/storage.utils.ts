@@ -3,10 +3,7 @@ import * as Types from "@/server/types";
 import { OrderSortDirection } from "@/lib/enum";
 
 // Mapping functions for GraphQL enums to actual values
-export const CONTENT_TYPE_MAP: Record<
-    Types.FileContentType,
-    string
-> = {
+export const CONTENT_TYPE_MAP: Record<Types.FileContentType, string> = {
     [Types.FileContentType.JPEG]: "image/jpeg",
     [Types.FileContentType.PNG]: "image/png",
     [Types.FileContentType.GIF]: "image/gif",
@@ -26,24 +23,19 @@ export const CONTENT_TYPE_MAP: Record<
     [Types.FileContentType.WAV]: "audio/wav",
 };
 
-export const UPLOAD_LOCATION_MAP: Record<
-    Types.UploadLocationPath,
-    string
-> = {
+export const UPLOAD_LOCATION_MAP: Record<Types.UploadLocationPath, string> = {
     [Types.UploadLocationPath.TEMPLATE_COVERS]: "public/templateCover",
 };
 
 // Reverse mapping for content types
-export const REVERSE_CONTENT_TYPE_MAP: Record<
-    string,
-    Types.FileContentType
-> = Object.entries(CONTENT_TYPE_MAP).reduce(
-    (acc, [key, value]) => {
-        acc[value] = key as Types.FileContentType;
-        return acc;
-    },
-    {} as Record<string, Types.FileContentType>,
-);
+export const REVERSE_CONTENT_TYPE_MAP: Record<string, Types.FileContentType> =
+    Object.entries(CONTENT_TYPE_MAP).reduce(
+        (acc, [key, value]) => {
+            acc[value] = key as Types.FileContentType;
+            return acc;
+        },
+        {} as Record<string, Types.FileContentType>,
+    );
 
 export const contentTypeEnumToMimeType = (
     enumValue: Types.FileContentType,
@@ -148,25 +140,22 @@ export const validateUpload = async (
 
 export const getFileTypeFromContentType = (
     contentType?: string,
-): Types.FileType => {
-    if (!contentType) return Types.FileType.OTHER;
+): Types.FileTypes => {
+    if (!contentType) return Types.FileTypes.OTHER;
 
-    if (contentType.startsWith("image/"))
-        return Types.FileType.IMAGE;
-    if (contentType.startsWith("video/"))
-        return Types.FileType.VIDEO;
-    if (contentType.startsWith("audio/"))
-        return Types.FileType.AUDIO;
+    if (contentType.startsWith("image/")) return Types.FileTypes.IMAGE;
+    if (contentType.startsWith("video/")) return Types.FileTypes.VIDEO;
+    if (contentType.startsWith("audio/")) return Types.FileTypes.AUDIO;
     if (
         contentType.includes("pdf") ||
         contentType.includes("document") ||
         contentType.includes("text")
     )
-        return Types.FileType.DOCUMENT;
+        return Types.FileTypes.DOCUMENT;
     if (contentType.includes("zip") || contentType.includes("rar"))
-        return Types.FileType.ARCHIVE;
+        return Types.FileTypes.ARCHIVE;
 
-    return Types.FileType.OTHER;
+    return Types.FileTypes.OTHER;
 };
 
 export const extractDirectoryPath = (filePath: string): string => {
@@ -257,19 +246,23 @@ export const combineDirectoryData = (
               allowMoveFiles: true,
           };
 
-    return new Types.DirectoryInfo(
-        bucketDir.path,
-        extractFileName(bucketDir.path),
-        dbEntity?.isProtected || false,
-        permissions,
-        dbEntity?.protectChildren || false,
-        bucketDir.createdAt,
-        bucketDir.lastModified,
-        true,
-        fileCount,
-        0,
-        0,
-    );
+    const result: Types.DirectoryInfo = {
+        dbId: dbEntity?.id,
+        path: bucketDir.path,
+        name: extractFileName(bucketDir.path),
+        isProtected: dbEntity?.isProtected || false,
+        permissions: permissions,
+        protectChildren: dbEntity?.protectChildren || false,
+        createdAt: bucketDir.createdAt,
+        lastModified: bucketDir.lastModified,
+        fileCount: fileCount,
+        isFromBucket: true,
+        isPublic: bucketDir.isPublic,
+        // todo: implement following
+        folderCount: 0,
+        totalSize: 0,
+    };
+    return result;
 };
 
 export const combineFileData = (
@@ -279,34 +272,36 @@ export const combineFileData = (
     const usages: Types.FileUsageInfo[] = [];
     const isProtected = dbEntity?.isProtected || false;
 
-    return new Types.FileInfo(
-        bucketFile.path,
-        extractFileName(bucketFile.path),
+    const result: Types.FileInfo = {
+        dbId: dbEntity?.id,
+        path: bucketFile.path,
+        name: extractFileName(bucketFile.path),
         isProtected,
-        bucketFile.directoryPath,
-        bucketFile.size,
-        bucketFile.contentType,
-        bucketFile.md5Hash,
-        bucketFile.createdAt,
-        bucketFile.lastModified,
-        true,
-        bucketFile.url,
-        bucketFile.mediaLink,
-        bucketFile.fileType,
-        bucketFile.isPublic,
-        false,
-        usages,
-    );
+        directoryPath: bucketFile.directoryPath,
+        size: bucketFile.size,
+        contentType: bucketFile.contentType,
+        md5Hash: bucketFile.md5Hash,
+        createdAt: bucketFile.createdAt,
+        lastModified: bucketFile.lastModified,
+        url: bucketFile.url,
+        mediaLink: bucketFile.mediaLink,
+        fileType: bucketFile.fileType,
+        isPublic: bucketFile.isPublic,
+        isFromBucket: true,
+        usages: usages,
+        isInUse: usages.length > 0,
+    };
+
+    return result;
 };
 
-export const createDirectoryFromPath = (
-    path: string,
-): Types.DirectoryInfo => {
-    return new Types.DirectoryInfo(
-        path,
-        extractFileName(path),
-        false,
-        {
+export const createDirectoryFromPath = (path: string): Types.DirectoryInfo => {
+    const now = new Date();
+    const result: Types.DirectoryInfo = {
+        path: path,
+        name: extractFileName(path),
+        isProtected: false,
+        permissions: {
             allowUploads: true,
             allowDelete: true,
             allowMove: true,
@@ -314,25 +309,25 @@ export const createDirectoryFromPath = (
             allowDeleteFiles: true,
             allowMoveFiles: true,
         },
-        false,
-        new Date(),
-        new Date(),
-        true,
-        0,
-        0,
-        0,
-    );
+        protectChildren: false,
+        createdAt: now,
+        lastModified: now,
+        fileCount: 0,
+        isFromBucket: false,
+        isPublic: path.startsWith("public"),
+        // todo: implement following
+        folderCount: 0,
+        totalSize: 0,
+    };
+
+    return result;
 };
 
 export const sortItems = (
-    items: Array<
-        Types.FileInfo | Types.DirectoryInfo
-    >,
+    items: Array<Types.FileInfo | Types.DirectoryInfo>,
     sortBy: Types.FileSortField,
     direction: OrderSortDirection,
-): Array<
-    Types.FileInfo | Types.DirectoryInfo
-> => {
+): Array<Types.FileInfo | Types.DirectoryInfo> => {
     const sorted = [...items].sort((a, b) => {
         let comparison = 0;
 

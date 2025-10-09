@@ -49,8 +49,12 @@ export type BucketDirectory = {
 };
 
 export type DirectoryInfo = StorageObject &
-    DirectoryEntity &
+    Omit<DirectoryEntity, keyof DirectoryPermissions | "id"> &
     BucketDirectory & {
+        path: string;
+        name: string;
+        isProtected: boolean;
+        dbId?: bigint | null;
         permissions: DirectoryPermissions;
         protectChildren: boolean;
         isFromBucket: boolean;
@@ -69,13 +73,17 @@ export type BucketFile = {
     lastModified: Date;
     url: string;
     mediaLink?: string;
-    fileType: FileType;
+    fileType: FileTypes;
     isPublic: boolean;
 };
 
-export type FileInfo = StorageObject &
-    FileEntity &
-    BucketFile & {
+export type FileInfo = Omit<FileEntity, "id"> &
+    BucketFile &
+    StorageObject & {
+        path: string;
+        name: string;
+        isProtected: boolean;
+        dbId?: bigint | null;
         isFromBucket: boolean;
         isInUse: boolean;
         usages: FileUsageInfo[];
@@ -89,7 +97,7 @@ export type StorageObjectList = {
     limit: number;
 };
 
-export enum FileType {
+export enum FileTypes {
     IMAGE = "IMAGE",
     VIDEO = "VIDEO",
     AUDIO = "AUDIO",
@@ -246,7 +254,7 @@ export interface StorageStats {
     totalFiles: number;
     totalSize: bigint;
     fileTypeBreakdown: Array<{
-        type: FileType;
+        type: FileTypes;
         count: number;
         size: bigint;
     }>;
