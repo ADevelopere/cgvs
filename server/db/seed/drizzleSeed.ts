@@ -14,7 +14,7 @@
 import { createFileInitializationService } from "../../storage/demo/fileInitializationService";
 import { roles, userRoles } from "../schema/users";
 import { students } from "../schema/students";
-import { templateCategories, templates } from "../schema/templates";
+import { templates } from "../schema/templates";
 import {
     templateRecipientGroups,
     templateRecipientGroupItems,
@@ -29,9 +29,9 @@ import {
     shuffleArray,
 } from "./generators";
 import { createTemplateVariables } from "./templateVariableCreators";
-import logger from "@/lib/logger";
-import { UserRepository } from "../repo";
 import { Email } from "@/server/lib";
+import logger from "@/lib/logger";
+import { UserRepository, TemplateCategoryRepository } from "../repo";
 
 const now = new Date();
 
@@ -97,74 +97,21 @@ async function createTemplateCategories() {
     const allCategories = [];
 
     // Create or ensure special categories exist
-    const existingMain = await db
-        .select()
-        .from(templateCategories)
-        .where(eq(templateCategories.specialType, "Main"))
-        .limit(1);
+    const templatesMainCategory =
+        await TemplateCategoryRepository.createMainCategoryIfNotExisting();
+    allCategories.push(templatesMainCategory);
 
-    let mainCategory;
-    if (existingMain.length > 0) {
-        mainCategory = existingMain[0];
-        logger.log("   ⚠️ Main category already exists.");
-    } else {
-        [mainCategory] = await db
-            .insert(templateCategories)
-            .values({
-                name: "الفئة الرئيسية",
-                description: "الفئة الرئيسية لجميع الشهادات",
-                order: 0,
-                specialType: "Main",
-                parentCategoryId: null,
-                createdAt: now,
-                updatedAt: now,
-            })
-            .returning();
-        logger.log("   ✅ Main category created.");
-    }
-    allCategories.push(mainCategory);
-
-    const existingSuspension = await db
-        .select()
-        .from(templateCategories)
-        .where(eq(templateCategories.specialType, "Suspension"))
-        .limit(1);
-
-    let suspensionCategory;
-    if (existingSuspension.length > 0) {
-        suspensionCategory = existingSuspension[0];
-        logger.log("   ⚠️ Suspension category already exists.");
-    } else {
-        [suspensionCategory] = await db
-            .insert(templateCategories)
-            .values({
-                name: "فئة الإيقاف",
-                description: "فئة الشهادات الموقوفة أو المعلقة",
-                order: 1,
-                specialType: "Suspension",
-                parentCategoryId: null,
-                createdAt: now,
-                updatedAt: now,
-            })
-            .returning();
-        logger.log("   ✅ Suspension category created.");
-    }
-    allCategories.push(suspensionCategory);
+    const templatesSuspensionCategory =
+        await TemplateCategoryRepository.createSuspensionCategoryIfNotExisting();
+    allCategories.push(templatesSuspensionCategory);
 
     // Create regular categories
-    for (const [index, categoryData] of templateCategoriesData.entries()) {
-        const [parentCategory] = await db
-            .insert(templateCategories)
-            .values({
-                name: categoryData.name,
-                description: categoryData.description,
-                order: index + 2,
-                specialType: null,
-                parentCategoryId: null,
-                createdAt: now,
-                updatedAt: now,
-            })
-            .returning();
+    for (const [, categoryData] of templateCategoriesData.entries()) {
+        const parentCategory = await TemplateCategoryRepository.create({
+            name: categoryData.name,
+            description: categoryData.description,
+            parentCategoryId: null,
+        });
 
         allCategories.push(parentCategory);
 
@@ -173,22 +120,12 @@ async function createTemplateCategories() {
             categoryData.subcategories &&
             categoryData.subcategories.length > 0
         ) {
-            for (const [
-                subIndex,
-                sub,
-            ] of categoryData.subcategories.entries()) {
-                const [subCategory] = await db
-                    .insert(templateCategories)
-                    .values({
-                        name: sub.name,
-                        description: sub.description,
-                        parentCategoryId: parentCategory.id,
-                        order: subIndex + 1,
-                        specialType: null,
-                        createdAt: now,
-                        updatedAt: now,
-                    })
-                    .returning();
+            for (const [, sub] of categoryData.subcategories.entries()) {
+                const subCategory = await TemplateCategoryRepository.create({
+                    name: sub.name,
+                    description: sub.description,
+                    parentCategoryId: parentCategory.id,
+                });
 
                 allCategories.push(subCategory);
             }
@@ -280,7 +217,7 @@ async function createTemplates(
         }
 
         // Create variables for this template
-        await createTemplateVariables(db, template, category.name, now);
+        await createTemplateVariables(template, category.name);
     }
 
     logger.log(
