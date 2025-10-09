@@ -1,14 +1,75 @@
 import { db } from "@/server/db/drizzleDb";
-import { students } from "@/server/db/schema";
-import { eq, inArray } from "drizzle-orm";
-import {
-    buildPageInfoFromArgs,
-    PaginationArgs,
-} from "../../types/pagination.types";
+import { students, templateRecipientGroupItems } from "@/server/db/schema";
+import { eq, inArray, sql, notInArray } from "drizzle-orm";
 import * as Types from "@/server/types";
-import { StudentFilterUtils, StudentUtils } from "@/server/utils";
+import {
+    StudentFilterUtils,
+    StudentUtils,
+    PaginationUtils,
+} from "@/server/utils";
 import { queryWithPagination } from "@/server/db/query.extentions";
+import { RecipientGroupRepository } from "./recipientGroup.repository";
+import { PgSelect } from "drizzle-orm/pg-core";
 
+const _processStudentQuery = async <T extends PgSelect>(
+    query: T,
+    paginationArgs?: Types.PaginationArgs | null,
+    orderBy?: Types.StudentsOrderByClause[] | null,
+    filters?: Types.StudentFilterArgs | null,
+): Promise<Types.StudentsWithFiltersResponse> => {
+    let processedQuery = query;
+    processedQuery = StudentFilterUtils.applyFilters(processedQuery, filters);
+    processedQuery = StudentFilterUtils.applyOrdering(processedQuery, orderBy);
+    processedQuery = queryWithPagination(processedQuery, paginationArgs);
+
+    const results = await processedQuery;
+
+    const total = (results[0] as { total: number })?.total ?? 0;
+    const items: Types.StudentDto[] = results
+        .map((r) => {
+            const s: Types.StudentEntity = (
+                r as { student: Types.StudentEntity }
+            ).student;
+            return StudentUtils.mapEntityToDto(s);
+        })
+        .filter((s) => s !== null);
+
+    const pageInfo = PaginationUtils.buildPageInfoFromArgs(
+        paginationArgs,
+        items.length,
+        total,
+    );
+
+    return {
+        data: items,
+        pageInfo: pageInfo,
+    };
+};
+
+const _getStudentsByGroupQueryBase = (
+    recipientGroupId: number,
+    isInGroup: boolean,
+) => {
+    const studentIdsInGroupSubQuery = db
+        .select({ studentId: templateRecipientGroupItems.studentId })
+        .from(templateRecipientGroupItems)
+        .where(
+            eq(templateRecipientGroupItems.recipientGroupId, recipientGroupId),
+        );
+
+    const condition = isInGroup
+        ? inArray(students.id, studentIdsInGroupSubQuery)
+        : notInArray(students.id, studentIdsInGroupSubQuery);
+
+    return db
+        .select({
+            student: students,
+            total: sql<number>`cast(count(*) over() as int)`,
+        })
+        .from(students)
+        .where(condition)
+        .$dynamic();
+};
 export namespace StudentRepository {
     export const findById = async (
         id: number,
@@ -66,7 +127,7 @@ export namespace StudentRepository {
 
     export const loadByIds = async (
         ids: number[],
-    ): Promise<(Types.StudentPothosDefintion | Error)[]> => {
+    ): Promise<(Types.StudentDto | Error)[]> => {
         if (ids.length === 0) return [];
 
         const foundStudents = await db
@@ -74,15 +135,11 @@ export namespace StudentRepository {
             .from(students)
             .where(inArray(students.id, ids));
 
-        const studentList: (Types.StudentPothosDefintion | Error)[] = ids.map(
-            (id) => {
-                const s = foundStudents.find((c) => c.id === id);
-                if (!s) return new Error(`Student ${id} not found`);
-                return StudentUtils.mapEntityToPothosDefintion(
-                    s,
-                ) as Types.StudentPothosDefintion;
-            },
-        );
+        const studentList: (Types.StudentDto | Error)[] = ids.map((id) => {
+            const s = foundStudents.find((c) => c.id === id);
+            if (!s) return new Error(`Student ${id} not found`);
+            return StudentUtils.mapEntityToDto(s) as Types.StudentDto;
+        });
         return studentList;
     };
 
@@ -158,29 +215,73 @@ export namespace StudentRepository {
     };
 
     export const fetchWithFilters = async (
-        paginationArgs: PaginationArgs | null,
+        paginationArgs: Types.PaginationArgs | null,
         filters?: Types.StudentFilterArgs | null,
         orderBy?: Types.StudentsOrderByClause[] | null,
     ): Promise<Types.StudentsWithFiltersResponse> => {
-        const total = await countAllStudents();
-        let query = db.select().from(students).$dynamic();
-        query = StudentFilterUtils.applyFilters(query, filters);
-        query = StudentFilterUtils.applyOrdering(query, orderBy);
-        query = queryWithPagination(query, paginationArgs);
-        const items: Types.StudentPothosDefintion[] = (await query).map(
-            (s) =>
-                StudentUtils.mapEntityToPothosDefintion(
-                    s,
-                ) as Types.StudentPothosDefintion,
-        );
-        const pageInfo = buildPageInfoFromArgs(
+        const baseQuery = db
+            .select({
+                student: students,
+                total: sql<number>`cast(count(*) over() as int)`,
+            })
+            .from(students)
+            .$dynamic();
+
+        return await _processStudentQuery(
+            baseQuery,
             paginationArgs,
-            items.length,
-            total,
+            orderBy,
+            filters,
         );
-        return {
-            data: items,
-            pageInfo: pageInfo,
-        };
+    };
+
+    export const findStudentsInGroup = async (
+        recipientGroupId: number,
+        paginationArgs?: Types.PaginationArgs | null,
+        orderBy?: Types.StudentsOrderByClause[] | null,
+        filters?: Types.StudentFilterArgs | null,
+    ): Promise<Types.StudentsWithFiltersResponse> => {
+        await RecipientGroupRepository.existsById(recipientGroupId).then(
+            (exists) => {
+                if (!exists) {
+                    throw new Error(
+                        `Recipient group ${recipientGroupId} not found`,
+                    );
+                }
+            },
+        );
+
+        const baseQuery = _getStudentsByGroupQueryBase(recipientGroupId, true);
+        return await _processStudentQuery(
+            baseQuery,
+            paginationArgs,
+            orderBy,
+            filters,
+        );
+    };
+
+    export const searchStudentsNotInGroup = async (
+        recipientGroupId: number,
+        paginationArgs?: Types.PaginationArgs | null,
+        orderBy?: Types.StudentsOrderByClause[] | null,
+        filters?: Types.StudentFilterArgs | null,
+    ): Promise<Types.StudentsWithFiltersResponse> => {
+        await RecipientGroupRepository.existsById(recipientGroupId).then(
+            (exists) => {
+                if (!exists) {
+                    throw new Error(
+                        `Recipient group ${recipientGroupId} not found`,
+                    );
+                }
+            },
+        );
+
+        const baseQuery = _getStudentsByGroupQueryBase(recipientGroupId, false);
+        return await _processStudentQuery(
+            baseQuery,
+            paginationArgs,
+            orderBy,
+            filters,
+        );
     };
 }

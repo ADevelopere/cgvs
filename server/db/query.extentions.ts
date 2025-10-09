@@ -4,7 +4,7 @@ import { PaginationArgs } from "../types/pagination.types";
 
 export function queryWithPagination<T extends PgSelect>(
     qb: T,
-    args: PaginationArgs | null,
+    args?: PaginationArgs | null,
 ) {
     if (!args) return qb;
     return qb.limit(args.perPage).offset(args.offset);
