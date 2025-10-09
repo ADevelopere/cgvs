@@ -6,10 +6,17 @@ import {
     UserEntity,
     PaginatedUsersResponseSelectType,
     PaginationArgs,
+    UserCreateInput,
 } from "@/server/types";
 import { PaginationArgsDefault } from "@/server/graphql/pothos";
+import { AuthUtils } from "@/server/utils";
+import bcrypt from "bcryptjs";
 
 export namespace UserRepository {
+    export const existsByEmail = async (email: string): Promise<boolean> => {
+        return (await db.$count(users, eq(users.email, email))) > 0;
+    };
+
     export const findUserByIdOrThrow = async (
         id: number,
     ): Promise<UserEntity> => {
@@ -45,7 +52,7 @@ export namespace UserRepository {
         }
     };
 
-    export const findUserByEmail = async (
+    export const findByEmail = async (
         email: string,
     ): Promise<UserEntity | null> => {
         try {
@@ -140,15 +147,42 @@ export namespace UserRepository {
         return result;
     };
 
-    // export const createUser = async (
-    //     input: UserCreateInput,
-    // ): Promise<UserSelectType> => {
-    // validateUserName(existingUser.name);
+    export const create = async (
+        input: UserCreateInput,
+    ): Promise<UserEntity> => {
+        await existsByEmail(input.email.value).then((exists) => {
+            if (exists) {
+                throw new Error(
+                    `User with email ${input.email.value} already exists`,
+                );
+            }
+        });
 
-    //     const { name, email, password } = input;
+        AuthUtils.validateUserName(input.name);
+        const now = new Date();
+        const hashedPassword = await bcrypt.hash(input.password, 12);
 
-    //     return newUser;
-    // };
+        try {
+            const [result] = await db
+                .insert(users)
+                .values({
+                    name: input.name,
+                    email: input.email.value,
+                    password: hashedPassword,
+                    emailVerifiedAt: now,
+                    rememberToken: null,
+                    createdAt: now,
+                    updatedAt: now,
+                })
+                .returning();
+            return result;
+        } catch (err) {
+            logger.error(err);
+            throw new Error(
+                `Failed to create user with email: ${input.email.value}`,
+            );
+        }
+    };
 
     // export const updateUser = async (
     //     input: UserUpdateInput,

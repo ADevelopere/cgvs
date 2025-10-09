@@ -11,7 +11,7 @@ import {
     serial,
 } from "drizzle-orm/pg-core";
 import { TemplateVariableType } from "@/server/types/templateVariable.types";
-import { createPgEnumFromEnum } from "../enumHelpers";
+import { createPgEnumFromEnum } from "../../utils/db.utils";
 
 export const templateVariableTypeEnum = createPgEnumFromEnum(
     "template_variable_type",

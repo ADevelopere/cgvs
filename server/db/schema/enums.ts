@@ -1,4 +1,4 @@
-import { createPgEnumFromEnum } from "../enumHelpers";
+import { createPgEnumFromEnum } from "../../utils/db.utils";
 import { CountryCode, Gender } from "@/lib/enum";
 
 export const genderEnum = createPgEnumFromEnum("gender", Gender);

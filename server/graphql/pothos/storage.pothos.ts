@@ -4,14 +4,12 @@ import { OrderSortDirectionPothosObject } from "./enum.pothos";
 
 // File type enum
 export const FileTypePothosObject = gqlSchemaBuilder.enumType("FileType", {
-    values: Object.values(Types.FileType),
+    values: Object.values(Types.FileTypes),
 });
 
 // Directory permissions object
 export const DirectoryPermissionsPothosObject = gqlSchemaBuilder
-    .objectRef<Types.DirectoryPermissions>(
-        "DirectoryPermissions",
-    )
+    .objectRef<Types.DirectoryPermissions>("DirectoryPermissions")
     .implement({
         fields: (t) => ({
             allowUploads: t.exposeBoolean("allowUploads"),
@@ -53,10 +51,9 @@ const StorageItemPothosInterface = gqlSchemaBuilder
         }),
     });
 
-export const FileInfoPothosObject = gqlSchemaBuilder.objectType(
-    Types.FileInfo,
-    {
-        name: "FileInfo",
+export const FileInfoPothosObject = gqlSchemaBuilder
+    .objectRef<Types.FileInfo>("FileInfo")
+    .implement({
         interfaces: [StorageItemPothosInterface],
         isTypeOf: (item) =>
             typeof item === "object" && item !== null && "size" in item,
@@ -79,13 +76,11 @@ export const FileInfoPothosObject = gqlSchemaBuilder.objectType(
             isInUse: t.exposeBoolean("isInUse"),
             usages: t.expose("usages", { type: [FileUsageInfoPothosObject] }),
         }),
-    },
-);
+    });
 
-export const DirectoryInfoPothosObject = gqlSchemaBuilder.objectType(
-    Types.DirectoryInfo,
-    {
-        name: "DirectoryInfo",
+export const DirectoryInfoPothosObject = gqlSchemaBuilder
+    .objectRef<Types.DirectoryInfo>("DirectoryInfo")
+    .implement({
         interfaces: [StorageItemPothosInterface],
         isTypeOf: (item) =>
             typeof item === "object" && item !== null && !("size" in item),
@@ -101,8 +96,7 @@ export const DirectoryInfoPothosObject = gqlSchemaBuilder.objectType(
             folderCount: t.exposeInt("folderCount"),
             totalSize: t.exposeInt("totalSize"),
         }),
-    },
-);
+    });
 
 export const StorageObjectListPothosObject = gqlSchemaBuilder
     .objectRef<Types.StorageObjectList>("StorageObjectList")
@@ -145,7 +139,7 @@ export const ListFileInputPothosObject = gqlSchemaBuilder
 // File type breakdown for storage stats
 export const FileTypeBreakdownPothosObject = gqlSchemaBuilder
     .objectRef<{
-        type: Types.FileType;
+        type: Types.FileTypes;
         count: number;
         size: bigint;
     }>("FileTypeBreakdown")
@@ -291,9 +285,7 @@ export const GenerateUploadSignedUrlInputPothosObject = gqlSchemaBuilder
 
 // Directory permissions input
 export const DirectoryPermissionsInputPothosObject = gqlSchemaBuilder
-    .inputRef<Types.DirectoryPermissions>(
-        "DirectoryPermissionsInput",
-    )
+    .inputRef<Types.DirectoryPermissions>("DirectoryPermissionsInput")
     .implement({
         fields: (t) => ({
             allowUploads: t.boolean({ required: true }),

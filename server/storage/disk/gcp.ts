@@ -703,7 +703,7 @@ class GcpAdapter implements StorageService {
 
             let totalSize = BigInt(0);
             const fileTypeMap = new Map<
-                StorageTypes.FileType,
+                StorageTypes.FileTypes,
                 { count: number; size: bigint }
             >();
 
