@@ -43,7 +43,7 @@
  * ```
  */
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { usePageNavigationRegistry } from "./PageNavigationRegistryContext";
 import {
     UsePageNavigationResult,
@@ -57,6 +57,10 @@ import {
  */
 export function usePageNavigation(): UsePageNavigationResult {
     const registry = usePageNavigationRegistry();
+    const registryRef = useRef(registry);
+
+    // Update the ref whenever registry changes
+    registryRef.current = registry;
 
     // Local state for params (synced with registry)
     const [params, setParams] = useState<RouteParams>(() => registry.getParams());
@@ -65,9 +69,9 @@ export function usePageNavigation(): UsePageNavigationResult {
 
     // Sync params from registry
     useEffect(() => {
-        const currentParams = registry.getParams();
+        const currentParams = registryRef.current.getParams();
         setParams(currentParams);
-    }, [registry]);
+    }, [registry.getParams]);
 
     /**
      * Register a resolver with automatic cleanup
@@ -76,9 +80,9 @@ export function usePageNavigation(): UsePageNavigationResult {
         <TContext = unknown,>(
             registration: ResolverRegistration<TContext>,
         ): (() => void) => {
-            return registry.registerResolver(registration);
+            return registryRef.current.registerResolver(registration);
         },
-        [registry],
+        [],
     );
 
     /**
@@ -89,10 +93,10 @@ export function usePageNavigation(): UsePageNavigationResult {
             newParams: RouteParams,
             options?: { replace?: boolean; merge?: boolean },
         ) => {
-            registry.updateParams(newParams, options);
+            registryRef.current.updateParams(newParams, options);
             setParams((prev) => ({ ...prev, ...newParams }));
         },
-        [registry],
+        [],
     );
 
     /**
@@ -100,9 +104,9 @@ export function usePageNavigation(): UsePageNavigationResult {
      */
     const getParam = useCallback(
         (key: string): string | string[] | undefined => {
-            return params[key] ?? registry.getParam(key);
+            return params[key] ?? registryRef.current.getParam(key);
         },
-        [params, registry],
+        [params],
     );
 
     /**
@@ -113,7 +117,7 @@ export function usePageNavigation(): UsePageNavigationResult {
         setError(null);
 
         try {
-            const results = await registry.resolveCurrentRoute();
+            const results = await registryRef.current.resolveCurrentRoute();
             const errors = results
                 .filter((r) => !r.success && r.error)
                 .map((r) => r.error)
@@ -131,7 +135,7 @@ export function usePageNavigation(): UsePageNavigationResult {
         } finally {
             setIsResolving(false);
         }
-    }, [registry]);
+    }, []);
 
     return {
         params,
