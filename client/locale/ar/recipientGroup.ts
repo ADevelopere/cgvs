@@ -70,6 +70,10 @@ export const recipientGroup: RecipientGroupTranslation = {
  manageGroups: "إدارة المجموعات",
  addStudents: "إضافة طلاب",
 
+ // Invalid group messages
+ invalidGroupSelected: "مجموعة غير صالحة محددة",
+ groupNotFoundInTemplate: "المجموعة {groupId} غير موجودة في هذا النموذج",
+
  // Confirmation dialogs
  confirmClearSelection: "تأكيد إلغاء التحديد",
  confirmClearSelectionMessage:
