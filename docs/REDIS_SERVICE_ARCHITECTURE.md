@@ -10,7 +10,7 @@ This document describes the Redis service architecture implemented for the CGVS 
 
 ### Design Pattern: Adapter Pattern
 
-```
+```mermaid
 ┌─────────────────────────────────────────────────────────────┐
 │                    Application Layer                         │
 │  (Rate Limiting, Caching, Session Management)               │
@@ -51,14 +51,16 @@ This document describes the Redis service architecture implemented for the CGVS 
 ### Key Components
 
 #### 1. **IRedisService** (Interface)
+
 - **Location**: `server/services/redis/IRedisService.ts`
 - **Purpose**: Defines the contract that all Redis adapters must implement
-- **Benefits**: 
+- **Benefits**:
   - Type safety
   - Interchangeable implementations
   - Easy testing with mocks
 
 #### 2. **LocalRedisAdapter**
+
 - **Location**: `server/services/redis/LocalRedisAdapter.ts`
 - **Technology**: ioredis (npm package)
 - **Use Case**: Development and self-hosted production
@@ -69,6 +71,7 @@ This document describes the Redis service architecture implemented for the CGVS 
   - Event logging (connect, error, ready)
 
 #### 3. **UpstashRedisAdapter**
+
 - **Location**: `server/services/redis/UpstashRedisAdapter.ts`
 - **Technology**: @upstash/redis (npm package)
 - **Use Case**: Serverless production (Vercel, Netlify, etc.)
@@ -79,10 +82,12 @@ This document describes the Redis service architecture implemented for the CGVS 
   - Fully managed
 
 #### 4. **RedisServiceFactory**
+
 - **Location**: `server/services/redis/RedisServiceFactory.ts`
 - **Pattern**: Factory + Singleton
 - **Purpose**: Creates and manages the appropriate Redis adapter
 - **Selection Logic**:
+
   ```typescript
   REDIS_PROVIDER=local  → LocalRedisAdapter
   REDIS_PROVIDER=upstash → UpstashRedisAdapter
@@ -93,7 +98,8 @@ This document describes the Redis service architecture implemented for the CGVS 
 ## 📦 Files Created
 
 ### Core Service Files
-```
+
+```list
 server/services/redis/
 ├── IRedisService.ts           # Interface definition
 ├── LocalRedisAdapter.ts       # Local Redis (ioredis)
@@ -104,7 +110,8 @@ server/services/redis/
 ```
 
 ### Updated Files
-```
+
+```list
 server/lib/
 ├── ratelimit.ts              # Updated to use Redis service
 ├── env.ts                    # Added Redis provider validation
@@ -135,6 +142,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 **Setup:**
+
 ```bash
 cd containers/redis
 docker compose up -d
@@ -235,27 +243,32 @@ async function getTemplateWithCache(id: string) {
 ## 🚀 Benefits
 
 ### 1. **Flexibility**
+
 - Switch providers without code changes
 - Environment-based configuration
 - Easy to test with mocks
 
 ### 2. **Type Safety**
+
 - Full TypeScript support
 - Compile-time error checking
 - IntelliSense support
 
 ### 3. **Maintainability**
+
 - Clean separation of concerns
 - Single Responsibility Principle
 - Easy to extend with new providers
 
 ### 4. **Production Ready**
+
 - Automatic provider selection
 - Environment validation
 - Graceful error handling
 - Health checks built-in
 
 ### 5. **Developer Experience**
+
 - Simple API
 - Comprehensive documentation
 - Docker setup for local development
@@ -404,6 +417,7 @@ await redisService.pipeline([
 ### Problem: Local Redis not connecting
 
 **Solution:**
+
 ```bash
 # Check if Redis is running
 docker compose ps
@@ -418,6 +432,7 @@ docker compose logs -f redis
 ### Problem: Upstash connection errors
 
 **Solution:**
+
 1. Verify URL starts with `https://`
 2. Check token is correct (copy from Upstash console)
 3. Ensure `REDIS_PROVIDER=upstash` is set
@@ -425,6 +440,7 @@ docker compose logs -f redis
 ### Problem: Rate limiting not working
 
 **Solution:**
+
 ```bash
 # Test Redis connection
 docker exec -it cgvs_redis redis-cli ping
@@ -439,6 +455,7 @@ docker exec -it cgvs_redis redis-cli keys 'ratelimit:*'
 ## 🎯 Migration Path
 
 ### Phase 1: ✅ Current (Complete)
+
 - [x] Redis service interface
 - [x] Local Redis adapter
 - [x] Upstash Redis adapter
@@ -447,12 +464,14 @@ docker exec -it cgvs_redis redis-cli keys 'ratelimit:*'
 - [x] Environment validation
 
 ### Phase 2: 🔄 Next Steps
+
 - [ ] Session storage migration
 - [ ] GraphQL query caching
 - [ ] Template caching
 - [ ] Real-time pub/sub
 
 ### Phase 3: 🚀 Advanced
+
 - [ ] Distributed locking
 - [ ] Queue management
 - [ ] Analytics tracking
@@ -463,6 +482,7 @@ docker exec -it cgvs_redis redis-cli keys 'ratelimit:*'
 ## 📝 Comparison with Previous Implementation
 
 ### Before (Upstash Direct)
+
 ```typescript
 // ❌ Tightly coupled to Upstash
 import { Redis } from '@upstash/redis';
@@ -474,6 +494,7 @@ const redis = new Redis({ url: '...', token: '...' });
 ```
 
 ### After (Service Architecture)
+
 ```typescript
 // ✅ Works with any provider
 import { redisService } from '@/server/services/redis';
@@ -509,4 +530,3 @@ The Redis service architecture provides:
 
 **Provider**: Local Redis (Docker) for development
 **Future**: Can switch to Upstash for serverless production with zero code changes
-
