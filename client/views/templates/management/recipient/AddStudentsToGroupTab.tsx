@@ -2,12 +2,14 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import { RecipientManagementProvider, useRecipientManagement } from "@/client/contexts/recipient";
+import {
+    RecipientManagementProvider,
+    useRecipientManagement,
+} from "@/client/contexts/recipient";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import RecipientGroupSelector from "./RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
 import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
-import AddStudentsFooter from "./AddStudentsFooter";
 
 const AddStudentsContent: React.FC = () => {
     const { selectedGroupId } = useRecipientManagement();
@@ -18,7 +20,7 @@ const AddStudentsContent: React.FC = () => {
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
-                gap: 2,
+                overflow: "hidden",
             }}
         >
             {/* Group Selector */}
@@ -28,11 +30,16 @@ const AddStudentsContent: React.FC = () => {
 
             {/* Content Area */}
             {selectedGroupId ? (
-                <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                    <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
-                        <StudentsNotInGroupTable />
-                    </Box>
-                    <AddStudentsFooter />
+                <Box
+                    sx={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                        p: 2,
+                    }}
+                >
+                    <StudentsNotInGroupTable />
                 </Box>
             ) : (
                 <SelectGroupPrompt />

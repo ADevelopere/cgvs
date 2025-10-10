@@ -20,6 +20,9 @@ export type TableContextType = {
     onPageChange?: (newPage: number) => void;
     onRowsPerPageChange?: (newRowsPerPage: number) => void;
     rowsPerPageOptions?: number[];
+    
+    footerStartContent?: ReactNode;
+    footerEndContent?: ReactNode;
 };
 
 const TableContext = createContext<TableContextType | null>(null);
@@ -46,6 +49,10 @@ type TableProviderProps = {
     onRowsPerPageChange?: (newRowsPerPage: number) => void;
     rowsPerPageOptions?: number[];
     initialPageSize?: number;
+    
+    // Custom footer content
+    footerStartContent?: ReactNode;
+    footerEndContent?: ReactNode;
 };
 
 export const TableProvider = ({
@@ -61,6 +68,8 @@ export const TableProvider = ({
     onRowsPerPageChange,
     rowsPerPageOptions = [10, 25, 50, 100, 200],
     initialPageSize = 50,
+    footerStartContent,
+    footerEndContent,
 }: TableProviderProps) => {
     const [pageSize, setPageSize] = useState<number>(initialPageSize);
     const value = useMemo(() => {
@@ -74,6 +83,8 @@ export const TableProvider = ({
             rowsPerPageOptions,
             onPageChange,
             onRowsPerPageChange,
+            footerStartContent,
+            footerEndContent,
         };
     }, [
         data,
@@ -85,6 +96,8 @@ export const TableProvider = ({
 
         onPageChange,
         onRowsPerPageChange,
+        footerStartContent,
+        footerEndContent,
     ]);
     return (
         <TableContext.Provider value={value}>
