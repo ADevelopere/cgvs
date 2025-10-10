@@ -11,6 +11,7 @@ export const templateRecipientGroupByIdQueryDocument: TypedDocumentNode<
             name
             description
             date
+            studentCount
             createdAt
             updatedAt
             template {
@@ -44,6 +45,7 @@ export const templateRecipientGroupsByTemplateIdQueryDocument: TypedDocumentNode
             name
             description
             date
+            studentCount
             createdAt
             updatedAt
             template {
@@ -79,6 +81,7 @@ export const createTemplateRecipientGroupMutationDocument: TypedDocumentNode<
             name
             description
             date
+            studentCount
             createdAt
             updatedAt
             template {
@@ -101,6 +104,7 @@ export const updateTemplateRecipientGroupMutationDocument: TypedDocumentNode<
             name
             description
             date
+            studentCount
             createdAt
             updatedAt
             template {

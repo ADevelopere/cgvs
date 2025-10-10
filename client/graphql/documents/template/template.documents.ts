@@ -109,6 +109,7 @@ export const templateQueryDocument: TypedDocumentNode<
                 name
                 description
                 date
+                studentCount
                 createdAt
                 updatedAt
                 template {
@@ -225,6 +226,7 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
                     name
                     description
                     date
+                    studentCount
                     createdAt
                     updatedAt
                     template {

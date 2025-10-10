@@ -35,6 +35,10 @@ gqlSchemaBuilder.objectFields(TemplateRecipientGroupPothosObject, (t) => ({
         type: TemplateRecipientPothosObject,
         load: (ids: number[]) => RecipientRepository.loadForGroups(ids),
         resolve: (group) => group.id
+    }),
+    studentCount: t.field({
+        type: "Int",
+        resolve: async (group) => await RecipientRepository.countInGroup(group.id)
     })
 }));
 

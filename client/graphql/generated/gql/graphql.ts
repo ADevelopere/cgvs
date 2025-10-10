@@ -1165,6 +1165,7 @@ export type TemplateRecipientGroup = {
   id?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   recipients?: Maybe<Array<TemplateRecipient>>;
+  studentCount?: Maybe<Scalars['Int']['output']>;
   template?: Maybe<Template>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
