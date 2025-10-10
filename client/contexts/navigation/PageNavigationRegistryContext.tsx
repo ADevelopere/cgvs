@@ -56,14 +56,31 @@ export const PageNavigationRegistryProvider: React.FC<{
         pageStates: new Map(), // Store page-specific state
     });
 
-    // Refs to prevent stale closures
+    // Refs to prevent stale closures and dependency hell
     const resolversRef = useRef(state.resolvers);
     const isResolvingRef = useRef(false);
+    const routerRef = useRef(router);
+    const pageStatesRef = useRef(state.pageStates);
+    const pathnameRef = useRef(pathname);
+    const searchParamsRef = useRef(searchParams);
 
-    // Update refs when state changes
+    // Update refs when values change
     useEffect(() => {
         resolversRef.current = state.resolvers;
-    }, [state.resolvers]);
+        pageStatesRef.current = state.pageStates;
+    }, [state.resolvers, state.pageStates]);
+
+    useEffect(() => {
+        routerRef.current = router;
+    }, [router]);
+
+    useEffect(() => {
+        pathnameRef.current = pathname;
+    }, [pathname]);
+
+    useEffect(() => {
+        searchParamsRef.current = searchParams;
+    }, [searchParams]);
 
     /**
      * Register a navigation resolver
@@ -240,30 +257,51 @@ export const PageNavigationRegistryProvider: React.FC<{
         }));
 
         try {
-            const normalizedPath = normalizeSegment(pathname || "");
-            let params = parseSearchParams(searchParams);
+            const currentPathname = pathnameRef.current;
+            const currentSearchParams = searchParamsRef.current;
+            const currentPageStates = pageStatesRef.current;
+            
+            const normalizedPath = normalizeSegment(currentPathname || "");
+            let params = parseSearchParams(currentSearchParams);
 
             // Save current page state before changing routes (if we have an active segment)
-            if (state.activeSegment && state.activeSegment !== normalizedPath) {
-                setState((prev) => {
+            setState((prev) => {
+                if (prev.activeSegment && prev.activeSegment !== normalizedPath) {
                     const newPageStates = new Map(prev.pageStates);
-                    newPageStates.set(prev.activeSegment!, prev.currentParams);
+                    newPageStates.set(prev.activeSegment, prev.currentParams);
                     return {
                         ...prev,
                         pageStates: newPageStates,
+                        activeSegment: normalizedPath,
                     };
-                });
-            }
+                }
+                return {
+                    ...prev,
+                    activeSegment: normalizedPath,
+                };
+            });
 
             // Restore page state if available for the current route
-            const savedState = state.pageStates.get(normalizedPath);
-            if (savedState) {
+            const savedState = currentPageStates.get(normalizedPath);
+            const hasCurrentParams = Object.keys(params).length > 0;
+            const hasSavedState = savedState && Object.keys(savedState).length > 0;
+
+            // If we have saved state but no current params, restore the URL
+            if (hasSavedState && !hasCurrentParams) {
+                params = { ...savedState };
+                
+                // Update the URL with restored params using router.replace
+                const newUrl = buildUrlWithParams(currentPathname || "", params);
+                routerRef.current.replace(newUrl);
+                
+                logger.info(`Restored URL params for ${normalizedPath}:`, params);
+            } else if (hasSavedState && hasCurrentParams) {
+                // Merge saved state with current params (current params take precedence)
                 params = { ...savedState, ...params };
             }
 
             setState((prev) => ({
                 ...prev,
-                activeSegment: normalizedPath,
                 currentParams: params,
             }));
 
@@ -299,8 +337,7 @@ export const PageNavigationRegistryProvider: React.FC<{
                 isResolving: false,
             }));
         }
-        // todo usRef to escape the deps
-    }, [pathname, searchParams, resolveRoute, state.pageStates]);
+    }, [resolveRoute]);
 
     /**
      * Update URL params
@@ -311,19 +348,23 @@ export const PageNavigationRegistryProvider: React.FC<{
             options?: { replace?: boolean; merge?: boolean },
         ) => {
             const { replace = false, merge = true } = options || {};
+            
+            const currentPathname = pathnameRef.current;
+            const currentSearchParams = searchParamsRef.current;
+            const currentRouter = routerRef.current;
 
             let newParams = params;
             if (merge) {
-                const currentParams = parseSearchParams(searchParams);
+                const currentParams = parseSearchParams(currentSearchParams);
                 newParams = { ...currentParams, ...params };
             }
 
-            const newUrl = buildUrlWithParams(pathname || "", newParams);
+            const newUrl = buildUrlWithParams(currentPathname || "", newParams);
 
             if (replace) {
-                router.replace(newUrl);
+                currentRouter.replace(newUrl);
             } else {
-                router.push(newUrl);
+                currentRouter.push(newUrl);
             }
 
             setState((prev) => ({
@@ -331,7 +372,7 @@ export const PageNavigationRegistryProvider: React.FC<{
                 currentParams: newParams,
             }));
         },
-        [pathname, searchParams, router, state.activeSegment],
+        [],
     );
 
     /**
@@ -409,7 +450,7 @@ export const PageNavigationRegistryProvider: React.FC<{
         }, 100);
 
         return () => clearTimeout(timer);
-    }, [pathname, searchParams, resolveCurrentRoute, state.pageStates]);
+    }, [pathname, searchParams, resolveCurrentRoute]);
 
     const api: NavigationRegistryAPI = useMemo(
         () => ({

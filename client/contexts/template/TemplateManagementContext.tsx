@@ -118,7 +118,6 @@ export const TemplateManagementProvider: React.FC<{
                 "preview",
             ].includes(tab)
         ) {
-            setTabFromUrl(tab);
             setActiveTab(tab);
         }
     }, [getParam]);

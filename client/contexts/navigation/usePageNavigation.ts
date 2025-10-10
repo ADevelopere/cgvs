@@ -58,20 +58,40 @@ import {
 export function usePageNavigation(): UsePageNavigationResult {
     const registry = usePageNavigationRegistry();
     const registryRef = useRef(registry);
+    const paramsStringRef = useRef<string>("");
 
     // Update the ref whenever registry changes
     registryRef.current = registry;
 
     // Local state for params (synced with registry)
+    // Use a function to get initial state from registry
     const [params, setParams] = useState<RouteParams>(() => registry.getParams());
     const [isResolving, setIsResolving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Sync params from registry
+    // Sync params from registry when they change
+    // We check the params by comparing their JSON representation
     useEffect(() => {
-        const currentParams = registryRef.current.getParams();
-        setParams(currentParams);
-    }, [registry.getParams]);
+        const syncParams = () => {
+            const currentParams = registryRef.current.getParams();
+            const currentParamsString = JSON.stringify(currentParams);
+            
+            // Only update if params actually changed
+            if (currentParamsString !== paramsStringRef.current) {
+                paramsStringRef.current = currentParamsString;
+                setParams(currentParams);
+            }
+        };
+
+        // Initial sync
+        syncParams();
+
+        // Set up a check interval (this is a lightweight approach)
+        // Alternative would be to implement a full observer pattern
+        const interval = setInterval(syncParams, 200);
+
+        return () => clearInterval(interval);
+    }, []);
 
     /**
      * Register a resolver with automatic cleanup
