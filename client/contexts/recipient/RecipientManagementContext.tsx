@@ -1,7 +1,7 @@
 "use client";
 
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
+import React, {
  createContext,
  useCallback,
  useContext,
@@ -66,7 +66,7 @@ const ManagementProvider: React.FC<{
  children: React.ReactNode;
  selectedGroupId: number;
  setSelectedGroupId: (groupId: number | null) => void;
-}> = ({ children, selectedGroupId, setSelectedGroupId }) => {
+}> = React.memo(({ children, selectedGroupId, setSelectedGroupId }) => {
  const notifications = useNotifications();
  const strings = useAppTranslation("recipientGroupTranslations");
 
@@ -258,7 +258,9 @@ const ManagementProvider: React.FC<{
    {children}
   </RecipientManagementContext.Provider>
  );
-};
+});
+
+ManagementProvider.displayName = 'ManagementProvider';
 
 // Placeholder context for when no valid group is available
 const createPlaceholderContext = (): RecipientManagementContextType => ({
@@ -286,9 +288,11 @@ export const RecipientManagementProvider: React.FC<{
  const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(null);
  const [invalidGroupId, setInvalidGroupId] = useState<number | null>(null);
 
+ // Memoize the current group ID param to avoid unnecessary effect triggers
+ const groupIdParam = useMemo(() => getParam("groupId"), [getParam]);
+
  // Sync selectedGroupId with URL params and template changes
  useEffect(() => {
-  const groupIdParam = getParam("groupId");
   let resolvedGroupId: number | null = null;
 
   // Try to get group ID from URL parameter first
@@ -308,22 +312,27 @@ export const RecipientManagementProvider: React.FC<{
    resolvedGroupId = template?.recipientGroups?.[0]?.id || null;
   }
 
+  // Only update state if the resolved group ID is actually different
   if (resolvedGroupId !== selectedGroupId) {
    setSelectedGroupIdState(resolvedGroupId);
+  }
 
-   // Handle invalid group ID case
+  // Handle invalid group ID case
+  const newInvalidGroupId = (() => {
    if (groupIdParam) {
     const groupId = parseInt(groupIdParam as string, 10);
     if (!isNaN(groupId) && !template?.recipientGroups?.find((g) => g.id === groupId)) {
-     setInvalidGroupId(groupId);
-    } else {
-     setInvalidGroupId(null);
+     return groupId;
     }
-   } else {
-    setInvalidGroupId(null);
    }
+   return null;
+  })();
+
+  // Only update invalidGroupId if it's actually different
+  if (newInvalidGroupId !== invalidGroupId) {
+   setInvalidGroupId(newInvalidGroupId);
   }
- }, [template?.id, template?.recipientGroups, getParam, selectedGroupId]);
+ }, [template?.id, template?.recipientGroups, groupIdParam, selectedGroupId, invalidGroupId]);
 
  const setSelectedGroupId = useCallback(
   (groupId: number | null) => {
@@ -337,32 +346,42 @@ export const RecipientManagementProvider: React.FC<{
   [updateParams],
  );
 
- // If no valid group ID is available, return placeholder context
- if (selectedGroupId === null) {
-  const placeholderValue = createPlaceholderContext();
-  // Include invalidGroupId in placeholder context
-  placeholderValue.invalidGroupId = invalidGroupId;
-  placeholderValue.setSelectedGroupId = setSelectedGroupId;
+ // Memoize the placeholder context to prevent unnecessary re-renders
+ const placeholderContext = useMemo(() => {
+  const context = createPlaceholderContext();
+  context.invalidGroupId = invalidGroupId;
+  context.setSelectedGroupId = setSelectedGroupId;
+  return context;
+ }, [invalidGroupId, setSelectedGroupId]);
+
+ // Memoize the full provider chain to prevent unnecessary recreations
+ const managementProviderChain = useMemo(() => {
+  if (selectedGroupId === null) return null;
 
   return (
-   <RecipientManagementContext.Provider value={placeholderValue}>
+   <RecipientGraphQLProvider
+    recipientGroupId={selectedGroupId}
+    templateId={templateId}
+   >
+    <ManagementProvider
+     selectedGroupId={selectedGroupId}
+     setSelectedGroupId={setSelectedGroupId}
+    >
+     {children}
+    </ManagementProvider>
+   </RecipientGraphQLProvider>
+  );
+ }, [selectedGroupId, templateId, setSelectedGroupId, children]);
+
+ // If no valid group ID is available, return placeholder context
+ if (selectedGroupId === null) {
+  return (
+   <RecipientManagementContext.Provider value={placeholderContext}>
     {children}
    </RecipientManagementContext.Provider>
   );
  }
 
  // Return full provider chain with valid group ID
- return (
-  <RecipientGraphQLProvider
-   recipientGroupId={selectedGroupId}
-   templateId={templateId}
-  >
-   <ManagementProvider
-    selectedGroupId={selectedGroupId}
-    setSelectedGroupId={setSelectedGroupId}
-   >
-    {children}
-   </ManagementProvider>
-  </RecipientGraphQLProvider>
- );
+ return managementProviderChain;
 };
