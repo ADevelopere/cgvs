@@ -158,6 +158,11 @@ export interface NavigationRegistryState {
      * Last resolution error, if any
      */
     lastError: string | null;
+
+    /**
+     * Page-specific state storage for preserving parameters across navigations
+     */
+    pageStates: Map<string, RouteParams>;
 }
 
 /**
@@ -214,6 +219,16 @@ export interface NavigationRegistryAPI {
      * Get all registered resolvers for debugging
      */
     getRegisteredResolvers: () => RegisteredResolver[];
+
+    /**
+     * Save page-specific state for later restoration
+     */
+    savePageState: (segment: string, params: RouteParams) => void;
+
+    /**
+     * Restore page-specific state for a segment
+     */
+    restorePageState: (segment: string) => RouteParams | null;
 }
 
 /**
@@ -254,6 +269,17 @@ export interface UsePageNavigationResult {
      * Last resolution error
      */
     error: string | null;
+
+    /**
+     * Save page-specific state for later restoration
+     */
+    savePageState: NavigationRegistryAPI["savePageState"];
+
+    /**
+     * Restore page-specific state for a segment
+     */
+    restorePageState: NavigationRegistryAPI["restorePageState"];
+
 }
 
 /**

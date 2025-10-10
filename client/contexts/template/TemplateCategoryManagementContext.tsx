@@ -235,7 +235,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     const { setNavigation } = useDashboardLayout();
 
     // Use the new navigation system
-    const { registerResolver, updateParams } = usePageNavigation();
+    const { registerResolver, updateParams, restorePageState } = usePageNavigation();
 
     const router = useRouter();
     const [templateToManage, setTemplateToManage] = useState<
@@ -325,6 +325,29 @@ export const TemplateCategoryManagementProvider: React.FC<{
             segment: "admin/categories",
             resolver: async (params) => {
                 try {
+                    // Restore page state if available
+                    const restoredState = restorePageState("admin/categories");
+                    if (restoredState) {
+                        const tab = restoredState.tab as "all" | "deleted" | undefined;
+                        if (tab && ["all", "deleted"].includes(tab)) {
+                            setActiveCategoryTabState(tab);
+
+                            // When switching to deleted tab, show suspension category
+                            if (tab === "deleted" && suspensionCategoryFromCache) {
+                                setCurrentCategoryState(suspensionCategoryFromCache);
+                            } else if (tab === "all") {
+                                // When switching to all, select first regular category or clear
+                                if (sortedRegularCategories.length > 0) {
+                                    setCurrentCategoryState(sortedRegularCategories[0]);
+                                } else {
+                                    setCurrentCategoryState(null);
+                                }
+                            }
+                            // Merge restored state with current params
+                            return { success: true, params: restoredState };
+                        }
+                    }
+
                     // Handle tab parameter (all vs deleted)
                     if (params.tab) {
                         const tab = params.tab as "all" | "deleted";
@@ -393,6 +416,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         sortedRegularCategories,
         allCategoriesFromCache,
         allTemplatesFromCache,
+        restorePageState,
     ]);
 
     // Function to change category tab and update URL
