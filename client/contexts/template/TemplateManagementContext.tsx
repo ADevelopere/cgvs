@@ -18,7 +18,7 @@ import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/documents";
-import { usePageNavigation } from "../navigation/usePageNavigation";
+import { usePageNavigation, useParam } from "../navigation/usePageNavigation";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -68,7 +68,7 @@ export const TemplateManagementProvider: React.FC<{
     const { setNavigation } = useDashboardLayout();
 
     // Use the new navigation system
-    const { registerResolver, updateParams } = usePageNavigation();
+    const { registerResolver, updateParams, getParam } = usePageNavigation();
 
     const { data: apolloTemplateData } = useQuery(
         Document.templateQueryDocument,
@@ -82,8 +82,13 @@ export const TemplateManagementProvider: React.FC<{
     const [config, setConfig] =
         useState<Graphql.TemplatesConfigs>(defaultConfig);
 
-    const [activeTab, setActiveTab] =
-        useState<TemplateManagementTabType>("basic");
+    // Initialize activeTab from URL params instead of defaulting to "basic"
+    const tabFromUrl = useParam("tab", "basic") as TemplateManagementTabType;
+    const [activeTab, setActiveTab] = useState<TemplateManagementTabType>(
+        ["basic", "variables", "editor", "recipients", "preview"].includes(tabFromUrl)
+            ? tabFromUrl
+            : "basic"
+    );
     const [unsavedChanges, setUnsavedChanges] = useState(false);
     const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>(
         [],
@@ -105,6 +110,24 @@ export const TemplateManagementProvider: React.FC<{
     );
 
     const [loading, setLoading] = useState(false);
+
+    // Sync activeTab with URL params when they change
+    useEffect(() => {
+        const tab = getParam("tab") as TemplateManagementTabType | undefined;
+        if (
+            tab &&
+            [
+                "basic",
+                "variables",
+                "editor",
+                "recipients",
+                "preview",
+            ].includes(tab) &&
+            tab !== activeTab
+        ) {
+            setActiveTab(tab);
+        }
+    }, [getParam, activeTab]);
 
     // Register navigation resolver for this page
     useEffect(() => {
