@@ -57,21 +57,34 @@ const GroupSettingsDialog: React.FC = () => {
             return;
         }
 
-        if (!selectedGroupId) {
+        if (!selectedGroupId || !selectedGroup) {
+            return;
+        }
+
+        // Check if any values have actually changed
+        const trimmedName = name.trim();
+        const trimmedDescription = description.trim() || null;
+        const hasNameChanged = trimmedName !== selectedGroup.name;
+        const hasDescriptionChanged = trimmedDescription !== (selectedGroup.description || null);
+        const hasDateChanged = date?.getTime() !== (selectedGroup.date ? new Date(selectedGroup.date).getTime() : null);
+
+        // If nothing changed, just close the dialog without making a request
+        if (!hasNameChanged && !hasDescriptionChanged && !hasDateChanged) {
+            handleClose();
             return;
         }
 
         const success = await updateGroup({
             id: selectedGroupId,
-            name: name.trim(),
-            description: description.trim() || null,
+            name: trimmedName,
+            description: trimmedDescription,
             date: date || null,
         });
 
         if (success) {
             handleClose();
         }
-    }, [name, description, date, selectedGroupId, updateGroup, handleClose, strings]);
+    }, [name, description, date, selectedGroupId, selectedGroup, updateGroup, handleClose, strings]);
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>

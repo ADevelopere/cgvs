@@ -40,12 +40,16 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
             if (!group.id) {
                 return strings.errorUpdating;
             }
+            // Don't update if the name hasn't changed
+            if (value.trim() === group.name) {
+                return; // Successfully "updated" without making a request
+            }
             const success = await updateGroupName(group.id, value.trim());
             if (!success) {
                 return strings.errorUpdating;
             }
         },
-        [group.id, updateGroupName, strings],
+        [group.id, group.name, updateGroupName, strings],
     );
 
     const handleManageClick = useCallback(() => {
