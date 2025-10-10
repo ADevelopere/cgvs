@@ -101,10 +101,7 @@ const TemplateManagement: React.FC = () => {
      }}
     >
      <TemplateVariableManagementProvider templateId={template?.id}>
-      <RecipientManagementProvider
-       recipientGroupId={null}
-       templateId={template.id}
-      >
+      <RecipientManagementProvider templateId={template.id}>
        {/* <TemplateRecipientsProvider> */}
        <TabPanel value="basic">
         <BasicInfoTab />

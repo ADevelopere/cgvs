@@ -8,6 +8,7 @@ import {
  useMemo,
  useState,
  useEffect,
+ useRef,
 } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import {
@@ -18,31 +19,34 @@ import logger from "@/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import { usePageNavigation } from "../navigation/usePageNavigation";
 import { isAbortError } from "@/client/utils/errorUtils";
+import { useTemplateManagement } from "../template/TemplateManagementContext";
+import type { RouteParams } from "../navigation/PageNavigationRegistry.types";
 
 type RecipientManagementContextType = {
-    // State
-    loading: boolean;
-    selectedGroupId: number | null;
-    students: Graphql.Student[];
-    pageInfo: Graphql.PageInfo | null;
+ // State
+ loading: boolean;
+ selectedGroupId: number | null;
+ students: Graphql.Student[];
+ pageInfo: Graphql.PageInfo | null;
+ invalidGroupId: number | null;
 
-    // Group selection
-    setSelectedGroupId: (groupId: number | null) => void;
+ // Group selection
+ setSelectedGroupId: (groupId: number | null) => void;
 
-    // Operations
-    addStudentsToGroup: (studentIds: (string | number)[]) => Promise<boolean>;
-    fetchStudentsNotInGroup: (
-        recipientGroupId: number | null,
-        orderBy?: Graphql.StudentsOrderByClause[],
-        paginationArgs?: Graphql.PaginationArgs,
-        filterArgs?: Graphql.StudentFilterArgs,
-    ) => Promise<void>;
+ // Operations
+ addStudentsToGroup: (studentIds: (string | number)[]) => Promise<boolean>;
+ fetchStudentsNotInGroup: (
+  recipientGroupId: number | null,
+  orderBy?: Graphql.StudentsOrderByClause[],
+  paginationArgs?: Graphql.PaginationArgs,
+  filterArgs?: Graphql.StudentFilterArgs,
+ ) => Promise<void>;
 
-    // Pagination and filtering
-    onPageChange: (page: number) => void;
-    onRowsPerPageChange: (rowsPerPage: number) => void;
-    setFilters: (filters: Graphql.StudentFilterArgs | null) => void;
-    setSort: (sort: Graphql.StudentsOrderByClause[] | null) => void;
+ // Pagination and filtering
+ onPageChange: (page: number) => void;
+ onRowsPerPageChange: (rowsPerPage: number) => void;
+ setFilters: (filters: Graphql.StudentFilterArgs | null) => void;
+ setSort: (sort: Graphql.StudentsOrderByClause[] | null) => void;
 };
 
 const RecipientManagementContext = createContext<
@@ -64,57 +68,100 @@ const ManagementProvider: React.FC<{
 }> = ({ children }) => {
  const notifications = useNotifications();
  const strings = useAppTranslation("recipientGroupTranslations");
- const { updateParams, getParam } = usePageNavigation();
 
-    const [loading, setLoading] = useState(false);
-    const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
-        null,
-    );
-    const [students, setStudents] = useState<Graphql.Student[]>([]);
-    const [pageInfo, setPageInfo] = useState<Graphql.PageInfo | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(50);
-    const [filters, setFilters] = useState<Graphql.StudentFilterArgs | null>(
-        null,
-    );
-    const [sort, setSort] = useState<Graphql.StudentsOrderByClause[] | null>(
-        null,
-    );
+ // Use refs for stable references to notifications and strings
+ const notificationsRef = useRef(notifications);
+ const stringsRef = useRef(strings);
+
+ // Update refs when values change
+ useEffect(() => {
+  notificationsRef.current = notifications;
+ }, [notifications]);
+
+ useEffect(() => {
+  stringsRef.current = strings;
+ }, [strings]);
+ const { updateParams, params } = usePageNavigation();
+ const { template } = useTemplateManagement();
+
+ const [loading, setLoading] = useState(false);
+ const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
+  null,
+ );
+ const [invalidGroupId, setInvalidGroupId] = useState<number | null>(null);
+ const [students, setStudents] = useState<Graphql.Student[]>([]);
+ const [pageInfo, setPageInfo] = useState<Graphql.PageInfo | null>(null);
+ const [currentPage, setCurrentPage] = useState(1);
+ const [rowsPerPage, setRowsPerPage] = useState(50);
+ const [filters, setFilters] = useState<Graphql.StudentFilterArgs | null>(null);
+ const [sort, setSort] = useState<Graphql.StudentsOrderByClause[] | null>(null);
 
  const { studentsNotInRecipientGroupQuery, createRecipientsMutation } =
   useRecipientGraphQL();
 
- // Sync selectedGroupId with URL params
+ // Create refs for current URL params and groupId
+ const paramsRef = useRef<RouteParams>({});
+ const currentGroupIdRef = useRef<number | null>(null);
+
+ // Update params ref when params change
  useEffect(() => {
-  const groupIdParam = getParam("groupId");
+  paramsRef.current = params;
+ }, [params]);
+
+ // Sync selectedGroupId with URL params - use refs to avoid dependency issues
+ useEffect(() => {
+  const groupIdParam = paramsRef.current.groupId;
+  let newGroupId: number | null = null;
+
   if (groupIdParam) {
    const groupId = parseInt(groupIdParam as string, 10);
    if (!isNaN(groupId)) {
-    setSelectedGroupIdState(groupId);
+    newGroupId = groupId;
    }
   }
- }, [getParam]);
 
-    const setSelectedGroupId = useCallback(
-        (groupId: number | null) => {
-            setSelectedGroupIdState(groupId);
-            if (groupId) {
-                updateParams({ groupId: groupId.toString() }, { merge: true });
-            } else {
-                updateParams({ groupId: undefined }, { merge: true });
-            }
-        },
-        [updateParams],
-    );
+  // Only update if the groupId actually changed
+  if (currentGroupIdRef.current !== newGroupId) {
+   currentGroupIdRef.current = newGroupId;
+
+   if (newGroupId) {
+    // Validate that the groupId exists in the current template's recipientGroups
+    const validGroup = template?.recipientGroups?.find((g) => g.id === newGroupId);
+    if (validGroup) {
+     setSelectedGroupIdState(newGroupId);
+     setInvalidGroupId(null);
+    } else {
+     // Group doesn't exist in current template, set invalid state
+     logger.warn(
+      `Group ID ${newGroupId} not found in template ${template?.id} recipient groups`,
+     );
+     setInvalidGroupId(newGroupId);
+     setSelectedGroupIdState(null);
+    }
+   } else {
+    setSelectedGroupIdState(null);
+    setInvalidGroupId(null);
+   }
+  }
+ }, [template?.id, template?.recipientGroups]);
+
+ const setSelectedGroupId = useCallback(
+  (groupId: number | null) => {
+   setSelectedGroupIdState(groupId);
+   if (groupId) {
+    updateParams({ groupId: groupId.toString() }, { merge: true });
+   } else {
+    updateParams({ groupId: undefined }, { merge: true });
+   }
+  },
+  [updateParams],
+ );
 
  const fetchStudentsNotInGroup = useCallback(
   async (
    recipientGroupId: number | null,
-   orderBy: Graphql.StudentsOrderByClause[] = [],
-   paginationArgs: Graphql.PaginationArgs = {
-    page: currentPage,
-    first: rowsPerPage,
-   },
+   orderBy?: Graphql.StudentsOrderByClause[],
+   paginationArgs?: Graphql.PaginationArgs,
    filterArgs?: Graphql.StudentFilterArgs,
   ) => {
    // Don't fetch if recipientGroupId is null
@@ -144,7 +191,7 @@ const ManagementProvider: React.FC<{
     // Don't show error notification if the request was aborted (e.g., during navigation)
     if (!isAbortError(error)) {
      logger.error("Error fetching students not in group:", error);
-     notifications.show(strings.errorAddingToGroup, {
+     notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
       severity: "error",
       autoHideDuration: 3000,
      });
@@ -157,35 +204,31 @@ const ManagementProvider: React.FC<{
   },
   [
    studentsNotInRecipientGroupQuery,
-   notifications,
-   strings,
-   currentPage,
-   rowsPerPage,
   ],
  );
 
-    const addStudentsToGroup = useCallback(
-        async (studentIds: (string | number)[]): Promise<boolean> => {
-            if (selectedGroupId === null || studentIds.length === 0) {
-                return false;
-            }
+ const addStudentsToGroup = useCallback(
+  async (studentIds: (string | number)[]): Promise<boolean> => {
+   if (selectedGroupId === null || studentIds.length === 0) {
+    return false;
+   }
 
-            setLoading(true);
-            try {
-                // Convert string IDs to numbers
-                const numericIds = studentIds.map((id) =>
-                    typeof id === "string" ? parseInt(id, 10) : id,
-                );
+   setLoading(true);
+   try {
+    // Convert string IDs to numbers
+    const numericIds = studentIds.map((id) =>
+     typeof id === "string" ? parseInt(id, 10) : id,
+    );
 
-                const result = await createRecipientsMutation({
-                    input: {
-                        recipientGroupId: selectedGroupId,
-                        studentIds: numericIds,
-                    },
-                });
+    const result = await createRecipientsMutation({
+     input: {
+      recipientGroupId: selectedGroupId,
+      studentIds: numericIds,
+     },
+    });
 
                 if (result.data?.createRecipients) {
-                    notifications.show(strings.addedToGroup, {
+                    notificationsRef.current.show(stringsRef.current.addedToGroup, {
                         severity: "success",
                         autoHideDuration: 3000,
                     });
@@ -196,24 +239,28 @@ const ManagementProvider: React.FC<{
                     return true;
                 }
 
-                notifications.show(strings.errorAddingToGroup, {
+                notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
                     severity: "error",
                     autoHideDuration: 3000,
                 });
                 return false;
             } catch (error) {
                 logger.error("Error adding students to group:", error);
-                notifications.show(strings.errorAddingToGroup, {
+                notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
                     severity: "error",
                     autoHideDuration: 3000,
                 });
                 return false;
-            } finally {
-                setLoading(false);
-            }
-        },
-        [selectedGroupId, createRecipientsMutation, notifications, strings, fetchStudentsNotInGroup],
-    );
+   } finally {
+    setLoading(false);
+   }
+  },
+  [
+   selectedGroupId,
+   createRecipientsMutation,
+   fetchStudentsNotInGroup,
+  ],
+ );
 
  // Fetch students when group changes
  useEffect(() => {
@@ -247,32 +294,34 @@ const ManagementProvider: React.FC<{
   setCurrentPage(1);
  }, []);
 
-    const contextValue = useMemo(
-        () => ({
-            loading,
-            selectedGroupId,
-            students,
-            pageInfo,
-            setSelectedGroupId,
-            addStudentsToGroup,
-            fetchStudentsNotInGroup,
-            onPageChange,
-            onRowsPerPageChange,
-            setFilters,
-            setSort,
-        }),
-        [
-            loading,
-            selectedGroupId,
-            students,
-            pageInfo,
-            setSelectedGroupId,
-            addStudentsToGroup,
-            fetchStudentsNotInGroup,
-            onPageChange,
-            onRowsPerPageChange,
-        ],
-    );
+ const contextValue = useMemo(
+  () => ({
+   loading,
+   selectedGroupId,
+   students,
+   pageInfo,
+   invalidGroupId,
+   setSelectedGroupId,
+   addStudentsToGroup,
+   fetchStudentsNotInGroup,
+   onPageChange,
+   onRowsPerPageChange,
+   setFilters,
+   setSort,
+  }),
+  [
+   loading,
+   selectedGroupId,
+   students,
+   pageInfo,
+   invalidGroupId,
+   setSelectedGroupId,
+   addStudentsToGroup,
+   fetchStudentsNotInGroup,
+   onPageChange,
+   onRowsPerPageChange,
+  ],
+ );
 
  return (
   <RecipientManagementContext.Provider value={contextValue}>
@@ -283,14 +332,10 @@ const ManagementProvider: React.FC<{
 
 export const RecipientManagementProvider: React.FC<{
  children: React.ReactNode;
- recipientGroupId: number | null;
  templateId: number;
-}> = ({ children, recipientGroupId, templateId }) => {
+}> = ({ children, templateId }) => {
  return (
-  <RecipientGraphQLProvider
-   recipientGroupId={recipientGroupId}
-   templateId={templateId}
-  >
+  <RecipientGraphQLProvider recipientGroupId={null} templateId={templateId}>
    <ManagementProvider>{children}</ManagementProvider>
   </RecipientGraphQLProvider>
  );

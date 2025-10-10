@@ -72,4 +72,8 @@ export type RecipientGroupTranslation = {
  confirmClearSelectionMessage: string;
  confirmAddStudents: string;
  confirmAddStudentsMessage: string;
+
+ // Invalid group messages
+ invalidGroupSelected: string;
+ groupNotFoundInTemplate: string;
 };
