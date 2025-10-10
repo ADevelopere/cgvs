@@ -9,7 +9,10 @@ import {
     TemplateManagementTabType,
 } from "@/client/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
-// import RecipientsTab from "./recipients/RecipientsTab";
+// import RecipientGroupTab from "./recipients/RecipientsTab";
+// import RecipientsViewTab from "./recipients/RecipientsTab";
+// import RecipientsManagementTab from "./recipients/RecipientsTab";
+// import RecipientsDataTab from "./recipients/RecipientsTab";
 // import PreviewTab from "./tabs/PreviewTab";
 // import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
 // import EditorTab from "./editor/EditorTab";
