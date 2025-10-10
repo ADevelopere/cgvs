@@ -4,6 +4,7 @@ export * from "./calendar";
 export * from "./country";
 export * from "./gender";
 export * from "./language";
+export * from "./recipientGroup";
 export * from "./templateCategory";
 export * from "./error";
 export * from "./student";
