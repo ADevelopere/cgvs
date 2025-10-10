@@ -20,7 +20,6 @@ import { useAppTranslation } from "@/client/locale";
 import { usePageNavigation } from "../navigation/usePageNavigation";
 import { isAbortError } from "@/client/utils/errorUtils";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
-import type { RouteParams } from "../navigation/PageNavigationRegistry.types";
 
 type RecipientManagementContextType = {
  // State
@@ -65,7 +64,9 @@ export const useRecipientManagement = () => {
 
 const ManagementProvider: React.FC<{
  children: React.ReactNode;
-}> = ({ children }) => {
+ selectedGroupId: number;
+ setSelectedGroupId: (groupId: number | null) => void;
+}> = ({ children, selectedGroupId, setSelectedGroupId }) => {
  const notifications = useNotifications();
  const strings = useAppTranslation("recipientGroupTranslations");
 
@@ -81,14 +82,8 @@ const ManagementProvider: React.FC<{
  useEffect(() => {
   stringsRef.current = strings;
  }, [strings]);
- const { updateParams, params } = usePageNavigation();
- const { template } = useTemplateManagement();
 
  const [loading, setLoading] = useState(false);
- const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
-  null,
- );
- const [invalidGroupId, setInvalidGroupId] = useState<number | null>(null);
  const [students, setStudents] = useState<Graphql.Student[]>([]);
  const [pageInfo, setPageInfo] = useState<Graphql.PageInfo | null>(null);
  const [currentPage, setCurrentPage] = useState(1);
@@ -98,66 +93,6 @@ const ManagementProvider: React.FC<{
 
  const { studentsNotInRecipientGroupQuery, createRecipientsMutation } =
   useRecipientGraphQL();
-
- // Create refs for current URL params and groupId
- const paramsRef = useRef<RouteParams>({});
- const currentGroupIdRef = useRef<number | null>(null);
-
- // Update params ref when params change
- useEffect(() => {
-  paramsRef.current = params;
- }, [params]);
-
- // Sync selectedGroupId with URL params - use refs to avoid dependency issues
- useEffect(() => {
-  const groupIdParam = paramsRef.current.groupId;
-  let newGroupId: number | null = null;
-
-  if (groupIdParam) {
-   const groupId = parseInt(groupIdParam as string, 10);
-   if (!isNaN(groupId)) {
-    newGroupId = groupId;
-   }
-  }
-
-  // Only update if the groupId actually changed
-  if (currentGroupIdRef.current !== newGroupId) {
-   currentGroupIdRef.current = newGroupId;
-
-   if (newGroupId) {
-    // Validate that the groupId exists in the current template's recipientGroups
-    const validGroup = template?.recipientGroups?.find(
-     (g) => g.id === newGroupId,
-    );
-    if (validGroup) {
-     setSelectedGroupIdState(newGroupId);
-     setInvalidGroupId(null);
-    } else {
-     // Group doesn't exist in current template, set invalid state
-     logger.warn(
-      `Group ID ${newGroupId} not found in template ${template?.id} recipient groups`,
-     );
-     setInvalidGroupId(newGroupId);
-     setSelectedGroupIdState(null);
-    }
-   } else {
-    setSelectedGroupIdState(null);
-    setInvalidGroupId(null);
-   }
-  }
- }, [template?.id, template?.recipientGroups]);
-
- const setSelectedGroupId = useCallback(
-  (groupId: number | null) => {
-   setSelectedGroupIdState(groupId);
-   if (groupId) {
-    updateParams({ groupId: groupId.toString() }, { merge: true });
-   } else {
-    updateParams({ groupId: undefined }, { merge: true });
-   }
-  },
-  [updateParams],
- );
 
  const fetchStudentsNotInGroup = useCallback(
   async (
@@ -296,7 +231,7 @@ const ManagementProvider: React.FC<{
    selectedGroupId,
    students,
    pageInfo,
-   invalidGroupId,
+   invalidGroupId: null, // Always null since we only render when valid group exists
    setSelectedGroupId,
    addStudentsToGroup,
    fetchStudentsNotInGroup,
@@ -310,7 +245,6 @@ const ManagementProvider: React.FC<{
    selectedGroupId,
    students,
    pageInfo,
-   invalidGroupId,
    setSelectedGroupId,
    addStudentsToGroup,
    fetchStudentsNotInGroup,
@@ -326,22 +260,109 @@ const ManagementProvider: React.FC<{
  );
 };
 
+// Placeholder context for when no valid group is available
+const createPlaceholderContext = (): RecipientManagementContextType => ({
+ loading: false,
+ selectedGroupId: null,
+ students: [],
+ pageInfo: null,
+ invalidGroupId: null,
+ setSelectedGroupId: () => {},
+ addStudentsToGroup: async () => false,
+ fetchStudentsNotInGroup: async () => {},
+ onPageChange: () => {},
+ onRowsPerPageChange: () => {},
+ setFilters: () => {},
+ setSort: () => {},
+});
+
 export const RecipientManagementProvider: React.FC<{
  children: React.ReactNode;
  templateId: number;
 }> = ({ children, templateId }) => {
- // For the GraphQL provider, we need a valid group ID
- // We'll use the first available group ID, or null if none exist
- // The management context will handle the case where no valid group is selected
  const { template } = useTemplateManagement();
- const validGroupId = template?.recipientGroups?.[0]?.id || null;
+ const { getParam, updateParams } = usePageNavigation();
 
+ const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(null);
+ const [invalidGroupId, setInvalidGroupId] = useState<number | null>(null);
+
+ // Sync selectedGroupId with URL params and template changes
+ useEffect(() => {
+  const groupIdParam = getParam("groupId");
+  let resolvedGroupId: number | null = null;
+
+  // Try to get group ID from URL parameter first
+  if (groupIdParam) {
+   const groupId = parseInt(groupIdParam as string, 10);
+   if (!isNaN(groupId)) {
+    // Validate that the groupId exists in the current template's recipientGroups
+    const validGroup = template?.recipientGroups?.find((g) => g.id === groupId);
+    if (validGroup) {
+     resolvedGroupId = groupId;
+    }
+   }
+  }
+
+  // Fall back to first available group ID
+  if (resolvedGroupId === null) {
+   resolvedGroupId = template?.recipientGroups?.[0]?.id || null;
+  }
+
+  if (resolvedGroupId !== selectedGroupId) {
+   setSelectedGroupIdState(resolvedGroupId);
+
+   // Handle invalid group ID case
+   if (groupIdParam) {
+    const groupId = parseInt(groupIdParam as string, 10);
+    if (!isNaN(groupId) && !template?.recipientGroups?.find((g) => g.id === groupId)) {
+     setInvalidGroupId(groupId);
+    } else {
+     setInvalidGroupId(null);
+    }
+   } else {
+    setInvalidGroupId(null);
+   }
+  }
+ }, [template?.id, template?.recipientGroups, getParam, selectedGroupId]);
+
+ const setSelectedGroupId = useCallback(
+  (groupId: number | null) => {
+   setSelectedGroupIdState(groupId);
+   if (groupId) {
+    updateParams({ groupId: groupId.toString() }, { merge: true });
+   } else {
+    updateParams({ groupId: undefined }, { merge: true });
+   }
+  },
+  [updateParams],
+ );
+
+ // If no valid group ID is available, return placeholder context
+ if (selectedGroupId === null) {
+  const placeholderValue = createPlaceholderContext();
+  // Include invalidGroupId in placeholder context
+  placeholderValue.invalidGroupId = invalidGroupId;
+  placeholderValue.setSelectedGroupId = setSelectedGroupId;
+
+  return (
+   <RecipientManagementContext.Provider value={placeholderValue}>
+    {children}
+   </RecipientManagementContext.Provider>
+  );
+ }
+
+ // Return full provider chain with valid group ID
  return (
   <RecipientGraphQLProvider
-   recipientGroupId={validGroupId}
+   recipientGroupId={selectedGroupId}
    templateId={templateId}
   >
-   <ManagementProvider>{children}</ManagementProvider>
+   <ManagementProvider
+    selectedGroupId={selectedGroupId}
+    setSelectedGroupId={setSelectedGroupId}
+   >
+    {children}
+   </ManagementProvider>
   </RecipientGraphQLProvider>
-);
+ );
 };
