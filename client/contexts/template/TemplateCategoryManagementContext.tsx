@@ -29,9 +29,9 @@ import { useRouter } from "next/navigation";
 import logger from "@/lib/logger";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
-import { TemplateManagementTabType } from "./TemplateManagementContext";
 import { templateCategoriesQueryDocument } from "@/client/graphql/documents";
 import { useQuery } from "@apollo/client/react";
+import { usePageNavigation } from "../navigation/usePageNavigation";
 
 // Helper function to find a category in a hierarchical tree by ID
 const findCategoryInTreeById = (
@@ -204,9 +204,11 @@ type TemplateCategoryManagementContextType = {
     setOnNewTemplateCancel: (callback: (() => void) | undefined) => void;
 
     templateToManage?: Graphql.Template;
-    templateManagementTab: TemplateManagementTabType;
-    setTemplateManagementTab: (tab: TemplateManagementTabType) => void;
     manageTemplate: (templateId: number) => void;
+
+    // Category page tab management
+    activeCategoryTab: "all" | "deleted";
+    setActiveCategoryTab: (tab: "all" | "deleted") => void;
 };
 
 const TemplateCategoryManagementContext = createContext<
@@ -232,13 +234,17 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
     const { setNavigation } = useDashboardLayout();
 
+    // Use the new navigation system
+    const { registerResolver, updateParams } = usePageNavigation();
+
     const router = useRouter();
     const [templateToManage, setTemplateToManage] = useState<
         Graphql.Template | undefined
     >(undefined);
 
-    const [templateManagementTab, setTemplateManagementTab] =
-        useState<TemplateManagementTabType>("basic");
+    // Category page tab state
+    const [activeCategoryTab, setActiveCategoryTabState] =
+        useState<"all" | "deleted">("all");
 
     const {
         data: apolloCategoryData,
@@ -312,6 +318,106 @@ export const TemplateCategoryManagementProvider: React.FC<{
             return modifier * (Number(a.id) - Number(b.id));
         });
     }, [regularCategoriesFromCache]);
+
+    // Register navigation resolver for category page tabs
+    useEffect(() => {
+        const unregister = registerResolver({
+            segment: "admin/categories",
+            resolver: async (params) => {
+                try {
+                    // Handle tab parameter (all vs deleted)
+                    if (params.tab) {
+                        const tab = params.tab as "all" | "deleted";
+                        if (["all", "deleted"].includes(tab)) {
+                            setActiveCategoryTabState(tab);
+
+                            // When switching to deleted tab, show suspension category
+                            if (tab === "deleted" && suspensionCategoryFromCache) {
+                                setCurrentCategoryState(suspensionCategoryFromCache);
+                            } else if (tab === "all") {
+                                // When switching to all, select first regular category or clear
+                                if (sortedRegularCategories.length > 0) {
+                                    setCurrentCategoryState(sortedRegularCategories[0]);
+                                } else {
+                                    setCurrentCategoryState(null);
+                                }
+                            }
+                        }
+                    }
+
+                    // Handle category selection
+                    if (params.categoryId) {
+                        const categoryId = parseInt(params.categoryId as string, 10);
+                        if (!isNaN(categoryId)) {
+                            const category = findCategoryInTreeById(
+                                allCategoriesFromCache,
+                                categoryId,
+                            );
+                            if (category) {
+                                setCurrentCategoryState(category);
+                            }
+                        }
+                    }
+
+                    // Handle template selection
+                    if (params.templateId) {
+                        const templateId = parseInt(params.templateId as string, 10);
+                        if (!isNaN(templateId)) {
+                            const template = allTemplatesFromCache.find(
+                                (t) => t.id === templateId,
+                            );
+                            if (template) {
+                                setCurrentTemplate(template);
+                            }
+                        }
+                    }
+
+                    return { success: true };
+                } catch (error) {
+                    return {
+                        success: false,
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : "Failed to resolve navigation",
+                    };
+                }
+            },
+            priority: 10,
+        });
+
+        return unregister;
+    }, [
+        registerResolver,
+        suspensionCategoryFromCache,
+        sortedRegularCategories,
+        allCategoriesFromCache,
+        allTemplatesFromCache,
+    ]);
+
+    // Function to change category tab and update URL
+    const setActiveCategoryTab = useCallback(
+        (tab: "all" | "deleted") => {
+            setActiveCategoryTabState(tab);
+            updateParams({ tab }, { replace: true, merge: true });
+
+            // Update current category based on tab
+            if (tab === "deleted" && suspensionCategoryFromCache) {
+                setCurrentCategoryState(suspensionCategoryFromCache);
+            } else if (tab === "all") {
+                if (sortedRegularCategories.length > 0) {
+                    setCurrentCategoryState(sortedRegularCategories[0]);
+                } else {
+                    setCurrentCategoryState(null);
+                }
+            }
+        },
+        [
+            updateParams,
+            suspensionCategoryFromCache,
+            sortedRegularCategories,
+        ],
+    );
 
     // Effect to keep currentCategoryState synchronized with the actual object from the cache
     useEffect(() => {
@@ -755,9 +861,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
             onNewTemplateCancel,
             setOnNewTemplateCancel,
             manageTemplate,
-            templateManagementTab,
-            setTemplateManagementTab,
             templateToManage,
+            activeCategoryTab,
+            setActiveCategoryTab,
         }),
         [
             fetchCategories,
@@ -782,9 +888,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
             isAddingTemplate,
             onNewTemplateCancel,
             manageTemplate,
-            templateManagementTab,
-            setTemplateManagementTab,
             templateToManage,
+            activeCategoryTab,
+            setActiveCategoryTab,
         ],
     );
 

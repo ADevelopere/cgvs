@@ -15,7 +15,7 @@ import {
     Tooltip,
 } from "@mui/material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { useNavigation } from "@/client/contexts/NavigationContext";
+import { useNavigation } from "@/client/contexts/navigation/NavigationContext";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationItem, NavigationPageItem } from "@/client/contexts/adminLayout.types";
 

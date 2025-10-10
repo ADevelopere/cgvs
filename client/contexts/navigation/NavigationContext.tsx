@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { NavigationPageItem } from './adminLayout.types';
+import { NavigationPageItem } from '../adminLayout.types';
 
 interface NavigationContextType {
     isPathActive: (item: NavigationPageItem) => boolean;

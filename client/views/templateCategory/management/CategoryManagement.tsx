@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import { Alert, Box, Button, IconButton, Tab, Tooltip } from "@mui/material";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTranslation } from "@/client/locale";
-import {
-    useTemplateCategoryManagement,
-} from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
@@ -33,17 +31,19 @@ const This: React.FC = () => {
         setSecondPaneVisible(!secondPaneVisible);
     };
 
-    const [activeTab, setActiveTab] =
-        useState<TemplateCategoryManagementTabType>("all");
-
-    const { fetchCategories, fetchError, currentCategory } =
-        useTemplateCategoryManagement();
+    const {
+        fetchCategories,
+        fetchError,
+        currentCategory,
+        activeCategoryTab,
+        setActiveCategoryTab,
+    } = useTemplateCategoryManagement();
 
     const handleTabChange = async (
         _: React.SyntheticEvent,
         newValue: TemplateCategoryManagementTabType,
     ) => {
-        setActiveTab(newValue);
+        setActiveCategoryTab(newValue);
     };
 
     const fetchErrorView = fetchError && (
@@ -71,7 +71,7 @@ const This: React.FC = () => {
 
     return (
         <>
-            {(fetchErrorView ?? (
+            {fetchErrorView ?? (
                 <Box
                     sx={{
                         display: "flex",
@@ -79,7 +79,7 @@ const This: React.FC = () => {
                         height: "100%",
                     }}
                 >
-                    <TabContext value={activeTab}>
+                    <TabContext value={activeCategoryTab}>
                         {/* controllers */}
                         <Box
                             sx={{
@@ -131,7 +131,7 @@ const This: React.FC = () => {
                             </TabList>
 
                             <Box sx={{ flex: 1 }} />
-                            {activeTab === "all" && (
+                            {activeCategoryTab === "all" && (
                                 <Box>
                                     {/* first pane visibility button*/}
                                     <Tooltip
@@ -142,7 +142,12 @@ const This: React.FC = () => {
                                                 onClick={
                                                     handleFirstPaneVisibility
                                                 }
-                                                disabled={!(currentCategory && secondPaneVisible)}
+                                                disabled={
+                                                    !(
+                                                        currentCategory &&
+                                                        secondPaneVisible
+                                                    )
+                                                }
                                             >
                                                 <PanelRight />
                                             </IconButton>
@@ -204,7 +209,7 @@ const This: React.FC = () => {
                         </TabPanel>
                     </TabContext>
                 </Box>
-            ))}
+            )}
         </>
     );
 };

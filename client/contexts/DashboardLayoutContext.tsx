@@ -19,6 +19,7 @@ import {
     Navigation,
 } from "./adminLayout.types";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
+import { PageNavigationRegistryProvider } from "./navigation/PageNavigationRegistryContext";
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
@@ -143,9 +144,11 @@ export const DashboardLayoutProvider: React.FC<
     ]);
 
     return (
-        <DashboardLayoutContext.Provider value={value}>
-            {children}
-        </DashboardLayoutContext.Provider>
+        <PageNavigationRegistryProvider>
+            <DashboardLayoutContext.Provider value={value}>
+                {children}
+            </DashboardLayoutContext.Provider>
+        </PageNavigationRegistryProvider>
     );
 };
 
