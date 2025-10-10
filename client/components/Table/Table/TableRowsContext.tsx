@@ -26,6 +26,7 @@ export type TableRowsContextType = {
         event: React.ChangeEvent<HTMLInputElement>,
     ) => void;
     toggleRowSelection: (rowId: string | number) => void;
+    clearAllSelections: () => void;
 
     // Row height and styling
     rowHeights: Record<string | number, number>;
@@ -207,18 +208,29 @@ export const TableRowsProvider = ({
     );
 
     // Rest of the component...
-    // Handle select all checkbox change
+    // Handle select all checkbox change - only affects current page
     const toggleAllRowsSelection = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             if (!data) return;
 
+            const currentPageIds = data.map((row) => row[rowIdKey]);
+
             if (event.target.checked) {
-                // Select all rows in the current data
-                const allIds = data.map((row) => row[rowIdKey]);
-                setSelectedRowIds(allIds);
+                // Select all rows in the current page, preserving selections from other pages
+                setSelectedRowIds((prevSelected) => {
+                    const newSelections = [...prevSelected];
+                    currentPageIds.forEach((id) => {
+                        if (!newSelections.includes(id)) {
+                            newSelections.push(id);
+                        }
+                    });
+                    return newSelections;
+                });
             } else {
-                // Deselect all rows
-                setSelectedRowIds([]);
+                // Deselect only rows in the current page, keeping selections from other pages
+                setSelectedRowIds((prevSelected) =>
+                    prevSelected.filter((id) => !currentPageIds.includes(id))
+                );
             }
         },
         [data, rowIdKey],
@@ -234,6 +246,11 @@ export const TableRowsProvider = ({
                 return [...prevSelectedRowIds, rowId];
             }
         });
+    }, []);
+
+    // Clear all selections
+    const clearAllSelections = useCallback(() => {
+        setSelectedRowIds([]);
     }, []);
 
     const isAllRowsSelected = useMemo(() => {
@@ -253,6 +270,7 @@ export const TableRowsProvider = ({
             selectedRowIds,
             toggleAllRowsSelection,
             toggleRowSelection,
+            clearAllSelections,
 
             // Row styling and dimensions
             rowHeights,
@@ -274,6 +292,7 @@ export const TableRowsProvider = ({
             selectedRowIds,
             toggleAllRowsSelection,
             toggleRowSelection,
+            clearAllSelections,
             resizeRowHeight,
             getRowStyle,
             rowHeights,

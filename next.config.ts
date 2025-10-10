@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true, // Enable gzip compression
   images: {
-    domains: ["storage.googleapis.com"],
+    domains: ["storage.googleapis.com", "flagcdn.com"],
     unoptimized: true, // Disable optimization for external images
   },
   async headers() {
@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Access-Control-Allow-Origin",
-            value: process.env.NODE_ENV === "production" 
+            value: process.env.NODE_ENV === "production"
               ? process.env.ALLOWED_ORIGIN || "https://yourdomain.com"
               : "http://localhost:3000",
           },
@@ -75,7 +75,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://storage.googleapis.com",
+              "img-src 'self' data: https://storage.googleapis.com https://flagcdn.com",
               "font-src 'self' data:",
               "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:*",
               "frame-ancestors 'none'",
