@@ -3,7 +3,10 @@
 import React from "react";
 import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { RecipientGroupManagementProvider, useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import {
+    RecipientGroupManagementProvider,
+    useRecipientGroupManagement,
+} from "@/client/contexts/recipientGroup";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
 import EmptyGroupsState from "./EmptyGroupsState";
@@ -13,12 +16,13 @@ import GroupInfoDialog from "./GroupInfoDialog";
 import GroupSettingsDialog from "./GroupSettingsDialog";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
-const RecipientTabContent: React.FC = () => {
+const RecipientGroupTabContent: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const { template } = useTemplateManagement();
     const { openCreateDialog } = useRecipientGroupManagement();
 
-    const hasGroups = template?.recipientGroups && template.recipientGroups.length > 0;
+    const hasGroups =
+        template?.recipientGroups && template.recipientGroups.length > 0;
 
     return (
         <Box
@@ -59,7 +63,7 @@ const RecipientTabContent: React.FC = () => {
     );
 };
 
-const RecipientTab: React.FC = () => {
+const RecipientGroupTab: React.FC = () => {
     const { template } = useTemplateManagement();
 
     if (!template?.id) {
@@ -68,9 +72,9 @@ const RecipientTab: React.FC = () => {
 
     return (
         <RecipientGroupManagementProvider templateId={template.id}>
-            <RecipientTabContent />
+            <RecipientGroupTabContent />
         </RecipientGroupManagementProvider>
     );
 };
 
-export default RecipientTab;
+export default RecipientGroupTab;

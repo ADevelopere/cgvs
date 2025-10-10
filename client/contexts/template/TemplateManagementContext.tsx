@@ -25,6 +25,7 @@ export type TemplateManagementTabType =
     | "variables"
     | "editor"
     | "recipients"
+    | "recipientsManagement"
     | "preview";
 
 export interface TabError {
@@ -96,6 +97,7 @@ export const TemplateManagementProvider: React.FC<{
         variables: undefined,
         editor: undefined,
         recipients: undefined,
+        recipientsManagement: undefined,
         preview: undefined,
     });
 
@@ -115,6 +117,7 @@ export const TemplateManagementProvider: React.FC<{
                 "variables",
                 "editor",
                 "recipients",
+                "recipientsManagement",
                 "preview",
             ].includes(tab)
         ) {
@@ -132,6 +135,7 @@ export const TemplateManagementProvider: React.FC<{
                 "variables",
                 "editor",
                 "recipients",
+                "recipientsManagement",
                 "preview",
             ].includes(tab) &&
             tab !== activeTab
@@ -157,6 +161,7 @@ export const TemplateManagementProvider: React.FC<{
                                 "variables",
                                 "editor",
                                 "recipients",
+                                "recipientsManagement",
                                 "preview",
                             ].includes(tab)
                         ) {
@@ -175,6 +180,7 @@ export const TemplateManagementProvider: React.FC<{
                             "variables",
                             "editor",
                             "recipients",
+                            "recipientsManagement",
                             "preview",
                         ].includes(tab)
                     ) {

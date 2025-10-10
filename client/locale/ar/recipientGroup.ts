@@ -54,5 +54,19 @@ export const recipientGroup: RecipientGroupTranslation = {
     errorUpdating: "فشل تحديث المجموعة",
     errorDeleting: "فشل حذف المجموعة",
     cannotDeleteGroupWithStudents: "لا يمكن حذف المجموعة التي تحتوي على طلاب",
+
+    // Add students to group
+    selectGroup: "اختر مجموعة",
+    selectGroupToAddStudents: "اختر مجموعة لإضافة طلاب",
+    studentsNotInGroup: "الطلاب غير الموجودين في المجموعة",
+    noStudentsAvailable: "لا يوجد طلاب متاحون للإضافة",
+    selectedStudents: "الطلاب المحددون",
+    addToGroup: "إضافة إلى المجموعة",
+    clearSelection: "إلغاء التحديد",
+    addedToGroup: "تمت إضافة الطلاب إلى المجموعة بنجاح",
+    errorAddingToGroup: "فشل في إضافة الطلاب إلى المجموعة",
+    goToStudentsPage: "الانتقال إلى صفحة الطلاب",
+    manageGroups: "إدارة المجموعات",
+    addStudents: "إضافة طلاب",
 };
 

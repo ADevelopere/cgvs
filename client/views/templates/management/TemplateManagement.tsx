@@ -9,10 +9,6 @@ import {
     TemplateManagementTabType,
 } from "@/client/contexts/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
-// import RecipientGroupTab from "./recipients/RecipientsTab";
-// import RecipientsViewTab from "./recipients/RecipientsTab";
-// import RecipientsManagementTab from "./recipients/RecipientsTab";
-// import RecipientsDataTab from "./recipients/RecipientsTab";
 // import PreviewTab from "./tabs/PreviewTab";
 // import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";
 // import EditorTab from "./editor/EditorTab";
@@ -22,7 +18,8 @@ import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import { TemplateVariableManagementProvider } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
-import RecipientTab from "./recipient/RecipientTab";
+import RecipientGroupTab from "./recipient/RecipientGroupTab";
+import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
 
 const TemplateManagement: React.FC = () => {
     const theme = useTheme();
@@ -113,8 +110,10 @@ const TemplateManagement: React.FC = () => {
                             <TemplateVariableManagement />
                         </TabPanel>
                         <TabPanel value="recipients">
-                            <RecipientTab />
-                            {/* <RecipientsTab /> */}
+                            <RecipientGroupTab />
+                        </TabPanel>
+                        <TabPanel value="recipientsManagement">
+                            <RecipientsManagementTab />
                         </TabPanel>
                         {/* <TabPanel value="editor">
                             <EditorTab />
