@@ -15,7 +15,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
   const theme = useTheme();
   const { strings } = useTableLocale();
 
-  const { pageInfo } = useTableContext();
+  const { pageInfo, footerStartContent, footerEndContent } = useTableContext();
 
   const {
     totalRows = 0,
@@ -89,53 +89,76 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
 
   return (
     <div style={tfStyle}>
-      {pageInfo ? (
-        // Render pagination controls when pageInfo is provided
-        <TablePagination
-          component="div"
-          count={pageInfo.total}
-          page={pageInfo.currentPage - 1} // Convert 1-indexed to 0-indexed
-          rowsPerPage={pageInfo.perPage}
-          rowsPerPageOptions={rowsPerPageOptions}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-          labelRowsPerPage={strings.pagination.rowsPerPage}
-          labelDisplayedRows={labelDisplayedRows}
-          getItemAriaLabel={getItemAriaLabel}
-        />
-      ) : (
-        // Render standard footer when not using pagination
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span>
-            {rowSelectionEnabled && selectedRowIds.length > 0 ? (
-              <strong style={{ color: theme.palette.primary.main }}>
-                {`${selectedRowIds.length} ${
-                  selectedRowIds.length === 1 ? "row" : "rows"
-                } selected`}
-              </strong>
-            ) : (
-              `${loadedRows} of ${totalRows} rows | ${visibleColumns.length} columns visible`
-            )}
-          </span>
-          <span>
-            {isLoading && (
-              <>
-                <CircularProgress
-                  size={16}
-                  style={{ marginRight: 8, verticalAlign: "middle" }}
-                />
-                {strings.general.loading}
-              </>
-            )}
-          </span>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: theme.spacing(2),
+        }}
+      >
+        {/* Start content (left side) */}
+        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing(1) }}>
+          {footerStartContent}
         </div>
-      )}
+
+        {/* Middle content - pagination or status */}
+        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          {pageInfo ? (
+            // Render pagination controls when pageInfo is provided
+            <TablePagination
+              component="div"
+              count={pageInfo.total}
+              page={pageInfo.currentPage - 1} // Convert 1-indexed to 0-indexed
+              rowsPerPage={pageInfo.perPage}
+              rowsPerPageOptions={rowsPerPageOptions}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              labelRowsPerPage={strings.pagination.rowsPerPage}
+              labelDisplayedRows={labelDisplayedRows}
+              getItemAriaLabel={getItemAriaLabel}
+            />
+          ) : (
+            // Render standard footer when not using pagination
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <span>
+                {rowSelectionEnabled && selectedRowIds.length > 0 ? (
+                  <strong style={{ color: theme.palette.primary.main }}>
+                    {`${selectedRowIds.length} ${
+                      selectedRowIds.length === 1 ? "row" : "rows"
+                    } selected`}
+                  </strong>
+                ) : (
+                  `${loadedRows} of ${totalRows} rows | ${visibleColumns.length} columns visible`
+                )}
+              </span>
+              <span>
+                {isLoading && (
+                  <>
+                    <CircularProgress
+                      size={16}
+                      style={{ marginRight: 8, verticalAlign: "middle" }}
+                    />
+                    {strings.general.loading}
+                  </>
+                )}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* End content (right side) */}
+        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing(1) }}>
+          {footerEndContent}
+        </div>
+      </div>
     </div>
   );
 };
