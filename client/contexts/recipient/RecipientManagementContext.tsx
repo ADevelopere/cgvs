@@ -126,7 +126,9 @@ const ManagementProvider: React.FC<{
 
    if (newGroupId) {
     // Validate that the groupId exists in the current template's recipientGroups
-    const validGroup = template?.recipientGroups?.find((g) => g.id === newGroupId);
+    const validGroup = template?.recipientGroups?.find(
+     (g) => g.id === newGroupId,
+    );
     if (validGroup) {
      setSelectedGroupIdState(newGroupId);
      setInvalidGroupId(null);
@@ -202,9 +204,7 @@ const ManagementProvider: React.FC<{
     setLoading(false);
    }
   },
-  [
-   studentsNotInRecipientGroupQuery,
-  ],
+  [studentsNotInRecipientGroupQuery],
  );
 
  const addStudentsToGroup = useCallback(
@@ -227,39 +227,35 @@ const ManagementProvider: React.FC<{
      },
     });
 
-                if (result.data?.createRecipients) {
-                    notificationsRef.current.show(stringsRef.current.addedToGroup, {
-                        severity: "success",
-                        autoHideDuration: 3000,
-                    });
+    if (result.data?.createRecipients) {
+     notificationsRef.current.show(stringsRef.current.addedToGroup, {
+      severity: "success",
+      autoHideDuration: 3000,
+     });
 
-                    // Refresh the student list
-                    await fetchStudentsNotInGroup(selectedGroupId);
+     // Refresh the student list
+     await fetchStudentsNotInGroup(selectedGroupId);
 
-                    return true;
-                }
+     return true;
+    }
 
-                notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
-                    severity: "error",
-                    autoHideDuration: 3000,
-                });
-                return false;
-            } catch (error) {
-                logger.error("Error adding students to group:", error);
-                notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
-                    severity: "error",
-                    autoHideDuration: 3000,
-                });
-                return false;
+    notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return false;
+   } catch (error) {
+    logger.error("Error adding students to group:", error);
+    notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return false;
    } finally {
     setLoading(false);
    }
   },
-  [
-   selectedGroupId,
-   createRecipientsMutation,
-   fetchStudentsNotInGroup,
-  ],
+  [selectedGroupId, createRecipientsMutation, fetchStudentsNotInGroup],
  );
 
  // Fetch students when group changes
@@ -334,9 +330,18 @@ export const RecipientManagementProvider: React.FC<{
  children: React.ReactNode;
  templateId: number;
 }> = ({ children, templateId }) => {
+ // For the GraphQL provider, we need a valid group ID
+ // We'll use the first available group ID, or null if none exist
+ // The management context will handle the case where no valid group is selected
+ const { template } = useTemplateManagement();
+ const validGroupId = template?.recipientGroups?.[0]?.id || null;
+
  return (
-  <RecipientGraphQLProvider recipientGroupId={null} templateId={templateId}>
+  <RecipientGraphQLProvider
+   recipientGroupId={validGroupId}
+   templateId={templateId}
+  >
    <ManagementProvider>{children}</ManagementProvider>
   </RecipientGraphQLProvider>
- );
+);
 };

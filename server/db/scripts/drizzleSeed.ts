@@ -69,15 +69,15 @@ async function createAdminUser() {
     logger.log("👤 Creating admin user...");
 
     // Check if admin user already exists
-    let adminUser = await UserRepository.findByEmail("admin@cgvs.com");
+    let adminUser = await UserRepository.findByEmail(process.env.ADMIN_EMAIL!);
 
     if (adminUser) {
         logger.log("   ⚠️ Admin user already exists, skipping creation.");
     } else {
         adminUser = await UserRepository.create({
             name: "System Administrator",
-            email: new Email("admin@cgvs.com"),
-            password: "cgvs@123",
+            email: new Email(process.env.ADMIN_EMAIL!),
+            password: process.env.ADMIN_PASSWORD!,
         });
     }
 
