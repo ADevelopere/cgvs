@@ -12,18 +12,8 @@ All security and HTTP features from your Ktor implementation have been successfu
 
 ### 1. **CORS Configuration** ✅
 
-**Ktor Implementation:**
-```kotlin
-install(CORS) {
-    allowHost("localhost:3000", schemes = listOf("http"))
-    allowMethod(HttpMethod.Get)
-    allowMethod(HttpMethod.Post)
-    // ... other methods
-    allowCredentials = true
-}
-```
-
 **Next.js Implementation:**
+
 - **Location:** `next.config.ts` (global headers) + `app/api/graphql/route.ts` (OPTIONS handler)
 - **Features:**
   - Explicit CORS headers for all API routes
@@ -33,6 +23,7 @@ install(CORS) {
   - Max-Age caching (24 hours)
 
 **Configuration:**
+
 ```typescript
 // In next.config.ts
 {
@@ -49,10 +40,8 @@ install(CORS) {
 
 ### 2. **Security Headers** ✅
 
-**Ktor Implementation:**
-- Configured via Sessions with httpOnly, secure, SameSite
-
 **Next.js Implementation:**
+
 - **Location:** `next.config.ts`
 - **Headers Added:**
   - `X-Frame-Options: DENY` - Prevents clickjacking
@@ -64,6 +53,7 @@ install(CORS) {
   - `Content-Security-Policy` - Prevents XSS, injection attacks
 
 **CSP Configuration:**
+
 ```typescript
 Content-Security-Policy:
   default-src 'self';
@@ -78,18 +68,8 @@ Content-Security-Policy:
 
 ### 3. **Request Logging** ✅
 
-**Ktor Implementation:**
-```kotlin
-install(CallLogging) {
-    level = Level.INFO
-    filter { call ->
-        call.application.log.info("Request Content-Type: $contentType")
-        true
-    }
-}
-```
-
 **Next.js Implementation:**
+
 - **Location:** `middleware.ts`
 - **Features:**
   - Logs all API requests
@@ -99,6 +79,7 @@ install(CallLogging) {
   - Development-friendly logging
 
 **Usage:**
+
 ```typescript
 export function middleware(request: NextRequest) {
     const start = Date.now();
@@ -112,15 +93,8 @@ export function middleware(request: NextRequest) {
 
 ### 4. **Compression** ✅
 
-**Ktor Implementation:**
-```kotlin
-install(Compression) {
-    gzip { priority = 1.0 }
-    deflate { priority = 10.0; minimumSize(1024) }
-}
-```
-
 **Next.js Implementation:**
+
 - **Location:** `next.config.ts`
 - **Configuration:** `compress: true`
 - **Note:** Next.js handles compression automatically in production
@@ -128,11 +102,10 @@ install(Compression) {
 
 ---
 
-### 5. **Rate Limiting** ✅ NEW!
-
-**Not in Ktor** - New security enhancement!
+### 5. **Rate Limiting** ✅ NEW
 
 **Next.js Implementation:**
+
 - **Location:** `server/lib/ratelimit.ts` + `app/api/graphql/route.ts`
 - **Technology:** Redis + @upstash/ratelimit
 - **Features:**
@@ -144,6 +117,7 @@ install(Compression) {
   - Graceful degradation if Redis is down
 
 **Rate Limiters:**
+
 ```typescript
 // GraphQL (100/min)
 export const graphqlRateLimiter = new Ratelimit({
@@ -159,6 +133,7 @@ export const authRateLimiter = new Ratelimit({
 ```
 
 **Response Headers:**
+
 - `X-RateLimit-Limit`: Maximum requests allowed
 - `X-RateLimit-Remaining`: Requests remaining
 - `X-RateLimit-Reset`: Timestamp when limit resets
@@ -168,18 +143,8 @@ export const authRateLimiter = new Ratelimit({
 
 ### 6. **Session Management** ✅
 
-**Ktor Implementation:**
-```kotlin
-install(Sessions) {
-    cookie<UserSession>("cgvs_refresh_token") {
-        cookie.httpOnly = true
-        cookie.maxAgeInSeconds = 7.days.inWholeSeconds
-        cookie.extensions["SameSite"] = "Lax"
-    }
-}
-```
-
 **Next.js Implementation:**
+
 - **Location:** `server/graphql/mutation/auth.mutation.ts` (already existed)
 - **Features:**
   - httpOnly cookies for refresh tokens
@@ -195,6 +160,7 @@ install(Sessions) {
 ### 7. **JWT Authentication** ✅
 
 **Ktor Implementation:**
+
 ```kotlin
 install(Authentication) {
     jwt("auth-jwt") {
@@ -206,6 +172,7 @@ install(Authentication) {
 ```
 
 **Next.js Implementation:**
+
 - **Location:** `server/graphql/gqlContextFactory.ts` (already existed)
 - **Features:**
   - JWT verification on every request
@@ -217,11 +184,10 @@ install(Authentication) {
 
 ---
 
-### 8. **Environment Variable Validation** ✅ NEW!
-
-**Enhanced Security Feature**
+### 8. **Environment Variable Validation** ✅ NEW
 
 **Next.js Implementation:**
+
 - **Location:** `server/lib/env.ts`
 - **Features:**
   - Validates JWT_SECRET length (minimum 32 chars in production)
@@ -232,6 +198,7 @@ install(Authentication) {
   - Development-friendly warnings
 
 **Validation:**
+
 ```typescript
 export function validateEnvironment(): EnvironmentConfig {
     // Validates all critical env vars
@@ -250,17 +217,20 @@ export function validateEnvironment(): EnvironmentConfig {
 **Location:** `containers/redis/`
 
 **Files:**
+
 - `docker-compose.yml` - Container orchestration
 - `redis.conf` - Redis configuration
 - `README.md` - Usage documentation
 
 **Start Redis:**
+
 ```bash
 cd containers/redis
 docker compose up -d
 ```
 
 **Configuration:**
+
 - Port: 6379
 - Max Memory: 256MB
 - Eviction Policy: LRU (Least Recently Used)
@@ -271,7 +241,7 @@ docker compose up -d
 
 ## 📂 File Structure
 
-```
+```list
 /home/pc/Projects/cgsvNew/
 ├── app/api/graphql/
 │   └── route.ts                    # ✅ Updated - Rate limiting + CORS
@@ -367,7 +337,8 @@ curl -I http://localhost:3000/api/graphql
 ```
 
 Expected headers:
-```
+
+```list
 X-Frame-Options: DENY
 X-Content-Type-Options: nosniff
 Content-Security-Policy: ...
@@ -396,7 +367,7 @@ X-RateLimit-Remaining: 99
 
 ## 🔒 Security Improvements
 
-### What's Better Than Ktor?
+### What's Better?
 
 1. **Content Security Policy** - Prevents XSS attacks
 2. **Rate Limiting** - Prevents brute force and DDoS
@@ -467,7 +438,7 @@ Before deploying to production:
 
 ---
 
-## 🔄 Migration Complete!
+## 🔄 Migration Complete
 
 All Ktor security and HTTP features have been successfully migrated to Next.js with additional enhancements. The application now has:
 
@@ -513,4 +484,3 @@ redis-cli -u redis://localhost:6379 ping
 ---
 
 **Migration completed successfully!** 🎉
-

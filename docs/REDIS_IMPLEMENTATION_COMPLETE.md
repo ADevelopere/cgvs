@@ -10,7 +10,7 @@ Successfully implemented a **clean, adapter-based Redis service architecture** w
 
 ### 1. **Redis Service Layer** (`server/services/redis/`)
 
-```
+```md
 server/services/redis/
 ├── IRedisService.ts           ✅ Interface definition
 ├── LocalRedisAdapter.ts       ✅ ioredis implementation
@@ -21,6 +21,7 @@ server/services/redis/
 ```
 
 **Benefits:**
+
 - ✅ Type-safe interface
 - ✅ Interchangeable implementations
 - ✅ Easy to test
@@ -29,11 +30,13 @@ server/services/redis/
 ### 2. **Updated Rate Limiting** (`server/lib/ratelimit.ts`)
 
 **Before:**
+
 - ❌ Directly coupled to @upstash/ratelimit
 - ❌ Only worked with Upstash cloud
 - ❌ Failed with local Redis
 
 **After:**
+
 - ✅ Uses Redis service interface
 - ✅ Works with any provider
 - ✅ Custom implementation
@@ -42,6 +45,7 @@ server/services/redis/
 ### 3. **Environment Validation** (`server/lib/env.ts`)
 
 Added validation for:
+
 - ✅ `REDIS_PROVIDER` (local or upstash)
 - ✅ `REDIS_URL` for local Redis
 - ✅ `UPSTASH_REDIS_REST_URL` for Upstash
@@ -51,6 +55,7 @@ Added validation for:
 ### 4. **Environment Files**
 
 **`.env.example`** (Created)
+
 ```bash
 # Redis Configuration
 REDIS_PROVIDER=local
@@ -60,6 +65,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 **`.env`** (Updated)
+
 ```bash
 # Added:
 REDIS_PROVIDER=local
@@ -91,12 +97,14 @@ const value = await redisService.get('key');
 ### Switch Providers
 
 **Development (Local Redis):**
+
 ```bash
 REDIS_PROVIDER=local
 REDIS_URL=redis://localhost:6379
 ```
 
 **Production (Upstash):**
+
 ```bash
 REDIS_PROVIDER=upstash
 UPSTASH_REDIS_REST_URL=https://your-endpoint.upstash.io
@@ -143,6 +151,7 @@ docker compose down    # Stop Redis
 ```
 
 **Container Details:**
+
 - Name: `cgvs_redis`
 - Port: `6379`
 - Health: ✅ Passing
@@ -157,7 +166,7 @@ docker compose down    # Stop Redis
 |-------------|----------------|-------------------|-------|
 | **Development** | `local` | `REDIS_URL` | Docker Compose |
 | **Self-Hosted Prod** | `local` | `REDIS_URL` | Redis server |
-| **Serverless Prod** | `upstash` | `UPSTASH_REDIS_REST_URL`<br>`UPSTASH_REDIS_REST_TOKEN` | Upstash account |
+| **Serverless Prod** | `upstash` | `UPSTASH_REDIS_REST_URL` `UPSTASH_REDIS_REST_TOKEN` | Upstash account |
 
 ---
 
@@ -166,16 +175,19 @@ docker compose down    # Stop Redis
 ### 1. Rate Limiting ✅
 
 **GraphQL API:**
+
 - Limit: 100 requests/minute
 - Key: `ratelimit:graphql:{ip}`
 - Status: ✅ Working
 
 **Auth Endpoints:**
+
 - Limit: 10 requests/15 minutes
 - Key: `ratelimit:auth:{ip}`
 - Status: ✅ Working
 
 **General API:**
+
 - Limit: 200 requests/minute
 - Key: `ratelimit:api:{ip}`
 - Status: ✅ Working
@@ -302,6 +314,7 @@ REDIS_URL=redis://:your-strong-password@localhost:6379
 ### Issue: "Redis connection failed"
 
 **Solution:**
+
 ```bash
 # Check Redis is running
 docker compose ps
@@ -316,6 +329,7 @@ docker compose logs -f redis
 ### Issue: "Upstash URL error"
 
 **Solution:**
+
 ```bash
 # Ensure URL starts with https://
 UPSTASH_REDIS_REST_URL=https://your-endpoint.upstash.io
@@ -326,6 +340,7 @@ UPSTASH_REDIS_REST_URL=https://your-endpoint.upstash.io
 ### Issue: "Rate limiting not working"
 
 **Solution:**
+
 ```bash
 # Test Redis connection
 docker exec -it cgvs_redis redis-cli ping
@@ -457,11 +472,13 @@ This implementation demonstrates:
 ## 🚀 Next Steps
 
 1. **Test the implementation**
+
    ```bash
    bun run dev
    ```
 
 2. **Verify Redis connection**
+
    ```bash
    docker compose ps
    ```
@@ -493,6 +510,7 @@ This implementation demonstrates:
 ## ✅ Status: COMPLETE
 
 All tasks completed successfully:
+
 - ✅ Redis service architecture implemented
 - ✅ Local and Upstash adapters working
 - ✅ Rate limiting integrated
@@ -501,6 +519,3 @@ All tasks completed successfully:
 - ✅ Documentation comprehensive
 - ✅ No linter errors
 - ✅ Type-safe throughout
-
-**Ready for development and production use! 🎉**
-
