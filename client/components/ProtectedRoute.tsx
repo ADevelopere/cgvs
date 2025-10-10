@@ -6,23 +6,26 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 interface ProtectedRouteProps {
-    children: React.ReactNode;
-    requireAdmin?: boolean;
-    redirectTo?: string;
+ children: React.ReactNode;
+ requireAdmin?: boolean;
+ redirectTo?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-    children,
-    requireAdmin = false,
-    redirectTo = "/login",
+ children,
+ requireAdmin = false,
+ redirectTo = "/login",
 }) => {
-    const { isAuthenticated, user, isLoading } = useAuth();
-    const router = useRouter();
+ const { isAuthenticated, user, isLoading } = useAuth();
+ const router = useRouter();
 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) {
-                router.push(redirectTo);
+                // Get current URL for redirect parameter
+                const currentUrl = window.location.pathname + window.location.search;
+                const loginUrl = `${redirectTo}?redirect=${encodeURIComponent(currentUrl)}`;
+                router.push(loginUrl);
                 return;
             }
 
@@ -32,36 +35,34 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             //     return;
             // }
         }
-    }, [isAuthenticated, user, isLoading, requireAdmin, router, redirectTo]);
+    }, [isAuthenticated, user, isLoading, requireAdmin, router, redirectTo]); if (isLoading) {
+  return (
+   <Box
+    sx={{
+     display: "flex",
+     flexDirection: "column",
+     alignItems: "center",
+     justifyContent: "center",
+     height: "100vh",
+     gap: 2,
+    }}
+   >
+    <CircularProgress size={48} />
+    <Typography>Checking authentication...</Typography>
+   </Box>
+  );
+ }
 
-    if (isLoading) {
-        return (
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "100vh",
-                    gap: 2,
-                }}
-            >
-                <CircularProgress size={48} />
-                <Typography>Checking authentication...</Typography>
-            </Box>
-        );
-    }
+ if (!isAuthenticated) {
+  return null; // Will redirect in useEffect
+ }
 
-    if (!isAuthenticated) {
-        return null; // Will redirect in useEffect
-    }
+ // todo: Uncomment this when we have user roles
+ // if (requireAdmin && user && !user.isAdmin) {
+ //     return null; // Will redirect in useEffect
+ // }
 
-    // todo: Uncomment this when we have user roles
-    // if (requireAdmin && user && !user.isAdmin) {
-    //     return null; // Will redirect in useEffect
-    // }
-
-    return <>{children}</>;
+ return <>{children}</>;
 };
 
 export default ProtectedRoute;
