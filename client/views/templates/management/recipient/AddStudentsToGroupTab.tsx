@@ -2,16 +2,12 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import {
-    RecipientManagementProvider,
-    useRecipientManagement,
-} from "@/client/contexts/recipient";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useRecipientManagement } from "@/client/contexts/recipient";
 import RecipientGroupSelector from "./RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
 import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
 
-const AddStudentsContent: React.FC = () => {
+const AddStudentsToGroupTab: React.FC = () => {
     const { selectedGroupId } = useRecipientManagement();
 
     return (
@@ -45,27 +41,6 @@ const AddStudentsContent: React.FC = () => {
                 <SelectGroupPrompt />
             )}
         </Box>
-    );
-};
-
-const AddStudentsToGroupTab: React.FC = () => {
-    const { template } = useTemplateManagement();
-
-    if (!template?.id) {
-        return null;
-    }
-
-    // Use a default recipientGroupId (0 or first group) since provider requires it
-    // The actual groupId will be managed via URL params
-    const defaultGroupId = template.recipientGroups?.[0]?.id || 0;
-
-    return (
-        <RecipientManagementProvider
-            recipientGroupId={defaultGroupId}
-            templateId={template.id}
-        >
-            <AddStudentsContent />
-        </RecipientManagementProvider>
     );
 };
 

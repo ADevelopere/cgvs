@@ -11,6 +11,7 @@ import {
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStudentGraphQL } from "./StudentGraphQLContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
+import { isAbortError } from "@/client/utils/errorUtils";
 
 type StudentManagementContextType = {
     // States
@@ -91,11 +92,14 @@ export const StudentManagementProvider: React.FC<{
                     setStudents(result.students.data);
                     setPageInfo(result.students.pageInfo);
                 }
-            } catch {
-                notifications.show("Failed to fetch students", {
-                    severity: "error",
-                    autoHideDuration: 3000,
-                });
+            } catch (error) {
+                // Don't show error notification if the request was aborted (e.g., during navigation)
+                if (!isAbortError(error)) {
+                    notifications.show("Failed to fetch students", {
+                        severity: "error",
+                        autoHideDuration: 3000,
+                    });
+                }
             } finally {
                 setLoading(false);
             }

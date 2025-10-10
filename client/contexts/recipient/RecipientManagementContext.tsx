@@ -17,6 +17,7 @@ import {
 import logger from "@/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import { usePageNavigation } from "../navigation/usePageNavigation";
+import { isAbortError } from "@/client/utils/errorUtils";
 
 type RecipientManagementContextType = {
     // State
@@ -31,7 +32,7 @@ type RecipientManagementContextType = {
     // Operations
     addStudentsToGroup: (studentIds: (string | number)[]) => Promise<boolean>;
     fetchStudentsNotInGroup: (
-        recipientGroupId: number,
+        recipientGroupId: number | null,
         orderBy?: Graphql.StudentsOrderByClause[],
         paginationArgs?: Graphql.PaginationArgs,
         filterArgs?: Graphql.StudentFilterArgs,
@@ -108,7 +109,7 @@ const ManagementProvider: React.FC<{
 
  const fetchStudentsNotInGroup = useCallback(
   async (
-   recipientGroupId: number,
+   recipientGroupId: number | null,
    orderBy: Graphql.StudentsOrderByClause[] = [],
    paginationArgs: Graphql.PaginationArgs = {
     page: currentPage,
@@ -116,6 +117,14 @@ const ManagementProvider: React.FC<{
    },
    filterArgs?: Graphql.StudentFilterArgs,
   ) => {
+   // Don't fetch if recipientGroupId is null
+   if (recipientGroupId === null) {
+    setStudents([]);
+    setPageInfo(null);
+    setLoading(false);
+    return;
+   }
+
    setLoading(true);
    try {
     const result = await studentsNotInRecipientGroupQuery({
@@ -132,11 +141,16 @@ const ManagementProvider: React.FC<{
      }
     }
    } catch (error) {
-    logger.error("Error fetching students not in group:", error);
-    notifications.show(strings.errorAddingToGroup, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
+    // Don't show error notification if the request was aborted (e.g., during navigation)
+    if (!isAbortError(error)) {
+     logger.error("Error fetching students not in group:", error);
+     notifications.show(strings.errorAddingToGroup, {
+      severity: "error",
+      autoHideDuration: 3000,
+     });
+    } else {
+     logger.debug("Query aborted (likely due to navigation):", error);
+    }
    } finally {
     setLoading(false);
    }
@@ -152,7 +166,7 @@ const ManagementProvider: React.FC<{
 
     const addStudentsToGroup = useCallback(
         async (studentIds: (string | number)[]): Promise<boolean> => {
-            if (!selectedGroupId || studentIds.length === 0) {
+            if (selectedGroupId === null || studentIds.length === 0) {
                 return false;
             }
 
@@ -210,6 +224,10 @@ const ManagementProvider: React.FC<{
     { page: currentPage, first: rowsPerPage },
     filters || undefined,
    );
+  } else {
+   // Clear students when no group is selected
+   setStudents([]);
+   setPageInfo(null);
   }
  }, [
   selectedGroupId,
@@ -265,7 +283,7 @@ const ManagementProvider: React.FC<{
 
 export const RecipientManagementProvider: React.FC<{
  children: React.ReactNode;
- recipientGroupId: number;
+ recipientGroupId: number | null;
  templateId: number;
 }> = ({ children, recipientGroupId, templateId }) => {
  return (

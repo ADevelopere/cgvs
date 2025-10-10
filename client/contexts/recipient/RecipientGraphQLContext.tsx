@@ -97,7 +97,7 @@ export const useRecipientGraphQL = () => {
 
 export const RecipientGraphQLProvider: React.FC<{
  children: React.ReactNode;
- recipientGroupId: number;
+ recipientGroupId: number | null;
  templateId: number;
 }> = ({ children, recipientGroupId, templateId }) => {
  // Query for single recipient
@@ -208,6 +208,11 @@ export const RecipientGraphQLProvider: React.FC<{
 
  const studentsNotInRecipientGroupQuery = useCallback(
   async (variables: Graphql.StudentsNotInRecipientGroupQueryVariables) => {
+   // Don't execute query if recipientGroupId is null
+   if (variables.recipientGroupId === null || variables.recipientGroupId === undefined) {
+    throw new Error("recipientGroupId is required for students not in group query");
+   }
+
    const result = await studentsNotInGroupQueryRef.refetch({
     recipientGroupId: variables.recipientGroupId,
     orderBy: variables.orderBy,
@@ -227,7 +232,8 @@ export const RecipientGraphQLProvider: React.FC<{
   update(cache, { data }) {
    if (!data?.createRecipient) return;
    const newRecipient = data.createRecipient;
-   // Update the recipient group query to include the new recipient and update studentCount
+
+   // Update the recipient group query
    try {
     const existingGroupData =
      cache.readQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>({
@@ -237,28 +243,21 @@ export const RecipientGraphQLProvider: React.FC<{
     if (existingGroupData?.templateRecipientGroupsByTemplateId) {
      const updatedGroups =
       existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-       if (group.id === recipientGroupId) {
-        // Add new recipient
-        const updatedRecipients = [...(group.recipients || []), newRecipient];
-        // Calculate unique studentIds before
-        const prevStudentIds = new Set(
-         (group.recipients || []).map((r) => r.studentId).filter(Boolean),
-        );
-        // If newRecipient.studentId is not in prevStudentIds, increment studentCount
-        let updatedStudentCount = group.studentCount ?? 0;
-        if (
-         newRecipient.studentId &&
-         !prevStudentIds.has(newRecipient.studentId)
-        ) {
-         updatedStudentCount += 1;
-        }
-        return {
-         ...group,
-         recipients: updatedRecipients,
-         studentCount: updatedStudentCount,
-        };
+       if (group.id !== recipientGroupId) return group;
+
+       const updatedRecipients = [...(group.recipients || []), newRecipient];
+       const prevStudentIds = new Set(
+        (group.recipients || []).map((r) => r.studentId).filter(Boolean),
+       );
+       let updatedStudentCount = group.studentCount ?? 0;
+       if (newRecipient.studentId && !prevStudentIds.has(newRecipient.studentId)) {
+        updatedStudentCount += 1;
        }
-       return group;
+       return {
+        ...group,
+        recipients: updatedRecipients,
+        studentCount: updatedStudentCount,
+       };
       });
      cache.writeQuery({
       query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
@@ -269,8 +268,41 @@ export const RecipientGraphQLProvider: React.FC<{
      });
     }
    } catch (error) {
-    // Query might not be in cache yet, that's okay
     logger.debug("Could not update recipient group cache:", error);
+   }
+
+   // Update the main template query cache
+   try {
+    const existingTemplateData =
+     cache.readQuery<Graphql.TemplateQuery>({
+      query: Document.templateQueryDocument,
+      variables: { id: templateId },
+     });
+    if (existingTemplateData?.template?.recipientGroups) {
+     const updatedGroups = existingTemplateData.template.recipientGroups.map((group) => {
+      if (group.id !== recipientGroupId) return group;
+
+      // For template query, we don't have full recipient data, just update count
+      const prevCount = group.studentCount ?? 0;
+      const shouldIncrement = newRecipient.studentId;
+      return {
+       ...group,
+       studentCount: shouldIncrement ? prevCount + 1 : prevCount,
+      };
+     });
+     cache.writeQuery({
+      query: Document.templateQueryDocument,
+      variables: { id: templateId },
+      data: {
+       template: {
+        ...existingTemplateData.template,
+        recipientGroups: updatedGroups,
+       },
+      },
+     });
+    }
+   } catch (error) {
+    logger.debug("Could not update template cache:", error);
    }
 
    // Update the student's recipientRecords if student query exists in cache
@@ -310,7 +342,8 @@ export const RecipientGraphQLProvider: React.FC<{
    update(cache, { data }) {
     if (!data?.createRecipients) return;
     const newRecipients = data.createRecipients;
-    // Update the recipient group query to include the new recipients and update studentCount
+
+    // Update the recipient group query (templateRecipientGroupsByTemplateId)
     try {
      const existingGroupData =
       cache.readQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>({
@@ -320,34 +353,33 @@ export const RecipientGraphQLProvider: React.FC<{
      if (existingGroupData?.templateRecipientGroupsByTemplateId) {
       const updatedGroups =
        existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-        if (group.id === recipientGroupId) {
-         const updatedRecipients = [
-          ...(group.recipients || []),
-          ...newRecipients,
-         ];
-         // Unique studentIds before and after
-         const prevStudentIds = new Set(
-          (group.recipients || []).map((r) => r.studentId).filter(Boolean),
-         );
-         const newStudentIds = new Set(
-          updatedRecipients.map((r) => r.studentId).filter(Boolean),
-         );
-         // Count how many new unique studentIds were added
-         let addedUniqueCount = 0;
-         for (const studentId of newStudentIds) {
-          if (!prevStudentIds.has(studentId)) {
-           addedUniqueCount += 1;
-          }
+        if (group.id !== recipientGroupId) return group;
+
+        const updatedRecipients = [
+         ...(group.recipients || []),
+         ...newRecipients,
+        ];
+        // Unique studentIds before and after
+        const prevStudentIds = new Set(
+         (group.recipients || []).map((r) => r.studentId).filter(Boolean),
+        );
+        const newStudentIds = new Set(
+         updatedRecipients.map((r) => r.studentId).filter(Boolean),
+        );
+        // Count how many new unique studentIds were added
+        let addedUniqueCount = 0;
+        for (const studentId of newStudentIds) {
+         if (!prevStudentIds.has(studentId)) {
+          addedUniqueCount += 1;
          }
-         const updatedStudentCount =
-          (group.studentCount ?? 0) + addedUniqueCount;
-         return {
-          ...group,
-          recipients: updatedRecipients,
-          studentCount: updatedStudentCount,
-         };
         }
-        return group;
+        const updatedStudentCount =
+         (group.studentCount ?? 0) + addedUniqueCount;
+        return {
+         ...group,
+         recipients: updatedRecipients,
+         studentCount: updatedStudentCount,
+        };
        });
       cache.writeQuery({
        query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
@@ -359,6 +391,41 @@ export const RecipientGraphQLProvider: React.FC<{
      }
     } catch (error) {
      logger.debug("Could not update recipient group cache:", error);
+    }
+
+    // Update the main template query cache (this is what TemplateManagementContext uses)
+    try {
+     const existingTemplateData =
+      cache.readQuery<Graphql.TemplateQuery>({
+       query: Document.templateQueryDocument,
+       variables: { id: templateId },
+      });
+     if (existingTemplateData?.template?.recipientGroups) {
+      const updatedGroups = existingTemplateData.template.recipientGroups.map((group) => {
+       if (group.id !== recipientGroupId) return group;
+
+       // Count unique student IDs being added
+       const uniqueStudentIds = new Set(newRecipients.map((r) => r.studentId).filter(Boolean));
+       const addedCount = uniqueStudentIds.size;
+
+       return {
+        ...group,
+        studentCount: (group.studentCount ?? 0) + addedCount,
+       };
+      });
+      cache.writeQuery({
+       query: Document.templateQueryDocument,
+       variables: { id: templateId },
+       data: {
+        template: {
+         ...existingTemplateData.template,
+         recipientGroups: updatedGroups,
+        },
+       },
+      });
+     }
+    } catch (error) {
+     logger.debug("Could not update template cache:", error);
     }
 
     // Update each student's recipientRecords if student query exists in cache
