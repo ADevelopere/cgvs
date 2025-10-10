@@ -10,7 +10,7 @@ We take the security of our application seriously. If you discover a security vu
 
 Instead, please report security vulnerabilities by emailing:
 
-📧 **security@yourdomain.com** (replace with your actual security contact)
+📧 **<security@yourdomain.com>** (replace with your actual security contact)
 
 ### What to Include
 
@@ -47,24 +47,28 @@ Please include the following information in your report:
 ## Security Measures in Place
 
 ### Authentication & Authorization
+
 - JWT-based authentication (access + refresh tokens)
 - Secure session management with Redis
 - Password hashing with industry-standard algorithms
 - Rate limiting on authentication endpoints
 
 ### API Security
+
 - GraphQL query depth and complexity limiting
 - Input validation and sanitization
 - Rate limiting on all endpoints
 - CORS and CSP headers configured
 
 ### Data Protection
+
 - Encryption at rest for sensitive data
 - Encryption in transit (HTTPS/TLS)
 - Secure cookie flags (HttpOnly, Secure, SameSite)
 - Environment variable protection
 
 ### Infrastructure Security
+
 - Database connection security (SSL)
 - Redis authentication and encryption
 - Security headers configured
@@ -117,6 +121,7 @@ Before submitting a PR, ensure:
 ### Current Implementation Status
 
 This application is implementing comprehensive security measures. Please refer to:
+
 - [Security Hardening Plan](docs/SECURITY_HARDENING_PLAN.md) - Full security roadmap
 - [Security Checklist](docs/SECURITY_CHECKLIST.md) - Implementation checklist
 - [Auth Flow](docs/AUTH_FLOW.md) - Authentication details
@@ -153,9 +158,9 @@ _No reports yet_
 
 ## Contact Information
 
-- **Security Email:** security@yourdomain.com
-- **General Email:** support@yourdomain.com
-- **Website:** https://yourdomain.com
+- **Security Email:** <security@yourdomain.com>
+- **General Email:** <support@yourdomain.com>
+- **Website:** <https://yourdomain.com>
 
 ---
 
@@ -167,4 +172,3 @@ While we strive to maintain the highest security standards, no system is 100% se
 
 **Last Updated:** October 10, 2025  
 **Next Review:** November 10, 2025
-
