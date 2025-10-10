@@ -33,6 +33,22 @@ type RecipientGraphQLContextType = {
  ) => Promise<Graphql.RecipientsByStudentIdQuery>;
 
  /**
+  * Query to get students in a recipient group
+  * @param variables - The query variables
+  */
+ studentsInRecipientGroupQuery: (
+  variables: Graphql.StudentsInRecipientGroupQueryVariables,
+ ) => Promise<Graphql.StudentsInRecipientGroupQuery>;
+
+ /**
+  * Query to get students not in a recipient group
+  * @param variables - The query variables
+  */
+ studentsNotInRecipientGroupQuery: (
+  variables: Graphql.StudentsNotInRecipientGroupQueryVariables,
+ ) => Promise<Graphql.StudentsNotInRecipientGroupQuery>;
+
+ /**
   * Mutation to create a new recipient
   * @param variables - The creation recipient variables
   */
@@ -108,6 +124,32 @@ export const RecipientGraphQLProvider: React.FC<{
   },
  );
 
+ // Query for students in recipient group
+ const studentsInGroupQueryRef = useQuery(
+  Document.studentsInRecipientGroupQueryDocument,
+  {
+   skip: true,
+   variables: {
+    recipientGroupId,
+    orderBy: [],
+    paginationArgs: { page: 1, first: 50 },
+   },
+  },
+ );
+
+ // Query for students not in recipient group
+ const studentsNotInGroupQueryRef = useQuery(
+  Document.studentsNotInRecipientGroupQueryDocument,
+  {
+   skip: true,
+   variables: {
+    recipientGroupId,
+    orderBy: [],
+    paginationArgs: { page: 1, first: 50 },
+   },
+  },
+ );
+
  // Query wrapper functions
  const recipientQuery = useCallback(
   async (variables: Graphql.RecipientQueryVariables) => {
@@ -146,6 +188,38 @@ export const RecipientGraphQLProvider: React.FC<{
    return result.data;
   },
   [recipientsByStudentIdQueryRef],
+ );
+
+ const studentsInRecipientGroupQuery = useCallback(
+  async (variables: Graphql.StudentsInRecipientGroupQueryVariables) => {
+   const result = await studentsInGroupQueryRef.refetch({
+    recipientGroupId: variables.recipientGroupId,
+    orderBy: variables.orderBy,
+    paginationArgs: variables.paginationArgs,
+    filterArgs: variables.filterArgs,
+   });
+   if (!result.data) {
+    throw new Error("No data returned from students in group query");
+   }
+   return result.data;
+  },
+  [studentsInGroupQueryRef],
+ );
+
+ const studentsNotInRecipientGroupQuery = useCallback(
+  async (variables: Graphql.StudentsNotInRecipientGroupQueryVariables) => {
+   const result = await studentsNotInGroupQueryRef.refetch({
+    recipientGroupId: variables.recipientGroupId,
+    orderBy: variables.orderBy,
+    paginationArgs: variables.paginationArgs,
+    filterArgs: variables.filterArgs,
+   });
+   if (!result.data) {
+    throw new Error("No data returned from students not in group query");
+   }
+   return result.data;
+  },
+  [studentsNotInGroupQueryRef],
  );
 
  // Create recipient mutation
@@ -522,6 +596,8 @@ export const RecipientGraphQLProvider: React.FC<{
    recipientQuery,
    recipientsByGroupIdQuery,
    recipientsByStudentIdQuery,
+   studentsInRecipientGroupQuery,
+   studentsNotInRecipientGroupQuery,
    createRecipientMutation,
    createRecipientsMutation,
    deleteRecipientMutation,
@@ -531,6 +607,8 @@ export const RecipientGraphQLProvider: React.FC<{
    recipientQuery,
    recipientsByGroupIdQuery,
    recipientsByStudentIdQuery,
+   studentsInRecipientGroupQuery,
+   studentsNotInRecipientGroupQuery,
    createRecipientMutation,
    createRecipientsMutation,
    deleteRecipientMutation,

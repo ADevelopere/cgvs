@@ -52,5 +52,19 @@ export type RecipientGroupTranslation = {
     errorUpdating: string;
     errorDeleting: string;
     cannotDeleteGroupWithStudents: string;
+
+    // Add students to group
+    selectGroup: string;
+    selectGroupToAddStudents: string;
+    studentsNotInGroup: string;
+    noStudentsAvailable: string;
+    selectedStudents: string;
+    addToGroup: string;
+    clearSelection: string;
+    addedToGroup: string;
+    errorAddingToGroup: string;
+    goToStudentsPage: string;
+    manageGroups: string;
+    addStudents: string;
 };
 
