@@ -239,4 +239,11 @@ export namespace RecipientRepository {
         );
         return allGroups;
     };
+
+    export const countInGroup = async (groupId: number): Promise<number> => {
+        return await db.$count(
+            templateRecipientGroupItems,
+            eq(templateRecipientGroupItems.recipientGroupId, groupId),
+        );
+    };
 }

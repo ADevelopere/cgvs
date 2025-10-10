@@ -851,6 +851,7 @@ type TemplateRecipientGroup {
   id: Int
   name: String
   recipients: [TemplateRecipient!]
+  studentCount: Int
   template: Template
   updatedAt: DateTime
 }
