@@ -178,16 +178,25 @@ const StudentsNotInGroupTable: React.FC = () => {
         [],
     );
 
-    // Initialize column widths
+    // Initialize column widths as ratios of total available width
     useEffect(() => {
         if (!tableContainerRef.current || widthsInitialized.current) return;
 
         const newWidths: Record<string, number> = {};
+        
+        // Calculate total container width minus scrollbar and margins
+        const containerWidth = tableContainerRef.current.offsetWidth - 20;
+        
+        // Calculate the sum of all initial width ratios
+        const totalRatio = baseColumns.reduce(
+            (sum, col) => sum + (col.initialWidth || 100),
+            0,
+        );
 
+        // Calculate actual widths based on ratios
         baseColumns.forEach((column) => {
-            if (column.initialWidth) {
-                newWidths[column.id] = column.initialWidth;
-            }
+            const ratio = (column.initialWidth || 100) / totalRatio;
+            newWidths[column.id] = Math.floor(containerWidth * ratio);
         });
 
         setInitialWidths(newWidths);

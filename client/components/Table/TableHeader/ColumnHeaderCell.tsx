@@ -404,7 +404,9 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
                                 </HeaderIconButton>
                             </IconsContainer>
                         </HeaderContent>
-                        <ResizeHandle onResize={handleResizeStart} />
+                        {column.resizable !== false && (
+                            <ResizeHandle onResize={handleResizeStart} />
+                        )}
                     </HeaderInner>
                 </HeaderContainer>
             </StyledTh>
