@@ -20,7 +20,7 @@ export type TableContextType = {
     onPageChange?: (newPage: number) => void;
     onRowsPerPageChange?: (newRowsPerPage: number) => void;
     rowsPerPageOptions?: number[];
-    
+
     footerStartContent?: ReactNode;
     footerEndContent?: ReactNode;
 };
@@ -49,7 +49,7 @@ type TableProviderProps = {
     onRowsPerPageChange?: (newRowsPerPage: number) => void;
     rowsPerPageOptions?: number[];
     initialPageSize?: number;
-    
+
     // Custom footer content
     footerStartContent?: ReactNode;
     footerEndContent?: ReactNode;
