@@ -97,7 +97,7 @@ export const useRecipientGraphQL = () => {
 
 export const RecipientGraphQLProvider: React.FC<{
  children: React.ReactNode;
- recipientGroupId: number | null;
+ recipientGroupId: number;
  templateId: number;
 }> = ({ children, recipientGroupId, templateId }) => {
  // Query for single recipient
