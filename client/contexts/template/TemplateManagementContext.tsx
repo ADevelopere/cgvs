@@ -18,7 +18,7 @@ import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/documents";
-import { usePageNavigation, useParam } from "../navigation/usePageNavigation";
+import { usePageNavigation } from "../navigation/usePageNavigation";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -68,7 +68,7 @@ export const TemplateManagementProvider: React.FC<{
     const { setNavigation } = useDashboardLayout();
 
     // Use the new navigation system
-    const { registerResolver, updateParams, getParam } = usePageNavigation();
+    const { registerResolver, updateParams, getParam, restorePageState } = usePageNavigation();
 
     const { data: apolloTemplateData } = useQuery(
         Document.templateQueryDocument,
@@ -82,13 +82,7 @@ export const TemplateManagementProvider: React.FC<{
     const [config, setConfig] =
         useState<Graphql.TemplatesConfigs>(defaultConfig);
 
-    // Initialize activeTab from URL params instead of defaulting to "basic"
-    const tabFromUrl = useParam("tab", "basic") as TemplateManagementTabType;
-    const [activeTab, setActiveTab] = useState<TemplateManagementTabType>(
-        ["basic", "variables", "editor", "recipients", "preview"].includes(tabFromUrl)
-            ? tabFromUrl
-            : "basic"
-    );
+    const [activeTab, setActiveTab] = useState<TemplateManagementTabType>("basic");
     const [unsavedChanges, setUnsavedChanges] = useState(false);
     const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>(
         [],
@@ -111,7 +105,25 @@ export const TemplateManagementProvider: React.FC<{
 
     const [loading, setLoading] = useState(false);
 
-    // Sync activeTab with URL params when they change
+    // Update tab when URL params are available
+    useEffect(() => {
+        const tab = getParam("tab") as TemplateManagementTabType | undefined;
+        if (
+            tab &&
+            [
+                "basic",
+                "variables",
+                "editor",
+                "recipients",
+                "preview",
+            ].includes(tab)
+        ) {
+            setTabFromUrl(tab);
+            setActiveTab(tab);
+        }
+    }, [getParam]);
+
+    // Sync activeTab with URL params when they change (backup)
     useEffect(() => {
         const tab = getParam("tab") as TemplateManagementTabType | undefined;
         if (
@@ -135,10 +147,28 @@ export const TemplateManagementProvider: React.FC<{
             segment: "admin/templates/:id/manage",
             resolver: async (params) => {
                 try {
-                    // Handle tab parameter
-                    const tab = params.tab as
-                        | TemplateManagementTabType
-                        | undefined;
+                    // Restore page state if available
+                    const restoredState = restorePageState("admin/templates/:id/manage");
+                    if (restoredState) {
+                        const tab = restoredState.tab as TemplateManagementTabType | undefined;
+                        if (
+                            tab &&
+                            [
+                                "basic",
+                                "variables",
+                                "editor",
+                                "recipients",
+                                "preview",
+                            ].includes(tab)
+                        ) {
+                            setActiveTab(tab);
+                            // Merge restored state with current params
+                            return { success: true, params: restoredState };
+                        }
+                    }
+
+                    // Handle tab parameter from current params
+                    const tab = params.tab as TemplateManagementTabType | undefined;
                     if (
                         tab &&
                         [
@@ -174,7 +204,7 @@ export const TemplateManagementProvider: React.FC<{
         });
 
         return unregister;
-    }, [registerResolver]);
+    }, [registerResolver, restorePageState]);
 
     const changeTab = useCallback(
         (tab: TemplateManagementTabType) => {

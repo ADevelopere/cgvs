@@ -145,6 +145,8 @@ export function usePageNavigation(): UsePageNavigationResult {
         resolve,
         isResolving,
         error,
+        savePageState: registry.savePageState,
+        restorePageState: registry.restorePageState,
     };
 }
 

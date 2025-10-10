@@ -53,6 +53,7 @@ export const PageNavigationRegistryProvider: React.FC<{
         currentParams: {},
         isResolving: false,
         lastError: null,
+        pageStates: new Map(), // Store page-specific state
     });
 
     // Refs to prevent stale closures
@@ -240,7 +241,25 @@ export const PageNavigationRegistryProvider: React.FC<{
 
         try {
             const normalizedPath = normalizeSegment(pathname || "");
-            const params = parseSearchParams(searchParams);
+            let params = parseSearchParams(searchParams);
+
+            // Save current page state before changing routes (if we have an active segment)
+            if (state.activeSegment && state.activeSegment !== normalizedPath) {
+                setState((prev) => {
+                    const newPageStates = new Map(prev.pageStates);
+                    newPageStates.set(prev.activeSegment!, prev.currentParams);
+                    return {
+                        ...prev,
+                        pageStates: newPageStates,
+                    };
+                });
+            }
+
+            // Restore page state if available for the current route
+            const savedState = state.pageStates.get(normalizedPath);
+            if (savedState) {
+                params = { ...savedState, ...params };
+            }
 
             setState((prev) => ({
                 ...prev,
@@ -280,7 +299,8 @@ export const PageNavigationRegistryProvider: React.FC<{
                 isResolving: false,
             }));
         }
-    }, [pathname, searchParams, resolveRoute]);
+        // todo usRef to escape the deps
+    }, [pathname, searchParams, resolveRoute, state.pageStates]);
 
     /**
      * Update URL params
@@ -311,7 +331,7 @@ export const PageNavigationRegistryProvider: React.FC<{
                 currentParams: newParams,
             }));
         },
-        [pathname, searchParams, router],
+        [pathname, searchParams, router, state.activeSegment],
     );
 
     /**
@@ -353,6 +373,34 @@ export const PageNavigationRegistryProvider: React.FC<{
         return all.sort((a, b) => a.registeredAt - b.registeredAt);
     }, [state.resolvers]);
 
+    /**
+     * Save page-specific state for later restoration
+     */
+    const savePageState = useCallback(
+        (segment: string, params: RouteParams) => {
+            setState((prev) => {
+                const newPageStates = new Map(prev.pageStates);
+                newPageStates.set(segment, params);
+                return {
+                    ...prev,
+                    pageStates: newPageStates,
+                };
+            });
+        },
+        [],
+    );
+
+    /**
+     * Restore page-specific state for a segment
+     */
+    const restorePageState = useCallback(
+        (segment: string): RouteParams | null => {
+            return state.pageStates.get(segment) || null;
+        },
+        [state.pageStates],
+    );
+
+
     // Auto-resolve when pathname or search params change
     useEffect(() => {
         // Small delay to allow resolvers to register first
@@ -361,7 +409,7 @@ export const PageNavigationRegistryProvider: React.FC<{
         }, 100);
 
         return () => clearTimeout(timer);
-    }, [pathname, searchParams, resolveCurrentRoute]);
+    }, [pathname, searchParams, resolveCurrentRoute, state.pageStates]);
 
     const api: NavigationRegistryAPI = useMemo(
         () => ({
@@ -373,6 +421,8 @@ export const PageNavigationRegistryProvider: React.FC<{
             getParam,
             hasResolver,
             getRegisteredResolvers,
+            savePageState,
+            restorePageState,
         }),
         [
             registerResolver,
@@ -383,6 +433,8 @@ export const PageNavigationRegistryProvider: React.FC<{
             getParam,
             hasResolver,
             getRegisteredResolvers,
+            savePageState,
+            restorePageState,
         ],
     );
 
