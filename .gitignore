@@ -19,7 +19,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.nova
-/.vscode
 /.zed
 /_ide_helper.php
 /.phpstorm.meta.php

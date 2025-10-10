@@ -32,6 +32,7 @@ docker compose down -v
 ## Usage in Application
 
 The Redis instance is used for:
+
 - Rate limiting API requests
 - Caching GraphQL queries (future)
 - Session storage (if needed)
@@ -45,9 +46,9 @@ REDIS_URL=redis://localhost:6379
 ## Production Notes
 
 For production deployment:
+
 1. Enable password authentication (uncomment `requirepass` in `redis.conf`)
 2. Use persistent volumes
 3. Configure backup strategy
 4. Monitor memory usage
 5. Consider Redis Cluster for high availability
-
