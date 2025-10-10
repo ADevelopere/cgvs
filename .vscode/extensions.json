@@ -5,8 +5,6 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "usernamehw.errorlens",
-        // React & Next.js
-        "dsznajder.es7-react-js-snippets",
         // GraphQL
         "graphql.vscode-graphql",
         "graphql.vscode-graphql-syntax",

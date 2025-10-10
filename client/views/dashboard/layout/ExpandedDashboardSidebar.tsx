@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { useNavigation } from "@/client/contexts/NavigationContext";
+import { useNavigation } from "@/client/contexts/navigation/NavigationContext";
 import { NavigationItem, NavigationPageItem } from "../../../contexts/adminLayout.types";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 

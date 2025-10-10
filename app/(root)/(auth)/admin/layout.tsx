@@ -9,7 +9,7 @@ import {
     Storage as StorageIcon,
 } from "@mui/icons-material";
 import { HomeIcon } from "lucide-react";
-import { NavigationProvider } from "@/client/contexts/NavigationContext";
+import { NavigationProvider } from "@/client/contexts/navigation/NavigationContext";
 import DashboardLayout from "@/client/views/dashboard/layout/DashboardLayout";
 import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndActions";
 import { TemplateCategoryManagementProvider } from "@/client/contexts/template/TemplateCategoryManagementContext";

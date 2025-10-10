@@ -8,7 +8,7 @@ import React, {
     useMemo,
     useEffect,
 } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
@@ -18,6 +18,7 @@ import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/documents";
+import { usePageNavigation } from "../navigation/usePageNavigation";
 
 export type TemplateManagementTabType =
     | "basic"
@@ -60,17 +61,14 @@ const TemplateManagementContext = createContext<
 export const TemplateManagementProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
-    const searchParams = useSearchParams();
-    const params = useParams<{ id: string }>();
-    const id = params?.id;
-    const {
-        allTemplates,
-        templateToManage,
-        templateManagementTab,
-        setTemplateManagementTab,
-    } = useTemplateCategoryManagement();
+    const pathParams = useParams<{ id: string }>();
+    const id = pathParams?.id;
+    const { allTemplates, templateToManage } = useTemplateCategoryManagement();
     const { templateConfigQuery } = useTemplateGraphQL();
     const { setNavigation } = useDashboardLayout();
+
+    // Use the new navigation system
+    const { registerResolver, updateParams } = usePageNavigation();
 
     const { data: apolloTemplateData } = useQuery(
         Document.templateQueryDocument,
@@ -108,18 +106,60 @@ export const TemplateManagementProvider: React.FC<{
 
     const [loading, setLoading] = useState(false);
 
+    // Register navigation resolver for this page
     useEffect(() => {
-        const tab = (searchParams.get("tab") ??
-            templateManagementTab) as TemplateManagementTabType;
-        setActiveTab(tab);
-    }, [searchParams, templateManagementTab]);
+        const unregister = registerResolver({
+            segment: "admin/templates/:id/manage",
+            resolver: async (params) => {
+                try {
+                    // Handle tab parameter
+                    const tab = params.tab as
+                        | TemplateManagementTabType
+                        | undefined;
+                    if (
+                        tab &&
+                        [
+                            "basic",
+                            "variables",
+                            "editor",
+                            "recipients",
+                            "preview",
+                        ].includes(tab)
+                    ) {
+                        setActiveTab(tab);
+                    }
+
+                    // Handle other nested params based on active tab
+                    // For example, if tab=variables&variable=5, we can handle variable selection
+                    if (tab === "variables" && params.variable) {
+                        // This can be handled by a child component's resolver
+                        // For now, we just ensure the tab is set correctly
+                    }
+
+                    return { success: true };
+                } catch (err) {
+                    return {
+                        success: false,
+                        error:
+                            err instanceof Error
+                                ? err.message
+                                : "Failed to resolve navigation",
+                    };
+                }
+            },
+            priority: 10,
+        });
+
+        return unregister;
+    }, [registerResolver]);
 
     const changeTab = useCallback(
         (tab: TemplateManagementTabType) => {
             setActiveTab(tab);
-            setTemplateManagementTab(tab);
+            // Update URL params to reflect tab change
+            updateParams({ tab }, { replace: true, merge: true });
         },
-        [setTemplateManagementTab],
+        [updateParams],
     );
 
     const handleSetTabLoaded = useCallback((tab: TemplateManagementTabType) => {
