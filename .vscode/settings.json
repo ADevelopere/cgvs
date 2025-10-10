@@ -1,0 +1,7 @@
+{
+    // Always use workspace TypeScript (no prompt)
+    "typescript.tsdk": "node_modules/typescript/lib",
+    
+    // Show prompt when workspace TS is detected
+    "typescript.enablePromptUseWorkspaceTsdk": true
+}

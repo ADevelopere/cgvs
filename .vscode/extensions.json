@@ -1,0 +1,28 @@
+{
+    "recommendations": [
+        // TypeScript & JavaScript
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "usernamehw.errorlens",
+        // React & Next.js
+        "dsznajder.es7-react-js-snippets",
+        // GraphQL
+        "graphql.vscode-graphql",
+        "graphql.vscode-graphql-syntax",
+        "apollographql.vscode-apollo",
+        // Docker
+        "ms-azuretools.vscode-docker",
+        "ms-azuretools.vscode-containers",
+        // Editor Config
+        "editorconfig.editorconfig",
+        // Git
+        "eamodio.gitlens",
+        // Markdown
+        "davidanson.vscode-markdownlint",
+        // Themes
+        "pkief.material-icon-theme",
+        // Redis
+        "redis.redis-for-vscode"
+    ]
+}
