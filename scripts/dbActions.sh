@@ -1,7 +1,7 @@
-#!/bin/zsh
+#!/bin/bash
 # Interactive DB actions script for cgsvNew project
 
-
+set -e
 
 # List of actions and their corresponding bun commands
 declare -A actions
@@ -14,8 +14,11 @@ actions=(
   ["Open Drizzle Studio"]="bun drizzle-kit studio"
 )
 
-# Get action names into an array
-action_names=(${(k)actions})
+# Get action names into an array (bash syntax)
+action_names=()
+for key in "${!actions[@]}"; do
+  action_names+=("$key")
+done
 
 # Use fzf for interactive selection (install if missing)
 if ! command -v fzf &> /dev/null; then
@@ -31,8 +34,26 @@ if [[ -z "$selected" ]]; then
   exit 0
 fi
 
-cmd=${actions[$selected]}
+cmd="${actions[$selected]}"
+
+if [[ -z "$cmd" ]]; then
+  echo "Error: No command found for selected action."
+  exit 1
+fi
+
 echo "Running: $cmd"
+echo ""
 
 # Run the selected command
-eval $cmd
+set +e  # Disable exit on error for the actual command
+bash -c "$cmd"
+exit_code=$?
+set -e  # Re-enable exit on error
+
+echo ""
+if [[ "$exit_code" -eq 0 ]]; then
+  echo "✓ Command completed successfully"
+else
+  echo "✗ Command failed with exit code: $exit_code"
+  exit "$exit_code"
+fi

@@ -23,6 +23,8 @@
         // Themes
         "pkief.material-icon-theme",
         // Redis
-        "redis.redis-for-vscode"
+        "redis.redis-for-vscode",
+        // Shell
+        "timonwong.shellcheck",
     ]
 }
