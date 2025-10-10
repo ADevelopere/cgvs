@@ -37,7 +37,7 @@ const defaultConfig: Graphql.TemplatesConfigs = {
     ],
 };
 
-interface TemplateManagementContextType {
+type TemplateManagementContextType = {
     activeTab: TemplateManagementTabType;
     unsavedChanges: boolean;
     loadedTabs: TemplateManagementTabType[];
@@ -51,7 +51,7 @@ interface TemplateManagementContextType {
     setUnsavedChanges: (hasChanges: boolean) => void;
     setTabError: (tab: TemplateManagementTabType, error: TabError) => void;
     clearTabError: (tab: TemplateManagementTabType) => void;
-}
+};
 
 const TemplateManagementContext = createContext<
     TemplateManagementContextType | undefined

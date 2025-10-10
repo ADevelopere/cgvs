@@ -438,18 +438,24 @@ type LoginResponse {
 type Mutation {
   copyStorageItems(input: StorageItemsCopyInput!): BulkOperationResult
   createFolder(input: FolderCreateInput!): FileOperationResult
+  createRecipient(input: TemplateRecipientCreateInput!): TemplateRecipient
+  createRecipients(input: TemplateRecipientCreateListInput!): [TemplateRecipient!]
   createStudent(input: StudentCreateInput!): Student
   createTemplate(input: TemplateCreateInput!): Template
   createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory
   createTemplateDateVariable(input: TemplateDateVariableCreateInput!): TemplateDateVariable
   createTemplateNumberVariable(input: TemplateNumberVariableCreateInput!): TemplateNumberVariable
+  createTemplateRecipientGroup(input: TemplateRecipientGroupCreateInput!): TemplateRecipientGroup
   createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
   createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
   deleteFile(path: String!): FileOperationResult
+  deleteRecipient(id: Int!): TemplateRecipient
+  deleteRecipients(ids: [Int!]!): [TemplateRecipient!]
   deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
   deleteStudent(id: Int!): Student
   deleteTemplate(id: Int!): Template
   deleteTemplateCategory(id: Int!): TemplateCategory
+  deleteTemplateRecipientGroup(id: Int!): TemplateRecipientGroup
   deleteTemplateVariable(id: Int!): TemplateVariable
   generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
   login(input: LoginInput!): LoginResponse
@@ -466,6 +472,7 @@ type Mutation {
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory
   updateTemplateDateVariable(input: TemplateDateVariableUpdateInput!): TemplateDateVariable
   updateTemplateNumberVariable(input: TemplateNumberVariableUpdateInput!): TemplateNumberVariable
+  updateTemplateRecipientGroup(input: TemplateRecipientGroupUpdateInput!): TemplateRecipientGroup
   updateTemplateSelectVariable(input: TemplateSelectVariableUpdateInput!): TemplateSelectVariable
   updateTemplateTextVariable(input: TemplateTextVariableUpdateInput!): TemplateTextVariable
 }
@@ -523,6 +530,9 @@ type Query {
   listFiles(input: FilesListInput!): StorageObjectList
   mainTemplateCategory: TemplateCategory
   me: User
+  recipient(id: Int!): TemplateRecipient
+  recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]
+  recipientsByStudentId(studentId: Int!): [TemplateRecipient!]
   searchFiles(
     """File type filter (optional)"""
     fileType: String
@@ -544,10 +554,14 @@ type Query {
   ): StorageStats
   student(id: Int!): Student
   students(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs): StudentsWithFiltersResponse
+  studentsInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse
+  studentsNotInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]
   templateCategory(id: Int!): TemplateCategory
+  templateRecipientGroupById(id: Int!): TemplateRecipientGroup
+  templateRecipientGroupsByTemplateId(templateId: Int!): [TemplateRecipientGroup!]
   templateVariable(id: Int!): TemplateVariable
   templateVariablesByTemplateId(templateId: Int!): [TemplateVariable!]
   templates(pagination: PaginationArgs): PaginatedTemplatesResponse
@@ -612,6 +626,7 @@ type Student {
   name: String!
   nationality: CountryCode
   phoneNumber: PhoneNumber
+  recipientRecords: [TemplateRecipient!]
   updatedAt: DateTime!
 }
 
@@ -691,10 +706,12 @@ type Template {
   createdAt: DateTime
   description: String
   id: Int!
+  imageFile: FileInfo
   imageUrl: String
   name: String
   order: Int
   preSuspensionCategory: TemplateCategory
+  recipientGroups: [TemplateRecipientGroup!]
   updatedAt: DateTime
   variables: [TemplateVariable!]
 }
@@ -805,6 +822,51 @@ input TemplateNumberVariableUpdateInput {
   name: String!
   previewValue: Float
   required: Boolean! = false
+}
+
+type TemplateRecipient {
+  createdAt: DateTime
+  id: Int
+  recipientGroup: TemplateRecipientGroup
+  recipientGroupId: Int
+  student: Student
+  studentId: Int
+  updatedAt: DateTime
+}
+
+input TemplateRecipientCreateInput {
+  recipientGroupId: Int!
+  studentId: Int!
+}
+
+input TemplateRecipientCreateListInput {
+  recipientGroupId: Int!
+  studentIds: [Int!]!
+}
+
+type TemplateRecipientGroup {
+  createdAt: DateTime
+  date: DateTime
+  description: String
+  id: Int
+  name: String
+  recipients: [TemplateRecipient!]
+  template: Template
+  updatedAt: DateTime
+}
+
+input TemplateRecipientGroupCreateInput {
+  date: DateTime
+  description: String
+  name: String!
+  templateId: Int!
+}
+
+input TemplateRecipientGroupUpdateInput {
+  date: DateTime
+  description: String
+  id: Int!
+  name: String!
 }
 
 type TemplateSelectVariable implements TemplateVariable {

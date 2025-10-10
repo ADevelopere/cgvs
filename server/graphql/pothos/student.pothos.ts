@@ -1,11 +1,12 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as Types from "@/server/types";
-import { StudentRepository } from "@/server/db/repo";
+import { RecipientRepository, StudentRepository } from "@/server/db/repo";
 import {
     PageInfoObject,
     CountryCodePothosObject,
     GenderPothosObject,
     OrderSortDirectionPothosObject,
+    TemplateRecipientPothosObject,
 } from "../pothos";
 import { OrderSortDirection } from "@/lib/enum";
 
@@ -51,6 +52,14 @@ export const StudentPothosObject = gqlSchemaBuilder
             }),
         }),
     });
+
+gqlSchemaBuilder.objectFields(StudentPothosObject, (t) => ({
+    recipientRecords: t.field({
+        type: [TemplateRecipientPothosObject],
+        nullable: true,
+        resolve: (s) => RecipientRepository.findByStudentId(s.id),
+    }),
+}));
 
 export const StudentCreateInputPothosObject = gqlSchemaBuilder
     .inputRef<Types.StudentCreateInput>("StudentCreateInput")

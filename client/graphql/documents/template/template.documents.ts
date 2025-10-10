@@ -103,6 +103,19 @@ export const templateQueryDocument: TypedDocumentNode<
                     updatedAt
                 }
             }
+
+            recipientGroups {
+                id
+                name
+                description
+                date
+                createdAt
+                updatedAt
+                template {
+                    id
+                    name
+                }
+            }
         }
     }
 `;
@@ -204,6 +217,19 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
                         }
                         type
                         updatedAt
+                    }
+                }
+
+                recipientGroups {
+                    id
+                    name
+                    description
+                    date
+                    createdAt
+                    updatedAt
+                    template {
+                        id
+                        name
                     }
                 }
 
