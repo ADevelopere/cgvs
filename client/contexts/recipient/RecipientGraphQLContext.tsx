@@ -4,10 +4,7 @@ import {
  createContext,
  useCallback,
  useContext,
- useEffect,
  useMemo,
- useRef,
- useState,
 } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
@@ -16,7 +13,6 @@ import { useMutation, useLazyQuery } from "@apollo/client/react";
 import logger from "@/lib/logger";
 
 type RecipientGraphQLContextType = {
- setRecipientGroupId: (groupId: number | null) => void;
  /**
   * Query to get a single recipient by ID
   * @param variables - The query variables
@@ -108,20 +104,6 @@ export const RecipientGraphQLProvider: React.FC<{
  children: React.ReactNode;
  templateId: number;
 }> = ({ children, templateId }) => {
- const [recipientGroupId, setRecipientGroupId] = useState<number | null>(null);
- const recipientGroupIdRef = useRef(recipientGroupId);
- useEffect(() => {
-  recipientGroupIdRef.current = recipientGroupId;
- }, [recipientGroupId]);
-
- const setGroupId = useCallback(
-  (groupId: number | null) => {
-   if (recipientGroupIdRef.current !== groupId) {
-    setRecipientGroupId(groupId);
-   }
-  },
-  [setRecipientGroupId, recipientGroupIdRef],
- );
 
  // Query for single recipient
  const [executeRecipientQuery] = useLazyQuery(Document.recipientQueryDocument);
@@ -241,9 +223,12 @@ export const RecipientGraphQLProvider: React.FC<{
 
  // Create recipient mutation
  const [mutateCreate] = useMutation(Document.createRecipientMutationDocument, {
-  update(cache, { data }) {
+  update(cache, { data }, { variables }) {
    if (!data?.createRecipient) return;
    const newRecipient = data.createRecipient;
+   // Extract recipientGroupId from the input
+   const recipientGroupId = variables?.input.recipientGroupId;
+   if (!recipientGroupId) return;
 
    // Update the recipient group query
    try {
@@ -255,7 +240,7 @@ export const RecipientGraphQLProvider: React.FC<{
     if (existingGroupData?.templateRecipientGroupsByTemplateId) {
      const updatedGroups =
       existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-       if (group.id !== recipientGroupIdRef.current) return group;
+       if (group.id !== recipientGroupId) return group;
 
        const updatedRecipients = [...(group.recipients || []), newRecipient];
        const prevStudentIds = new Set(
@@ -295,7 +280,7 @@ export const RecipientGraphQLProvider: React.FC<{
     if (existingTemplateData?.template?.recipientGroups) {
      const updatedGroups = existingTemplateData.template.recipientGroups.map(
       (group) => {
-       if (group.id !== recipientGroupIdRef.current) return group;
+       if (group.id !== recipientGroupId) return group;
 
        // For template query, we don't have full recipient data, just update count
        const prevCount = group.studentCount ?? 0;
@@ -355,9 +340,12 @@ export const RecipientGraphQLProvider: React.FC<{
  const [mutateCreateMultiple] = useMutation(
   Document.createRecipientsMutationDocument,
   {
-   update(cache, { data }) {
+   update(cache, { data }, { variables }) {
     if (!data?.createRecipients) return;
     const newRecipients = data.createRecipients;
+    // Extract recipientGroupId from the input
+    const recipientGroupId = variables?.input.recipientGroupId;
+    if (!recipientGroupId) return;
 
     // Update the recipient group query (templateRecipientGroupsByTemplateId)
     try {
@@ -369,7 +357,7 @@ export const RecipientGraphQLProvider: React.FC<{
      if (existingGroupData?.templateRecipientGroupsByTemplateId) {
       const updatedGroups =
        existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-        if (group.id !== recipientGroupIdRef.current) return group;
+        if (group.id !== recipientGroupId) return group;
 
         const updatedRecipients = [
          ...(group.recipients || []),
@@ -418,7 +406,7 @@ export const RecipientGraphQLProvider: React.FC<{
      if (existingTemplateData?.template?.recipientGroups) {
       const updatedGroups = existingTemplateData.template.recipientGroups.map(
        (group) => {
-        if (group.id !== recipientGroupIdRef.current) return group;
+        if (group.id !== recipientGroupId) return group;
 
         // Count unique student IDs being added
         const uniqueStudentIds = new Set(
@@ -485,6 +473,10 @@ export const RecipientGraphQLProvider: React.FC<{
   update(cache, { data }) {
    if (!data?.deleteRecipient) return;
    const deletedRecipient = data.deleteRecipient;
+   // Extract recipientGroupId from the response
+   const recipientGroupId = deletedRecipient.recipientGroupId;
+   if (!recipientGroupId) return;
+
    // Update the recipient group query to remove the deleted recipient and update studentCount
    try {
     const existingGroupData =
@@ -495,7 +487,7 @@ export const RecipientGraphQLProvider: React.FC<{
     if (existingGroupData?.templateRecipientGroupsByTemplateId) {
      const updatedGroups =
       existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-       if (group.id === recipientGroupIdRef.current) {
+       if (group.id === recipientGroupId) {
         const updatedRecipients = (group.recipients || []).filter(
          (recipient) => recipient.id !== deletedRecipient.id,
         );
@@ -564,9 +556,13 @@ export const RecipientGraphQLProvider: React.FC<{
   Document.deleteRecipientsMutationDocument,
   {
    update(cache, { data }) {
-    if (!data?.deleteRecipients) return;
+    if (!data?.deleteRecipients || data.deleteRecipients.length === 0) return;
     const deletedRecipients = data.deleteRecipients;
     const deletedIds = deletedRecipients.map((r) => r.id);
+    // Extract recipientGroupId from the first deleted recipient (all should be from the same group)
+    const recipientGroupId = deletedRecipients[0]?.recipientGroupId;
+    if (!recipientGroupId) return;
+
     // Update the recipient group query to remove the deleted recipients and update studentCount
     try {
      const existingGroupData =
@@ -577,7 +573,7 @@ export const RecipientGraphQLProvider: React.FC<{
      if (existingGroupData?.templateRecipientGroupsByTemplateId) {
       const updatedGroups =
        existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-        if (group.id === recipientGroupIdRef.current) {
+        if (group.id === recipientGroupId) {
          const updatedRecipients = (group.recipients || []).filter(
           (recipient) => !deletedIds.includes(recipient.id),
          );
@@ -679,7 +675,6 @@ export const RecipientGraphQLProvider: React.FC<{
 
  const contextValue = useMemo(
   () => ({
-   setRecipientGroupId: setGroupId,
    recipientQuery,
    recipientsByGroupIdQuery,
    recipientsByStudentIdQuery,
@@ -691,7 +686,6 @@ export const RecipientGraphQLProvider: React.FC<{
    deleteRecipientsMutation,
   }),
   [
-   setGroupId,
    recipientQuery,
    recipientsByGroupIdQuery,
    recipientsByStudentIdQuery,

@@ -292,7 +292,6 @@ const GroupIdProvider: React.FC<{
 }> = ({ children }) => {
  const { template } = useTemplateManagement();
  const { getParam, updateParams } = usePageNavigation();
- const { setRecipientGroupId } = useRecipientGraphQL();
 
  const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
   null,
@@ -326,8 +325,6 @@ const GroupIdProvider: React.FC<{
   // Only update state if the resolved group ID is actually different
   if (resolvedGroupId !== selectedGroupId) {
    setSelectedGroupIdState(resolvedGroupId);
-   // Sync with GraphQL context for cache updates
-   setRecipientGroupId(resolvedGroupId);
   }
 
   // Handle invalid group ID case
@@ -354,21 +351,18 @@ const GroupIdProvider: React.FC<{
   groupIdParam,
   selectedGroupId,
   invalidGroupId,
-  setRecipientGroupId,
  ]);
 
  const setSelectedGroupId = useCallback(
   (groupId: number | null) => {
    setSelectedGroupIdState(groupId);
-   // Sync with GraphQL context for cache updates
-   setRecipientGroupId(groupId);
    if (groupId) {
     updateParams({ groupId: groupId.toString() }, { merge: true });
    } else {
     updateParams({ groupId: undefined }, { merge: true });
    }
   },
-  [updateParams, setRecipientGroupId],
+  [updateParams],
  );
 
  // Memoize the placeholder context to prevent unnecessary re-renders
