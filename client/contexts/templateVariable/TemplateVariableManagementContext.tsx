@@ -8,9 +8,8 @@ import {
  useMemo,
  useState,
 } from "react";
-import { useNotifications } from "@toolpad/core/useNotifications";
 import logger from "@/lib/logger";
-import { useTemplateVariableGraphQL } from "@/client/graphql/apollo";
+import { useTemplateVariableService } from "@/client/graphql/service";
 
 type TemplateVariableManagementContextType = {
  // States
@@ -71,21 +70,8 @@ export const useTemplateVariableManagement = () => {
 export const TemplateVariableManagementProvider: React.FC<{
  children: React.ReactNode;
 }> = ({ children }) => {
- const notifications = useNotifications();
-
  const [loading, setLoading] = useState(false);
-
- const {
-  createTemplateTextVariableMutation,
-  updateTemplateTextVariableMutation,
-  createTemplateNumberVariableMutation,
-  updateTemplateNumberVariableMutation,
-  createTemplateDateVariableMutation,
-  updateTemplateDateVariableMutation,
-  createTemplateSelectVariableMutation,
-  updateTemplateSelectVariableMutation,
-  deleteTemplateVariableMutation,
- } = useTemplateVariableGraphQL();
+ const variableService = useTemplateVariableService();
 
  // Text template variable handlers
  const handleCreateTemplateTextVariable = useCallback(
@@ -95,36 +81,13 @@ export const TemplateVariableManagementProvider: React.FC<{
    logger.log("Creating text variable", variables);
    setLoading(true);
    try {
-    const result = await createTemplateTextVariableMutation({
-     input: {
-      ...variables.input,
-     },
-    });
-
-    if (result.data?.createTemplateTextVariable) {
-     notifications.show("Text variable created successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to create text variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error creating text variable:", error);
-    notifications.show("Failed to create text variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.createTextVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [createTemplateTextVariableMutation, notifications],
+  [variableService],
  );
 
  const handleUpdateTemplateTextVariable = useCallback(
@@ -133,31 +96,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await updateTemplateTextVariableMutation(variables);
-    if (result.data?.updateTemplateTextVariable) {
-     notifications.show("Text variable updated successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to update text variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error updating text variable:", error);
-    notifications.show("Failed to update text variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.updateTextVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [notifications, updateTemplateTextVariableMutation],
+  [variableService],
  );
 
  // Number template variable handlers
@@ -167,35 +112,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await createTemplateNumberVariableMutation({
-     input: {
-      ...variables.input,
-     },
-    });
-    if (result.data?.createTemplateNumberVariable) {
-     notifications.show("Number variable created successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to create number variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error creating number variable:", error);
-    notifications.show("Failed to create number variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.createNumberVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [createTemplateNumberVariableMutation, notifications],
+  [variableService],
  );
 
  const handleUpdateTemplateNumberVariable = useCallback(
@@ -204,31 +127,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await updateTemplateNumberVariableMutation(variables);
-    if (result.data?.updateTemplateNumberVariable) {
-     notifications.show("Number variable updated successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to update number variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error updating number variable:", error);
-    notifications.show("Failed to update number variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.updateNumberVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [notifications, updateTemplateNumberVariableMutation],
+  [variableService],
  );
 
  // Date template variable handlers
@@ -238,35 +143,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await createTemplateDateVariableMutation({
-     input: {
-      ...variables.input,
-     },
-    });
-    if (result.data?.createTemplateDateVariable) {
-     notifications.show("Date variable created successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to create date variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error creating date variable:", error);
-    notifications.show("Failed to create date variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.createDateVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [createTemplateDateVariableMutation, notifications],
+  [variableService],
  );
 
  const handleUpdateTemplateDateVariable = useCallback(
@@ -275,31 +158,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await updateTemplateDateVariableMutation(variables);
-    if (result.data?.updateTemplateDateVariable) {
-     notifications.show("Date variable updated successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to update date variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error updating date variable:", error);
-    notifications.show("Failed to update date variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.updateDateVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [notifications, updateTemplateDateVariableMutation],
+  [variableService],
  );
 
  // Select template variable handlers
@@ -309,35 +174,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await createTemplateSelectVariableMutation({
-     input: {
-      ...variables.input,
-     },
-    });
-    if (result.data?.createTemplateSelectVariable) {
-     notifications.show("Select variable created successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to create select variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error creating select variable:", error);
-    notifications.show("Failed to create select variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.createSelectVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [createTemplateSelectVariableMutation, notifications],
+  [variableService],
  );
 
  const handleUpdateTemplateSelectVariable = useCallback(
@@ -346,31 +189,13 @@ export const TemplateVariableManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await updateTemplateSelectVariableMutation(variables);
-    if (result.data?.updateTemplateSelectVariable) {
-     notifications.show("Select variable updated successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to update select variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error updating select variable:", error);
-    notifications.show("Failed to update select variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await variableService.updateSelectVariable(variables.input);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [notifications, updateTemplateSelectVariableMutation],
+  [variableService],
  );
 
  // Delete template variable handler
@@ -378,31 +203,12 @@ export const TemplateVariableManagementProvider: React.FC<{
   async (id: number): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await deleteTemplateVariableMutation({ id });
-    if (result.data?.deleteTemplateVariable) {
-     notifications.show("Variable deleted successfully", {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show("Failed to delete variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error deleting variable:", error);
-    notifications.show("Failed to delete variable", {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    return await variableService.deleteVariable(id);
    } finally {
     setLoading(false);
    }
   },
-  [deleteTemplateVariableMutation, notifications],
+  [variableService],
  );
 
  const value: TemplateVariableManagementContextType = useMemo(
