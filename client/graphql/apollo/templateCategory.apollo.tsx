@@ -4,7 +4,7 @@ import React, { createContext, useContext, useCallback } from "react";
 import { ApolloLink } from "@apollo/client";
 import * as Document from "@/client/graphql/documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useMutation, useQuery } from "@apollo/client/react";
+import { useMutation, useLazyQuery } from "@apollo/client/react";
 
 type TemplateCategoryGraphQLContextType = {
     /**
@@ -64,17 +64,13 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
     // Query for fetching flat categories
-    const { refetch: refetchFlat } = useQuery(
+    const [executeTemplateCategoriesQuery] = useLazyQuery(
         Document.templateCategoriesQueryDocument,
     );
 
     // Query for fetching single category
-    const { refetch: refetchSingle } = useQuery(
+    const [executeTemplateCategoryQuery] = useLazyQuery(
         Document.templateCategoryQueryDocument,
-        {
-            skip: true, // Skip initial execution since we'll only use refetch
-            variables: { id: 0 }, // Provide a default/dummy value
-        },
     );
 
     // Create category mutation
@@ -172,14 +168,14 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
 
     // Wrapper functions for mutations and queries
     const templateCategoriesQuery = useCallback(async () => {
-        return refetchFlat();
-    }, [refetchFlat]);
+        return executeTemplateCategoriesQuery();
+    }, [executeTemplateCategoriesQuery]);
 
     const templateCategoryQuery = useCallback(
         async (variables: Graphql.QueryTemplateCategoryArgs) => {
-            return refetchSingle(variables);
+            return executeTemplateCategoryQuery({ variables });
         },
-        [refetchSingle],
+        [executeTemplateCategoryQuery],
     );
 
     const createTemplateCategoryMutation = useCallback(

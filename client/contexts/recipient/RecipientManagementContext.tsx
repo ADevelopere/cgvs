@@ -14,7 +14,7 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import {
  RecipientGraphQLProvider,
  useRecipientGraphQL,
-} from "./RecipientGraphQLContext";
+} from "../../graphql/apollo/recipient.apollo";
 import logger from "@/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import { usePageNavigation } from "../navigation/usePageNavigation";

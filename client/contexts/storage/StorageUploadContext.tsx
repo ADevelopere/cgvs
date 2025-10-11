@@ -8,7 +8,7 @@ import React, {
     useRef,
     useMemo,
 } from "react";
-import { useStorageGraphQL } from "./StorageGraphQLContext";
+import { useStorageGraphQL } from "../../graphql/apollo/storage.apollo";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";

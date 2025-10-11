@@ -1,5 +1,5 @@
 import { StudentFilterAndSortProvider } from "@/client/contexts/student/StudentFilterContext";
-import { StudentGraphQLProvider } from "@/client/contexts/student/StudentGraphQLContext";
+import { StudentGraphQLProvider } from "@/client/graphql/apollo/student.apollo";
 import { StudentManagementProvider } from "@/client/contexts/student/StudentManagementContext";
 import { StudentTableManagementProvider } from "@/client/contexts/student/StudentTableManagementContext";
 import { TableLocaleProvider } from "@/client/locale/table/TableLocaleContext";

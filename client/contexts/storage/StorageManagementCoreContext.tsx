@@ -7,7 +7,7 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import { useStorageGraphQL } from "./StorageGraphQLContext";
+import { useStorageGraphQL } from "../../graphql/apollo/storage.apollo";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
