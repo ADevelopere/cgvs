@@ -19,6 +19,7 @@ gqlSchemaBuilder.queryFields((t) => ({
 
     students: t.field({
         type: Pothos.StudentsWithFiltersPothosObject,
+        nullable: false,
         args: {
             paginationArgs: t.arg({
                 type: Pothos.PaginationArgsObject,
@@ -43,6 +44,7 @@ gqlSchemaBuilder.queryFields((t) => ({
 
     studentsInRecipientGroup: t.field({
         type: Pothos.StudentsWithFiltersPothosObject,
+        nullable: false,
         args: {
             recipientGroupId: t.arg.int({ required: true }),
             paginationArgs: t.arg({
@@ -69,6 +71,7 @@ gqlSchemaBuilder.queryFields((t) => ({
 
     studentsNotInRecipientGroup: t.field({
         type: Pothos.StudentsWithFiltersPothosObject,
+        nullable: false,
         args: {
             recipientGroupId: t.arg.int({ required: true }),
             paginationArgs: t.arg({

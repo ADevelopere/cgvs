@@ -8,17 +8,10 @@ import React, {
  useMemo,
  useState,
  useEffect,
- useRef,
 } from "react";
-import { useNotifications } from "@toolpad/core/useNotifications";
-import {
- RecipientGraphQLProvider,
- useRecipientGraphQL,
-} from "../../graphql/apollo/recipient.apollo";
-import logger from "@/lib/logger";
-import { useAppTranslation } from "@/client/locale";
+import { RecipientGraphQLProvider } from "../../graphql/apollo/recipient.apollo";
+import { useRecipientService } from "../../graphql/service/recipient.service";
 import { usePageNavigation } from "../navigation/usePageNavigation";
-import { isAbortError } from "@/client/utils/errorUtils";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
 
 type RecipientManagementContextType = {
@@ -68,22 +61,6 @@ const ManagementProvider: React.FC<{
  setSelectedGroupId: (groupId: number | null) => void;
 }> = React.memo(
  ({ children, selectedGroupId, setSelectedGroupId }) => {
-  const notifications = useNotifications();
-  const strings = useAppTranslation("recipientGroupTranslations");
-
-  // Use refs for stable references to notifications and strings
-  const notificationsRef = useRef(notifications);
-  const stringsRef = useRef(strings);
-
-  // Update refs when values change
-  useEffect(() => {
-   notificationsRef.current = notifications;
-  }, [notifications]);
-
-  useEffect(() => {
-   stringsRef.current = strings;
-  }, [strings]);
-
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState<Graphql.Student[]>([]);
   const [pageInfo, setPageInfo] = useState<Graphql.PageInfo | null>(null);
@@ -96,107 +73,67 @@ const ManagementProvider: React.FC<{
    null,
   );
 
-  const { studentsNotInRecipientGroupQuery, createRecipientsMutation } =
-   useRecipientGraphQL();
+ const recipientService = useRecipientService();
 
-  const fetchStudentsNotInGroup = useCallback(
-   async (
-    recipientGroupId: number | null,
-    orderBy?: Graphql.StudentsOrderByClause[],
-    paginationArgs?: Graphql.PaginationArgs,
-    filterArgs?: Graphql.StudentFilterArgs,
-   ) => {
-    // Don't fetch if recipientGroupId is null
-    if (recipientGroupId === null) {
-     setStudents([]);
-     setPageInfo(null);
-     setLoading(false);
-     return;
+ const fetchStudentsNotInGroup = useCallback(
+  async (
+   recipientGroupId: number | null,
+   orderBy?: Graphql.StudentsOrderByClause[],
+   paginationArgs?: Graphql.PaginationArgs,
+   filterArgs?: Graphql.StudentFilterArgs,
+  ) => {
+   // Don't fetch if recipientGroupId is null
+   if (recipientGroupId === null) {
+    setStudents([]);
+    setPageInfo(null);
+    setLoading(false);
+    return;
+   }
+
+   setLoading(true);
+   try {
+    const result = await recipientService.fetchStudentsNotInGroup(
+     recipientGroupId,
+     orderBy,
+     paginationArgs,
+     filterArgs,
+    );
+
+    setStudents(result.students);
+    setPageInfo(result.pageInfo);
+   } finally {
+    setLoading(false);
+   }
+  },
+  [recipientService],
+ );
+
+ const addStudentsToGroup = useCallback(
+  async (studentIds: (string | number)[]): Promise<boolean> => {
+   if (selectedGroupId === null || studentIds.length === 0) {
+    return false;
+   }
+
+   setLoading(true);
+   try {
+    const createdRecipients = await recipientService.addStudentsToGroup(
+     selectedGroupId,
+     studentIds,
+    );
+
+    if (createdRecipients.length > 0) {
+     // Refresh the student list
+     await fetchStudentsNotInGroup(selectedGroupId);
+     return true;
     }
 
-    setLoading(true);
-    try {
-     const result = await studentsNotInRecipientGroupQuery({
-      recipientGroupId,
-      orderBy,
-      paginationArgs,
-      filterArgs,
-     });
-
-     if (result.studentsNotInRecipientGroup) {
-      setStudents(result.studentsNotInRecipientGroup.data as Graphql.Student[]);
-      if (result.studentsNotInRecipientGroup.pageInfo) {
-       setPageInfo(result.studentsNotInRecipientGroup.pageInfo);
-      }
-     }
-    } catch (error) {
-     // Don't show error notification if the request was aborted (e.g., during navigation)
-     if (!isAbortError(error)) {
-      logger.error("Error fetching students not in group:", error);
-      notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
-       severity: "error",
-       autoHideDuration: 3000,
-      });
-     } else {
-      logger.debug("Query aborted (likely due to navigation):", error);
-     }
-    } finally {
-     setLoading(false);
-    }
-   },
-   [studentsNotInRecipientGroupQuery],
-  );
-
-  const addStudentsToGroup = useCallback(
-   async (studentIds: (string | number)[]): Promise<boolean> => {
-    if (selectedGroupId === null || studentIds.length === 0) {
-     return false;
-    }
-
-    setLoading(true);
-    try {
-     // Convert string IDs to numbers
-     const numericIds = studentIds.map((id) =>
-      typeof id === "string" ? parseInt(id, 10) : id,
-     );
-
-     const result = await createRecipientsMutation({
-      input: {
-       recipientGroupId: selectedGroupId,
-       studentIds: numericIds,
-      },
-     });
-
-     if (result.data?.createRecipients) {
-      notificationsRef.current.show(stringsRef.current.addedToGroup, {
-       severity: "success",
-       autoHideDuration: 3000,
-      });
-
-      // Refresh the student list
-      await fetchStudentsNotInGroup(selectedGroupId);
-
-      return true;
-     }
-
-     notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
-      severity: "error",
-      autoHideDuration: 3000,
-     });
-     return false;
-    } catch (error) {
-     logger.error("Error adding students to group:", error);
-     notificationsRef.current.show(stringsRef.current.errorAddingToGroup, {
-      severity: "error",
-      autoHideDuration: 3000,
-     });
-     return false;
-    } finally {
-     setLoading(false);
-    }
-   },
-   [selectedGroupId, createRecipientsMutation, fetchStudentsNotInGroup],
-  );
+    return false;
+   } finally {
+    setLoading(false);
+   }
+  },
+  [selectedGroupId, recipientService, fetchStudentsNotInGroup],
+ );
 
   // Fetch students when group changes
   useEffect(() => {
@@ -395,9 +332,9 @@ const GroupIdProvider: React.FC<{
 export const RecipientManagementProvider: React.FC<{
  children: React.ReactNode;
  templateId: number;
-}> = ({ children, templateId }) => {
+}> = ({ children }) => {
  return (
-  <RecipientGraphQLProvider templateId={templateId}>
+  <RecipientGraphQLProvider>
    <GroupIdProvider>{children}</GroupIdProvider>
   </RecipientGraphQLProvider>
  );

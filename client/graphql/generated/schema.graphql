@@ -438,8 +438,8 @@ type LoginResponse {
 type Mutation {
   copyStorageItems(input: StorageItemsCopyInput!): BulkOperationResult
   createFolder(input: FolderCreateInput!): FileOperationResult
-  createRecipient(input: TemplateRecipientCreateInput!): TemplateRecipient
-  createRecipients(input: TemplateRecipientCreateListInput!): [TemplateRecipient!]
+  createRecipient(input: TemplateRecipientCreateInput!): TemplateRecipient!
+  createRecipients(input: TemplateRecipientCreateListInput!): [TemplateRecipient!]!
   createStudent(input: StudentCreateInput!): Student
   createTemplate(input: TemplateCreateInput!): Template
   createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory
@@ -449,8 +449,8 @@ type Mutation {
   createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
   createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
   deleteFile(path: String!): FileOperationResult
-  deleteRecipient(id: Int!): TemplateRecipient
-  deleteRecipients(ids: [Int!]!): [TemplateRecipient!]
+  deleteRecipient(id: Int!): TemplateRecipient!
+  deleteRecipients(ids: [Int!]!): [TemplateRecipient!]!
   deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
   deleteStudent(id: Int!): Student
   deleteTemplate(id: Int!): Template
@@ -531,8 +531,8 @@ type Query {
   mainTemplateCategory: TemplateCategory
   me: User
   recipient(id: Int!): TemplateRecipient
-  recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]
-  recipientsByStudentId(studentId: Int!): [TemplateRecipient!]
+  recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]!
+  recipientsByStudentId(studentId: Int!): [TemplateRecipient!]!
   searchFiles(
     """File type filter (optional)"""
     fileType: String
@@ -553,9 +553,9 @@ type Query {
     path: String
   ): StorageStats
   student(id: Int!): Student
-  students(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs): StudentsWithFiltersResponse
-  studentsInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse
-  studentsNotInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse
+  students(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs): StudentsWithFiltersResponse!
+  studentsInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse!
+  studentsNotInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse!
   suspensionTemplateCategory: TemplateCategory
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]
@@ -618,7 +618,7 @@ type StorageStats {
 }
 
 type Student {
-  createdAt: DateTime!
+  createdAt: DateTime
   dateOfBirth: DateTime
   email: String
   gender: Gender
@@ -627,7 +627,7 @@ type Student {
   nationality: CountryCode
   phoneNumber: PhoneNumber
   recipientRecords: [TemplateRecipient!]
-  updatedAt: DateTime!
+  updatedAt: DateTime
 }
 
 input StudentCreateInput {
@@ -697,8 +697,8 @@ enum StudentsOrderByColumn {
 }
 
 type StudentsWithFiltersResponse {
-  data: [Student!]
-  pageInfo: PageInfo
+  data: [Student!]!
+  pageInfo: PageInfo!
 }
 
 type Template {
