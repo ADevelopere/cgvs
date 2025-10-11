@@ -86,14 +86,22 @@ export const TemplateGraphQLProvider: React.FC<{
  children: React.ReactNode;
 }> = ({ children }) => {
  // Template queries
- const [executeTemplateQuery] = useLazyQuery(Document.templateQueryDocument);
+ const [executeTemplateQuery] = useLazyQuery(Document.templateQueryDocument, {
+  fetchPolicy: "cache-first",
+ });
 
  const [executePaginatedTemplatesQuery] = useLazyQuery(
   Document.paginatedTemplatesQueryDocument,
+  {
+   fetchPolicy: "cache-first",
+  },
  );
 
  const [executeTemplateConfigQuery] = useLazyQuery(
   Document.templatesConfigsQueryDocument,
+  {
+   fetchPolicy: "cache-first",
+  },
  );
 
  // Template query wrapper functions
