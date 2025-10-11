@@ -77,7 +77,7 @@ export const TemplateManagementProvider: React.FC<{
  const { data: apolloTemplateData } = useQuery(Document.templateQueryDocument, {
   variables: { id: id ? parseInt(id, 10) : 0 },
   skip: !id,
-  fetchPolicy: "cache-and-network", // This ensures we get cache updates and network updates
+  fetchPolicy: "cache-first", // Only fetch if not in cache
  });
 
  const [config, setConfig] = useState<Graphql.TemplatesConfigs>(defaultConfig);
