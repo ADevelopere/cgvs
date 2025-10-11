@@ -27,12 +27,6 @@ type RecipientManagementContextType = {
 
  // Operations
  addStudentsToGroup: (studentIds: (string | number)[]) => Promise<boolean>;
- fetchStudentsNotInGroup: (
-  recipientGroupId: number | null,
-  orderBy?: Graphql.StudentsOrderByClause[],
-  paginationArgs?: Graphql.PaginationArgs,
-  filterArgs?: Graphql.StudentFilterArgs,
- ) => Promise<void>;
 
  // Pagination and filtering
  onPageChange: (page: number) => void;
@@ -176,7 +170,6 @@ const ManagementProvider: React.FC<{
     invalidGroupId: null, // Always null since we only render when valid group exists
     setSelectedGroupId,
     addStudentsToGroup,
-    fetchStudentsNotInGroup,
     onPageChange,
     onRowsPerPageChange,
     setFilters,
@@ -189,7 +182,6 @@ const ManagementProvider: React.FC<{
     pageInfo,
     setSelectedGroupId,
     addStudentsToGroup,
-    fetchStudentsNotInGroup,
     onPageChange,
     onRowsPerPageChange,
    ],
@@ -217,7 +209,6 @@ const createPlaceholderContext = (): RecipientManagementContextType => ({
  invalidGroupId: null,
  setSelectedGroupId: () => {},
  addStudentsToGroup: async () => false,
- fetchStudentsNotInGroup: async () => {},
  onPageChange: () => {},
  onRowsPerPageChange: () => {},
  setFilters: () => {},
