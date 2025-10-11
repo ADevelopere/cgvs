@@ -291,7 +291,7 @@ export const useRecipientService = () => {
      },
     });
 
-    if (result.data) {
+    if (result.data && result.data.createRecipients.length > 0) {
      notifications.show(strings.addedToGroup, {
       severity: "success",
       autoHideDuration: 3000,

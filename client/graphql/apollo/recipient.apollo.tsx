@@ -210,6 +210,32 @@ export const RecipientGraphQLProvider: React.FC<{
   [executeStudentsNotInGroupQuery],
  );
 
+ // query to fetch recipient group by id, in mutations
+ const [executeRecipientGroupByIdQuery] = useLazyQuery(
+  Document.templateRecipientGroupByIdQueryDocument,
+  {
+   fetchPolicy: "cache-first",
+  },
+ );
+
+ const templateIdByRecipientGroupId = useCallback(
+  async (recipientGroupId: number) => {
+   const recipientGroup = await executeRecipientGroupByIdQuery({
+    variables: { id: recipientGroupId },
+   });
+   if (!recipientGroupId) {
+    throw new Error("Recipient group ID not found");
+   }
+   const templateId =
+    recipientGroup.data?.templateRecipientGroupById?.template?.id;
+   if (!templateId) {
+    throw new Error("Template ID not found");
+   }
+   return templateId;
+  },
+  [executeRecipientGroupByIdQuery],
+ );
+
  // Create recipient mutation
  const [mutateCreate] = useMutation(Document.createRecipientMutationDocument, {
   update(cache, { data }) {
@@ -228,7 +254,7 @@ export const RecipientGraphQLProvider: React.FC<{
     const existingGroupData =
      cache.readQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>({
       query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
-      variables: { templateId },
+      variables: { recipientGroupId },
      });
     if (existingGroupData?.templateRecipientGroupsByTemplateId) {
      const updatedGroups =
@@ -333,8 +359,8 @@ export const RecipientGraphQLProvider: React.FC<{
  const [mutateCreateMultiple] = useMutation(
   Document.createRecipientsMutationDocument,
   {
-   update(cache, { data }) {
-    if (!data?.createRecipients) return;
+   async update(cache, { data }) {
+    if (!data || data.createRecipients.length === 0) return;
     const newRecipients = data.createRecipients;
 
     const recipientGroupId = newRecipients[0]?.recipientGroupId;
@@ -342,20 +368,7 @@ export const RecipientGraphQLProvider: React.FC<{
      throw new Error("Recipient group ID not found");
     }
 
-    //  get template id from apollo cache, by getting the recipient group and then the template id
-    const recipientGroup =
-     cache.readQuery<Graphql.TemplateRecipientGroupByIdQuery>({
-      query: Document.templateRecipientGroupByIdQueryDocument,
-      variables: { id: recipientGroupId },
-     });
-    if (!recipientGroup) {
-     throw new Error("Recipient group not found");
-    }
-    const templateId = recipientGroup.templateRecipientGroupById?.template?.id;
-    if (!templateId) {
-     throw new Error("Template ID not found");
-    }
-
+    const templateId = await templateIdByRecipientGroupId(recipientGroupId);
     // Update the recipient group query (templateRecipientGroupsByTemplateId)
     try {
      const existingGroupData =
@@ -479,7 +492,7 @@ export const RecipientGraphQLProvider: React.FC<{
 
  // Delete recipient mutation
  const [mutateDelete] = useMutation(Document.deleteRecipientMutationDocument, {
-  update(cache, { data }) {
+  async update(cache, { data }) {
    if (!data?.deleteRecipient) return;
    const deletedRecipient = data.deleteRecipient;
 
@@ -488,20 +501,7 @@ export const RecipientGraphQLProvider: React.FC<{
     throw new Error("Recipient group ID not found");
    }
 
-   //  get template id from apollo cache, by getting the recipient group and then the template id
-   const recipientGroup =
-    cache.readQuery<Graphql.TemplateRecipientGroupByIdQuery>({
-     query: Document.templateRecipientGroupByIdQueryDocument,
-     variables: { id: recipientGroupId },
-    });
-   if (!recipientGroup) {
-    throw new Error("Recipient group not found");
-   }
-   const templateId = recipientGroup.templateRecipientGroupById?.template?.id;
-   if (!templateId) {
-    throw new Error("Template ID not found");
-   }
-
+   const templateId = await templateIdByRecipientGroupId(recipientGroupId);
    // Update the recipient group query to remove the deleted recipient and update studentCount
    try {
     const existingGroupData =
@@ -580,7 +580,7 @@ export const RecipientGraphQLProvider: React.FC<{
  const [mutateDeleteMultiple] = useMutation(
   Document.deleteRecipientsMutationDocument,
   {
-   update(cache, { data }) {
+   async update(cache, { data }) {
     if (!data?.deleteRecipients || data.deleteRecipients.length === 0) return;
     const deletedRecipients = data.deleteRecipients;
     const deletedIds = deletedRecipients.map((r) => r.id);
@@ -590,20 +590,7 @@ export const RecipientGraphQLProvider: React.FC<{
      throw new Error("Recipient group ID not found");
     }
 
-    //  get template id from apollo cache, by getting the recipient group and then the template id
-    const recipientGroup =
-     cache.readQuery<Graphql.TemplateRecipientGroupByIdQuery>({
-      query: Document.templateRecipientGroupByIdQueryDocument,
-      variables: { id: recipientGroupId },
-     });
-    if (!recipientGroup) {
-     throw new Error("Recipient group not found");
-    }
-    const templateId = recipientGroup.templateRecipientGroupById?.template?.id;
-    if (!templateId) {
-     throw new Error("Template ID not found");
-    }
-
+    const templateId = await templateIdByRecipientGroupId(recipientGroupId);
     // Update the recipient group query to remove the deleted recipients and update studentCount
     try {
      const existingGroupData =
