@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 
 type RecipientGroupGraphQLContextType = {
@@ -13,7 +13,9 @@ type RecipientGroupGraphQLContextType = {
   */
  templateRecipientGroupsByTemplateIdQuery: (
   variables: Graphql.TemplateRecipientGroupsByTemplateIdQueryVariables,
- ) => Promise<Graphql.TemplateRecipientGroupsByTemplateIdQuery>;
+ ) => Promise<
+  ApolloClient.QueryResult<Graphql.TemplateRecipientGroupsByTemplateIdQuery>
+ >;
 
  /**
   * Mutation to create a new recipient group
@@ -21,7 +23,9 @@ type RecipientGroupGraphQLContextType = {
   */
  createTemplateRecipientGroupMutation: (
   variables: Graphql.CreateTemplateRecipientGroupMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateTemplateRecipientGroupMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.CreateTemplateRecipientGroupMutation>
+ >;
 
  /**
   * Mutation to update an existing recipient group
@@ -29,7 +33,9 @@ type RecipientGroupGraphQLContextType = {
   */
  updateTemplateRecipientGroupMutation: (
   variables: Graphql.UpdateTemplateRecipientGroupMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateRecipientGroupMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.UpdateTemplateRecipientGroupMutation>
+ >;
 
  /**
   * Mutation to delete a recipient group
@@ -37,7 +43,9 @@ type RecipientGroupGraphQLContextType = {
   */
  deleteTemplateRecipientGroupMutation: (
   variables: Graphql.DeleteTemplateRecipientGroupMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateRecipientGroupMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.DeleteTemplateRecipientGroupMutation>
+ >;
 };
 
 const RecipientGroupGraphQLContext = createContext<
@@ -67,13 +75,9 @@ export const RecipientGroupGraphQLProvider: React.FC<{
   async (
    variables: Graphql.TemplateRecipientGroupsByTemplateIdQueryVariables,
   ) => {
-   const result = await executeRecipientGroupsQuery({
+   return executeRecipientGroupsQuery({
     variables: { templateId: variables.templateId },
    });
-   if (!result.data) {
-    throw new Error("No data returned from recipient groups query");
-   }
-   return result.data;
   },
   [executeRecipientGroupsQuery],
  );

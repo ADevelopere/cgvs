@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
 type TemplateDateVariableGraphQLContextType = {
@@ -13,7 +13,9 @@ type TemplateDateVariableGraphQLContextType = {
   */
  createTemplateDateVariableMutation: (
   variables: Graphql.CreateTemplateDateVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateTemplateDateVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.CreateTemplateDateVariableMutation>
+ >;
 
  /**
   * Mutation to update an existing date template variable
@@ -21,7 +23,9 @@ type TemplateDateVariableGraphQLContextType = {
   */
  updateTemplateDateVariableMutation: (
   variables: Graphql.UpdateTemplateDateVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateDateVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.UpdateTemplateDateVariableMutation>
+ >;
 };
 
 const TemplateDateVariableGraphQLContext = createContext<

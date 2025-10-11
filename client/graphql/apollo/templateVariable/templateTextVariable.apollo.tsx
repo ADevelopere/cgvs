@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
 type TemplateTextVariableGraphQLContextType = {
@@ -13,7 +13,9 @@ type TemplateTextVariableGraphQLContextType = {
   */
  createTemplateTextVariableMutation: (
   variables: Graphql.CreateTemplateTextVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateTemplateTextVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.CreateTemplateTextVariableMutation>
+ >;
 
  /**
   * Mutation to update an existing text template variable
@@ -21,7 +23,9 @@ type TemplateTextVariableGraphQLContextType = {
   */
  updateTemplateTextVariableMutation: (
   variables: Graphql.UpdateTemplateTextVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateTextVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.UpdateTemplateTextVariableMutation>
+ >;
 };
 
 const TemplateTextVariableGraphQLContext = createContext<

@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
 type TemplateNumberVariableGraphQLContextType = {
@@ -13,7 +13,9 @@ type TemplateNumberVariableGraphQLContextType = {
   */
  createTemplateNumberVariableMutation: (
   variables: Graphql.CreateTemplateNumberVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateTemplateNumberVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.CreateTemplateNumberVariableMutation>
+ >;
 
  /**
   * Mutation to update an existing number template variable
@@ -21,7 +23,9 @@ type TemplateNumberVariableGraphQLContextType = {
   */
  updateTemplateNumberVariableMutation: (
   variables: Graphql.UpdateTemplateNumberVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateNumberVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.UpdateTemplateNumberVariableMutation>
+ >;
 };
 
 const TemplateNumberVariableGraphQLContext = createContext<
