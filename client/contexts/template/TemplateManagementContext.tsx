@@ -20,7 +20,7 @@ import * as Document from "@/client/graphql/documents";
 import { usePageNavigation } from "../navigation/usePageNavigation";
 import { TemplateVariableManagementProvider } from "../templateVariable";
 import { RecipientManagementProvider } from "../recipient";
-import { useTemplateGraphQL } from "@/client/graphql/apollo/template.apollo";
+import { useTemplateService } from "@/client/graphql/service";
 
 export type TemplateManagementTabType =
  | "basic"
@@ -67,7 +67,7 @@ export const TemplateManagementProvider: React.FC<{
  const pathParams = useParams<{ id: string }>();
  const id = pathParams?.id;
  const { allTemplates, templateToManage } = useTemplateCategoryManagement();
- const { templateConfigQuery } = useTemplateGraphQL();
+ const templateService = useTemplateService();
  const { setNavigation } = useDashboardLayout();
 
  // Use the new navigation system
@@ -286,45 +286,11 @@ export const TemplateManagementProvider: React.FC<{
  }, [id, templateToManage, allTemplates, apolloTemplateData]);
 
  const fetchConfig = useCallback(async () => {
-  try {
-   const data: Graphql.TemplatesConfigsQuery = await templateConfigQuery();
-   if (data.templatesConfigs) {
-    setConfig(data.templatesConfigs);
-   } else {
-    setError("Failed to fetch template config");
-    setTabErrors((prev) => ({
-     ...prev,
-     basic: {
-      message: "Failed to fetch template config",
-     },
-    }));
-   }
-  } catch (error) {
-   let message = "Failed to fetch template config";
-   if (
-    typeof error === "object" &&
-    error !== null &&
-    "response" in error &&
-    typeof (error as { response?: unknown }).response === "object" &&
-    (error as { response?: { data?: { message?: unknown } } }).response?.data
-     ?.message &&
-    typeof (error as { response: { data: { message: unknown } } }).response.data
-     .message === "string"
-   ) {
-    message = (error as { response: { data: { message: string } } }).response
-     .data.message;
-   } else if (error instanceof Error) {
-    message = error.message;
-   }
-   setError(message);
-   setTabErrors((prev) => ({
-    ...prev,
-    basic: {
-     message,
-    },
-   }));
+  const config = await templateService.fetchTemplateConfig();
+  if (config) {
+   setConfig(config);
   }
- }, [templateConfigQuery]);
+ }, [templateService]);
 
  useEffect(() => {
   fetchConfig();

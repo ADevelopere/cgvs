@@ -23,8 +23,7 @@ import {
  buildCategoryHierarchy,
  getSerializableTemplateCategory,
 } from "@/client/utils/template/template-category-mapper";
-import { useTemplateCategoryService } from "@/client/graphql/service";
-import { useTemplateGraphQL } from "@/client/graphql/apollo/template.apollo";
+import { useTemplateCategoryService, useTemplateService } from "@/client/graphql/service";
 import { useRouter } from "next/navigation";
 import logger from "@/lib/logger";
 import { useDashboardLayout } from "../DashboardLayoutContext";
@@ -466,6 +465,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
  }, [allCategoriesFromCache, currentCategoryState, currentCategoryState?.id]); // currentCategoryState itself is not in dep array to avoid loops
 
  const categoryService = useTemplateCategoryService();
+ const templateService = useTemplateService();
 
  const fetchCategories = useCallback(async () => {
   try {
@@ -538,158 +538,62 @@ export const TemplateCategoryManagementProvider: React.FC<{
   [categoryService, currentCategoryState?.id, setCurrentCategory],
  );
 
- const {
-  createTemplateMutation,
-  updateTemplateMutation,
-  suspendTemplateMutation,
-  unsuspendTemplateMutation,
- } = useTemplateGraphQL();
  const createTemplate = useCallback(
   async (name: string, categoryId: number, description?: string) => {
-   try {
-    const response = await createTemplateMutation({
-     input: {
-      name,
-      categoryId,
-      description,
-     },
-    });
-    // Cache updated by Apollo. currentCategoryState.templates should reflect this.
-    const newTemplateData = response.data?.createTemplate;
-    if (newTemplateData) {
-     setCurrentTemplate(newTemplateData);
-     notifications.show(messages.templateAddedSuccessfully, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return newTemplateData;
-    } else {
-     throw new Error(messages.templateAddFailed);
-    }
-   } catch (error: unknown) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     messages.templateAddFailed;
+   const newTemplate = await templateService.createTemplate({
+    name,
+    categoryId,
+    description,
+   });
 
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-
-    throw error;
+   if (newTemplate) {
+    setCurrentTemplate(newTemplate);
+    return newTemplate;
+   } else {
+    throw new Error(messages.templateAddFailed);
    }
   },
-  [createTemplateMutation, setCurrentTemplate, notifications, messages],
+  [templateService, setCurrentTemplate, messages],
  );
 
  const updateTemplate = useCallback(
   async (variables: Graphql.UpdateTemplateMutationVariables) => {
-   try {
-    const response = await updateTemplateMutation(variables);
-    // Cache updated by Apollo.
-    const updatedTemplateData = response.data?.updateTemplate;
-    if (updatedTemplateData) {
-     setCurrentTemplate(updatedTemplateData);
-     notifications.show(messages.templateUpdatedSuccessfully, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
+   const updatedTemplate = await templateService.updateTemplate(variables.input);
 
-     return updatedTemplateData;
-    } else {
-     throw new Error(messages.templateUpdateFailed);
-    }
-   } catch (error: unknown) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     messages.templateUpdateFailed;
-
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-
-    return null;
+   if (updatedTemplate) {
+    setCurrentTemplate(updatedTemplate);
+    return updatedTemplate;
    }
+
+   return null;
   },
-  [updateTemplateMutation, setCurrentTemplate, notifications, messages],
+  [templateService, setCurrentTemplate],
  );
 
  const suspendTemplate = useCallback(
   async (templateId: number) => {
-   try {
-    await suspendTemplateMutation({ id: templateId });
-    // Cache updated by Apollo.
+   const suspended = await templateService.suspendTemplate(templateId);
+
+   if (suspended) {
     if (currentTemplate?.id === templateId) {
      setCurrentTemplate(null);
     }
-    notifications.show(messages.templateMovedToDeletionSuccessfully, {
-     severity: "success",
-     autoHideDuration: 3000,
-    });
-   } catch (error: unknown) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     messages.templateMoveToDeletionFailed;
-
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-
-    throw error;
+   } else {
+    throw new Error(messages.templateMoveToDeletionFailed);
    }
   },
-  [
-   suspendTemplateMutation,
-   currentTemplate?.id,
-   setCurrentTemplate,
-   notifications,
-   messages,
-  ],
+  [templateService, currentTemplate?.id, setCurrentTemplate, messages],
  );
 
  const unsuspendTemplate = useCallback(
   async (templateId: number) => {
-   try {
-    await unsuspendTemplateMutation({ id: templateId });
-    notifications.show(messages.templateRestoredSuccessfully, {
-     severity: "success",
-     autoHideDuration: 3000,
-    });
-   } catch (error: unknown) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     messages.templateRestoreFailed;
+   const restored = await templateService.unsuspendTemplate(templateId);
 
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-    throw error;
+   if (!restored) {
+    throw new Error(messages.templateRestoreFailed);
    }
   },
-  [unsuspendTemplateMutation, notifications, messages],
+  [templateService, messages],
  );
 
  const manageTemplate = useCallback(
