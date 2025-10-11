@@ -442,7 +442,7 @@ type Mutation {
   createRecipients(input: TemplateRecipientCreateListInput!): [TemplateRecipient!]!
   createStudent(input: StudentCreateInput!): Student
   createTemplate(input: TemplateCreateInput!): Template
-  createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory
+  createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory!
   createTemplateDateVariable(input: TemplateDateVariableCreateInput!): TemplateDateVariable
   createTemplateNumberVariable(input: TemplateNumberVariableCreateInput!): TemplateNumberVariable
   createTemplateRecipientGroup(input: TemplateRecipientGroupCreateInput!): TemplateRecipientGroup
@@ -454,7 +454,7 @@ type Mutation {
   deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
   deleteStudent(id: Int!): Student
   deleteTemplate(id: Int!): Template
-  deleteTemplateCategory(id: Int!): TemplateCategory
+  deleteTemplateCategory(id: Int!): TemplateCategory!
   deleteTemplateRecipientGroup(id: Int!): TemplateRecipientGroup
   deleteTemplateVariable(id: Int!): TemplateVariable
   generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
@@ -469,7 +469,7 @@ type Mutation {
   unsuspendTemplate(id: Int!): Template
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
   updateTemplate(input: TemplateUpdateInput!): Template
-  updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory
+  updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory!
   updateTemplateDateVariable(input: TemplateDateVariableUpdateInput!): TemplateDateVariable
   updateTemplateNumberVariable(input: TemplateNumberVariableUpdateInput!): TemplateNumberVariable
   updateTemplateRecipientGroup(input: TemplateRecipientGroupUpdateInput!): TemplateRecipientGroup
@@ -528,7 +528,7 @@ type Query {
   fileUsage(input: FileUsageCheckInput!): FileUsageResult
   folderInfo(path: String!): DirectoryInfo
   listFiles(input: FilesListInput!): StorageObjectList
-  mainTemplateCategory: TemplateCategory
+  mainTemplateCategory: TemplateCategory!
   me: User
   recipient(id: Int!): TemplateRecipient
   recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]!
@@ -556,9 +556,9 @@ type Query {
   students(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs): StudentsWithFiltersResponse!
   studentsInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse!
   studentsNotInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse!
-  suspensionTemplateCategory: TemplateCategory
+  suspensionTemplateCategory: TemplateCategory!
   template(id: Int!): Template
-  templateCategories: [TemplateCategory!]
+  templateCategories: [TemplateCategory!]!
   templateCategory(id: Int!): TemplateCategory
   templateRecipientGroupById(id: Int!): TemplateRecipientGroup
   templateRecipientGroupsByTemplateId(templateId: Int!): [TemplateRecipientGroup!]

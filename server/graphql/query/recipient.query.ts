@@ -9,7 +9,7 @@ gqlSchemaBuilder.queryFields((t) => ({
   args: {
    id: t.arg.int({ required: true }),
   },
-  resolve: async (_, args) => RecipientRepository.findById(args.id),
+  resolve: async (_, args) => await RecipientRepository.findById(args.id),
  }),
 
  recipientsByGroupId: t.field({
@@ -19,7 +19,7 @@ gqlSchemaBuilder.queryFields((t) => ({
    recipientGroupId: t.arg.int({ required: true }),
   },
   resolve: async (_, args) =>
-   RecipientRepository.findAllByGroupId(args.recipientGroupId),
+   await RecipientRepository.findAllByGroupId(args.recipientGroupId),
  }),
 
  recipientsByStudentId: t.field({
@@ -29,6 +29,6 @@ gqlSchemaBuilder.queryFields((t) => ({
    studentId: t.arg.int({ required: true }),
   },
   resolve: async (_, args) =>
-   RecipientRepository.findByStudentId(args.studentId),
+   await RecipientRepository.findByStudentId(args.studentId),
  }),
 }));

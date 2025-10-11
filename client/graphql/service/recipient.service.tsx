@@ -21,7 +21,7 @@ import { isAbortError } from "@/client/utils/errorUtils";
 export const useRecipientService = () => {
  const apollo = useRecipientGraphQL();
  const notifications = useNotifications();
- const strings = useAppTranslation("recipientGroupTranslations");
+ const strings = useAppTranslation("recipientTranslations");
 
  /**
   * Fetch students not in a recipient group
@@ -50,17 +50,30 @@ export const useRecipientService = () => {
      filterArgs,
     });
 
-    // Handle nested Maybe types: studentsNotInRecipientGroup can be null/undefined
-    const studentsResponse = result.studentsNotInRecipientGroup;
-    const students = studentsResponse.data;
-    const pageInfo = studentsResponse.pageInfo;
+    if (result.data) {
+     // Handle nested Maybe types: studentsNotInRecipientGroup can be null/undefined
+     const studentsResponse = result.data.studentsNotInRecipientGroup;
+     const students = studentsResponse.data;
+     const pageInfo = studentsResponse.pageInfo;
 
-    return { students, pageInfo };
+     return { students, pageInfo };
+    }
+
+    logger.error(
+     `Error fetching students not in group, id: ${recipientGroupId}`,
+     result.error,
+    );
+    notifications.show(strings.errorFetchingStudentsNotInGroup, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+
+    return { students: [], pageInfo: null };
    } catch (error) {
     // Don't show error notification if the request was aborted (e.g., during navigation)
     if (!isAbortError(error)) {
      logger.error("Error fetching students not in group:", error);
-     notifications.show(strings.errorAddingToGroup, {
+     notifications.show(strings.errorFetchingStudentsNotInGroup, {
       severity: "error",
       autoHideDuration: 3000,
      });
@@ -100,17 +113,29 @@ export const useRecipientService = () => {
      filterArgs,
     });
 
-    // Handle nested Maybe types
-    const studentsResponse = result.studentsInRecipientGroup;
-    const students = studentsResponse.data;
-    const pageInfo = studentsResponse.pageInfo;
+    if (result.data) {
+     // Handle nested Maybe types
+     const studentsResponse = result.data.studentsInRecipientGroup;
+     const students = studentsResponse.data;
+     const pageInfo = studentsResponse.pageInfo;
 
-    return { students, pageInfo };
+     return { students, pageInfo };
+    }
+
+    logger.error(
+     `Error fetching students in group, id: ${recipientGroupId}`,
+     result.error,
+    );
+    notifications.show(strings.errorFetchingStudentsInGroup, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return { students: [], pageInfo: null };
    } catch (error) {
     // Don't show error notification if the request was aborted
     if (!isAbortError(error)) {
      logger.error("Error fetching students in group:", error);
-     notifications.show(strings.errorAddingToGroup, {
+     notifications.show(strings.errorFetchingStudentsInGroup, {
       severity: "error",
       autoHideDuration: 3000,
      });
@@ -131,18 +156,19 @@ export const useRecipientService = () => {
    try {
     const result = await apollo.recipientQuery({ id });
 
-    const recipient = result.recipient;
-    return recipient;
+    if (result.data) {
+     return result.data.recipient;
+    }
    } catch (error) {
     logger.error("Error fetching recipient:", error);
-    notifications.show("Error fetching recipient", {
+    notifications.show(strings.errorFetchingRecipient, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return null;
    }
   },
-  [apollo, notifications],
+  [apollo, notifications, strings],
  );
 
  /**
@@ -155,17 +181,26 @@ export const useRecipientService = () => {
      recipientGroupId,
     });
 
-    return result.recipientsByGroupId;
+    if (result.data) {
+     return result.data.recipientsByGroupId;
+    }
+
+    logger.error("Error fetching recipients by group:", result.error);
+    notifications.show(strings.errorFetchingRecipients, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return [];
    } catch (error) {
     logger.error("Error fetching recipients by group:", error);
-    notifications.show("Error fetching recipients", {
+    notifications.show(strings.errorFetchingRecipients, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return [];
    }
   },
-  [apollo, notifications],
+  [apollo, notifications, strings],
  );
 
  /**
@@ -176,17 +211,26 @@ export const useRecipientService = () => {
    try {
     const result = await apollo.recipientsByStudentIdQuery({ studentId });
 
-    return result.recipientsByStudentId;
+    if (result.data) {
+     return result.data.recipientsByStudentId;
+    }
+
+    logger.error("Error fetching recipients by student:", result.error);
+    notifications.show(strings.errorFetchingRecipients, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return [];
    } catch (error) {
     logger.error("Error fetching recipients by student:", error);
-    notifications.show("Error fetching recipients", {
+    notifications.show(strings.errorFetchingRecipients, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return [];
    }
   },
-  [apollo, notifications],
+  [apollo, notifications, strings],
  );
 
  /**
@@ -200,28 +244,30 @@ export const useRecipientService = () => {
     const result = await apollo.createRecipientMutation({ input });
 
     if (result.data) {
-     notifications.show("Recipient created successfully", {
+     notifications.show(strings.recipientCreated, {
       severity: "success",
       autoHideDuration: 3000,
      });
      return result.data.createRecipient;
     }
 
-    notifications.show("Error creating recipient", {
+    logger.error("Error creating recipient:", result.error);
+
+    notifications.show(strings.errorCreatingRecipient, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return null;
    } catch (error) {
     logger.error("Error creating recipient:", error);
-    notifications.show("Error creating recipient", {
+    notifications.show(strings.errorCreatingRecipient, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return null;
    }
   },
-  [apollo, notifications],
+  [apollo, notifications, strings],
  );
 
  /**
@@ -231,43 +277,34 @@ export const useRecipientService = () => {
  const addStudentsToRecipientGroup = useCallback(
   async (
    recipientGroupId: number,
-   studentIds: (string | number)[],
+   studentIds: number[],
   ): Promise<Graphql.TemplateRecipient[]> => {
    if (studentIds.length === 0) {
     return [];
    }
 
    try {
-    // Convert string IDs to numbers
-    const numericIds = studentIds.map((id) =>
-     typeof id === "string" ? parseInt(id, 10) : id,
-    );
-
     const result = await apollo.createRecipientsMutation({
      input: {
       recipientGroupId,
-      studentIds: numericIds,
+      studentIds,
      },
     });
 
-    const createdRecipients = result.data?.createRecipients;
-
-    if (!createdRecipients) {
-     notifications.show(strings.errorAddingToGroup, {
-      severity: "error",
-      autoHideDuration: 3000,
-     });
-     return [];
-    }
-
-    if (createdRecipients.length > 0) {
+    if (result.data) {
      notifications.show(strings.addedToGroup, {
       severity: "success",
       autoHideDuration: 3000,
      });
+     return result.data.createRecipients;
     }
 
-    return createdRecipients;
+    logger.error("Error adding students to group:", result.error);
+    notifications.show(strings.errorAddingToGroup, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return [];
    } catch (error) {
     logger.error("Error adding students to group:", error);
     notifications.show(strings.errorAddingToGroup, {
@@ -289,28 +326,29 @@ export const useRecipientService = () => {
     const result = await apollo.deleteRecipientMutation({ id });
 
     if (result.data) {
-     notifications.show("Recipient deleted successfully", {
+     notifications.show(strings.recipientDeleted, {
       severity: "success",
       autoHideDuration: 3000,
      });
      return true;
     }
 
-    notifications.show("Error deleting recipient", {
+    logger.error("Error deleting recipient:", result.error);
+    notifications.show(strings.errorDeletingRecipient, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return false;
    } catch (error) {
     logger.error("Error deleting recipient:", error);
-    notifications.show("Error deleting recipient", {
+    notifications.show(strings.errorDeletingRecipient, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return false;
    }
   },
-  [apollo, notifications],
+  [apollo, notifications, strings],
  );
 
  /**
@@ -325,29 +363,30 @@ export const useRecipientService = () => {
 
     const result = await apollo.deleteRecipientsMutation({ ids });
 
-    if (result.data?.deleteRecipients) {
-     notifications.show("Recipients deleted successfully", {
+    if (result.data) {
+     notifications.show(strings.recipientsDeleted, {
       severity: "success",
       autoHideDuration: 3000,
      });
      return true;
     }
 
-    notifications.show("Error deleting recipients", {
+    logger.error("Error deleting recipients:", result.error);
+    notifications.show(strings.errorDeletingRecipients, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return false;
    } catch (error) {
     logger.error("Error deleting recipients:", error);
-    notifications.show("Error deleting recipients", {
+    notifications.show(strings.errorDeletingRecipients, {
      severity: "error",
      autoHideDuration: 3000,
     });
     return false;
    }
   },
-  [apollo, notifications],
+  [apollo, notifications, strings],
  );
 
  return useMemo(
