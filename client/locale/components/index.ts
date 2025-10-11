@@ -6,6 +6,7 @@ export * from "./Error";
 export * from "./Gender";
 export * from "./Header";
 export * from "./Language";
+export * from "./Recipient";
 export * from "./RecipientGroup";
 export * from "./Storage";
 export * from "./Student";

@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 import logger from "@/lib/logger";
 
@@ -14,7 +14,7 @@ type RecipientGraphQLContextType = {
   */
  recipientQuery: (
   variables: Graphql.RecipientQueryVariables,
- ) => Promise<Graphql.RecipientQuery>;
+ ) => Promise<ApolloClient.QueryResult<Graphql.RecipientQuery>>;
 
  /**
   * Query to get recipients by group ID
@@ -22,7 +22,7 @@ type RecipientGraphQLContextType = {
   */
  recipientsByGroupIdQuery: (
   variables: Graphql.RecipientsByGroupIdQueryVariables,
- ) => Promise<Graphql.RecipientsByGroupIdQuery>;
+ ) => Promise<ApolloClient.QueryResult<Graphql.RecipientsByGroupIdQuery>>;
 
  /**
   * Query to get recipients by student ID
@@ -30,7 +30,7 @@ type RecipientGraphQLContextType = {
   */
  recipientsByStudentIdQuery: (
   variables: Graphql.RecipientsByStudentIdQueryVariables,
- ) => Promise<Graphql.RecipientsByStudentIdQuery>;
+ ) => Promise<ApolloClient.QueryResult<Graphql.RecipientsByStudentIdQuery>>;
 
  /**
   * Query to get students in a recipient group
@@ -38,7 +38,7 @@ type RecipientGraphQLContextType = {
   */
  studentsInRecipientGroupQuery: (
   variables: Graphql.StudentsInRecipientGroupQueryVariables,
- ) => Promise<Graphql.StudentsInRecipientGroupQuery>;
+ ) => Promise<ApolloClient.QueryResult<Graphql.StudentsInRecipientGroupQuery>>;
 
  /**
   * Query to get students not in a recipient group
@@ -46,7 +46,9 @@ type RecipientGraphQLContextType = {
   */
  studentsNotInRecipientGroupQuery: (
   variables: Graphql.StudentsNotInRecipientGroupQueryVariables,
- ) => Promise<Graphql.StudentsNotInRecipientGroupQuery>;
+ ) => Promise<
+  ApolloClient.QueryResult<Graphql.StudentsNotInRecipientGroupQuery>
+ >;
 
  /**
   * Mutation to create a new recipient
@@ -54,7 +56,7 @@ type RecipientGraphQLContextType = {
   */
  createRecipientMutation: (
   variables: Graphql.CreateRecipientMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateRecipientMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.CreateRecipientMutation>>;
 
  /**
   * Mutation to create multiple recipients
@@ -62,7 +64,7 @@ type RecipientGraphQLContextType = {
   */
  createRecipientsMutation: (
   variables: Graphql.CreateRecipientsMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateRecipientsMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.CreateRecipientsMutation>>;
 
  /**
   * Mutation to delete a recipient
@@ -70,7 +72,7 @@ type RecipientGraphQLContextType = {
   */
  deleteRecipientMutation: (
   variables: Graphql.DeleteRecipientMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.DeleteRecipientMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.DeleteRecipientMutation>>;
 
  /**
   * Mutation to delete multiple recipients
@@ -78,7 +80,7 @@ type RecipientGraphQLContextType = {
   */
  deleteRecipientsMutation: (
   variables: Graphql.DeleteRecipientsMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.DeleteRecipientsMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.DeleteRecipientsMutation>>;
 };
 
 const RecipientGraphQLContext = createContext<
@@ -138,52 +140,40 @@ export const RecipientGraphQLProvider: React.FC<{
  // Query wrapper functions
  const recipientQuery = useCallback(
   async (variables: Graphql.RecipientQueryVariables) => {
-   const result = await executeRecipientQuery({
+   return executeRecipientQuery({
     variables: {
      id: variables.id,
     },
    });
-   if (!result.data) {
-    throw new Error("No data returned from recipient query");
-   }
-   return result.data;
   },
   [executeRecipientQuery],
  );
 
  const recipientsByGroupIdQuery = useCallback(
   async (variables: Graphql.RecipientsByGroupIdQueryVariables) => {
-   const result = await executeRecipientsByGroupIdQuery({
+   return executeRecipientsByGroupIdQuery({
     variables: {
      recipientGroupId: variables.recipientGroupId,
     },
    });
-   if (!result.data) {
-    throw new Error("No data returned from recipients by group query");
-   }
-   return result.data;
   },
   [executeRecipientsByGroupIdQuery],
  );
 
  const recipientsByStudentIdQuery = useCallback(
   async (variables: Graphql.RecipientsByStudentIdQueryVariables) => {
-   const result = await executeRecipientsByStudentIdQuery({
+   return executeRecipientsByStudentIdQuery({
     variables: {
      studentId: variables.studentId,
     },
    });
-   if (!result.data) {
-    throw new Error("No data returned from recipients by student query");
-   }
-   return result.data;
   },
   [executeRecipientsByStudentIdQuery],
  );
 
  const studentsInRecipientGroupQuery = useCallback(
   async (variables: Graphql.StudentsInRecipientGroupQueryVariables) => {
-   const result = await executeStudentsInGroupQuery({
+   return executeStudentsInGroupQuery({
     variables: {
      recipientGroupId: variables.recipientGroupId,
      orderBy: variables.orderBy,
@@ -191,10 +181,6 @@ export const RecipientGraphQLProvider: React.FC<{
      filterArgs: variables.filterArgs,
     },
    });
-   if (!result.data) {
-    throw new Error("No data returned from students in group query");
-   }
-   return result.data;
   },
   [executeStudentsInGroupQuery],
  );
@@ -212,7 +198,7 @@ export const RecipientGraphQLProvider: React.FC<{
     );
    }
 
-   const result = await executeStudentsNotInGroupQuery({
+   return executeStudentsNotInGroupQuery({
     variables: {
      recipientGroupId: variables.recipientGroupId,
      orderBy: variables.orderBy,
@@ -220,10 +206,6 @@ export const RecipientGraphQLProvider: React.FC<{
      filterArgs: variables.filterArgs,
     },
    });
-   if (!result.data) {
-    throw new Error("No data returned from students not in group query");
-   }
-   return result.data;
   },
   [executeStudentsNotInGroupQuery],
  );

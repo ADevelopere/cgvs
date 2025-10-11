@@ -1,4 +1,5 @@
 import ProtectedRoute from "@/client/components/ProtectedRoute";
+import { ApolloRepositoryProvider } from "@/client/graphql/apollo";
 import StorageProvider from "@/client/views/storage/StorageProvider";
 
 export default function RootLayout({
@@ -8,7 +9,9 @@ export default function RootLayout({
 }>) {
  return (
   <ProtectedRoute>
-   <StorageProvider>{children}</StorageProvider>
+   <ApolloRepositoryProvider>
+    <StorageProvider>{children}</StorageProvider>
+   </ApolloRepositoryProvider>
   </ProtectedRoute>
  );
 }

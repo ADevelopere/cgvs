@@ -6,7 +6,7 @@ import { RecipientGroupGraphQLProvider } from "./recipientGroup.apollo";
 import { StorageGraphQLProvider } from "./storage.apollo";
 import { StudentGraphQLProvider } from "./student.apollo";
 
-export const GraphQLApolloRepositoryProvider: React.FC<{
+export const ApolloRepositoryProvider: React.FC<{
  children: React.ReactNode;
 }> = ({ children }) => {
  return (

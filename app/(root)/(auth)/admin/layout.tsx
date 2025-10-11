@@ -15,9 +15,7 @@ import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndAct
 import { TemplateCategoryManagementProvider } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { DashboardLayoutProvider } from "@/client/contexts/DashboardLayoutContext";
 import { Navigation, Title } from "@/client/contexts/adminLayout.types";
-import { TemplateCategoryGraphQLProvider } from "@/client/graphql/apollo/templateCategory.apollo";
 import StudentProvider from "@/client/contexts/student/StudentProvider";
-import { TemplateGraphQLProvider } from "@/client/graphql/apollo";
 
 const NAVIGATION: Navigation = [
  {
@@ -80,15 +78,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
      endActions: <DashboardEndActions />,
     }}
    >
-    <TemplateCategoryGraphQLProvider>
-     <TemplateGraphQLProvider>
-      <TemplateCategoryManagementProvider>
-       <StudentProvider>
-        <DashboardLayout>{children}</DashboardLayout>
-       </StudentProvider>
-      </TemplateCategoryManagementProvider>
-     </TemplateGraphQLProvider>
-    </TemplateCategoryGraphQLProvider>
+    <TemplateCategoryManagementProvider>
+     <StudentProvider>
+      <DashboardLayout>{children}</DashboardLayout>
+     </StudentProvider>
+    </TemplateCategoryManagementProvider>
    </DashboardLayoutProvider>
   </NavigationProvider>
  );

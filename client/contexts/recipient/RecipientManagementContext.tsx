@@ -1,16 +1,9 @@
 "use client";
 
+import React from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import React, {
- createContext,
- useCallback,
- useContext,
- useMemo,
- useState,
- useEffect,
-} from "react";
-import { RecipientGraphQLProvider } from "../../graphql/apollo/recipient.apollo";
-import { useRecipientService } from "../../graphql/service/recipient.service";
+import { RecipientGraphQLProvider } from "@/client/graphql/apollo";
+import { useRecipientService } from "@/client/graphql/service";
 import { usePageNavigation } from "../navigation/usePageNavigation";
 import { useTemplateManagement } from "../template/TemplateManagementContext";
 
@@ -26,7 +19,7 @@ type RecipientManagementContextType = {
  setSelectedGroupId: (groupId: number | null) => void;
 
  // Operations
- addStudentsToGroup: (studentIds: (string | number)[]) => Promise<boolean>;
+ addStudentsToGroup: (studentIds: number[]) => Promise<boolean>;
 
  // Pagination and filtering
  onPageChange: (page: number) => void;
@@ -35,12 +28,12 @@ type RecipientManagementContextType = {
  setSort: (sort: Graphql.StudentsOrderByClause[] | null) => void;
 };
 
-const RecipientManagementContext = createContext<
+const RecipientManagementContext = React.createContext<
  RecipientManagementContextType | undefined
 >(undefined);
 
 export const useRecipientManagement = () => {
- const context = useContext(RecipientManagementContext);
+ const context = React.useContext(RecipientManagementContext);
  if (!context) {
   throw new Error(
    "useRecipientManagement must be used within a RecipientManagementProvider",
@@ -55,82 +48,81 @@ const ManagementProvider: React.FC<{
  setSelectedGroupId: (groupId: number | null) => void;
 }> = React.memo(
  ({ children, selectedGroupId, setSelectedGroupId }) => {
-  const [loading, setLoading] = useState(false);
-  const [students, setStudents] = useState<Graphql.Student[]>([]);
-  const [pageInfo, setPageInfo] = useState<Graphql.PageInfo | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [filters, setFilters] = useState<Graphql.StudentFilterArgs | null>(
-   null,
-  );
-  const [sort, setSort] = useState<Graphql.StudentsOrderByClause[] | null>(
-   null,
-  );
+  const [loading, setLoading] = React.useState(false);
+  const [students, setStudents] = React.useState<Graphql.Student[]>([]);
+  const [pageInfo, setPageInfo] = React.useState<Graphql.PageInfo | null>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
+  const [filters, setFilters] =
+   React.useState<Graphql.StudentFilterArgs | null>(null);
+  const [sort, setSort] = React.useState<
+   Graphql.StudentsOrderByClause[] | null
+  >(null);
 
- const recipientService = useRecipientService();
+  const recipientService = useRecipientService();
 
- const fetchStudentsNotInGroup = useCallback(
-  async (
-   recipientGroupId: number | null,
-   orderBy?: Graphql.StudentsOrderByClause[],
-   paginationArgs?: Graphql.PaginationArgs,
-   filterArgs?: Graphql.StudentFilterArgs,
-  ) => {
-   // Don't fetch if recipientGroupId is null
-   if (recipientGroupId === null) {
-    setStudents([]);
-    setPageInfo(null);
-    setLoading(false);
-    return;
-   }
-
-   setLoading(true);
-   try {
-    const result = await recipientService.fetchStudentsNotInGroup(
-     recipientGroupId,
-     orderBy,
-     paginationArgs,
-     filterArgs,
-    );
-
-    setStudents(result.students);
-    setPageInfo(result.pageInfo);
-   } finally {
-    setLoading(false);
-   }
-  },
-  [recipientService],
- );
-
- const addStudentsToGroup = useCallback(
-  async (studentIds: (string | number)[]): Promise<boolean> => {
-   if (selectedGroupId === null || studentIds.length === 0) {
-    return false;
-   }
-
-   setLoading(true);
-   try {
-    const createdRecipients = await recipientService.addStudentsToGroup(
-     selectedGroupId,
-     studentIds,
-    );
-
-    if (createdRecipients.length > 0) {
-     // Refresh the student list
-     await fetchStudentsNotInGroup(selectedGroupId);
-     return true;
+  const fetchStudentsNotInGroup = React.useCallback(
+   async (
+    recipientGroupId: number | null,
+    orderBy?: Graphql.StudentsOrderByClause[],
+    paginationArgs?: Graphql.PaginationArgs,
+    filterArgs?: Graphql.StudentFilterArgs,
+   ) => {
+    // Don't fetch if recipientGroupId is null
+    if (recipientGroupId === null) {
+     setStudents([]);
+     setPageInfo(null);
+     setLoading(false);
+     return;
     }
 
-    return false;
-   } finally {
-    setLoading(false);
-   }
-  },
-  [selectedGroupId, recipientService, fetchStudentsNotInGroup],
- );
+    setLoading(true);
+    try {
+     const result = await recipientService.fetchStudentsNotInGroup(
+      recipientGroupId,
+      orderBy,
+      paginationArgs,
+      filterArgs,
+     );
+
+     setStudents(result.students);
+     setPageInfo(result.pageInfo);
+    } finally {
+     setLoading(false);
+    }
+   },
+   [recipientService],
+  );
+
+  const addStudentsToGroup = React.useCallback(
+   async (studentIds: number[]): Promise<boolean> => {
+    if (selectedGroupId === null || studentIds.length === 0) {
+     return false;
+    }
+
+    setLoading(true);
+    try {
+     const createdRecipients = await recipientService.addStudentsToGroup(
+      selectedGroupId,
+      studentIds,
+     );
+
+     if (createdRecipients.length > 0) {
+      // Refresh the student list
+      await fetchStudentsNotInGroup(selectedGroupId);
+      return true;
+     }
+
+     return false;
+    } finally {
+     setLoading(false);
+    }
+   },
+   [selectedGroupId, recipientService, fetchStudentsNotInGroup],
+  );
 
   // Fetch students when group changes
-  useEffect(() => {
+  React.useEffect(() => {
    if (selectedGroupId) {
     fetchStudentsNotInGroup(
      selectedGroupId,
@@ -152,16 +144,16 @@ const ManagementProvider: React.FC<{
    fetchStudentsNotInGroup,
   ]);
 
-  const onPageChange = useCallback((page: number) => {
+  const onPageChange = React.useCallback((page: number) => {
    setCurrentPage(page);
   }, []);
 
-  const onRowsPerPageChange = useCallback((rowsPerPage: number) => {
+  const onRowsPerPageChange = React.useCallback((rowsPerPage: number) => {
    setRowsPerPage(rowsPerPage);
    setCurrentPage(1);
   }, []);
 
-  const contextValue = useMemo(
+  const contextValue = React.useMemo(
    () => ({
     loading,
     selectedGroupId,
@@ -221,16 +213,18 @@ const GroupIdProvider: React.FC<{
  const { template } = useTemplateManagement();
  const { getParam, updateParams } = usePageNavigation();
 
- const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
+ const [selectedGroupId, setSelectedGroupIdState] = React.useState<
+  number | null
+ >(null);
+ const [invalidGroupId, setInvalidGroupId] = React.useState<number | null>(
   null,
  );
- const [invalidGroupId, setInvalidGroupId] = useState<number | null>(null);
 
  // Memoize the current group ID param to avoid unnecessary effect triggers
- const groupIdParam = useMemo(() => getParam("groupId"), [getParam]);
+ const groupIdParam = React.useMemo(() => getParam("groupId"), [getParam]);
 
  // Sync selectedGroupId with URL params and template changes
- useEffect(() => {
+ React.useEffect(() => {
   let resolvedGroupId: number | null = null;
 
   // Try to get group ID from URL parameter first
@@ -281,7 +275,7 @@ const GroupIdProvider: React.FC<{
   invalidGroupId,
  ]);
 
- const setSelectedGroupId = useCallback(
+ const setSelectedGroupId = React.useCallback(
   (groupId: number | null) => {
    setSelectedGroupIdState(groupId);
    if (groupId) {
@@ -294,7 +288,7 @@ const GroupIdProvider: React.FC<{
  );
 
  // Memoize the placeholder context to prevent unnecessary re-renders
- const placeholderContext = useMemo(() => {
+ const placeholderContext = React.useMemo(() => {
   const context = createPlaceholderContext();
   context.invalidGroupId = invalidGroupId;
   context.setSelectedGroupId = setSelectedGroupId;
