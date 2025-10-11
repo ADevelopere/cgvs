@@ -287,12 +287,12 @@ const createPlaceholderContext = (): RecipientManagementContextType => ({
  setSort: () => {},
 });
 
-export const RecipientManagementProvider: React.FC<{
+const GroupIdProvider: React.FC<{
  children: React.ReactNode;
- templateId: number;
-}> = ({ children, templateId }) => {
+}> = ({ children }) => {
  const { template } = useTemplateManagement();
  const { getParam, updateParams } = usePageNavigation();
+ const { setRecipientGroupId } = useRecipientGraphQL();
 
  const [selectedGroupId, setSelectedGroupIdState] = useState<number | null>(
   null,
@@ -326,6 +326,8 @@ export const RecipientManagementProvider: React.FC<{
   // Only update state if the resolved group ID is actually different
   if (resolvedGroupId !== selectedGroupId) {
    setSelectedGroupIdState(resolvedGroupId);
+   // Sync with GraphQL context for cache updates
+   setRecipientGroupId(resolvedGroupId);
   }
 
   // Handle invalid group ID case
@@ -352,18 +354,21 @@ export const RecipientManagementProvider: React.FC<{
   groupIdParam,
   selectedGroupId,
   invalidGroupId,
+  setRecipientGroupId,
  ]);
 
  const setSelectedGroupId = useCallback(
   (groupId: number | null) => {
    setSelectedGroupIdState(groupId);
+   // Sync with GraphQL context for cache updates
+   setRecipientGroupId(groupId);
    if (groupId) {
     updateParams({ groupId: groupId.toString() }, { merge: true });
    } else {
     updateParams({ groupId: undefined }, { merge: true });
    }
   },
-  [updateParams],
+  [updateParams, setRecipientGroupId],
  );
 
  // Memoize the placeholder context to prevent unnecessary re-renders
@@ -374,26 +379,6 @@ export const RecipientManagementProvider: React.FC<{
   return context;
  }, [invalidGroupId, setSelectedGroupId]);
 
- // Memoize the full provider chain to prevent unnecessary recreations
- const managementProviderChain = useMemo(() => {
-  if (selectedGroupId === null) return null;
-
-  return (
-   <RecipientGraphQLProvider
-    recipientGroupId={selectedGroupId}
-    templateId={templateId}
-   >
-    <ManagementProvider
-     selectedGroupId={selectedGroupId}
-     setSelectedGroupId={setSelectedGroupId}
-    >
-     {children}
-    </ManagementProvider>
-   </RecipientGraphQLProvider>
-  );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [selectedGroupId, setSelectedGroupId, children]);
-
  // If no valid group ID is available, return placeholder context
  if (selectedGroupId === null) {
   return (
@@ -403,6 +388,23 @@ export const RecipientManagementProvider: React.FC<{
   );
  }
 
- // Return full provider chain with valid group ID
- return managementProviderChain;
+ return (
+  <ManagementProvider
+   selectedGroupId={selectedGroupId}
+   setSelectedGroupId={setSelectedGroupId}
+  >
+   {children}
+  </ManagementProvider>
+ );
+};
+
+export const RecipientManagementProvider: React.FC<{
+ children: React.ReactNode;
+ templateId: number;
+}> = ({ children, templateId }) => {
+ return (
+  <RecipientGraphQLProvider templateId={templateId}>
+   <GroupIdProvider>{children}</GroupIdProvider>
+  </RecipientGraphQLProvider>
+ );
 };

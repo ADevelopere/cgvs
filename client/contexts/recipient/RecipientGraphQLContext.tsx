@@ -1,13 +1,22 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo } from "react";
+import {
+ createContext,
+ useCallback,
+ useContext,
+ useEffect,
+ useMemo,
+ useRef,
+ useState,
+} from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
 import { ApolloLink } from "@apollo/client";
-import { useQuery, useMutation } from "@apollo/client/react";
+import { useMutation, useLazyQuery } from "@apollo/client/react";
 import logger from "@/lib/logger";
 
 type RecipientGraphQLContextType = {
+ setRecipientGroupId: (groupId: number | null) => void;
  /**
   * Query to get a single recipient by ID
   * @param variables - The query variables
@@ -97,134 +106,137 @@ export const useRecipientGraphQL = () => {
 
 export const RecipientGraphQLProvider: React.FC<{
  children: React.ReactNode;
- recipientGroupId: number;
  templateId: number;
-}> = ({ children, recipientGroupId, templateId }) => {
+}> = ({ children, templateId }) => {
+ const [recipientGroupId, setRecipientGroupId] = useState<number | null>(null);
+ const recipientGroupIdRef = useRef(recipientGroupId);
+ useEffect(() => {
+  recipientGroupIdRef.current = recipientGroupId;
+ }, [recipientGroupId]);
+
+ const setGroupId = useCallback(
+  (groupId: number | null) => {
+   if (recipientGroupIdRef.current !== groupId) {
+    setRecipientGroupId(groupId);
+   }
+  },
+  [setRecipientGroupId, recipientGroupIdRef],
+ );
+
  // Query for single recipient
- const recipientQueryRef = useQuery(Document.recipientQueryDocument, {
-  skip: true,
-  variables: { id: 0 },
- });
+ const [executeRecipientQuery] = useLazyQuery(Document.recipientQueryDocument);
 
  // Query for recipients by group ID
- const recipientsByGroupIdQueryRef = useQuery(
+ const [executeRecipientsByGroupIdQuery] = useLazyQuery(
   Document.recipientsByGroupIdQueryDocument,
-  {
-   skip: true,
-   variables: { recipientGroupId },
-  },
  );
 
  // Query for recipients by student ID
- const recipientsByStudentIdQueryRef = useQuery(
+ const [executeRecipientsByStudentIdQuery] = useLazyQuery(
   Document.recipientsByStudentIdQueryDocument,
-  {
-   skip: true,
-   variables: { studentId: 0 },
-  },
  );
 
  // Query for students in recipient group
- const studentsInGroupQueryRef = useQuery(
+ const [executeStudentsInGroupQuery] = useLazyQuery(
   Document.studentsInRecipientGroupQueryDocument,
-  {
-   skip: true,
-   variables: {
-    recipientGroupId,
-    orderBy: [],
-    paginationArgs: { page: 1, first: 50 },
-   },
-  },
  );
 
  // Query for students not in recipient group
- const studentsNotInGroupQueryRef = useQuery(
+ const [executeStudentsNotInGroupQuery] = useLazyQuery(
   Document.studentsNotInRecipientGroupQueryDocument,
-  {
-   skip: true,
-   variables: {
-    recipientGroupId,
-    orderBy: [],
-    paginationArgs: { page: 1, first: 50 },
-   },
-  },
  );
 
  // Query wrapper functions
  const recipientQuery = useCallback(
   async (variables: Graphql.RecipientQueryVariables) => {
-   const result = await recipientQueryRef.refetch({
-    id: variables.id,
+   const result = await executeRecipientQuery({
+    variables: {
+     id: variables.id,
+    },
    });
    if (!result.data) {
     throw new Error("No data returned from recipient query");
    }
    return result.data;
   },
-  [recipientQueryRef],
+  [executeRecipientQuery],
  );
 
  const recipientsByGroupIdQuery = useCallback(
   async (variables: Graphql.RecipientsByGroupIdQueryVariables) => {
-   const result = await recipientsByGroupIdQueryRef.refetch({
-    recipientGroupId: variables.recipientGroupId,
+   const result = await executeRecipientsByGroupIdQuery({
+    variables: {
+     recipientGroupId: variables.recipientGroupId,
+    },
    });
    if (!result.data) {
     throw new Error("No data returned from recipients by group query");
    }
    return result.data;
   },
-  [recipientsByGroupIdQueryRef],
+  [executeRecipientsByGroupIdQuery],
  );
 
  const recipientsByStudentIdQuery = useCallback(
   async (variables: Graphql.RecipientsByStudentIdQueryVariables) => {
-   const result = await recipientsByStudentIdQueryRef.refetch({
-    studentId: variables.studentId,
+   const result = await executeRecipientsByStudentIdQuery({
+    variables: {
+     studentId: variables.studentId,
+    },
    });
    if (!result.data) {
     throw new Error("No data returned from recipients by student query");
    }
    return result.data;
   },
-  [recipientsByStudentIdQueryRef],
+  [executeRecipientsByStudentIdQuery],
  );
 
  const studentsInRecipientGroupQuery = useCallback(
   async (variables: Graphql.StudentsInRecipientGroupQueryVariables) => {
-   const result = await studentsInGroupQueryRef.refetch({
-    recipientGroupId: variables.recipientGroupId,
-    orderBy: variables.orderBy,
-    paginationArgs: variables.paginationArgs,
-    filterArgs: variables.filterArgs,
+   const result = await executeStudentsInGroupQuery({
+    variables: {
+     recipientGroupId: variables.recipientGroupId,
+     orderBy: variables.orderBy,
+     paginationArgs: variables.paginationArgs,
+     filterArgs: variables.filterArgs,
+    },
    });
    if (!result.data) {
     throw new Error("No data returned from students in group query");
    }
    return result.data;
   },
-  [studentsInGroupQueryRef],
+  [executeStudentsInGroupQuery],
  );
 
  const studentsNotInRecipientGroupQuery = useCallback(
   async (variables: Graphql.StudentsNotInRecipientGroupQueryVariables) => {
+   logger.info("studentsNotInRecipientGroupQuery", variables);
    // Don't execute query if recipientGroupId is null
-   if (variables.recipientGroupId === null || variables.recipientGroupId === undefined) {
-    throw new Error("recipientGroupId is required for students not in group query");
+   if (
+    variables.recipientGroupId === null ||
+    variables.recipientGroupId === undefined
+   ) {
+    throw new Error(
+     "recipientGroupId is required for students not in group query",
+    );
    }
 
-   const result = await studentsNotInGroupQueryRef.refetch({
-    recipientGroupId: variables.recipientGroupId,
-    orderBy: variables.orderBy,
-    paginationArgs: variables.paginationArgs,
-    filterArgs: variables.filterArgs,
+   const result = await executeStudentsNotInGroupQuery({
+    variables: {
+     recipientGroupId: variables.recipientGroupId,
+     orderBy: variables.orderBy,
+     paginationArgs: variables.paginationArgs,
+     filterArgs: variables.filterArgs,
+    },
    });
    if (!result.data) {
     throw new Error("No data returned from students not in group query");
    }
    return result.data;
   },
-  [studentsNotInGroupQueryRef],
+  [executeStudentsNotInGroupQuery],
  );
 
  // Create recipient mutation
@@ -243,14 +255,17 @@ export const RecipientGraphQLProvider: React.FC<{
     if (existingGroupData?.templateRecipientGroupsByTemplateId) {
      const updatedGroups =
       existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-       if (group.id !== recipientGroupId) return group;
+       if (group.id !== recipientGroupIdRef.current) return group;
 
        const updatedRecipients = [...(group.recipients || []), newRecipient];
        const prevStudentIds = new Set(
         (group.recipients || []).map((r) => r.studentId).filter(Boolean),
        );
        let updatedStudentCount = group.studentCount ?? 0;
-       if (newRecipient.studentId && !prevStudentIds.has(newRecipient.studentId)) {
+       if (
+        newRecipient.studentId &&
+        !prevStudentIds.has(newRecipient.studentId)
+       ) {
         updatedStudentCount += 1;
        }
        return {
@@ -273,23 +288,24 @@ export const RecipientGraphQLProvider: React.FC<{
 
    // Update the main template query cache
    try {
-    const existingTemplateData =
-     cache.readQuery<Graphql.TemplateQuery>({
-      query: Document.templateQueryDocument,
-      variables: { id: templateId },
-     });
+    const existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
+     query: Document.templateQueryDocument,
+     variables: { id: templateId },
+    });
     if (existingTemplateData?.template?.recipientGroups) {
-     const updatedGroups = existingTemplateData.template.recipientGroups.map((group) => {
-      if (group.id !== recipientGroupId) return group;
+     const updatedGroups = existingTemplateData.template.recipientGroups.map(
+      (group) => {
+       if (group.id !== recipientGroupIdRef.current) return group;
 
-      // For template query, we don't have full recipient data, just update count
-      const prevCount = group.studentCount ?? 0;
-      const shouldIncrement = newRecipient.studentId;
-      return {
-       ...group,
-       studentCount: shouldIncrement ? prevCount + 1 : prevCount,
-      };
-     });
+       // For template query, we don't have full recipient data, just update count
+       const prevCount = group.studentCount ?? 0;
+       const shouldIncrement = newRecipient.studentId;
+       return {
+        ...group,
+        studentCount: shouldIncrement ? prevCount + 1 : prevCount,
+       };
+      },
+     );
      cache.writeQuery({
       query: Document.templateQueryDocument,
       variables: { id: templateId },
@@ -353,7 +369,7 @@ export const RecipientGraphQLProvider: React.FC<{
      if (existingGroupData?.templateRecipientGroupsByTemplateId) {
       const updatedGroups =
        existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-        if (group.id !== recipientGroupId) return group;
+        if (group.id !== recipientGroupIdRef.current) return group;
 
         const updatedRecipients = [
          ...(group.recipients || []),
@@ -395,24 +411,27 @@ export const RecipientGraphQLProvider: React.FC<{
 
     // Update the main template query cache (this is what TemplateManagementContext uses)
     try {
-     const existingTemplateData =
-      cache.readQuery<Graphql.TemplateQuery>({
-       query: Document.templateQueryDocument,
-       variables: { id: templateId },
-      });
+     const existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
+      query: Document.templateQueryDocument,
+      variables: { id: templateId },
+     });
      if (existingTemplateData?.template?.recipientGroups) {
-      const updatedGroups = existingTemplateData.template.recipientGroups.map((group) => {
-       if (group.id !== recipientGroupId) return group;
+      const updatedGroups = existingTemplateData.template.recipientGroups.map(
+       (group) => {
+        if (group.id !== recipientGroupIdRef.current) return group;
 
-       // Count unique student IDs being added
-       const uniqueStudentIds = new Set(newRecipients.map((r) => r.studentId).filter(Boolean));
-       const addedCount = uniqueStudentIds.size;
+        // Count unique student IDs being added
+        const uniqueStudentIds = new Set(
+         newRecipients.map((r) => r.studentId).filter(Boolean),
+        );
+        const addedCount = uniqueStudentIds.size;
 
-       return {
-        ...group,
-        studentCount: (group.studentCount ?? 0) + addedCount,
-       };
-      });
+        return {
+         ...group,
+         studentCount: (group.studentCount ?? 0) + addedCount,
+        };
+       },
+      );
       cache.writeQuery({
        query: Document.templateQueryDocument,
        variables: { id: templateId },
@@ -476,7 +495,7 @@ export const RecipientGraphQLProvider: React.FC<{
     if (existingGroupData?.templateRecipientGroupsByTemplateId) {
      const updatedGroups =
       existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-       if (group.id === recipientGroupId) {
+       if (group.id === recipientGroupIdRef.current) {
         const updatedRecipients = (group.recipients || []).filter(
          (recipient) => recipient.id !== deletedRecipient.id,
         );
@@ -558,7 +577,7 @@ export const RecipientGraphQLProvider: React.FC<{
      if (existingGroupData?.templateRecipientGroupsByTemplateId) {
       const updatedGroups =
        existingGroupData.templateRecipientGroupsByTemplateId.map((group) => {
-        if (group.id === recipientGroupId) {
+        if (group.id === recipientGroupIdRef.current) {
          const updatedRecipients = (group.recipients || []).filter(
           (recipient) => !deletedIds.includes(recipient.id),
          );
@@ -660,6 +679,7 @@ export const RecipientGraphQLProvider: React.FC<{
 
  const contextValue = useMemo(
   () => ({
+   setRecipientGroupId: setGroupId,
    recipientQuery,
    recipientsByGroupIdQuery,
    recipientsByStudentIdQuery,
@@ -671,6 +691,7 @@ export const RecipientGraphQLProvider: React.FC<{
    deleteRecipientsMutation,
   }),
   [
+   setGroupId,
    recipientQuery,
    recipientsByGroupIdQuery,
    recipientsByStudentIdQuery,
