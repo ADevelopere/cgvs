@@ -23,7 +23,7 @@ import {
     buildCategoryHierarchy,
     getSerializableTemplateCategory,
 } from "@/client/utils/template/template-category-mapper";
-import { useTemplateCategoryGraphQL } from "./TemplateCategoryGraphQLContext";
+import { useTemplateCategoryGraphQL } from "../../graphql/apollo/templateCategory.apollo";
 import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { useRouter } from "next/navigation";
 import logger from "@/lib/logger";

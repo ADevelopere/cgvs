@@ -13,7 +13,6 @@ import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTemplateCategoryManagement } from "./TemplateCategoryManagementContext";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useTemplateGraphQL } from "./TemplateGraphQLContext";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
@@ -21,6 +20,7 @@ import * as Document from "@/client/graphql/documents";
 import { usePageNavigation } from "../navigation/usePageNavigation";
 import { TemplateVariableManagementProvider } from "../templateVariable";
 import { RecipientManagementProvider } from "../recipient";
+import { useTemplateGraphQL } from "@/client/graphql/apollo/template.apollo";
 
 export type TemplateManagementTabType =
  | "basic"
