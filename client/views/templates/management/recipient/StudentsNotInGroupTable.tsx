@@ -203,7 +203,8 @@ const StudentsNotInGroupTable: React.FC = () => {
   loading,
   onPageChange,
   onRowsPerPageChange,
-  fetchStudentsNotInGroup,
+  setFilters,
+  setSort,
   selectedGroupId,
  } = useRecipientManagement();
 
@@ -357,8 +358,8 @@ const StudentsNotInGroupTable: React.FC = () => {
    Object.assign(newFilterArgs, mappedFilter);
   });
 
-  fetchStudentsNotInGroup(selectedGroupId, undefined, undefined, newFilterArgs);
- }, [activeFilters, selectedGroupId, fetchStudentsNotInGroup, baseColumns]);
+  setFilters(Object.keys(newFilterArgs).length > 0 ? (newFilterArgs as Graphql.StudentFilterArgs) : null);
+ }, [activeFilters, selectedGroupId, setFilters, baseColumns]);
 
  // Handle sort changes
  const handleSort = useCallback(
@@ -384,14 +385,9 @@ const StudentsNotInGroupTable: React.FC = () => {
     });
    });
 
-   fetchStudentsNotInGroup(
-    selectedGroupId,
-    graphqlOrderBy,
-    undefined,
-    undefined,
-   );
+   setSort(graphqlOrderBy.length > 0 ? graphqlOrderBy : null);
   },
-  [selectedGroupId, fetchStudentsNotInGroup],
+  [selectedGroupId, setSort],
  );
 
  return (
