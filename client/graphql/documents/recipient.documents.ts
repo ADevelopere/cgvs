@@ -126,10 +126,6 @@ export const createRecipientsMutationDocument: TypedDocumentNode<
             recipientGroupId
             createdAt
             updatedAt
-            student {
-                id
-                name
-            }
         }
     }
 `;
@@ -143,10 +139,6 @@ export const deleteRecipientMutationDocument: TypedDocumentNode<
             id
             studentId
             recipientGroupId
-            student {
-                id
-                name
-            }
         }
     }
 `;

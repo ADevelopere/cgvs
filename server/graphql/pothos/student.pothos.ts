@@ -44,11 +44,11 @@ export const StudentPothosObject = gqlSchemaBuilder
 
             createdAt: t.expose("createdAt", {
                 type: "DateTime",
-                nullable: false,
+                nullable: true,
             }),
             updatedAt: t.expose("updatedAt", {
                 type: "DateTime",
-                nullable: false,
+                nullable: true,
             }),
         }),
     });
@@ -122,8 +122,8 @@ export const StudentsWithFiltersPothosObject = gqlSchemaBuilder
     .objectRef<Types.StudentsWithFiltersResponse>("StudentsWithFiltersResponse")
     .implement({
         fields: (t) => ({
-            data: t.expose("data", { type: [StudentPothosObject] }),
-            pageInfo: t.expose("pageInfo", { type: PageInfoObject }),
+            data: t.expose("data", { type: [StudentPothosObject], nullable: false }),
+            pageInfo: t.expose("pageInfo", { type: PageInfoObject, nullable: false }),
         }),
     });
 

@@ -1,0 +1,27 @@
+import { TemplateCategoryGraphQLProvider } from "./templateCategory.apollo";
+import { TemplateGraphQLProvider } from "./template.apollo";
+import { TemplateVariableGraphQLProvider } from "./templateVariable/templateVariable.apollo";
+import { RecipientGraphQLProvider } from "./recipient.apollo";
+import { RecipientGroupGraphQLProvider } from "./recipientGroup.apollo";
+import { StorageGraphQLProvider } from "./storage.apollo";
+import { StudentGraphQLProvider } from "./student.apollo";
+
+export const GraphQLApolloRepositoryProvider: React.FC<{
+ children: React.ReactNode;
+}> = ({ children }) => {
+ return (
+  <TemplateCategoryGraphQLProvider>
+   <TemplateGraphQLProvider>
+    <TemplateVariableGraphQLProvider>
+     <RecipientGraphQLProvider>
+      <RecipientGroupGraphQLProvider>
+       <StorageGraphQLProvider>
+        <StudentGraphQLProvider>{children}</StudentGraphQLProvider>
+       </StorageGraphQLProvider>
+      </RecipientGroupGraphQLProvider>
+     </RecipientGraphQLProvider>
+    </TemplateVariableGraphQLProvider>
+   </TemplateGraphQLProvider>
+  </TemplateCategoryGraphQLProvider>
+ );
+};
