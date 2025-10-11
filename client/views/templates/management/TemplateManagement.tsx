@@ -15,8 +15,6 @@ import BasicInfoTab from "./BasicInfoTab";
 import { useState, useEffect } from "react";
 import ManagementHeader from "./ManagementHeader";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
-import { TemplateVariableManagementProvider } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import { RecipientManagementProvider } from "@/client/contexts/recipient/RecipientManagementContext";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 import RecipientGroupTab from "./recipient/RecipientGroupTab";
@@ -100,43 +98,39 @@ const TemplateManagement: React.FC = () => {
       },
      }}
     >
-     <TemplateVariableManagementProvider templateId={template?.id}>
-      <RecipientManagementProvider templateId={template.id}>
-       {/* <TemplateRecipientsProvider> */}
-       <TabPanel value="basic">
-        <BasicInfoTab />
-       </TabPanel>
-       <TabPanel value="variables">
-        <TemplateVariableManagement />
-       </TabPanel>
-       <TabPanel value="recipients">
-        <RecipientGroupTab />
-       </TabPanel>
-       <TabPanel value="recipientsManagement">
-        <RecipientsManagementTab />
-       </TabPanel>
-       {/* <TabPanel value="editor">
+     {/* <TemplateRecipientsProvider> */}
+     <TabPanel value="basic">
+      <BasicInfoTab />
+     </TabPanel>
+     <TabPanel value="variables">
+      <TemplateVariableManagement />
+     </TabPanel>
+     <TabPanel value="recipients">
+      <RecipientGroupTab />
+     </TabPanel>
+     <TabPanel value="recipientsManagement">
+      <RecipientsManagementTab />
+     </TabPanel>
+     {/* <TabPanel value="editor">
                                 <EditorTab />
                             </TabPanel> */}
-       <TabPanel value="preview">
-        <Box
-         sx={{
-          p: 2,
-          width: "100%",
-          height: "100%",
+     <TabPanel value="preview">
+      <Box
+       sx={{
+        p: 2,
+        width: "100%",
+        height: "100%",
 
-          borderColor: "red",
-         }}
-         id="template-variable-management"
-        >
-         {/* PreviewTab will go here */}
-         <h1>PreviewTab</h1>
-        </Box>
-        {/* <PreviewTab /> */}
-       </TabPanel>
-       {/* </TemplateRecipientsProvider> */}
-      </RecipientManagementProvider>
-     </TemplateVariableManagementProvider>
+        borderColor: "red",
+       }}
+       id="template-variable-management"
+      >
+       {/* PreviewTab will go here */}
+       <h1>PreviewTab</h1>
+      </Box>
+      {/* <PreviewTab /> */}
+     </TabPanel>
+     {/* </TemplateRecipientsProvider> */}
     </Box>
    </TabContext>
 
