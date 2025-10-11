@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useCallback, useMemo } from "react";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -13,7 +13,7 @@ type TemplateGraphQLContextType = {
   */
  templateQuery: (
   variables: Graphql.TemplateQueryVariables,
- ) => Promise<Graphql.TemplateQuery>;
+ ) => Promise<ApolloClient.QueryResult<Graphql.TemplateQuery>>;
 
  /**
   * Query to get paginated templates
@@ -21,9 +21,11 @@ type TemplateGraphQLContextType = {
   */
  paginatedTemplatesQuery: (
   variables: Graphql.TemplatesQueryVariables,
- ) => Promise<Graphql.TemplatesQuery>;
+ ) => Promise<ApolloClient.QueryResult<Graphql.TemplatesQuery>>;
 
- templateConfigQuery: () => Promise<Graphql.TemplatesConfigsQuery>;
+ templateConfigQuery: () => Promise<
+  ApolloClient.QueryResult<Graphql.TemplatesConfigsQuery>
+ >;
 
  /**
   * Mutation to create a new template
@@ -31,7 +33,7 @@ type TemplateGraphQLContextType = {
   */
  createTemplateMutation: (
   variables: Graphql.CreateTemplateMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateTemplateMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.CreateTemplateMutation>>;
 
  /**
   * Mutation to update an existing template
@@ -39,7 +41,7 @@ type TemplateGraphQLContextType = {
   */
  updateTemplateMutation: (
   variables: Graphql.UpdateTemplateMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.UpdateTemplateMutation>>;
 
  /**
   * Mutation to delete a template
@@ -47,7 +49,7 @@ type TemplateGraphQLContextType = {
   */
  deleteTemplateMutation: (
   variables: Graphql.DeleteTemplateMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.DeleteTemplateMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.DeleteTemplateMutation>>;
 
  /**
   * Mutation to move a template to the deletion category
@@ -55,7 +57,7 @@ type TemplateGraphQLContextType = {
   */
  suspendTemplateMutation: (
   variables: Graphql.SuspendTemplateMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.SuspendTemplateMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.SuspendTemplateMutation>>;
 
  /**
   * Mutation to restore a template from the deletion category
@@ -63,7 +65,7 @@ type TemplateGraphQLContextType = {
   */
  unsuspendTemplateMutation: (
   variables: Graphql.UnsuspendTemplateMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UnsuspendTemplateMutation>>;
+ ) => Promise<ApolloClient.MutateResult<Graphql.UnsuspendTemplateMutation>>;
 };
 
 const TemplateGraphQLContext = createContext<
@@ -97,34 +99,22 @@ export const TemplateGraphQLProvider: React.FC<{
  // Template query wrapper functions
  const templateQuery = useCallback(
   async (variables: Graphql.QueryTemplateArgs) => {
-   const result = await executeTemplateQuery({
+   return executeTemplateQuery({
     variables: { id: variables.id },
    });
-   if (!result.data) {
-    throw new Error("No data returned from template query");
-   }
-   return result.data;
   },
   [executeTemplateQuery],
  );
 
  const paginatedTemplatesQuery = useCallback(
   async (variables: Graphql.QueryTemplatesArgs) => {
-   const result = await executePaginatedTemplatesQuery({ variables });
-   if (!result.data) {
-    throw new Error("No data returned from templates query");
-   }
-   return result.data;
+   return executePaginatedTemplatesQuery({ variables });
   },
   [executePaginatedTemplatesQuery],
  );
 
  const templateConfigQuery = useCallback(async () => {
-  const result = await executeTemplateConfigQuery();
-  if (!result.data) {
-   throw new Error("No data returned from template config query");
-  }
-  return result.data;
+  return executeTemplateConfigQuery();
  }, [executeTemplateConfigQuery]);
 
  // Create template mutation

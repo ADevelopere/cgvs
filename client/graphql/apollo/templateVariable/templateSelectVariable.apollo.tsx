@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { ApolloLink } from "@apollo/client";
+import { ApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
 type TemplateSelectVariableGraphQLContextType = {
@@ -13,7 +13,9 @@ type TemplateSelectVariableGraphQLContextType = {
   */
  createTemplateSelectVariableMutation: (
   variables: Graphql.CreateTemplateSelectVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.CreateTemplateSelectVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.CreateTemplateSelectVariableMutation>
+ >;
 
  /**
   * Mutation to update an existing select template variable
@@ -21,7 +23,9 @@ type TemplateSelectVariableGraphQLContextType = {
   */
  updateTemplateSelectVariableMutation: (
   variables: Graphql.UpdateTemplateSelectVariableMutationVariables,
- ) => Promise<ApolloLink.Result<Graphql.UpdateTemplateSelectVariableMutation>>;
+ ) => Promise<
+  ApolloClient.MutateResult<Graphql.UpdateTemplateSelectVariableMutation>
+ >;
 };
 
 const TemplateSelectVariableGraphQLContext = createContext<
