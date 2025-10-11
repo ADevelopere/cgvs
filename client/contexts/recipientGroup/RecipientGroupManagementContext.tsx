@@ -8,13 +8,9 @@ import {
  useMemo,
  useState,
 } from "react";
-import { useNotifications } from "@toolpad/core/useNotifications";
-import {
- RecipientGroupGraphQLProvider,
- useRecipientGroupGraphQL,
-} from "@/client/graphql/apollo/recipientGroup.apollo";
+import { RecipientGroupGraphQLProvider } from "@/client/graphql/apollo/recipientGroup.apollo";
 import logger from "@/lib/logger";
-import { useAppTranslation } from "@/client/locale";
+import { useRecipientGroupService } from "@/client/graphql/service";
 
 type RecipientGroupManagementContextType = {
  // States
@@ -65,23 +61,15 @@ export const useRecipientGroupManagement = () => {
 const ManagementProvider: React.FC<{
  children: React.ReactNode;
 }> = ({ children }) => {
- const notifications = useNotifications();
- const strings = useAppTranslation("recipientGroupTranslations");
-
  const [loading, setLoading] = useState(false);
  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+ const groupService = useRecipientGroupService();
 
  // Dialog states
  const [createDialogOpen, setCreateDialogOpen] = useState(false);
  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
- const {
-  createTemplateRecipientGroupMutation,
-  updateTemplateRecipientGroupMutation,
-  deleteTemplateRecipientGroupMutation,
- } = useRecipientGroupGraphQL();
 
  // Dialog handlers
  const openCreateDialog = useCallback(() => {
@@ -130,40 +118,17 @@ const ManagementProvider: React.FC<{
    logger.log("Creating recipient group", input);
    setLoading(true);
    try {
-    const result = await createTemplateRecipientGroupMutation({
-     input,
-    });
-
-    if (result.data?.createTemplateRecipientGroup) {
-     notifications.show(strings.groupCreated, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
+    const result = await groupService.createGroup(input);
+    if (result) {
      closeCreateDialog();
      return true;
     }
-    notifications.show(strings.errorCreating, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error creating recipient group:", error);
-    notifications.show(strings.errorCreating, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
     return false;
    } finally {
     setLoading(false);
    }
   },
-  [
-   createTemplateRecipientGroupMutation,
-   notifications,
-   strings,
-   closeCreateDialog,
-  ],
+  [groupService, closeCreateDialog],
  );
 
  const updateGroup = useCallback(
@@ -172,111 +137,47 @@ const ManagementProvider: React.FC<{
   ): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await updateTemplateRecipientGroupMutation({
-     input,
-    });
-    if (result.data?.updateTemplateRecipientGroup) {
-     notifications.show(strings.groupUpdated, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
+    const result = await groupService.updateGroup(input);
+    if (result) {
      closeSettingsDialog();
      return true;
     }
-    notifications.show(strings.errorUpdating, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error updating recipient group:", error);
-    notifications.show(strings.errorUpdating, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
     return false;
    } finally {
     setLoading(false);
    }
   },
-  [
-   notifications,
-   updateTemplateRecipientGroupMutation,
-   strings,
-   closeSettingsDialog,
-  ],
+  [groupService, closeSettingsDialog],
  );
 
  const updateGroupName = useCallback(
   async (id: number, name: string): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await updateTemplateRecipientGroupMutation({
-     input: { id, name },
-    });
-    if (result.data?.updateTemplateRecipientGroup) {
-     notifications.show(strings.groupUpdated, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return true;
-    }
-    notifications.show(strings.errorUpdating, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error updating recipient group name:", error);
-    notifications.show(strings.errorUpdating, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
+    const result = await groupService.updateGroupName(id, name);
+    return !!result;
    } finally {
     setLoading(false);
    }
   },
-  [notifications, updateTemplateRecipientGroupMutation, strings],
+  [groupService],
  );
 
  const deleteGroup = useCallback(
   async (id: number): Promise<boolean> => {
    setLoading(true);
    try {
-    const result = await deleteTemplateRecipientGroupMutation({
-     id,
-    });
-    if (result.data?.deleteTemplateRecipientGroup) {
-     notifications.show(strings.groupDeleted, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
+    const result = await groupService.deleteGroup(id);
+    if (result) {
      closeDeleteDialog();
      return true;
     }
-    notifications.show(strings.errorDeleting, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return false;
-   } catch (error) {
-    logger.error("Error deleting recipient group:", error);
-    notifications.show(strings.errorDeleting, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
     return false;
    } finally {
     setLoading(false);
    }
   },
-  [
-   deleteTemplateRecipientGroupMutation,
-   notifications,
-   strings,
-   closeDeleteDialog,
-  ],
+  [groupService, closeDeleteDialog],
  );
 
  const contextValue = useMemo(
