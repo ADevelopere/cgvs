@@ -556,6 +556,7 @@ type Query {
   students(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs): StudentsWithFiltersResponse!
   studentsInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse!
   studentsNotInRecipientGroup(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): StudentsWithFiltersResponse!
+  suspendedTemplates: [Template!]
   suspensionTemplateCategory: TemplateCategory!
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]!
@@ -565,6 +566,7 @@ type Query {
   templateVariable(id: Int!): TemplateVariable
   templateVariablesByTemplateId(templateId: Int!): [TemplateVariable!]
   templates(pagination: PaginationArgs): PaginatedTemplatesResponse
+  templatesByCategoryId(categoryId: Int!): [Template!]
   templatesConfigs: TemplatesConfigs
   user(id: Int!): User
   users: [User!]
