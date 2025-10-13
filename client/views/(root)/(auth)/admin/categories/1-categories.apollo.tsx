@@ -2,25 +2,11 @@
 
 import React, { createContext, useContext, useCallback } from "react";
 import { ApolloClient, gql } from "@apollo/client";
-import * as Document from "@/client/graphql/documents";
+import * as Document from "./0-categories.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 
 type TemplateCategoryGraphQLContextType = {
-  /**
-   * Query to fetch all template categories in a flat structure
-   */
-  templateCategoriesQuery: () => Promise<
-    ApolloClient.QueryResult<Graphql.TemplateCategoriesQuery>
-  >;
-
-  /**
-   * Query to fetch a single template category by ID
-   */
-  templateCategoryQuery: (
-    variables: Graphql.QueryTemplateCategoryArgs,
-  ) => Promise<ApolloClient.QueryResult<Graphql.TemplateCategoryQuery>>;
-
   /**
    * Query to fetch children of a specific category by parent ID
    */
@@ -76,22 +62,6 @@ export const useTemplateCategoryGraphQL = () => {
 export const TemplateCategoryGraphQLProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  // Query for fetching flat categories
-  const [executeTemplateCategoriesQuery] = useLazyQuery(
-    Document.templateCategoriesQueryDocument,
-    {
-      fetchPolicy: "cache-first",
-    },
-  );
-
-  // Query for fetching single category
-  const [executeTemplateCategoryQuery] = useLazyQuery(
-    Document.templateCategoryQueryDocument,
-    {
-      fetchPolicy: "cache-first",
-    },
-  );
-
   // Query for fetching category children
   const [executeCategoryChildrenQuery] = useLazyQuery(
     Document.categoryChildrenQueryDocument,
@@ -310,18 +280,6 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
     },
   );
 
-  // Wrapper functions for mutations and queries
-  const templateCategoriesQuery = useCallback(async () => {
-    return executeTemplateCategoriesQuery();
-  }, [executeTemplateCategoriesQuery]);
-
-  const templateCategoryQuery = useCallback(
-    async (variables: Graphql.QueryTemplateCategoryArgs) => {
-      return executeTemplateCategoryQuery({ variables });
-    },
-    [executeTemplateCategoryQuery],
-  );
-
   const categoryChildrenQuery = useCallback(
     async (variables: Graphql.CategoryChildrenQueryVariables) => {
       return executeCategoryChildrenQuery({ variables });
@@ -358,16 +316,12 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
 
   const contextValue = React.useMemo(
     () => ({
-      templateCategoriesQuery,
-      templateCategoryQuery,
       categoryChildrenQuery,
       createTemplateCategoryMutation,
       updateTemplateCategoryMutation,
       deleteTemplateCategoryMutation,
     }),
     [
-      templateCategoriesQuery,
-      templateCategoryQuery,
       categoryChildrenQuery,
       createTemplateCategoryMutation,
       updateTemplateCategoryMutation,

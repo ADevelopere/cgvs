@@ -20,7 +20,7 @@ import {
 import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
 import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/4-categories.context";
 import { useAppTranslation } from "@/client/locale";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import Image from "next/image";

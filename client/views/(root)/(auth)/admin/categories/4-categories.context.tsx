@@ -35,14 +35,11 @@ import {
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import {
-  useTemplateCategoryService,
-  useTemplateService,
-} from "@/client/graphql/service";
 import { useRouter } from "next/navigation";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
-import { useTemplateCategoryUIStore } from "./categories.store";
+import { useTemplateCategoryUIStore } from "./3-categories.store";
+import { useTemplateCategoryService } from "./2-category.service";
 
 // Note: Tree traversal is no longer needed - ReactiveCategoryTree component handles hierarchical structure
 
@@ -132,8 +129,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
   // No queries here! Components use useQuery directly for their data needs
   // Context only provides business logic functions
 
-  const categoryService = useTemplateCategoryService();
-  const templateService = useTemplateService();
+  const apolloService = useTemplateCategoryService();
 
   const setCurrentCategory = React.useCallback(
     (category: Graphql.TemplateCategory | null) => {
@@ -144,7 +140,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
   const createCategory = React.useCallback(
     async (name: string, parentId?: number) => {
-      const newCategory = await categoryService.createCategory({
+      const newCategory = await apolloService.createCategory({
         name,
         parentCategoryId: parentId,
       });
@@ -153,7 +149,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         setCurrentCategoryId(newCategory.id);
       }
     },
-    [categoryService, setCurrentCategoryId],
+    [apolloService, setCurrentCategoryId],
   );
 
   const updateCategory = React.useCallback(
@@ -169,30 +165,30 @@ export const TemplateCategoryManagementProvider: React.FC<{
         return;
       }
 
-      await categoryService.updateCategory({
+      await apolloService.updateCategory({
         id: category.id,
         name: category.name,
         description: category.description,
         parentCategoryId: parentCategoryId,
       });
     },
-    [categoryService, notifications, messages],
+    [apolloService, notifications, messages],
   );
 
   const deleteCategory = React.useCallback(
     async (categoryId: number) => {
-      const success = await categoryService.deleteCategory(categoryId);
+      const success = await apolloService.deleteCategory(categoryId);
 
       if (success && currentCategoryId === categoryId) {
         setCurrentCategoryId(null);
       }
     },
-    [categoryService, currentCategoryId, setCurrentCategoryId],
+    [apolloService, currentCategoryId, setCurrentCategoryId],
   );
 
   const createTemplate = React.useCallback(
     async (name: string, categoryId: number, description?: string) => {
-      const newTemplate = await templateService.createTemplate({
+      const newTemplate = await apolloService.createTemplate({
         name,
         categoryId,
         description,
@@ -205,12 +201,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
         throw new Error(messages.templateAddFailed);
       }
     },
-    [templateService, setCurrentTemplateId, messages],
+    [apolloService, setCurrentTemplateId, messages],
   );
 
   const updateTemplate = React.useCallback(
     async (variables: Graphql.UpdateTemplateMutationVariables) => {
-      const updatedTemplate = await templateService.updateTemplate(
+      const updatedTemplate = await apolloService.updateTemplate(
         variables.input,
       );
 
@@ -221,12 +217,12 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
       return null;
     },
-    [templateService, setCurrentTemplateId],
+    [apolloService, setCurrentTemplateId],
   );
 
   const suspendTemplate = React.useCallback(
     async (templateId: number) => {
-      const suspended = await templateService.suspendTemplate(templateId);
+      const suspended = await apolloService.suspendTemplate(templateId);
 
       if (suspended) {
         if (currentTemplateId === templateId) {
@@ -236,18 +232,18 @@ export const TemplateCategoryManagementProvider: React.FC<{
         throw new Error(messages.templateMoveToDeletionFailed);
       }
     },
-    [templateService, currentTemplateId, setCurrentTemplateId, messages],
+    [apolloService, currentTemplateId, setCurrentTemplateId, messages],
   );
 
   const unsuspendTemplate = React.useCallback(
     async (templateId: number) => {
-      const restored = await templateService.unsuspendTemplate(templateId);
+      const restored = await apolloService.unsuspendTemplate(templateId);
 
       if (!restored) {
         throw new Error(messages.templateRestoreFailed);
       }
     },
-    [templateService, messages],
+    [apolloService, messages],
   );
 
   const manageTemplate = React.useCallback(

@@ -140,51 +140,6 @@ export const useTemplateService = () => {
    }
   }, [apollo, notifications]);
 
- /**
-  * Create a new template
-  * Returns the created template on success, null on failure
-  */
- const createTemplate = useCallback(
-  async (
-   input: Graphql.CreateTemplateMutationVariables["input"],
-  ): Promise<Graphql.Template | null> => {
-   try {
-    const result = await apollo.createTemplateMutation({ input });
-
-    if (result.data) {
-     notifications.show(strings.templateAddedSuccessfully, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return result.data.createTemplate;
-    }
-
-    logger.error("Error creating template:", result.errors);
-    notifications.show(strings.templateAddFailed, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return null;
-   } catch (error) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     strings.templateAddFailed;
-
-    logger.error("Error creating template:", error);
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-    return null;
-   }
-  },
-  [apollo, notifications, strings],
- );
 
  /**
   * Update an existing template
@@ -232,158 +187,20 @@ export const useTemplateService = () => {
   [apollo, notifications, strings],
  );
 
- /**
-  * Delete a template (permanently)
-  * Returns true on success, false on failure
-  */
- const deleteTemplate = useCallback(
-  async (id: number): Promise<boolean> => {
-   try {
-    const result = await apollo.deleteTemplateMutation({ id });
-
-    if (result.data) {
-     notifications.show(
-      strings.templateDeletedSuccessfully || "Template deleted successfully",
-      {
-       severity: "success",
-       autoHideDuration: 3000,
-      },
-     );
-     return true;
-    }
-
-    logger.error("Error deleting template:", result.errors);
-    notifications.show(
-     strings.templateDeleteFailed || "Failed to delete template",
-     {
-      severity: "error",
-      autoHideDuration: 3000,
-     },
-    );
-    return false;
-   } catch (error) {
-    logger.error("Error deleting template:", error);
-    notifications.show(
-     strings.templateDeleteFailed || "Failed to delete template",
-     {
-      severity: "error",
-      autoHideDuration: 3000,
-     },
-    );
-    return false;
-   }
-  },
-  [apollo, notifications, strings],
- );
-
- /**
-  * Suspend a template (move to deletion category)
-  * Returns the suspended template on success, null on failure
-  */
- const suspendTemplate = useCallback(
-  async (id: number): Promise<Graphql.Template | null> => {
-   try {
-    const result = await apollo.suspendTemplateMutation({ id });
-
-    if (result.data) {
-     notifications.show(strings.templateMovedToDeletionSuccessfully, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return result.data.suspendTemplate;
-    }
-
-    logger.error("Error suspending template:", result.errors);
-    notifications.show(strings.templateMoveToDeletionFailed, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return null;
-   } catch (error) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     strings.templateMoveToDeletionFailed;
-
-    logger.error("Error suspending template:", error);
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-    return null;
-   }
-  },
-  [apollo, notifications, strings],
- );
-
- /**
-  * Unsuspend a template (restore from deletion category)
-  * Returns the restored template on success, null on failure
-  */
- const unsuspendTemplate = useCallback(
-  async (id: number): Promise<Graphql.Template | null> => {
-   try {
-    const result = await apollo.unsuspendTemplateMutation({ id });
-
-    if (result.data) {
-     notifications.show(strings.templateRestoredSuccessfully, {
-      severity: "success",
-      autoHideDuration: 3000,
-     });
-     return result.data.unsuspendTemplate;
-    }
-
-    logger.error("Error unsuspending template:", result.errors);
-    notifications.show(strings.templateRestoreFailed, {
-     severity: "error",
-     autoHideDuration: 3000,
-    });
-    return null;
-   } catch (error) {
-    const gqlError = error as {
-     message?: string;
-     graphQLErrors?: Array<{ message: string }>;
-    };
-    const errorMessage =
-     gqlError.graphQLErrors?.[0]?.message ||
-     gqlError.message ||
-     strings.templateRestoreFailed;
-
-    logger.error("Error unsuspending template:", error);
-    notifications.show(errorMessage, {
-     severity: "error",
-     autoHideDuration: 5000,
-    });
-    return null;
-   }
-  },
-  [apollo, notifications, strings],
- );
-
  return useMemo(
   () => ({
    fetchTemplate,
    fetchTemplates,
    fetchTemplateConfig,
-   createTemplate,
    updateTemplate,
-   deleteTemplate,
-   suspendTemplate,
-   unsuspendTemplate,
+
   }),
   [
    fetchTemplate,
    fetchTemplates,
    fetchTemplateConfig,
-   createTemplate,
    updateTemplate,
-   deleteTemplate,
-   suspendTemplate,
-   unsuspendTemplate,
+
   ],
  );
 };

@@ -4,7 +4,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Server",
+            "name": "Server (Next.js + Apollo DevTools)",
             "runtimeExecutable": "bun",
             "runtimeArgs": ["run", "debug"],
             "cwd": "${workspaceFolder}",
@@ -19,7 +19,7 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Client",
+            "name": "Client (Next.js App)",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}"
         },

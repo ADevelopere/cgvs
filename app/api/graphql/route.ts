@@ -6,8 +6,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit, getClientIdentifier, graphqlRateLimiter } from "@/server/lib/ratelimit";
 import logger from "@/lib/logger";
 
+// import { ApolloServerPluginUsageReporting } from "@apollo/server/plugin/usageReporting";
+
 const server = new ApolloServer({
     schema: graphQLSchema,
+    // plugins: [
+    //     ApolloServerPluginUsageReporting({
+    //         // Optionally configure the plugin here
+    //         sendHeaders: { all: true },
+    //         // You can customize reporting, but basic inclusion is enough for tracing
+    //     }),
+    // ],
 });
 
 const handler = startServerAndCreateNextHandler(server, {

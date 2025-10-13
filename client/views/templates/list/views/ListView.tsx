@@ -19,7 +19,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/client/utils/dateUtils";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/4-categories.context";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface ListViewProps {

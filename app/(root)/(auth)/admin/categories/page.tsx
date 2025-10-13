@@ -1,4 +1,4 @@
-import { TemplateCategoryManagementProvider } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
+import { TemplateCategoryManagementProvider } from "@/client/views/(root)/(auth)/admin/categories/4-categories.context";
 import TemplateCategoryManagement from "@/client/views/(root)/(auth)/admin/categories/CategoryManagement";
 import React from "react";
 
