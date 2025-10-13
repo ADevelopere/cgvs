@@ -5,6 +5,9 @@ import {
   TemplatePothosObject,
   TemplatesConfigsPothosObject,
   PaginationArgsObject,
+  TemplatesWithFiltersPothosObject,
+  TemplateFilterArgsPothosObject,
+  TemplatesOrderByClausePothosObject,
 } from "@/server/graphql/pothos";
 import { TemplateRepository } from "@/server/db/repo";
 
@@ -32,12 +35,29 @@ gqlSchemaBuilder.queryFields((t) => ({
   }),
 
   templatesByCategoryId: t.field({
-    type: [TemplatePothosObject],
+    type: TemplatesWithFiltersPothosObject,
     args: {
-      categoryId: t.arg.int({ required: true }),
+      categoryId: t.arg.int({ required: false }),
+      paginationArgs: t.arg({
+        type: PaginationArgsObject,
+        required: false,
+      }),
+      filterArgs: t.arg({
+        type: TemplateFilterArgsPothosObject,
+        required: false,
+      }),
+      orderBy: t.arg({
+        type: [TemplatesOrderByClausePothosObject],
+        required: false,
+      }),
     },
     resolve: async (_, args) =>
-      await TemplateRepository.findByCategoryId(args.categoryId),
+      await TemplateRepository.fetchByCategoryIdWithFilters(
+        args.categoryId,
+        new PaginationArgs({ ...args.paginationArgs }),
+        args.filterArgs,
+        args.orderBy,
+      ),
   }),
 
   suspendedTemplates: t.field({

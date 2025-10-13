@@ -567,7 +567,7 @@ type Query {
   templateVariable(id: Int!): TemplateVariable
   templateVariablesByTemplateId(templateId: Int!): [TemplateVariable!]
   templates(pagination: PaginationArgs): PaginatedTemplatesResponse
-  templatesByCategoryId(categoryId: Int!): [Template!]
+  templatesByCategoryId(categoryId: Int, filterArgs: TemplateFilterArgs, orderBy: [TemplatesOrderByClause!], paginationArgs: PaginationArgs): TemplatesWithFiltersResponse
   templatesConfigs: TemplatesConfigs
   user(id: Int!): User
   users: [User!]
@@ -789,6 +789,10 @@ input TemplateDateVariableUpdateInput {
   required: Boolean! = false
 }
 
+input TemplateFilterArgs {
+  name: String
+}
+
 type TemplateNumberVariable implements TemplateVariable {
   createdAt: DateTime
   decimalPlaces: Int
@@ -985,6 +989,23 @@ type TemplatesConfigs {
 enum TemplatesConfigsKey {
   ALLOWED_FILE_TYPES
   MAX_BACKGROUND_SIZE
+}
+
+input TemplatesOrderByClause {
+  column: TemplatesOrderByColumn!
+  order: OrderSortDirection = ASC
+}
+
+enum TemplatesOrderByColumn {
+  CREATED_AT
+  NAME
+  ORDER
+  UPDATED_AT
+}
+
+type TemplatesWithFiltersResponse {
+  data: [Template!]!
+  pageInfo: PageInfo!
 }
 
 enum UploadLocationPath {

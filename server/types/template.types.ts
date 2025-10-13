@@ -5,6 +5,7 @@ import {
     templatesConfigs,
     templatesConfigsKeyEnum,
 } from "@/server/db/schema";
+import { OrderSortDirection } from "@/lib/enum";
 
 export type TemplateEntity = typeof templates.$inferSelect;
 export type TemplateEntityInput = typeof templates.$inferInsert;
@@ -55,3 +56,27 @@ export type TemplatesConfigPothosDefinition = TemplatesConfigSelectType;
 export type TemplatesConfigsPothosDefinition = {
     configs: TemplatesConfigSelectType[];
 };
+
+export type TemplatesWithFiltersResponse = {
+    data: TemplatePothosDefintion[];
+    pageInfo: PageInfo;
+};
+
+export type TemplateFilterArgs = {
+    name?: string | null;
+};
+
+/**
+ * Represents a clause for ordering template results.
+ */
+export type TemplatesOrderByClause = {
+    column: TemplatesOrderByColumn;
+    order?: OrderSortDirection | null;
+};
+
+export enum TemplatesOrderByColumn {
+    NAME = "NAME",
+    ORDER = "ORDER",
+    CREATED_AT = "CREATED_AT",
+    UPDATED_AT = "UPDATED_AT",
+}
