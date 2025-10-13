@@ -245,11 +245,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
 
         const categoryId = createdTemplate.category?.id;
 
-        // Category must exist
+        // Skip if category doesn't exist
         if (!categoryId) {
-          throw new Error(
-            `Category not found for created template ${createdTemplate.id}. Template must have a valid category.`,
-          );
+          return;
         }
 
         // Update the templatesByCategoryId cache
@@ -289,33 +287,30 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         const updatedTemplate = data.updateTemplate;
 
         // First, get the old template to check the old category ID
-        // Template must exist in cache when updating
-        const existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
-          query: templateQueryDocument,
-          variables: { id: updatedTemplate.id },
-        });
+        // Only update if template exists in cache
+        let existingTemplateData: Graphql.TemplateQuery | null = null;
+        try {
+          existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
+            query: templateQueryDocument,
+            variables: { id: updatedTemplate.id },
+          });
+        } catch {
+          // Template not in cache, skip update
+          return;
+        }
 
         if (!existingTemplateData?.template) {
-          throw new Error(
-            `Template with id ${updatedTemplate.id} not found in cache. Template must be in cache before updating.`,
-          );
+          // Template not in cache, skip update
+          return;
         }
 
         const oldTemplate = existingTemplateData.template;
         const oldCategoryId = oldTemplate.category?.id;
         const newCategoryId = updatedTemplate.category?.id;
 
-        // Both categories must exist
-        if (!oldCategoryId) {
-          throw new Error(
-            `Old category not found for template ${updatedTemplate.id}. Template must have a valid category.`,
-          );
-        }
-
-        if (!newCategoryId) {
-          throw new Error(
-            `New category not found in update data for template ${updatedTemplate.id}. Template must have a valid category.`,
-          );
+        // Skip if categories don't exist
+        if (!oldCategoryId || !newCategoryId) {
+          return;
         }
 
         const newTemplate: Graphql.Template = {
@@ -428,11 +423,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         const deletedTemplate = data.deleteTemplate;
         const categoryId = deletedTemplate.category?.id;
 
-        // Category must exist
+        // Skip if category doesn't exist
         if (!categoryId) {
-          throw new Error(
-            `Category not found for deleted template ${deletedTemplate.id}. Template must have a valid category.`,
-          );
+          return;
         }
 
         // Update the templatesByCategoryId cache
@@ -477,11 +470,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         // Use preSuspensionCategory from the suspended template
         const oldCategoryId = suspendedTemplate.preSuspensionCategory?.id;
 
-        // Old category must exist
+        // Skip if old category doesn't exist
         if (!oldCategoryId) {
-          throw new Error(
-            `PreSuspensionCategory not found for template ${suspendedTemplate.id}. Template must have a valid preSuspensionCategory.`,
-          );
+          return;
         }
 
         // Remove template from old category's templatesByCategoryId cache
@@ -547,11 +538,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         // Get the destination category ID from the unsuspended template
         const newCategoryId = unsuspendedTemplate.category?.id;
 
-        // Destination category must exist
+        // Skip if destination category doesn't exist
         if (!newCategoryId) {
-          throw new Error(
-            `Destination category not found for template ${unsuspendedTemplate.id}. Template must have a valid category for unsuspension.`,
-          );
+          return;
         }
 
         // Remove template from suspended templates cache
