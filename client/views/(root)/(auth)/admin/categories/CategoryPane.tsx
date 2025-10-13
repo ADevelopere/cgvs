@@ -7,7 +7,11 @@ import { Boxes } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
 
-import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
+import {
+  CategoryChildrenQuery,
+  CategoryChildrenQueryVariables,
+  TemplateCategory,
+} from "@/client/graphql/generated/gql/graphql";
 
 import { ReactiveCategoryTree } from "@/client/components/reactiveTree";
 import EditableTypography from "@/client/components/input/EditableTypography";
@@ -27,6 +31,10 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     updateCategory,
     deleteCategory,
     currentCategoryId,
+    expandedCategoryIds,
+    toggleExpanded,
+    isFetched,
+    markAsFetched,
   } = useTemplateCategoryManagement();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
@@ -126,6 +134,27 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     updateCategory({ ...category, name: newName });
   };
 
+  const handleToggleExpanded = React.useCallback(
+    (nodeId: string | number) => {
+      toggleExpanded(Number(nodeId));
+    },
+    [toggleExpanded],
+  );
+
+  const handleIsFetched = React.useCallback(
+    (nodeId: string | number) => {
+      return isFetched(Number(nodeId));
+    },
+    [isFetched],
+  );
+
+  const handleMarkAsFetched = React.useCallback(
+    (nodeId: string | number) => {
+      markAsFetched(Number(nodeId));
+    },
+    [markAsFetched],
+  );
+
   return (
     <Box
       sx={{
@@ -146,25 +175,16 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       >
         <ReactiveCategoryTree<
           TemplateCategory,
-          { rootTemplateCategories: TemplateCategory[] },
-          { categoryChildren: TemplateCategory[] },
-          Record<string, string | number | boolean>,
-          { parentCategoryId: number }
+          CategoryChildrenQuery,
+          CategoryChildrenQueryVariables
         >
-          // Root resolver - returns query options for root categories
-          rootResolver={() => ({
-            query: Document.rootTemplateCategoriesQueryDocument,
-            fetchPolicy: "cache-first",
-          })}
-          // Children resolver - returns query options for a parent's children
-          childrenResolver={(parentId) => ({
+          resolver={(parent) => ({
             query: Document.categoryChildrenQueryDocument,
-            variables: { parentCategoryId: Number(parentId) },
+            variables: parent ? { parentCategoryId: parent.id } : undefined,
             fetchPolicy: "cache-first",
           })}
           // Extract data from query results
-          getRootItems={(data) => data.rootTemplateCategories || []}
-          getChildItems={(data) => data.categoryChildren || []}
+          getItems={(data) => data.categoryChildren || []}
           // Get node label
           getNodeLabel={(node) => node.name || String(node.id)}
           // Custom rendering using existing RenderCategoryItem
@@ -172,7 +192,6 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             <RenderCategoryItem
               key={node.id}
               category={node}
-              selectedCategoryId={currentCategoryId}
               handleCategoryClick={handleCategoryClick}
               handleOpenEditDialog={handleOpenEditDialog}
               deleteCategory={deleteCategory}
@@ -184,6 +203,12 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
           // Selection
           selectedItemId={currentCategoryId}
           onSelectItem={handleCategoryClick}
+          // Expansion state (persisted across navigation)
+          expandedItemIds={expandedCategoryIds}
+          onToggleExpand={handleToggleExpanded}
+          // Fetch tracking (persisted across navigation)
+          isFetched={handleIsFetched}
+          onMarkAsFetched={handleMarkAsFetched}
           // UI
           header={strings.categories}
           noItemsMessage={strings.noCategories}

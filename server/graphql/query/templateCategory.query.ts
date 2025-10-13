@@ -33,17 +33,11 @@ gqlSchemaBuilder.queryFields((t) => ({
       await TemplateCategoryRepository.findTemplatesSuspensionCategory(),
   }),
 
-  rootTemplateCategories: t.field({
-    type: [TemplateCategoryPothosObject],
-    nullable: false,
-    resolve: async () => await TemplateCategoryRepository.findRootCategories(),
-  }),
-
   categoryChildren: t.field({
     type: [TemplateCategoryPothosObject],
     nullable: false,
     args: {
-      parentCategoryId: t.arg.int({ required: true }),
+      parentCategoryId: t.arg.int({ required: false }),
     },
     resolve: async (_query, args) =>
       await TemplateCategoryRepository.findCategoryChildren(

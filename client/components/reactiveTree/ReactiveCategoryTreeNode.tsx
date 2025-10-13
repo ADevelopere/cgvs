@@ -2,21 +2,20 @@
 
 import { useState } from "react";
 import { useQuery } from "@apollo/client/react";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import type {
-  ReactiveTreeNode,
-  ChildrenResolver,
-} from "./types";
+import { Box, IconButton, CircularProgress, Typography } from "@mui/material";
+import { ChevronRight as ChevronRightIcon } from "@mui/icons-material";
+import type { ReactiveTreeNode, QueryResolverOptions } from "./types";
+import { useAppTheme } from "@/client/contexts/ThemeContext";
 
-interface TreeNodeProps<TNode extends ReactiveTreeNode, TChildData, TChildVariables> {
+interface TreeNodeProps<
+  TNode extends ReactiveTreeNode,
+  TResult = unknown,
+  TVariables = unknown,
+> {
   node: TNode;
   level: number;
-  childrenResolver: ChildrenResolver<TChildVariables>;
-  getChildItems: (data: TChildData) => TNode[];
+  resolver: (parent: TNode | undefined) => QueryResolverOptions<TVariables>;
+  getItems: (data: TResult) => TNode[];
   hasChildren?: (node: TNode) => boolean;
   getNodeLabel: (node: TNode) => string;
   itemRenderer?: (props: {
@@ -25,52 +24,102 @@ interface TreeNodeProps<TNode extends ReactiveTreeNode, TChildData, TChildVariab
     isExpanded: boolean;
     isSelected: boolean;
   }) => React.ReactNode;
-  selectedItemId?: string | number | null;
+  selectedItemId?: TNode['id'] | null;
   onSelectItem?: (node: TNode) => void;
+  expandedItemIds?: Set<TNode['id']>;
+  onToggleExpand?: (nodeId: TNode['id']) => void;
+  isFetched?: (nodeId: TNode['id']) => boolean;
+  onMarkAsFetched?: (nodeId: TNode['id']) => void;
   itemHeight?: number;
 }
 
-export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildData, TChildVariables>(
-  props: TreeNodeProps<TNode, TChildData, TChildVariables>,
-) {
+export function ReactiveCategoryTreeNode<
+  TNode extends ReactiveTreeNode,
+  TResult = unknown,
+  TVariables = unknown,
+>(props: TreeNodeProps<TNode, TResult, TVariables>) {
   const {
     node,
     level,
-    childrenResolver,
-    getChildItems,
+    resolver,
+    getItems,
     hasChildren,
     getNodeLabel,
     itemRenderer,
     selectedItemId,
     onSelectItem,
+    expandedItemIds,
+    onToggleExpand,
+    isFetched: isFetchedExternal,
+    onMarkAsFetched,
     itemHeight = 40,
   } = props;
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  // Use external expansion state if provided, otherwise use internal state
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const isExpanded = expandedItemIds ? expandedItemIds.has(node.id) : internalExpanded;
   const isSelected = node.id === selectedItemId;
+  const { isRtl } = useAppTheme();
+
+  // Track if we've initiated a fetch (via hover or expand click)
+  // Use external fetched state if provided, otherwise use internal state
+  const [internalFetched, setInternalFetched] = useState(false);
+  const hasFetched = isFetchedExternal ? isFetchedExternal(node.id) : internalFetched;
 
   // Determine if this node might have children
   const mightHaveChildren = hasChildren ? hasChildren(node) : true;
 
   // Call useQuery for THIS node's children at top level
-  // Skip if not expanded or if we know it has no children
-  const childQueryOptions = childrenResolver(node.id);
+  // Skip until first fetch is initiated (via hover or expand click)
+  const childQueryOptions = resolver(node);
   const { data: childData, loading: childLoading } = useQuery(
     childQueryOptions.query,
     {
-      variables: childQueryOptions.variables as Record<string, string | number | boolean>,
-      skip: !isExpanded || !mightHaveChildren,
+      variables: childQueryOptions.variables as Record<
+        string,
+        string | number | boolean
+      >,
+      skip: !hasFetched || !mightHaveChildren,
       fetchPolicy: childQueryOptions.fetchPolicy || "cache-first",
     },
   );
 
-  const children = childData ? getChildItems(childData as TChildData) : [];
+  const children = childData ? getItems(childData as TResult) : [];
   const hasLoadedChildren = isExpanded && children.length > 0;
-  const isLoading = isExpanded && childLoading;
+  const isLoading = hasFetched && childLoading;
+
+  // Trigger fetch on first hover
+  const handleHover = () => {
+    if (!hasFetched && mightHaveChildren) {
+      if (onMarkAsFetched) {
+        // Use external state handler if provided
+        onMarkAsFetched(node.id);
+      } else {
+        // Fall back to internal state
+        setInternalFetched(true);
+      }
+    }
+  };
 
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsExpanded(!isExpanded);
+    // Initiate fetch if not already done
+    if (!hasFetched && mightHaveChildren) {
+      if (onMarkAsFetched) {
+        // Use external state handler if provided
+        onMarkAsFetched(node.id);
+      } else {
+        // Fall back to internal state
+        setInternalFetched(true);
+      }
+    }
+    if (onToggleExpand) {
+      // Use external state handler if provided
+      onToggleExpand(node.id);
+    } else {
+      // Fall back to internal state
+      setInternalExpanded(!internalExpanded);
+    }
   };
 
   return (
@@ -94,9 +143,10 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildD
           },
         }}
         onClick={() => onSelectItem?.(node)}
+        onMouseEnter={handleHover}
       >
         {/* Expand/Collapse Button */}
-        {mightHaveChildren && (
+        {mightHaveChildren && (isLoading || !hasFetched || children.length > 0) && (
           <IconButton
             size="small"
             onClick={toggleExpand}
@@ -104,15 +154,15 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildD
             sx={{
               mr: 1,
               transform:
-                isExpanded && !isLoading ? "rotate(90deg)" : "rotate(0deg)",
+                isExpanded && !isLoading
+                  ? "rotate(90deg)"
+                  : isRtl
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
               transition: "transform 0.2s",
             }}
           >
-            {isLoading ? (
-              <CircularProgress size={20} />
-            ) : (
-              <ChevronRightIcon />
-            )}
+            {isLoading ? <CircularProgress size={20} /> : <ChevronRightIcon />}
           </IconButton>
         )}
 
@@ -120,9 +170,7 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildD
         {itemRenderer ? (
           itemRenderer({ node, level, isExpanded, isSelected })
         ) : (
-          <Typography>
-            {getNodeLabel(node)}
-          </Typography>
+          <Typography>{getNodeLabel(node)}</Typography>
         )}
       </Box>
 
@@ -130,17 +178,21 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildD
       {hasLoadedChildren && (
         <Box>
           {children.map((childNode: TNode) => (
-            <ReactiveCategoryTreeNode<TNode, TChildData, TChildVariables>
+            <ReactiveCategoryTreeNode<TNode, TResult, TVariables>
               key={childNode.id}
               node={childNode}
               level={level + 1}
-              childrenResolver={childrenResolver}
-              getChildItems={getChildItems}
+              resolver={resolver}
+              getItems={getItems}
               hasChildren={hasChildren}
               getNodeLabel={getNodeLabel}
               itemRenderer={itemRenderer}
               selectedItemId={selectedItemId}
               onSelectItem={onSelectItem}
+              expandedItemIds={expandedItemIds}
+              onToggleExpand={onToggleExpand}
+              isFetched={isFetchedExternal}
+              onMarkAsFetched={onMarkAsFetched}
               itemHeight={itemHeight}
             />
           ))}
@@ -149,4 +201,3 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildD
     </Box>
   );
 }
-

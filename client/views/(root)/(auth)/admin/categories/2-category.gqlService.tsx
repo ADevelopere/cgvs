@@ -2,10 +2,10 @@
 
 import { useCallback, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useTemplateCategoryGraphQL } from "./1-categories.apollo";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/lib/logger";
+import { useTemplateCategoryGraphQL } from "./1-categories.apolloCache";
 
 /**
  * Template Category Service Hook
@@ -32,7 +32,9 @@ export const useTemplateCategoryService = () => {
     ): Promise<Graphql.TemplateCategory | null> => {
       try {
         const result = await apollo.createTemplateCategoryMutation({
-          input,
+          variables: {
+            input,
+          },
         });
 
         if (result.data) {
@@ -72,7 +74,9 @@ export const useTemplateCategoryService = () => {
     ): Promise<Graphql.TemplateCategory | null> => {
       try {
         const result = await apollo.updateTemplateCategoryMutation({
-          input,
+          variables: {
+            input,
+          },
         });
 
         if (result.data) {
@@ -109,7 +113,9 @@ export const useTemplateCategoryService = () => {
     async (id: number): Promise<boolean> => {
       try {
         const result = await apollo.deleteTemplateCategoryMutation({
-          id,
+          variables: {
+            id,
+          },
         });
 
         if (result.data) {
@@ -147,9 +153,13 @@ export const useTemplateCategoryService = () => {
       input: Graphql.CreateTemplateMutationVariables["input"],
     ): Promise<Graphql.Template | null> => {
       try {
-        const result = await apollo.createTemplateMutation({ input });
+        const result = await apollo.createTemplateMutation({
+          variables: {
+            input,
+          },
+        });
 
-        if (result.data) {
+        if (result.data?.createTemplate) {
           notifications.show(strings.templateAddedSuccessfully, {
             severity: "success",
             autoHideDuration: 3000,
@@ -157,7 +167,7 @@ export const useTemplateCategoryService = () => {
           return result.data.createTemplate;
         }
 
-        logger.error("Error creating template:", result.errors);
+        logger.error("Error creating template:", result.error);
         notifications.show(strings.templateAddFailed, {
           severity: "error",
           autoHideDuration: 3000,
@@ -185,13 +195,63 @@ export const useTemplateCategoryService = () => {
   );
 
   /**
+   * Update an existing template
+   * Returns the updated template on success, null on failure
+   */
+  const updateTemplate = useCallback(
+    async (
+      input: Graphql.UpdateTemplateMutationVariables["input"],
+    ): Promise<Graphql.Template | null> => {
+      try {
+        const result = await apollo.updateTemplateMutation({
+          variables: { input },
+        });
+
+        if (result.data?.updateTemplate) {
+          notifications.show(strings.templateUpdatedSuccessfully, {
+            severity: "success",
+            autoHideDuration: 3000,
+          });
+          return result.data.updateTemplate;
+        }
+
+        logger.error("Error updating template:", result.error);
+        notifications.show(strings.templateUpdateFailed, {
+          severity: "error",
+          autoHideDuration: 3000,
+        });
+        return null;
+      } catch (error) {
+        const gqlError = error as {
+          message?: string;
+          graphQLErrors?: Array<{ message: string }>;
+        };
+        const errorMessage =
+          gqlError.graphQLErrors?.[0]?.message ||
+          gqlError.message ||
+          strings.templateUpdateFailed;
+
+        logger.error("Error updating template:", error);
+        notifications.show(errorMessage, {
+          severity: "error",
+          autoHideDuration: 5000,
+        });
+        return null;
+      }
+    },
+    [apollo, notifications, strings],
+  );
+
+  /**
    * Delete a template (permanently)
    * Returns true on success, false on failure
    */
   const deleteTemplate = useCallback(
     async (id: number): Promise<boolean> => {
       try {
-        const result = await apollo.deleteTemplateMutation({ id });
+        const result = await apollo.deleteTemplateMutation({
+          variables: { id },
+        });
 
         if (result.data) {
           notifications.show(
@@ -205,7 +265,7 @@ export const useTemplateCategoryService = () => {
           return true;
         }
 
-        logger.error("Error deleting template:", result.errors);
+        logger.error("Error deleting template:", result.error);
         notifications.show(
           strings.templateDeleteFailed || "Failed to delete template",
           {
@@ -236,9 +296,11 @@ export const useTemplateCategoryService = () => {
   const suspendTemplate = useCallback(
     async (id: number): Promise<Graphql.Template | null> => {
       try {
-        const result = await apollo.suspendTemplateMutation({ id });
+        const result = await apollo.suspendTemplateMutation({
+          variables: { id },
+        });
 
-        if (result.data) {
+        if (result.data?.suspendTemplate) {
           notifications.show(strings.templateMovedToDeletionSuccessfully, {
             severity: "success",
             autoHideDuration: 3000,
@@ -246,7 +308,7 @@ export const useTemplateCategoryService = () => {
           return result.data.suspendTemplate;
         }
 
-        logger.error("Error suspending template:", result.errors);
+        logger.error("Error suspending template:", result.error);
         notifications.show(strings.templateMoveToDeletionFailed, {
           severity: "error",
           autoHideDuration: 3000,
@@ -280,9 +342,11 @@ export const useTemplateCategoryService = () => {
   const unsuspendTemplate = useCallback(
     async (id: number): Promise<Graphql.Template | null> => {
       try {
-        const result = await apollo.unsuspendTemplateMutation({ id });
+        const result = await apollo.unsuspendTemplateMutation({
+          variables: { id },
+        });
 
-        if (result.data) {
+        if (result.data?.unsuspendTemplate) {
           notifications.show(strings.templateRestoredSuccessfully, {
             severity: "success",
             autoHideDuration: 3000,
@@ -290,7 +354,7 @@ export const useTemplateCategoryService = () => {
           return result.data.unsuspendTemplate;
         }
 
-        logger.error("Error unsuspending template:", result.errors);
+        logger.error("Error unsuspending template:", result.error);
         notifications.show(strings.templateRestoreFailed, {
           severity: "error",
           autoHideDuration: 3000,
@@ -323,6 +387,7 @@ export const useTemplateCategoryService = () => {
       updateCategory,
       deleteCategory,
       createTemplate,
+      updateTemplate,
       deleteTemplate,
       suspendTemplate,
       unsuspendTemplate,
@@ -332,6 +397,7 @@ export const useTemplateCategoryService = () => {
       updateCategory,
       deleteCategory,
       createTemplate,
+      updateTemplate,
       deleteTemplate,
       suspendTemplate,
       unsuspendTemplate,

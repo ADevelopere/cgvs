@@ -30,24 +30,6 @@ export namespace TemplateCategoryRepository {
       .orderBy(templateCategories.order);
   };
 
-  export const findRootCategories = async (): Promise<
-    TemplateCategorySelectType[]
-  > => {
-    return db
-      .select()
-      .from(templateCategories)
-      .where(
-        and(
-          isNull(templateCategories.parentCategoryId),
-          or(
-            isNull(templateCategories.specialType),
-            not(eq(templateCategories.specialType, "Suspension")),
-          ),
-        ),
-      )
-      .orderBy(templateCategories.order);
-  };
-
   export const existsById = async (id: number): Promise<boolean> => {
     return (
       (await db.$count(templateCategories, eq(templateCategories.id, id))) > 0
@@ -55,8 +37,24 @@ export namespace TemplateCategoryRepository {
   };
 
   export const findCategoryChildren = async (
-    parentCategoryId: number,
+    parentCategoryId?: number | null,
   ): Promise<TemplateCategorySelectType[]> => {
+    if (!parentCategoryId) {
+      return db
+        .select()
+        .from(templateCategories)
+        .where(
+          and(
+            isNull(templateCategories.parentCategoryId),
+            or(
+              isNull(templateCategories.specialType),
+              not(eq(templateCategories.specialType, "Suspension")),
+            ),
+          ),
+        )
+        .orderBy(templateCategories.order);
+    }
+
     await existsById(parentCategoryId).then((exists) => {
       if (!exists) {
         throw new Error(`Category with ID ${parentCategoryId} does not exist.`);
@@ -273,6 +271,7 @@ export namespace TemplateCategoryRepository {
         name: "قوالب غير مصنفة",
         specialType: "Main",
         parentCategoryId: null,
+        order: 1,
         createdAt: now,
         updatedAt: now,
       };
@@ -302,6 +301,7 @@ export namespace TemplateCategoryRepository {
         name: "فئة القوالب المحذوفة",
         specialType: "Suspension",
         parentCategoryId: null,
+        order: 2,
         createdAt: now,
         updatedAt: now,
       };
@@ -370,16 +370,18 @@ export namespace TemplateCategoryRepository {
   };
 
   export const findTemplateCategoryMaxOrderByParentCategoryId = async (
-    categoryId: number | null,
+    parentCategoryId: number | null,
   ): Promise<number> => {
     const [{ maxOrder }] = await db
       .select({ maxOrder: max(templateCategories.order) })
       .from(templateCategories)
       .where(
-        categoryId === null
+        parentCategoryId === null
           ? isNull(templateCategories.parentCategoryId)
-          : eq(templateCategories.parentCategoryId, categoryId),
+          : eq(templateCategories.parentCategoryId, parentCategoryId),
       );
-    return maxOrder ?? 0;
+
+    // if root categories, then max order to start with is 2, (1, 2) reserved for main and suspenstion categories
+    return maxOrder ?? (parentCategoryId ? 0 : 2);
   };
 }

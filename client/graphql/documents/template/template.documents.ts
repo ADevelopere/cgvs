@@ -262,26 +262,3 @@ export const templatesConfigsQueryDocument: TypedDocumentNode<Graphql.TemplatesC
     }
   }
 `;
-
-export const templatesByCategoryIdQueryDocument: TypedDocumentNode<
-  Graphql.TemplatesByCategoryIdQuery,
-  Graphql.TemplatesByCategoryIdQueryVariables
-> = gql`
-  query templatesByCategoryId($categoryId: Int!) {
-    templatesByCategoryId(categoryId: $categoryId) {
-      id
-      name
-      description
-      imageUrl
-      order
-      createdAt
-      updatedAt
-      category {
-        id
-      }
-      preSuspensionCategory {
-        id
-      }
-    }
-  }
-`;

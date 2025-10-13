@@ -19,15 +19,14 @@ import { useQuery } from "@apollo/client/react";
 
 import EmptyStateIllustration from "@/client/components/common/EmptyStateIllustration";
 import EditableTypography from "@/client/components/input/EditableTypography";
-import { useTemplateCategoryManagement } from "./4-categories.context";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
-import TemplateEditDialog from "./TemplateEditDialog";
 import { mapTemplateToUpdateInput } from "@/client/utils/template/template-mappers";
+import { useTemplateCategoryManagement } from "./4-categories.context";
+import TemplateEditDialog from "./TemplateEditDialog";
 
 import {
   Template,
-  TemplateCategory,
   TemplateUpdateInput,
 } from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
@@ -45,18 +44,17 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   } = useTemplateCategoryManagement();
 
   // Fetch templates for current category
-  const { data: templatesData, loading: regularTemplatesLoading } = useQuery(
-    Document.templatesByCategoryIdQueryDocument,
-    {
+  const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
+    useQuery(Document.templatesByCategoryIdQueryDocument, {
       variables: { categoryId: currentCategoryId ?? 0 },
       skip: !currentCategoryId,
       fetchPolicy: "cache-first",
-    },
-  );
+    });
 
-  const templates = React.useMemo(() => {
-    return templatesData?.templatesByCategoryId ?? [];
-  }, [templatesData]);
+  const templates = React.useMemo(
+    () => templatesByCategoryIdQuery?.templatesByCategoryId ?? [],
+    [templatesByCategoryIdQuery?.templatesByCategoryId],
+  );
 
   // todo: use server side query, or read from apollo cache only
   // Fetch all categories for the autocomplete
@@ -67,7 +65,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   //     },
   // );
 
-  const regularCategories: TemplateCategory[] = [];
+  // const regularCategories: TemplateCategory[] = [];
   // categoriesData?.templateCategories?.filter(
   //     (cat) => cat.specialType !== "Suspension",
   // ) ?? [];
@@ -168,9 +166,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   };
 
   const getEmptyMessage = () => {
-    if (regularCategories.length === 0) {
-      return strings.createCategoryFirst;
-    }
     if (!currentCategoryId) {
       return strings.selectCategoryFirst;
     }
@@ -205,7 +200,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         </Typography>
 
         {/* category selector */}
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             alignItems: "center",
@@ -213,7 +208,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             // flexGrow: 1,
           }}
         >
-          {/* <Autocomplete
+          <Autocomplete
             value={currentCategory}
             onChange={(_, newValue) => {
               trySelectCategory(newValue?.id ?? null);
@@ -244,182 +239,181 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                 {option.name}
               </li>
             )}
-          /> */}
-        </Box>
+          />
+        </Box> */}
       </Box>
-      {regularCategories.length === 0 ? (
-        <EmptyStateIllustration message={strings.noCategories} />
-      ) : (
-        <>
-          <List
-            ref={listRef}
+
+      <List
+        ref={listRef}
+        sx={{
+          flexGrow: 1,
+          overflow: "auto",
+        }}
+      >
+        {regularTemplatesLoading && currentCategoryId && (
+          <Box
             sx={{
-              flexGrow: 1,
-              overflow: "auto",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              p: 4,
             }}
           >
-            {regularTemplatesLoading && currentCategoryId ? (
+            <CircularProgress />
+          </Box>
+        )}
+
+        {templates &&
+          templates.map((template) => (
+            <ListItem
+              key={template?.id}
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  p: 4,
-                }}
-              >
-                <CircularProgress />
-              </Box>
-            ) : (
-              templates.map((template) => (
-                <ListItem
-                  key={template?.id}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      gap: 1,
-                      alignItems: "center",
-                    }}
-                  >
-                    <GraduationCap style={{ marginRight: 2 }} />
-                    <EditableTypography
-                      typography={{
-                        variant: "body1",
-                      }}
-                      textField={{
-                        size: "small",
-                        variant: "standard",
-                        sx: { minWidth: 150 },
-                      }}
-                      value={template?.name ?? ""}
-                      onSave={(newValue) =>
-                        handleTemplateNameEdit(template, newValue)
-                      }
-                      isValid={validateTemplateName}
-                    />
-                  </Box>
-
-                  <Box sx={{ flexGrow: 1 }} />
-
-                  <Tooltip title={strings.delete}>
-                    <IconButton
-                      onClick={() => suspendTemplate(template.id)}
-                      color="error"
-                      disabled={false}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title={strings.edit}>
-                    <IconButton
-                      onClick={() => {
-                        handleOpenEditDialog(template);
-                      }}
-                      color="primary"
-                      disabled={false}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title={strings.manage}>
-                    <IconButton
-                      onClick={() => manageTemplate(template.id)}
-                      color="info"
-                      disabled={false}
-                    >
-                      <SquareArrowOutUpRight />
-                    </IconButton>
-                  </Tooltip>
-                </ListItem>
-              ))
-            )}
-            {tempTemplate && (
-              <ListItem
-                ref={newTemplateRef}
-                key={tempTemplate.id}
-                sx={{
-                  display: "flex",
                   flexDirection: "row",
+                  gap: 1,
                   alignItems: "center",
-                  width: "100%",
                 }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 1,
-                    alignItems: "center",
+                <GraduationCap style={{ marginRight: 2 }} />
+                <EditableTypography
+                  typography={{
+                    variant: "body1",
                   }}
+                  textField={{
+                    size: "small",
+                    variant: "standard",
+                    sx: { minWidth: 150 },
+                  }}
+                  value={template?.name ?? ""}
+                  onSave={(newValue) =>
+                    handleTemplateNameEdit(template, newValue)
+                  }
+                  isValid={validateTemplateName}
+                />
+              </Box>
+
+              <Box sx={{ flexGrow: 1 }} />
+
+              <Tooltip title={strings.delete}>
+                <IconButton
+                  onClick={() => suspendTemplate(template.id)}
+                  color="error"
+                  disabled={false}
                 >
-                  <GraduationCap style={{ marginRight: 2 }} />
-                  <EditableTypography
-                    typography={{
-                      variant: "body1",
-                    }}
-                    textField={{
-                      size: "small",
-                      variant: "standard",
-                      sx: { minWidth: 150 },
-                    }}
-                    value=""
-                    onSave={handleNewTemplateSave}
-                    onCancel={handleNewTemplateCancel}
-                    isValid={validateTemplateName}
-                    startEditing={true}
-                  />
-                </Box>
-              </ListItem>
-            )}
-          </List>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
 
-          {/* Show empty state only when no templates and no temp template */}
-          {templates.length === 0 && !tempTemplate && (
-            <EmptyStateIllustration message={getEmptyMessage()} />
-          )}
+              <Tooltip title={strings.edit}>
+                <IconButton
+                  onClick={() => {
+                    handleOpenEditDialog(template);
+                  }}
+                  color="primary"
+                  disabled={false}
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
 
-          {/* Bottom action bar */}
-          <Box
+              <Tooltip title={strings.manage}>
+                <IconButton
+                  onClick={() => manageTemplate(template.id)}
+                  color="info"
+                  disabled={false}
+                >
+                  <SquareArrowOutUpRight />
+                </IconButton>
+              </Tooltip>
+            </ListItem>
+          ))}
+
+        {tempTemplate && (
+          <ListItem
+            ref={newTemplateRef}
+            key={tempTemplate.id}
             sx={{
-              p: 2,
-              borderTop: "1px solid",
-              borderColor: theme.palette.divider,
               display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
             }}
           >
-            {/* add template button */}
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddNewTemplate}
-              disabled={!currentCategoryId || !!tempTemplate}
-              sx={{ mr: 1 }}
-            >
-              {strings.addTemplate}
-            </Button>
-
             <Box
               sx={{
-                flexGrow: 1,
                 display: "flex",
-                justifyContent: "flex-end",
+                flexDirection: "row",
+                gap: 1,
+                alignItems: "center",
               }}
             >
-              <Typography>{templates?.length ?? 0}</Typography>
+              <GraduationCap style={{ marginRight: 2 }} />
+              <EditableTypography
+                typography={{
+                  variant: "body1",
+                }}
+                textField={{
+                  size: "small",
+                  variant: "standard",
+                  sx: { minWidth: 150 },
+                }}
+                value=""
+                onSave={handleNewTemplateSave}
+                onCancel={handleNewTemplateCancel}
+                isValid={validateTemplateName}
+                startEditing={true}
+              />
             </Box>
-          </Box>
-        </>
+          </ListItem>
+        )}
+      </List>
+
+      {/* Show empty state only when no templates and no temp template */}
+      {templates.length === 0 && !tempTemplate && !regularTemplatesLoading && (
+        <EmptyStateIllustration message={getEmptyMessage()} />
       )}
+
+      {/* Bottom action bar */}
+      <Box
+        sx={{
+          p: 2,
+          borderTop: "1px solid",
+          borderColor: theme.palette.divider,
+          display: "flex",
+        }}
+      >
+        {/* add template button */}
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddNewTemplate}
+          disabled={!currentCategoryId || !!tempTemplate}
+          sx={{ mr: 1 }}
+        >
+          {strings.addTemplate}
+        </Button>
+
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          {/* <Typography>{templates?.length ?? 0}</Typography> */}
+        </Box>
+      </Box>
+
+      {/* end of 2 */}
 
       {templateToEdit && currentCategoryId && (
         <TemplateEditDialog

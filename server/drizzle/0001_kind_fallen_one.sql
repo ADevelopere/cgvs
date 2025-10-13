@@ -74,7 +74,7 @@ CREATE TABLE "TemplateCategory" (
 	"name" varchar(255) NOT NULL,
 	"description" text,
 	"parent_category_id" integer,
-	"order" integer,
+	"order" integer NOT NULL,
 	"special_type" "category_special_type",
 	"created_at" timestamp (3) NOT NULL,
 	"updated_at" timestamp (3) NOT NULL
