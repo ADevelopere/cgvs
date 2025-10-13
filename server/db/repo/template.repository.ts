@@ -4,7 +4,7 @@ import {
   templates,
   templatesConfigs,
 } from "@/server/db/schema";
-import { count, eq, inArray, max } from "drizzle-orm";
+import { count, eq, inArray, max, sql, asc } from "drizzle-orm";
 import {
   TemplateEntity,
   PaginatedTemplatesEntityResponse,
@@ -12,13 +12,21 @@ import {
   TemplateCreateInput,
   TemplateUpdateInput,
   TemplatesConfigSelectType,
+  TemplatesWithFiltersResponse,
+  TemplatePothosDefintion,
 } from "@/server/types";
 import logger from "@/lib/logger";
 import { PaginationArgs } from "../../types/pagination.types";
 import { PaginationArgsDefault } from "../../graphql/pothos/pagination.objects";
-import { TemplateUtils } from "@/server/utils";
+import {
+  TemplateUtils,
+  TemplateFilterUtils,
+  PaginationUtils,
+} from "@/server/utils";
 import { TemplateCategoryRepository } from "./templateCategory.repository";
 import { getStorageService } from "@/server/storage/storage.service";
+import * as Types from "@/server/types";
+import { queryWithPagination } from "@/server/db/query.extentions";
 
 export namespace TemplateRepository {
   export const findById = async (
@@ -401,5 +409,69 @@ export namespace TemplateRepository {
 
   export const existsById = async (id: number): Promise<boolean> => {
     return (await db.$count(templates, eq(templates.id, id))) > 0;
+  };
+
+  export const fetchByCategoryIdWithFilters = async (
+    categoryId?: number | null,
+    paginationArgs?: Types.PaginationArgs | null,
+    filters?: Types.TemplateFilterArgs | null,
+    orderBy?: Types.TemplatesOrderByClause[] | null,
+  ): Promise<TemplatesWithFiltersResponse> => {
+    // Build base query
+    let baseQuery = db
+      .select({
+        template: templates,
+        total: sql<number>`cast(count(*) over() as int)`,
+      })
+      .from(templates)
+      .$dynamic();
+
+    // Apply categoryId filter if provided
+    if (categoryId !== null && categoryId !== undefined) {
+      baseQuery = baseQuery.where(eq(templates.categoryId, categoryId));
+    }
+
+    // Apply name filters
+    let processedQuery = TemplateFilterUtils.applyFilters(baseQuery, filters);
+
+    // Apply ordering - with conditional defaults
+    if (!orderBy || orderBy.length === 0) {
+      // Apply default ordering based on categoryId
+      if (categoryId === null || categoryId === undefined) {
+        // If no categoryId, sort by name
+        processedQuery = processedQuery.orderBy(asc(templates.name));
+      } else {
+        // If categoryId provided, sort by order
+        processedQuery = processedQuery.orderBy(asc(templates.order));
+      }
+    } else {
+      // Apply user-specified ordering
+      processedQuery = TemplateFilterUtils.applyOrdering(
+        processedQuery,
+        orderBy,
+      );
+    }
+
+    // Apply pagination
+    processedQuery = queryWithPagination(processedQuery, paginationArgs);
+
+    const results = await processedQuery;
+
+    const total = (results[0] as { total: number })?.total ?? 0;
+    const items: TemplatePothosDefintion[] = results.map((r) => {
+      const t: TemplateEntity = (r as { template: TemplateEntity }).template;
+      return t;
+    });
+
+    const pageInfo = PaginationUtils.buildPageInfoFromArgs(
+      paginationArgs,
+      items.length,
+      total,
+    );
+
+    return {
+      data: items,
+      pageInfo: pageInfo,
+    };
   };
 }
