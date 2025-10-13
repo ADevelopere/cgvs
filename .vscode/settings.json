@@ -1,7 +1,12 @@
 {
     // Always use workspace TypeScript (no prompt)
     "typescript.tsdk": "node_modules/typescript/lib",
-    
+
     // Show prompt when workspace TS is detected
-    "typescript.enablePromptUseWorkspaceTsdk": true
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+
+    // Apollo DevTools configuration
+    "apollo.devTools.enabled": true,
+    "apollo.devTools.port": 7095,
+    "apollo.devTools.targetUri": "ws://localhost:7095"
 }

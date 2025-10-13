@@ -1,36 +1,45 @@
 import type { DocumentNode } from "@apollo/client";
 
-export type QueryResolverOptions = {
+export type QueryResolverOptions<TVariables> = {
   query: DocumentNode;
-  variables?: Record<string, any>;
+  variables?: TVariables;
   skip?: boolean;
   fetchPolicy?: "cache-first" | "cache-only" | "network-only";
 };
 
-export type RootResolver<TData> = () => QueryResolverOptions;
+export type RootResolver<TVariables> =
+  () => QueryResolverOptions<TVariables>;
 
-export type ChildrenResolver<TData> = (
+export type ChildrenResolver<TVariables> = (
   parentId: string | number,
-) => QueryResolverOptions;
+) => QueryResolverOptions<TVariables>;
 
 export interface ReactiveTreeNode {
   id: string | number;
-  [key: string]: any;
 }
 
-export interface ReactiveTreeProps<TNode extends ReactiveTreeNode> {
+export interface ReactiveTreeProps<
+  TNode extends ReactiveTreeNode,
+  TRootData,
+  TChildData,
+  TRootVariables,
+  TChildVariables,
+> {
   // Resolver for root-level items
-  rootResolver: RootResolver<TNode[]>;
+  rootResolver: RootResolver<TRootVariables>;
 
   // Resolver for children given parent ID
-  childrenResolver: ChildrenResolver<TNode[]>;
+  childrenResolver: ChildrenResolver<TChildVariables>;
 
   // Extract items array from query result
-  getRootItems: (data: any) => TNode[];
-  getChildItems: (data: any) => TNode[];
+  getRootItems: (data: TRootData) => TNode[];
+  getChildItems: (data: TChildData) => TNode[];
 
   // Check if node has children (before loading)
   hasChildren?: (node: TNode) => boolean;
+
+  // Get node label for display
+  getNodeLabel: (node: TNode) => string;
 
   // Custom rendering
   itemRenderer?: (props: {
@@ -41,7 +50,7 @@ export interface ReactiveTreeProps<TNode extends ReactiveTreeNode> {
   }) => React.ReactNode;
 
   // Selection
-  selectedItemId?: string | number;
+  selectedItemId?: string | number | null;
   onSelectItem?: (node: TNode) => void;
 
   // Styling
@@ -49,4 +58,3 @@ export interface ReactiveTreeProps<TNode extends ReactiveTreeNode> {
   header?: string;
   noItemsMessage?: string;
 }
-

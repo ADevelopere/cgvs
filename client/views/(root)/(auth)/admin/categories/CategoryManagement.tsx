@@ -1,21 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Box, IconButton, Tab, Tooltip } from "@mui/material";
-import { useQuery } from "@apollo/client";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
-import { useTemplateCategoryUIStore } from "@/client/views/(root)/(auth)/admin/categories/categories.store";
-import TemplateCategoryManagementCategoryPane from "./CategoryPane";
-import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import SplitPane from "@/client/components/splitPane/SplitPane";
 import { FileStack, PanelLeft, PanelRight } from "lucide-react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
 import { DeleteOutline } from "@mui/icons-material";
-import * as Document from "@/client/graphql/documents";
+import { useTemplateCategoryManagement } from "./4-categories.context";
+import TemplateCategoryManagementCategoryPane from "./CategoryPane";
+import TemplateCategoryManagementTemplatePane from "./TemplatePane";
+import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
+
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
@@ -23,8 +21,8 @@ const This: React.FC = () => {
   const strings = useAppTranslation("templateCategoryTranslations");
 
   const { theme } = useAppTheme();
-  const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
-  const [secondPaneVisible, setSecondPaneVisible] = useState<boolean>(true);
+  const [firstPaneVisible, setFirstPaneVisible] = React.useState<boolean>(true);
+  const [secondPaneVisible, setSecondPaneVisible] = React.useState<boolean>(true);
 
   const handleFirstPaneVisibility = () => {
     setFirstPaneVisible(!firstPaneVisible);
@@ -37,21 +35,9 @@ const This: React.FC = () => {
   const {
     activeCategoryTab,
     setActiveCategoryTab,
+    currentCategoryId
   } = useTemplateCategoryManagement();
 
-  // Get current category ID from store
-  const { currentCategoryId } = useTemplateCategoryUIStore();
-
-  // Fetch current category data
-  const { data: currentCategoryData } = useQuery(
-    Document.templateCategoryByIdQueryDocument,
-    {
-      variables: { id: currentCategoryId ?? 0 },
-      skip: !currentCategoryId,
-      fetchPolicy: "cache-first",
-    },
-  );
-  const currentCategory = currentCategoryData?.templateCategoryById ?? null;
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
@@ -128,7 +114,7 @@ const This: React.FC = () => {
                     <span>
                       <IconButton
                         onClick={handleFirstPaneVisibility}
-                        disabled={!(currentCategory && secondPaneVisible)}
+                        disabled={!(currentCategoryId && secondPaneVisible)}
                       >
                         <PanelRight />
                       </IconButton>

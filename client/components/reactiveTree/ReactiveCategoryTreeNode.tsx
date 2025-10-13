@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -12,25 +12,26 @@ import type {
   ChildrenResolver,
 } from "./types";
 
-interface TreeNodeProps<TNode extends ReactiveTreeNode> {
+interface TreeNodeProps<TNode extends ReactiveTreeNode, TChildData, TChildVariables> {
   node: TNode;
   level: number;
-  childrenResolver: ChildrenResolver<TNode[]>;
-  getChildItems: (data: any) => TNode[];
+  childrenResolver: ChildrenResolver<TChildVariables>;
+  getChildItems: (data: TChildData) => TNode[];
   hasChildren?: (node: TNode) => boolean;
+  getNodeLabel: (node: TNode) => string;
   itemRenderer?: (props: {
     node: TNode;
     level: number;
     isExpanded: boolean;
     isSelected: boolean;
   }) => React.ReactNode;
-  selectedItemId?: string | number;
+  selectedItemId?: string | number | null;
   onSelectItem?: (node: TNode) => void;
   itemHeight?: number;
 }
 
-export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode>(
-  props: TreeNodeProps<TNode>,
+export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TChildData, TChildVariables>(
+  props: TreeNodeProps<TNode, TChildData, TChildVariables>,
 ) {
   const {
     node,
@@ -38,6 +39,7 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode>(
     childrenResolver,
     getChildItems,
     hasChildren,
+    getNodeLabel,
     itemRenderer,
     selectedItemId,
     onSelectItem,
@@ -56,13 +58,13 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode>(
   const { data: childData, loading: childLoading } = useQuery(
     childQueryOptions.query,
     {
-      variables: childQueryOptions.variables,
+      variables: childQueryOptions.variables as Record<string, string | number | boolean>,
       skip: !isExpanded || !mightHaveChildren,
       fetchPolicy: childQueryOptions.fetchPolicy || "cache-first",
     },
   );
 
-  const children = childData ? getChildItems(childData) : [];
+  const children = childData ? getChildItems(childData as TChildData) : [];
   const hasLoadedChildren = isExpanded && children.length > 0;
   const isLoading = isExpanded && childLoading;
 
@@ -118,19 +120,28 @@ export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode>(
         {itemRenderer ? (
           itemRenderer({ node, level, isExpanded, isSelected })
         ) : (
-          <Typography>{(node as any).name || node.id}</Typography>
+          <Typography>
+            {getNodeLabel(node)}
+          </Typography>
         )}
       </Box>
 
       {/* Recursive Children */}
       {hasLoadedChildren && (
         <Box>
-          {children.map((childNode) => (
-            <ReactiveCategoryTreeNode
+          {children.map((childNode: TNode) => (
+            <ReactiveCategoryTreeNode<TNode, TChildData, TChildVariables>
               key={childNode.id}
               node={childNode}
               level={level + 1}
-              {...props}
+              childrenResolver={childrenResolver}
+              getChildItems={getChildItems}
+              hasChildren={hasChildren}
+              getNodeLabel={getNodeLabel}
+              itemRenderer={itemRenderer}
+              selectedItemId={selectedItemId}
+              onSelectItem={onSelectItem}
+              itemHeight={itemHeight}
             />
           ))}
         </Box>

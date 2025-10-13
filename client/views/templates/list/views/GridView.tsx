@@ -13,7 +13,7 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/4-categories.context";
 import Image from "next/image";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 

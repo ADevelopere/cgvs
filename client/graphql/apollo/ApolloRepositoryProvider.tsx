@@ -1,4 +1,4 @@
-import { TemplateCategoryGraphQLProvider } from "../../views/(root)/(auth)/admin/categories/category.apollo";
+import { TemplateCategoryGraphQLProvider } from "../../views/(root)/(auth)/admin/categories/1-categories.apollo";
 import { TemplateGraphQLProvider } from "./template.apollo";
 import { TemplateVariableGraphQLProvider } from "./templateVariable/templateVariable.apollo";
 import { RecipientGraphQLProvider } from "./recipient.apollo";
