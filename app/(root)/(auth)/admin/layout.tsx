@@ -12,7 +12,6 @@ import { HomeIcon } from "lucide-react";
 import { NavigationProvider } from "@/client/contexts/navigation/NavigationContext";
 import DashboardLayout from "@/client/views/dashboard/layout/DashboardLayout";
 import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndActions";
-import { TemplateCategoryManagementProvider } from "@/client/contexts/template/TemplateCategoryManagementContext";
 import { DashboardLayoutProvider } from "@/client/contexts/DashboardLayoutContext";
 import { Navigation, Title } from "@/client/contexts/adminLayout.types";
 import StudentProvider from "@/client/contexts/student/StudentProvider";
@@ -78,11 +77,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
      endActions: <DashboardEndActions />,
     }}
    >
-    <TemplateCategoryManagementProvider>
      <StudentProvider>
       <DashboardLayout>{children}</DashboardLayout>
      </StudentProvider>
-    </TemplateCategoryManagementProvider>
    </DashboardLayoutProvider>
   </NavigationProvider>
  );

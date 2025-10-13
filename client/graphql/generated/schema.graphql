@@ -520,6 +520,7 @@ input PartialStudentUpdateInput {
 scalar PhoneNumber
 
 type Query {
+  categoryChildren(parentCategoryId: Int!): [TemplateCategory!]!
   directoryChildren(
     """Parent directory path (empty or null for root level)"""
     path: String
@@ -533,6 +534,7 @@ type Query {
   recipient(id: Int!): TemplateRecipient
   recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]!
   recipientsByStudentId(studentId: Int!): [TemplateRecipient!]!
+  rootTemplateCategories: [TemplateCategory!]!
   searchFiles(
     """File type filter (optional)"""
     fileType: String

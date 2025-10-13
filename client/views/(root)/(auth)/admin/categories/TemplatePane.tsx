@@ -11,23 +11,24 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { Typography } from "@mui/material";
+import { Typography, CircularProgress } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import { GraduationCap, SquareArrowOutUpRight, EditIcon } from "lucide-react";
+import { useQuery } from "@apollo/client";
 
 import EmptyStateIllustration from "@/client/components/common/EmptyStateIllustration";
 import EditableTypography from "@/client/components/input/EditableTypography";
-import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
+import { useTemplateCategoryUIStore } from "@/client/views/(root)/(auth)/admin/categories/categories.store";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
 import TemplateEditDialog from "./TemplateEditDialog";
 import { mapTemplateToUpdateInput } from "@/client/utils/template/template-mappers";
 import { Template } from "@/client/graphql/generated/gql/graphql";
+import * as Document from "@/client/graphql/documents";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
     const {
-        currentCategory,
-        regularCategories,
         createTemplate: addTemplate,
         updateTemplate,
         suspendTemplate,
@@ -37,7 +38,42 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         manageTemplate,
     } = useTemplateCategoryManagement();
 
-    const templates = currentCategory?.templates ?? [];
+    // Get current category ID from store
+    const { currentCategoryId } = useTemplateCategoryUIStore();
+
+    // Fetch current category data
+    const { data: currentCategoryData } = useQuery(
+        Document.templateCategoryByIdQueryDocument,
+        {
+            variables: { id: currentCategoryId ?? 0 },
+            skip: !currentCategoryId,
+            fetchPolicy: "cache-first",
+        },
+    );
+    const currentCategory = currentCategoryData?.templateCategoryById ?? null;
+
+    // Fetch templates for current category
+    const { data: templatesData, loading: regularTemplatesLoading } = useQuery(
+        Document.templatesByCategoryIdQueryDocument,
+        {
+            variables: { categoryId: currentCategoryId ?? 0 },
+            skip: !currentCategoryId,
+            fetchPolicy: "cache-first",
+        },
+    );
+    const templates = templatesData?.templatesByCategoryId ?? [];
+
+    // Fetch all categories for the autocomplete
+    const { data: categoriesData } = useQuery(
+        Document.templateCategoriesQueryDocument,
+        {
+            fetchPolicy: "cache-first",
+        },
+    );
+    const regularCategories =
+        categoriesData?.templateCategories?.filter(
+            (cat) => cat.specialType !== "Suspension",
+        ) ?? [];
 
     const { theme } = useAppTheme();
     const [tempTemplate, setTempTemplate] = useState<{
@@ -181,7 +217,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                     <Autocomplete
                         value={currentCategory}
                         onChange={(_, newValue) => {
-                            trySelectCategory(newValue).then((r) => r);
+                            trySelectCategory(newValue?.id ?? null);
                         }}
                         options={
                             Array.isArray(regularCategories)
@@ -229,7 +265,20 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                             overflow: "auto",
                         }}
                     >
-                        {templates.map((template) => (
+                        {regularTemplatesLoading && currentCategory ? (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100%",
+                                    p: 4,
+                                }}
+                            >
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            templates.map((template) => (
                             <ListItem
                                 key={template?.id}
                                 sx={{
@@ -306,7 +355,8 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                                     </IconButton>
                                 </Tooltip>
                             </ListItem>
-                        ))}
+                            ))
+                        )}
                         {tempTemplate && (
                             <ListItem
                                 ref={newTemplateRef}
