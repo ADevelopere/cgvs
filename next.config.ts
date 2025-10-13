@@ -19,9 +19,10 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Access-Control-Allow-Origin",
-            value: process.env.NODE_ENV === "production"
-              ? process.env.ALLOWED_ORIGIN || "https://yourdomain.com"
-              : "http://localhost:3000",
+            value:
+              process.env.NODE_ENV === "production"
+                ? process.env.ALLOWED_ORIGIN || "https://yourdomain.com"
+                : "http://localhost:3000",
           },
           {
             key: "Access-Control-Allow-Methods",
@@ -29,7 +30,8 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Access-Control-Allow-Headers",
-            value: "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token",
+            value:
+              "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token",
           },
           {
             key: "Access-Control-Max-Age",
@@ -67,21 +69,37 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+            value:
+              "camera=(), microphone=(), geolocation=(), interest-cohort=()",
           },
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://storage.googleapis.com https://flagcdn.com",
-              "font-src 'self' data:",
-              "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:*",
-              "frame-ancestors 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-            ].join("; "),
+            value:
+              process.env.NODE_ENV === "production"
+                ? [
+                    "default-src 'self'",
+                    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+                    "style-src 'self' 'unsafe-inline'",
+                    "img-src 'self' data: https://storage.googleapis.com https://flagcdn.com",
+                    "font-src 'self' data:",
+                    "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:*",
+                    "frame-ancestors 'none'",
+                    "base-uri 'self'",
+                    "form-action 'self'",
+                  ].join("; ")
+                : [
+                    "default-src 'self' https://*.apollographql.com https://*.googleapis.com https://*.gstatic.com",
+                    "script-src 'self' 'unsafe-eval' 'unsafe-inline' 'unsafe-hashes' https://*.apollographql.com https://*.googletagmanager.com https://*.amplitude.com",
+                    "style-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.apollographql.com",
+                    "img-src 'self' data: blob: https://storage.googleapis.com https://flagcdn.com https://*.apollographql.com",
+                    "font-src 'self' data: https://*.gstatic.com https://*.googleapis.com",
+                    "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://*.apollographql.com https://*.googletagmanager.com https://*.amplitude.com https://sentry.io",
+                    "frame-src 'self' https://*.apollographql.com",
+                    "manifest-src 'self' https://*.apollographql.com",
+                    "frame-ancestors 'none'",
+                    "base-uri 'self'",
+                    "form-action 'self'",
+                  ].join("; "),
           },
         ],
       },
