@@ -1,14 +1,26 @@
 "use client";
 
+/**
+ * Template Management Context
+ *
+ * Architecture:
+ * - UI State: Managed by Zustand (useTemplateUIStore) with automatic persistence
+ * - Data & Services: Managed by React Context (Apollo queries, business logic)
+ * - Components: Use combined hook (useTemplateManagement) that merges both
+ *
+ * This pattern provides:
+ * - Automatic state persistence across navigation
+ * - Clean separation of concerns
+ * - Backward compatible API for existing components
+ */
+
 import React, {
   createContext,
   useContext,
   useState,
-  useCallback,
-  useMemo,
   useEffect,
 } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -16,22 +28,16 @@ import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/documents";
-import { usePageNavigation } from "../navigation/usePageNavigation";
 import { TemplateVariableManagementProvider } from "../templateVariable";
 import { RecipientManagementProvider } from "../recipient";
 import { useTemplateService } from "@/client/graphql/service";
+import {
+  useTemplateUIStore,
+  initializeTemplateUIFromURL,
+} from "@/client/stores/useTemplateUIStore";
 
-export type TemplateManagementTabType =
-  | "basic"
-  | "variables"
-  | "editor"
-  | "recipients"
-  | "recipientsManagement"
-  | "preview";
-
-export interface TabError {
-  message: string;
-}
+// Re-export types for backward compatibility with existing components
+export type { TemplateManagementTabType, TabError } from "@/client/stores/useTemplateUIStore";
 
 const defaultConfig: Graphql.TemplatesConfigs = {
   configs: [
@@ -40,20 +46,15 @@ const defaultConfig: Graphql.TemplatesConfigs = {
   ],
 };
 
+/**
+ * Context type now only contains data and services
+ * UI state is managed by Zustand store
+ */
 type TemplateManagementContextType = {
-  activeTab: TemplateManagementTabType;
-  unsavedChanges: boolean;
-  loadedTabs: TemplateManagementTabType[];
-  error: string | undefined;
-  tabErrors: Record<TemplateManagementTabType, TabError | undefined>;
   config: Graphql.TemplatesConfigs;
   template: Graphql.Template | undefined;
   loading: boolean;
-  changeTab: (tab: TemplateManagementTabType) => void;
-  setTabLoaded: (tab: TemplateManagementTabType) => void;
-  setUnsavedChanges: (hasChanges: boolean) => void;
-  setTabError: (tab: TemplateManagementTabType, error: TabError) => void;
-  clearTabError: (tab: TemplateManagementTabType) => void;
+  error: string | undefined;
 };
 
 const TemplateManagementContext = createContext<
@@ -64,216 +65,62 @@ export const TemplateManagementProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const pathParams = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const id = pathParams?.id;
   const templateService = useTemplateService();
   const { setNavigation } = useDashboardLayout();
 
-  // Use the new navigation system
-  const { registerResolver, updateParams, getParam, restorePageState } =
-    usePageNavigation();
-
-  const { data: apolloTemplateData } = useQuery(
+  // Apollo query for template data
+  const { data: apolloTemplateData, loading: apolloLoading } = useQuery(
     Document.templateQueryDocument,
     {
       variables: { id: id ? parseInt(id, 10) : 0 },
       skip: !id,
-      fetchPolicy: "cache-first", // Only fetch if not in cache
+      fetchPolicy: "cache-first",
     },
   );
 
   const [config, setConfig] = useState<Graphql.TemplatesConfigs>(defaultConfig);
-
-  const [activeTab, setActiveTab] =
-    useState<TemplateManagementTabType>("basic");
-  const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const [loadedTabs, setLoadedTabs] = useState<TemplateManagementTabType[]>([]);
-
+  const [template, setTemplate] = useState<Graphql.Template | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [tabErrors, setTabErrors] = useState<
-    Record<TemplateManagementTabType, TabError | undefined>
-  >({
-    basic: undefined,
-    variables: undefined,
-    editor: undefined,
-    recipients: undefined,
-    recipientsManagement: undefined,
-    preview: undefined,
-  });
 
-  const [template, setTemplate] = useState<Graphql.Template | undefined>(
-    undefined,
-  );
-  const [loading, setLoading] = useState(true);
+  // Initialize store from URL params once on mount
+  useEffect(() => {
+    initializeTemplateUIFromURL(searchParams);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync template from Apollo query
   useEffect(() => {
     if (apolloTemplateData?.template) {
       setTemplate(apolloTemplateData.template);
       setError(undefined);
-      setLoading(false);
     } else if (!id) {
       setError("Template ID not found in URL");
-      setLoading(false);
     }
   }, [apolloTemplateData, id]);
 
-  // Update tab when URL params are available
+  // Fetch config once on mount
   useEffect(() => {
-    const tab = getParam("tab") as TemplateManagementTabType | undefined;
-    if (
-      tab &&
-      [
-        "basic",
-        "variables",
-        "editor",
-        "recipients",
-        "recipientsManagement",
-        "preview",
-      ].includes(tab)
-    ) {
-      setActiveTab(tab);
-    }
-  }, [getParam]);
-
-  // Sync activeTab with URL params when they change (backup)
-  useEffect(() => {
-    const tab = getParam("tab") as TemplateManagementTabType | undefined;
-    if (
-      tab &&
-      [
-        "basic",
-        "variables",
-        "editor",
-        "recipients",
-        "recipientsManagement",
-        "preview",
-      ].includes(tab) &&
-      tab !== activeTab
-    ) {
-      setActiveTab(tab);
-    }
-  }, [getParam, activeTab]);
-
-  // Register navigation resolver for this page
-  useEffect(() => {
-    const unregister = registerResolver({
-      segment: "admin/templates/:id/manage",
-      resolver: async (params) => {
-        try {
-          // Restore page state if available
-          const restoredState = restorePageState("admin/templates/:id/manage");
-          if (restoredState) {
-            const tab = restoredState.tab as
-              | TemplateManagementTabType
-              | undefined;
-            if (
-              tab &&
-              [
-                "basic",
-                "variables",
-                "editor",
-                "recipients",
-                "recipientsManagement",
-                "preview",
-              ].includes(tab)
-            ) {
-              setActiveTab(tab);
-              // Merge restored state with current params
-              return { success: true, params: restoredState };
-            }
-          }
-
-          // Handle tab parameter from current params
-          const tab = params.tab as TemplateManagementTabType | undefined;
-          if (
-            tab &&
-            [
-              "basic",
-              "variables",
-              "editor",
-              "recipients",
-              "recipientsManagement",
-              "preview",
-            ].includes(tab)
-          ) {
-            setActiveTab(tab);
-          }
-
-          // Handle other nested params based on active tab
-          // For example, if tab=variables&variable=5, we can handle variable selection
-          if (tab === "variables" && params.variable) {
-            // This can be handled by a child component's resolver
-            // For now, we just ensure the tab is set correctly
-          }
-
-          return { success: true };
-        } catch (err) {
-          return {
-            success: false,
-            error:
-              err instanceof Error
-                ? err.message
-                : "Failed to resolve navigation",
-          };
-        }
-      },
-      priority: 10,
-    });
-
-    return unregister;
-  }, [registerResolver, restorePageState]);
-
-  const changeTab = useCallback(
-    (tab: TemplateManagementTabType) => {
-      setActiveTab(tab);
-      // Update URL params to reflect tab change
-      updateParams({ tab }, { replace: true, merge: true });
-    },
-    [updateParams],
-  );
-
-  const handleSetTabLoaded = useCallback((tab: TemplateManagementTabType) => {
-    setLoadedTabs((prevTabs) =>
-      prevTabs.includes(tab) ? prevTabs : [...prevTabs, tab],
-    );
-  }, []);
-
-  const handleSetTabError = useCallback(
-    (tab: TemplateManagementTabType, error: TabError) => {
-      setTabErrors((prev) => ({
-        ...prev,
-        [tab]: error,
-      }));
-    },
-    [],
-  );
-
-  const handleClearTabError = useCallback((tab: TemplateManagementTabType) => {
-    setTabErrors((prev) => ({
-      ...prev,
-      [tab]: undefined,
-    }));
-  }, []);
-
-  const fetchConfig = useCallback(async () => {
-    const config = await templateService.fetchTemplateConfig();
-    if (config) {
-      setConfig(config);
-    }
+    const fetchConfig = async () => {
+      const config = await templateService.fetchTemplateConfig();
+      if (config) {
+        setConfig(config);
+      }
+    };
+    fetchConfig();
   }, [templateService]);
 
+  // Update navigation
   useEffect(() => {
-    fetchConfig();
-  }, [fetchConfig]);
+    if (!template?.id) return;
 
-  useEffect(() => {
     setNavigation((prevNav) => {
       if (!prevNav) return prevNav;
       return prevNav.map((item) => {
         if ("id" in item && item.id === "templates") {
           return {
             ...item,
-            segment: `admin/templates/${template?.id}/manage`,
+            segment: `admin/templates/${template.id}/manage`,
           } as NavigationPageItem;
         }
         return item;
@@ -281,39 +128,22 @@ export const TemplateManagementProvider: React.FC<{
     });
   }, [setNavigation, template?.id]);
 
-  const value = useMemo(
-    () => ({
-      activeTab,
-      unsavedChanges,
-      loadedTabs,
-      error,
-      tabErrors,
-      config,
-      template,
-      loading,
-      changeTab,
-      setTabLoaded: handleSetTabLoaded,
-      setUnsavedChanges,
-      setTabError: handleSetTabError,
-      clearTabError: handleClearTabError,
-    }),
-    [
-      activeTab,
-      changeTab,
-      unsavedChanges,
-      loadedTabs,
-      error,
-      tabErrors,
-      config,
-      template,
-      loading,
-      handleSetTabLoaded,
-      handleSetTabError,
-      handleClearTabError,
-    ],
-  );
+  // Reset store on unmount
+  useEffect(() => {
+    return () => {
+      useTemplateUIStore.getState().reset();
+    };
+  }, []);
 
-  if (loading) {
+  // Context value only contains data and services
+  const value = {
+    config,
+    template,
+    loading: apolloLoading,
+    error,
+  };
+
+  if (apolloLoading) {
     return (
       <Box
         sx={{
@@ -354,17 +184,9 @@ export const TemplateManagementProvider: React.FC<{
           <Typography variant="h6" color="error" gutterBottom>
             Error Loading Template
           </Typography>
-          <Typography color="text.secondary" sx={{ mb: 3 }}>
+          <Typography color="text.secondary">
             {error}
           </Typography>
-          {/* <Button
-                        variant="contained"
-                        startIcon={<RefreshIcon />}
-                        onClick={() => {
-                        }}
-                    >
-                        Try Again
-                    </Button> */}
         </Paper>
       </Box>
     );
@@ -372,7 +194,7 @@ export const TemplateManagementProvider: React.FC<{
 
   return (
     <TemplateManagementContext.Provider value={value}>
-      <TemplateVariableManagementProvider templateId={template?.id}>
+      <TemplateVariableManagementProvider>
         <RecipientManagementProvider templateId={template.id}>
           {children}
         </RecipientManagementProvider>
@@ -381,12 +203,23 @@ export const TemplateManagementProvider: React.FC<{
   );
 };
 
+/**
+ * Hook that combines context (data/services) with Zustand store (UI state)
+ * Components only use this hook - Zustand is an implementation detail
+ */
 export const useTemplateManagement = () => {
   const context = useContext(TemplateManagementContext);
+  const uiStore = useTemplateUIStore();
+
   if (context === undefined) {
     throw new Error(
       "useTemplateManagement must be used within a TemplateManagementProvider",
     );
   }
-  return context;
+
+  // Combine context data with UI store state
+  return {
+    ...context,
+    ...uiStore,
+  };
 };

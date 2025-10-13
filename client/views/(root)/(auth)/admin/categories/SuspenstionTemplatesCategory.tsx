@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
-import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { useQuery } from "@apollo/client";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
 import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
+import * as Document from "@/client/graphql/documents";
 
 interface TemplateRow {
     id: number;
@@ -20,8 +22,7 @@ interface TemplateRow {
 const SuspenstionTemplatesCategory: React.FC = () => {
     const strings = useAppTranslation("templateCategoryTranslations");
     const { theme } = useAppTheme();
-    const { suspensionCategory, unsuspendTemplate } =
-        useTemplateCategoryManagement();
+    const { unsuspendTemplate } = useTemplateCategoryManagement();
     const [sortModel, setSortModel] = useState<GridSortModel>([
         {
             field: "trashed_at",
@@ -29,8 +30,14 @@ const SuspenstionTemplatesCategory: React.FC = () => {
         },
     ]);
 
-    // Get templates from the deleted category
-    const templates = suspensionCategory?.templates ?? [];
+    // Fetch suspended templates
+    const { data: suspendedData, loading: suspensionTemplatesLoading } = useQuery(
+        Document.suspendedTemplatesQueryDocument,
+        {
+            fetchPolicy: "cache-first",
+        },
+    );
+    const templates = suspendedData?.suspendedTemplates ?? [];
 
     const columns: GridColDef[] = [
         {
@@ -123,6 +130,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
             <DataGrid
                 rows={rows}
                 columns={columns}
+                loading={suspensionTemplatesLoading}
                 sortModel={sortModel}
                 onSortModelChange={(model) => setSortModel(model)}
                 initialState={{

@@ -24,6 +24,8 @@ export type TreeViewItemRenderer<T> = (props: {
     isExpanded: boolean;
 }) => React.ReactNode;
 
+export type LazyLoadStrategy = 'on-expand' | 'preload-level';
+
 export function TreeView<T extends BaseTreeItem>({
     items,
     onSelectItem,
@@ -40,6 +42,10 @@ export function TreeView<T extends BaseTreeItem>({
     onExpandItem,
     onCollapseItem,
     onHoverItem,
+    childrenResolver,
+    lazyLoadStrategy,
+    hasChildrenKey,
+    onChildrenLoaded,
 }: Readonly<{
     items: T[];
     onSelectItem?: (item: T) => void;
@@ -56,6 +62,10 @@ export function TreeView<T extends BaseTreeItem>({
     onExpandItem?: (item: T) => void;
     onCollapseItem?: (item: T) => void;
     onHoverItem?: (item: T) => void;
+    childrenResolver?: (item: T) => Promise<T[]>;
+    lazyLoadStrategy?: LazyLoadStrategy;
+    hasChildrenKey?: string;
+    onChildrenLoaded?: (item: T, children: T[]) => void;
 }>) {
     const { isRtl } = useAppTheme();
 
@@ -63,6 +73,7 @@ export function TreeView<T extends BaseTreeItem>({
         Set<string | number>
     >(new Set());
     const [searchTerm, setSearchTerm] = useState("");
+    const [loadingItems, setLoadingItems] = useState<Set<string | number>>(new Set());
 
     const expandedItems = expandedItemsProp ?? internalExpandedItems;
     const setExpandedItems = useMemo(
@@ -71,9 +82,10 @@ export function TreeView<T extends BaseTreeItem>({
     );
 
     const toggleExpand = useCallback(
-        (item: T, event: React.MouseEvent) => {
+        async (item: T, event: React.MouseEvent) => {
             event.stopPropagation();
             if (expandedItems.has(item.id)) {
+                // Collapse
                 onCollapseItem?.(item);
                 if (!expandedItemsProp) {
                     setInternalExpandedItems((prev) => {
@@ -83,6 +95,24 @@ export function TreeView<T extends BaseTreeItem>({
                     });
                 }
             } else {
+                // Expand - check if need to load children
+                const children = item[childrenKey] as T[] | undefined;
+                const hasChildrenFlag = hasChildrenKey ? item[hasChildrenKey] : true;
+
+                if (childrenResolver && hasChildrenFlag && (!children || children.length === 0)) {
+                    setLoadingItems((prev) => new Set(prev).add(item.id));
+                    try {
+                        const loadedChildren = await childrenResolver(item);
+                        onChildrenLoaded?.(item, loadedChildren);
+                    } finally {
+                        setLoadingItems((prev) => {
+                            const s = new Set(prev);
+                            s.delete(item.id);
+                            return s;
+                        });
+                    }
+                }
+
                 onExpandItem?.(item);
                 if (!expandedItemsProp) {
                     setInternalExpandedItems((prev) => {
@@ -93,7 +123,16 @@ export function TreeView<T extends BaseTreeItem>({
                 }
             }
         },
-        [expandedItems, onCollapseItem, expandedItemsProp, onExpandItem],
+        [
+            expandedItems,
+            childrenResolver,
+            childrenKey,
+            hasChildrenKey,
+            onChildrenLoaded,
+            onCollapseItem,
+            expandedItemsProp,
+            onExpandItem,
+        ],
     );
 
     const flattenedItems = useMemo(() => {
@@ -316,6 +355,7 @@ export function TreeView<T extends BaseTreeItem>({
                         expandedItems={expandedItems}
                         itemRenderer={itemRenderer}
                         labelKey={labelKey}
+                        loadingItems={loadingItems}
                     />
                 ) : (
                     <Box

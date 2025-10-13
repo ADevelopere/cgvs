@@ -14,7 +14,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/client/utils/dateUtils";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
 import Image from "next/image";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 

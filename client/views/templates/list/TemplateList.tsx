@@ -15,7 +15,7 @@ import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { Folder } from "lucide-react";
 import { TreeView } from "@/client/components/treeView/TreeView";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";

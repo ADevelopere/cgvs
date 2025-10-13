@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useTemplateCategoryGraphQL } from "@/client/graphql/apollo/templateCategory.apollo";
+import { useTemplateCategoryGraphQL } from "@/client/views/(root)/(auth)/admin/categories/category.apollo";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/lib/logger";
@@ -209,10 +209,45 @@ export const useTemplateCategoryService = () => {
   [apollo, notifications, strings],
  );
 
+ /**
+  * Fetch children of a category by parent ID
+  * Returns empty array on error
+  */
+ const fetchCategoryChildren = useCallback(
+  async (parentCategoryId: number): Promise<Graphql.TemplateCategory[]> => {
+   try {
+    const result = await apollo.categoryChildrenQuery({ parentCategoryId });
+    if (result.data) {
+     return result.data.categoryChildren;
+    }
+
+    logger.error("Error fetching category children:", result.error);
+    notifications.show(strings.errorLoadingCategories, {
+     severity: "error",
+     autoHideDuration: 3000,
+    });
+    return [];
+   } catch (error) {
+    if (!isAbortError(error)) {
+     logger.error("Error fetching category children:", error);
+     notifications.show(strings.errorLoadingCategories, {
+      severity: "error",
+      autoHideDuration: 3000,
+     });
+    } else {
+     logger.debug("Query aborted (likely due to navigation):", error);
+    }
+    return [];
+   }
+  },
+  [apollo, notifications, strings],
+ );
+
  return useMemo(
   () => ({
    fetchCategories,
    fetchCategory,
+   fetchCategoryChildren,
    createCategory,
    updateCategory,
    deleteCategory,
@@ -220,6 +255,7 @@ export const useTemplateCategoryService = () => {
   [
    fetchCategories,
    fetchCategory,
+   fetchCategoryChildren,
    createCategory,
    updateCategory,
    deleteCategory,

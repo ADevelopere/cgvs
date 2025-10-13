@@ -1,49 +1,43 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const mainTemplateCategoryQueryDocument: TypedDocumentNode<Graphql.MainTemplateCategoryQuery> = gql`
-  query mainTemplateCategory {
-    mainTemplateCategory {
-      id
-      name
-      description
-      specialType
-      parentCategory {
-        id
-      }
-      order
-      subCategories {
-        id
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-export const suspenionTemplateCategoryQueryDocument: TypedDocumentNode<Graphql.SuspensionTemplateCategoryQuery> = gql`
-  query suspensionTemplateCategory {
-    suspensionTemplateCategory {
-      id
-      name
-      description
-      specialType
-      parentCategory {
-        id
-      }
-      order
-      subCategories {
-        id
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
 export const templateCategoriesQueryDocument: TypedDocumentNode<Graphql.TemplateCategoriesQuery> = gql`
   query templateCategories {
     templateCategories {
+      id
+      name
+      description
+      specialType
+      parentCategory {
+        id
+      }
+      order
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const rootTemplateCategoriesQueryDocument: TypedDocumentNode<Graphql.RootTemplateCategoriesQuery> = gql`
+  query rootTemplateCategories {
+    rootTemplateCategories {
+      id
+      name
+      description
+      specialType
+      order
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const categoryChildrenQueryDocument: TypedDocumentNode<
+  Graphql.CategoryChildrenQuery,
+  Graphql.CategoryChildrenQueryVariables
+> = gql`
+  query categoryChildren($parentCategoryId: Int!) {
+    categoryChildren(parentCategoryId: $parentCategoryId) {
       id
       name
       description
@@ -73,9 +67,6 @@ export const templateCategoryQueryDocument: TypedDocumentNode<
       }
       order
       subCategories {
-        id
-      }
-      templates {
         id
       }
       createdAt

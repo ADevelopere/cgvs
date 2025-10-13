@@ -18,7 +18,7 @@ import CardView from "./views/CardView";
 import ListView from "./views/ListView";
 import GridView from "./views/GridView";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/contexts/template/TemplateCategoryManagementContext";
+import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/categories.context";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 

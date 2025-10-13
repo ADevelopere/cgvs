@@ -8,7 +8,6 @@ import {
     DialogActions,
     Button,
     TextField,
-    Autocomplete,
     Box,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
@@ -16,8 +15,7 @@ import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 
 interface Props {
     open: boolean;
-    category: TemplateCategory | null;
-    categories: TemplateCategory[];
+    categoryToEdit: TemplateCategory | null;
     onClose: () => void;
     onSave: (data: {
         name: string;
@@ -28,26 +26,25 @@ interface Props {
 
 const CategoryEditDialog: React.FC<Props> = ({
     open,
-    category,
-    categories,
+    categoryToEdit,
     onClose,
     onSave,
 }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
-    const [name, setName] = useState(category?.name ?? "");
-    const [description, setDescription] = useState(category?.description ?? "");
+    const [name, setName] = useState(categoryToEdit?.name ?? "");
+    const [description, setDescription] = useState(categoryToEdit?.description ?? "");
     const [parentId, setParentId] = useState<number | null>(
-        category?.parentCategory?.id ?? null,
+        categoryToEdit?.parentCategory?.id ?? null,
     );
     const [error, setError] = useState("");
 
     useEffect(() => {
-        if (category?.name) {
-            setName(category.name);
-            setDescription(category.description ?? "");
-            setParentId(category.parentCategory?.id ?? null);
+        if (categoryToEdit?.name) {
+            setName(categoryToEdit.name);
+            setDescription(categoryToEdit.description ?? "");
+            setParentId(categoryToEdit.parentCategory?.id ?? null);
         }
-    }, [category]);
+    }, [categoryToEdit]);
 
     const handleSave = () => {
         if (name.length < 3) {
@@ -62,7 +59,7 @@ const CategoryEditDialog: React.FC<Props> = ({
         onSave({
             name,
             description: description || undefined,
-            parentId: category?.specialType ? undefined : parentId,
+            parentId: categoryToEdit?.specialType ? undefined : parentId,
         });
         handleClose();
     };
@@ -72,12 +69,13 @@ const CategoryEditDialog: React.FC<Props> = ({
         onClose();
     };
 
-    const availableParentCategories = categories.filter(
-        (c) =>
-            c.id !== category?.id &&
-            // Prevent circular references by excluding children
-            !category?.subCategories?.some((child) => child.id === c.id),
-    );
+    // todo: use server search,
+    // const availableParentCategories = categories.filter(
+    //     (c) =>
+    //         c.id !== categoryToEdit?.id &&
+    //         // Prevent circular references by excluding children
+    //         !categoryToEdit?.subCategories?.some((child) => child.id === c.id),
+    // );
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -113,7 +111,9 @@ const CategoryEditDialog: React.FC<Props> = ({
                         onChange={(e) => setDescription(e.target.value)}
                     />
 
-                    {!category?.specialType && (
+
+                    {/* todo: */}
+                    {/* {!categoryToEdit?.specialType && (
                         <Autocomplete
                             value={
                                 availableParentCategories.find(
@@ -141,7 +141,7 @@ const CategoryEditDialog: React.FC<Props> = ({
                                 />
                             )}
                         />
-                    )}
+                    )} */}
                 </Box>
             </DialogContent>
             <DialogActions>

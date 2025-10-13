@@ -22,7 +22,7 @@ export async function OPTIONS() {
     return new Response(null, {
         status: 204,
         headers: {
-            "Access-Control-Allow-Origin": process.env.NODE_ENV === "production" 
+            "Access-Control-Allow-Origin": process.env.NODE_ENV === "production"
                 ? process.env.ALLOWED_ORIGIN || "https://yourdomain.com"
                 : "http://localhost:3000",
             "Access-Control-Allow-Methods": "GET, POST, OPTIONS, HEAD",
@@ -50,13 +50,13 @@ async function withRateLimit(
     handler: (req: NextRequest) => Promise<Response>
 ): Promise<Response> {
     const identifier = getClientIdentifier(request);
-    
+
     // Check rate limit
     const { success, limit, remaining, reset } = await checkRateLimit(identifier, graphqlRateLimiter);
-    
+
     if (!success) {
         logger.warn(`Rate limit exceeded for ${identifier}`);
-        
+
         return NextResponse.json(
             {
                 errors: [{
@@ -79,16 +79,16 @@ async function withRateLimit(
             }
         );
     }
-    
+
     // Add rate limit headers to successful responses
     const response = await handler(request);
-    
+
     // Clone response to add headers
     const newResponse = new Response(response.body, response);
     newResponse.headers.set("X-RateLimit-Limit", limit.toString());
     newResponse.headers.set("X-RateLimit-Remaining", remaining.toString());
     newResponse.headers.set("X-RateLimit-Reset", reset.toString());
-    
+
     return newResponse;
 }
 

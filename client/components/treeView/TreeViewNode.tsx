@@ -1,6 +1,7 @@
 import type React from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
@@ -22,6 +23,7 @@ interface TreeViewNodeProps<T extends BaseTreeItem> {
     expandedItems: Set<string | number>;
     itemRenderer?: TreeViewItemRenderer<T>;
     labelKey: string;
+    loadingItems?: Set<string | number>;
 }
 
 export default function TreeViewNode<T extends BaseTreeItem>({
@@ -37,6 +39,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
     expandedItems,
     itemRenderer,
     labelKey,
+    loadingItems,
 }: Readonly<TreeViewNodeProps<T>>) {
     return (
         <>
@@ -45,6 +48,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                 const hasChildren = children && children.length > 0;
                 const isExpanded = expandedItems.has(item.id);
                 const isSelected = item.id === selectedItemId;
+                const isLoading = loadingItems?.has(item.id) || false;
 
                 return (
                     <Box key={item.id}>
@@ -82,6 +86,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                                 <IconButton
                                     size="small"
                                     onClick={(e) => toggleExpand(item, e)}
+                                    disabled={isLoading}
                                     sx={{
                                         padding: "4px",
                                         marginRight: "4px",
@@ -94,7 +99,9 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                                             "transform 0.15s ease-in-out",
                                     }}
                                 >
-                                    {isRtl ? (
+                                    {isLoading ? (
+                                        <CircularProgress size={20} />
+                                    ) : isRtl ? (
                                         <ChevronLeftIcon fontSize="medium" />
                                     ) : (
                                         <ChevronRightIcon fontSize="medium" />
@@ -127,6 +134,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                                     expandedItems={expandedItems}
                                     itemRenderer={itemRenderer}
                                     labelKey={labelKey}
+                                    loadingItems={loadingItems}
                                 />
                             </Box>
                         )}
