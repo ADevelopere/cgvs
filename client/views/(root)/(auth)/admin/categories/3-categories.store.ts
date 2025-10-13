@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 /**
  * Category tab types
@@ -22,8 +22,7 @@ interface CategoryUIState {
 
   // Lazy loading state
   expandedCategoryIds: Set<number>;
-  loadedChildrenIds: Set<number>;
-  categoryTreeMap: Map<number, number[]>; // categoryId -> childIds
+  fetchedCategoryIds: Set<number>; // Track which categories have had their children fetched
 
   // Actions
   setCurrentCategoryId: (id: number | null) => void;
@@ -41,8 +40,8 @@ interface CategoryUIState {
   // Lazy loading actions
   setExpandedCategoryIds: (ids: Set<number>) => void;
   toggleExpanded: (id: number) => void;
-  markChildrenLoaded: (categoryId: number, childIds: number[]) => void;
-  isChildrenLoaded: (categoryId: number) => boolean;
+  markAsFetched: (id: number) => void;
+  isFetched: (id: number) => boolean;
 
   reset: () => void;
 }
@@ -55,8 +54,7 @@ const initialState = {
   isSwitchWarningOpen: false,
   pendingCategoryId: null,
   expandedCategoryIds: new Set<number>(),
-  loadedChildrenIds: new Set<number>(),
-  categoryTreeMap: new Map<number, number[]>(),
+  fetchedCategoryIds: new Set<number>(),
 };
 
 /**
@@ -68,16 +66,18 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
     (set, get) => ({
       ...initialState,
 
-      setCurrentCategoryId: (id) => set({
-        currentCategoryId: id,
-        currentTemplateId: null, // Reset template when category changes
-      }),
+      setCurrentCategoryId: (id) =>
+        set({
+          currentCategoryId: id,
+          currentTemplateId: null, // Reset template when category changes
+        }),
 
       setCurrentTemplateId: (id) => set({ currentTemplateId: id }),
 
-      setActiveCategoryTab: (tab) => set({
-        activeCategoryTab: tab,
-      }),
+      setActiveCategoryTab: (tab) =>
+        set({
+          activeCategoryTab: tab,
+        }),
 
       setIsAddingTemplate: (adding) => set({ isAddingTemplate: adding }),
 
@@ -112,43 +112,69 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
         });
       },
 
-      closeSwitchWarning: () => set({
-        isSwitchWarningOpen: false,
-        pendingCategoryId: null,
-      }),
+      closeSwitchWarning: () =>
+        set({
+          isSwitchWarningOpen: false,
+          pendingCategoryId: null,
+        }),
 
       setExpandedCategoryIds: (ids) => set({ expandedCategoryIds: ids }),
 
-      toggleExpanded: (id) => set((state) => {
-        const newSet = new Set(state.expandedCategoryIds);
-        if (newSet.has(id)) {
-          newSet.delete(id);
-        } else {
+      toggleExpanded: (id) =>
+        set((state) => {
+          const newSet = new Set(state.expandedCategoryIds);
+          if (newSet.has(id)) {
+            newSet.delete(id);
+          } else {
+            newSet.add(id);
+          }
+          return { expandedCategoryIds: newSet };
+        }),
+
+      markAsFetched: (id) =>
+        set((state) => {
+          const newSet = new Set(state.fetchedCategoryIds);
           newSet.add(id);
-        }
-        return { expandedCategoryIds: newSet };
-      }),
+          return { fetchedCategoryIds: newSet };
+        }),
 
-      markChildrenLoaded: (categoryId, childIds) => set((state) => ({
-        loadedChildrenIds: new Set([...state.loadedChildrenIds, categoryId]),
-        categoryTreeMap: new Map(state.categoryTreeMap).set(categoryId, childIds),
-      })),
-
-      isChildrenLoaded: (categoryId) => get().loadedChildrenIds.has(categoryId),
+      isFetched: (id) => {
+        return get().fetchedCategoryIds.has(id);
+      },
 
       reset: () => set(initialState),
     }),
     {
-      name: 'template-category-ui-store',
+      name: "template-category-ui-store",
       storage: createJSONStorage(() => sessionStorage),
       // Persist selections for restoration
       partialize: (state) => ({
         currentCategoryId: state.currentCategoryId,
         currentTemplateId: state.currentTemplateId,
         activeCategoryTab: state.activeCategoryTab,
+        expandedCategoryIds: Array.from(state.expandedCategoryIds), // Convert Set to Array for JSON
+        fetchedCategoryIds: Array.from(state.fetchedCategoryIds), // Convert Set to Array for JSON
       }),
-    }
-  )
+      // Custom merge to handle Set conversion
+      merge: (persistedState, currentState) => {
+        const typedPersistedState =
+          persistedState as Partial<CategoryUIState> & {
+            expandedCategoryIds?: number[];
+            fetchedCategoryIds?: number[];
+          };
+        return {
+          ...currentState,
+          ...typedPersistedState,
+          expandedCategoryIds: new Set(
+            typedPersistedState?.expandedCategoryIds || [],
+          ), // Convert Array back to Set
+          fetchedCategoryIds: new Set(
+            typedPersistedState?.fetchedCategoryIds || [],
+          ), // Convert Array back to Set
+        };
+      },
+    },
+  ),
 );
 
 /**

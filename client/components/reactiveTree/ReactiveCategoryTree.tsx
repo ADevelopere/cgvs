@@ -9,25 +9,23 @@ import { ReactiveCategoryTreeNode } from "./ReactiveCategoryTreeNode";
 
 export function ReactiveCategoryTree<
   TNode extends ReactiveTreeNode,
-  TRootData,
-  TChildData,
-  TRootVariables,
-  TChildVariables
+  TResult = unknown,
+  TVariables = unknown
 >(
-  props: ReactiveTreeProps<TNode, TRootData, TChildData, TRootVariables, TChildVariables>,
+  props: ReactiveTreeProps<TNode, TResult, TVariables>,
 ) {
-  const { rootResolver, getRootItems, header, noItemsMessage, ...nodeProps } =
+  const { resolver, getItems, header, noItemsMessage, ...nodeProps } =
     props;
 
-  // Call useQuery at top level with root resolver
-  const rootQueryOptions = rootResolver();
+  // Call useQuery at top level with root resolver (parent = undefined)
+  const rootQueryOptions = resolver(undefined);
   const { data, loading, error } = useQuery(rootQueryOptions.query, {
     variables: rootQueryOptions.variables as Record<string, string | number | boolean>,
     skip: rootQueryOptions.skip,
     fetchPolicy: rootQueryOptions.fetchPolicy || "cache-first",
   });
 
-  const rootItems = data ? getRootItems(data as TRootData) : [];
+  const rootItems = data ? getItems(data as TResult) : [];
 
   if (loading) {
     return (
@@ -63,10 +61,12 @@ export function ReactiveCategoryTree<
           </Typography>
         ) : (
           rootItems.map((node: TNode) => (
-            <ReactiveCategoryTreeNode<TNode, TChildData, TChildVariables>
+            <ReactiveCategoryTreeNode<TNode, TResult, TVariables>
               key={node.id}
               node={node}
               level={0}
+              resolver={resolver}
+              getItems={getItems}
               {...nodeProps}
             />
           ))

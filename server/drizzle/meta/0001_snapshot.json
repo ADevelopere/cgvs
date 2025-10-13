@@ -1,5 +1,5 @@
 {
-  "id": "5852c9e3-ceee-460d-bd9f-bc51da8f6919",
+  "id": "e1610c8f-e8a3-4df9-9169-ba703b4a069e",
   "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
@@ -507,7 +507,7 @@
           "name": "order",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "special_type": {
           "name": "special_type",

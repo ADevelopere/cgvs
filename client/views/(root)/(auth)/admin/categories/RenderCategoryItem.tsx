@@ -24,7 +24,6 @@ import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
 
 type RenderCategoryItemProps = {
   category: TemplateCategory;
-  selectedCategoryId: number | null;
   handleCategoryClick: (category: TemplateCategory) => void;
   handleOpenEditDialog: (category: TemplateCategory) => void;
   deleteCategory: (categoryId: number) => void;
@@ -38,7 +37,6 @@ type RenderCategoryItemProps = {
 
 const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
   category,
-  selectedCategoryId,
   handleCategoryClick,
   handleOpenEditDialog,
   deleteCategory,
@@ -84,16 +82,10 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
       disablePadding
       key={category.id}
       sx={{
-        backgroundColor:
-          category.id === selectedCategoryId
-            ? theme.palette.action.focus
-            : "inherit",
         px: 0,
-        borderRadius: 2,
       }}
     >
       <ListItemButton
-        selected={category.id === selectedCategoryId}
         onClick={() => handleCategoryClick(category)}
         sx={{
           display: "flex",
@@ -102,7 +94,9 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
           width: "100%",
           p: 0,
           paddingInlineStart: 1,
-          borderRadius: 2,
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
         }}
       >
         <Box

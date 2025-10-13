@@ -7,33 +7,24 @@ export type QueryResolverOptions<TVariables> = {
   fetchPolicy?: "cache-first" | "cache-only" | "network-only";
 };
 
-export type RootResolver<TVariables> =
-  () => QueryResolverOptions<TVariables>;
-
-export type ChildrenResolver<TVariables> = (
-  parentId: string | number,
+export type ItemResolver<TNode extends ReactiveTreeNode, TVariables> = (
+  parent: TNode | undefined,
 ) => QueryResolverOptions<TVariables>;
 
-export interface ReactiveTreeNode {
-  id: string | number;
+export interface ReactiveTreeNode<TId = string | number> {
+  id: TId;
 }
 
 export interface ReactiveTreeProps<
   TNode extends ReactiveTreeNode,
-  TRootData,
-  TChildData,
-  TRootVariables,
-  TChildVariables,
+  TResult = unknown,
+  TVariables = unknown,
 > {
-  // Resolver for root-level items
-  rootResolver: RootResolver<TRootVariables>;
-
-  // Resolver for children given parent ID
-  childrenResolver: ChildrenResolver<TChildVariables>;
+  // Unified resolver for both root and children items
+  resolver: ItemResolver<TNode, TVariables>;
 
   // Extract items array from query result
-  getRootItems: (data: TRootData) => TNode[];
-  getChildItems: (data: TChildData) => TNode[];
+  getItems: (data: TResult) => TNode[];
 
   // Check if node has children (before loading)
   hasChildren?: (node: TNode) => boolean;
@@ -50,8 +41,16 @@ export interface ReactiveTreeProps<
   }) => React.ReactNode;
 
   // Selection
-  selectedItemId?: string | number | null;
+  selectedItemId?: TNode['id'] | null;
   onSelectItem?: (node: TNode) => void;
+
+  // Expansion state management (optional - uses internal state if not provided)
+  expandedItemIds?: Set<TNode['id']>;
+  onToggleExpand?: (nodeId: TNode['id']) => void;
+
+  // Fetch tracking (optional - uses internal state if not provided)
+  isFetched?: (nodeId: TNode['id']) => boolean;
+  onMarkAsFetched?: (nodeId: TNode['id']) => void;
 
   // Styling
   itemHeight?: number;

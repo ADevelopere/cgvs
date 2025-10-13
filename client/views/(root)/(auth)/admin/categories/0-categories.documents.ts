@@ -1,25 +1,11 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const rootTemplateCategoriesQueryDocument: TypedDocumentNode<Graphql.RootTemplateCategoriesQuery> = gql`
-  query rootTemplateCategories {
-    rootTemplateCategories {
-      id
-      name
-      description
-      specialType
-      order
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
 export const categoryChildrenQueryDocument: TypedDocumentNode<
   Graphql.CategoryChildrenQuery,
   Graphql.CategoryChildrenQueryVariables
 > = gql`
-  query categoryChildren($parentCategoryId: Int!) {
+  query categoryChildren($parentCategoryId: Int) {
     categoryChildren(parentCategoryId: $parentCategoryId) {
       id
       name
@@ -90,6 +76,29 @@ export const updateTemplateCategoryMutationDocument: TypedDocumentNode<
   }
 `;
 
+export const templatesByCategoryIdQueryDocument: TypedDocumentNode<
+  Graphql.TemplatesByCategoryIdQuery,
+  Graphql.TemplatesByCategoryIdQueryVariables
+> = gql`
+  query templatesByCategoryId($categoryId: Int!) {
+    templatesByCategoryId(categoryId: $categoryId) {
+      id
+      name
+      description
+      imageUrl
+      order
+      createdAt
+      updatedAt
+      category {
+        id
+      }
+      preSuspensionCategory {
+        id
+      }
+    }
+  }
+`;
+
 export const suspendedTemplatesQueryDocument: TypedDocumentNode<
   Graphql.SuspendedTemplatesQuery,
   Graphql.SuspendedTemplatesQueryVariables
@@ -125,12 +134,10 @@ export const createTemplateQueryDocument: TypedDocumentNode<
       imageUrl
       category {
         id
-        name
       }
       order
       preSuspensionCategory {
         id
-        name
       }
       createdAt
       updatedAt
@@ -150,12 +157,10 @@ export const suspendTemplateMutationDocument: TypedDocumentNode<
       imageUrl
       category {
         id
-        name
       }
       order
       preSuspensionCategory {
         id
-        name
       }
       createdAt
       updatedAt
@@ -175,12 +180,10 @@ export const unsuspendTemplateMutationDocument: TypedDocumentNode<
       imageUrl
       category {
         id
-        name
       }
       order
       preSuspensionCategory {
         id
-        name
       }
       createdAt
       updatedAt
@@ -200,12 +203,10 @@ export const updateTemplateMutationDocument: TypedDocumentNode<
       imageUrl
       category {
         id
-        name
       }
       order
       preSuspensionCategory {
         id
-        name
       }
       createdAt
       updatedAt
@@ -223,7 +224,6 @@ export const deleteTemplateMutationDocument: TypedDocumentNode<
       name
       category {
         id
-        name
       }
     }
   }

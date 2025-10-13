@@ -9,6 +9,7 @@ actions=(
   ["Reset Database"]="bun run server/db/scripts/resetDb.ts"
   ["Seed Database"]="bun run server/db/scripts/drizzleSeed.ts"
   ["Generate Drizzle Schema"]="bun drizzle-kit generate"
+  ["Drop Drizzle Schema"]="bun drizzle-kit drop"
   ["Run Migrations"]="bun run server/db/scripts/migrate.ts"
   ["Push Schema to DB"]="bun drizzle-kit push"
   ["Open Drizzle Studio"]="bun drizzle-kit studio"

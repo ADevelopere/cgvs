@@ -39,7 +39,7 @@ import { useRouter } from "next/navigation";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 import { useTemplateCategoryUIStore } from "./3-categories.store";
-import { useTemplateCategoryService } from "./2-category.service";
+import { useTemplateCategoryService } from "./2-category.gqlService";
 
 // Note: Tree traversal is no longer needed - ReactiveCategoryTree component handles hierarchical structure
 

@@ -22,7 +22,7 @@ export const templateCategories = pgTable(
         name: varchar("name", { length: 255 }).notNull(),
         description: text("description"),
         parentCategoryId: integer("parent_category_id"),
-        order: integer("order"),
+        order: integer("order").notNull(),
         specialType: templatecategorySpecialTypeEnum("special_type"),
         createdAt: timestamp("created_at", { precision: 3 }).notNull(),
         updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),

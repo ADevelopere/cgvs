@@ -3,8 +3,7 @@ export { ReactiveCategoryTreeNode } from "./ReactiveCategoryTreeNode";
 export type {
   ReactiveTreeNode,
   ReactiveTreeProps,
-  RootResolver,
-  ChildrenResolver,
+  ItemResolver,
   QueryResolverOptions,
 } from "./types";
 
