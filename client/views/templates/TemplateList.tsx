@@ -1,286 +1,26 @@
 "use client";
 
-import {
-  Box,
-  Paper,
-  styled,
-  useMediaQuery,
-  useTheme,
-  Autocomplete,
-  TextField,
-  IconButton,
-} from "@mui/material";
+import { Box, Paper, styled, useMediaQuery, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
-import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
+import { useAppTranslation } from "@/client/locale";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";
-import { useAppTranslation } from "@/client/locale";
-import { TemplatesPageProvider, useTemplatesList } from "./TemplatesContext";
-import { ReactiveCategoryTree } from "@/client/components/reactiveTree/ReactiveCategoryTree";
-import { useLazyQuery } from "@apollo/client/react";
-import * as Document from "@/client/graphql/sharedDocuments";
-import { categoryChildrenQueryDocument } from "@/client/graphql/sharedDocuments/template/templateCategory.documents";
-import {
-  CategoryChildrenQuery,
-  CategoryChildrenQueryVariables,
-  TemplateCategory,
-  TemplateCategoryWithParentTree,
-} from "@/client/graphql/generated/gql/graphql";
+import { TemplatesPageProvider } from "./TemplatesContext";
+import ToggleSideBarButton from "./ToggleSideBarButton";
+import CategoryTreePane from "./CategoryTreePane";
 
 const Main = styled("main")(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
 }));
 
-const ToggleSideBarButton: React.FC<{
-  open?: boolean;
-  toggleSidebar: () => void;
-  dashboardsidebarState: string;
-  zIndex: number;
-  isMobile: boolean;
-}> = ({ open, toggleSidebar, dashboardsidebarState, isMobile, zIndex }) => {
-  if (dashboardsidebarState === "expanded" && isMobile) {
-    return null;
-  }
-  return (
-    <Box
-      sx={{
-        width: { xs: 48, sm: 72 },
-        display: "flex",
-        justifyContent: "center",
-        position: "fixed",
-        zIndex: zIndex,
-        minHeight: 48,
-        alignItems: "center",
-      }}
-    >
-      <IconButton
-        onClick={toggleSidebar}
-        edge="start"
-        color="inherit"
-        aria-label="toggle sidebar"
-        sx={{
-          transition: "transform 0.3s ease-in-out",
-          transform: open ? "rotate(180deg)" : "rotate(0deg)",
-        }}
-      >
-        {open ? <CloseIcon /> : <MenuIcon />}
-      </IconButton>
-    </Box>
-  );
-};
-
-const CategoryTreePane: React.FC = () => {
-  const strings = useAppTranslation("templateCategoryTranslations");
-  const {
-    currentCategoryId,
-    clearCurrentCategory,
-    selectCategoryWithParentTree,
-    expandedCategoryIds,
-    toggleExpanded,
-    markAsFetched,
-    isFetched,
-  } = useTemplatesList();
-
-  // Category search for autocomplete
-  const [
-    searchCategories,
-    { data: searchCategoriesData, loading: searchLoading },
-  ] = useLazyQuery(Document.searchTemplateCategoriesQueryDocument);
-
-  const [currentCategory, setCurrentCategory] =
-    React.useState<TemplateCategoryWithParentTree | null>(null);
-  const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
-  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Sync currentCategory with currentCategoryId from store
-  React.useEffect(() => {
-    if (currentCategoryId === null) {
-      setCurrentCategory(null);
-    }
-  }, [currentCategoryId]);
-
-  const categoryOptions = React.useMemo(
-    () => searchCategoriesData?.searchTemplateCategories ?? [],
-    [searchCategoriesData?.searchTemplateCategories],
-  );
-
-  // Debounced search handler
-  const handleCategorySearch = React.useCallback(
-    (searchTerm: string) => {
-      setCategorySearchTerm(searchTerm);
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-
-      if (searchTerm.trim().length > 0) {
-        searchTimeoutRef.current = setTimeout(() => {
-          searchCategories({
-            variables: {
-              searchTerm,
-              limit: 10,
-              includeParentTree: true,
-            },
-          });
-        }, 300);
-      }
-    },
-    [searchCategories],
-  );
-
-  // Handle input change for autocomplete
-  const handleInputChange = React.useCallback(
-    (_event: React.SyntheticEvent, newInputValue: string) => {
-      handleCategorySearch(newInputValue);
-    },
-    [handleCategorySearch],
-  );
-
-  // Cleanup timeout on unmount
-  React.useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Callback adapters for expansion and fetch tracking
-  const handleToggleExpanded = React.useCallback(
-    (nodeId: string | number) => {
-      toggleExpanded(Number(nodeId));
-    },
-    [toggleExpanded],
-  );
-
-  const handleIsFetched = React.useCallback(
-    (nodeId: string | number) => {
-      return isFetched(Number(nodeId));
-    },
-    [isFetched],
-  );
-
-  const handleMarkAsFetched = React.useCallback(
-    (nodeId: string | number) => {
-      markAsFetched(Number(nodeId));
-    },
-    [markAsFetched],
-  );
-
-  const handleCategorySelect = React.useCallback(
-    (category: TemplateCategory) => {
-      selectCategoryWithParentTree(category.id, []);
-      // Also set the current category state for autocomplete display
-      setCurrentCategory({
-        id: category.id,
-        name: category.name,
-      });
-    },
-    [selectCategoryWithParentTree, setCurrentCategory],
-  );
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-      }}
-      onClick={(e) => {
-        // Click on empty area clears category selection
-        if (e.target === e.currentTarget) {
-          clearCurrentCategory();
-        }
-      }}
-    >
-      {/* Category Search Autocomplete - positioned at top, outside scrollable area */}
-      <Box
-        sx={{
-          px: 2,
-          pt: 2,
-          pb: 1,
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          backgroundColor: "background.paper",
-        }}
-      >
-        <Autocomplete
-          value={currentCategory}
-          onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
-            if (newValue) {
-              selectCategoryWithParentTree(
-                newValue.id,
-                newValue.parentTree ?? [],
-              );
-            } else {
-              clearCurrentCategory();
-            }
-          }}
-          inputValue={categorySearchTerm}
-          onInputChange={handleInputChange}
-          options={categoryOptions}
-          getOptionLabel={(option) => option.name ?? strings.unnamed}
-          loading={searchLoading}
-          loadingText={strings.loading}
-          noOptionsText={
-            categorySearchTerm.trim().length > 0
-              ? strings.noCategories
-              : strings.selectCategory
-          }
-          sx={{ width: "100%" }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={strings.selectCategory}
-              variant="outlined"
-              size="small"
-              placeholder={currentCategory ? undefined : strings.selectCategory}
-            />
-          )}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          renderOption={(props, option) => (
-            <li {...props} key={option.id}>
-              {option.name ?? strings.unnamed}
-            </li>
-          )}
-        />
-      </Box>
-
-      {/* Reactive Category Tree - now in scrollable area */}
-      <Box sx={{ flexGrow: 1, overflow: "auto", px: 2, pt: 1 }}>
-        <ReactiveCategoryTree<
-          TemplateCategory,
-          CategoryChildrenQuery,
-          CategoryChildrenQueryVariables
-        >
-          resolver={(parent) => ({
-            query: categoryChildrenQueryDocument,
-            variables: parent ? { parentCategoryId: parent.id } : undefined,
-            fetchPolicy: "cache-first",
-          })}
-          getItems={(data) => data.categoryChildren || []}
-          getNodeLabel={(node) => node.name || String(node.id)}
-          selectedItemId={currentCategoryId}
-          onSelectItem={handleCategorySelect}
-          expandedItemIds={expandedCategoryIds}
-          onToggleExpand={handleToggleExpanded}
-          isFetched={handleIsFetched}
-          onMarkAsFetched={handleMarkAsFetched}
-          header={strings.categories}
-          noItemsMessage={strings.noCategories}
-          itemHeight={48}
-        />
-      </Box>
-    </Box>
-  );
-};
-
 const TemplateList: React.FC = () => {
   const { sidebarState: dashboardsidebarState } = useDashboardLayout();
   const [open, setOpen] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const strings = useAppTranslation("templateCategoryTranslations");
 
   const toggleSidebar = () => {
     setOpen((prev) => !prev);
@@ -294,6 +34,7 @@ const TemplateList: React.FC = () => {
         dashboardsidebarState={dashboardsidebarState}
         zIndex={theme.zIndex.drawer + 1}
         isMobile={isMobile}
+        title={open ? strings.hideCategoriesPane : strings.showCategoriesPane}
       />
 
       {!isMobile && (

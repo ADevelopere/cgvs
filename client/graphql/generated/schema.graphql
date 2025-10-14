@@ -752,7 +752,7 @@ type TemplateCategoryWithParentTree {
   id: Int!
   name: String
   order: Int
-  parentTree: [Int!]
+  parentTree: [Int!]!
   specialType: String
   updatedAt: DateTime
 }

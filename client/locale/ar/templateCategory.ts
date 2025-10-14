@@ -6,6 +6,8 @@ export const templateCategory: TemplateCategoryTranslation = {
   theDeleted: "المحذوفة",
   toggleCategoriesPane: "فتح/إغلاق لوحة الفئات",
   toggleTemplatesPane: "فتح/إغلاق لوحة القوالب",
+  showCategoriesPane: "إظهار لوحة الفئات",
+  hideCategoriesPane: "إخفاء لوحة الفئات",
 
   // General terms
   categories: "الفئات",
@@ -27,6 +29,7 @@ export const templateCategory: TemplateCategoryTranslation = {
   addCategory: "إضافة فئة",
   addTemplate: "إضافة قالب",
   selectCategory: "اختر فئة",
+  searchCategories: "البحث في الفئات",
   selectParentCategory: "اختر الفئة الرئيسية",
   createChildCategory: "إنشاء فئة فرعية",
   addNewCategory: "إضافة فئة جديدة",

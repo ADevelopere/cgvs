@@ -3,6 +3,8 @@ export type TemplateCategoryTranslation = {
   theDeleted: string;
   toggleCategoriesPane: string;
   toggleTemplatesPane: string;
+  showCategoriesPane: string;
+  hideCategoriesPane: string;
 
   // General terms
   categories: string;
@@ -26,6 +28,7 @@ export type TemplateCategoryTranslation = {
 
   // Form and button actions
   selectCategory: string;
+  searchCategories: string;
   selectParentCategory: string;
   createChildCategory: string;
   addNewCategory: string;
