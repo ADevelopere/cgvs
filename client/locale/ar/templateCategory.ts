@@ -10,6 +10,7 @@ export const templateCategory: TemplateCategoryTranslation = {
   // General terms
   categories: "الفئات",
   templates: "القوالب",
+  allTemplates: "جميع القوالب",
   name: "الإسم",
   image: "الصورة",
   actions: "الإجراءات",

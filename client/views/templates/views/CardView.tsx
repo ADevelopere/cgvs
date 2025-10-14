@@ -14,7 +14,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/client/utils/dateUtils";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
+import { useTemplatesList } from "../TemplatesContext";
 import Image from "next/image";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
@@ -25,7 +25,7 @@ interface CardViewProps {
 const CardView: React.FC<CardViewProps> = ({ templates }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
 
-    const { manageTemplate } = useTemplateCategoryManagement();
+    const { manageTemplate } = useTemplatesList();
 
     return (
         <Grid

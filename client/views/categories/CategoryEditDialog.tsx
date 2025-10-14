@@ -17,7 +17,7 @@ import {
   TemplateCategory,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
-import { searchTemplateCategoriesQueryDocument } from "./0-categories.documents";
+import { searchTemplateCategoriesQueryDocument } from "@/client/graphql/sharedDocuments";
 
 interface Props {
   open: boolean;

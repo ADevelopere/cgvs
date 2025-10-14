@@ -5,8 +5,9 @@ import { ApolloCache, gql } from "@apollo/client";
 import * as Document from "./0-categories.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useMutation } from "@apollo/client/react";
-import { templateQueryDocument } from "@/client/graphql/sharedDocuments";
+import * as SharedDocument from "@/client/graphql/sharedDocuments";
 import { useTemplateCategoryUIStore } from "./3-categories.store";
+import { useTemplatesPageStore } from "../templates/templatesPage.store";
 
 type TemplateCategoryGraphQLContextType = {
   /**
@@ -103,7 +104,8 @@ export const useTemplateCategoryGraphQL = () => {
 export const TemplateCategoryGraphQLProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const store = useTemplateCategoryUIStore();
+  const categoryStore = useTemplateCategoryUIStore();
+  const templatesPageStore = useTemplatesPageStore();
 
   // Create category mutation - simplified with cache.updateQuery
   const [createTemplateCategoryMutation] = useMutation(
@@ -117,7 +119,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         // Add to parent's children query cache (null for root categories)
         cache.updateQuery<Graphql.CategoryChildrenQuery>(
           {
-            query: Document.categoryChildrenQueryDocument,
+            query: SharedDocument.categoryChildrenQueryDocument,
             variables: { parentCategoryId: parentId ?? null },
           },
           (existing) => {
@@ -161,7 +163,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         // Update single category query if it exists in cache
         cache.updateQuery<Graphql.TemplateCategoryQuery>(
           {
-            query: Document.templateCategoryQueryDocument,
+            query: SharedDocument.templateCategoryQueryDocument,
             variables: { id: updated.id },
           },
           (existing) => {
@@ -176,7 +178,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           // Same parent - update in place
           cache.updateQuery<Graphql.CategoryChildrenQuery>(
             {
-              query: Document.categoryChildrenQueryDocument,
+              query: SharedDocument.categoryChildrenQueryDocument,
               variables: { parentCategoryId: newParentId ?? null },
             },
             (existing) => {
@@ -193,7 +195,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           // Remove from old parent
           cache.updateQuery<Graphql.CategoryChildrenQuery>(
             {
-              query: Document.categoryChildrenQueryDocument,
+              query: SharedDocument.categoryChildrenQueryDocument,
               variables: { parentCategoryId: oldParentId ?? null },
             },
             (existing) => {
@@ -209,7 +211,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           // Add to new parent
           cache.updateQuery<Graphql.CategoryChildrenQuery>(
             {
-              query: Document.categoryChildrenQueryDocument,
+              query: SharedDocument.categoryChildrenQueryDocument,
               variables: { parentCategoryId: newParentId ?? null },
             },
             (existing) => {
@@ -236,7 +238,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         // Remove from parent's children query (null for root categories)
         cache.updateQuery<Graphql.CategoryChildrenQuery>(
           {
-            query: Document.categoryChildrenQueryDocument,
+            query: SharedDocument.categoryChildrenQueryDocument,
             variables: { parentCategoryId: parentId ?? null },
           },
           (existing) => {
@@ -267,18 +269,34 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Get full query variables from store
-        const queryVars = store.getTemplateQueryVariables(categoryId);
-
-        // Evict the templatesByCategoryId cache with full arguments to force refetch
+        // Evict cache for category page store
+        const categoryQueryVars =
+          categoryStore.getTemplateQueryVariables(categoryId);
         cache.evict({
           id: "ROOT_QUERY",
           fieldName: "templatesByCategoryId",
           args: {
             categoryId,
-            ...queryVars, // Include paginationArgs, filterArgs, orderBy
+            ...categoryQueryVars,
           },
         });
+
+        // Evict cache for templates page store (if category matches or if viewing all)
+        const templatesPageCategoryId = templatesPageStore.currentCategoryId;
+        if (
+          templatesPageCategoryId === categoryId ||
+          templatesPageCategoryId === null
+        ) {
+          cache.evict({
+            id: "ROOT_QUERY",
+            fieldName: "templatesByCategoryId",
+            args: {
+              categoryId: templatesPageCategoryId ?? undefined,
+              ...templatesPageStore.templateQueryVariables,
+            },
+          });
+        }
+
         cache.gc();
       },
     },
@@ -297,7 +315,7 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         let existingTemplateData: Graphql.TemplateQuery | null = null;
         try {
           existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
-            query: templateQueryDocument,
+            query: SharedDocument.templateQueryDocument,
             variables: { id: updatedTemplate.id },
           });
         } catch {
@@ -319,10 +337,9 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Get full query variables from store for old category
-        const oldQueryVars = store.getTemplateQueryVariables(oldCategoryId);
-
-        // Evict cache for old category with full arguments
+        // Evict cache for category page store
+        const oldQueryVars =
+          categoryStore.getTemplateQueryVariables(oldCategoryId);
         cache.evict({
           id: "ROOT_QUERY",
           fieldName: "templatesByCategoryId",
@@ -332,15 +349,32 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           },
         });
 
-        // If category changed, also evict cache for new category
         if (oldCategoryId !== newCategoryId) {
-          const newQueryVars = store.getTemplateQueryVariables(newCategoryId);
+          const newQueryVars =
+            categoryStore.getTemplateQueryVariables(newCategoryId);
           cache.evict({
             id: "ROOT_QUERY",
             fieldName: "templatesByCategoryId",
             args: {
               categoryId: newCategoryId,
               ...newQueryVars,
+            },
+          });
+        }
+
+        // Evict cache for templates page store
+        const templatesPageCategoryId = templatesPageStore.currentCategoryId;
+        if (
+          templatesPageCategoryId === oldCategoryId ||
+          templatesPageCategoryId === newCategoryId ||
+          templatesPageCategoryId === null
+        ) {
+          cache.evict({
+            id: "ROOT_QUERY",
+            fieldName: "templatesByCategoryId",
+            args: {
+              categoryId: templatesPageCategoryId ?? undefined,
+              ...templatesPageStore.templateQueryVariables,
             },
           });
         }
@@ -365,18 +399,34 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Get full query variables from store
-        const queryVars = store.getTemplateQueryVariables(categoryId);
-
-        // Evict the templatesByCategoryId cache with full arguments to force refetch
+        // Evict cache for category page store
+        const categoryQueryVars =
+          categoryStore.getTemplateQueryVariables(categoryId);
         cache.evict({
           id: "ROOT_QUERY",
           fieldName: "templatesByCategoryId",
           args: {
             categoryId,
-            ...queryVars,
+            ...categoryQueryVars,
           },
         });
+
+        // Evict cache for templates page store (if category matches or if viewing all)
+        const templatesPageCategoryId = templatesPageStore.currentCategoryId;
+        if (
+          templatesPageCategoryId === categoryId ||
+          templatesPageCategoryId === null
+        ) {
+          cache.evict({
+            id: "ROOT_QUERY",
+            fieldName: "templatesByCategoryId",
+            args: {
+              categoryId: templatesPageCategoryId ?? undefined,
+              ...templatesPageStore.templateQueryVariables,
+            },
+          });
+        }
+
         cache.gc();
       },
     },
@@ -399,18 +449,33 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Get full query variables from store for old category
-        const queryVars = store.getTemplateQueryVariables(oldCategoryId);
-
-        // Evict the templatesByCategoryId cache for old category with full arguments
+        // Evict cache for category page store
+        const categoryQueryVars =
+          categoryStore.getTemplateQueryVariables(oldCategoryId);
         cache.evict({
           id: "ROOT_QUERY",
           fieldName: "templatesByCategoryId",
           args: {
             categoryId: oldCategoryId,
-            ...queryVars,
+            ...categoryQueryVars,
           },
         });
+
+        // Evict cache for templates page store (if category matches or if viewing all)
+        const templatesPageCategoryId = templatesPageStore.currentCategoryId;
+        if (
+          templatesPageCategoryId === oldCategoryId ||
+          templatesPageCategoryId === null
+        ) {
+          cache.evict({
+            id: "ROOT_QUERY",
+            fieldName: "templatesByCategoryId",
+            args: {
+              categoryId: templatesPageCategoryId ?? undefined,
+              ...templatesPageStore.templateQueryVariables,
+            },
+          });
+        }
 
         // Evict suspended templates cache
         cache.evict({
@@ -446,18 +511,33 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           fieldName: "suspendedTemplates",
         });
 
-        // Get full query variables from store for new category
-        const queryVars = store.getTemplateQueryVariables(newCategoryId);
-
-        // Evict the templatesByCategoryId cache for new category with full arguments
+        // Evict cache for category page store
+        const categoryQueryVars =
+          categoryStore.getTemplateQueryVariables(newCategoryId);
         cache.evict({
           id: "ROOT_QUERY",
           fieldName: "templatesByCategoryId",
           args: {
             categoryId: newCategoryId,
-            ...queryVars,
+            ...categoryQueryVars,
           },
         });
+
+        // Evict cache for templates page store (if category matches or if viewing all)
+        const templatesPageCategoryId = templatesPageStore.currentCategoryId;
+        if (
+          templatesPageCategoryId === newCategoryId ||
+          templatesPageCategoryId === null
+        ) {
+          cache.evict({
+            id: "ROOT_QUERY",
+            fieldName: "templatesByCategoryId",
+            args: {
+              categoryId: templatesPageCategoryId ?? undefined,
+              ...templatesPageStore.templateQueryVariables,
+            },
+          });
+        }
 
         cache.gc();
       },
