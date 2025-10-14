@@ -5,5 +5,5 @@
  */
 
 export * from './useTemplateUIStore';
-export * from '../views/(root)/(auth)/admin/categories/3-categories.store';
+export * from '../views/categories/3-categories.store';
 
