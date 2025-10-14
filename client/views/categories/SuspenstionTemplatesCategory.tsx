@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import { Box, Button } from "@mui/material";
-import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridSortModel,
+  GridRenderCellParams,
+} from "@mui/x-data-grid";
 import { useQuery } from "@apollo/client/react";
 import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
 import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
+import { getTemplateImageUrl } from "@/client/utils/template/getTemplateImageUrl";
 import * as sharedDocuments from "@/client/graphql/sharedDocuments";
 
 interface TemplateRow {
@@ -17,6 +22,7 @@ interface TemplateRow {
   name: string;
   createdAt: string;
   imageUrl?: string | null;
+  trashed_at?: string | null;
 }
 
 const SuspenstionTemplatesCategory: React.FC = () => {
@@ -45,7 +51,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       headerName: strings.image,
       width: 100,
       sortable: false,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams<TemplateRow>) => (
         <Box
           sx={{
             display: "flex",
@@ -55,7 +61,10 @@ const SuspenstionTemplatesCategory: React.FC = () => {
         >
           <Box
             component="img"
-            src={params.row.imageUrl ?? TEMPLATE_IMAGE_PLACEHOLDER_URL}
+            src={getTemplateImageUrl(
+              { imageUrl: params.row.imageUrl },
+              theme.palette.mode === "dark",
+            )}
             alt={`${params.row.name} ${strings.image}`}
             sx={{
               width: 60,
@@ -76,20 +85,22 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       field: "createdAt",
       headerName: strings.createdAt,
       flex: 1,
-      renderCell: (params) => formatDate(params.row.createdAt),
+      renderCell: (params: GridRenderCellParams<TemplateRow>) =>
+        formatDate(params.row.createdAt),
     },
     {
       field: "trashed_at",
       headerName: strings.deletedAt,
       flex: 1,
-      renderCell: (params) => formatDate(params.row.trashed_at),
+      renderCell: (params: GridRenderCellParams<TemplateRow>) =>
+        formatDate(params.row.trashed_at),
     },
     {
       field: "actions",
       headerName: strings.actions,
       width: 150,
       sortable: false,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams<TemplateRow>) => (
         <Button
           variant="outlined"
           size="small"

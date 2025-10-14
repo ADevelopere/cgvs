@@ -79,13 +79,6 @@ export const TemplatesPageProvider: React.FC<{
     });
   }, [setNavigation]);
 
-  // Reset store on unmount
-  useEffect(() => {
-    return () => {
-      useTemplatesPageStore.getState().reset();
-    };
-  }, []);
-
   const manageTemplate = React.useCallback(
     (templateId: number) => {
       router.push(`/admin/templates/${templateId}/manage`);
