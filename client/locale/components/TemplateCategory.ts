@@ -165,4 +165,5 @@ export type TemplateCategoryTranslation = {
   showing: string;
   of: string;
   perPage: string;
+  goToPage: string;
 };
