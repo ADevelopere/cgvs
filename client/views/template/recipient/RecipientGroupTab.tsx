@@ -7,7 +7,7 @@ import {
     RecipientGroupManagementProvider,
     useRecipientGroupManagement,
 } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
 import EmptyGroupsState from "./EmptyGroupsState";
 import RecipientGroupList from "./RecipientGroupList";

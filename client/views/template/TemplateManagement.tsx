@@ -7,7 +7,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
  useTemplateManagement,
  TemplateManagementTabType,
-} from "@/client/contexts/template/TemplateManagementContext";
+} from "@/client/views/template/TemplateManagementContext";
 import BasicInfoTab from "./BasicInfoTab";
 // import PreviewTab from "./tabs/PreviewTab";
 // import { TemplateRecipientsProvider } from "@/contexts/template/TemplateRecipientsContext";

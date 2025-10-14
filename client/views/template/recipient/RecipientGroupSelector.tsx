@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useRecipientManagement } from "@/client/contexts/recipient";
 import { useAppTranslation } from "@/client/locale";
 

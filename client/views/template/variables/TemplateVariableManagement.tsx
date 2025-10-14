@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import TemplateVariableModal from "./TemplateVariableModal";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateVariableTranslation } from "@/client/locale/components";
