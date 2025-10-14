@@ -44,19 +44,21 @@ const TemplateEditDialog: React.FC<Props> = ({
   const [error, setError] = React.useState("");
 
   // Category search for autocomplete
-  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] =
-    useLazyQuery(searchTemplateCategoriesQueryDocument);
+  const [
+    searchCategories,
+    { data: searchCategoriesData, loading: searchLoading },
+  ] = useLazyQuery(searchTemplateCategoriesQueryDocument);
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
-    [searchCategoriesData?.searchTemplateCategories]
+    [searchCategoriesData?.searchTemplateCategories],
   );
 
   const selectedCategory = React.useMemo(
     () => categoryOptions.find((c) => c.id === categoryId) ?? null,
-    [categoryOptions, categoryId]
+    [categoryOptions, categoryId],
   );
 
   // Debounced search handler
@@ -79,7 +81,7 @@ const TemplateEditDialog: React.FC<Props> = ({
         }, 300);
       }
     },
-    [searchCategories]
+    [searchCategories],
   );
 
   // Cleanup timeout on unmount
@@ -171,13 +173,10 @@ const TemplateEditDialog: React.FC<Props> = ({
               handleCategorySearch(newInputValue);
             }}
             options={categoryOptions}
-            getOptionLabel={(option) => {
-              if (!option.name) {
-                return "";
-              }
-              return option.name;
-            }}
+            getOptionLabel={(option) => option.name ?? strings.unnamed}
             loading={searchLoading}
+            loadingText={strings.loading}
+            noOptionsText={strings.noCategories}
             renderInput={(params) => (
               <TextField
                 {...params}
