@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Box, Button } from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useQuery } from "@apollo/client/react";
-import { useTemplateCategoryManagement } from "@/client/views/(root)/(auth)/admin/categories/4-categories.context";
+import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
 import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";

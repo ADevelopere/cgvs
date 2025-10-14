@@ -4,7 +4,7 @@ const config: CodegenConfig = {
     overwrite: true,
     schema: "./client/graphql/generated/schema.graphql",
     documents: [
-        "./client/graphql/documents/**/*.ts",
+        "./client/graphql/sharedDocuments/**/*.ts",
         "./client/views/**/*.documents.ts",
     ],
     ignoreNoDocuments: true,
