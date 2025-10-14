@@ -38,7 +38,10 @@ import {
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
-import { searchTemplateCategoriesQueryDocument } from "./0-categories.documents";
+import {
+  searchTemplateCategoriesQueryDocument,
+  templateCategoryQueryDocument,
+} from "./0-categories.documents";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const {
@@ -56,9 +59,34 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   // Get query variables from store for the current category
   const queryVariables = React.useMemo(
-    () => (currentCategoryId ? store.getTemplateQueryVariables(currentCategoryId) : undefined),
-    [currentCategoryId, store]
+    () =>
+      currentCategoryId
+        ? store.getTemplateQueryVariables(currentCategoryId)
+        : undefined,
+    [currentCategoryId, store],
   );
+
+  // Fetch current category for autocomplete display
+  const { data: currentCategoryData } = useQuery(
+    templateCategoryQueryDocument,
+    {
+      variables: {
+        id: currentCategoryId ?? 0,
+      },
+      skip: !currentCategoryId,
+      fetchPolicy: "cache-first",
+    },
+  );
+
+  const currentCategory = React.useMemo(() => {
+    const cat = currentCategoryData?.templateCategory;
+    if (!cat) return null;
+    // Convert to TemplateCategoryWithParentTree format with empty parentTree
+    return {
+      ...cat,
+      parentTree: [],
+    } as TemplateCategoryWithParentTree;
+  }, [currentCategoryData?.templateCategory]);
 
   // Fetch templates for current category
   const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
@@ -96,14 +124,16 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   );
 
   // Category search for autocomplete
-  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] =
-    useLazyQuery(searchTemplateCategoriesQueryDocument);
+  const [
+    searchCategories,
+    { data: searchCategoriesData, loading: searchLoading },
+  ] = useLazyQuery(searchTemplateCategoriesQueryDocument);
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
-    [searchCategoriesData?.searchTemplateCategories]
+    [searchCategoriesData?.searchTemplateCategories],
   );
 
   // Debounced search handler
@@ -126,7 +156,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         }, 300);
       }
     },
-    [searchCategories]
+    [searchCategories],
   );
 
   // Cleanup timeout on unmount
@@ -239,7 +269,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategoryId, queryVariables, store]
+    [currentCategoryId, queryVariables, store],
   );
 
   const handlePageSizeChange = React.useCallback(
@@ -255,7 +285,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategoryId, queryVariables, store]
+    [currentCategoryId, queryVariables, store],
   );
 
   return (
@@ -295,12 +325,12 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
           }}
         >
           <Autocomplete
-            value={null}
+            value={currentCategory}
             onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
               if (newValue) {
                 store.selectCategoryWithParentTree(
                   newValue.id,
-                  newValue.parentTree
+                  newValue.parentTree,
                 );
               }
             }}
@@ -309,13 +339,10 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
               handleCategorySearch(newInputValue);
             }}
             options={categoryOptions}
-            getOptionLabel={(option) => {
-              if (!option.name) {
-                return "";
-              }
-              return option.name;
-            }}
+            getOptionLabel={(option) => option.name ?? strings.unnamed}
             loading={searchLoading}
+            loadingText={strings.loading}
+            noOptionsText={strings.noCategories}
             sx={{ width: "100%" }}
             renderInput={(params) => (
               <TextField
@@ -329,7 +356,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             isOptionEqualToValue={(option, value) => option.id === value.id}
             renderOption={(props, option) => (
               <li {...props} key={option.id}>
-                {option.name}
+                {option.name ?? strings.unnamed}
               </li>
             )}
           />
@@ -499,8 +526,8 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         {/* Pagination info */}
         {pageInfo && pageInfo.total > 0 && (
           <Typography variant="body2" color="text.secondary">
-            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0} {strings.of}{" "}
-            {pageInfo.total}
+            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0}{" "}
+            {strings.of} {pageInfo.total}
           </Typography>
         )}
 

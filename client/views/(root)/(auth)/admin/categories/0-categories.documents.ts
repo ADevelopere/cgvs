@@ -1,6 +1,23 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
+export const templateCategoryQueryDocument: TypedDocumentNode<
+  Graphql.TemplateCategoryQuery,
+  Graphql.TemplateCategoryQueryVariables
+> = gql`
+  query templateCategory($id: Int!) {
+    templateCategory(id: $id) {
+      id
+      name
+      description
+      specialType
+      order
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const categoryChildrenQueryDocument: TypedDocumentNode<
   Graphql.CategoryChildrenQuery,
   Graphql.CategoryChildrenQueryVariables
