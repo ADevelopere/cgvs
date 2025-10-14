@@ -78,6 +78,7 @@ type Documents = {
     "\n  mutation unsuspendTemplate($id: Int!) {\n    unsuspendTemplate(id: $id) {\n      id\n      name\n      description\n      imageUrl\n      category {\n        id\n      }\n      order\n      preSuspensionCategory {\n        id\n      }\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UnsuspendTemplateDocument,
     "\n  mutation updateTemplate($input: TemplateUpdateInput!) {\n    updateTemplate(input: $input) {\n      id\n      name\n      description\n      imageUrl\n      category {\n        id\n      }\n      order\n      preSuspensionCategory {\n        id\n      }\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateTemplateDocument,
     "\n  mutation deleteTemplate($id: Int!) {\n    deleteTemplate(id: $id) {\n      id\n      name\n      category {\n        id\n      }\n    }\n  }\n": typeof types.DeleteTemplateDocument,
+    "\n  query searchTemplateCategories(\n    $searchTerm: String!\n    $limit: Int\n    $includeParentTree: Boolean\n  ) {\n    searchTemplateCategories(\n      searchTerm: $searchTerm\n      limit: $limit\n      includeParentTree: $includeParentTree\n    ) {\n      id\n      name\n      description\n      specialType\n      order\n      parentTree\n    }\n  }\n": typeof types.SearchTemplateCategoriesDocument,
 };
 const documents: Documents = {
     "\n    query me {\n        me {\n            createdAt\n            email\n            emailVerifiedAt\n            id\n            name\n            updatedAt\n        }\n    }\n": types.MeDocument,
@@ -144,6 +145,7 @@ const documents: Documents = {
     "\n  mutation unsuspendTemplate($id: Int!) {\n    unsuspendTemplate(id: $id) {\n      id\n      name\n      description\n      imageUrl\n      category {\n        id\n      }\n      order\n      preSuspensionCategory {\n        id\n      }\n      createdAt\n      updatedAt\n    }\n  }\n": types.UnsuspendTemplateDocument,
     "\n  mutation updateTemplate($input: TemplateUpdateInput!) {\n    updateTemplate(input: $input) {\n      id\n      name\n      description\n      imageUrl\n      category {\n        id\n      }\n      order\n      preSuspensionCategory {\n        id\n      }\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateTemplateDocument,
     "\n  mutation deleteTemplate($id: Int!) {\n    deleteTemplate(id: $id) {\n      id\n      name\n      category {\n        id\n      }\n    }\n  }\n": types.DeleteTemplateDocument,
+    "\n  query searchTemplateCategories(\n    $searchTerm: String!\n    $limit: Int\n    $includeParentTree: Boolean\n  ) {\n    searchTemplateCategories(\n      searchTerm: $searchTerm\n      limit: $limit\n      includeParentTree: $includeParentTree\n    ) {\n      id\n      name\n      description\n      specialType\n      order\n      parentTree\n    }\n  }\n": types.SearchTemplateCategoriesDocument,
 };
 
 /**
@@ -416,6 +418,10 @@ export function graphql(source: "\n  mutation updateTemplate($input: TemplateUpd
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation deleteTemplate($id: Int!) {\n    deleteTemplate(id: $id) {\n      id\n      name\n      category {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation deleteTemplate($id: Int!) {\n    deleteTemplate(id: $id) {\n      id\n      name\n      category {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query searchTemplateCategories(\n    $searchTerm: String!\n    $limit: Int\n    $includeParentTree: Boolean\n  ) {\n    searchTemplateCategories(\n      searchTerm: $searchTerm\n      limit: $limit\n      includeParentTree: $includeParentTree\n    ) {\n      id\n      name\n      description\n      specialType\n      order\n      parentTree\n    }\n  }\n"): (typeof documents)["\n  query searchTemplateCategories(\n    $searchTerm: String!\n    $limit: Int\n    $includeParentTree: Boolean\n  ) {\n    searchTemplateCategories(\n      searchTerm: $searchTerm\n      limit: $limit\n      includeParentTree: $includeParentTree\n    ) {\n      id\n      name\n      description\n      specialType\n      order\n      parentTree\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

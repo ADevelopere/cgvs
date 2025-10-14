@@ -16,10 +16,12 @@ import {
   FormControl,
   InputLabel,
   SelectChangeEvent,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { GraduationCap, SquareArrowOutUpRight, EditIcon } from "lucide-react";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useLazyQuery } from "@apollo/client/react";
 
 import EmptyStateIllustration from "@/client/components/common/EmptyStateIllustration";
 import EditableTypography from "@/client/components/input/EditableTypography";
@@ -33,8 +35,10 @@ import { useTemplateCategoryUIStore } from "./3-categories.store";
 import {
   Template,
   TemplateUpdateInput,
+  TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 import * as Document from "@/client/graphql/documents";
+import { searchTemplateCategoriesQueryDocument } from "./0-categories.documents";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const {
@@ -77,20 +81,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     [templatesByCategoryIdQuery?.templatesByCategoryId?.pageInfo],
   );
 
-  // todo: use server side query, or read from apollo cache only
-  // Fetch all categories for the autocomplete
-  // const { data: categoriesData } = useQuery(
-  //     Document.templateCategoriesQueryDocument,
-  //     {
-  //         fetchPolicy: "cache-first",
-  //     },
-  // );
-
-  // const regularCategories: TemplateCategory[] = [];
-  // categoriesData?.templateCategories?.filter(
-  //     (cat) => cat.specialType !== "Suspension",
-  // ) ?? [];
-
   const { theme } = useAppTheme();
   const [tempTemplate, setTempTemplate] = React.useState<{
     id: string;
@@ -104,6 +94,49 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const [templateToEdit, setTemplateToEdit] = React.useState<Template | null>(
     null,
   );
+
+  // Category search for autocomplete
+  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] =
+    useLazyQuery(searchTemplateCategoriesQueryDocument);
+  const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const categoryOptions = React.useMemo(
+    () => searchCategoriesData?.searchTemplateCategories ?? [],
+    [searchCategoriesData?.searchTemplateCategories]
+  );
+
+  // Debounced search handler
+  const handleCategorySearch = React.useCallback(
+    (searchTerm: string) => {
+      setCategorySearchTerm(searchTerm);
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      if (searchTerm.trim().length > 0) {
+        searchTimeoutRef.current = setTimeout(() => {
+          searchCategories({
+            variables: {
+              searchTerm,
+              limit: 10,
+              includeParentTree: true,
+            },
+          });
+        }, 300);
+      }
+    },
+    [searchCategories]
+  );
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const validateTemplateName = (name: string) => {
     if (name.length < 3) return strings.nameTooShort;
@@ -253,26 +286,36 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         </Typography>
 
         {/* category selector */}
-        {/* <Box
+        <Box
           sx={{
             display: "flex",
             alignItems: "center",
             p: 1,
-            // flexGrow: 1,
+            flexGrow: 1,
           }}
         >
           <Autocomplete
-            value={currentCategory}
-            onChange={(_, newValue) => {
-              trySelectCategory(newValue?.id ?? null);
+            value={null}
+            onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
+              if (newValue) {
+                store.selectCategoryWithParentTree(
+                  newValue.id,
+                  newValue.parentTree
+                );
+              }
             }}
-            options={Array.isArray(regularCategories) ? regularCategories : []}
+            inputValue={categorySearchTerm}
+            onInputChange={(_, newInputValue) => {
+              handleCategorySearch(newInputValue);
+            }}
+            options={categoryOptions}
             getOptionLabel={(option) => {
               if (!option.name) {
-                throw new Error("Category name is required");
+                return "";
               }
               return option.name;
             }}
+            loading={searchLoading}
             sx={{ width: "100%" }}
             renderInput={(params) => (
               <TextField
@@ -280,10 +323,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                 label={strings.selectCategory}
                 variant="outlined"
                 size="small"
-                disabled={
-                  !Array.isArray(regularCategories) ||
-                  regularCategories.length === 0
-                }
+                placeholder={strings.selectCategory}
               />
             )}
             isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -293,7 +333,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
               </li>
             )}
           />
-        </Box> */}
+        </Box>
       </Box>
 
       {/* Horizontal loading progress bar */}

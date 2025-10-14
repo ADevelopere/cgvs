@@ -50,6 +50,12 @@ interface CategoryUIState {
   confirmSwitch: () => void;
   closeSwitchWarning: () => void;
 
+  // Category selection with parent tree
+  selectCategoryWithParentTree: (
+    categoryId: number,
+    parentTree: number[]
+  ) => void;
+
   // Lazy loading actions
   setExpandedCategoryIds: (ids: Set<number>) => void;
   toggleExpanded: (id: number) => void;
@@ -141,6 +147,26 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
           isSwitchWarningOpen: false,
           pendingCategoryId: null,
         }),
+
+      selectCategoryWithParentTree: (categoryId, parentTree) => {
+        set((state) => {
+          const newExpandedIds = new Set(state.expandedCategoryIds);
+          const newFetchedIds = new Set(state.fetchedCategoryIds);
+
+          // Mark all IDs in parentTree as fetched and expanded
+          parentTree.forEach((id) => {
+            newExpandedIds.add(id);
+            newFetchedIds.add(id);
+          });
+
+          return {
+            currentCategoryId: categoryId,
+            currentTemplateId: null,
+            expandedCategoryIds: newExpandedIds,
+            fetchedCategoryIds: newFetchedIds,
+          };
+        });
+      },
 
       setExpandedCategoryIds: (ids) => set({ expandedCategoryIds: ids }),
 

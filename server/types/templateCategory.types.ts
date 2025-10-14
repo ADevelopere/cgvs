@@ -29,3 +29,7 @@ export type TemplateCategoryUpdateInput = {
     description?: string | null;
     parentCategoryId?: number | null;
 };
+
+export type TemplateCategoryWithParentTree = TemplateCategorySelectType & {
+    parentTree: number[]; // [currentId, parentId, grandparentId, ...]
+};

@@ -547,6 +547,7 @@ type Query {
     limit: Int = 50
     searchTerm: String!
   ): StorageObjectList
+  searchTemplateCategories(includeParentTree: Boolean, limit: Int, searchTerm: String!): [TemplateCategoryWithParentTree!]!
   storageStats(
     """
     Folder path to get stats for (optional, gets stats for entire bucket if not specified)
@@ -743,6 +744,17 @@ input TemplateCategoryUpdateInput {
   id: Int!
   name: String!
   parentCategoryId: Int
+}
+
+type TemplateCategoryWithParentTree {
+  createdAt: DateTime
+  description: String
+  id: Int!
+  name: String
+  order: Int
+  parentTree: [Int!]!
+  specialType: String
+  updatedAt: DateTime
 }
 
 input TemplateCreateInput {

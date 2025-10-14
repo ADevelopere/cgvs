@@ -1,5 +1,8 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { TemplateCategoryPothosObject } from "@/server/graphql/pothos";
+import {
+  TemplateCategoryPothosObject,
+  TemplateCategoryWithParentTreePothosObject,
+} from "@/server/graphql/pothos";
 import { TemplateCategoryRepository } from "@/server/db/repo";
 
 gqlSchemaBuilder.queryFields((t) => ({
@@ -42,6 +45,22 @@ gqlSchemaBuilder.queryFields((t) => ({
     resolve: async (_query, args) =>
       await TemplateCategoryRepository.findCategoryChildren(
         args.parentCategoryId,
+      ),
+  }),
+
+  searchTemplateCategories: t.field({
+    type: [TemplateCategoryWithParentTreePothosObject],
+    nullable: false,
+    args: {
+      searchTerm: t.arg.string({ required: true }),
+      limit: t.arg.int({ required: false }),
+      includeParentTree: t.arg.boolean({ required: false }),
+    },
+    resolve: async (_query, args) =>
+      await TemplateCategoryRepository.searchByName(
+        args.searchTerm,
+        args.limit ?? 10,
+        args.includeParentTree ?? false,
       ),
   }),
 }));

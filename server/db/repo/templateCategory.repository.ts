@@ -1,11 +1,12 @@
 import { db } from "@/server/db/drizzleDb";
-import { eq, inArray, max, isNull, count, and, not, or } from "drizzle-orm";
+import { eq, inArray, max, isNull, count, and, not, or, ilike } from "drizzle-orm";
 import { templateCategories, templates } from "@/server/db/schema";
 import {
   TemplateCategoryCreateInput,
   TemplateCategoryInsertInput,
   TemplateCategorySelectType,
   TemplateCategoryUpdateInput,
+  TemplateCategoryWithParentTree,
 } from "@/server/types";
 import { TemplateCategoryUtils } from "@/server/utils";
 import logger from "@/lib/logger";
@@ -383,5 +384,55 @@ export namespace TemplateCategoryRepository {
 
     // if root categories, then max order to start with is 2, (1, 2) reserved for main and suspenstion categories
     return maxOrder ?? (parentCategoryId ? 0 : 2);
+  };
+
+  export const searchByName = async (
+    searchTerm: string,
+    limit: number = 10,
+    includeParentTree: boolean = false,
+  ): Promise<TemplateCategoryWithParentTree[]> => {
+    // Search for categories by name, excluding Suspension category
+    const categories = await db
+      .select()
+      .from(templateCategories)
+      .where(
+        and(
+          ilike(templateCategories.name, `%${searchTerm}%`),
+          or(
+            isNull(templateCategories.specialType),
+            not(eq(templateCategories.specialType, "Suspension")),
+          ),
+        ),
+      )
+      .orderBy(templateCategories.name)
+      .limit(limit);
+
+    // Build parent tree for each category if requested
+    const result: TemplateCategoryWithParentTree[] = [];
+
+    for (const category of categories) {
+      const parentTree: number[] = [];
+
+      if (includeParentTree) {
+        // Start with current category ID
+        parentTree.push(category.id);
+
+        // Traverse up to build parent tree
+        let currentParentId = category.parentCategoryId;
+        while (currentParentId !== null) {
+          parentTree.push(currentParentId);
+          const parent = await findById(currentParentId);
+          if (!parent) break;
+          currentParentId = parent.parentCategoryId;
+        }
+      }
+
+      result.push({
+        ...category,
+        parentTree,
+      });
+    }
+
+    return result;
   };
 }
