@@ -37,7 +37,7 @@ import {
   TemplateUpdateInput,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
-import * as Document from "@/client/graphql/documents";
+import * as Document from "@/client/graphql/sharedDocuments";
 import {
   searchTemplateCategoriesQueryDocument,
   templateCategoryQueryDocument,

@@ -1,7 +1,7 @@
 "use client";
 
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import * as Document from "@/client/graphql/documents";
+import * as Document from "@/client/graphql/sharedDocuments";
 
 import { AuthTranslations } from "@/client/locale/components/Auth";
 import { useAppTranslation } from "@/client/locale";

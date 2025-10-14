@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useCallback, useMemo } from "react";
 import { ApolloClient } from "@apollo/client";
 import { useLazyQuery } from "@apollo/client/react";
-import * as Document from "@/client/graphql/documents";
+import * as Document from "@/client/graphql/sharedDocuments";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 type TemplateGraphQLContextType = {
