@@ -5,7 +5,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { RecipientGraphQLProvider } from "@/client/graphql/apollo";
 import { useRecipientService } from "@/client/graphql/service";
 import { usePageNavigation } from "../navigation/usePageNavigation";
-import { useTemplateManagement } from "../template/TemplateManagementContext";
+import { useTemplateManagement } from "../../views/template/TemplateManagementContext";
 
 type RecipientManagementContextType = {
  // State

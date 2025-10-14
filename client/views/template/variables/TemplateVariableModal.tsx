@@ -10,7 +10,7 @@ import {
     IconButton,
 } from "@mui/material";
 import { X } from "lucide-react";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import NumberTemplateVariableForm from "./forms/TemplateNumberVariableForm";
 import DateTemplateVariableForm from "./forms/TemplateDateVariableForm";
 import TextTemplateVariableForm from "./forms/TemplateTextVariableForm";

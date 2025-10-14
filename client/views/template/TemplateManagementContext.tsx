@@ -24,12 +24,12 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useDashboardLayout } from "../DashboardLayoutContext";
-import { NavigationPageItem } from "../adminLayout.types";
+import { useDashboardLayout } from "../../contexts/DashboardLayoutContext";
+import { NavigationPageItem } from "../../contexts/adminLayout.types";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/sharedDocuments";
-import { TemplateVariableManagementProvider } from "../templateVariable";
-import { RecipientManagementProvider } from "../recipient";
+import { TemplateVariableManagementProvider } from "../../contexts/templateVariable";
+import { RecipientManagementProvider } from "../../contexts/recipient";
 import { useTemplateService } from "@/client/graphql/service";
 import {
   useTemplateUIStore,

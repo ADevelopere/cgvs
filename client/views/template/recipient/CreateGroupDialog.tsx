@@ -14,7 +14,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
 
 const CreateGroupDialog: React.FC = () => {

@@ -3,7 +3,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import RecipientGroupItem from "./RecipientGroupItem";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 
 const RecipientGroupList: React.FC = () => {
     const { template } = useTemplateManagement();

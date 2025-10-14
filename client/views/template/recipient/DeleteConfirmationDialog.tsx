@@ -11,7 +11,7 @@ import {
     Alert,
 } from "@mui/material";
 import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
 
 const DeleteConfirmationDialog: React.FC = () => {

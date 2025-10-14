@@ -12,7 +12,7 @@ import {
     Button,
 } from "@mui/material";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import { useTemplateManagement } from "@/client/contexts/template/TemplateManagementContext";
+import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import TagInput from "@/client/components/input/TagInput";
 import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
