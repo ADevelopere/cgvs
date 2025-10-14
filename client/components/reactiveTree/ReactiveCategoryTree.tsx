@@ -2,7 +2,7 @@
 
 import { useQuery } from "@apollo/client/react";
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
+import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import type { ReactiveTreeNode, ReactiveTreeProps } from "./types";
 import { ReactiveCategoryTreeNode } from "./ReactiveCategoryTreeNode";
@@ -27,22 +27,6 @@ export function ReactiveCategoryTree<
 
   const rootItems = data ? getItems(data as TResult) : [];
 
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ p: 4, color: "error.main" }}>
-        Error loading categories: {error.message}
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {header && (
@@ -54,24 +38,41 @@ export function ReactiveCategoryTree<
         </Typography>
       )}
 
-      <Box sx={{ p: 2, flexGrow: 1, overflow: "auto" }}>
-        {rootItems.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            {noItemsMessage || "No items"}
-          </Typography>
-        ) : (
-          rootItems.map((node: TNode) => (
-            <ReactiveCategoryTreeNode<TNode, TResult, TVariables>
-              key={node.id}
-              node={node}
-              level={0}
-              resolver={resolver}
-              getItems={getItems}
-              {...nodeProps}
-            />
-          ))
-        )}
+      {/* Horizontal loading progress bar */}
+      <Box
+        sx={{
+          width: "100%",
+          height: 4,
+          visibility: loading ? "visible" : "hidden",
+        }}
+      >
+        <LinearProgress />
       </Box>
+
+      {error ? (
+        <Box sx={{ p: 4, color: "error.main" }}>
+          Error loading categories: {error.message}
+        </Box>
+      ) : (
+        <Box sx={{ p: 2, flexGrow: 1, overflow: "auto" }}>
+          {rootItems.length === 0 && !loading ? (
+            <Typography variant="body2" color="text.secondary">
+              {noItemsMessage || "No items"}
+            </Typography>
+          ) : (
+            rootItems.map((node: TNode) => (
+              <ReactiveCategoryTreeNode<TNode, TResult, TVariables>
+                key={node.id}
+                node={node}
+                level={0}
+                resolver={resolver}
+                getItems={getItems}
+                {...nodeProps}
+              />
+            ))
+          )}
+        </Box>
+      )}
     </Box>
   );
 }
