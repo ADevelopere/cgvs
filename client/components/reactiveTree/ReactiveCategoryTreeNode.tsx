@@ -158,8 +158,8 @@ export function ReactiveCategoryTreeNode<
         onClick={() => onSelectItem?.(node)}
         onMouseEnter={handleHover}
       >
-        {/* Expand/Collapse Button */}
-        {mightHaveChildren && (isLoading || !hasFetched || children.length > 0) && (
+        {/* Expand/Collapse Button or Spacer */}
+        {mightHaveChildren && (isLoading || !hasFetched || children.length > 0) ? (
           <IconButton
             size="small"
             onClick={toggleExpand}
@@ -175,9 +175,25 @@ export function ReactiveCategoryTreeNode<
               transition: "transform 0.2s",
             }}
           >
-            {isLoading ? <CircularProgress size={20} /> : <ChevronRightIcon />}
+            {isLoading ? (
+              <CircularProgress size={20} />
+            ) : (
+              <ChevronRightIcon sx={{ fontSize: 20 }} />
+            )}
           </IconButton>
-        )}
+        ) : mightHaveChildren ? (
+          // Invisible spacer to maintain consistent spacing when no icon is shown
+          <Box
+            sx={{
+              width: 31,
+              height: 31,
+              mr: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          />
+        ) : null}
 
         {/* Item Content */}
         {itemRenderer ? (

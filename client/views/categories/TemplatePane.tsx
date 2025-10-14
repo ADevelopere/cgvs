@@ -44,11 +44,11 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     createTemplate: addTemplate,
     updateTemplate,
     suspendTemplate,
-    // trySelectCategory,
     setIsAddingTemplate,
     setOnNewTemplateCancel,
     manageTemplate,
     currentCategoryId,
+    currentCategory,
   } = useTemplateCategoryManagement();
 
   const store = useTemplateCategoryUIStore();
@@ -61,28 +61,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         : undefined,
     [currentCategoryId, store],
   );
-
-  // Fetch current category for autocomplete display
-  const { data: currentCategoryData } = useQuery(
-    SharedDocuments.templateCategoryQueryDocument,
-    {
-      variables: {
-        id: currentCategoryId ?? 0,
-      },
-      skip: !currentCategoryId,
-      fetchPolicy: "cache-first",
-    },
-  );
-
-  const currentCategory = React.useMemo(() => {
-    const cat = currentCategoryData?.templateCategory;
-    if (!cat) return null;
-    // Convert to TemplateCategoryWithParentTree format with empty parentTree
-    return {
-      ...cat,
-      parentTree: [],
-    } as TemplateCategoryWithParentTree;
-  }, [currentCategoryData?.templateCategory]);
 
   // Fetch templates for current category
   const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
