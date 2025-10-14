@@ -10,7 +10,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
-import * as Document from "@/client/graphql/sharedDocuments";
+import * as sharedDocuments from "@/client/graphql/sharedDocuments";
 
 interface TemplateRow {
   id: number;
@@ -32,7 +32,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
 
   // Fetch suspended templates
   const { data: suspendedData, loading: suspensionTemplatesLoading } = useQuery(
-    Document.suspendedTemplatesQueryDocument,
+    sharedDocuments.suspendedTemplatesQueryDocument,
     {
       fetchPolicy: "cache-first",
     },

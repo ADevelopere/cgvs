@@ -7,6 +7,7 @@ export type TemplateCategoryTranslation = {
   // General terms
   categories: string;
   templates: string;
+  allTemplates: string;
   name: string;
   addCategory: string;
   addTemplate: string;

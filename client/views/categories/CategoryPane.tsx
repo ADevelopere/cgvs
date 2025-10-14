@@ -16,10 +16,10 @@ import {
 import { ReactiveCategoryTree } from "@/client/components/reactiveTree";
 import EditableTypography from "@/client/components/input/EditableTypography";
 
-import * as Document from "./0-categories.documents";
 import { useTemplateCategoryManagement } from "./4-categories.context";
 import CategoryEditDialog from "./CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
+import { categoryChildrenQueryDocument } from "@/client/graphql/sharedDocuments";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const { theme } = useAppTheme();
@@ -179,7 +179,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
           CategoryChildrenQueryVariables
         >
           resolver={(parent) => ({
-            query: Document.categoryChildrenQueryDocument,
+            query: categoryChildrenQueryDocument,
             variables: parent ? { parentCategoryId: parent.id } : undefined,
             fetchPolicy: "cache-first",
           })}

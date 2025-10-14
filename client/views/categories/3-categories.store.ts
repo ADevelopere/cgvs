@@ -1,20 +1,11 @@
+import { TemplatesByCategoryIdQueryVariables } from "@/client/graphql/generated/gql/graphql";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Category tab types
  */
 export type CategoryTabType = "all" | "deleted";
-
-/**
- * Template query variables for pagination, filtering, and sorting
- */
-export type TemplateQueryVariables = {
-  paginationArgs?: Graphql.PaginationArgs;
-  filterArgs?: Graphql.TemplateFilterArgs;
-  orderBy?: Graphql.TemplatesOrderByClause[];
-};
 
 /**
  * Category UI Store State
@@ -35,7 +26,7 @@ interface CategoryUIState {
   fetchedCategoryIds: Set<number>; // Track which categories have had their children fetched
 
   // Template query variables per category
-  templateQueryVariables: Map<number, TemplateQueryVariables>;
+  templateQueryVariables: Map<number, TemplatesByCategoryIdQueryVariables>;
 
   // Actions
   setCurrentCategoryId: (id: number | null) => void;
@@ -53,7 +44,7 @@ interface CategoryUIState {
   // Category selection with parent tree
   selectCategoryWithParentTree: (
     categoryId: number,
-    parentTree: number[]
+    parentTree: number[],
   ) => void;
 
   // Lazy loading actions
@@ -65,11 +56,11 @@ interface CategoryUIState {
   // Template query variables actions
   setTemplateQueryVariables: (
     categoryId: number,
-    vars: TemplateQueryVariables
+    vars: TemplatesByCategoryIdQueryVariables,
   ) => void;
   getTemplateQueryVariables: (
-    categoryId: number
-  ) => TemplateQueryVariables | undefined;
+    categoryId: number,
+  ) => TemplatesByCategoryIdQueryVariables | undefined;
   resetTemplateQueryVariables: (categoryId: number) => void;
 
   reset: () => void;
@@ -84,7 +75,10 @@ const initialState = {
   pendingCategoryId: null,
   expandedCategoryIds: new Set<number>(),
   fetchedCategoryIds: new Set<number>(),
-  templateQueryVariables: new Map<number, TemplateQueryVariables>(),
+  templateQueryVariables: new Map<
+    number,
+    TemplatesByCategoryIdQueryVariables
+  >(),
 };
 
 /**
@@ -222,7 +216,9 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
         activeCategoryTab: state.activeCategoryTab,
         expandedCategoryIds: Array.from(state.expandedCategoryIds), // Convert Set to Array for JSON
         fetchedCategoryIds: Array.from(state.fetchedCategoryIds), // Convert Set to Array for JSON
-        templateQueryVariables: Array.from(state.templateQueryVariables.entries()), // Convert Map to Array for JSON
+        templateQueryVariables: Array.from(
+          state.templateQueryVariables.entries(),
+        ), // Convert Map to Array for JSON
       }),
       // Custom merge to handle Set and Map conversion
       merge: (persistedState, currentState) => {
@@ -230,7 +226,10 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
           persistedState as Partial<CategoryUIState> & {
             expandedCategoryIds?: number[];
             fetchedCategoryIds?: number[];
-            templateQueryVariables?: [number, TemplateQueryVariables][];
+            templateQueryVariables?: [
+              number,
+              TemplatesByCategoryIdQueryVariables,
+            ][];
           };
         return {
           ...currentState,

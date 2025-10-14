@@ -1,14 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
-    Typography,
-    Box,
-    Paper,
-    TextField,
-    InputAdornment,
-    ToggleButtonGroup,
-    ToggleButton,
+  Typography,
+  Box,
+  TextField,
+  InputAdornment,
+  ToggleButtonGroup,
+  ToggleButton,
+  LinearProgress,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
@@ -18,155 +24,282 @@ import CardView from "./views/CardView";
 import ListView from "./views/ListView";
 import GridView from "./views/GridView";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
-import { loadFromLocalStorage } from "@/client/utils/localStorage";
-import { Template } from "@/client/graphql/generated/gql/graphql";
-
-type ViewMode = "card" | "grid" | "list";
+import { useTemplatesList } from "./TemplatesContext";
+import { useQuery } from "@apollo/client/react";
+import * as Document from "@/client/graphql/sharedDocuments";
+import EmptyStateIllustration from "@/client/components/common/EmptyStateIllustration";
 
 type TemplateListProps = {
-    templates: Template[];
-    style?: React.CSSProperties;
+  style?: React.CSSProperties;
 };
 
-const TemplateListContent: React.FC<TemplateListProps> = ({ templates, style }) => {
-    const strings = useAppTranslation("templateCategoryTranslations");
-    const { currentCategory } = useTemplateCategoryManagement();
+const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
+  const strings = useAppTranslation("templateCategoryTranslations");
+  const {
+    currentCategoryId,
+    templateQueryVariables,
+    updateTemplateQueryVariables,
+    viewMode,
+    setViewMode,
+  } = useTemplatesList();
 
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [viewMode, setViewMode] = useState<ViewMode>(() => {
-        const savedViewMode = loadFromLocalStorage("templateListViewMode");
-        return (savedViewMode as ViewMode) || "card";
-    });
+  // Fetch templates with current query variables
+  const { data, loading } = useQuery(
+    Document.templatesByCategoryIdQueryDocument,
+    {
+      variables: {
+        categoryId: currentCategoryId ?? undefined,
+        paginationArgs: templateQueryVariables.paginationArgs,
+        filterArgs: templateQueryVariables.filterArgs,
+        orderBy: templateQueryVariables.orderBy,
+      },
+      fetchPolicy: "cache-first",
+    },
+  );
 
-    // Save view mode to localStorage whenever it changes
-    useEffect(() => {
-        localStorage.setItem("templateListViewMode", viewMode);
-    }, [viewMode]);
+  const templates = useMemo(
+    () => data?.templatesByCategoryId?.data ?? [],
+    [data?.templatesByCategoryId?.data],
+  );
 
-    // Filter templates based on search
-    const searchTemplates = React.useMemo(() => {
-        if (!Array.isArray(templates)) {
-            return [];
-        }
-        return templates.filter((template) => {
-            if (!searchQuery) return true;
-            const query = searchQuery.toLowerCase();
-            return (
-                template.name?.toLowerCase().includes(query) ||
-                template.description?.toLowerCase().includes(query)
-            );
-        });
-    }, [templates, searchQuery]);
+  const pageInfo = useMemo(
+    () => data?.templatesByCategoryId?.pageInfo,
+    [data?.templatesByCategoryId?.pageInfo],
+  );
 
-    const handleViewChange = useCallback(
-        (_: React.MouseEvent<HTMLElement>, newView: ViewMode | null): void => {
-            if (newView !== null) {
-                setViewMode(newView);
-            }
+  // Search query from filter args
+  const searchQuery = useMemo(
+    () => templateQueryVariables.filterArgs?.name ?? "",
+    [templateQueryVariables.filterArgs?.name],
+  );
+
+  // Handle search input change
+  const handleSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const searchValue = event.target.value;
+      updateTemplateQueryVariables((current) => ({
+        ...current,
+        filterArgs: {
+          ...current.filterArgs,
+          name: searchValue || undefined,
         },
-        [setViewMode],
-    );
+        paginationArgs: {
+          ...current.paginationArgs,
+          page: 1, // Reset to first page on search
+        },
+      }));
+    },
+    [updateTemplateQueryVariables],
+  );
 
+  const handleViewChange = useCallback(
+    (
+      _: React.MouseEvent<HTMLElement>,
+      newView: "card" | "grid" | "list" | null,
+    ): void => {
+      if (newView !== null) {
+        setViewMode(newView);
+      }
+    },
+    [setViewMode],
+  );
 
-    const renderTemplateView = useMemo(
-        () => {
-            if (searchTemplates?.length === 0) {
-                return (
-                    <Paper elevation={2}>
-                        <Box p={3} textAlign="center">
-                            <Typography color="textSecondary">
-                                {searchQuery
-                                    ? strings.noTemplatesFoundSearch
-                                    : strings.noTemplatesFoundCreate}
-                            </Typography>
-                        </Box>
-                    </Paper>
-                );
-            }
+  // Pagination handlers
+  const handlePageChange = useCallback(
+    (_event: React.ChangeEvent<unknown>, page: number) => {
+      updateTemplateQueryVariables((current) => ({
+        ...current,
+        paginationArgs: {
+          ...current.paginationArgs,
+          page,
+        },
+      }));
+    },
+    [updateTemplateQueryVariables],
+  );
 
-        switch (viewMode) {
-            case "list":
-                return <ListView templates={searchTemplates} />;
-            case "grid":
-                return <GridView templates={searchTemplates} />;
-            default:
-                return <CardView templates={searchTemplates} />;
-        }
-    }, [searchQuery, searchTemplates, strings.noTemplatesFoundCreate, strings.noTemplatesFoundSearch, viewMode]);
+  const handlePageSizeChange = useCallback(
+    (event: SelectChangeEvent<number>) => {
+      const pageSize = event.target.value as number;
+      updateTemplateQueryVariables((current) => ({
+        ...current,
+        paginationArgs: {
+          first: pageSize,
+          page: 1, // Reset to page 1 on page size change
+        },
+      }));
+    },
+    [updateTemplateQueryVariables],
+  );
 
-    return (
+  const getEmptyMessage = React.useCallback(() => {
+    if (searchQuery) {
+      return strings.noTemplatesFoundSearch;
+    }
+    if (currentCategoryId === null) {
+      return strings.noTemplatesFoundCreate;
+    }
+    return strings.noTemplates;
+  }, [
+    currentCategoryId,
+    searchQuery,
+    strings.noTemplates,
+    strings.noTemplatesFoundCreate,
+    strings.noTemplatesFoundSearch,
+  ]);
+
+  const renderTemplateView = useMemo(() => {
+    if (templates?.length === 0 && !loading) {
+      return <EmptyStateIllustration message={getEmptyMessage()} />;
+    }
+
+    switch (viewMode) {
+      case "list":
+        return <ListView templates={templates} />;
+      case "grid":
+        return <GridView templates={templates} />;
+      default:
+        return <CardView templates={templates} />;
+    }
+  }, [templates, loading, viewMode, getEmptyMessage]);
+
+  return (
+    <Box
+      sx={{
+        ...style,
+        bgcolor: "background.default",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "center" },
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        <Typography variant="h6">
+          {currentCategoryId !== null
+            ? strings.templates
+            : strings.allTemplates}
+        </Typography>
+
         <Box
-            sx={{
-                ...style,
-                bgcolor: "background.default",
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-            }}
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            alignItems: { xs: "stretch", sm: "center" },
+            gap: 2,
+          }}
         >
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" }, // Stack on extra-small screens
-                    justifyContent: "space-between",
-                    alignItems: { xs: "stretch", sm: "center" }, // Align items differently on small screens
-                    gap: 2,
-                    mb: 3,
-                }}
-            >
-                <Typography variant="h6">
-                    {currentCategory?.name || strings.templates}
-                </Typography>
+          <TextField
+            placeholder={strings.searchTemplatesPlaceholder}
+            value={searchQuery}
+            onChange={handleSearchChange}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{ width: { xs: "100%", sm: 300 } }}
+          />
 
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", sm: "row" }, // Stack on extra-small screens
-                        justifyContent: "space-between",
-                        alignItems: { xs: "stretch", sm: "center" }, // Align items differently on small screens
-                        gap: 2,
-                    }}
-                >
-                    <TextField
-                        placeholder={strings.searchTemplatesPlaceholder}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                        sx={{ width: { xs: "100%", sm: 300 } }} // Full width on extra-small screens
-                    />
-
-                    <ToggleButtonGroup
-                        value={viewMode}
-                        exclusive
-                        onChange={handleViewChange}
-                        sx={{ alignSelf: { xs: "center", sm: "auto" } }} // Center toggle buttons when stacked
-                    >
-                        <ToggleButton value="card">
-                            <ViewModuleIcon />
-                        </ToggleButton>
-                        <ToggleButton value="grid">
-                            <GridViewIcon />
-                        </ToggleButton>
-                        <ToggleButton value="list">
-                            <ViewListIcon />
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </Box>
-            </Box>
-
-            {renderTemplateView}
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={handleViewChange}
+            sx={{ alignSelf: { xs: "center", sm: "auto" } }}
+          >
+            <ToggleButton value="card">
+              <ViewModuleIcon />
+            </ToggleButton>
+            <ToggleButton value="grid">
+              <GridViewIcon />
+            </ToggleButton>
+            <ToggleButton value="list">
+              <ViewListIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Box>
-    );
+      </Box>
+
+      {/* Loading progress bar */}
+      {loading && (
+        <Box sx={{ width: "100%", mb: 2 }}>
+          <LinearProgress />
+        </Box>
+      )}
+
+      {/* Template view */}
+      <Box sx={{ flexGrow: 1, overflow: "auto" }}>{renderTemplateView}</Box>
+
+      {/* Pagination controls */}
+      {pageInfo && pageInfo.total > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 2,
+            mt: 2,
+            pt: 2,
+            borderTop: "1px solid",
+            borderColor: "divider",
+            flexWrap: "wrap",
+          }}
+        >
+          {/* Pagination info */}
+          <Typography variant="body2" color="text.secondary">
+            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0}{" "}
+            {strings.of} {pageInfo.total}
+          </Typography>
+
+          {/* Page size selector */}
+          <FormControl size="small" sx={{ minWidth: 100 }}>
+            <InputLabel id="page-size-label">{strings.perPage}</InputLabel>
+            <Select
+              labelId="page-size-label"
+              value={
+                templateQueryVariables.paginationArgs?.first ?? pageInfo.perPage
+              }
+              label={strings.perPage}
+              onChange={handlePageSizeChange}
+              disabled={loading}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* Pagination component */}
+          {pageInfo.lastPage > 1 && (
+            <Pagination
+              count={pageInfo.lastPage}
+              page={pageInfo.currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              disabled={loading}
+              showFirstButton
+              showLastButton
+            />
+          )}
+        </Box>
+      )}
+    </Box>
+  );
 };
 
 export default TemplateListContent;

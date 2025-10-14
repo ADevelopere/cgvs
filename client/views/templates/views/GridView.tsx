@@ -13,7 +13,7 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
+import { useTemplatesList } from "../TemplatesContext";
 import Image from "next/image";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
@@ -23,7 +23,7 @@ interface GridViewProps {
 
 const GridView: React.FC<GridViewProps> = ({ templates }) => {
     const strings = useAppTranslation("templateCategoryTranslations");
-    const { manageTemplate } = useTemplateCategoryManagement();
+    const { manageTemplate } = useTemplatesList();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 

@@ -37,11 +37,7 @@ import {
   TemplateUpdateInput,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
-import * as Document from "@/client/graphql/sharedDocuments";
-import {
-  searchTemplateCategoriesQueryDocument,
-  templateCategoryQueryDocument,
-} from "./0-categories.documents";
+import * as SharedDocuments from "@/client/graphql/sharedDocuments";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const {
@@ -68,7 +64,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   // Fetch current category for autocomplete display
   const { data: currentCategoryData } = useQuery(
-    templateCategoryQueryDocument,
+    SharedDocuments.templateCategoryQueryDocument,
     {
       variables: {
         id: currentCategoryId ?? 0,
@@ -90,7 +86,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   // Fetch templates for current category
   const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
-    useQuery(Document.templatesByCategoryIdQueryDocument, {
+    useQuery(SharedDocuments.templatesByCategoryIdQueryDocument, {
       variables: {
         categoryId: currentCategoryId,
         ...queryVariables,
@@ -127,7 +123,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const [
     searchCategories,
     { data: searchCategoriesData, loading: searchLoading },
-  ] = useLazyQuery(searchTemplateCategoriesQueryDocument);
+  ] = useLazyQuery(SharedDocuments.searchTemplateCategoriesQueryDocument);
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 

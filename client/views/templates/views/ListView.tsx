@@ -19,7 +19,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/client/utils/dateUtils";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
+import { useTemplatesList } from "../TemplatesContext";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface ListViewProps {
@@ -27,7 +27,7 @@ interface ListViewProps {
 }
 
 const ListView: React.FC<ListViewProps> = ({ templates }) => {
-    const { manageTemplate } = useTemplateCategoryManagement();
+    const { manageTemplate } = useTemplatesList();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const strings = useAppTranslation("templateCategoryTranslations");

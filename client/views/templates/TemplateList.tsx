@@ -1,258 +1,340 @@
 "use client";
 
 import {
-    Box,
-    Drawer,
-    IconButton,
-    Paper,
-    styled,
-    Typography,
-    useMediaQuery,
-    useTheme,
+  Box,
+  Paper,
+  styled,
+  useMediaQuery,
+  useTheme,
+  Autocomplete,
+  TextField,
+  IconButton,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
-import { Folder } from "lucide-react";
-import { TreeView } from "@/client/components/treeView/TreeView";
-import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";
-import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
+import { useAppTranslation } from "@/client/locale";
+import { TemplatesPageProvider, useTemplatesList } from "./TemplatesContext";
+import { ReactiveCategoryTree } from "@/client/components/reactiveTree/ReactiveCategoryTree";
+import { useLazyQuery } from "@apollo/client/react";
+import * as Document from "@/client/graphql/sharedDocuments";
+import { categoryChildrenQueryDocument } from "@/client/graphql/sharedDocuments/template/templateCategory.documents";
+import {
+  CategoryChildrenQuery,
+  CategoryChildrenQueryVariables,
+  TemplateCategory,
+  TemplateCategoryWithParentTree,
+} from "@/client/graphql/generated/gql/graphql";
 
-const drawerWidth = 240;
-
-const Main = styled("main", {
-    shouldForwardProp: (prop) => prop !== "open" && prop !== "sideBarWidth",
-})(({ theme }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
+const Main = styled("main")(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
 }));
 
 const ToggleSideBarButton: React.FC<{
-    open?: boolean;
-    toggleSidebar: () => void;
-    dashboardsidebarState: string;
-    zIndex: number;
-    isMobile: boolean;
+  open?: boolean;
+  toggleSidebar: () => void;
+  dashboardsidebarState: string;
+  zIndex: number;
+  isMobile: boolean;
 }> = ({ open, toggleSidebar, dashboardsidebarState, isMobile, zIndex }) => {
-    if (dashboardsidebarState === "expanded" && isMobile) {
-        return null;
-    }
-    return (
-        <Box
-            sx={{
-                width: { xs: 48, sm: 72 },
-                display: "flex",
-                justifyContent: "center",
-                position: "fixed",
-                zIndex: zIndex,
-                minHeight: 48,
-                alignItems: "center",
-            }}
-        >
-            <IconButton
-                onClick={toggleSidebar}
-                edge="start"
-                color="inherit"
-                aria-label="toggle sidebar"
-                sx={{
-                    transition: "transform 0.3s ease-in-out",
-                    transform: open ? "rotate(180deg)" : "rotate(0deg)",
-                }}
-            >
-                {open ? <CloseIcon /> : <MenuIcon />}
-            </IconButton>
-        </Box>
-    );
+  if (dashboardsidebarState === "expanded" && isMobile) {
+    return null;
+  }
+  return (
+    <Box
+      sx={{
+        width: { xs: 48, sm: 72 },
+        display: "flex",
+        justifyContent: "center",
+        position: "fixed",
+        zIndex: zIndex,
+        minHeight: 48,
+        alignItems: "center",
+      }}
+    >
+      <IconButton
+        onClick={toggleSidebar}
+        edge="start"
+        color="inherit"
+        aria-label="toggle sidebar"
+        sx={{
+          transition: "transform 0.3s ease-in-out",
+          transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        }}
+      >
+        {open ? <CloseIcon /> : <MenuIcon />}
+      </IconButton>
+    </Box>
+  );
 };
 
-const RenderCategoryItem: React.FC<{
-    category: TemplateCategory;
-    onClick: (category: TemplateCategory) => void;
-    selected: boolean;
-    selectedColor?: string;
-}> = ({ category, onClick, selected, selectedColor }) => {
-    return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 1,
-                alignItems: "center",
-                backgroundColor: selected ? selectedColor : "inherit",
-                px: 0,
-                paddingInline: 1,
-                borderRadius: 2,
-            }}
-            onClick={() => {
-                onClick(category);
-            }}
-        >
-            {category.subCategories && category.subCategories.length > 0 && (
-                <Folder />
-            )}
-            <Typography
-                sx={{
-                    minWidth: "max-content",
-                }}
-            >
-                {category.name}
-            </Typography>
-        </Box>
-    );
-};
+const CategoryTreePane: React.FC = () => {
+  const strings = useAppTranslation("templateCategoryTranslations");
+  const {
+    currentCategoryId,
+    clearCurrentCategory,
+    selectCategoryWithParentTree,
+    expandedCategoryIds,
+    toggleExpanded,
+    markAsFetched,
+    isFetched,
+  } = useTemplatesList();
 
-const CategoryTree: React.FC = () => {
-    const strings = useAppTranslation("templateCategoryTranslations");
-    const theme = useTheme();
-    const { regularCategories, currentCategory, trySelectCategory } =
-        useTemplateCategoryManagement();
-    return (
-        <TreeView
-            style={{
-                display: "flex",
-                padding: theme.spacing(0, 1),
-                // height: `${headerHeight}px`,
-                paddingInlineStart: 6,
-                justifyContent: "start",
-            }}
-            items={regularCategories}
-            itemRenderer={({ item, isSelected }) => (
-                <RenderCategoryItem
-                    category={item}
-                    onClick={trySelectCategory}
-                    selected={isSelected || currentCategory?.id === item.id}
-                    selectedColor={theme.palette.action.focus}
-                />
-            )}
-            childrenKey="childCategories"
-            labelKey="name"
-            noItemsMessage={strings.noCategories}
-            searchText={strings.filter}
-            header={strings.categories}
+  // Category search for autocomplete
+  const [
+    searchCategories,
+    { data: searchCategoriesData, loading: searchLoading },
+  ] = useLazyQuery(Document.searchTemplateCategoriesQueryDocument);
+  const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const categoryOptions = React.useMemo(
+    () => searchCategoriesData?.searchTemplateCategories ?? [],
+    [searchCategoriesData?.searchTemplateCategories],
+  );
+
+  // Debounced search handler
+  const handleCategorySearch = React.useCallback(
+    (searchTerm: string) => {
+      setCategorySearchTerm(searchTerm);
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      if (searchTerm.trim().length > 0) {
+        searchTimeoutRef.current = setTimeout(() => {
+          searchCategories({
+            variables: {
+              searchTerm,
+              limit: 10,
+              includeParentTree: true,
+            },
+          });
+        }, 300);
+      }
+    },
+    [searchCategories],
+  );
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Get current category for autocomplete (convert from ID to object)
+  const currentCategory = React.useMemo(() => {
+    if (!currentCategoryId) return null;
+    // Try to find in search results
+    const found = categoryOptions.find((cat) => cat.id === currentCategoryId);
+    if (found) return found;
+    // Return a placeholder object if not in search results
+    return {
+      id: currentCategoryId,
+      name: strings.loading,
+      description: null,
+      specialType: null,
+      order: 0,
+      parentTree: [],
+    } as TemplateCategoryWithParentTree;
+  }, [currentCategoryId, categoryOptions, strings.loading]);
+
+  // Callback adapters for expansion and fetch tracking
+  const handleToggleExpanded = React.useCallback(
+    (nodeId: string | number) => {
+      toggleExpanded(Number(nodeId));
+    },
+    [toggleExpanded],
+  );
+
+  const handleIsFetched = React.useCallback(
+    (nodeId: string | number) => {
+      return isFetched(Number(nodeId));
+    },
+    [isFetched],
+  );
+
+  const handleMarkAsFetched = React.useCallback(
+    (nodeId: string | number) => {
+      markAsFetched(Number(nodeId));
+    },
+    [markAsFetched],
+  );
+
+  const handleCategorySelect = React.useCallback(
+    (category: TemplateCategory) => {
+      selectCategoryWithParentTree(category.id, []);
+    },
+    [selectCategoryWithParentTree],
+  );
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        gap: 2,
+      }}
+      onClick={(e) => {
+        // Click on empty area clears category selection
+        if (e.target === e.currentTarget) {
+          clearCurrentCategory();
+        }
+      }}
+    >
+      {/* Category Search Autocomplete */}
+      <Box sx={{ px: 2, pt: 2 }}>
+        <Autocomplete
+          value={currentCategory}
+          onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
+            if (newValue) {
+              selectCategoryWithParentTree(newValue.id, newValue.parentTree);
+            } else {
+              clearCurrentCategory();
+            }
+          }}
+          inputValue={categorySearchTerm}
+          onInputChange={(_, newInputValue) => {
+            handleCategorySearch(newInputValue);
+          }}
+          options={categoryOptions}
+          getOptionLabel={(option) => option.name ?? strings.unnamed}
+          loading={searchLoading}
+          loadingText={strings.loading}
+          noOptionsText={strings.noCategories}
+          sx={{ width: "100%" }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={strings.selectCategory}
+              variant="outlined"
+              size="small"
+              placeholder={strings.selectCategory}
+            />
+          )}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          renderOption={(props, option) => (
+            <li {...props} key={option.id}>
+              {option.name ?? strings.unnamed}
+            </li>
+          )}
         />
-    );
+      </Box>
+
+      {/* Reactive Category Tree */}
+      <Box sx={{ flexGrow: 1, overflow: "auto", px: 2 }}>
+        <ReactiveCategoryTree<
+          TemplateCategory,
+          CategoryChildrenQuery,
+          CategoryChildrenQueryVariables
+        >
+          resolver={(parent) => ({
+            query: categoryChildrenQueryDocument,
+            variables: parent ? { parentCategoryId: parent.id } : undefined,
+            fetchPolicy: "cache-first",
+          })}
+          getItems={(data) => data.categoryChildren || []}
+          getNodeLabel={(node) => node.name || String(node.id)}
+          selectedItemId={currentCategoryId}
+          onSelectItem={handleCategorySelect}
+          expandedItemIds={expandedCategoryIds}
+          onToggleExpand={handleToggleExpanded}
+          isFetched={handleIsFetched}
+          onMarkAsFetched={handleMarkAsFetched}
+          header={strings.categories}
+          noItemsMessage={strings.noCategories}
+          itemHeight={48}
+        />
+      </Box>
+    </Box>
+  );
 };
 
 const TemplateList: React.FC = () => {
-    const { headerHeight, sidebarState: dashboardsidebarState } =
-        useDashboardLayout();
-    const { allTemplates, currentCategory } = useTemplateCategoryManagement();
-    const { setNavigation } = useDashboardLayout();
+  const { sidebarState: dashboardsidebarState } = useDashboardLayout();
+  const [open, setOpen] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const [open, setOpen] = useState(true);
-    const theme = useTheme();
+  const toggleSidebar = () => {
+    setOpen((prev) => !prev);
+  };
 
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  return (
+    <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
+      <ToggleSideBarButton
+        open={open}
+        toggleSidebar={toggleSidebar}
+        dashboardsidebarState={dashboardsidebarState}
+        zIndex={theme.zIndex.drawer + 1}
+        isMobile={isMobile}
+      />
 
-    const toggleSidebar = () => {
-        setOpen((prev) => !prev);
-    };
+      {!isMobile && (
+        <SplitPane
+          orientation="vertical"
+          firstPane={{
+            visible: open,
+            minRatio: 0.1,
+          }}
+          secondPane={{
+            visible: true,
+            minRatio: 0.5,
+          }}
+          resizerProps={{
+            style: {
+              cursor: "col-resize",
+            },
+          }}
+          storageKey="templateListSplitPane"
+        >
+          <Paper
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
+            <CategoryTreePane />
+          </Paper>
+          <TemplateListContent
+            style={{
+              paddingInlineStart: open ? 2 : 8,
+              paddingInlineEnd: 2,
+              paddingTop: 2,
+              paddingBottom: 4,
+            }}
+          />
+        </SplitPane>
+      )}
 
-    useEffect(() => {
-        setNavigation((prevNav) => {
-            if (!prevNav) return prevNav;
-            return prevNav.map((item) => {
-                if ("id" in item && item.id === "templates") {
-                    return { ...item, segment: "admin/templates" };
-                }
-                return item;
-            });
-        });
-    }, [setNavigation]);
-
-    return (
-        <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
-            <ToggleSideBarButton
-                open={open}
-                toggleSidebar={toggleSidebar}
-                dashboardsidebarState={dashboardsidebarState}
-                zIndex={theme.zIndex.drawer + 1}
-                isMobile={isMobile}
-            />
-
-            {!isMobile && (
-                <SplitPane
-                    orientation="vertical"
-                    firstPane={{
-                        visible: open,
-                        minRatio: 0.1,
-                    }}
-                    secondPane={{
-                        visible: true,
-                        minRatio: 0.5,
-                    }}
-                    resizerProps={{
-                        style: {
-                            cursor: "col-resize",
-                        },
-                    }}
-                    storageKey="templateListSplitPane"
-                >
-                    <Paper
-                        sx={{
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            padding: 2,
-                            justifyContent: "start",
-                            alignItems: "start",
-                            overflow: "hidden",
-                        }}
-                    >
-                        <CategoryTree />
-                    </Paper>
-                    <TemplateListContent
-                        templates={currentCategory?.templates || allTemplates}
-                        style={{
-                            paddingInlineStart: open ? 2 : 8,
-                            paddingInlineEnd: 2,
-                            paddingTop: 2,
-                            paddingBottom: 4,
-                        }}
-                    />
-                </SplitPane>
-            )}
-
-            {isMobile && (
-                <Main>
-                    <TemplateListContent
-                        templates={currentCategory?.templates || allTemplates}
-                        style={{
-                            paddingInlineStart: 2,
-                        }}
-                    />
-                </Main>
-            )}
-
-            {open && isMobile && (
-                <Drawer
-                    sx={{
-                        position: "fixed",
-                        top: `${headerHeight}px`,
-                        height: `calc(100% - ${headerHeight}px)`,
-                        width: drawerWidth, // The container for the paperTemplateListContainer
-                        overflow: "hidden", // This will clip the paper during transition
-                        flexShrink: 0,
-                        "& .MuiDrawer-paper": {
-                            width: drawerWidth,
-                            boxSizing: "border-box",
-                            position: "absolute", // Relative to the Drawer root due to variant="persistent"
-                            height: "100%", // Fill the Drawer root
-                            // variant="persistent" handles transform and transition for open/close
-                        },
-                    }}
-                    variant="persistent"
-                    anchor={"left"}
-                    open={open}
-                >
-                    <CategoryTree />
-                </Drawer>
-            )}
-        </Box>
-    );
+      {isMobile && (
+        <Main>
+          <TemplateListContent
+            style={{
+              paddingInlineStart: 2,
+            }}
+          />
+        </Main>
+      )}
+    </Box>
+  );
 };
 
-export default TemplateList;
+const TemplateListPage: React.FC = () => {
+  return (
+    <TemplatesPageProvider>
+      <TemplateList />
+    </TemplatesPageProvider>
+  );
+};
+
+export default TemplateListPage;

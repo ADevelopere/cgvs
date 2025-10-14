@@ -262,3 +262,48 @@ export const templatesConfigsQueryDocument: TypedDocumentNode<Graphql.TemplatesC
     }
   }
 `;
+
+export const templatesByCategoryIdQueryDocument: TypedDocumentNode<
+  Graphql.TemplatesByCategoryIdQuery,
+  Graphql.TemplatesByCategoryIdQueryVariables
+> = gql`
+  query templatesByCategoryId(
+    $categoryId: Int
+    $paginationArgs: PaginationArgs
+    $filterArgs: TemplateFilterArgs
+    $orderBy: [TemplatesOrderByClause!]
+  ) {
+    templatesByCategoryId(
+      categoryId: $categoryId
+      paginationArgs: $paginationArgs
+      filterArgs: $filterArgs
+      orderBy: $orderBy
+    ) {
+      data {
+        id
+        name
+        description
+        imageUrl
+        order
+        createdAt
+        updatedAt
+        category {
+          id
+        }
+        preSuspensionCategory {
+          id
+        }
+      }
+      pageInfo {
+        count
+        currentPage
+        firstItem
+        lastItem
+        hasMorePages
+        lastPage
+        perPage
+        total
+      }
+    }
+  }
+`;
