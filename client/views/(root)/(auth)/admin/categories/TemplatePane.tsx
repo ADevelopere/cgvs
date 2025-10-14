@@ -9,9 +9,13 @@ import {
   Tooltip,
   Button,
   Typography,
-  CircularProgress,
-  // TextField,
-  // Autocomplete
+  LinearProgress,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent,
 } from "@mui/material";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { GraduationCap, SquareArrowOutUpRight, EditIcon } from "lucide-react";
@@ -24,6 +28,7 @@ import { useAppTranslation } from "@/client/locale";
 import { mapTemplateToUpdateInput } from "@/client/utils/template/template-mappers";
 import { useTemplateCategoryManagement } from "./4-categories.context";
 import TemplateEditDialog from "./TemplateEditDialog";
+import { useTemplateCategoryUIStore } from "./3-categories.store";
 
 import {
   Template,
@@ -43,17 +48,33 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     currentCategoryId,
   } = useTemplateCategoryManagement();
 
+  const store = useTemplateCategoryUIStore();
+
+  // Get query variables from store for the current category
+  const queryVariables = React.useMemo(
+    () => (currentCategoryId ? store.getTemplateQueryVariables(currentCategoryId) : undefined),
+    [currentCategoryId, store]
+  );
+
   // Fetch templates for current category
   const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
     useQuery(Document.templatesByCategoryIdQueryDocument, {
-      variables: { categoryId: currentCategoryId ?? 0 },
+      variables: {
+        categoryId: currentCategoryId,
+        ...queryVariables,
+      },
       skip: !currentCategoryId,
       fetchPolicy: "cache-first",
     });
 
   const templates = React.useMemo(
-    () => templatesByCategoryIdQuery?.templatesByCategoryId ?? [],
-    [templatesByCategoryIdQuery?.templatesByCategoryId],
+    () => templatesByCategoryIdQuery?.templatesByCategoryId?.data ?? [],
+    [templatesByCategoryIdQuery?.templatesByCategoryId?.data],
+  );
+
+  const pageInfo = React.useMemo(
+    () => templatesByCategoryIdQuery?.templatesByCategoryId?.pageInfo,
+    [templatesByCategoryIdQuery?.templatesByCategoryId?.pageInfo],
   );
 
   // todo: use server side query, or read from apollo cache only
@@ -172,6 +193,38 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     return strings.noTemplates;
   };
 
+  // Pagination handlers
+  const handlePageChange = React.useCallback(
+    (_event: React.ChangeEvent<unknown>, page: number) => {
+      if (!currentCategoryId) return;
+      const currentVars = queryVariables || {};
+      store.setTemplateQueryVariables(currentCategoryId, {
+        ...currentVars,
+        paginationArgs: {
+          ...currentVars.paginationArgs,
+          page,
+        },
+      });
+    },
+    [currentCategoryId, queryVariables, store]
+  );
+
+  const handlePageSizeChange = React.useCallback(
+    (event: SelectChangeEvent<number>) => {
+      if (!currentCategoryId) return;
+      const pageSize = event.target.value as number;
+      const currentVars = queryVariables || {};
+      store.setTemplateQueryVariables(currentCategoryId, {
+        ...currentVars,
+        paginationArgs: {
+          first: pageSize,
+          page: 1, // Reset to page 1 on page size change
+        },
+      });
+    },
+    [currentCategoryId, queryVariables, store]
+  );
+
   return (
     <Box
       sx={{
@@ -243,6 +296,17 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         </Box> */}
       </Box>
 
+      {/* Horizontal loading progress bar */}
+      <Box
+        sx={{
+          width: "100%",
+          height: 4,
+          visibility: regularTemplatesLoading ? "visible" : "hidden",
+        }}
+      >
+        <LinearProgress />
+      </Box>
+
       <List
         ref={listRef}
         sx={{
@@ -250,20 +314,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
           overflow: "auto",
         }}
       >
-        {regularTemplatesLoading && currentCategoryId && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              p: 4,
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        )}
-
         {templates &&
           templates.map((template) => (
             <ListItem
@@ -389,6 +439,9 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
           borderTop: "1px solid",
           borderColor: theme.palette.divider,
           display: "flex",
+          alignItems: "center",
+          gap: 2,
+          flexWrap: "wrap",
         }}
       >
         {/* add template button */}
@@ -397,20 +450,51 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
           startIcon={<AddIcon />}
           onClick={handleAddNewTemplate}
           disabled={!currentCategoryId || !!tempTemplate}
-          sx={{ mr: 1 }}
         >
           {strings.addTemplate}
         </Button>
 
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          {/* <Typography>{templates?.length ?? 0}</Typography> */}
-        </Box>
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* Pagination info */}
+        {pageInfo && pageInfo.total > 0 && (
+          <Typography variant="body2" color="text.secondary">
+            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0} {strings.of}{" "}
+            {pageInfo.total}
+          </Typography>
+        )}
+
+        {/* Page size selector */}
+        {pageInfo && pageInfo.total > 0 && (
+          <FormControl size="small" sx={{ minWidth: 100 }}>
+            <InputLabel id="page-size-label">{strings.perPage}</InputLabel>
+            <Select
+              labelId="page-size-label"
+              value={queryVariables?.paginationArgs?.first ?? pageInfo.perPage}
+              label={strings.perPage}
+              onChange={handlePageSizeChange}
+              disabled={regularTemplatesLoading}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+        )}
+
+        {/* Pagination component */}
+        {pageInfo && pageInfo.lastPage > 1 && (
+          <Pagination
+            count={pageInfo.lastPage}
+            page={pageInfo.currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            disabled={regularTemplatesLoading}
+            showFirstButton
+            showLastButton
+          />
+        )}
       </Box>
 
       {/* end of 2 */}

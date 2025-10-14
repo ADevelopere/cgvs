@@ -65,6 +65,10 @@ const enLocale: TableLocale = {
         noData: "No data to display",
         actions: "Actions",
         columnVisibility: "Columns",
+        rowOf: "row",
+        rowsOf: "rows",
+        of: "of",
+        columnsVisible: "columns visible",
     },
     selection: {
         selectAll: "Select all",
@@ -150,6 +154,10 @@ const arLocale: TableLocale = {
         noData: "لا توجد بيانات للعرض",
         actions: "إجراءات",
         columnVisibility: "الأعمدة",
+        rowOf: "صف",
+        rowsOf: "صفوف",
+        of: "من",
+        columnsVisible: "عمود مرئي",
     },
     selection: {
         selectAll: "تحديد الكل",

@@ -160,4 +160,9 @@ export const templateCategory: TemplateCategoryTranslation = {
     // basic info tab
     recommendedImageSize: "حجم الصورة الموصى به",
     uploadImage: "رفع الصورة",
+
+    // Pagination
+    showing: "عرض",
+    of: "من",
+    perPage: "لكل صفحة",
 };

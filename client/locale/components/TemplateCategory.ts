@@ -157,4 +157,9 @@ export type TemplateCategoryTranslation = {
     // basic info tab
     recommendedImageSize: string;
     uploadImage: string;
+
+    // Pagination
+    showing: string;
+    of: string;
+    perPage: string;
 };

@@ -35,7 +35,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
         onPageChange(newPage + 1);
       }
     },
-    [onPageChange]
+    [onPageChange],
   );
 
   // Handle rows per page change
@@ -45,7 +45,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
         onRowsPerPageChange(Number.parseInt(event.target.value, 10));
       }
     },
-    [onRowsPerPageChange]
+    [onRowsPerPageChange],
   );
 
   const tfStyle = useMemo(
@@ -56,7 +56,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
       color: theme.palette.text.primary,
       backgroundColor: theme.palette.background.paper,
     }),
-    [theme]
+    [theme],
   );
 
   const labelDisplayedRows = useCallback(
@@ -64,9 +64,9 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
       strings.pagination.displayedRows(
         from,
         to,
-        typeof count === "number" ? count : to
+        typeof count === "number" ? count : to,
       ),
-    [strings]
+    [strings],
   );
 
   const getItemAriaLabel = useCallback(
@@ -84,7 +84,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
           return "";
       }
     },
-    [strings]
+    [strings],
   );
 
   return (
@@ -98,7 +98,13 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
         }}
       >
         {/* Start content (left side) */}
-        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing(1) }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: theme.spacing(1),
+          }}
+        >
           {footerStartContent}
         </div>
 
@@ -131,12 +137,10 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
               <span>
                 {rowSelectionEnabled && selectedRowIds.length > 0 ? (
                   <strong style={{ color: theme.palette.primary.main }}>
-                    {`${selectedRowIds.length} ${
-                      selectedRowIds.length === 1 ? "row" : "rows"
-                    } selected`}
+                    {strings.selection.rowsSelected(selectedRowIds.length)}
                   </strong>
                 ) : (
-                  `${loadedRows} of ${totalRows} rows | ${visibleColumns.length} columns visible`
+                  `${loadedRows} ${strings.general.of} ${totalRows} ${strings.general.rowsOf} | ${visibleColumns.length} ${strings.general.columnsVisible}`
                 )}
               </span>
               <span>
@@ -155,7 +159,13 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
         </div>
 
         {/* End content (right side) */}
-        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing(1) }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: theme.spacing(1),
+          }}
+        >
           {footerEndContent}
         </div>
       </div>
