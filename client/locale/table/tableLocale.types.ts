@@ -75,6 +75,10 @@ export interface TableLocaleGeneral {
     noData: string; // e.g., "No data to display"
     actions: string; // e.g., "Actions" (for action columns)
     columnVisibility: string; // e.g., "Show/Hide Columns"
+    rowOf: string; // e.g., "row" (singular)
+    rowsOf: string; // e.g., "rows" (plural)
+    of: string; // e.g., "of"
+    columnsVisible: string; // e.g., "columns visible"
     // Add other general strings
 }
 

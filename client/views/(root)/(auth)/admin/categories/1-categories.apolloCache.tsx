@@ -6,6 +6,7 @@ import * as Document from "./0-categories.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useMutation } from "@apollo/client/react";
 import { templateQueryDocument } from "@/client/graphql/documents";
+import { useTemplateCategoryUIStore } from "./3-categories.store";
 
 type TemplateCategoryGraphQLContextType = {
   /**
@@ -102,6 +103,8 @@ export const useTemplateCategoryGraphQL = () => {
 export const TemplateCategoryGraphQLProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const store = useTemplateCategoryUIStore();
+
   // Create category mutation - simplified with cache.updateQuery
   const [createTemplateCategoryMutation] = useMutation(
     Document.createTemplateCategoryMutationDocument,
@@ -250,29 +253,19 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Update the templatesByCategoryId cache
-        try {
-          const categoryTemplatesData =
-            cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId },
-            });
+        // Get full query variables from store
+        const queryVars = store.getTemplateQueryVariables(categoryId);
 
-          if (categoryTemplatesData?.templatesByCategoryId) {
-            cache.writeQuery({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId },
-              data: {
-                templatesByCategoryId: [
-                  ...categoryTemplatesData.templatesByCategoryId,
-                  createdTemplate,
-                ],
-              },
-            });
-          }
-        } catch {
-          // Templates might not be in cache yet, that's okay
-        }
+        // Evict the templatesByCategoryId cache with full arguments to force refetch
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "templatesByCategoryId",
+          args: {
+            categoryId,
+            ...queryVars, // Include paginationArgs, filterArgs, orderBy
+          },
+        });
+        cache.gc();
       },
     },
   );
@@ -287,7 +280,6 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         const updatedTemplate = data.updateTemplate;
 
         // First, get the old template to check the old category ID
-        // Only update if template exists in cache
         let existingTemplateData: Graphql.TemplateQuery | null = null;
         try {
           existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
@@ -313,102 +305,33 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        const newTemplate: Graphql.Template = {
-          ...oldTemplate,
-          ...updatedTemplate,
-        };
+        // Get full query variables from store for old category
+        const oldQueryVars = store.getTemplateQueryVariables(oldCategoryId);
 
-        // Update the template query cache
-        cache.writeQuery({
-          query: templateQueryDocument,
-          variables: { id: updatedTemplate.id },
-          data: {
-            template: newTemplate,
+        // Evict cache for old category with full arguments
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "templatesByCategoryId",
+          args: {
+            categoryId: oldCategoryId,
+            ...oldQueryVars,
           },
         });
 
-        // If category hasn't changed, update the category's templates cache
-        if (oldCategoryId === newCategoryId) {
-          try {
-            const categoryTemplatesData =
-              cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-                query: Document.templatesByCategoryIdQueryDocument,
-                variables: { categoryId: newCategoryId },
-              });
-
-            if (categoryTemplatesData?.templatesByCategoryId) {
-              const updatedTemplates =
-                categoryTemplatesData.templatesByCategoryId.map(
-                  (t: Graphql.Template) =>
-                    t.id === updatedTemplate.id ? newTemplate : t,
-                );
-
-              cache.writeQuery({
-                query: Document.templatesByCategoryIdQueryDocument,
-                variables: { categoryId: newCategoryId },
-                data: {
-                  templatesByCategoryId: updatedTemplates,
-                },
-              });
-            }
-          } catch {
-            // Templates might not be in cache, that's okay
-          }
-          return;
-        }
-
-        // Category has changed, update both categories' template caches
+        // If category changed, also evict cache for new category
         if (oldCategoryId !== newCategoryId) {
-          // Update old category - remove the template
-          try {
-            const oldCategoryTemplatesData =
-              cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-                query: Document.templatesByCategoryIdQueryDocument,
-                variables: { categoryId: oldCategoryId },
-              });
-
-            if (oldCategoryTemplatesData?.templatesByCategoryId) {
-              const updatedTemplates =
-                oldCategoryTemplatesData.templatesByCategoryId.filter(
-                  (t: Graphql.Template) => t.id !== updatedTemplate.id,
-                );
-
-              cache.writeQuery({
-                query: Document.templatesByCategoryIdQueryDocument,
-                variables: { categoryId: oldCategoryId },
-                data: {
-                  templatesByCategoryId: updatedTemplates,
-                },
-              });
-            }
-          } catch {
-            // Old category templates might not be in cache, that's okay
-          }
-
-          // Update new category - add the template
-          try {
-            const newCategoryTemplatesData =
-              cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-                query: Document.templatesByCategoryIdQueryDocument,
-                variables: { categoryId: newCategoryId },
-              });
-
-            if (newCategoryTemplatesData?.templatesByCategoryId) {
-              cache.writeQuery({
-                query: Document.templatesByCategoryIdQueryDocument,
-                variables: { categoryId: newCategoryId },
-                data: {
-                  templatesByCategoryId: [
-                    ...newCategoryTemplatesData.templatesByCategoryId,
-                    newTemplate,
-                  ],
-                },
-              });
-            }
-          } catch {
-            // New category templates might not be in cache, that's okay
-          }
+          const newQueryVars = store.getTemplateQueryVariables(newCategoryId);
+          cache.evict({
+            id: "ROOT_QUERY",
+            fieldName: "templatesByCategoryId",
+            args: {
+              categoryId: newCategoryId,
+              ...newQueryVars,
+            },
+          });
         }
+
+        cache.gc();
       },
     },
   );
@@ -428,32 +351,19 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Update the templatesByCategoryId cache
-        try {
-          const categoryTemplatesData =
-            cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId },
-            });
+        // Get full query variables from store
+        const queryVars = store.getTemplateQueryVariables(categoryId);
 
-          if (categoryTemplatesData?.templatesByCategoryId) {
-            const updatedTemplates =
-              categoryTemplatesData.templatesByCategoryId.filter(
-                (template: Graphql.Template) =>
-                  template.id !== deletedTemplate.id,
-              );
-
-            cache.writeQuery({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId },
-              data: {
-                templatesByCategoryId: updatedTemplates,
-              },
-            });
-          }
-        } catch {
-          // Templates might not be in cache, that's okay
-        }
+        // Evict the templatesByCategoryId cache with full arguments to force refetch
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "templatesByCategoryId",
+          args: {
+            categoryId,
+            ...queryVars,
+          },
+        });
+        cache.gc();
       },
     },
   );
@@ -475,53 +385,26 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Remove template from old category's templatesByCategoryId cache
-        try {
-          const oldCategoryTemplatesData =
-            cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId: oldCategoryId },
-            });
+        // Get full query variables from store for old category
+        const queryVars = store.getTemplateQueryVariables(oldCategoryId);
 
-          if (oldCategoryTemplatesData?.templatesByCategoryId) {
-            const updatedTemplates =
-              oldCategoryTemplatesData.templatesByCategoryId.filter(
-                (t: Graphql.Template) => t.id !== suspendedTemplate.id,
-              );
+        // Evict the templatesByCategoryId cache for old category with full arguments
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "templatesByCategoryId",
+          args: {
+            categoryId: oldCategoryId,
+            ...queryVars,
+          },
+        });
 
-            cache.writeQuery({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId: oldCategoryId },
-              data: {
-                templatesByCategoryId: updatedTemplates,
-              },
-            });
-          }
-        } catch {
-          // Old category templates might not be in cache, that's okay
-        }
+        // Evict suspended templates cache
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "suspendedTemplates",
+        });
 
-        // Add template to suspended templates cache
-        try {
-          const suspendedTemplatesData =
-            cache.readQuery<Graphql.SuspendedTemplatesQuery>({
-              query: Document.suspendedTemplatesQueryDocument,
-            });
-
-          if (suspendedTemplatesData?.suspendedTemplates) {
-            cache.writeQuery({
-              query: Document.suspendedTemplatesQueryDocument,
-              data: {
-                suspendedTemplates: [
-                  ...suspendedTemplatesData.suspendedTemplates,
-                  suspendedTemplate,
-                ],
-              },
-            });
-          }
-        } catch {
-          // Suspended templates might not be in cache yet, that's okay
-        }
+        cache.gc();
       },
     },
   );
@@ -543,53 +426,26 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
           return;
         }
 
-        // Remove template from suspended templates cache
-        try {
-          const suspendedTemplatesData =
-            cache.readQuery<Graphql.SuspendedTemplatesQuery>({
-              query: Document.suspendedTemplatesQueryDocument,
-            });
+        // Evict suspended templates cache
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "suspendedTemplates",
+        });
 
-          if (suspendedTemplatesData?.suspendedTemplates) {
-            const updatedTemplates =
-              suspendedTemplatesData.suspendedTemplates.filter(
-                (t: Graphql.Template) => t.id !== unsuspendedTemplate.id,
-              );
+        // Get full query variables from store for new category
+        const queryVars = store.getTemplateQueryVariables(newCategoryId);
 
-            cache.writeQuery({
-              query: Document.suspendedTemplatesQueryDocument,
-              data: {
-                suspendedTemplates: updatedTemplates,
-              },
-            });
-          }
-        } catch {
-          // Suspended templates might not be in cache, that's okay
-        }
+        // Evict the templatesByCategoryId cache for new category with full arguments
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "templatesByCategoryId",
+          args: {
+            categoryId: newCategoryId,
+            ...queryVars,
+          },
+        });
 
-        // Add template to destination category's templatesByCategoryId cache
-        try {
-          const newCategoryTemplatesData =
-            cache.readQuery<Graphql.TemplatesByCategoryIdQuery>({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId: newCategoryId },
-            });
-
-          if (newCategoryTemplatesData?.templatesByCategoryId) {
-            cache.writeQuery({
-              query: Document.templatesByCategoryIdQueryDocument,
-              variables: { categoryId: newCategoryId },
-              data: {
-                templatesByCategoryId: [
-                  ...newCategoryTemplatesData.templatesByCategoryId,
-                  unsuspendedTemplate,
-                ],
-              },
-            });
-          }
-        } catch {
-          // Destination category templates might not be in cache, that's okay
-        }
+        cache.gc();
       },
     },
   );

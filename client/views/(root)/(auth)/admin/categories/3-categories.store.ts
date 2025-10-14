@@ -1,10 +1,20 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Category tab types
  */
 export type CategoryTabType = "all" | "deleted";
+
+/**
+ * Template query variables for pagination, filtering, and sorting
+ */
+export type TemplateQueryVariables = {
+  paginationArgs?: Graphql.PaginationArgs;
+  filterArgs?: Graphql.TemplateFilterArgs;
+  orderBy?: Graphql.TemplatesOrderByClause[];
+};
 
 /**
  * Category UI Store State
@@ -23,6 +33,9 @@ interface CategoryUIState {
   // Lazy loading state
   expandedCategoryIds: Set<number>;
   fetchedCategoryIds: Set<number>; // Track which categories have had their children fetched
+
+  // Template query variables per category
+  templateQueryVariables: Map<number, TemplateQueryVariables>;
 
   // Actions
   setCurrentCategoryId: (id: number | null) => void;
@@ -43,6 +56,16 @@ interface CategoryUIState {
   markAsFetched: (id: number) => void;
   isFetched: (id: number) => boolean;
 
+  // Template query variables actions
+  setTemplateQueryVariables: (
+    categoryId: number,
+    vars: TemplateQueryVariables
+  ) => void;
+  getTemplateQueryVariables: (
+    categoryId: number
+  ) => TemplateQueryVariables | undefined;
+  resetTemplateQueryVariables: (categoryId: number) => void;
+
   reset: () => void;
 }
 
@@ -55,6 +78,7 @@ const initialState = {
   pendingCategoryId: null,
   expandedCategoryIds: new Set<number>(),
   fetchedCategoryIds: new Set<number>(),
+  templateQueryVariables: new Map<number, TemplateQueryVariables>(),
 };
 
 /**
@@ -142,6 +166,24 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
         return get().fetchedCategoryIds.has(id);
       },
 
+      setTemplateQueryVariables: (categoryId, vars) =>
+        set((state) => {
+          const newMap = new Map(state.templateQueryVariables);
+          newMap.set(categoryId, vars);
+          return { templateQueryVariables: newMap };
+        }),
+
+      getTemplateQueryVariables: (categoryId) => {
+        return get().templateQueryVariables.get(categoryId);
+      },
+
+      resetTemplateQueryVariables: (categoryId) =>
+        set((state) => {
+          const newMap = new Map(state.templateQueryVariables);
+          newMap.delete(categoryId);
+          return { templateQueryVariables: newMap };
+        }),
+
       reset: () => set(initialState),
     }),
     {
@@ -154,13 +196,15 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
         activeCategoryTab: state.activeCategoryTab,
         expandedCategoryIds: Array.from(state.expandedCategoryIds), // Convert Set to Array for JSON
         fetchedCategoryIds: Array.from(state.fetchedCategoryIds), // Convert Set to Array for JSON
+        templateQueryVariables: Array.from(state.templateQueryVariables.entries()), // Convert Map to Array for JSON
       }),
-      // Custom merge to handle Set conversion
+      // Custom merge to handle Set and Map conversion
       merge: (persistedState, currentState) => {
         const typedPersistedState =
           persistedState as Partial<CategoryUIState> & {
             expandedCategoryIds?: number[];
             fetchedCategoryIds?: number[];
+            templateQueryVariables?: [number, TemplateQueryVariables][];
           };
         return {
           ...currentState,
@@ -171,6 +215,9 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
           fetchedCategoryIds: new Set(
             typedPersistedState?.fetchedCategoryIds || [],
           ), // Convert Array back to Set
+          templateQueryVariables: new Map(
+            typedPersistedState?.templateQueryVariables || [],
+          ), // Convert Array back to Map
         };
       },
     },
