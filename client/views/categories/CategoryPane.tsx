@@ -26,11 +26,11 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const strings = useAppTranslation("templateCategoryTranslations");
 
   const {
-    trySelectCategory,
     createCategory,
     updateCategory,
     deleteCategory,
     currentCategoryId,
+    selectCategory,
     expandedCategoryIds,
     toggleExpanded,
     isFetched,
@@ -57,9 +57,9 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
 
   const handleCategoryClick = React.useCallback(
     (category: TemplateCategory) => {
-      trySelectCategory(category.id);
+      selectCategory(category);
     },
-    [trySelectCategory],
+    [selectCategory],
   );
 
   const handleAddNewCategory = React.useCallback(() => {

@@ -160,20 +160,6 @@ export const TemplateCategoryGraphQLProvider: React.FC<{
         });
         const oldParentId = oldCat?.parentCategory?.id;
 
-        // Update single category query if it exists in cache
-        cache.updateQuery<Graphql.TemplateCategoryQuery>(
-          {
-            query: SharedDocument.templateCategoryQueryDocument,
-            variables: { id: updated.id },
-          },
-          (existing) => {
-            if (!existing?.templateCategory) return existing;
-            return {
-              templateCategory: { ...existing.templateCategory, ...updated },
-            };
-          },
-        );
-
         if (oldParentId === newParentId) {
           // Same parent - update in place
           cache.updateQuery<Graphql.CategoryChildrenQuery>(

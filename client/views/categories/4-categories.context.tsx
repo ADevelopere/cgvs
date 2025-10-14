@@ -67,7 +67,6 @@ type TemplateCategoryManagementContextType = {
   manageTemplate: (templateId: number) => void;
 
   // Selection management (delegates to Zustand)
-  setCurrentCategory: (category: Graphql.TemplateCategory | null) => void;
   trySelectCategory: (
     category: Graphql.TemplateCategory | null,
   ) => Promise<boolean>;
@@ -75,6 +74,11 @@ type TemplateCategoryManagementContextType = {
   // Callback management
   onNewTemplateCancel?: () => void;
   setOnNewTemplateCancel: (callback: (() => void) | undefined) => void;
+
+  currentCategory: Graphql.TemplateCategoryWithParentTree | null;
+  selectCategory: (
+    category: Graphql.TemplateCategory | null,
+  ) => void;
 };
 
 const TemplateCategoryManagementContext = React.createContext<
@@ -109,6 +113,9 @@ export const TemplateCategoryManagementProvider: React.FC<{
   const { setNavigation } = useDashboardLayout();
   const router = useRouter();
 
+  const [currentCategory, setCurrentCategory] =
+    React.useState<Graphql.TemplateCategoryWithParentTree | null>(null);
+
   // Get UI state from Zustand store (only what's needed by provider logic)
   const {
     currentCategoryId,
@@ -131,9 +138,16 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
   const apolloService = useTemplateCategoryService();
 
-  const setCurrentCategory = React.useCallback(
+  const selectCategory = React.useCallback(
     (category: Graphql.TemplateCategory | null) => {
       setCurrentCategoryId(category?.id ?? null);
+      if (category) {
+        setCurrentCategory({
+          id: category.id,
+          name: category.name,
+          parentTree: [],
+        });
+      }
     },
     [setCurrentCategoryId],
   );
@@ -288,7 +302,8 @@ export const TemplateCategoryManagementProvider: React.FC<{
     createCategory,
     updateCategory,
     deleteCategory,
-    setCurrentCategory,
+    currentCategory,
+    selectCategory,
     trySelectCategory,
     // Template operations
     createTemplate,
