@@ -15,7 +15,7 @@ import {
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 
-const CategoryTreePane: React.FC = () => {
+const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableTopPadding = false }) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const {
     currentCategoryId,
@@ -25,6 +25,8 @@ const CategoryTreePane: React.FC = () => {
     toggleExpanded,
     markAsFetched,
     isFetched,
+    currentCategory,
+    setCurrentCategory,
   } = useTemplatesList();
 
   // Category search for autocomplete
@@ -32,9 +34,6 @@ const CategoryTreePane: React.FC = () => {
     searchCategories,
     { data: searchCategoriesData, loading: searchLoading },
   ] = useLazyQuery(Document.searchTemplateCategoriesQueryDocument);
-
-  const [currentCategory, setCurrentCategory] =
-    React.useState<TemplateCategoryWithParentTree | null>(null);
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -43,7 +42,7 @@ const CategoryTreePane: React.FC = () => {
     if (currentCategoryId === null) {
       setCurrentCategory(null);
     }
-  }, [currentCategoryId]);
+  }, [currentCategoryId, setCurrentCategory]);
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
@@ -131,7 +130,7 @@ const CategoryTreePane: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        pt: 8,
+        pt: disableTopPadding ? 14 : 8,
       }}
       onClick={(e) => {
         // Click on empty area clears category selection

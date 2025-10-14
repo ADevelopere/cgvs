@@ -38,11 +38,11 @@ type TemplateListProps = {
 const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const {
-    currentCategoryId,
     templateQueryVariables,
     updateTemplateQueryVariables,
     viewMode,
     setViewMode,
+    currentCategory,
   } = useTemplatesList();
 
   // Local state for page input value (can be different from actual current page until confirmed)
@@ -53,7 +53,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     Document.templatesByCategoryIdQueryDocument,
     {
       variables: {
-        categoryId: currentCategoryId ?? undefined,
+        categoryId: currentCategory?.id,
         paginationArgs: templateQueryVariables.paginationArgs,
         filterArgs: templateQueryVariables.filterArgs,
         orderBy: templateQueryVariables.orderBy,
@@ -198,12 +198,12 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     if (searchQuery) {
       return strings.noTemplatesFoundSearch;
     }
-    if (currentCategoryId === null) {
+    if (currentCategory?.id === null) {
       return strings.noTemplatesFoundCreate;
     }
     return strings.noTemplates;
   }, [
-    currentCategoryId,
+    currentCategory?.id,
     searchQuery,
     strings.noTemplates,
     strings.noTemplatesFoundCreate,
@@ -247,9 +247,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
         }}
       >
         <Typography variant="h6">
-          {currentCategoryId !== null
-            ? strings.templates
-            : strings.allTemplates}
+          {currentCategory ? currentCategory.name : strings.allTemplates}
         </Typography>
 
         <Box

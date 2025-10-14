@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 import { useTemplatesPageStore } from "./templatesPage.store";
+import { TemplateCategoryWithParentTree } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Context provides ONLY business logic functions
@@ -28,6 +29,9 @@ import { useTemplatesPageStore } from "./templatesPage.store";
 type TemplatesPageContextType = {
   // Navigation
   manageTemplate: (templateId: number) => void;
+
+  currentCategory: TemplateCategoryWithParentTree | null;
+  setCurrentCategory: (category: TemplateCategoryWithParentTree | null) => void;
 };
 
 const TemplatesPageContext = React.createContext<
@@ -61,6 +65,9 @@ export const TemplatesPageProvider: React.FC<{
   const router = useRouter();
   const { setNavigation } = useDashboardLayout();
 
+  const [currentCategory, setCurrentCategory] =
+    React.useState<TemplateCategoryWithParentTree | null>(null);
+
   // Update navigation
   useEffect(() => {
     setNavigation((prevNav) => {
@@ -84,8 +91,10 @@ export const TemplatesPageProvider: React.FC<{
   const value = React.useMemo(
     () => ({
       manageTemplate,
+      currentCategory,
+      setCurrentCategory,
     }),
-    [manageTemplate],
+    [manageTemplate, currentCategory, setCurrentCategory],
   );
 
   return (
