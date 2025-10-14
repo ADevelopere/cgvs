@@ -9,9 +9,15 @@ import {
     Button,
     TextField,
     Box,
+    Autocomplete,
 } from "@mui/material";
+import { useLazyQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
-import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
+import {
+    TemplateCategory,
+    TemplateCategoryWithParentTree,
+} from "@/client/graphql/generated/gql/graphql";
+import { searchTemplateCategoriesQueryDocument } from "./0-categories.documents";
 
 interface Props {
     open: boolean;
@@ -37,6 +43,55 @@ const CategoryEditDialog: React.FC<Props> = ({
         categoryToEdit?.parentCategory?.id ?? null,
     );
     const [error, setError] = useState("");
+
+    // Category search for autocomplete
+    const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] =
+        useLazyQuery(searchTemplateCategoriesQueryDocument);
+    const [categorySearchTerm, setCategorySearchTerm] = useState("");
+    const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    const categoryOptions = React.useMemo(() => {
+        const options = searchCategoriesData?.searchTemplateCategories ?? [];
+        // Filter out current category and its subcategories to prevent circular references
+        return options.filter((c) => c.id !== categoryToEdit?.id);
+    }, [searchCategoriesData?.searchTemplateCategories, categoryToEdit?.id]);
+
+    const selectedParentCategory = React.useMemo(
+        () => categoryOptions.find((c) => c.id === parentId) ?? null,
+        [categoryOptions, parentId]
+    );
+
+    // Debounced search handler
+    const handleCategorySearch = React.useCallback(
+        (searchTerm: string) => {
+            setCategorySearchTerm(searchTerm);
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+
+            if (searchTerm.trim().length > 0) {
+                searchTimeoutRef.current = setTimeout(() => {
+                    searchCategories({
+                        variables: {
+                            searchTerm,
+                            limit: 10,
+                            includeParentTree: false,
+                        },
+                    });
+                }, 300);
+            }
+        },
+        [searchCategories]
+    );
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (categoryToEdit?.name) {
@@ -111,27 +166,24 @@ const CategoryEditDialog: React.FC<Props> = ({
                         onChange={(e) => setDescription(e.target.value)}
                     />
 
-
-                    {/* todo: */}
-                    {/* {!categoryToEdit?.specialType && (
+                    {!categoryToEdit?.specialType && (
                         <Autocomplete
-                            value={
-                                availableParentCategories.find(
-                                    (c) => c.id === parentId,
-                                ) || undefined
-                            }
-                            onChange={(_, newValue) =>
+                            value={selectedParentCategory}
+                            onChange={(_, newValue: TemplateCategoryWithParentTree | null) =>
                                 setParentId(newValue?.id ?? null)
                             }
-                            options={availableParentCategories}
+                            inputValue={categorySearchTerm}
+                            onInputChange={(_, newInputValue) => {
+                                handleCategorySearch(newInputValue);
+                            }}
+                            options={categoryOptions}
                             getOptionLabel={(option) => {
                                 if (!option.name) {
-                                    throw new Error(
-                                        "Category name is required",
-                                    );
+                                    return "";
                                 }
                                 return option.name;
                             }}
+                            loading={searchLoading}
                             noOptionsText={strings.noCategories}
                             renderInput={(params) => (
                                 <TextField
@@ -140,8 +192,9 @@ const CategoryEditDialog: React.FC<Props> = ({
                                     placeholder={strings.selectCategory}
                                 />
                             )}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                         />
-                    )} */}
+                    )}
                 </Box>
             </DialogContent>
             <DialogActions>

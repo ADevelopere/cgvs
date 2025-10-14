@@ -31,6 +31,16 @@ export const templateCategories = pgTable(
   },
   (table) => [
     uniqueIndex("template_category_special_type_key").on(table.specialType),
+    // GIN index for Full-Text Search on 'name' column
+    index("idx_template_categories_name_fts").using(
+      "gin",
+      sql`to_tsvector('simple', ${table.name})`,
+    ),
+    // GiST index for faster LIKE/ILIKE on name using pg_trgm
+    index("idx_template_categories_name_trgm").using(
+      "gist",
+      table.name.op("gist_trgm_ops"),
+    ),
   ],
 );
 

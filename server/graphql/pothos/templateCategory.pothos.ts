@@ -3,6 +3,7 @@ import {
     TemplateCategoryCreateInput,
     TemplateCategoryPothosDefintion,
     TemplateCategoryUpdateInput,
+    TemplateCategoryWithParentTree,
 } from "@/server/types";
 import {
     TemplateRepository,
@@ -82,5 +83,30 @@ export const TemplateCategoryUpdateInputPothosObject =
             name: t.string({ required: true }),
             parentCategoryId: t.int({ required: false }),
             description: t.string({ required: false }),
+        }),
+    });
+
+const TemplateCategoryWithParentTreeRef =
+    gqlSchemaBuilder.objectRef<TemplateCategoryWithParentTree>(
+        "TemplateCategoryWithParentTree",
+    );
+
+export const TemplateCategoryWithParentTreePothosObject =
+    gqlSchemaBuilder.objectType(TemplateCategoryWithParentTreeRef, {
+        fields: (t) => ({
+            id: t.exposeInt("id", { nullable: false }),
+            name: t.exposeString("name", { nullable: true }),
+            description: t.exposeString("description", { nullable: true }),
+            order: t.exposeInt("order", { nullable: true }),
+            specialType: t.exposeString("specialType", { nullable: true }),
+            createdAt: t.expose("createdAt", {
+                type: "DateTime",
+                nullable: true,
+            }),
+            updatedAt: t.expose("updatedAt", {
+                type: "DateTime",
+                nullable: true,
+            }),
+            parentTree: t.exposeIntList("parentTree", { nullable: false }),
         }),
     });

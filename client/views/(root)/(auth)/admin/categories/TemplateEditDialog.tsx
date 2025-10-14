@@ -9,12 +9,16 @@ import {
   Button,
   TextField,
   Box,
+  Autocomplete,
 } from "@mui/material";
+import { useLazyQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import {
   Template,
   TemplateUpdateInput,
+  TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
+import { searchTemplateCategoriesQueryDocument } from "./0-categories.documents";
 
 interface Props {
   open: boolean;
@@ -38,6 +42,54 @@ const TemplateEditDialog: React.FC<Props> = ({
   >(template?.description);
   const [categoryId, setCategoryId] = React.useState<number>(parentCategoryId);
   const [error, setError] = React.useState("");
+
+  // Category search for autocomplete
+  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] =
+    useLazyQuery(searchTemplateCategoriesQueryDocument);
+  const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const categoryOptions = React.useMemo(
+    () => searchCategoriesData?.searchTemplateCategories ?? [],
+    [searchCategoriesData?.searchTemplateCategories]
+  );
+
+  const selectedCategory = React.useMemo(
+    () => categoryOptions.find((c) => c.id === categoryId) ?? null,
+    [categoryOptions, categoryId]
+  );
+
+  // Debounced search handler
+  const handleCategorySearch = React.useCallback(
+    (searchTerm: string) => {
+      setCategorySearchTerm(searchTerm);
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      if (searchTerm.trim().length > 0) {
+        searchTimeoutRef.current = setTimeout(() => {
+          searchCategories({
+            variables: {
+              searchTerm,
+              limit: 10,
+              includeParentTree: false,
+            },
+          });
+        }, 300);
+      }
+    },
+    [searchCategories]
+  );
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
     if (template) {
@@ -109,17 +161,23 @@ const TemplateEditDialog: React.FC<Props> = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          {/* todo: add category autocomplete */}
-          {/* <Autocomplete
-            value={categories.find((c) => c.id === categoryId) || null}
-            onChange={(_, newValue) => setCategoryId(newValue?.id ?? null)}
-            options={categories}
+          <Autocomplete
+            value={selectedCategory}
+            onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
+              setCategoryId(newValue?.id ?? parentCategoryId);
+            }}
+            inputValue={categorySearchTerm}
+            onInputChange={(_, newInputValue) => {
+              handleCategorySearch(newInputValue);
+            }}
+            options={categoryOptions}
             getOptionLabel={(option) => {
               if (!option.name) {
-                throw new Error("Category name is required");
+                return "";
               }
               return option.name;
             }}
+            loading={searchLoading}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -127,7 +185,8 @@ const TemplateEditDialog: React.FC<Props> = ({
                 placeholder={strings.selectCategory}
               />
             )}
-          /> */}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+          />
         </Box>
       </DialogContent>
       <DialogActions>
