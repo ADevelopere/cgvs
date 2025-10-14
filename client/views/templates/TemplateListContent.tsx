@@ -312,17 +312,24 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            mt: 2,
-            pt: 2,
-            px: 2,
+            justifyContent: { sm: "center", md: "space-between" },
+            mt: { xs: 1, sm: 2 },
+            pt: { xs: 1, sm: 2 },
+            px: { xs: 1, sm: 2 },
             borderTop: "1px solid",
             borderColor: "divider",
             flexWrap: "wrap",
+            gap: { xs: 1, sm: 2 },
           }}
         >
-          {/* Pagination info */}
-          <Typography variant="body2" color="text.secondary">
+          {/* Pagination info - hidden on mobile */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              display: { xs: "none", md: "block" },
+            }}
+          >
             {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0}{" "}
             {strings.of} {pageInfo.total}
           </Typography>
@@ -332,12 +339,18 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-end",
-              gap: 2,
+              gap: { xs: 1, sm: 1.5, md: 2 },
               flexWrap: "wrap",
             }}
           >
             {/* Page input field and pagination arrows */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: { xs: 0.5, sm: 1 },
+              }}
+            >
               {/* Page input field */}
               <TextField
                 size="small"
@@ -348,12 +361,18 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
                 onBlur={handlePageInputBlur}
                 onKeyDown={handlePageInputKeyDown}
                 disabled={loading || pageInfo.lastPage <= 1}
-                inputProps={{
-                  min: 1,
-                  max: pageInfo.lastPage,
-                  style: { textAlign: "center", width: "60px" },
+                slotProps={{
+                  input: {
+                    style: { textAlign: "center", width: "60px" },
+                  },
+                  htmlInput: {
+                    min: 1,
+                    max: pageInfo.lastPage,
+                  },
                 }}
-                sx={{ width: 120 }}
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                }}
               />
 
               {/* Pagination arrows */}
@@ -370,12 +389,25 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
                   "& .MuiPagination-ul": {
                     flexWrap: "nowrap",
                   },
+                  "& .MuiPaginationItem-root": {
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    minWidth: { xs: 28, sm: 32 },
+                    height: { xs: 28, sm: 32 },
+                  },
                 }}
               />
             </Box>
 
             {/* Page size selector */}
-            <FormControl size="small" sx={{ minWidth: 100 }}>
+            <FormControl
+              size="small"
+              sx={{
+                minWidth: { xs: 80, sm: 100 },
+                "& .MuiInputBase-input": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+              }}
+            >
               <InputLabel id="page-size-label">{strings.perPage}</InputLabel>
               <Select
                 labelId="page-size-label"
@@ -386,6 +418,11 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
                 label={strings.perPage}
                 onChange={handlePageSizeChange}
                 disabled={loading}
+                sx={{
+                  "& .MuiSelect-select": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                }}
               >
                 <MenuItem value={10}>10</MenuItem>
                 <MenuItem value={25}>25</MenuItem>
@@ -393,7 +430,6 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
                 <MenuItem value={100}>100</MenuItem>
               </Select>
             </FormControl>
-
           </Box>
         </Box>
       )}

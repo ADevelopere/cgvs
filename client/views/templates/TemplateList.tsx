@@ -88,8 +88,18 @@ const CategoryTreePane: React.FC = () => {
     searchCategories,
     { data: searchCategoriesData, loading: searchLoading },
   ] = useLazyQuery(Document.searchTemplateCategoriesQueryDocument);
+
+  const [currentCategory, setCurrentCategory] =
+    React.useState<TemplateCategoryWithParentTree | null>(null);
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Sync currentCategory with currentCategoryId from store
+  React.useEffect(() => {
+    if (currentCategoryId === null) {
+      setCurrentCategory(null);
+    }
+  }, [currentCategoryId]);
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
@@ -119,6 +129,14 @@ const CategoryTreePane: React.FC = () => {
     [searchCategories],
   );
 
+  // Handle input change for autocomplete
+  const handleInputChange = React.useCallback(
+    (_event: React.SyntheticEvent, newInputValue: string) => {
+      handleCategorySearch(newInputValue);
+    },
+    [handleCategorySearch],
+  );
+
   // Cleanup timeout on unmount
   React.useEffect(() => {
     return () => {
@@ -127,23 +145,6 @@ const CategoryTreePane: React.FC = () => {
       }
     };
   }, []);
-
-  // Get current category for autocomplete (convert from ID to object)
-  const currentCategory = React.useMemo(() => {
-    if (!currentCategoryId) return null;
-    // Try to find in search results
-    const found = categoryOptions.find((cat) => cat.id === currentCategoryId);
-    if (found) return found;
-    // Return a placeholder object if not in search results
-    return {
-      id: currentCategoryId,
-      name: strings.loading,
-      description: null,
-      specialType: null,
-      order: 0,
-      parentTree: [],
-    } as TemplateCategoryWithParentTree;
-  }, [currentCategoryId, categoryOptions, strings.loading]);
 
   // Callback adapters for expansion and fetch tracking
   const handleToggleExpanded = React.useCallback(
@@ -170,8 +171,13 @@ const CategoryTreePane: React.FC = () => {
   const handleCategorySelect = React.useCallback(
     (category: TemplateCategory) => {
       selectCategoryWithParentTree(category.id, []);
+      // Also set the current category state for autocomplete display
+      setCurrentCategory({
+        id: category.id,
+        name: category.name,
+      });
     },
-    [selectCategoryWithParentTree],
+    [selectCategoryWithParentTree, setCurrentCategory],
   );
 
   return (
@@ -180,7 +186,6 @@ const CategoryTreePane: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        gap: 2,
       }}
       onClick={(e) => {
         // Click on empty area clears category selection
@@ -189,26 +194,40 @@ const CategoryTreePane: React.FC = () => {
         }
       }}
     >
-      {/* Category Search Autocomplete */}
-      <Box sx={{ px: 2, pt: 2 }}>
+      {/* Category Search Autocomplete - positioned at top, outside scrollable area */}
+      <Box
+        sx={{
+          px: 2,
+          pt: 2,
+          pb: 1,
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          backgroundColor: "background.paper",
+        }}
+      >
         <Autocomplete
           value={currentCategory}
           onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
             if (newValue) {
-              selectCategoryWithParentTree(newValue.id, newValue.parentTree);
+              selectCategoryWithParentTree(
+                newValue.id,
+                newValue.parentTree ?? [],
+              );
             } else {
               clearCurrentCategory();
             }
           }}
           inputValue={categorySearchTerm}
-          onInputChange={(_, newInputValue) => {
-            handleCategorySearch(newInputValue);
-          }}
+          onInputChange={handleInputChange}
           options={categoryOptions}
           getOptionLabel={(option) => option.name ?? strings.unnamed}
           loading={searchLoading}
           loadingText={strings.loading}
-          noOptionsText={strings.noCategories}
+          noOptionsText={
+            categorySearchTerm.trim().length > 0
+              ? strings.noCategories
+              : strings.selectCategory
+          }
           sx={{ width: "100%" }}
           renderInput={(params) => (
             <TextField
@@ -216,7 +235,7 @@ const CategoryTreePane: React.FC = () => {
               label={strings.selectCategory}
               variant="outlined"
               size="small"
-              placeholder={strings.selectCategory}
+              placeholder={currentCategory ? undefined : strings.selectCategory}
             />
           )}
           isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -228,8 +247,8 @@ const CategoryTreePane: React.FC = () => {
         />
       </Box>
 
-      {/* Reactive Category Tree */}
-      <Box sx={{ flexGrow: 1, overflow: "auto", px: 2 }}>
+      {/* Reactive Category Tree - now in scrollable area */}
+      <Box sx={{ flexGrow: 1, overflow: "auto", px: 2, pt: 1 }}>
         <ReactiveCategoryTree<
           TemplateCategory,
           CategoryChildrenQuery,
@@ -282,7 +301,7 @@ const TemplateList: React.FC = () => {
           orientation="vertical"
           firstPane={{
             visible: open,
-            minRatio: 0.1,
+            minRatio: 0.2,
           }}
           secondPane={{
             visible: true,

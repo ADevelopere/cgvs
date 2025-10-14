@@ -107,6 +107,6 @@ export const TemplateCategoryWithParentTreePothosObject =
                 type: "DateTime",
                 nullable: true,
             }),
-            parentTree: t.exposeIntList("parentTree", { nullable: false }),
+            parentTree: t.exposeIntList("parentTree", { nullable: true }),
         }),
     });

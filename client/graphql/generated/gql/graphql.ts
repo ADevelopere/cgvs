@@ -1083,7 +1083,7 @@ export type TemplateCategoryWithParentTree = {
   id: Scalars['Int']['output'];
   name?: Maybe<Scalars['String']['output']>;
   order?: Maybe<Scalars['Int']['output']>;
-  parentTree: Array<Scalars['Int']['output']>;
+  parentTree?: Maybe<Array<Scalars['Int']['output']>>;
   specialType?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -1757,7 +1757,7 @@ export type SearchTemplateCategoriesQueryVariables = Exact<{
 }>;
 
 
-export type SearchTemplateCategoriesQuery = { __typename?: 'Query', searchTemplateCategories: Array<{ __typename?: 'TemplateCategoryWithParentTree', id: number, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, parentTree: Array<number> }> };
+export type SearchTemplateCategoriesQuery = { __typename?: 'Query', searchTemplateCategories: Array<{ __typename?: 'TemplateCategoryWithParentTree', id: number, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, parentTree?: Array<number> | null }> };
 
 export type CreateTemplateTextVariableMutationVariables = Exact<{
   input: TemplateTextVariableCreateInput;
