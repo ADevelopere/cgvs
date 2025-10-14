@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Paper, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Paper, styled, useMediaQuery, useTheme, Drawer } from "@mui/material";
 import React, { useState } from "react";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { useAppTranslation } from "@/client/locale";
@@ -20,7 +20,12 @@ const TemplateList: React.FC = () => {
   const [open, setOpen] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const strings = useAppTranslation("templateCategoryTranslations");
+
+  const isFloating = React.useMemo(() => {
+    return (isMobile || isTablet) && dashboardsidebarState === "expanded";
+  }, [dashboardsidebarState, isMobile, isTablet])
 
   const toggleSidebar = () => {
     setOpen((prev) => !prev);
@@ -37,7 +42,7 @@ const TemplateList: React.FC = () => {
         title={open ? strings.hideCategoriesPane : strings.showCategoriesPane}
       />
 
-      {!isMobile && (
+      {!isFloating && (
         <SplitPane
           orientation="vertical"
           firstPane={{
@@ -63,7 +68,7 @@ const TemplateList: React.FC = () => {
               overflow: "hidden",
             }}
           >
-            <CategoryTreePane />
+            <CategoryTreePane isMobile={false} />
           </Paper>
           <TemplateListContent
             style={{
@@ -76,14 +81,41 @@ const TemplateList: React.FC = () => {
         </SplitPane>
       )}
 
-      {isMobile && (
-        <Main>
-          <TemplateListContent
-            style={{
-              paddingInlineStart: 2,
+      {isFloating && (
+        <>
+          <Drawer
+            anchor="left"
+            open={open}
+            onClose={toggleSidebar}
+            variant="temporary"
+            sx={{
+              width: 300,
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: 300,
+                boxSizing: 'border-box',
+              },
             }}
-          />
-        </Main>
+          >
+            <Paper
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              }}
+            >
+              <CategoryTreePane isMobile={true} />
+            </Paper>
+          </Drawer>
+          <Main>
+            <TemplateListContent
+              style={{
+                paddingInlineStart: 2,
+              }}
+            />
+          </Main>
+        </>
       )}
     </Box>
   );
