@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client/react";
+import { useEffect, useMemo } from "react";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
@@ -14,7 +15,7 @@ export function ReactiveCategoryTree<
 >(
   props: ReactiveTreeProps<TNode, TResult, TVariables>,
 ) {
-  const { resolver, getItems, header, noItemsMessage, ...nodeProps } =
+  const { resolver, getItems, header, noItemsMessage, selectedItemId, onSelectItem, ...nodeProps } =
     props;
 
   // Call useQuery at top level with root resolver (parent = undefined)
@@ -25,7 +26,20 @@ export function ReactiveCategoryTree<
     fetchPolicy: rootQueryOptions.fetchPolicy || "cache-first",
   });
 
-  const rootItems = data ? getItems(data as TResult) : [];
+  const rootItems = useMemo(() =>
+    data ? getItems(data as TResult) : [],
+    [data, getItems]
+  );
+
+  // Auto-select item if it matches selectedItemId after data updates
+  useEffect(() => {
+    if (selectedItemId && onSelectItem && rootItems.length > 0) {
+      const selectedItem = rootItems.find((item: TNode) => item.id === selectedItemId);
+      if (selectedItem) {
+        onSelectItem(selectedItem);
+      }
+    }
+  }, [selectedItemId, onSelectItem, rootItems]);
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -67,6 +81,8 @@ export function ReactiveCategoryTree<
                 level={0}
                 resolver={resolver}
                 getItems={getItems}
+                selectedItemId={selectedItemId}
+                onSelectItem={onSelectItem}
                 {...nodeProps}
               />
             ))

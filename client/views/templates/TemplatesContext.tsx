@@ -19,7 +19,6 @@ import { useRouter } from "next/navigation";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 import { useTemplatesPageStore } from "./templatesPage.store";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Context provides ONLY business logic functions
@@ -29,9 +28,6 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 type TemplatesPageContextType = {
   // Navigation
   manageTemplate: (templateId: number) => void;
-
-  // Category selection
-  setCurrentCategory: (category: Graphql.TemplateCategory | null) => void;
 };
 
 const TemplatesPageContext = React.createContext<
@@ -48,7 +44,7 @@ export const useTemplatesList = () => {
 
   if (context === undefined) {
     throw new Error(
-      "useTemplatesList must be used within a TemplatesPageProvider"
+      "useTemplatesList must be used within a TemplatesPageProvider",
     );
   }
 
@@ -64,7 +60,6 @@ export const TemplatesPageProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const { setNavigation } = useDashboardLayout();
-  const { setCurrentCategoryId } = useTemplatesPageStore();
 
   // Update navigation
   useEffect(() => {
@@ -83,22 +78,14 @@ export const TemplatesPageProvider: React.FC<{
     (templateId: number) => {
       router.push(`/admin/templates/${templateId}/manage`);
     },
-    [router]
-  );
-
-  const setCurrentCategory = React.useCallback(
-    (category: Graphql.TemplateCategory | null) => {
-      setCurrentCategoryId(category?.id ?? null);
-    },
-    [setCurrentCategoryId]
+    [router],
   );
 
   const value = React.useMemo(
     () => ({
       manageTemplate,
-      setCurrentCategory,
     }),
-    [manageTemplate, setCurrentCategory]
+    [manageTemplate],
   );
 
   return (
@@ -107,4 +94,3 @@ export const TemplatesPageProvider: React.FC<{
     </TemplatesPageContext.Provider>
   );
 };
-

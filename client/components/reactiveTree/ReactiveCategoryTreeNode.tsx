@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { Box, IconButton, CircularProgress, Typography } from "@mui/material";
 import { ChevronRight as ChevronRightIcon } from "@mui/icons-material";
@@ -84,9 +84,22 @@ export function ReactiveCategoryTreeNode<
     },
   );
 
-  const children = childData ? getItems(childData as TResult) : [];
+  const children = useMemo(() =>
+    childData ? getItems(childData as TResult) : [],
+    [childData, getItems]
+  );
   const hasLoadedChildren = isExpanded && children.length > 0;
   const isLoading = hasFetched && childLoading;
+
+  // Auto-select child item if it matches selectedItemId after data updates
+  useEffect(() => {
+    if (selectedItemId && onSelectItem && children.length > 0) {
+      const selectedItem = children.find((item: TNode) => item.id === selectedItemId);
+      if (selectedItem) {
+        onSelectItem(selectedItem);
+      }
+    }
+  }, [selectedItemId, onSelectItem, children]);
 
   // Trigger fetch on first hover
   const handleHover = () => {
