@@ -5,7 +5,7 @@ import { ApolloCache, gql } from "@apollo/client";
 import * as Document from "./0-categories.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useMutation } from "@apollo/client/react";
-import { templateQueryDocument } from "@/client/graphql/documents";
+import { templateQueryDocument } from "@/client/graphql/sharedDocuments";
 import { useTemplateCategoryUIStore } from "./3-categories.store";
 
 type TemplateCategoryGraphQLContextType = {

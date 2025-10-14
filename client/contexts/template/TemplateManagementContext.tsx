@@ -27,7 +27,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useDashboardLayout } from "../DashboardLayoutContext";
 import { NavigationPageItem } from "../adminLayout.types";
 import { useQuery } from "@apollo/client/react";
-import * as Document from "@/client/graphql/documents";
+import * as Document from "@/client/graphql/sharedDocuments";
 import { TemplateVariableManagementProvider } from "../templateVariable";
 import { RecipientManagementProvider } from "../recipient";
 import { useTemplateService } from "@/client/graphql/service";

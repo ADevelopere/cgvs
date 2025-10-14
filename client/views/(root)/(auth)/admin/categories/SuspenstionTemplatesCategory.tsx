@@ -10,7 +10,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { TEMPLATE_IMAGE_PLACEHOLDER_URL } from "@/client/utils/templateImagePlaceHolder";
-import * as Document from "@/client/graphql/documents";
+import * as Document from "@/client/graphql/sharedDocuments";
 
 interface TemplateRow {
   id: number;
