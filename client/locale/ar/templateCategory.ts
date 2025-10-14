@@ -167,4 +167,5 @@ export const templateCategory: TemplateCategoryTranslation = {
   showing: "عرض",
   of: "من",
   perPage: "لكل صفحة",
+  goToPage: "الذهاب إلى الصفحة",
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Typography,
   Box,
@@ -16,10 +16,12 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import ViewListIcon from "@mui/icons-material/ViewList";
-import GridViewIcon from "@mui/icons-material/GridView";
+import {
+  Search as SearchIcon,
+  ViewModule as ViewModuleIcon,
+  ViewList as ViewListIcon,
+  GridView as GridViewIcon,
+} from "@mui/icons-material";
 import CardView from "./views/CardView";
 import ListView from "./views/ListView";
 import GridView from "./views/GridView";
@@ -42,6 +44,9 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     viewMode,
     setViewMode,
   } = useTemplatesList();
+
+  // Local state for page input value (can be different from actual current page until confirmed)
+  const [pageInputValue, setPageInputValue] = useState<number>(1);
 
   // Fetch templates with current query variables
   const { data, loading } = useQuery(
@@ -66,6 +71,13 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     () => data?.templatesByCategoryId?.pageInfo,
     [data?.templatesByCategoryId?.pageInfo],
   );
+
+  // Sync local input value with actual current page when pageInfo changes
+  React.useEffect(() => {
+    if (pageInfo?.currentPage) {
+      setPageInputValue(pageInfo.currentPage);
+    }
+  }, [pageInfo?.currentPage]);
 
   // Search query from filter args
   const searchQuery = useMemo(
@@ -131,6 +143,56 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     },
     [updateTemplateQueryVariables],
   );
+
+  const handlePageInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const pageValue = event.target.value;
+      const pageNumber = parseInt(pageValue, 10);
+
+      // Update local state regardless of validity (for controlled input)
+      if (pageValue === "") {
+        // Allow empty value for better UX, but don't change the state yet
+        return;
+      } else if (!isNaN(pageNumber) && pageNumber >= 1) {
+        setPageInputValue(pageNumber);
+      }
+    },
+    [],
+  );
+
+  const handlePageInputSubmit = useCallback(() => {
+    const maxPage = pageInfo?.lastPage ?? 1;
+    // Coerce the value to be within valid range
+    const coercedPage = Math.min(Math.max(pageInputValue, 1), maxPage);
+
+    // Update pagination args with the coerced value
+    updateTemplateQueryVariables((current) => ({
+      ...current,
+      paginationArgs: {
+        ...current.paginationArgs,
+        page: coercedPage,
+      },
+    }));
+
+    // Update local state to reflect the coerced value that will be fetched
+    setPageInputValue(coercedPage);
+  }, [pageInputValue, pageInfo?.lastPage, updateTemplateQueryVariables]);
+
+  const handlePageInputKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handlePageInputSubmit();
+      }
+    },
+    [handlePageInputSubmit],
+  );
+
+  const handlePageInputBlur = useCallback(() => {
+    // Reset the input to the current page value
+    const currentPage = pageInfo?.currentPage ?? 1;
+    setPageInputValue(currentPage);
+  }, [pageInfo?.currentPage]);
 
   const getEmptyMessage = React.useCallback(() => {
     if (searchQuery) {
@@ -250,10 +312,10 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
-            gap: 2,
+            justifyContent: "space-between",
             mt: 2,
             pt: 2,
+            px: 2,
             borderTop: "1px solid",
             borderColor: "divider",
             flexWrap: "wrap",
@@ -265,37 +327,74 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
             {strings.of} {pageInfo.total}
           </Typography>
 
-          {/* Page size selector */}
-          <FormControl size="small" sx={{ minWidth: 100 }}>
-            <InputLabel id="page-size-label">{strings.perPage}</InputLabel>
-            <Select
-              labelId="page-size-label"
-              value={
-                templateQueryVariables.paginationArgs?.first ?? pageInfo.perPage
-              }
-              label={strings.perPage}
-              onChange={handlePageSizeChange}
-              disabled={loading}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: 2,
+              flexWrap: "wrap",
+            }}
+          >
+            {/* Page input field and pagination arrows */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {/* Page input field */}
+              <TextField
+                size="small"
+                type="number"
+                label={strings.goToPage}
+                value={pageInputValue}
+                onChange={handlePageInputChange}
+                onBlur={handlePageInputBlur}
+                onKeyDown={handlePageInputKeyDown}
+                disabled={loading || pageInfo.lastPage <= 1}
+                inputProps={{
+                  min: 1,
+                  max: pageInfo.lastPage,
+                  style: { textAlign: "center", width: "60px" },
+                }}
+                sx={{ width: 120 }}
+              />
 
-          {/* Pagination component */}
-          {pageInfo.lastPage > 1 && (
-            <Pagination
-              count={pageInfo.lastPage}
-              page={pageInfo.currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              disabled={loading}
-              showFirstButton
-              showLastButton
-            />
-          )}
+              {/* Pagination arrows */}
+              <Pagination
+                count={pageInfo.lastPage}
+                page={pageInfo.currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                disabled={loading}
+                showFirstButton
+                showLastButton
+                size="small"
+                sx={{
+                  "& .MuiPagination-ul": {
+                    flexWrap: "nowrap",
+                  },
+                }}
+              />
+            </Box>
+
+            {/* Page size selector */}
+            <FormControl size="small" sx={{ minWidth: 100 }}>
+              <InputLabel id="page-size-label">{strings.perPage}</InputLabel>
+              <Select
+                labelId="page-size-label"
+                value={
+                  templateQueryVariables.paginationArgs?.first ??
+                  pageInfo.perPage
+                }
+                label={strings.perPage}
+                onChange={handlePageSizeChange}
+                disabled={loading}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+
+          </Box>
         </Box>
       )}
     </Box>
