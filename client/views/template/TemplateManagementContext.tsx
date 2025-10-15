@@ -31,13 +31,9 @@ import * as Document from "@/client/graphql/sharedDocuments";
 import { TemplateVariableManagementProvider } from "../../contexts/templateVariable";
 import { RecipientManagementProvider } from "../../contexts/recipient";
 import { useTemplateService } from "@/client/graphql/service";
-import {
-  useTemplateUIStore,
-  initializeTemplateUIFromURL,
-} from "@/client/stores/useTemplateUIStore";
+import { initializeTemplateUIFromURL, useTemplateUIStore } from "./useTemplateUIStore";
 
 // Re-export types for backward compatibility with existing components
-export type { TemplateManagementTabType, TabError } from "@/client/stores/useTemplateUIStore";
 
 const defaultConfig: Graphql.TemplatesConfigs = {
   configs: [
