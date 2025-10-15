@@ -20,7 +20,10 @@ import EditableTypography from "@/client/components/input/EditableTypography";
 import { EditIcon, Ungroup, FolderPlus } from "lucide-react";
 import { useAppTranslation } from "@/client/locale";
 import { useState } from "react";
-import { TemplateCategory } from "@/client/graphql/generated/gql/graphql";
+import {
+  TemplateCategory,
+  TemplateCategoryCreateInput,
+} from "@/client/graphql/generated/gql/graphql";
 
 type RenderCategoryItemProps = {
   category: TemplateCategory;
@@ -32,7 +35,7 @@ type RenderCategoryItemProps = {
     category: TemplateCategory,
     newValue: string,
   ) => void;
-  createCategory: (name: string, parentId?: number) => void;
+  createCategory: (input: TemplateCategoryCreateInput) => Promise<void>;
 };
 
 const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
@@ -69,7 +72,10 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
       setError(validationError);
       return;
     }
-    createCategory(newCategoryName, category.id);
+    createCategory({
+      name: newCategoryName,
+      parentCategoryId: category.id,
+    });
     handleCloseCreateDialog();
   };
 
