@@ -11,30 +11,40 @@ import { ReactiveCategoryTreeNode } from "./ReactiveCategoryTreeNode";
 export function ReactiveCategoryTree<
   TNode extends ReactiveTreeNode,
   TResult = unknown,
-  TVariables = unknown
->(
-  props: ReactiveTreeProps<TNode, TResult, TVariables>,
-) {
-  const { resolver, getItems, header, noItemsMessage, selectedItemId, onSelectItem, ...nodeProps } =
-    props;
+  TVariables = unknown,
+>(props: ReactiveTreeProps<TNode, TResult, TVariables>) {
+  const {
+    resolver,
+    getItems,
+    header,
+    noItemsMessage,
+    selectedItemId,
+    onSelectItem,
+    ...nodeProps
+  } = props;
 
   // Call useQuery at top level with root resolver (parent = undefined)
   const rootQueryOptions = resolver(undefined);
   const { data, loading, error } = useQuery(rootQueryOptions.query, {
-    variables: rootQueryOptions.variables as Record<string, string | number | boolean>,
+    variables: rootQueryOptions.variables as Record<
+      string,
+      string | number | boolean
+    >,
     skip: rootQueryOptions.skip,
     fetchPolicy: rootQueryOptions.fetchPolicy || "cache-first",
   });
 
-  const rootItems = useMemo(() =>
-    data ? getItems(data as TResult) : [],
-    [data, getItems]
+  const rootItems = useMemo(
+    () => (data ? getItems(data as TResult, undefined) : []),
+    [data, getItems],
   );
 
   // Auto-select item if it matches selectedItemId after data updates
   useEffect(() => {
     if (selectedItemId && onSelectItem && rootItems.length > 0) {
-      const selectedItem = rootItems.find((item: TNode) => item.id === selectedItemId);
+      const selectedItem = rootItems.find(
+        (item: TNode) => item.id === selectedItemId,
+      );
       if (selectedItem) {
         onSelectItem(selectedItem);
       }

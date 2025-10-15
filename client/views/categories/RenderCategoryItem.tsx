@@ -19,20 +19,22 @@ import {
 import EditableTypography from "@/client/components/input/EditableTypography";
 import { EditIcon, Ungroup, FolderPlus } from "lucide-react";
 import { useAppTranslation } from "@/client/locale";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  TemplateCategory,
+  TemplateCategoryWithParentTree,
   TemplateCategoryCreateInput,
 } from "@/client/graphql/generated/gql/graphql";
+import { useQuery } from "@apollo/client/react";
+import { templatesByCategoryIdQueryDocument } from "@/client/graphql/sharedDocuments";
 
 type RenderCategoryItemProps = {
-  category: TemplateCategory;
-  handleCategoryClick: (category: TemplateCategory) => void;
-  handleOpenEditDialog: (category: TemplateCategory) => void;
+  category: TemplateCategoryWithParentTree;
+  handleCategoryClick: (category: TemplateCategoryWithParentTree) => void;
+  handleOpenEditDialog: (category: TemplateCategoryWithParentTree) => void;
   deleteCategory: (categoryId: number) => void;
   validateCategoryName: (name: string) => string;
   handleCategoryNameEdit: (
-    category: TemplateCategory,
+    category: TemplateCategoryWithParentTree,
     newValue: string,
   ) => void;
   createCategory: (input: TemplateCategoryCreateInput) => Promise<void>;
@@ -53,6 +55,25 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [error, setError] = useState("");
+
+  // Fetch templates for current category
+  const { data: templatesByCategoryIdQuery } = useQuery(
+    templatesByCategoryIdQueryDocument,
+    {
+      variables: {
+        categoryId: category.id,
+      },
+      skip: !category.id,
+      fetchPolicy: "cache-only",
+      nextFetchPolicy: "cache-only",
+    },
+  );
+
+  const hasTemplates: boolean = useMemo(
+    () =>
+      (templatesByCategoryIdQuery?.templatesByCategoryId?.data?.length ?? 0) > 0,
+    [templatesByCategoryIdQuery?.templatesByCategoryId?.data],
+  );
 
   const handleCreateSubCategory = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -150,7 +171,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
               }}
               color="error"
               disabled={
-                !!category.specialType || (category.templates?.length ?? 0) > 0
+                !!category.specialType || hasTemplates
               }
             >
               <DeleteIcon />
