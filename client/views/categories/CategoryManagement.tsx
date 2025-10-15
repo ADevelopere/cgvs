@@ -16,7 +16,6 @@ import {
 import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
-import { TemplateCategoryGraphQLProvider } from "./1-categories.apolloCache";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
@@ -182,21 +181,19 @@ const TemplateCategoryManagement: React.FC = () => {
   // ...existing code...
 
   return (
-    <TemplateCategoryGraphQLProvider>
-      <TemplateCategoryManagementProvider>
-        <Box
-          sx={{
-            top: `${appBarHeight}px`,
-            height: `calc(100vh - ${appBarHeight}px - 48px)`,
-            display: "flex",
-            flexDirection: "column",
-            p: 3,
-          }}
-        >
-          <This />
-        </Box>
-      </TemplateCategoryManagementProvider>
-    </TemplateCategoryGraphQLProvider>
+    <TemplateCategoryManagementProvider>
+      <Box
+        sx={{
+          top: `${appBarHeight}px`,
+          height: `calc(100vh - ${appBarHeight}px - 48px)`,
+          display: "flex",
+          flexDirection: "column",
+          p: 3,
+        }}
+      >
+        <This />
+      </Box>
+    </TemplateCategoryManagementProvider>
   );
 };
 

@@ -5,7 +5,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/lib/logger";
-import { useTemplateCategoryGraphQL } from "./1-categories.apolloCache";
+import { useTemplateCategoryGraphQL } from "./useTemplateCategoryGraphQL";
 
 /**
  * Template Category Service Hook

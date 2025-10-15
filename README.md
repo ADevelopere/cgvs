@@ -64,24 +64,6 @@ Visit `http://localhost:3000` to see the application.
 
 ---
 
-## 📚 Documentation
-
-Comprehensive documentation is available in the [`docs/`](./docs/) directory:
-
-### Getting Started
-- [Documentation Index](./docs/README.md) - Overview of all documentation
-
-### Architecture
-- [Redis Service Architecture](./docs/REDIS_SERVICE_ARCHITECTURE.md)
-- [Authentication Flow](./docs/AUTH_FLOW.md)
-
-### Security
-- [Security Hardening Plan](./docs/SECURITY_HARDENING_PLAN.md) - Comprehensive security roadmap
-- [Security Checklist](./docs/SECURITY_CHECKLIST.md) - Implementation tracking
-- [Security Policy](./SECURITY.md) - Vulnerability reporting
-
----
-
 ## 🛠️ Technology Stack
 
 ### Frontend
@@ -106,184 +88,6 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 - **Type Checking:** TypeScript strict mode
 
 ---
-
-## 📁 Project Structure
-
-```
-cgsvNew/
-├── app/                    # Next.js App Router
-│   ├── (root)/            # Protected routes
-│   ├── api/               # API routes (GraphQL)
-│   └── login/             # Authentication pages
-├── client/                # Client-side code
-│   ├── components/        # React components
-│   ├── contexts/          # React contexts
-│   ├── graphql/           # GraphQL queries/mutations
-│   ├── hooks/             # Custom React hooks
-│   ├── locale/            # Internationalization
-│   ├── theme/             # MUI theme configuration
-│   ├── utils/             # Utility functions
-│   └── views/             # Page views/containers
-├── server/                # Server-side code
-│   ├── db/                # Database schema & queries
-│   ├── graphql/           # GraphQL resolvers & schema
-│   ├── lib/               # Server utilities
-│   ├── services/          # Business logic services
-│   └── storage/           # File storage system
-├── docs/                  # Documentation
-├── containers/            # Docker configurations
-└── public/                # Static assets
-```
-
----
-
-## 🔧 Available Scripts
-
-### Development
-```bash
-bun run dev          # Start development server
-bun run build        # Build for production
-bun run start        # Start production server
-bun run lint         # Run ESLint
-bun run type-check   # Run TypeScript check
-```
-
-### Database
-```bash
-bun run db:generate  # Generate migrations
-bun run db:migrate   # Run migrations
-bun run db:push      # Push schema changes
-bun run db:studio    # Open Drizzle Studio
-bun run db:seed      # Seed database
-```
-
-### GraphQL
-```bash
-bun run gql:generate # Generate GraphQL schema
-bun run codegen      # Generate TypeScript types
-```
-
----
-
-## 🔒 Security
-
-Security is a top priority. We implement:
-
-- ✅ JWT-based authentication with refresh tokens
-- ✅ Rate limiting on all API endpoints
-- ✅ Input validation and sanitization
-- ✅ SQL injection prevention
-- ✅ XSS protection
-- ✅ CSRF protection
-- ✅ Secure headers (CSP, HSTS, etc.)
-- ✅ Environment variable validation
-- 🚧 Additional security measures (see [Security Plan](./docs/SECURITY_HARDENING_PLAN.md))
-
-**Found a security issue?** See our [Security Policy](./SECURITY.md) for responsible disclosure.
-
----
-
-## 🌍 Internationalization
-
-The application supports multiple languages:
-
-- 🇬🇧 English
-- 🇸🇦 Arabic (RTL support)
-
-Language files are located in `client/locale/`.
-
----
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-bun test
-
-# Run tests in watch mode
-bun test:watch
-
-# Run tests with coverage
-bun test:coverage
-```
-
----
-
-## 📦 Deployment
-
-### Environment Variables
-
-Ensure all required environment variables are set:
-
-```env
-# Application
-NODE_ENV=production
-ALLOWED_ORIGIN=https://yourdomain.com
-
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
-
-# Authentication
-JWT_SECRET=your-super-secret-key-min-32-chars
-
-# Redis
-REDIS_PROVIDER=upstash  # or 'local'
-UPSTASH_REDIS_REST_URL=https://...
-UPSTASH_REDIS_REST_TOKEN=...
-
-# Storage
-STORAGE_TYPE=disk  # or 'cloud'
-```
-
-### Build & Deploy
-
-```bash
-# Build the application
-bun run build
-
-# Run migrations
-bun run db:migrate
-
-# Start production server
-bun run start
-```
-
-### Deployment Platforms
-
-This application can be deployed to:
-- ✅ Vercel
-- ✅ AWS
-- ✅ DigitalOcean
-- ✅ Self-hosted (Docker)
-
-See platform-specific guides in `docs/deployment/` (coming soon).
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Contribution Guidelines
-
-- Follow the existing code style
-- Add tests for new features
-- Update documentation as needed
-- Follow security best practices
-- Check the [Security Checklist](./docs/SECURITY_CHECKLIST.md)
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
 ---
 
 ## 🙏 Acknowledgments
@@ -296,41 +100,46 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ---
 
-## 📞 Support
+## Troubleshooting Local Development
 
-- 📧 **Email:** support@yourdomain.com
-- 🐛 **Issues:** [GitHub Issues](https://github.com/yourusername/cgsvNew/issues)
-- 💬 **Discussions:** [GitHub Discussions](https://github.com/yourusername/cgsvNew/discussions)
-- 📖 **Documentation:** [docs/](./docs/)
+If you encounter issues while running scripts that interact with Google Cloud services from your local machine, here are solutions to common authentication errors.
 
 ---
 
-## 🗺️ Roadmap
+### Error: `Could not load the default credentials`
 
-- [x] Authentication & Authorization
-- [x] GraphQL API
-- [x] Template Management
-- [x] Student Management
-- [x] File Storage
-- [x] Internationalization
-- [ ] Certificate Generation
-- [ ] Email Notifications
-- [ ] Advanced Analytics
-- [ ] Mobile App
-- [ ] API Documentation (Swagger)
-- [ ] Comprehensive Test Suite
+This error occurs when the Google Cloud client libraries within the application cannot find authentication credentials, even if you have already logged in via the `gcloud` CLI.
 
-See [SECURITY_HARDENING_PLAN.md](./docs/SECURITY_HARDENING_PLAN.md) for security roadmap.
+* **Cause:** The initial `gcloud init` command authenticates **you** for using the command-line tool. However, the application code requires a separate credential file known as **Application Default Credentials (ADC)** to authenticate **itself**.
+* **Solution:** Generate the ADC file by running the following command. This will open a browser for you to log in and grant permissions.
+
+    ```bash
+    gcloud auth application-default login
+    ```
 
 ---
 
-## 📊 Project Status
+### Error: `invalid_grant: Invalid JWT`
 
-- **Version:** 1.0.0 (Development)
-- **Status:** Active Development
-- **Last Updated:** October 10, 2025
+After resolving the first issue, you might encounter an error related to an invalid JSON Web Token (JWT).
+
+* **Cause:** This error almost always means your computer's system clock is out of sync with Google's servers. For security, authentication tokens are timestamped and have a very short lifespan. If your clock is off by even a few minutes, Google will reject the token as invalid.
+* **Solution:** You must force your operating system to synchronize its clock with an internet time server.
+
+    **On Windows:**
+    1.  Go to **Settings** > **Time & Language** > **Date & time**.
+    2.  Ensure **"Set time automatically"** is enabled.
+    3.  Click the **"Sync now"** button to update your clock.
+
+## Setting up a Redis-Compatible Service on Native Windows
+
+For Windows development without Docker or WSL, this project uses **Memurai**, a native, Redis-compatible datastore. It installs as a proper Windows service and provides a modern alternative to the outdated MSOpenTech Redis port.
 
 ---
 
-**Made with ❤️ by the CGSV Team**
+### 1. Installation
 
+Install the free Memurai Developer Edition using the Windows Package Manager (`winget`). Open PowerShell or Command Prompt as an administrator and run:
+
+```sh
+winget install -e --id Memurai.MemuraiDeveloper
