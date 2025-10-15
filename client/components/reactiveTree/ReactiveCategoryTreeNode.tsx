@@ -26,6 +26,7 @@ interface TreeNodeProps<
   }) => React.ReactNode;
   selectedItemId?: TNode["id"] | null;
   onSelectItem?: (node: TNode) => void;
+  onUpdateItem?: (node: TNode) => void;
   expandedItemIds?: Set<TNode["id"]>;
   onToggleExpand?: (nodeId: TNode["id"]) => void;
   isFetched?: (nodeId: TNode["id"]) => boolean;
@@ -48,6 +49,7 @@ export function ReactiveCategoryTreeNode<
     itemRenderer,
     selectedItemId,
     onSelectItem,
+    onUpdateItem,
     expandedItemIds,
     onToggleExpand,
     isFetched: isFetchedExternal,
@@ -95,17 +97,20 @@ export function ReactiveCategoryTreeNode<
   const hasLoadedChildren = isExpanded && children.length > 0;
   const isLoading = hasFetched && childLoading;
 
-  // Auto-select child item if it matches selectedItemId after data updates
+
+  // Update child item if it matches selectedItemId after data updates
   useEffect(() => {
-    if (selectedItemId && onSelectItem && children.length > 0) {
+    if (selectedItemId && children.length > 0) {
       const selectedItem = children.find(
         (item: TNode) => item.id === selectedItemId,
       );
       if (selectedItem) {
-        onSelectItem(selectedItem);
+        if (onUpdateItem) {
+          onUpdateItem(selectedItem);
+        }
       }
     }
-  }, [selectedItemId, onSelectItem, children]);
+  }, [selectedItemId, children, onUpdateItem, onSelectItem]);
 
   // Trigger fetch on first hover
   const handleHover = () => {
@@ -225,6 +230,7 @@ export function ReactiveCategoryTreeNode<
               itemRenderer={itemRenderer}
               selectedItemId={selectedItemId}
               onSelectItem={onSelectItem}
+              onUpdateItem={onUpdateItem}
               expandedItemIds={expandedItemIds}
               onToggleExpand={onToggleExpand}
               isFetched={isFetchedExternal}

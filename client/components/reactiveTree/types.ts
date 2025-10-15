@@ -43,6 +43,7 @@ export interface ReactiveTreeProps<
   // Selection
   selectedItemId?: TNode['id'] | null;
   onSelectItem?: (node: TNode) => void;
+  onUpdateItem?: (node: TNode) => void;
 
   // Expansion state management (optional - uses internal state if not provided)
   expandedItemIds?: Set<TNode['id']>;

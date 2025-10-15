@@ -33,6 +33,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     isFetched,
     markAsFetched,
     selectCategory,
+    updateSelectedCategory,
   } = useTemplateCategoryStore();
   const { createCategory, updateCategory, deleteCategory } =
     useTemplateCategoryOperations();
@@ -60,6 +61,13 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       selectCategory(category);
     },
     [selectCategory],
+  );
+
+  const handleCategoryUpdate = React.useCallback(
+    (category: TemplateCategoryWithParentTree) => {
+      updateSelectedCategory(category);
+    },
+    [updateSelectedCategory],
   );
 
   const handleAddNewCategory = React.useCallback(() => {
@@ -153,6 +161,23 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     [markAsFetched],
   );
 
+  const getItems = React.useCallback(
+    (data: CategoryChildrenQuery, parent?: TemplateCategoryWithParentTree) =>
+      data.categoryChildren.map((category) => ({
+        ...category,
+        __typename: undefined,
+        parentTree: [
+          ...(parent ? [parent.id, ...parent.parentTree] : []),
+        ],
+      })) || [],
+    [],
+  );
+
+  const getNodeLabel = React.useCallback(
+    (node: TemplateCategoryWithParentTree) => node.name || String(node.id),
+    [],
+  );
+
   return (
     <Box
       sx={{
@@ -182,17 +207,9 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             fetchPolicy: "cache-first",
           })}
           // Extract data from query results
-          getItems={(data, parent) =>
-            data.categoryChildren.map((category) => ({
-              ...category,
-              __typename: undefined,
-              parentTree: [
-                ...(parent ? [parent.id, ...parent.parentTree] : []),
-              ],
-            })) || []
-          }
+          getItems={getItems}
           // Get node label
-          getNodeLabel={(node) => node.name || String(node.id)}
+          getNodeLabel={getNodeLabel}
           // Custom rendering using existing RenderCategoryItem
           itemRenderer={({ node }) => (
             <RenderCategoryItem
@@ -209,6 +226,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
           // Selection
           selectedItemId={currentCategory?.id}
           onSelectItem={handleCategoryClick}
+          onUpdateItem={handleCategoryUpdate}
           // Expansion state (persisted across navigation)
           expandedItemIds={expandedCategoryIds}
           onToggleExpand={handleToggleExpanded}

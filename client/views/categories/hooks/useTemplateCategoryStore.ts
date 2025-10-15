@@ -1,5 +1,6 @@
 import { TemplatesByCategoryIdQueryVariables } from "@/client/graphql/generated/gql/graphql";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import logger from "@/lib/logger";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -35,6 +36,9 @@ type Actions = {
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
   selectCategory: (
+    category: Graphql.TemplateCategoryWithParentTree | null,
+  ) => void;
+  updateSelectedCategory: (
     category: Graphql.TemplateCategoryWithParentTree | null,
   ) => void;
   setCurrentTemplateId: (id: number | null) => void;
@@ -108,6 +112,11 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
 
       selectCategory: (category) => {
         set((state) => {
+          // Early return if selecting the same category
+          if (category?.id === state.currentCategory?.id) {
+            return state;
+          }
+
           let currentCategory = state.currentCategory;
           let currentTemplateId = state.currentTemplateId;
           if (
@@ -122,8 +131,6 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
             if (category?.id !== currentCategory?.id) {
               currentCategory = category;
               currentTemplateId = null;
-            } else {
-              currentCategory = category;
             }
           }
 
@@ -140,6 +147,27 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
             currentTemplateId: currentTemplateId,
             expandedCategoryIds: newExpandedIds,
             fetchedCategoryIds: newFetchedIds,
+          };
+        });
+      },
+
+      updateSelectedCategory: (category) => {
+        set((state) => {
+          logger.log("updateSelectedCategory", category);
+          logger.log("state.currentCategory", state.currentCategory);
+          // Only update if we have a current category and the new category has the same ID
+          if (!state.currentCategory || !category || state.currentCategory.id !== category.id) {
+            return state;
+          }
+
+          // Only update if the category object has actually changed
+          if (state.currentCategory === category) {
+            return state;
+          }
+
+          // Update the category object with the latest data from Apollo cache
+          return {
+            currentCategory: category,
           };
         });
       },
