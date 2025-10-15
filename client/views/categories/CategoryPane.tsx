@@ -81,7 +81,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       }
 
       try {
-        createCategory({ name });
+        createCategory({ name }, null);
         setTempCategory(null);
         return "";
       } catch (error: unknown) {
@@ -203,7 +203,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
               deleteCategory={deleteCategory}
               validateCategoryName={validateCategoryName}
               handleCategoryNameEdit={handleCategoryNameEdit}
-              createCategory={createCategory}
+              createCategory={(input) => createCategory(input, node)}
             />
           )}
           // Selection

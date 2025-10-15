@@ -18,7 +18,7 @@ type State = {
   activeCategoryTab: CategoryTabType;
   isAddingTemplate: boolean;
   isSwitchWarningOpen: boolean;
-  pendingCategory:  Graphql.TemplateCategoryWithParentTree | null;
+  pendingCategory: Graphql.TemplateCategoryWithParentTree | null;
 
   currentCategory: Graphql.TemplateCategoryWithParentTree | null;
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
@@ -29,14 +29,14 @@ type State = {
 
   // Template query variables per category
   templateQueryVariables: Map<number, TemplatesByCategoryIdQueryVariables>;
-}
+};
 
 type Actions = {
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
   selectCategory: (
     category: Graphql.TemplateCategoryWithParentTree | null,
-  ) => boolean;
+  ) => void;
   setCurrentTemplateId: (id: number | null) => void;
   setActiveCategoryTab: (tab: CategoryTabType) => void;
   setIsAddingTemplate: (adding: boolean) => void;
@@ -46,12 +46,6 @@ type Actions = {
   // Category switching with warning
   confirmSwitch: () => void;
   closeSwitchWarning: () => void;
-
-  // Category selection with parent tree
-  selectCategoryWithParentTree: (
-    categoryId: number,
-    parentTree: number[],
-  ) => void;
 
   // Lazy loading actions
   setExpandedCategoryIds: (ids: Set<number>) => void;
@@ -70,9 +64,9 @@ type Actions = {
   resetTemplateQueryVariables: (categoryId: number) => void;
 
   reset: () => void;
-}
+};
 
-type CategoryUIState = State & Actions
+type CategoryUIState = State & Actions;
 
 const initialState: State = {
   currentTemplateId: null,
@@ -113,26 +107,41 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
         set({ onNewTemplateCancel: callback }),
 
       selectCategory: (category) => {
-        const { isAddingTemplate } = get();
-        const { currentCategory } = get();
-        if (isAddingTemplate && category?.id !== currentCategory?.id) {
-          set({
-            isSwitchWarningOpen: true,
-            pendingCategory: category,
-          });
-          return false;
-        } else if (category?.id !== currentCategory?.id) {
-          set({
-            currentCategory: category,
-            currentTemplateId: null,
-          });
-        } else {
-          set({
-            currentCategory: category,
-          });
-        }
+        set((state) => {
+          let currentCategory = state.currentCategory;
+          let currentTemplateId = state.currentTemplateId;
+          if (
+            state.isAddingTemplate &&
+            category?.id !== state.currentCategory?.id
+          ) {
+            return {
+              isSwitchWarningOpen: true,
+              pendingCategory: category,
+            };
+          } else {
+            if (category?.id !== currentCategory?.id) {
+              currentCategory = category;
+              currentTemplateId = null;
+            } else {
+              currentCategory = category;
+            }
+          }
 
-        return true;
+          const newExpandedIds = new Set(state.expandedCategoryIds);
+          const newFetchedIds = new Set(state.fetchedCategoryIds);
+
+          category?.parentTree.forEach((id) => {
+            newExpandedIds.add(id);
+            newFetchedIds.add(id);
+          });
+
+          return {
+            currentCategory: currentCategory,
+            currentTemplateId: currentTemplateId,
+            expandedCategoryIds: newExpandedIds,
+            fetchedCategoryIds: newFetchedIds,
+          };
+        });
       },
 
       confirmSwitch: () => {
@@ -154,26 +163,6 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           isSwitchWarningOpen: false,
           pendingCategory: null,
         }),
-
-      selectCategoryWithParentTree: (categoryId, parentTree) => {
-        set((state) => {
-          const newExpandedIds = new Set(state.expandedCategoryIds);
-          const newFetchedIds = new Set(state.fetchedCategoryIds);
-
-          // Mark all IDs in parentTree as fetched and expanded
-          parentTree.forEach((id) => {
-            newExpandedIds.add(id);
-            newFetchedIds.add(id);
-          });
-
-          return {
-            currentCategoryId: categoryId,
-            currentTemplateId: null,
-            expandedCategoryIds: newExpandedIds,
-            fetchedCategoryIds: newFetchedIds,
-          };
-        });
-      },
 
       setExpandedCategoryIds: (ids) => set({ expandedCategoryIds: ids }),
 
