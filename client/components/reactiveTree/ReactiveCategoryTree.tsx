@@ -20,6 +20,7 @@ export function ReactiveCategoryTree<
     noItemsMessage,
     selectedItemId,
     onSelectItem,
+    onUpdateItem,
     ...nodeProps
   } = props;
 
@@ -39,17 +40,22 @@ export function ReactiveCategoryTree<
     [data, getItems],
   );
 
-  // Auto-select item if it matches selectedItemId after data updates
+  // Auto-select or update item if it matches selectedItemId after data updates
   useEffect(() => {
-    if (selectedItemId && onSelectItem && rootItems.length > 0) {
+    if (selectedItemId && rootItems.length > 0) {
       const selectedItem = rootItems.find(
         (item: TNode) => item.id === selectedItemId,
       );
       if (selectedItem) {
-        onSelectItem(selectedItem);
+        // Use update handler if available, otherwise use select handler
+        if (onUpdateItem) {
+          onUpdateItem(selectedItem);
+        } else if (onSelectItem) {
+          onSelectItem(selectedItem);
+        }
       }
     }
-  }, [selectedItemId, onSelectItem, rootItems]);
+  }, [data, rootItems, selectedItemId, onUpdateItem, onSelectItem]);
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>

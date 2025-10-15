@@ -3,9 +3,10 @@ import TemplateManagement from "@/client/views/template/TemplateManagement";
 
 const TemplateManagementPage = () => {
   return (
-    <TemplateManagementProvider>
-      <TemplateManagement />
-    </TemplateManagementProvider>
+    // <TemplateManagementProvider>
+    //   <TemplateManagement />
+    // </TemplateManagementProvider>
+    <div>TemplateManagementPage</div>
   );
 };
 
