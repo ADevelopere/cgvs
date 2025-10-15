@@ -1,4 +1,5 @@
 import { TemplatesByCategoryIdQueryVariables } from "@/client/graphql/generated/gql/graphql";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -12,14 +13,15 @@ export type CategoryTabType = "all" | "deleted";
  * Manages all UI-related state for category management
  * Stores IDs instead of full objects - objects are derived from Apollo cache
  */
-interface CategoryUIState {
-  // State - Store IDs, not full objects
-  currentCategoryId: number | null;
+type State = {
   currentTemplateId: number | null;
   activeCategoryTab: CategoryTabType;
   isAddingTemplate: boolean;
   isSwitchWarningOpen: boolean;
-  pendingCategoryId: number | null;
+  pendingCategory:  Graphql.TemplateCategory | null;
+
+  currentCategory: Graphql.TemplateCategory | null;
+  onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
   // Lazy loading state
   expandedCategoryIds: Set<number>;
@@ -27,17 +29,21 @@ interface CategoryUIState {
 
   // Template query variables per category
   templateQueryVariables: Map<number, TemplatesByCategoryIdQueryVariables>;
+}
 
-  // Actions
-  setCurrentCategoryId: (id: number | null) => void;
+type Actions = {
+  onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
+
+  selectCategory: (
+    category: Graphql.TemplateCategory | null,
+  ) => boolean;
   setCurrentTemplateId: (id: number | null) => void;
   setActiveCategoryTab: (tab: CategoryTabType) => void;
   setIsAddingTemplate: (adding: boolean) => void;
 
+  setOnNewTemplateCancel: (callback?: () => void) => void;
+
   // Category switching with warning
-  trySelectCategory: (id: number | null) => boolean;
-  setPendingCategory: (id: number | null) => void;
-  setIsSwitchWarningOpen: (open: boolean) => void;
   confirmSwitch: () => void;
   closeSwitchWarning: () => void;
 
@@ -66,13 +72,17 @@ interface CategoryUIState {
   reset: () => void;
 }
 
-const initialState = {
-  currentCategoryId: null,
+type CategoryUIState = State & Actions
+
+const initialState: State = {
   currentTemplateId: null,
   activeCategoryTab: "all" as CategoryTabType,
   isAddingTemplate: false,
   isSwitchWarningOpen: false,
-  pendingCategoryId: null,
+  pendingCategory: null,
+
+  currentCategory: null,
+
   expandedCategoryIds: new Set<number>(),
   fetchedCategoryIds: new Set<number>(),
   templateQueryVariables: new Map<
@@ -85,16 +95,10 @@ const initialState = {
  * Zustand store for category UI state
  * Persists selections to sessionStorage for restoration
  */
-export const useTemplateCategoryUIStore = create<CategoryUIState>()(
+export const useTemplateCategoryStore = create<CategoryUIState>()(
   persist(
     (set, get) => ({
       ...initialState,
-
-      setCurrentCategoryId: (id) =>
-        set({
-          currentCategoryId: id,
-          currentTemplateId: null, // Reset template when category changes
-        }),
 
       setCurrentTemplateId: (id) => set({ currentTemplateId: id }),
 
@@ -105,41 +109,50 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
 
       setIsAddingTemplate: (adding) => set({ isAddingTemplate: adding }),
 
-      setPendingCategory: (id) => set({ pendingCategoryId: id }),
+      setOnNewTemplateCancel: (callback) =>
+        set({ onNewTemplateCancel: callback }),
 
-      setIsSwitchWarningOpen: (open) => set({ isSwitchWarningOpen: open }),
-
-      trySelectCategory: (id) => {
+      selectCategory: (category) => {
         const { isAddingTemplate } = get();
-        if (isAddingTemplate) {
+        const { currentCategory } = get();
+        if (isAddingTemplate && category?.id !== currentCategory?.id) {
           set({
             isSwitchWarningOpen: true,
-            pendingCategoryId: id,
+            pendingCategory: category,
           });
           return false;
+        } else if (category?.id !== currentCategory?.id) {
+          set({
+            currentCategory: category,
+            currentTemplateId: null,
+          });
+        } else {
+          set({
+            currentCategory: category,
+          });
         }
-        set({
-          currentCategoryId: id,
-          currentTemplateId: null,
-        });
+
         return true;
       },
 
       confirmSwitch: () => {
-        const { pendingCategoryId } = get();
+        const { pendingCategory, onNewTemplateCancel } = get();
+        if (onNewTemplateCancel) {
+          onNewTemplateCancel();
+        }
         set({
           isAddingTemplate: false,
-          currentCategoryId: pendingCategoryId,
+          currentCategory: pendingCategory,
           currentTemplateId: null,
           isSwitchWarningOpen: false,
-          pendingCategoryId: null,
+          pendingCategory: null,
         });
       },
 
       closeSwitchWarning: () =>
         set({
           isSwitchWarningOpen: false,
-          pendingCategoryId: null,
+          pendingCategory: null,
         }),
 
       selectCategoryWithParentTree: (categoryId, parentTree) => {
@@ -210,16 +223,21 @@ export const useTemplateCategoryUIStore = create<CategoryUIState>()(
       name: "template-category-ui-store",
       storage: createJSONStorage(() => sessionStorage),
       // Persist selections for restoration
-      partialize: (state) => ({
-        currentCategoryId: state.currentCategoryId,
-        currentTemplateId: state.currentTemplateId,
-        activeCategoryTab: state.activeCategoryTab,
-        expandedCategoryIds: Array.from(state.expandedCategoryIds), // Convert Set to Array for JSON
-        fetchedCategoryIds: Array.from(state.fetchedCategoryIds), // Convert Set to Array for JSON
-        templateQueryVariables: Array.from(
-          state.templateQueryVariables.entries(),
-        ), // Convert Map to Array for JSON
-      }),
+      // Exclude non-serializable function from persistence
+      partialize: (state) => {
+        const { ...rest } = state;
+        return {
+          currentCategoryId: rest.currentCategory?.id,
+          currentTemplateId: rest.currentTemplateId,
+          activeCategoryTab: rest.activeCategoryTab,
+          currentCategory: rest.currentCategory,
+          expandedCategoryIds: Array.from(rest.expandedCategoryIds), // Convert Set to Array for JSON
+          fetchedCategoryIds: Array.from(rest.fetchedCategoryIds), // Convert Set to Array for JSON
+          templateQueryVariables: Array.from(
+            rest.templateQueryVariables.entries(),
+          ), // Convert Map to Array for JSON
+        };
+      },
       // Custom merge to handle Set and Map conversion
       merge: (persistedState, currentState) => {
         const typedPersistedState =

@@ -9,13 +9,13 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid";
 import { useQuery } from "@apollo/client/react";
-import { useTemplateCategoryManagement } from "@/client/views/categories/4-categories.context";
 import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTranslation } from "@/client/locale";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { getTemplateImageUrl } from "@/client/utils/template/getTemplateImageUrl";
 import * as sharedDocuments from "@/client/graphql/sharedDocuments";
+import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
 
 interface TemplateRow {
   id: number;
@@ -28,7 +28,7 @@ interface TemplateRow {
 const SuspenstionTemplatesCategory: React.FC = () => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const { theme } = useAppTheme();
-  const { unsuspendTemplate } = useTemplateCategoryManagement();
+  const { unsuspendTemplate } = useTemplateCategoryOperations();
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: "trashed_at",

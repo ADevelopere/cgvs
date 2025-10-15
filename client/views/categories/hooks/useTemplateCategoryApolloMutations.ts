@@ -2,19 +2,19 @@
 
 import React from "react";
 import { ApolloCache, gql } from "@apollo/client";
-import * as Document from "./0-categories.documents";
+import * as Document from "./categories.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as SharedDocument from "@/client/graphql/sharedDocuments";
-import { useTemplateCategoryUIStore } from "./3-categories.store";
-import { useTemplatesPageStore } from "../templates/templatesPage.store";
+import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
+import { useTemplatesPageStore } from "@/client/views/templates/templatesPage.store";
 import { useMutation } from "@apollo/client/react";
 
 /**
  * A custom React hook that provides mutation functions for managing
  * template categories and templates, including Apollo cache updates.
  */
-export const useTemplateCategoryGraphQL = () => {
-  const categoryStore = useTemplateCategoryUIStore();
+export const useTemplateCategoryApolloMutations = () => {
+  const categoryStore = useTemplateCategoryStore();
   const templatesPageStore = useTemplatesPageStore();
 
   // Create category mutation

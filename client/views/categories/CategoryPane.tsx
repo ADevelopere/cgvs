@@ -16,26 +16,26 @@ import {
 import { ReactiveCategoryTree } from "@/client/components/reactiveTree";
 import EditableTypography from "@/client/components/input/EditableTypography";
 
-import { useTemplateCategoryManagement } from "./4-categories.context";
-import CategoryEditDialog from "./CategoryEditDialog";
+import CategoryEditDialog from "./---CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
 import { categoryChildrenQueryDocument } from "@/client/graphql/sharedDocuments";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
+import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const { theme } = useAppTheme();
   const strings = useAppTranslation("templateCategoryTranslations");
 
   const {
-    createCategory,
-    updateCategory,
-    deleteCategory,
-    currentCategoryId,
-    selectCategory,
+    currentCategory,
     expandedCategoryIds,
     toggleExpanded,
     isFetched,
     markAsFetched,
-  } = useTemplateCategoryManagement();
+    selectCategory,
+  } = useTemplateCategoryStore();
+  const { createCategory, updateCategory, deleteCategory } =
+    useTemplateCategoryOperations();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [categoryToEdit, setCategoryToEdit] =
@@ -81,7 +81,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       }
 
       try {
-        createCategory(name);
+        createCategory({ name });
         setTempCategory(null);
         return "";
       } catch (error: unknown) {
@@ -102,14 +102,12 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       parentId?: number | null;
     }) => {
       if (categoryToEdit) {
-        updateCategory(
-          {
-            ...categoryToEdit,
-            name,
-            description: description,
-          },
-          parentId,
-        );
+        updateCategory({
+          ...categoryToEdit,
+          name,
+          description: description,
+          parentCategoryId: parentId,
+        });
         setIsEditDialogOpen(false);
         setCategoryToEdit(null);
       }
@@ -201,7 +199,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             />
           )}
           // Selection
-          selectedItemId={currentCategoryId}
+          selectedItemId={currentCategory?.id}
           onSelectItem={handleCategoryClick}
           // Expansion state (persisted across navigation)
           expandedItemIds={expandedCategoryIds}

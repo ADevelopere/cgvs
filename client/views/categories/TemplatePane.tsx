@@ -28,9 +28,8 @@ import EditableTypography from "@/client/components/input/EditableTypography";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
 import { mapTemplateToUpdateInput } from "@/client/utils/template/template-mappers";
-import { useTemplateCategoryManagement } from "./4-categories.context";
 import TemplateEditDialog from "./TemplateEditDialog";
-import { useTemplateCategoryUIStore } from "./3-categories.store";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
 import {
   Template,
@@ -38,38 +37,41 @@ import {
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 import * as SharedDocuments from "@/client/graphql/sharedDocuments";
+import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const {
     createTemplate: addTemplate,
     updateTemplate,
     suspendTemplate,
+    manageTemplate,
+  } = useTemplateCategoryOperations();
+
+  const {
     setIsAddingTemplate,
     setOnNewTemplateCancel,
-    manageTemplate,
-    currentCategoryId,
     currentCategory,
-  } = useTemplateCategoryManagement();
+  } = useTemplateCategoryStore();
 
-  const store = useTemplateCategoryUIStore();
+  const store = useTemplateCategoryStore();
 
   // Get query variables from store for the current category
   const queryVariables = React.useMemo(
     () =>
-      currentCategoryId
-        ? store.getTemplateQueryVariables(currentCategoryId)
+      currentCategory
+        ? store.getTemplateQueryVariables(currentCategory.id)
         : undefined,
-    [currentCategoryId, store],
+    [currentCategory, store],
   );
 
   // Fetch templates for current category
   const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
     useQuery(SharedDocuments.templatesByCategoryIdQueryDocument, {
       variables: {
-        categoryId: currentCategoryId,
+        categoryId: currentCategory?.id,
         ...queryVariables,
       },
-      skip: !currentCategoryId,
+      skip: !currentCategory?.id,
       fetchPolicy: "cache-first",
     });
 
@@ -155,7 +157,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   }, [setOnNewTemplateCancel, setIsAddingTemplate]);
 
   const handleAddNewTemplate = () => {
-    if (!currentCategoryId) return;
+    if (!currentCategory) return;
     setTempTemplate({ id: "temp-" + Date.now(), name: "" });
     setIsAddingTemplate(true);
     setOnNewTemplateCancel(() => handleNewTemplateCancel);
@@ -169,7 +171,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   };
 
   const handleNewTemplateSave = async (name: string) => {
-    if (!currentCategoryId) return strings.selectCategoryFirst;
+    if (!currentCategory) return strings.selectCategoryFirst;
 
     const error = validateTemplateName(name);
     if (error) {
@@ -177,7 +179,10 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     }
 
     try {
-      addTemplate(name, currentCategoryId);
+      addTemplate({
+        name,
+        categoryId: currentCategory.id,
+      });
       setTempTemplate(null);
       setIsAddingTemplate(false);
       return "";
@@ -196,9 +201,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     }
 
     try {
-      updateTemplate({
-        input: mapTemplateToUpdateInput({ ...template, name: newName }),
-      });
+      updateTemplate(mapTemplateToUpdateInput({ ...template, name: newName }));
       return ""; // success
     } catch (error: unknown) {
       return (error as Error).message || strings.templateUpdateFailed;
@@ -216,15 +219,13 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   };
 
   const handleUpdateTemplate = async (input: TemplateUpdateInput) => {
-    await updateTemplate({
-      input,
-    });
+    await updateTemplate(input);
     setIsEditDialogOpen(false);
     setTemplateToEdit(null);
   };
 
   const getEmptyMessage = () => {
-    if (!currentCategoryId) {
+    if (!currentCategory) {
       return strings.selectCategoryFirst;
     }
     return strings.noTemplates;
@@ -233,9 +234,9 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   // Pagination handlers
   const handlePageChange = React.useCallback(
     (_event: React.ChangeEvent<unknown>, page: number) => {
-      if (!currentCategoryId) return;
+      if (!currentCategory) return;
       const currentVars = queryVariables || {};
-      store.setTemplateQueryVariables(currentCategoryId, {
+      store.setTemplateQueryVariables(currentCategory.id, {
         ...currentVars,
         paginationArgs: {
           ...currentVars.paginationArgs,
@@ -243,15 +244,15 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategoryId, queryVariables, store],
+    [currentCategory, queryVariables, store],
   );
 
   const handlePageSizeChange = React.useCallback(
     (event: SelectChangeEvent<number>) => {
-      if (!currentCategoryId) return;
+      if (!currentCategory) return;
       const pageSize = event.target.value as number;
       const currentVars = queryVariables || {};
-      store.setTemplateQueryVariables(currentCategoryId, {
+      store.setTemplateQueryVariables(currentCategory.id, {
         ...currentVars,
         paginationArgs: {
           first: pageSize,
@@ -259,7 +260,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategoryId, queryVariables, store],
+    [currentCategory, queryVariables, store],
   );
 
   return (
@@ -299,7 +300,16 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
           }}
         >
           <Autocomplete
-            value={currentCategory}
+            options={categoryOptions}
+            value={
+              currentCategory
+                ? {
+                    ...currentCategory,
+                    __typename: undefined,
+                    parentTree: [],
+                  }
+                : null
+            }
             onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
               if (newValue) {
                 store.selectCategoryWithParentTree(
@@ -312,7 +322,6 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             onInputChange={(_, newInputValue) => {
               handleCategorySearch(newInputValue);
             }}
-            options={categoryOptions}
             getOptionLabel={(option) => option.name ?? strings.unnamed}
             loading={searchLoading}
             loadingText={strings.loading}
@@ -490,7 +499,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddNewTemplate}
-          disabled={!currentCategoryId || !!tempTemplate}
+          disabled={!currentCategory || !!tempTemplate}
         >
           {strings.addTemplate}
         </Button>
@@ -540,13 +549,13 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
       {/* end of 2 */}
 
-      {templateToEdit && currentCategoryId && (
+      {templateToEdit && currentCategory && (
         <TemplateEditDialog
           open={isEditDialogOpen}
           template={templateToEdit}
           onClose={handleCloseEditDialog}
           onSave={handleUpdateTemplate}
-          parentCategoryId={currentCategoryId}
+          parentCategoryId={currentCategory.id}
         />
       )}
     </Box>

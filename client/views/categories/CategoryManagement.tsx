@@ -9,13 +9,10 @@ import SplitPane from "@/client/components/splitPane/SplitPane";
 import { FileStack, PanelLeft, PanelRight } from "lucide-react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { DeleteOutline } from "@mui/icons-material";
-import {
-  TemplateCategoryManagementProvider,
-  useTemplateCategoryManagement,
-} from "./4-categories.context";
 import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
@@ -35,8 +32,8 @@ const This: React.FC = () => {
     setSecondPaneVisible(!secondPaneVisible);
   };
 
-  const { activeCategoryTab, setActiveCategoryTab, currentCategoryId } =
-    useTemplateCategoryManagement();
+  const { activeCategoryTab, setActiveCategoryTab, currentCategory } =
+    useTemplateCategoryStore();
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
@@ -113,7 +110,7 @@ const This: React.FC = () => {
                   <span>
                     <IconButton
                       onClick={handleFirstPaneVisibility}
-                      disabled={!(currentCategoryId && secondPaneVisible)}
+                      disabled={!(currentCategory && secondPaneVisible)}
                     >
                       <PanelRight />
                     </IconButton>
@@ -181,19 +178,17 @@ const TemplateCategoryManagement: React.FC = () => {
   // ...existing code...
 
   return (
-    <TemplateCategoryManagementProvider>
-      <Box
-        sx={{
-          top: `${appBarHeight}px`,
-          height: `calc(100vh - ${appBarHeight}px - 48px)`,
-          display: "flex",
-          flexDirection: "column",
-          p: 3,
-        }}
-      >
-        <This />
-      </Box>
-    </TemplateCategoryManagementProvider>
+    <Box
+      sx={{
+        top: `${appBarHeight}px`,
+        height: `calc(100vh - ${appBarHeight}px - 48px)`,
+        display: "flex",
+        flexDirection: "column",
+        p: 3,
+      }}
+    >
+      <This />
+    </Box>
   );
 };
 
