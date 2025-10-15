@@ -47,11 +47,8 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     manageTemplate,
   } = useTemplateCategoryOperations();
 
-  const {
-    setIsAddingTemplate,
-    setOnNewTemplateCancel,
-    currentCategory,
-  } = useTemplateCategoryStore();
+  const { setIsAddingTemplate, setOnNewTemplateCancel, currentCategory } =
+    useTemplateCategoryStore();
 
   const store = useTemplateCategoryStore();
 
@@ -312,10 +309,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             }
             onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
               if (newValue) {
-                store.selectCategoryWithParentTree(
-                  newValue.id,
-                  newValue.parentTree,
-                );
+                store.selectCategory(newValue);
               }
             }}
             inputValue={categorySearchTerm}

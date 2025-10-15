@@ -22,19 +22,18 @@ export const useTemplateCategoryOperations = () => {
   const strings = useAppTranslation("templateCategoryTranslations");
 
   // Get the state and setters from the store
-  const {
-    currentCategoryId,
-    currentTemplateId,
-    setCurrentTemplateId,
-    selectCategory,
-  } = useTemplateCategoryStore();
+  const { currentCategory, currentTemplateId, setCurrentTemplateId, selectCategory } =
+    useTemplateCategoryStore();
 
   /**
    * Create a new template category.
    * Updates the store directly on success.
    */
   const createCategory = useCallback(
-    async (input: Graphql.TemplateCategoryCreateInput): Promise<void> => {
+    async (
+      input: Graphql.TemplateCategoryCreateInput,
+      parent: Graphql.TemplateCategoryWithParentTree | null,
+    ): Promise<void> => {
       try {
         const result = await apollo.createTemplateCategoryMutation({
           variables: { input },
@@ -44,8 +43,13 @@ export const useTemplateCategoryOperations = () => {
           notifications.show(strings.categoryAddedSuccessfully, {
             severity: "success",
           });
+          // result.data.createTemplateCategory
           // Directly update the store instead of returning a value
-          selectCategory(result.data.createTemplateCategory);
+          selectCategory({
+            ...result.data.createTemplateCategory,
+            __typename: undefined,
+            parentTree: [...(parent ? [parent.id, ...parent.parentTree] : [])],
+          });
         } else {
           logger.error("Error creating template category:", result.error);
           notifications.show(strings.categoryAddFailed, { severity: "error" });
@@ -103,7 +107,7 @@ export const useTemplateCategoryOperations = () => {
             severity: "success",
           });
           // If the deleted category was the active one, clear it from the store
-          if (currentCategoryId === id) {
+          if (currentCategory?.id === id) {
             selectCategory(null);
           }
         } else {
@@ -117,7 +121,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryDeleteFailed, { severity: "error" });
       }
     },
-    [apollo, notifications, strings, currentCategoryId, selectCategory],
+    [apollo, notifications, strings, currentCategory, selectCategory],
   );
 
   /**
