@@ -18,9 +18,9 @@ type State = {
   activeCategoryTab: CategoryTabType;
   isAddingTemplate: boolean;
   isSwitchWarningOpen: boolean;
-  pendingCategory:  Graphql.TemplateCategory | null;
+  pendingCategory:  Graphql.TemplateCategoryWithParentTree | null;
 
-  currentCategory: Graphql.TemplateCategory | null;
+  currentCategory: Graphql.TemplateCategoryWithParentTree | null;
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
   // Lazy loading state
@@ -35,7 +35,7 @@ type Actions = {
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
   selectCategory: (
-    category: Graphql.TemplateCategory | null,
+    category: Graphql.TemplateCategoryWithParentTree | null,
   ) => boolean;
   setCurrentTemplateId: (id: number | null) => void;
   setActiveCategoryTab: (tab: CategoryTabType) => void;

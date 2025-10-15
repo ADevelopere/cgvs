@@ -15,7 +15,7 @@ interface TreeNodeProps<
   node: TNode;
   level: number;
   resolver: (parent: TNode | undefined) => QueryResolverOptions<TVariables>;
-  getItems: (data: TResult) => TNode[];
+  getItems: (data: TResult, parent?: TNode) => TNode[];
   hasChildren?: (node: TNode) => boolean;
   getNodeLabel: (node: TNode) => string;
   itemRenderer?: (props: {
@@ -24,12 +24,12 @@ interface TreeNodeProps<
     isExpanded: boolean;
     isSelected: boolean;
   }) => React.ReactNode;
-  selectedItemId?: TNode['id'] | null;
+  selectedItemId?: TNode["id"] | null;
   onSelectItem?: (node: TNode) => void;
-  expandedItemIds?: Set<TNode['id']>;
-  onToggleExpand?: (nodeId: TNode['id']) => void;
-  isFetched?: (nodeId: TNode['id']) => boolean;
-  onMarkAsFetched?: (nodeId: TNode['id']) => void;
+  expandedItemIds?: Set<TNode["id"]>;
+  onToggleExpand?: (nodeId: TNode["id"]) => void;
+  isFetched?: (nodeId: TNode["id"]) => boolean;
+  onMarkAsFetched?: (nodeId: TNode["id"]) => void;
   itemHeight?: number;
 }
 
@@ -57,14 +57,18 @@ export function ReactiveCategoryTreeNode<
 
   // Use external expansion state if provided, otherwise use internal state
   const [internalExpanded, setInternalExpanded] = useState(false);
-  const isExpanded = expandedItemIds ? expandedItemIds.has(node.id) : internalExpanded;
+  const isExpanded = expandedItemIds
+    ? expandedItemIds.has(node.id)
+    : internalExpanded;
   const isSelected = node.id === selectedItemId;
   const { isRtl } = useAppTheme();
 
   // Track if we've initiated a fetch (via hover or expand click)
   // Use external fetched state if provided, otherwise use internal state
   const [internalFetched, setInternalFetched] = useState(false);
-  const hasFetched = isFetchedExternal ? isFetchedExternal(node.id) : internalFetched;
+  const hasFetched = isFetchedExternal
+    ? isFetchedExternal(node.id)
+    : internalFetched;
 
   // Determine if this node might have children
   const mightHaveChildren = hasChildren ? hasChildren(node) : true;
@@ -84,9 +88,9 @@ export function ReactiveCategoryTreeNode<
     },
   );
 
-  const children = useMemo(() =>
-    childData ? getItems(childData as TResult) : [],
-    [childData, getItems]
+  const children = useMemo(
+    () => (childData ? getItems(childData as TResult, node) : []),
+    [childData, getItems, node],
   );
   const hasLoadedChildren = isExpanded && children.length > 0;
   const isLoading = hasFetched && childLoading;
@@ -94,7 +98,9 @@ export function ReactiveCategoryTreeNode<
   // Auto-select child item if it matches selectedItemId after data updates
   useEffect(() => {
     if (selectedItemId && onSelectItem && children.length > 0) {
-      const selectedItem = children.find((item: TNode) => item.id === selectedItemId);
+      const selectedItem = children.find(
+        (item: TNode) => item.id === selectedItemId,
+      );
       if (selectedItem) {
         onSelectItem(selectedItem);
       }
@@ -108,7 +114,7 @@ export function ReactiveCategoryTreeNode<
         // Use external state handler if provided
         onMarkAsFetched(node.id);
       } else {
-        // Fall back to internal state
+        // Fall back to internal stateF
         setInternalFetched(true);
       }
     }
@@ -159,7 +165,8 @@ export function ReactiveCategoryTreeNode<
         onMouseEnter={handleHover}
       >
         {/* Expand/Collapse Button or Spacer */}
-        {mightHaveChildren && (isLoading || !hasFetched || children.length > 0) ? (
+        {mightHaveChildren &&
+        (isLoading || !hasFetched || children.length > 0) ? (
           <IconButton
             size="small"
             onClick={toggleExpand}

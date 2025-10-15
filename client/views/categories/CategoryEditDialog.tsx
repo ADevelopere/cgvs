@@ -14,14 +14,13 @@ import {
 import { useLazyQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import {
-  TemplateCategory,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 import { searchTemplateCategoriesQueryDocument } from "@/client/graphql/sharedDocuments";
 
 interface Props {
   open: boolean;
-  categoryToEdit: TemplateCategory | null;
+  categoryToEdit: TemplateCategoryWithParentTree | null;
   onClose: () => void;
   onSave: (data: {
     name: string;
@@ -42,7 +41,7 @@ const CategoryEditDialog: React.FC<Props> = ({
     categoryToEdit?.description ?? "",
   );
   const [parentId, setParentId] = useState<number | null>(
-    categoryToEdit?.parentCategory?.id ?? null,
+    categoryToEdit?.parentTree[0] ?? null,
   );
   const [error, setError] = useState("");
 
@@ -101,7 +100,7 @@ const CategoryEditDialog: React.FC<Props> = ({
     if (categoryToEdit?.name) {
       setName(categoryToEdit.name);
       setDescription(categoryToEdit.description ?? "");
-      setParentId(categoryToEdit.parentCategory?.id ?? null);
+      setParentId(categoryToEdit.parentTree[0] ?? null);
     }
   }, [categoryToEdit]);
 

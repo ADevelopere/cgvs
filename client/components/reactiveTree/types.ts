@@ -24,7 +24,7 @@ export interface ReactiveTreeProps<
   resolver: ItemResolver<TNode, TVariables>;
 
   // Extract items array from query result
-  getItems: (data: TResult) => TNode[];
+  getItems: (data: TResult, parent?: TNode) => TNode[];
 
   // Check if node has children (before loading)
   hasChildren?: (node: TNode) => boolean;

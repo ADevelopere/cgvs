@@ -10,17 +10,17 @@ import { useAppTranslation } from "@/client/locale";
 import {
   CategoryChildrenQuery,
   CategoryChildrenQueryVariables,
-  TemplateCategory,
+  TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 
 import { ReactiveCategoryTree } from "@/client/components/reactiveTree";
 import EditableTypography from "@/client/components/input/EditableTypography";
 
-import CategoryEditDialog from "./---CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
 import { categoryChildrenQueryDocument } from "@/client/graphql/sharedDocuments";
 import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
+import CategoryEditDialog from "./CategoryEditDialog";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const { theme } = useAppTheme();
@@ -39,7 +39,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [categoryToEdit, setCategoryToEdit] =
-    React.useState<TemplateCategory | null>(null);
+    React.useState<TemplateCategoryWithParentTree | null>(null);
   const [tempCategory, setTempCategory] = React.useState<{
     id: string;
     name: string;
@@ -56,7 +56,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
   );
 
   const handleCategoryClick = React.useCallback(
-    (category: TemplateCategory) => {
+    (category: TemplateCategoryWithParentTree) => {
       selectCategory(category);
     },
     [selectCategory],
@@ -115,7 +115,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     [categoryToEdit, updateCategory],
   );
 
-  const handleOpenEditDialog = (category: TemplateCategory) => {
+  const handleOpenEditDialog = (category: TemplateCategoryWithParentTree) => {
     setCategoryToEdit(category);
     setIsEditDialogOpen(true);
   };
@@ -126,7 +126,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
   };
 
   const handleCategoryNameEdit = async (
-    category: TemplateCategory,
+    category: TemplateCategoryWithParentTree,
     newName: string,
   ) => {
     updateCategory({ ...category, name: newName });
@@ -172,7 +172,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         }}
       >
         <ReactiveCategoryTree<
-          TemplateCategory,
+          TemplateCategoryWithParentTree,
           CategoryChildrenQuery,
           CategoryChildrenQueryVariables
         >
@@ -182,7 +182,15 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
             fetchPolicy: "cache-first",
           })}
           // Extract data from query results
-          getItems={(data) => data.categoryChildren || []}
+          getItems={(data, parent) =>
+            data.categoryChildren.map((category) => ({
+              ...category,
+              __typename: undefined,
+              parentTree: [
+                ...(parent ? [parent.id, ...parent.parentTree] : []),
+              ],
+            })) || []
+          }
           // Get node label
           getNodeLabel={(node) => node.name || String(node.id)}
           // Custom rendering using existing RenderCategoryItem
