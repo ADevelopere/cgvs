@@ -64,7 +64,6 @@ export const TemplateManagementProvider: React.FC<{
   const searchParams = useSearchParams();
   const id = pathParams?.id;
   const templateService = useTemplateService();
-  const { setNavigation } = useDashboardLayout();
 
   // Apollo query for template data
   const { data: apolloTemplateData, loading: apolloLoading } = useQuery(
@@ -106,6 +105,7 @@ export const TemplateManagementProvider: React.FC<{
     fetchConfig();
   }, [templateService]);
 
+  const { setNavigation } = useDashboardLayout();
   // Update navigation
   useEffect(() => {
     if (!template?.id) return;
@@ -123,13 +123,6 @@ export const TemplateManagementProvider: React.FC<{
       });
     });
   }, [setNavigation, template?.id]);
-
-  // Reset store on unmount
-  useEffect(() => {
-    return () => {
-      useTemplateUIStore.getState().reset();
-    };
-  }, []);
 
   // Context value only contains data and services
   const value = {
