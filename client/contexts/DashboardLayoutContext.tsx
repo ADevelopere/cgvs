@@ -19,7 +19,7 @@ import {
     Navigation,
 } from "./adminLayout.types";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
-import { PageNavigationRegistryProvider } from "./navigation/PageNavigationRegistryContext";
+import { AutomatedNavigationProvider } from "./navigation/AutomatedNavigationProvider";
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
@@ -142,11 +142,11 @@ export const DashboardLayoutProvider: React.FC<
     ]);
 
     return (
-        <PageNavigationRegistryProvider>
+        <AutomatedNavigationProvider>
             <DashboardLayoutContext.Provider value={value}>
                 {children}
             </DashboardLayoutContext.Provider>
-        </PageNavigationRegistryProvider>
+        </AutomatedNavigationProvider>
     );
 };
 

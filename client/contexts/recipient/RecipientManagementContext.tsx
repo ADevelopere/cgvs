@@ -4,7 +4,6 @@ import React from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { RecipientGraphQLProvider } from "@/client/graphql/apollo";
 import { useRecipientService } from "@/client/graphql/service";
-import { usePageNavigation } from "../navigation/usePageNavigation";
 
 type RecipientManagementContextType = {
  // State
@@ -209,7 +208,6 @@ const createPlaceholderContext = (): RecipientManagementContextType => ({
 const GroupIdProvider: React.FC<{
  children: React.ReactNode;
 }> = ({ children }) => {
- const { getParam, updateParams } = usePageNavigation();
 
  const [selectedGroupId, setSelectedGroupIdState] = React.useState<
   number | null
@@ -218,71 +216,12 @@ const GroupIdProvider: React.FC<{
   null,
  );
 
- // Memoize the current group ID param to avoid unnecessary effect triggers
- const groupIdParam = React.useMemo(() => getParam("groupId"), [getParam]);
-
- // Sync selectedGroupId with URL params and template changes
- React.useEffect(() => {
-  let resolvedGroupId: number | null = null;
-
-  // Try to get group ID from URL parameter first
-  if (groupIdParam) {
-   const groupId = parseInt(groupIdParam as string, 10);
-   if (!isNaN(groupId)) {
-    // Validate that the groupId exists in the current template's recipientGroups
-    // todo, rely on server response to validate the groupId
-    const validGroup =  true
-    // template?.recipientGroups?.find((g) => g.id === groupId);
-    if (validGroup) {
-     resolvedGroupId = groupId;
-    }
-   }
-  }
-
-  // Fall back to first available group ID
-//   if (resolvedGroupId === null) {
-//    resolvedGroupId = template?.recipientGroups?.[0]?.id || null;
-//   }
-
-  // Only update state if the resolved group ID is actually different
-  if (resolvedGroupId !== selectedGroupId) {
-   setSelectedGroupIdState(resolvedGroupId);
-  }
-
-  // Handle invalid group ID case
-  const newInvalidGroupId = (() => {
-   if (groupIdParam) {
-    const groupId = parseInt(groupIdParam as string, 10);
-    // if (
-    //  !isNaN(groupId) &&
-    //  !template?.recipientGroups?.find((g) => g.id === groupId)
-    // ) {
-    //  return groupId;
-    // }
-   }
-   return null;
-  })();
-
-  // Only update invalidGroupId if it's actually different
-  if (newInvalidGroupId !== invalidGroupId) {
-   setInvalidGroupId(newInvalidGroupId);
-  }
- }, [
-  groupIdParam,
-  selectedGroupId,
-  invalidGroupId,
- ]);
 
  const setSelectedGroupId = React.useCallback(
   (groupId: number | null) => {
    setSelectedGroupIdState(groupId);
-   if (groupId) {
-    updateParams({ groupId: groupId.toString() }, { merge: true });
-   } else {
-    updateParams({ groupId: undefined }, { merge: true });
-   }
   },
-  [updateParams],
+  [],
  );
 
  // Memoize the placeholder context to prevent unnecessary re-renders

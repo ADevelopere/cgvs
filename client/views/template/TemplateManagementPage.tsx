@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useQuery } from "@apollo/client/react";
@@ -9,7 +9,6 @@ import * as Document from "@/client/graphql/sharedDocuments";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { TemplateVariableManagementProvider } from "../../contexts/templateVariable";
 import { RecipientManagementProvider } from "../../contexts/recipient";
-import { initializeTemplateUIFromURL } from "./useTemplateUIStore";
 import TemplateManagement from "./TemplateManagement";
 
 /**
@@ -18,15 +17,8 @@ import TemplateManagement from "./TemplateManagement";
  */
 export const TemplateManagementPage: React.FC = () => {
   const pathParams = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
   const id = pathParams?.id;
 
-  // Initialize store from URL params or sync URL with store state
-  // On first load: reads URL params and initializes store
-  // On subsequent mounts (navigation within layout): syn cs URL to current store state
-  useEffect(() => {
-    initializeTemplateUIFromURL(searchParams);
-  }, [searchParams]); // Re-run when searchParams change to handle navigation
 
   // Apollo query for template data
   const { data: templateQuery, loading: apolloLoading } = useQuery(
