@@ -186,29 +186,35 @@ export const useTemplatesPageStore = create<TemplatesPageUIState>()(
       name: "templates-page-ui-store",
       storage: createJSONStorage(() => sessionStorage),
       // Persist selections for restoration
+      // expandedCategoryIds and fetchedCategoryIds are in-memory only (not persisted)
       partialize: (state) => ({
         currentCategory: state.currentCategory,
-        expandedCategoryIds: Array.from(state.expandedCategoryIds),
-        fetchedCategoryIds: Array.from(state.fetchedCategoryIds),
         templateQueryVariables: state.templateQueryVariables,
         viewMode: state.viewMode,
       }),
       // Custom merge to handle Set conversion
       merge: (persistedState, currentState) => {
         const typedPersistedState =
-          persistedState as Partial<TemplatesPageUIState> & {
-            expandedCategoryIds?: number[];
-            fetchedCategoryIds?: number[];
-          };
+          persistedState as Partial<TemplatesPageUIState>;
+        
+        // Initialize expandedCategoryIds from current category's parent tree
+        const currentCategory = typedPersistedState?.currentCategory || currentState.currentCategory;
+        const expandedCategoryIds = new Set<number>();
+        const fetchedCategoryIds = new Set<number>();
+        
+        if (currentCategory?.parentTree) {
+          currentCategory.parentTree.forEach((id) => {
+            expandedCategoryIds.add(id);
+            fetchedCategoryIds.add(id);
+          });
+        }
+        
         return {
           ...currentState,
           ...typedPersistedState,
-          expandedCategoryIds: new Set(
-            typedPersistedState?.expandedCategoryIds || [],
-          ),
-          fetchedCategoryIds: new Set(
-            typedPersistedState?.fetchedCategoryIds || [],
-          ),
+          // Initialize expandedCategoryIds from current category's parent tree
+          expandedCategoryIds,
+          fetchedCategoryIds,
         };
       },
     },
