@@ -12,8 +12,6 @@ import BasicInfoTab from "./BasicInfoTab";
 import { useState, useEffect } from "react";
 import ManagementHeader from "./ManagementHeader";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
-import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 import RecipientGroupTab from "./recipient/RecipientGroupTab";
 import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -28,7 +26,6 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
   const router = useRouter();
   const { activeTab, setActiveTab, setTabError } = useTemplateUIStore();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const { setNavigation } = useDashboardLayout();
 
  useEffect(() => {
   const handleScroll = () => {
@@ -39,23 +36,6 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
   return () => window.removeEventListener("scroll", handleScroll);
  }, []);
 
-  // Update navigation when template changes
-  useEffect(() => {
-    if (!template?.id) return;
-
-    setNavigation((prevNav) => {
-      if (!prevNav) return prevNav;
-      return prevNav.map((item) => {
-        if ("id" in item && item.id === "templates") {
-          return {
-            ...item,
-            segment: `admin/templates/${template.id}/manage`,
-          } as NavigationPageItem;
-        }
-        return item;
-      });
-    });
-  }, [setNavigation, template?.id]);
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
@@ -66,18 +46,6 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
       const params = new URLSearchParams(searchParams.toString());
       params.set("tab", newValue);
 
-      setNavigation((prevNav) => {
-        if (!prevNav) return prevNav;
-        return prevNav.map((item) => {
-          if ("id" in item && item.id === "templates") {
-            return {
-              ...item,
-              segment: `admin/templates/${template?.id}/manage?${params.toString()}`,
-            } as NavigationPageItem;
-          }
-          return item;
-        });
-      });
 
       router.push(`?${params.toString()}`);
     } catch {

@@ -8,8 +8,6 @@ import logger from "@/lib/logger";
 import { useTemplateCategoryApolloMutations } from "./useTemplateCategoryApolloMutations";
 import { useTemplateCategoryStore } from "./useTemplateCategoryStore"; // 👈 Import the store
 import { useRouter } from "next/navigation";
-import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { useTemplateMutations } from "@/client/graphql/hooks/useTemplateMutations";
 import { useTemplateOperations } from "@/client/graphql/hooks/useTemplateOperations";
 
@@ -169,7 +167,13 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [categoryApollo, notifications, strings, setCurrentTemplateId],
+    [
+      templateApollo,
+      notifications,
+      strings.templateAddedSuccessfully,
+      strings.templateAddFailed,
+      setCurrentTemplateId,
+    ],
   );
 
   /**
@@ -225,9 +229,10 @@ export const useTemplateCategoryOperations = () => {
       }
     },
     [
-      categoryApollo,
+      templateApollo,
       notifications,
-      strings,
+      strings.templateDeletedSuccessfully,
+      strings.templateDeleteFailed,
       currentTemplateId,
       setCurrentTemplateId,
     ],
@@ -273,9 +278,10 @@ export const useTemplateCategoryOperations = () => {
       }
     },
     [
-      categoryApollo,
+      templateApollo,
       notifications,
-      strings,
+      strings.templateMovedToDeletionSuccessfully,
+      strings.templateMoveToDeletionFailed,
       currentTemplateId,
       setCurrentTemplateId,
     ],
@@ -326,28 +332,15 @@ export const useTemplateCategoryOperations = () => {
       setCurrentTemplateId,
     ],
   );
-  
-  const { setNavigation } = useDashboardLayout();
+
   const router = useRouter();
 
   const manageTemplate = useCallback(
     (templateId: number) => {
       // Navigate to template management page
-      setNavigation((prevNav) => {
-        if (!prevNav) return prevNav;
-        return prevNav.map((item) => {
-          if ("id" in item && item.id === "templates") {
-            return {
-              ...item,
-              segment: `admin/templates/${templateId}/manage`,
-            } as NavigationPageItem;
-          }
-          return item;
-        });
-      });
       router.push(`/admin/templates/${templateId}/manage`);
     },
-    [setNavigation, router],
+    [router],
   );
 
   return useMemo(

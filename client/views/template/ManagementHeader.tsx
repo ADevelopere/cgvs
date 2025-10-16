@@ -207,21 +207,12 @@ const ManagementHeader: React.FC<ManagementHeaderProps> = ({
     activeTab,
     templateName,
 }) => {
-    const { setDashboardSlot, setNavigation } = useDashboardLayout();
+    const { setDashboardSlot } = useDashboardLayout();
     const router = useRouter();
 
     const handleBack = React.useCallback(() => {
         router.push("/admin/templates");
-        setNavigation((prevNav) => {
-            if (!prevNav) return prevNav;
-            return prevNav.map((item) => {
-                if ("id" in item && item.id === "templates") {
-                    return { ...item, segment: "admin/templates" };
-                }
-                return item;
-            });
-        });
-    }, [router, setNavigation]);
+    }, [router]);
 
     useEffect(() => {
         // setDashboardSlot(
@@ -240,7 +231,7 @@ const ManagementHeader: React.FC<ManagementHeaderProps> = ({
             setDashboardSlot("middleActions", null);
             setDashboardSlot("titleRenderer", null);
         };
-    }, [setDashboardSlot, templateName, handleBack, setNavigation]);
+    }, [setDashboardSlot, templateName, handleBack]);
 
     return <ManagementTabList onChange={onChange} activeTab={activeTab} />;
 };

@@ -39,7 +39,7 @@ export const DashboardLayoutProvider: React.FC<
         const saved = loadFromLocalStorage(SIDEBAR_STATE_STORAGE_KEY);
         return (saved as SidebarState) || "expanded";
     });
-    const [navigation, setNavigation] = useState<Navigation | undefined>(
+    const [navigation] = useState<Navigation | undefined>(
         initialNavigation,
     );
 
@@ -105,7 +105,6 @@ export const DashboardLayoutProvider: React.FC<
     const value = useMemo(() => {
         return {
             navigation,
-            setNavigation,
             slots,
             title: titleState,
             sidebarState,
@@ -125,7 +124,6 @@ export const DashboardLayoutProvider: React.FC<
         };
     }, [
         navigation,
-        setNavigation,
         slots,
         titleState,
         sidebarState,
