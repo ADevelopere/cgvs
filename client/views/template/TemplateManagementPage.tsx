@@ -39,19 +39,21 @@ export const TemplateManagementPage: React.FC = () => {
 
   const [template, setTemplate] = useState<Graphql.Template | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (apolloLoading || !templateQuery?.template) return;
-    if(templateQuery.template){
+    if (templateQuery.template) {
       setTemplate(templateQuery.template);
+      setLoading(false);
     } else {
       setError("Template not found");
+      setLoading(false);
     }
   }, [apolloLoading, templateQuery]);
 
-
   // Show loading spinner during Apollo query
-  if (apolloLoading) {
+  if (apolloLoading || loading) {
     return (
       <Box
         sx={{
@@ -91,10 +93,7 @@ export const TemplateManagementPage: React.FC = () => {
         >
           <ErrorOutlineIcon color="error" sx={{ fontSize: 64, mb: 2 }} />
           <Typography variant="h6" color="error" gutterBottom>
-            Error Loading Template
-          </Typography>
-          <Typography color="text.secondary">
-            {error}
+            {error ?? "Error Loading Template"}
           </Typography>
         </Paper>
       </Box>
