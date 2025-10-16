@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -11,13 +11,6 @@ import { TemplateVariableManagementProvider } from "../../contexts/templateVaria
 import { RecipientManagementProvider } from "../../contexts/recipient";
 import { initializeTemplateUIFromURL } from "./useTemplateUIStore";
 import TemplateManagement from "./TemplateManagement";
-
-const defaultConfig: Graphql.TemplatesConfigs = {
-  configs: [
-    { key: "MAX_BACKGROUND_SIZE", value: "5125048" },
-    { key: "ALLOWED_FILE_TYPES", value: '["image/jpeg", "image/png"]' },
-  ],
-};
 
 /**
  * Wrapper component that handles template fetching, loading states, error states, and provider nesting
@@ -31,10 +24,11 @@ export const TemplateManagementPage: React.FC = () => {
   // Initialize store from URL params once on mount
   useEffect(() => {
     initializeTemplateUIFromURL(searchParams);
+    // only initialize the store once on mount
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apollo query for template data
-  const { data: apolloTemplateData, loading: apolloLoading } = useQuery(
+  const { data: templateQuery, loading: apolloLoading } = useQuery(
     Document.templateQueryDocument,
     {
       variables: { id: id ? parseInt(id, 10) : 0 },
@@ -43,8 +37,18 @@ export const TemplateManagementPage: React.FC = () => {
     },
   );
 
-  const template = apolloTemplateData?.template;
-  const error = !id ? "Template ID not found in URL" : undefined;
+  const [template, setTemplate] = useState<Graphql.Template | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (apolloLoading || !templateQuery?.template) return;
+    if(templateQuery.template){
+      setTemplate(templateQuery.template);
+    } else {
+      setError("Template not found");
+    }
+  }, [apolloLoading, templateQuery]);
+
 
   // Show loading spinner during Apollo query
   if (apolloLoading) {

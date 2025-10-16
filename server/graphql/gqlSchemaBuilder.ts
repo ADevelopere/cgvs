@@ -11,6 +11,7 @@ import { getTableConfig } from "drizzle-orm/pg-core";
 import logger from "@/lib/logger";
 import { AuthContexts, BaseContext } from "./gqlContext";
 import { PhoneNumber, Email } from "../lib";
+import TracingPlugin, { wrapResolver, isRootField } from '@pothos/plugin-tracing';
 
 export interface PothosTypes {
     DrizzleRelations: DrizzleRelations;
@@ -39,6 +40,7 @@ export const gqlSchemaBuilder = new SchemaBuilder<PothosTypes>({
         WithInputPlugin,
         SimpleObjectsPlugin,
         DataloaderPlugin,
+        TracingPlugin,
     ],
     drizzle: {
         client: () => db,
@@ -56,4 +58,13 @@ export const gqlSchemaBuilder = new SchemaBuilder<PothosTypes>({
         defaultTypes: [],
         onResolvedError: (error) => logger.error("Handled error:", error),
     },
+    tracing: {
+        // Enable tracing for rootFields by default, other fields need to opt in
+        default: (config) => isRootField(config),
+        // Log resolver execution duration
+        wrap: (resolver, options, config) =>
+          wrapResolver(resolver, (error, duration) => {
+            logger.log(`Executed resolver ${config.parentType}.${config.name} in ${duration}ms`);
+          }),
+      },
 });

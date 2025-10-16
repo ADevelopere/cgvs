@@ -6,6 +6,7 @@ import React, {
   ChangeEvent,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import {
   Box,
@@ -32,7 +33,6 @@ import {
 } from "@/client/graphql/generated/gql/graphql";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/sharedDocuments";
-import { useTemplateMutations } from "@/client/graphql/hooks/useTemplateMutations";
 import { useTemplateOperations } from "@/client/graphql/hooks/useTemplateOperations";
 
 type FormDataType = {
@@ -69,7 +69,9 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
     },
   );
 
-  const config = configData?.templatesConfigs ?? defaultConfig;
+  const config = useMemo(() => {
+    return configData?.templatesConfigs ?? defaultConfig;
+  }, [configData?.templatesConfigs]);
 
   // Create a ref to store the setUnsavedChanges function to prevent infinite re-renders
   const setUnsavedChangesRef = useRef(setUnsavedChanges);
