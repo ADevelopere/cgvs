@@ -124,4 +124,5 @@ export const relations = defineRelations(schema, (r) => ({
     //     items: r.many.templateRecipientGroupItems(),
     //     certificates: r.many.certificates(),
     // },
+    // Cache table has no relations (standalone cache)
 }));

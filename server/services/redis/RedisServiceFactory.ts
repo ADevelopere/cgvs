@@ -96,7 +96,18 @@ export class RedisServiceFactory {
 }
 
 /**
- * Export singleton instance
+ * Get Redis service instance (lazy-loaded)
  */
-export const redisService = RedisServiceFactory.getInstance();
+export const getRedisService = () => RedisServiceFactory.getInstance();
+
+/**
+ * Export singleton instance (lazy-loaded)
+ * Only initializes when actually accessed
+ */
+export const redisService = new Proxy({} as any, {
+  get(target, prop) {
+    const service = getRedisService();
+    return service[prop as keyof typeof service];
+  }
+});
 

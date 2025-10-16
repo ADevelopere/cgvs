@@ -1,15 +1,15 @@
 import logger from "@/lib/logger";
-import { redisService } from "@/server/services/redis";
+import { cacheService } from "@/server/services/cache";
 
 /**
  * Rate limiting configuration for API endpoints
- * Uses Redis for distributed rate limiting across multiple instances
+ * Uses cache service (Redis or PostgreSQL) for distributed rate limiting across multiple instances
  * Implements sliding window algorithm for accurate rate limiting
  */
 
 /**
  * Rate Limiter Class
- * Custom implementation using our Redis service interface
+ * Custom implementation using our cache service interface
  */
 class RateLimiter {
     private prefix: string;
@@ -42,7 +42,7 @@ class RateLimiter {
             const requestId = `${now}:${Math.random()}`;
             
             // Remove old entries outside the window
-            await redisService.pipeline([
+            await cacheService.pipeline([
                 { command: 'zremrangebyscore', args: [key, 0, windowStart] },
                 { command: 'zadd', args: [key, now, requestId] },
                 { command: 'zcard', args: [key] },
@@ -62,7 +62,7 @@ class RateLimiter {
             };
         } catch (error) {
             logger.error('Rate limiting error:', error);
-            // Fail open - allow request if Redis has issues
+            // Fail open - allow request if cache has issues
             return {
                 success: true,
                 limit: this.maxRequests,
@@ -77,7 +77,7 @@ class RateLimiter {
      */
     private async getCount(key: string): Promise<number> {
         try {
-            const value = await redisService.get(key);
+            const value = await cacheService.get(key);
             if (!value) return 0;
             
             // For sorted set implementation, we need to count members
@@ -102,12 +102,12 @@ class RateLimiter {
         const ttlSeconds = Math.ceil(this.windowMs / 1000);
         
         try {
-            const current = await redisService.get(key);
+            const current = await cacheService.get(key);
             const count = current ? parseInt(current, 10) : 0;
             
             if (count === 0) {
                 // First request in window
-                await redisService.set(key, '1', { ex: ttlSeconds });
+                await cacheService.set(key, '1', { ex: ttlSeconds });
                 return {
                     success: true,
                     limit: this.maxRequests,
@@ -118,7 +118,7 @@ class RateLimiter {
             
             if (count >= this.maxRequests) {
                 // Limit exceeded
-                const ttl = await redisService.ttl(key);
+                const ttl = await cacheService.ttl(key);
                 return {
                     success: false,
                     limit: this.maxRequests,
@@ -128,8 +128,8 @@ class RateLimiter {
             }
             
             // Increment counter
-            await redisService.incr(key);
-            const ttl = await redisService.ttl(key);
+            await cacheService.incr(key);
+            const ttl = await cacheService.ttl(key);
             
             return {
                 success: true,
@@ -139,7 +139,7 @@ class RateLimiter {
             };
         } catch (error) {
             logger.error('Rate limiting error:', error);
-            // Fail open
+            // Fail open - allow request if cache has issues
             return {
                 success: true,
                 limit: this.maxRequests,
@@ -197,7 +197,7 @@ export async function checkRateLimit(
         
         return { success, limit, remaining, reset };
     } catch (error) {
-        // If rate limiting fails (e.g., Redis is down), allow the request
+        // If rate limiting fails (e.g., cache is down), allow the request
         // but log the error for monitoring
         logger.error("Rate limiting error:", error);
         return { success: true, limit: 0, remaining: 0, reset: 0 };

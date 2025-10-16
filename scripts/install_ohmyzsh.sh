@@ -2,6 +2,7 @@
 
 # This script automates the installation of Oh My Zsh, a theme, plugins, and fonts.
 # It is designed for Debian/Ubuntu-based systems but can be adapted.
+# chmod +x ./scripts/install_ohmyzsh.sh && ./scripts/install_ohmyzsh.sh
 
 echo "🚀 Starting the ultimate Zsh setup..."
 
@@ -38,20 +39,72 @@ ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM}/themes/powerlevel10k
 
 # --- Step 5: Install Plugins ---
-echo "🔌 Step 5/7: Installing zsh-autosuggestions and zsh-syntax-highlighting plugins..."
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting
+echo "🔌 Step 5/7: Installing zsh plugins..."
+
+# Function to install a plugin if it doesn't exist
+install_plugin() {
+    local plugin_name=$1
+    local repo_url=$2
+    local install_path="${ZSH_CUSTOM}/plugins/${plugin_name}"
+    
+    if [ -d "$install_path" ]; then
+        echo "  ✔️ Plugin '$plugin_name' already installed, skipping..."
+    else
+        echo "  📦 Installing plugin '$plugin_name'..."
+        git clone "$repo_url" "$install_path"
+        if [ $? -eq 0 ]; then
+            echo "  ✅ Successfully installed '$plugin_name'"
+        else
+            echo "  ❌ Failed to install '$plugin_name'"
+            return 1
+        fi
+    fi
+}
+
+# Function to add plugin to .zshrc if not already present
+add_plugin_to_zshrc() {
+    local plugin_name=$1
+    local zshrc_file="$HOME/.zshrc"
+    
+    # Check if plugin is already in the plugins array
+    if grep -q "plugins=.*${plugin_name}" "$zshrc_file"; then
+        echo "  ✔️ Plugin '$plugin_name' already configured in .zshrc"
+    else
+        echo "  📝 Adding '$plugin_name' to .zshrc plugins array..."
+        # Use a more robust sed command to add the plugin
+        sed -i "s/plugins=(\([^)]*\))/plugins=(\1 ${plugin_name})/" "$zshrc_file"
+        echo "  ✅ Added '$plugin_name' to plugins configuration"
+    fi
+}
+
+# Install all plugins
+install_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git"
+install_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+install_plugin "fast-syntax-highlighting" "https://github.com/zdharma-continuum/fast-syntax-highlighting.git"
+install_plugin "zsh-autocomplete" "https://github.com/marlonrichert/zsh-autocomplete.git"
 
 # --- Step 6: Configure .zshrc ---
 echo "📝 Step 6/7: Configuring .zshrc to enable theme and plugins..."
 # Set ZSH_THEME to Powerlevel10k
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
-# Add plugins to the plugins array
-sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+
+# Add all installed plugins to .zshrc configuration
+echo "🔧 Configuring plugins in .zshrc..."
+add_plugin_to_zshrc "zsh-autosuggestions"
+add_plugin_to_zshrc "zsh-syntax-highlighting"
+add_plugin_to_zshrc "fast-syntax-highlighting"
+add_plugin_to_zshrc "zsh-autocomplete"
 
 # --- Step 7: Set Zsh as Default Shell ---
 echo "셸 Step 7/7: Setting Zsh as the default shell..."
-chsh -s $(which zsh)
+if [ "$EUID" -eq 0 ]; then
+    echo "  🔧 Running with sudo - changing default shell to zsh..."
+    chsh -s $(which zsh)
+    echo "  ✅ Default shell changed to zsh"
+else
+    echo "  ⚠️  Not running with sudo - skipping shell change"
+    echo "  💡 To change your default shell, run: sudo chsh -s \$(which zsh)"
+fi
 
 # --- Final Instructions ---
 echo ""

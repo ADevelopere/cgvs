@@ -6,3 +6,4 @@ export * from "./templateRecipientGroups";
 export * from "./templateElements";
 export * from "./certificates";
 export * from "./storage";
+export * from "./cache";
