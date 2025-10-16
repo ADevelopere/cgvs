@@ -9,7 +9,6 @@ import {
  Storage as StorageIcon,
 } from "@mui/icons-material";
 import { HomeIcon } from "lucide-react";
-import { NavigationProvider } from "@/client/contexts/navigation/NavigationContext";
 import DashboardLayout from "@/client/views/dashboard/layout/DashboardLayout";
 import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndActions";
 import { DashboardLayoutProvider } from "@/client/contexts/DashboardLayoutContext";
@@ -69,7 +68,6 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
  children: React.ReactNode;
 }) => {
  return (
-  <NavigationProvider>
    <DashboardLayoutProvider
     initialTitle={TITLE}
     initialNavigation={NAVIGATION}
@@ -81,7 +79,6 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
       <DashboardLayout>{children}</DashboardLayout>
      </StudentProvider>
    </DashboardLayoutProvider>
-  </NavigationProvider>
  );
 };
 
