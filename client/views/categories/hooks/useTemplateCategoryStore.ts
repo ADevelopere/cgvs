@@ -241,6 +241,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
       storage: createJSONStorage(() => sessionStorage),
       // Persist selections for restoration
       // Exclude non-serializable function from persistence
+      // expandedCategoryIds and fetchedCategoryIds are in-memory only (not persisted)
       partialize: (state) => {
         const { ...rest } = state;
         return {
@@ -248,8 +249,6 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           currentTemplateId: rest.currentTemplateId,
           activeCategoryTab: rest.activeCategoryTab,
           currentCategory: rest.currentCategory,
-          expandedCategoryIds: Array.from(rest.expandedCategoryIds), // Convert Set to Array for JSON
-          fetchedCategoryIds: Array.from(rest.fetchedCategoryIds), // Convert Set to Array for JSON
           templateQueryVariables: Array.from(
             rest.templateQueryVariables.entries(),
           ), // Convert Map to Array for JSON
@@ -259,22 +258,30 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
       merge: (persistedState, currentState) => {
         const typedPersistedState =
           persistedState as Partial<CategoryUIState> & {
-            expandedCategoryIds?: number[];
-            fetchedCategoryIds?: number[];
             templateQueryVariables?: [
               number,
               TemplatesByCategoryIdQueryVariables,
             ][];
           };
+        
+        // Initialize expandedCategoryIds from current category's parent tree
+        const currentCategory = typedPersistedState?.currentCategory || currentState.currentCategory;
+        const expandedCategoryIds = new Set<number>();
+        const fetchedCategoryIds = new Set<number>();
+        
+        if (currentCategory?.parentTree) {
+          currentCategory.parentTree.forEach((id) => {
+            expandedCategoryIds.add(id);
+            fetchedCategoryIds.add(id);
+          });
+        }
+        
         return {
           ...currentState,
           ...typedPersistedState,
-          expandedCategoryIds: new Set(
-            typedPersistedState?.expandedCategoryIds || [],
-          ), // Convert Array back to Set
-          fetchedCategoryIds: new Set(
-            typedPersistedState?.fetchedCategoryIds || [],
-          ), // Convert Array back to Set
+          // Initialize expandedCategoryIds from current category's parent tree
+          expandedCategoryIds,
+          fetchedCategoryIds,
           templateQueryVariables: new Map(
             typedPersistedState?.templateQueryVariables || [],
           ), // Convert Array back to Map
