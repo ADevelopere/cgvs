@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 import TemplateVariableModal from "./TemplateVariableModal";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateVariableTranslation } from "@/client/locale/components";
@@ -33,11 +33,11 @@ import {
 interface ContentProps {
     onOpenModal: (variable: TemplateVariable) => void;
     strings: TemplateVariableTranslation;
+    template: Template;
 }
 
-const Content: FC<ContentProps> = ({ onOpenModal, strings }) => {
+const Content: FC<ContentProps> = ({ onOpenModal, strings, template }) => {
     const { deleteTemplateVariable } = useTemplateVariableManagement();
-    const { template } = useTemplateManagement();
     const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
         useState(false);
     const [variableToDelete, setVariableToDelete] = useState<number | null>(
@@ -260,7 +260,11 @@ const Header: FC<FooterProps> = ({ onOpenModal, strings }) => {
     );
 };
 
-const TemplateVariableManagement: FC = () => {
+interface TemplateVariableManagementProps {
+  template: Template;
+}
+
+const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({ template }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingVariableID, setEditingVariableID] = useState<
         number | undefined
@@ -308,7 +312,7 @@ const TemplateVariableManagement: FC = () => {
                         px: 2,
                     }}
                 >
-                    <Content onOpenModal={handleEdit} strings={strings} />
+                    <Content onOpenModal={handleEdit} strings={strings} template={template} />
                 </Box>
             </Box>
 

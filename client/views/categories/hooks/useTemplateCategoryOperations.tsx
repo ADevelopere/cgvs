@@ -10,6 +10,8 @@ import { useTemplateCategoryStore } from "./useTemplateCategoryStore"; // 👈 I
 import { useRouter } from "next/navigation";
 import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
+import { useTemplateMutations } from "@/client/graphql/hooks/useTemplateMutations";
+import { useTemplateOperations } from "@/client/graphql/hooks/useTemplateOperations";
 
 /**
  * Template Category Service Hook
@@ -17,13 +19,19 @@ import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
  * Provides data operations for template categories
  */
 export const useTemplateCategoryOperations = () => {
-  const apollo = useTemplateCategoryApolloMutations();
+  const categoryApollo = useTemplateCategoryApolloMutations();
+  const templateApollo = useTemplateMutations();
+  const templateOperations = useTemplateOperations();
   const notifications = useNotifications();
   const strings = useAppTranslation("templateCategoryTranslations");
 
   // Get the state and setters from the store
-  const { currentCategory, currentTemplateId, setCurrentTemplateId, selectCategory } =
-    useTemplateCategoryStore();
+  const {
+    currentCategory,
+    currentTemplateId,
+    setCurrentTemplateId,
+    selectCategory,
+  } = useTemplateCategoryStore();
 
   /**
    * Create a new template category.
@@ -35,7 +43,7 @@ export const useTemplateCategoryOperations = () => {
       parent: Graphql.TemplateCategoryWithParentTree | null,
     ): Promise<void> => {
       try {
-        const result = await apollo.createTemplateCategoryMutation({
+        const result = await categoryApollo.createTemplateCategoryMutation({
           variables: { input },
         });
 
@@ -59,7 +67,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryAddFailed, { severity: "error" });
       }
     },
-    [apollo, notifications, strings, selectCategory],
+    [categoryApollo, notifications, strings, selectCategory],
   );
 
   /**
@@ -69,7 +77,7 @@ export const useTemplateCategoryOperations = () => {
   const updateCategory = useCallback(
     async (input: Graphql.TemplateCategoryUpdateInput): Promise<void> => {
       try {
-        const result = await apollo.updateTemplateCategoryMutation({
+        const result = await categoryApollo.updateTemplateCategoryMutation({
           variables: { input },
         });
 
@@ -88,7 +96,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryUpdateFailed, { severity: "error" });
       }
     },
-    [apollo, notifications, strings],
+    [categoryApollo, notifications, strings],
   );
 
   /**
@@ -98,7 +106,7 @@ export const useTemplateCategoryOperations = () => {
   const deleteCategory = useCallback(
     async (id: number): Promise<void> => {
       try {
-        const result = await apollo.deleteTemplateCategoryMutation({
+        const result = await categoryApollo.deleteTemplateCategoryMutation({
           variables: { id },
         });
 
@@ -121,7 +129,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryDeleteFailed, { severity: "error" });
       }
     },
-    [apollo, notifications, strings, currentCategory, selectCategory],
+    [categoryApollo, notifications, strings, currentCategory, selectCategory],
   );
 
   /**
@@ -133,7 +141,7 @@ export const useTemplateCategoryOperations = () => {
       input: Graphql.CreateTemplateMutationVariables["input"],
     ): Promise<void> => {
       try {
-        const result = await apollo.createTemplateMutation({
+        const result = await templateApollo.createTemplateMutation({
           variables: { input },
         });
 
@@ -161,7 +169,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [apollo, notifications, strings, setCurrentTemplateId],
+    [categoryApollo, notifications, strings, setCurrentTemplateId],
   );
 
   /**
@@ -172,38 +180,12 @@ export const useTemplateCategoryOperations = () => {
     async (
       input: Graphql.UpdateTemplateMutationVariables["input"],
     ): Promise<void> => {
-      try {
-        const result = await apollo.updateTemplateMutation({
-          variables: { input },
-        });
-
-        if (result.data?.updateTemplate) {
-          notifications.show(strings.templateUpdatedSuccessfully, {
-            severity: "success",
-          });
-          // Directly update the store
-          setCurrentTemplateId(result.data.updateTemplate.id);
-        } else {
-          logger.error("Error updating template:", result.error);
-          notifications.show(strings.templateUpdateFailed, {
-            severity: "error",
-          });
-        }
-      } catch (error) {
-        const gqlError = error as {
-          message?: string;
-          graphQLErrors?: Array<{ message: string }>;
-        };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.templateUpdateFailed;
-
-        logger.error("Error updating template:", error);
-        notifications.show(errorMessage, { severity: "error" });
+      const updatedTemplate = await templateOperations.updateTemplate(input);
+      if (updatedTemplate) {
+        setCurrentTemplateId(updatedTemplate.id);
       }
     },
-    [apollo, notifications, strings, setCurrentTemplateId],
+    [templateOperations, setCurrentTemplateId],
   );
 
   /**
@@ -213,7 +195,7 @@ export const useTemplateCategoryOperations = () => {
   const deleteTemplate = useCallback(
     async (id: number): Promise<void> => {
       try {
-        const result = await apollo.deleteTemplateMutation({
+        const result = await templateApollo.deleteTemplateMutation({
           variables: { id },
         });
 
@@ -242,7 +224,13 @@ export const useTemplateCategoryOperations = () => {
         );
       }
     },
-    [apollo, notifications, strings, currentTemplateId, setCurrentTemplateId],
+    [
+      categoryApollo,
+      notifications,
+      strings,
+      currentTemplateId,
+      setCurrentTemplateId,
+    ],
   );
 
   /**
@@ -252,7 +240,7 @@ export const useTemplateCategoryOperations = () => {
   const suspendTemplate = useCallback(
     async (id: number): Promise<void> => {
       try {
-        const result = await apollo.suspendTemplateMutation({
+        const result = await templateApollo.suspendTemplateMutation({
           variables: { id },
         });
 
@@ -284,7 +272,13 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [apollo, notifications, strings, currentTemplateId, setCurrentTemplateId],
+    [
+      categoryApollo,
+      notifications,
+      strings,
+      currentTemplateId,
+      setCurrentTemplateId,
+    ],
   );
 
   /**
@@ -294,7 +288,7 @@ export const useTemplateCategoryOperations = () => {
   const unsuspendTemplate = useCallback(
     async (id: number): Promise<void> => {
       try {
-        const result = await apollo.unsuspendTemplateMutation({
+        const result = await templateApollo.unsuspendTemplateMutation({
           variables: { id },
         });
 
@@ -324,7 +318,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [apollo, notifications, strings, setCurrentTemplateId],
+    [categoryApollo, notifications, strings, setCurrentTemplateId],
   );
   const { setNavigation } = useDashboardLayout();
   const router = useRouter();

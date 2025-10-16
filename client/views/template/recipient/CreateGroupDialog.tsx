@@ -14,14 +14,16 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
 
-const CreateGroupDialog: React.FC = () => {
+const CreateGroupDialog: React.FC<{
+    templateId: number;
+}> = ({
+    templateId,
+}) => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const { createDialogOpen, closeCreateDialog, createGroup, loading } =
         useRecipientGroupManagement();
-    const { template } = useTemplateManagement();
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -42,12 +44,12 @@ const CreateGroupDialog: React.FC = () => {
             return;
         }
 
-        if (!template?.id) {
+        if (!templateId) {
             return;
         }
 
         const success = await createGroup({
-            templateId: template.id,
+            templateId: templateId,
             name: name.trim(),
             description: description.trim() || null,
             date: date || null,
@@ -56,7 +58,7 @@ const CreateGroupDialog: React.FC = () => {
         if (success) {
             handleClose();
         }
-    }, [name, description, date, template?.id, createGroup, handleClose, strings]);
+    }, [name, description, date, templateId, createGroup, handleClose, strings]);
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>

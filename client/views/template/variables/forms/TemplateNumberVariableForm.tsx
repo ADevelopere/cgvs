@@ -2,190 +2,190 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import {
-    Box,
-    TextField,
-    FormControlLabel,
-    Checkbox,
-    Button,
+  Box,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Button,
 } from "@mui/material";
-import {
-    useTemplateManagement,
-    useTemplateVariableManagement,
-} from "@/client/contexts";
+import { useTemplateVariableManagement } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
 import {
-    isNumberVariableDifferent,
-    mapToTemplateNumberVariableCreateInput,
+  isNumberVariableDifferent,
+  mapToTemplateNumberVariableCreateInput,
 } from "@/client/utils/templateVariable";
 import {
-    TemplateNumberVariable,
-    TemplateNumberVariableCreateInput,
+  TemplateNumberVariable,
+  TemplateNumberVariableCreateInput,
 } from "@/client/graphql/generated/gql/graphql";
 
 type TemplateNumberVariableFormProps = {
-    editingVariableID?: number;
-    onDispose: () => void;
+  editingVariableID?: number;
+  onDispose: () => void;
 };
 
 const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
-    onDispose,
-    editingVariableID,
+  onDispose,
+  editingVariableID,
 }) => {
-    const { template } = useTemplateManagement();
+  // const editingVariable: TemplateNumberVariable | null = useMemo(() => {
+  //     if (!template?.variables || !editingVariableID) return null;
 
-    const editingVariable: TemplateNumberVariable | null = useMemo(() => {
-        if (!template?.variables || !editingVariableID) return null;
+  //     return (
+  //         template.variables.find((v) => v.id === editingVariableID) ?? null
+  //     );
+  // }, [template, editingVariableID]);
 
-        return (
-            template.variables.find((v) => v.id === editingVariableID) ?? null
-        );
-    }, [template, editingVariableID]);
+  const editingVariable: TemplateNumberVariable | null = useMemo(() => {
+    if (!editingVariableID) return null;
+    return {
+      id: editingVariableID,
+      name: "Test Variable",
+      description: "Test Description",
+    } as TemplateNumberVariable;
+  }, [editingVariableID]);
 
-    const { createTemplateNumberVariable, updateTemplateNumberVariable } =
-        useTemplateVariableManagement();
+  const { createTemplateNumberVariable, updateTemplateNumberVariable } =
+    useTemplateVariableManagement();
 
-    const strings = useAppTranslation("templateVariableTranslations");
+  const strings = useAppTranslation("templateVariableTranslations");
 
-    const [state, setState] = useState<TemplateNumberVariableCreateInput>(
-        () => {
-            if (editingVariable) {
-                return mapToTemplateNumberVariableCreateInput(editingVariable);
-            }
-            return {
-                name: "",
-                templateId: template?.id ?? 0,
-                required: false,
-            };
+  const [state, setState] = useState<TemplateNumberVariableCreateInput>(() => {
+    if (editingVariable) {
+      return mapToTemplateNumberVariableCreateInput(editingVariable);
+    }
+    return {
+      name: "",
+      templateId: 1,
+      required: false,
+    };
+  });
+
+  const handleChange = useCallback(
+    (field: keyof TemplateNumberVariableCreateInput) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value =
+          event.target.type === "checkbox"
+            ? event.target.checked
+            : event.target.value;
+
+        setState((prevState) => ({
+          ...prevState,
+          [field]: value,
+        }));
+      },
+    [],
+  );
+
+  const handleNumericChange = useCallback(
+    (field: "minValue" | "maxValue" | "decimalPlaces") =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        const numericValue = value === "" ? null : Number(value);
+
+        setState((prevState) => ({
+          ...prevState,
+          [field]: numericValue,
+        }));
+      },
+    [],
+  );
+
+  const handleSave = useCallback(async () => {
+    let success = false;
+
+    if (editingVariableID) {
+      success = await updateTemplateNumberVariable({
+        input: {
+          id: editingVariableID,
+          ...state,
         },
-    );
+      });
+    } else {
+      success = await createTemplateNumberVariable({
+        input: state,
+      });
+    }
 
-    const handleChange = useCallback(
-        (field: keyof TemplateNumberVariableCreateInput) =>
-            (event: React.ChangeEvent<HTMLInputElement>) => {
-                const value =
-                    event.target.type === "checkbox"
-                        ? event.target.checked
-                        : event.target.value;
+    if (success) {
+      onDispose();
+    }
+  }, [
+    state,
+    editingVariableID,
+    createTemplateNumberVariable,
+    updateTemplateNumberVariable,
+    onDispose,
+  ]);
 
-                setState((prevState) => ({
-                    ...prevState,
-                    [field]: value,
-                }));
-            },
-        [],
-    );
+  const isDifferentFromOriginal = useCallback((): boolean => {
+    if (!editingVariableID) return true;
 
-    const handleNumericChange = useCallback(
-        (field: "minValue" | "maxValue" | "decimalPlaces") =>
-            (event: React.ChangeEvent<HTMLInputElement>) => {
-                const value = event.target.value;
-                const numericValue = value === "" ? null : Number(value);
+    if (!editingVariable) return false;
 
-                setState((prevState) => ({
-                    ...prevState,
-                    [field]: numericValue,
-                }));
-            },
-        [],
-    );
+    return isNumberVariableDifferent(editingVariable, state);
+  }, [editingVariableID, editingVariable, state]);
 
-    const handleSave = useCallback(async () => {
-        let success = false;
+  const hasValidationError = !state.name;
+  const hasChanges = editingVariableID ? isDifferentFromOriginal() : true;
 
-        if (editingVariableID) {
-            success = await updateTemplateNumberVariable({
-                input: {
-                    id: editingVariableID,
-                    ...state,
-                },
-            });
-        } else {
-            success = await createTemplateNumberVariable({
-                input: state,
-            });
+  return (
+    <Box
+      component="form"
+      noValidate
+      autoComplete="off"
+      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+    >
+      <TextField
+        label={strings?.minimumValue ?? "Minimum Value"}
+        value={state.name}
+        onChange={handleChange("name")}
+        error={!state.name}
+        helperText={!state.name ? (strings?.required ?? "Required") : ""}
+        required
+        fullWidth
+      />
+      <TextField
+        label={strings?.description ?? "Description"}
+        value={state.description ?? ""}
+        onChange={handleChange("description")}
+        fullWidth
+        multiline
+        rows={3}
+      />
+      <TextField
+        label={strings?.minimumValue ?? "Minimum Value"}
+        type="number"
+        value={state.minValue ?? ""}
+        onChange={handleNumericChange("minValue")}
+      />
+      <TextField
+        label={strings?.maximumValue ?? "Maximum Value"}
+        type="number"
+        value={state.maxValue ?? ""}
+        onChange={handleNumericChange("maxValue")}
+      />
+      <TextField
+        label={strings?.decimalPlaces ?? "Decimal Places"}
+        type="number"
+        value={state.decimalPlaces ?? ""}
+        onChange={handleNumericChange("decimalPlaces")}
+      />
+      <TextField
+        label={strings?.previewValue ?? "Preview Value"}
+        value={state.previewValue ?? ""}
+        onChange={handleChange("previewValue")}
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={state.required ?? false}
+            onChange={handleChange("required")}
+          />
         }
-
-        if (success) {
-            onDispose();
-        }
-    }, [
-        state,
-        editingVariableID,
-        createTemplateNumberVariable,
-        updateTemplateNumberVariable,
-        onDispose,
-    ]);
-
-    const isDifferentFromOriginal = useCallback((): boolean => {
-        if (!editingVariableID) return true;
-
-        if (!editingVariable) return false;
-
-        return isNumberVariableDifferent(editingVariable, state);
-    }, [editingVariableID, editingVariable, state]);
-
-    const hasValidationError = !state.name;
-    const hasChanges = editingVariableID ? isDifferentFromOriginal() : true;
-
-    return (
-        <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-        >
-            <TextField
-                label={strings?.minimumValue ?? "Minimum Value"}
-                value={state.name}
-                onChange={handleChange("name")}
-                error={!state.name}
-                helperText={
-                    !state.name ? (strings?.required ?? "Required") : ""
-                }
-                required
-                fullWidth
-            />
-            <TextField
-                label={strings?.description ?? "Description"}
-                value={state.description ?? ""}
-                onChange={handleChange("description")}
-                fullWidth
-                multiline
-                rows={3}
-            />
-            <TextField
-                label={strings?.minimumValue ?? "Minimum Value"}
-                type="number"
-                value={state.minValue ?? ""}
-                onChange={handleNumericChange("minValue")}
-            />
-            <TextField
-                label={strings?.maximumValue ?? "Maximum Value"}
-                type="number"
-                value={state.maxValue ?? ""}
-                onChange={handleNumericChange("maxValue")}
-            />
-            <TextField
-                label={strings?.decimalPlaces ?? "Decimal Places"}
-                type="number"
-                value={state.decimalPlaces ?? ""}
-                onChange={handleNumericChange("decimalPlaces")}
-            />
-            <TextField
-                label={strings?.previewValue ?? "Preview Value"}
-                value={state.previewValue ?? ""}
-                onChange={handleChange("previewValue")}
-            />
-            <FormControlLabel
-                control={
-                    <Checkbox
-                        checked={state.required ?? false}
-                        onChange={handleChange("required")}
-                    />
-                }
-                label={strings?.required ?? "Required"}
-            />
-            {/* <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+        label={strings?.required ?? "Required"}
+      />
+      {/* <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
                 <Button onClick={onDispose}>{strings?.cancel ?? "Cancel"}</Button>
                 <Button
                     variant="contained"
@@ -196,18 +196,18 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
                 </Button>
             </Box> */}
 
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSave}
-                disabled={hasValidationError || !hasChanges}
-            >
-                {editingVariableID
-                    ? (strings?.updateVariable ?? "Update Variable")
-                    : (strings?.createVariable ?? "Create Variable")}
-            </Button>
-        </Box>
-    );
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSave}
+        disabled={hasValidationError || !hasChanges}
+      >
+        {editingVariableID
+          ? (strings?.updateVariable ?? "Update Variable")
+          : (strings?.createVariable ?? "Create Variable")}
+      </Button>
+    </Box>
+  );
 };
 
 export default TemplateNumberVariableForm;

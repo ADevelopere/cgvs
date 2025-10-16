@@ -1,13 +1,5 @@
-import { TemplateManagementProvider } from "@/client/contexts";
-import TemplateManagement from "@/client/views/template/TemplateManagement";
+import TemplateManagementPage from "@/client/views/template/TemplateManagementPage";
 
-const TemplateManagementPage = () => {
-  return (
-    // <TemplateManagementProvider>
-    //   <TemplateManagement />
-    // </TemplateManagementProvider>
-    <div>TemplateManagementPage</div>
-  );
-};
-
-export default TemplateManagementPage;
+export default function Page() {
+  return <TemplateManagementPage />;
+}

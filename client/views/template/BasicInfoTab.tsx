@@ -18,7 +18,7 @@ import {
   Stack,
 } from "@mui/material";
 import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
+import { useTemplateUIStore } from "./useTemplateUIStore";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
@@ -27,7 +27,13 @@ import Image from "next/image";
 import {
   FileInfo,
   TemplateUpdateInput,
+  Template,
+  TemplatesConfigs,
 } from "@/client/graphql/generated/gql/graphql";
+import { useQuery } from "@apollo/client/react";
+import * as Document from "@/client/graphql/sharedDocuments";
+import { useTemplateMutations } from "@/client/graphql/hooks/useTemplateMutations";
+import { useTemplateOperations } from "@/client/graphql/hooks/useTemplateOperations";
 
 type FormDataType = {
   name: string;
@@ -36,15 +42,34 @@ type FormDataType = {
   imagePath?: string | null;
 };
 
-const BasicInfoTab: React.FC = () => {
+const defaultConfig: TemplatesConfigs = {
+  configs: [
+    { key: "MAX_BACKGROUND_SIZE", value: "5125048" },
+    { key: "ALLOWED_FILE_TYPES", value: '["image/jpeg", "image/png"]' },
+  ],
+};
+
+interface BasicInfoTabProps {
+  template: Template;
+}
+
+const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   const { theme, isDark } = useAppTheme();
   const strings = useAppTranslation("templateCategoryTranslations");
   const storageStrings = useAppTranslation("storageTranslations");
 
-  const { template, unsavedChanges, setUnsavedChanges } =
-    useTemplateManagement();
+  const { unsavedChanges, setUnsavedChanges } = useTemplateUIStore();
+  const templateOperations = useTemplateOperations();
 
-  const { updateTemplate } = useTemplateCategoryManagement();
+  // Fetch template config using useQuery with cache-first
+  const { data: configData } = useQuery(
+    Document.templatesConfigsQueryDocument,
+    {
+      fetchPolicy: "cache-first",
+    },
+  );
+
+  const config = configData?.templatesConfigs ?? defaultConfig;
 
   // Create a ref to store the setUnsavedChanges function to prevent infinite re-renders
   const setUnsavedChangesRef = useRef(setUnsavedChanges);
@@ -141,9 +166,7 @@ const BasicInfoTab: React.FC = () => {
       // imagePath: formData.imagePath,
     };
 
-    const updatedTemplate = await updateTemplate({
-      input: input,
-    });
+    const updatedTemplate = await templateOperations.updateTemplate(input);
 
     if (updatedTemplate) {
       setError(null);
@@ -156,7 +179,7 @@ const BasicInfoTab: React.FC = () => {
     formData.name,
     template?.category?.id,
     template?.id,
-    updateTemplate,
+    templateOperations,
   ]);
 
   const handleCancel = useCallback(() => {

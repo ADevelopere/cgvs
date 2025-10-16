@@ -5,7 +5,6 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { RecipientGraphQLProvider } from "@/client/graphql/apollo";
 import { useRecipientService } from "@/client/graphql/service";
 import { usePageNavigation } from "../navigation/usePageNavigation";
-import { useTemplateManagement } from "../../views/template/TemplateManagementContext";
 
 type RecipientManagementContextType = {
  // State
@@ -210,7 +209,6 @@ const createPlaceholderContext = (): RecipientManagementContextType => ({
 const GroupIdProvider: React.FC<{
  children: React.ReactNode;
 }> = ({ children }) => {
- const { template } = useTemplateManagement();
  const { getParam, updateParams } = usePageNavigation();
 
  const [selectedGroupId, setSelectedGroupIdState] = React.useState<
@@ -232,7 +230,9 @@ const GroupIdProvider: React.FC<{
    const groupId = parseInt(groupIdParam as string, 10);
    if (!isNaN(groupId)) {
     // Validate that the groupId exists in the current template's recipientGroups
-    const validGroup = template?.recipientGroups?.find((g) => g.id === groupId);
+    // todo, rely on server response to validate the groupId
+    const validGroup =  true
+    // template?.recipientGroups?.find((g) => g.id === groupId);
     if (validGroup) {
      resolvedGroupId = groupId;
     }
@@ -240,9 +240,9 @@ const GroupIdProvider: React.FC<{
   }
 
   // Fall back to first available group ID
-  if (resolvedGroupId === null) {
-   resolvedGroupId = template?.recipientGroups?.[0]?.id || null;
-  }
+//   if (resolvedGroupId === null) {
+//    resolvedGroupId = template?.recipientGroups?.[0]?.id || null;
+//   }
 
   // Only update state if the resolved group ID is actually different
   if (resolvedGroupId !== selectedGroupId) {
@@ -253,12 +253,12 @@ const GroupIdProvider: React.FC<{
   const newInvalidGroupId = (() => {
    if (groupIdParam) {
     const groupId = parseInt(groupIdParam as string, 10);
-    if (
-     !isNaN(groupId) &&
-     !template?.recipientGroups?.find((g) => g.id === groupId)
-    ) {
-     return groupId;
-    }
+    // if (
+    //  !isNaN(groupId) &&
+    //  !template?.recipientGroups?.find((g) => g.id === groupId)
+    // ) {
+    //  return groupId;
+    // }
    }
    return null;
   })();
@@ -268,8 +268,6 @@ const GroupIdProvider: React.FC<{
    setInvalidGroupId(newInvalidGroupId);
   }
  }, [
-  template?.id,
-  template?.recipientGroups,
   groupIdParam,
   selectedGroupId,
   invalidGroupId,
