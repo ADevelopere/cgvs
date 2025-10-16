@@ -13,7 +13,6 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplatesList } from "../TemplatesContext";
 import { getTemplateImageUrl } from "@/client/utils/template/getTemplateImageUrl";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import Image from "next/image";
@@ -21,13 +20,12 @@ import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface CardViewProps {
   templates: Template[];
+  manageTemplate: (templateId: number) => void;
 }
 
-const CardView: React.FC<CardViewProps> = ({ templates }) => {
+const CardView: React.FC<CardViewProps> = ({ templates, manageTemplate }) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const { isDark } = useAppTheme();
-
-  const { manageTemplate } = useTemplatesList();
 
   return (
     <Grid

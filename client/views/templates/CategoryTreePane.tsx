@@ -3,7 +3,6 @@
 import { Box, Autocomplete, TextField } from "@mui/material";
 import React from "react";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplatesList } from "./TemplatesContext";
 import { ReactiveCategoryTree } from "@/client/components/reactiveTree/ReactiveCategoryTree";
 import { useLazyQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/sharedDocuments";
@@ -11,23 +10,20 @@ import { categoryChildrenQueryDocument } from "@/client/graphql/sharedDocuments/
 import {
   CategoryChildrenQuery,
   CategoryChildrenQueryVariables,
-  TemplateCategory,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
+import { useTemplatesPageStore } from "./useTemplatesPageStore";
 
 const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableTopPadding = false }) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const {
-    currentCategoryId,
-    clearCurrentCategory,
-    selectCategoryWithParentTree,
+    selectCategory,
     expandedCategoryIds,
     toggleExpanded,
     markAsFetched,
     isFetched,
     currentCategory,
-    setCurrentCategory,
-  } = useTemplatesList();
+  } = useTemplatesPageStore();
 
   // Category search for autocomplete
   const [
@@ -36,13 +32,6 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableT
   ] = useLazyQuery(Document.searchTemplateCategoriesQueryDocument);
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Sync currentCategory with currentCategoryId from store
-  React.useEffect(() => {
-    if (currentCategoryId === null) {
-      setCurrentCategory(null);
-    }
-  }, [currentCategoryId, setCurrentCategory]);
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
@@ -112,16 +101,38 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableT
   );
 
   const handleCategorySelect = React.useCallback(
-    (category: TemplateCategory) => {
-      selectCategoryWithParentTree(category.id, []);
-      // Also set the current category state for autocomplete display
-      setCurrentCategory({
-        id: category.id,
-        name: category.name,
-        parentTree: [],
-      });
+    (category: TemplateCategoryWithParentTree) => {
+      selectCategory(category);
     },
-    [selectCategoryWithParentTree, setCurrentCategory],
+    [selectCategory],
+  );
+
+  const handleClearCategory = React.useCallback(() => {
+    selectCategory(null);
+  }, [selectCategory]);
+
+  const handleAutocompleteChange = React.useCallback(
+    (_: React.SyntheticEvent, newValue: TemplateCategoryWithParentTree | null) => {
+      selectCategory(newValue);
+    },
+    [selectCategory],
+  );
+
+  const getItems = React.useCallback(
+    (data: CategoryChildrenQuery, parent?: TemplateCategoryWithParentTree) =>
+      data.categoryChildren.map((category) => ({
+        ...category,
+        __typename: undefined,
+        parentTree: [
+          ...(parent ? [parent.id, ...parent.parentTree] : []),
+        ],
+      })) || [],
+    [],
+  );
+
+  const getNodeLabel = React.useCallback(
+    (node: TemplateCategoryWithParentTree) => node.name || String(node.id),
+    [],
   );
 
   return (
@@ -135,7 +146,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableT
       onClick={(e) => {
         // Click on empty area clears category selection
         if (e.target === e.currentTarget) {
-          clearCurrentCategory();
+          handleClearCategory();
         }
       }}
     >
@@ -150,16 +161,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableT
       >
         <Autocomplete
           value={currentCategory}
-          onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
-            if (newValue) {
-              selectCategoryWithParentTree(
-                newValue.id,
-                newValue.parentTree ?? [],
-              );
-            } else {
-              clearCurrentCategory();
-            }
-          }}
+          onChange={handleAutocompleteChange}
           inputValue={categorySearchTerm}
           onInputChange={handleInputChange}
           options={categoryOptions}
@@ -195,7 +197,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableT
       {/* Reactive Category Tree - now in scrollable area */}
       <Box sx={{ flexGrow: 1, overflow: "auto", px: 2, pt: 1 }}>
         <ReactiveCategoryTree<
-          TemplateCategory,
+          TemplateCategoryWithParentTree,
           CategoryChildrenQuery,
           CategoryChildrenQueryVariables
         >
@@ -204,9 +206,9 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableT
             variables: parent ? { parentCategoryId: parent.id } : undefined,
             fetchPolicy: "cache-first",
           })}
-          getItems={(data) => data.categoryChildren || []}
-          getNodeLabel={(node) => node.name || String(node.id)}
-          selectedItemId={currentCategoryId}
+          getItems={getItems}
+          getNodeLabel={getNodeLabel}
+          selectedItemId={currentCategory?.id}
           onSelectItem={handleCategorySelect}
           expandedItemIds={expandedCategoryIds}
           onToggleExpand={handleToggleExpanded}

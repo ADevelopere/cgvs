@@ -26,10 +26,11 @@ import CardView from "./views/CardView";
 import ListView from "./views/ListView";
 import GridView from "./views/GridView";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplatesList } from "./TemplatesContext";
 import { useQuery } from "@apollo/client/react";
 import * as Document from "@/client/graphql/sharedDocuments";
 import EmptyStateIllustration from "@/client/components/common/EmptyStateIllustration";
+import { useRouter } from "next/navigation";
+import { useTemplatesPageStore } from "./useTemplatesPageStore";
 
 type TemplateListProps = {
   style?: React.CSSProperties;
@@ -43,7 +44,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     viewMode,
     setViewMode,
     currentCategory,
-  } = useTemplatesList();
+  } = useTemplatesPageStore();
 
   // Local state for page input value (can be different from actual current page until confirmed)
   const [pageInputValue, setPageInputValue] = useState<number>(1);
@@ -210,6 +211,16 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     strings.noTemplatesFoundSearch,
   ]);
 
+  const router = useRouter();
+
+  const manageTemplate = React.useCallback(
+    (templateId: number) => {
+      router.push(`/admin/templates/${templateId}/manage`);
+    },
+    [router],
+  );
+  
+
   const renderTemplateView = useMemo(() => {
     if (templates?.length === 0 && !loading) {
       return <EmptyStateIllustration message={getEmptyMessage()} />;
@@ -217,13 +228,15 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
 
     switch (viewMode) {
       case "list":
-        return <ListView templates={templates} />;
+        return <ListView templates={templates} manageTemplate={manageTemplate} />;
       case "grid":
-        return <GridView templates={templates} />;
+        return <GridView templates={templates} manageTemplate={manageTemplate} />;
       default:
-        return <CardView templates={templates} />;
+        return <CardView templates={templates} manageTemplate={manageTemplate} />;
     }
-  }, [templates, loading, viewMode, getEmptyMessage]);
+  }, [templates, loading, viewMode, getEmptyMessage, manageTemplate]);
+
+
 
   return (
     <Box
