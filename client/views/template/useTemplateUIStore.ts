@@ -107,38 +107,4 @@ export function isValidTab(tab: string): tab is TemplateManagementTabType {
   return ["basic", "variables", "editor", "recipients", "recipientsManagement", "preview"].includes(tab);
 }
 
-/**
- * Helper function to update URL parameters without causing navigation
- */
-function updateURLParams(tab: TemplateManagementTabType) {
-  if (typeof window !== 'undefined') {
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', tab);
-    window.history.replaceState({}, '', url.toString());
-  }
-}
-
-/**
- * Initialize store from URL parameters or sync URL with current store state
- * Call this on mount to handle both initial load and navigation within layout
- */
-export function initializeTemplateUIFromURL(searchParams: URLSearchParams) {
-  const store = useTemplateUIStore.getState();
-  
-  // If store has already been initialized from URL, sync URL params to current store state
-  if (store.initializedFromURL) {
-    updateURLParams(store.activeTab);
-    return;
-  }
-  
-  // First time initialization: read from URL params
-  const tab = searchParams.get('tab') as TemplateManagementTabType | null;
-  
-  if (tab && isValidTab(tab)) {
-    store.setActiveTab(tab);
-  }
-  
-  // Mark as initialized from URL
-  store.setInitializedFromURL(true);
-}
 
