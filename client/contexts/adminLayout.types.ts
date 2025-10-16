@@ -58,7 +58,6 @@ export type SlotName = keyof DashboardLayoutSlots;
 
 export type DashboardLayoutContextProps = {
     navigation?: Navigation;
-    setNavigation: React.Dispatch<React.SetStateAction<Navigation | undefined>>;
     slots: DashboardLayoutSlots;
     // title states
     title?: Title;

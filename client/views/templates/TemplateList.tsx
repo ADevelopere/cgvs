@@ -8,14 +8,13 @@ import {
   useTheme,
   Drawer,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { useAppTranslation } from "@/client/locale";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";
 import ToggleSideBarButton from "./ToggleSideBarButton";
 import CategoryTreePane from "./CategoryTreePane";
-import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 
 const Main = styled("main")(({ theme }) => ({
   flexGrow: 1,
@@ -23,25 +22,12 @@ const Main = styled("main")(({ theme }) => ({
 }));
 
 const TemplateList: React.FC = () => {
-  const { sidebarState: dashboardsidebarState, setNavigation } =
-    useDashboardLayout();
+  const { sidebarState: dashboardsidebarState } = useDashboardLayout();
   const [open, setOpen] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const strings = useAppTranslation("templateCategoryTranslations");
-  // Update navigation
-  useEffect(() => {
-    setNavigation((prevNav) => {
-      if (!prevNav) return prevNav;
-      return prevNav.map((item) => {
-        if ("id" in item && item.id === "templates") {
-          return { ...item, segment: "admin/templates" } as NavigationPageItem;
-        }
-        return item;
-      });
-    });
-  }, [setNavigation]);
 
   const isFloating = React.useMemo(() => {
     return (isMobile || isTablet) && dashboardsidebarState === "expanded";
