@@ -21,11 +21,12 @@ export const TemplateManagementPage: React.FC = () => {
   const searchParams = useSearchParams();
   const id = pathParams?.id;
 
-  // Initialize store from URL params once on mount
+  // Initialize store from URL params or sync URL with store state
+  // On first load: reads URL params and initializes store
+  // On subsequent mounts (navigation within layout): syn cs URL to current store state
   useEffect(() => {
     initializeTemplateUIFromURL(searchParams);
-    // only initialize the store once on mount
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams]); // Re-run when searchParams change to handle navigation
 
   // Apollo query for template data
   const { data: templateQuery, loading: apolloLoading } = useQuery(

@@ -29,6 +29,7 @@ interface TemplateUIState {
   unsavedChanges: boolean;
   loadedTabs: TemplateManagementTabType[];
   tabErrors: Record<TemplateManagementTabType, TabError | undefined>;
+  initializedFromURL: boolean; // Non-persisted state to track if store was initialized from URL
 
   // Actions
   setActiveTab: (tab: TemplateManagementTabType) => void;
@@ -36,6 +37,7 @@ interface TemplateUIState {
   setTabLoaded: (tab: TemplateManagementTabType) => void;
   setTabError: (tab: TemplateManagementTabType, error: TabError) => void;
   clearTabError: (tab: TemplateManagementTabType) => void;
+  setInitializedFromURL: (initialized: boolean) => void;
   reset: () => void;
 }
 
@@ -53,6 +55,7 @@ const initialState = {
   unsavedChanges: false,
   loadedTabs: [] as TemplateManagementTabType[],
   tabErrors: initialTabErrors,
+  initializedFromURL: false,
 };
 
 /**
@@ -82,6 +85,8 @@ export const useTemplateUIStore = create<TemplateUIState>()(
         tabErrors: { ...state.tabErrors, [tab]: undefined },
       })),
 
+      setInitializedFromURL: (initialized) => set({ initializedFromURL: initialized }),
+
       reset: () => set(initialState),
     }),
     {
@@ -103,14 +108,37 @@ export function isValidTab(tab: string): tab is TemplateManagementTabType {
 }
 
 /**
- * Initialize store from URL parameters
- * Call this once on mount to sync URL params with store
+ * Helper function to update URL parameters without causing navigation
+ */
+function updateURLParams(tab: TemplateManagementTabType) {
+  if (typeof window !== 'undefined') {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url.toString());
+  }
+}
+
+/**
+ * Initialize store from URL parameters or sync URL with current store state
+ * Call this on mount to handle both initial load and navigation within layout
  */
 export function initializeTemplateUIFromURL(searchParams: URLSearchParams) {
-  const tab = searchParams.get('tab') as TemplateManagementTabType | null;
-
-  if (tab && isValidTab(tab)) {
-    useTemplateUIStore.getState().setActiveTab(tab);
+  const store = useTemplateUIStore.getState();
+  
+  // If store has already been initialized from URL, sync URL params to current store state
+  if (store.initializedFromURL) {
+    updateURLParams(store.activeTab);
+    return;
   }
+  
+  // First time initialization: read from URL params
+  const tab = searchParams.get('tab') as TemplateManagementTabType | null;
+  
+  if (tab && isValidTab(tab)) {
+    store.setActiveTab(tab);
+  }
+  
+  // Mark as initialized from URL
+  store.setInitializedFromURL(true);
 }
 
