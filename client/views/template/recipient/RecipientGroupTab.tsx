@@ -7,7 +7,7 @@ import {
     RecipientGroupManagementProvider,
     useRecipientGroupManagement,
 } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 import EmptyGroupsState from "./EmptyGroupsState";
 import RecipientGroupList from "./RecipientGroupList";
@@ -16,9 +16,12 @@ import GroupInfoDialog from "./GroupInfoDialog";
 import GroupSettingsDialog from "./GroupSettingsDialog";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
-const RecipientGroupTabContent: React.FC = () => {
+interface RecipientGroupTabContentProps {
+    template: Template;
+}
+
+const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({ template }) => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const { template } = useTemplateManagement();
     const { openCreateDialog } = useRecipientGroupManagement();
 
     const hasGroups =
@@ -63,16 +66,18 @@ const RecipientGroupTabContent: React.FC = () => {
     );
 };
 
-const RecipientGroupTab: React.FC = () => {
-    const { template } = useTemplateManagement();
+interface RecipientGroupTabProps {
+    template: Template;
+}
 
+const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({ template }) => {
     if (!template?.id) {
         return null;
     }
 
     return (
         <RecipientGroupManagementProvider templateId={template.id}>
-            <RecipientGroupTabContent />
+            <RecipientGroupTabContent template={template} />
         </RecipientGroupManagementProvider>
     );
 };

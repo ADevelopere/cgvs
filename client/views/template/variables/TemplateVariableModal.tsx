@@ -10,7 +10,6 @@ import {
     IconButton,
 } from "@mui/material";
 import { X } from "lucide-react";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import NumberTemplateVariableForm from "./forms/TemplateNumberVariableForm";
 import DateTemplateVariableForm from "./forms/TemplateDateVariableForm";
 import TextTemplateVariableForm from "./forms/TemplateTextVariableForm";
@@ -33,7 +32,6 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
     editingVariableID,
     type,
 }) => {
-    const { template } = useTemplateManagement();
     const strings = useAppTranslation("templateVariableTranslations");
 
     // Close modal when template variables are updated (indicating successful operation)
@@ -42,7 +40,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
 
         // You might want to add logic here to close modal after successful operations
         // This could be based on listening to template.variables changes or notifications
-    }, [template?.variables, open]);
+    }, [ open]);
 
     const typeToLabelMap: Record<TemplateVariableType, string> = useMemo(
         () => ({

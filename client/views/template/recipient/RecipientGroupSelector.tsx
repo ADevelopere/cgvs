@@ -2,20 +2,30 @@
 
 import React, { useMemo } from "react";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useRecipientManagement } from "@/client/contexts/recipient";
 import { useAppTranslation } from "@/client/locale";
+import { TemplateRecipientGroup, Template } from "@/client/graphql/generated/gql/graphql";
 
 const RecipientGroupSelector: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const { template } = useTemplateManagement();
     const { selectedGroupId, setSelectedGroupId } = useRecipientManagement();
+
+    const template: Template = {
+        id: 1,
+        name: "Test Template",
+        recipientGroups: [],
+    } as Template;
 
     const groups = useMemo(() => {
         return template?.recipientGroups || [];
     }, [template]);
 
-    const selectedGroup = useMemo(() => {
+    // const selectedGroup = useMemo(() => {
+    //     if (!selectedGroupId) return null;
+    //     return groups.find((g) => g.id === selectedGroupId) || null;
+    // }, [selectedGroupId, groups]);
+
+    const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
         if (!selectedGroupId) return null;
         return groups.find((g) => g.id === selectedGroupId) || null;
     }, [selectedGroupId, groups]);

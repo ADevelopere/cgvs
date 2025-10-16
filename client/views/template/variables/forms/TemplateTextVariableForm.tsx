@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
 
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { mapToTemplateTextVariableCreateInput } from "@/client/utils/templateVariable";
 import { isTextVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
 import { useAppTranslation } from "@/client/locale";
@@ -25,15 +24,23 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
-    const { template } = useTemplateManagement();
+
+    // const editingVariable: TemplateTextVariable | null = useMemo(() => {
+    //     if (!template?.variables || !editingVariableID) return null;
+
+    //     return (
+    //         template.variables.find((v) => v.id === editingVariableID) ?? null
+    //     );
+    // }, [template, editingVariableID]);
 
     const editingVariable: TemplateTextVariable | null = useMemo(() => {
-        if (!template?.variables || !editingVariableID) return null;
-
-        return (
-            template.variables.find((v) => v.id === editingVariableID) ?? null
-        );
-    }, [template, editingVariableID]);
+        if (!editingVariableID) return null;
+        return {
+            id: editingVariableID,
+            name: "Test Variable",
+            description: "Test Description",
+        } as TemplateTextVariable;
+    }, [editingVariableID]);
 
     const { createTemplateTextVariable, updateTemplateTextVariable } =
         useTemplateVariableManagement();
@@ -47,7 +54,8 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
         return {
             name: "",
             required: false,
-            templateId: template?.id ?? 0,
+            // todo, fix this
+            templateId: 1,
         };
     });
 

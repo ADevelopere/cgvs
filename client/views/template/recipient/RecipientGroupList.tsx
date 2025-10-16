@@ -3,10 +3,14 @@
 import React from "react";
 import { Box } from "@mui/material";
 import RecipientGroupItem from "./RecipientGroupItem";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 
 const RecipientGroupList: React.FC = () => {
-    const { template } = useTemplateManagement();
+    const template: Template = {
+        id: 1,
+        name: "Test Template",
+        recipientGroups: [],
+    } as Template;
 
     if (!template?.recipientGroups || template.recipientGroups.length === 0) {
         return null;

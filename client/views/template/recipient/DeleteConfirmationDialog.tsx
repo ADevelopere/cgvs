@@ -11,10 +11,14 @@ import {
     Alert,
 } from "@mui/material";
 import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
+import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
-const DeleteConfirmationDialog: React.FC = () => {
+const DeleteConfirmationDialog: React.FC<{
+    templateId: number;
+}> = ({
+    templateId,
+}) => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const {
         deleteDialogOpen,
@@ -23,12 +27,17 @@ const DeleteConfirmationDialog: React.FC = () => {
         loading,
         selectedGroupId,
     } = useRecipientGroupManagement();
-    const { template } = useTemplateManagement();
 
-    const selectedGroup = useMemo(() => {
-        if (!selectedGroupId || !template?.recipientGroups) return null;
-        return template.recipientGroups.find((g) => g.id === selectedGroupId);
-    }, [selectedGroupId, template]);
+    // todo, fix this
+    const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
+        // if (!selectedGroupId || !template?.recipientGroups) return null;
+        // return template.recipientGroups.find((g) => g.id === selectedGroupId);
+        return {
+            id: selectedGroupId,
+            name: "Test Group",
+            studentCount: 0,
+        } as TemplateRecipientGroup;
+    }, [selectedGroupId]);
 
     const handleDelete = useCallback(async () => {
         if (!selectedGroupId) return;

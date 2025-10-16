@@ -13,20 +13,28 @@ import {
     Chip,
 } from "@mui/material";
 import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import { useAppTranslation } from "@/client/locale";
 import { format } from "date-fns";
+import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
 const GroupInfoDialog: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const { infoDialogOpen, closeInfoDialog, selectedGroupId } =
         useRecipientGroupManagement();
-    const { template } = useTemplateManagement();
 
-    const selectedGroup = useMemo(() => {
-        if (!selectedGroupId || !template?.recipientGroups) return null;
-        return template.recipientGroups.find((g) => g.id === selectedGroupId);
-    }, [selectedGroupId, template]);
+    // const selectedGroup = useMemo(() => {
+    //     if (!selectedGroupId || !template?.recipientGroups) return null;
+    //     return template.recipientGroups.find((g) => g.id === selectedGroupId);
+    // }, [selectedGroupId, template]);
+
+    const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
+        if (!selectedGroupId) return null;
+        return {
+            id: selectedGroupId,
+            name: "Test Group",
+            studentCount: 0,
+        } as TemplateRecipientGroup;
+    }, [selectedGroupId]);
 
     const formatDate = (date: string | Date | null | undefined) => {
         if (!date) return "-";

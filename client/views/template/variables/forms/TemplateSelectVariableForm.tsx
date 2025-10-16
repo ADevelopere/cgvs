@@ -12,7 +12,6 @@ import {
     Button,
 } from "@mui/material";
 import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
-import { useTemplateManagement } from "@/client/views/template/TemplateManagementContext";
 import TagInput from "@/client/components/input/TagInput";
 import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
@@ -31,14 +30,23 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
-    const { template } = useTemplateManagement();
-    const editingVariable: TemplateSelectVariable | null = useMemo(() => {
-        if (!template?.variables || !editingVariableID) return null;
+    // const editingVariable: TemplateSelectVariable | null = useMemo(() => {
+    //     if (!template?.variables || !editingVariableID) return null;
 
-        return (
-            template.variables.find((v) => v.id === editingVariableID) ?? null
-        );
-    }, [template, editingVariableID]);
+    //     return (
+    //         template.variables.find((v) => v.id === editingVariableID) ?? null
+    //     );
+    // }, [template, editingVariableID]);
+
+    const editingVariable: TemplateSelectVariable | null = useMemo(() => {
+        if (!editingVariableID) return null;
+        return {
+            id: editingVariableID,
+            name: "Test Variable",
+            description: "Test Description",
+            options: [],
+        } as TemplateSelectVariable;
+    }, [editingVariableID]);
 
     const { createTemplateSelectVariable, updateTemplateSelectVariable } =
         useTemplateVariableManagement();
@@ -55,7 +63,8 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
                 required: false,
                 options: [],
                 multiple: false,
-                templateId: template?.id ?? 0,
+                // todo, fix this
+                templateId: 1,
             };
         },
     );

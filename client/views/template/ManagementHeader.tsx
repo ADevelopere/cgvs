@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
-import { TemplateManagementTabType } from "@/client/views/template/TemplateManagementContext";
+import { TemplateManagementTabType } from "@/client/views/template/useTemplateUIStore";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import { useAppTranslation } from "@/client/locale";

@@ -11,7 +11,6 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import {
     useTemplateVariableManagement,
-    useTemplateManagement,
 } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
 import {
@@ -39,15 +38,22 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
     onDispose,
     editingVariableID,
 }) => {
-    const { template } = useTemplateManagement();
+    // const editingVariable: TemplateDateVariable | null = useMemo(() => {
+    //     if (!template?.variables || !editingVariableID) return null;
+
+    //     return (
+    //         template.variables.find((v) => v.id === editingVariableID) ?? null
+    //     );
+    // }, [template, editingVariableID]);
 
     const editingVariable: TemplateDateVariable | null = useMemo(() => {
-        if (!template?.variables || !editingVariableID) return null;
-
-        return (
-            template.variables.find((v) => v.id === editingVariableID) ?? null
-        );
-    }, [template, editingVariableID]);
+        if (!editingVariableID) return null;
+        return {
+            id: editingVariableID,
+            name: "Test Variable",
+            description: "Test Description",
+        } as TemplateDateVariable;
+    }, [editingVariableID]);
 
     const { createTemplateDateVariable, updateTemplateDateVariable } =
         useTemplateVariableManagement();
@@ -60,7 +66,8 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
         }
         return {
             name: "",
-            templateId: template?.id ?? 0,
+            // todo, fix this
+            templateId: 1,
             required: false,
         };
     });
