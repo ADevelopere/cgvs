@@ -5,6 +5,12 @@ CREATE TYPE "public"."template_config_key" AS ENUM('MAX_BACKGROUND_SIZE', 'ALLOW
 CREATE TYPE "public"."template_variable_type" AS ENUM('TEXT', 'NUMBER', 'DATE', 'SELECT');--> statement-breakpoint
 CREATE TYPE "public"."template_element_type" AS ENUM('static_text', 'data_text', 'data_date', 'image', 'qr_code');--> statement-breakpoint
 CREATE TYPE "public"."template_element_source_type" AS ENUM('student', 'variable', 'certificate');--> statement-breakpoint
+CREATE TABLE "cache" (
+	"key" text PRIMARY KEY NOT NULL,
+	"value" text NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "certificate" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"template_id" integer NOT NULL,
@@ -252,12 +258,17 @@ CREATE TABLE "storage_file" (
 --> statement-breakpoint
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_role_id_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."roles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "cache_expires_at_idx" ON "cache" USING btree ("expires_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_student_template_certificate" ON "certificate" USING btree ("template_id","student_id");--> statement-breakpoint
 CREATE INDEX "sessions_user_id_index" ON "sessions" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "sessions_last_activity_index" ON "sessions" USING btree ("lastActivity");--> statement-breakpoint
 CREATE INDEX "idx_students_name_fts" ON "student" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
 CREATE INDEX "idx_students_name_trgm" ON "student" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
 CREATE UNIQUE INDEX "template_category_special_type_key" ON "TemplateCategory" USING btree ("special_type");--> statement-breakpoint
+CREATE INDEX "idx_template_categories_name_fts" ON "TemplateCategory" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
+CREATE INDEX "idx_template_categories_name_trgm" ON "TemplateCategory" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
+CREATE INDEX "idx_templates_name_fts" ON "template" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
+CREATE INDEX "idx_templates_name_trgm" ON "template" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
 CREATE UNIQUE INDEX "template_base_variable_template_id_name_key" ON "template_variable_base" USING btree ("template_id","name");--> statement-breakpoint
 CREATE UNIQUE INDEX "rgiv_group_item_variable_unique" ON "recipient_group_item_variable_value" USING btree ("template_recipient_group_item_id","templateVariableId");--> statement-breakpoint
 CREATE INDEX "rgiv_value_idx" ON "recipient_group_item_variable_value" USING btree ("value_indexed");--> statement-breakpoint

@@ -10,3 +10,4 @@ export { UserRepository } from "./user.repository";
 export { SessionRepository } from "./session.repository";
 
 export { StorageDbRepository } from "./storage.repository";
+export { CacheDbRepository } from "./cache.repository";

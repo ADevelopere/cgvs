@@ -106,6 +106,88 @@ If you encounter issues while running scripts that interact with Google Cloud se
 
 ---
 
+### Installing Google Cloud CLI on Linux
+
+Before you can use Google Cloud services, you need to install the `gcloud` CLI tool.
+
+**On Ubuntu/Debian:**
+```bash
+# Add the Cloud SDK distribution URI as a package source
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+# Import the Google Cloud Platform public key
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+# Update the package list and install the Cloud SDK
+sudo apt-get update && sudo apt-get install google-cloud-cli
+```
+
+**On CentOS/RHEL/Fedora:**
+```bash
+# Add the Cloud SDK repository
+sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
+[google-cloud-sdk]
+name=Google Cloud SDK
+baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el8-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+       https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOM
+
+# Install the Cloud SDK
+sudo yum install google-cloud-cli
+```
+
+**On Arch Linux:**
+```bash
+# Install using pacman
+sudo pacman -S google-cloud-cli
+```
+
+**Initialize gcloud:**
+```bash
+# After installation, initialize gcloud
+gcloud init
+```
+
+**Automated Setup Script:**
+For convenience, you can use the provided script that handles installation and authentication automatically:
+```bash
+# Run the setup script from the project root
+./scripts/setup-gcloud.sh
+```
+
+This script will:
+- Detect your operating system
+- Check if gcloud is already installed
+- Install gcloud if needed (supports Ubuntu/Debian, CentOS/RHEL/Fedora, Arch Linux, and macOS)
+- Initialize gcloud configuration
+- Set up authentication with Application Default Credentials
+
+**After Authentication Setup:**
+Once the script completes or after manual installation, you'll need to complete these additional steps:
+
+1. **Set your Google Cloud project:**
+```bash
+# Replace with your actual project ID
+gcloud config set project YOUR_PROJECT_ID
+```
+
+2. **Set the quota project for Application Default Credentials:**
+```bash
+# This ensures proper billing and quota management
+gcloud auth application-default set-quota-project YOUR_PROJECT_ID
+```
+
+**Important Notes:**
+- Replace `YOUR_PROJECT_ID` with your actual Google Cloud project ID
+- The quota project setting is crucial for proper billing and quota management
+- These commands will save credentials to `~/.config/gcloud/application_default_credentials.json`
+
+---
+
 ### Error: `Could not load the default credentials`
 
 This error occurs when the Google Cloud client libraries within the application cannot find authentication credentials, even if you have already logged in via the `gcloud` CLI.
