@@ -1,5 +1,6 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
+import { JWT } from "google-auth-library";
 import logger from "@/lib/logger";
 import * as Types from "@/server/types";
 import {
@@ -51,9 +52,16 @@ const getStorageFromSecretManager = async (): Promise<Storage | null> => {
 
         const credentials = JSON.parse(payload.toString());
 
+        // Create JWT client with the credentials to avoid deprecated methods
+        const jwtClient = new JWT({
+            email: credentials.client_email,
+            key: credentials.private_key,
+            scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+        });
+
         return new Storage({
             projectId,
-            credentials,
+            authClient: jwtClient,
         });
     } catch (error) {
         logger.error(
@@ -72,7 +80,8 @@ export async function createGcpStorage(): Promise<Storage> {
         }
     }
 
-    // Fallback to default credentials
+    // Fallback to Application Default Credentials (ADC)
+    // This uses the default authentication flow and doesn't trigger deprecation warnings
     return new Storage({
         projectId,
     });
