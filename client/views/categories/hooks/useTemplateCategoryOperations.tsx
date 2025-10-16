@@ -318,8 +318,15 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [categoryApollo, notifications, strings, setCurrentTemplateId],
+    [
+      templateApollo,
+      notifications,
+      strings.templateRestoredSuccessfully,
+      strings.templateRestoreFailed,
+      setCurrentTemplateId,
+    ],
   );
+  
   const { setNavigation } = useDashboardLayout();
   const router = useRouter();
 
