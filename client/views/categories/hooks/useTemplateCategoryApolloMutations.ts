@@ -6,7 +6,7 @@ import * as Document from "./categories.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as SharedDocument from "@/client/graphql/sharedDocuments";
 import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
-import { useTemplatesPageStore } from "@/client/views/templates/templatesPage.store";
+import { useTemplatesPageStore } from "@/client/views/templates/useTemplatesPageStore";
 import { useMutation } from "@apollo/client/react";
 
 /**
@@ -160,7 +160,7 @@ export const useTemplateCategoryApolloMutations = () => {
     });
 
     // Evict for the main templates page view if it's showing this category or all categories
-    const templatesPageCategoryId = templatesPageStore.currentCategoryId;
+    const templatesPageCategoryId = templatesPageStore.currentCategory?.id;
     if (
       templatesPageCategoryId === categoryId ||
       templatesPageCategoryId === null

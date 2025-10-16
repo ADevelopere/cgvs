@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplatesList } from "../TemplatesContext";
 import { getTemplateImageUrl } from "@/client/utils/template/getTemplateImageUrl";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import Image from "next/image";
@@ -20,11 +19,11 @@ import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface GridViewProps {
   templates: Template[];
+  manageTemplate: (templateId: number) => void;
 }
 
-const GridView: React.FC<GridViewProps> = ({ templates }) => {
+const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate }) => {
   const strings = useAppTranslation("templateCategoryTranslations");
-  const { manageTemplate } = useTemplatesList();
   const { isDark } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

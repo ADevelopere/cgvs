@@ -18,17 +18,16 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplatesList } from "../TemplatesContext";
 import { getTemplateImageUrl } from "@/client/utils/template/getTemplateImageUrl";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
 interface ListViewProps {
   templates: Template[];
+  manageTemplate: (templateId: number) => void;
 }
 
-const ListView: React.FC<ListViewProps> = ({ templates }) => {
-  const { manageTemplate } = useTemplatesList();
+const ListView: React.FC<ListViewProps> = ({ templates, manageTemplate }) => {
   const { isDark } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));

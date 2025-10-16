@@ -1,4 +1,6 @@
 import { TemplatesByCategoryIdQueryVariables } from "@/client/graphql/generated/gql/graphql";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import logger from "@/lib/logger";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -7,42 +9,24 @@ import { persist, createJSONStorage } from "zustand/middleware";
  */
 export type ViewMode = "card" | "grid" | "list";
 
-const initialTemplateQueryVariables: TemplatesByCategoryIdQueryVariables = {
-  categoryId: null,
-  paginationArgs: {
-    first: 25,
-    page: 1,
-  },
-  filterArgs: {},
-  orderBy: [],
-};
-
-const initialState = {
-  currentCategoryId: null,
-  expandedCategoryIds: new Set<number>(),
-  fetchedCategoryIds: new Set<number>(),
-  templateQueryVariables: initialTemplateQueryVariables,
-  viewMode: "card" as ViewMode,
-};
-
 /**
  * Templates Page UI Store State
  * Manages all UI-related state for the templates list page
  */
-interface TemplatesPageUIState {
-  // State
-  currentCategoryId: number | null;
+type State = {
+  currentCategory: Graphql.TemplateCategoryWithParentTree | null;
   expandedCategoryIds: Set<number>;
   fetchedCategoryIds: Set<number>;
   templateQueryVariables: TemplatesByCategoryIdQueryVariables;
   viewMode: ViewMode;
-
-  // Actions
-  setCurrentCategoryId: (id: number | null) => void;
-  clearCurrentCategory: () => void;
-  selectCategoryWithParentTree: (
-    categoryId: number,
-    parentTree: number[],
+};
+type Actions = {
+  // Category selection actions
+  selectCategory: (
+    category: Graphql.TemplateCategoryWithParentTree | null,
+  ) => void;
+  updateSelectedCategory: (
+    category: Graphql.TemplateCategoryWithParentTree | null,
   ) => void;
 
   // Lazy loading actions
@@ -65,7 +49,27 @@ interface TemplatesPageUIState {
   setViewMode: (mode: ViewMode) => void;
 
   reset: () => void;
-}
+};
+
+type TemplatesPageUIState = State & Actions;
+
+const initialTemplateQueryVariables: TemplatesByCategoryIdQueryVariables = {
+  categoryId: null,
+  paginationArgs: {
+    first: 25,
+    page: 1,
+  },
+  filterArgs: {},
+  orderBy: [],
+};
+
+const initialState: State = {
+  currentCategory: null,
+  expandedCategoryIds: new Set<number>(),
+  fetchedCategoryIds: new Set<number>(),
+  templateQueryVariables: initialTemplateQueryVariables,
+  viewMode: "card" as ViewMode,
+};
 
 /**
  * Zustand store for templates page UI state
@@ -76,46 +80,66 @@ export const useTemplatesPageStore = create<TemplatesPageUIState>()(
     (set, get) => ({
       ...initialState,
 
-      setCurrentCategoryId: (id) =>
-        set((state) => ({
-          currentCategoryId: id,
-          templateQueryVariables: {
-            ...state.templateQueryVariables,
-            categoryId: id,
-          },
-        })),
-
-      clearCurrentCategory: () =>
-        set((state) => ({
-          currentCategoryId: null,
-          templateQueryVariables: {
-            ...state.templateQueryVariables,
-            categoryId: null,
-          },
-        })),
-
-      selectCategoryWithParentTree: (categoryId, parentTree) => {
+      selectCategory: (category) => {
         set((state) => {
+          // Early return if selecting the same category
+          if (category?.id === state.currentCategory?.id) {
+            return state;
+          }
+
+          // Handle clearing category when null
+          if (!category) {
+            return {
+              currentCategory: null,
+              templateQueryVariables: {
+                ...state.templateQueryVariables,
+                categoryId: null,
+              },
+            };
+          }
+
           const newExpandedIds = new Set(state.expandedCategoryIds);
           const newFetchedIds = new Set(state.fetchedCategoryIds);
 
           // Mark all IDs in parentTree as fetched and expanded
-          parentTree.forEach((id) => {
+          category.parentTree.forEach((id) => {
             newExpandedIds.add(id);
             newFetchedIds.add(id);
           });
 
           return {
-            currentCategoryId: categoryId,
+            currentCategory: category,
             expandedCategoryIds: newExpandedIds,
             fetchedCategoryIds: newFetchedIds,
             templateQueryVariables: {
               ...state.templateQueryVariables,
-              categoryId: categoryId,
+              categoryId: category.id,
             },
           };
         });
       },
+
+      updateSelectedCategory: (category) => {
+        set((state) => {
+          logger.log("updateSelectedCategory", category);
+          logger.log("state.currentCategory", state.currentCategory);
+          // Only update if we have a current category and the new category has the same ID
+          if (!state.currentCategory || !category || state.currentCategory.id !== category.id) {
+            return state;
+          }
+
+          // Only update if the category object has actually changed
+          if (state.currentCategory === category) {
+            return state;
+          }
+
+          // Update the category object with the latest data from Apollo cache
+          return {
+            currentCategory: category,
+          };
+        });
+      },
+
 
       setExpandedCategoryIds: (ids) => set({ expandedCategoryIds: ids }),
 
@@ -145,7 +169,7 @@ export const useTemplatesPageStore = create<TemplatesPageUIState>()(
         set({
           templateQueryVariables: {
             ...vars,
-            categoryId: get().currentCategoryId,
+            categoryId: get().currentCategory?.id || null,
           },
         }),
 
@@ -163,7 +187,7 @@ export const useTemplatesPageStore = create<TemplatesPageUIState>()(
       storage: createJSONStorage(() => sessionStorage),
       // Persist selections for restoration
       partialize: (state) => ({
-        currentCategoryId: state.currentCategoryId,
+        currentCategory: state.currentCategory,
         expandedCategoryIds: Array.from(state.expandedCategoryIds),
         fetchedCategoryIds: Array.from(state.fetchedCategoryIds),
         templateQueryVariables: state.templateQueryVariables,

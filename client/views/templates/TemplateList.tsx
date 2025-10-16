@@ -1,14 +1,21 @@
 "use client";
 
-import { Box, Paper, styled, useMediaQuery, useTheme, Drawer } from "@mui/material";
-import React, { useState } from "react";
+import {
+  Box,
+  Paper,
+  styled,
+  useMediaQuery,
+  useTheme,
+  Drawer,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
 import { useAppTranslation } from "@/client/locale";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";
-import { TemplatesPageProvider } from "./TemplatesContext";
 import ToggleSideBarButton from "./ToggleSideBarButton";
 import CategoryTreePane from "./CategoryTreePane";
+import { NavigationPageItem } from "@/client/contexts/adminLayout.types";
 
 const Main = styled("main")(({ theme }) => ({
   flexGrow: 1,
@@ -16,16 +23,29 @@ const Main = styled("main")(({ theme }) => ({
 }));
 
 const TemplateList: React.FC = () => {
-  const { sidebarState: dashboardsidebarState } = useDashboardLayout();
+  const { sidebarState: dashboardsidebarState, setNavigation } =
+    useDashboardLayout();
   const [open, setOpen] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const strings = useAppTranslation("templateCategoryTranslations");
+  // Update navigation
+  useEffect(() => {
+    setNavigation((prevNav) => {
+      if (!prevNav) return prevNav;
+      return prevNav.map((item) => {
+        if ("id" in item && item.id === "templates") {
+          return { ...item, segment: "admin/templates" } as NavigationPageItem;
+        }
+        return item;
+      });
+    });
+  }, [setNavigation]);
 
   const isFloating = React.useMemo(() => {
     return (isMobile || isTablet) && dashboardsidebarState === "expanded";
-  }, [dashboardsidebarState, isMobile, isTablet])
+  }, [dashboardsidebarState, isMobile, isTablet]);
 
   const toggleSidebar = () => {
     setOpen((prev) => !prev);
@@ -91,9 +111,9 @@ const TemplateList: React.FC = () => {
             sx={{
               width: 300,
               flexShrink: 0,
-              '& .MuiDrawer-paper': {
+              "& .MuiDrawer-paper": {
                 width: 300,
-                boxSizing: 'border-box',
+                boxSizing: "border-box",
               },
             }}
           >
@@ -121,12 +141,4 @@ const TemplateList: React.FC = () => {
   );
 };
 
-const TemplateListPage: React.FC = () => {
-  return (
-    <TemplatesPageProvider>
-      <TemplateList />
-    </TemplatesPageProvider>
-  );
-};
-
-export default TemplateListPage;
+export default TemplateList;
