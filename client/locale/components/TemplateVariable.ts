@@ -45,4 +45,12 @@ export type TemplateVariableTranslation = {
 
     // edit/create modal
     editVariable: string;
+
+    // operation results
+    variableAddedSuccessfully: string;
+    variableAddFailed: string;
+    variableUpdatedSuccessfully: string;
+    variableUpdateFailed: string;
+    variableDeletedSuccessfully: string;
+    variableDeleteFailed: string;
 };

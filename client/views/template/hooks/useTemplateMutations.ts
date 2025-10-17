@@ -13,18 +13,20 @@ import { useTemplateListStore } from "../templateList/useTemplateListStore";
  * Provides mutation functions for template operations
  */
 export const useTemplateMutations = () => {
-  const categoryStore = useTemplateCategoryStore();
-  const templateListStore = useTemplateListStore();
+  // Extract stable references from stores
+  const getTemplateQueryVariables = useTemplateCategoryStore((state) => state.getTemplateQueryVariables);
+  const currentCategory = useTemplateListStore((state) => state.currentCategory);
+  const templateQueryVariables = useTemplateListStore((state) => state.templateQueryVariables);
 
   // Helper function to evict template queries from the cache
-  const evictTemplateQueries = (
+  const evictTemplateQueries = React.useCallback((
     cache: ApolloCache,
     categoryId: number | null | undefined,
   ) => {
     if (categoryId === undefined) return;
 
     // Evict for the specific category's view
-    const categoryQueryVars = categoryStore.getTemplateQueryVariables(
+    const categoryQueryVars = getTemplateQueryVariables(
       categoryId as number,
     );
     cache.evict({
@@ -34,7 +36,7 @@ export const useTemplateMutations = () => {
     });
 
     // Evict for the main templates page view if it's showing this category or all categories
-    const templatesPageCategoryId = templateListStore.currentCategory?.id;
+    const templatesPageCategoryId = currentCategory?.id;
     if (
       templatesPageCategoryId === categoryId ||
       templatesPageCategoryId === null
@@ -44,11 +46,11 @@ export const useTemplateMutations = () => {
         fieldName: "templatesByCategoryId",
         args: {
           categoryId: templatesPageCategoryId ?? undefined,
-          ...templateListStore.templateQueryVariables,
+          ...templateQueryVariables,
         },
       });
     }
-  };
+  }, [getTemplateQueryVariables, currentCategory, templateQueryVariables]);
 
   // Update template mutation
   const [updateTemplateMutation] = useMutation(

@@ -22,7 +22,7 @@ import {
 export const useTemplateVariableApolloQueries = (templateId: number) => {
   const { data, loading, error, refetch } = useQuery(
     templateVariablesByTemplateIdQueryDocument,
-    { 
+    {
       variables: { templateId },
       skip: !templateId,
     }
@@ -45,7 +45,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [createTextMutation] = useMutation(createTemplateTextVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.createTemplateTextVariable) return;
-      
+
       const templateId = data.createTemplateTextVariable.template?.id;
       if (!templateId) return;
 
@@ -74,7 +74,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [createNumberMutation] = useMutation(createTemplateNumberVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.createTemplateNumberVariable) return;
-      
+
       const templateId = data.createTemplateNumberVariable.template?.id;
       if (!templateId) return;
 
@@ -102,7 +102,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [createDateMutation] = useMutation(createTemplateDateVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.createTemplateDateVariable) return;
-      
+
       const templateId = data.createTemplateDateVariable.template?.id;
       if (!templateId) return;
 
@@ -130,7 +130,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [createSelectMutation] = useMutation(createTemplateSelectVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.createTemplateSelectVariable) return;
-      
+
       const templateId = data.createTemplateSelectVariable.template?.id;
       if (!templateId) return;
 
@@ -158,7 +158,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [updateTextMutation] = useMutation(updateTemplateTextVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.updateTemplateTextVariable) return;
-      
+
       const templateId = data.updateTemplateTextVariable.template?.id;
       if (!templateId) return;
 
@@ -187,7 +187,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [updateNumberMutation] = useMutation(updateTemplateNumberVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.updateTemplateNumberVariable) return;
-      
+
       const templateId = data.updateTemplateNumberVariable.template?.id;
       if (!templateId) return;
 
@@ -216,7 +216,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [updateDateMutation] = useMutation(updateTemplateDateVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.updateTemplateDateVariable) return;
-      
+
       const templateId = data.updateTemplateDateVariable.template?.id;
       if (!templateId) return;
 
@@ -245,7 +245,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [updateSelectMutation] = useMutation(updateTemplateSelectVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.updateTemplateSelectVariable) return;
-      
+
       const templateId = data.updateTemplateSelectVariable.template?.id;
       if (!templateId) return;
 
@@ -274,7 +274,7 @@ export const useTemplateVariableApolloMutations = () => {
   const [deleteMutation] = useMutation(deleteTemplateVariableMutationDocument, {
     update(cache, { data }) {
       if (!data?.deleteTemplateVariable) return;
-      
+
       const templateId = data.deleteTemplateVariable.template?.id;
       if (!templateId) return;
 
@@ -305,13 +305,13 @@ export const useTemplateVariableApolloMutations = () => {
     createNumberVariable: createNumberMutation,
     createDateVariable: createDateMutation,
     createSelectVariable: createSelectMutation,
-    
+
     // Update mutations
     updateTextVariable: updateTextMutation,
     updateNumberVariable: updateNumberMutation,
     updateDateVariable: updateDateMutation,
     updateSelectVariable: updateSelectMutation,
-    
+
     // Delete mutation
     deleteVariable: deleteMutation,
   };

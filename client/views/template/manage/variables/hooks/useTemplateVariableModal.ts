@@ -10,44 +10,49 @@ import { useTemplateVariableOperations } from "./useTemplateVariableOperations";
  * Combines modal store + operations hook
  */
 export const useTemplateVariableModal = (templateId: number) => {
-  const modalStore = useTemplateVariableModalStore();
+  // Extract stable action references from store
+  const isOpen = useTemplateVariableModalStore((state) => state.isOpen);
+  const editingVariableId = useTemplateVariableModalStore((state) => state.editingVariableId);
+  const variableType = useTemplateVariableModalStore((state) => state.variableType);
+  const isCreating = useTemplateVariableModalStore((state) => state.isCreating);
+  const openCreateModalAction = useTemplateVariableModalStore((state) => state.openCreateModal);
+  const openEditModalAction = useTemplateVariableModalStore((state) => state.openEditModal);
+  const closeModalAction = useTemplateVariableModalStore((state) => state.closeModal);
+
   const operations = useTemplateVariableOperations(templateId);
 
   const openCreateModal = useCallback((type: Graphql.TemplateVariableType) => {
-    modalStore.openCreateModal(type);
-  }, [modalStore]);
+    openCreateModalAction(type);
+  }, [openCreateModalAction]);
 
   const openEditModal = useCallback((variable: Graphql.TemplateVariable) => {
-    modalStore.openEditModal(variable);
-  }, [modalStore]);
+    openEditModalAction(variable);
+  }, [openEditModalAction]);
 
   const closeModal = useCallback(() => {
-    modalStore.closeModal();
-  }, [modalStore]);
+    closeModalAction();
+  }, [closeModalAction]);
 
   const handleSave = useCallback(async (data: any) => {
-    if (modalStore.isCreating) {
-      await operations.createVariable(modalStore.variableType, data);
-    } else if (modalStore.editingVariableId) {
-      await operations.updateVariable(modalStore.editingVariableId, modalStore.variableType, data);
+    if (isCreating) {
+      await operations.createVariable(variableType, data);
+    } else if (editingVariableId) {
+      await operations.updateVariable(editingVariableId, variableType, data);
     }
     closeModal();
-  }, [modalStore.isCreating, modalStore.variableType, modalStore.editingVariableId, operations, closeModal]);
+  }, [isCreating, variableType, editingVariableId, operations, closeModal]);
 
   return {
     // Modal state
-    isOpen: modalStore.isOpen,
-    editingVariableId: modalStore.editingVariableId,
-    variableType: modalStore.variableType,
-    isCreating: modalStore.isCreating,
-    
+    isOpen,
+    editingVariableId,
+    variableType,
+    isCreating,
+
     // Modal actions
     openCreateModal,
     openEditModal,
     closeModal,
     handleSave,
-    
-    // Store access for advanced usage
-    modalStore,
   };
 };

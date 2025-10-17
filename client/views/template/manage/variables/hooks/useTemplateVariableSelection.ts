@@ -8,45 +8,52 @@ import { useTemplateVariableUIStore, useTemplateVariableDataStore } from "../sto
  * Wraps UI store selection logic
  */
 export const useTemplateVariableSelection = () => {
-  const uiStore = useTemplateVariableUIStore();
-  const dataStore = useTemplateVariableDataStore();
+  // Extract stable action references from stores
+  const toggleSelectAction = useTemplateVariableUIStore((state) => state.toggleSelect);
+  const selectAllAction = useTemplateVariableUIStore((state) => state.selectAll);
+  const clearSelectionAction = useTemplateVariableUIStore((state) => state.clearSelection);
+  const selectRangeAction = useTemplateVariableUIStore((state) => state.selectRange);
+  const setFocusedVariableAction = useTemplateVariableUIStore((state) => state.setFocusedVariable);
+
+  const selectedVariables = useTemplateVariableUIStore((state) => state.selectedVariables);
+  const lastSelectedVariable = useTemplateVariableUIStore((state) => state.lastSelectedVariable);
+  const focusedVariable = useTemplateVariableUIStore((state) => state.focusedVariable);
+
+  const variables = useTemplateVariableDataStore((state) => state.variables);
 
   const toggleSelect = useCallback((id: number) => {
-    uiStore.toggleSelect(id);
-  }, [uiStore]);
+    toggleSelectAction(id);
+  }, [toggleSelectAction]);
 
   const selectAll = useCallback(() => {
-    const allIds = dataStore.variables.map((variable) => variable.id).filter((id): id is number => id !== null);
-    uiStore.selectAll(allIds);
-  }, [dataStore.variables, uiStore]);
+    const allIds = variables.map((variable) => variable.id).filter((id): id is number => id !== null);
+    selectAllAction(allIds);
+  }, [variables, selectAllAction]);
 
   const clearSelection = useCallback(() => {
-    uiStore.clearSelection();
-  }, [uiStore]);
+    clearSelectionAction();
+  }, [clearSelectionAction]);
 
   const selectRange = useCallback((startId: number, endId: number) => {
-    const allIds = dataStore.variables.map((variable) => variable.id).filter((id): id is number => id !== null);
-    uiStore.selectRange(startId, endId, allIds);
-  }, [dataStore.variables, uiStore]);
+    const allIds = variables.map((variable) => variable.id).filter((id): id is number => id !== null);
+    selectRangeAction(startId, endId, allIds);
+  }, [variables, selectRangeAction]);
 
   const setFocusedVariable = useCallback((id: number | null) => {
-    uiStore.setFocusedVariable(id);
-  }, [uiStore]);
+    setFocusedVariableAction(id);
+  }, [setFocusedVariableAction]);
 
   return {
     // Selection state
-    selectedVariables: uiStore.selectedVariables,
-    lastSelectedVariable: uiStore.lastSelectedVariable,
-    focusedVariable: uiStore.focusedVariable,
-    
+    selectedVariables,
+    lastSelectedVariable,
+    focusedVariable,
+
     // Selection actions
     toggleSelect,
     selectAll,
     clearSelection,
     selectRange,
     setFocusedVariable,
-    
-    // Store access for advanced usage
-    uiStore,
   };
 };
