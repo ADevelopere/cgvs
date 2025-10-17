@@ -17,10 +17,10 @@ import {
     Error as ErrorIcon,
     CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
-import { useStudentManagement } from "@/client/contexts/student/StudentManagementContext";
+import { useStudentManagement } from "@/client/views/student/hook/StudentManagementContext";
 import { useStudentFilter } from "@/client/contexts/student/StudentFilterContext";
 import { TextFilterOperation } from "@/client/types/filters";
-import { useStudentTableManagement } from "@/client/contexts/student/StudentTableManagementContext";
+import { useStudentTableManagement } from "@/client/views/student/hook/StudentTableManagementContext";
 import { useAppTranslation } from "@/client/locale";
 import {
     TextFieldComponent,

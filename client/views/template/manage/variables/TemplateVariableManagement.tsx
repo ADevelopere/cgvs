@@ -20,7 +20,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
-import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
+import { useTemplateVariableManagement } from "@/client/views/template/manage/variables/TemplateVariableManagementContext";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import TemplateVariableModal from "./TemplateVariableModal";
 import { useAppTranslation } from "@/client/locale";
