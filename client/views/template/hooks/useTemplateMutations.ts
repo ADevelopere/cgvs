@@ -5,7 +5,8 @@ import { ApolloCache } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { TemplateDocuments } from "./index";
-import { useTemplateCategoryStore, useTemplateListStore } from "./index";
+import { useTemplateCategoryStore } from "../category/useTemplateCategoryStore";
+import { useTemplateListStore } from "../templateList/useTemplateListStore";
 
 /**
  * Hook for template mutations

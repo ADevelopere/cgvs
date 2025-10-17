@@ -16,10 +16,10 @@ import {
 } from "@/client/graphql/generated/gql/graphql";
 import {
   useTemplateOperations,
-  useTemplateUIStore,
   TemplateDocuments,
 } from "../hooks";
 import { TemplateUtils } from "../utils";
+import { useTemplateUIStore } from "./useTemplateManagementStore";
 
 type FormDataType = {
   name: string;

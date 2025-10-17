@@ -6,12 +6,9 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import logger from "@/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  useTemplateMutations,
-  useTemplateOperations,
-  useTemplateCategoryApolloMutations,
-  useTemplateCategoryStore,
-} from "./index";
+import { useTemplateMutations, useTemplateOperations } from "../hooks/index";
+import { useTemplateCategoryApolloMutations } from "./useTemplateCategoryApolloMutations";
+import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
 
 /**
  * Template Category Service Hook

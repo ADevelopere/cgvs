@@ -10,7 +10,8 @@ import {
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
 import { ReactiveCategoryTree } from "@/client/components";
-import { CategoryDocuments, useTemplateListStore } from "../hooks";
+import { CategoryDocuments } from "../hooks";
+import { useTemplateListStore } from "./useTemplateListStore";
 
 const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
   isMobile: disableTopPadding = false,
