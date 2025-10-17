@@ -8,7 +8,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import GroupIcon from "@mui/icons-material/Group";
 import { EditableTypography } from "@/client/components";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
+import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/lib/logger";
@@ -20,7 +20,7 @@ interface RecipientGroupItemProps {
 const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { openInfoDialog, openSettingsDialog, openDeleteDialog } = useRecipientGroupDialogs();
-  const { updateGroupName } = useRecipientGroupOperations(0); // templateId not needed for updateName
+  const { updateGroup } = useRecipientGroupOperations();
 
   const handleNameSave = useCallback(
     async (value: string) => {
@@ -34,12 +34,12 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
       if (value.trim() === group.name) {
         return; // Successfully "updated" without making a request
       }
-      const success = await updateGroupName(group.id, value.trim());
-      if (!success) {
-        return strings.errorUpdating;
-      }
+      await updateGroup({
+        id: group.id,
+        name: value.trim(),
+      });
     },
-    [group.id, group.name, updateGroupName, strings],
+    [group.id, group.name, updateGroup, strings],
   );
 
   const handleManageClick = useCallback(() => {

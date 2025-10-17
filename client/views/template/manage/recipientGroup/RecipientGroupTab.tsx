@@ -3,10 +3,12 @@
 import React from "react";
 import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useQuery } from "@apollo/client/react";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
-import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
+import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
+import * as Document from "./hooks/recipientGroup.documents";
 import EmptyGroupsState from "../recipient/EmptyGroupsState";
 import RecipientGroupList from "./RecipientGroupList";
 import CreateGroupDialog from "./CreateGroupDialog";
@@ -20,10 +22,20 @@ interface RecipientGroupTabContentProps {
 
 const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({ template }) => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const operations = useRecipientGroupOperations(template.id);
+    const operations = useRecipientGroupOperations();
     const dialogs = useRecipientGroupDialogs();
 
-    const hasGroups = operations.groups && operations.groups.length > 0;
+    // Use useQuery directly to fetch recipient groups
+    const { data, loading, error } = useQuery(
+        Document.templateRecipientGroupsByTemplateIdQueryDocument,
+        { 
+            variables: { templateId: template.id },
+            skip: !template.id 
+        }
+    );
+
+    const groups = data?.templateRecipientGroupsByTemplateId || [];
+    const hasGroups = groups && groups.length > 0;
 
     return (
         <Box
@@ -35,7 +47,7 @@ const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({ tem
             }}
         >
             {/* Content Area */}
-            {hasGroups ? <RecipientGroupList /> : <EmptyGroupsState />}
+            {hasGroups ? <RecipientGroupList groups={groups} loading={loading} /> : <EmptyGroupsState />}
 
             {/* Floating Action Button (only show when there are groups) */}
             {hasGroups && (
@@ -56,10 +68,10 @@ const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({ tem
             )}
 
             {/* Dialogs */}
-            <CreateGroupDialog />
-            <GroupInfoDialog />
-            <GroupSettingsDialog />
-            <DeleteConfirmationDialog />
+            <CreateGroupDialog templateId={template.id} />
+            <GroupInfoDialog groups={groups} />
+            <GroupSettingsDialog groups={groups} />
+            <DeleteConfirmationDialog groups={groups} />
         </Box>
     );
 };
