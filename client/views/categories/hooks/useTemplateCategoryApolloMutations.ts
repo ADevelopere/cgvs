@@ -133,7 +133,6 @@ export const useTemplateCategoryApolloMutations = () => {
             };
           },
         );
-        ``;
       },
     },
   );

@@ -11,8 +11,8 @@ import {
 import { HomeIcon } from "lucide-react";
 import DashboardLayout from "@/client/views/dashboard/layout/DashboardLayout";
 import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndActions";
-import { DashboardLayoutProvider } from "@/client/contexts/DashboardLayoutContext";
-import { Navigation, Title } from "@/client/contexts/adminLayout.types";
+import { DashboardLayoutProvider } from "@/client/views/dashboard/layout/DashboardLayoutContext";
+import { Navigation, Title } from "@/client/views/dashboard/layout/types";
 import StudentProvider from "@/client/contexts/student/StudentProvider";
 
 const NAVIGATION: Navigation = [

@@ -16,11 +16,9 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import {
-  NavigationItem,
-  NavigationPageItem,
-} from "../../../contexts/adminLayout.types";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
+import { NavigationItem, NavigationPageItem } from "./types";
+import { useDashboardLayout } from "./DashboardLayoutContext";
+import { isPathActive } from "./utilts";
 
 const NavItem: React.FC<{
   item: NavigationPageItem;
@@ -30,50 +28,38 @@ const NavItem: React.FC<{
   const { theme } = useAppTheme();
   const currentPathname = usePathname();
 
-  // Simple isPathActive function
-  const isPathActive = (navItem: NavigationPageItem): boolean => {
-    const normalizedPathname = currentPathname.replace(/\/$/, "");
-    const itemPath =
-      navItem.pattern || (navItem.segment ? `/${navItem.segment}` : "");
+  const hasChildren = React.useMemo(() => {
+    return item.children && item.children.length > 0;
+  }, [item.children]);
 
-    if (itemPath) {
-      // Direct match
-      if (normalizedPathname === itemPath) {
-        return true;
-      }
-      // Check if current path starts with the item path (for nested routes)
-      if (normalizedPathname.startsWith(itemPath + "/")) {
-        return true;
-      }
-    }
-
-    // Check children recursively
-    if (navItem.children) {
-      return navItem.children.some(
-        (child) => child.kind === "page" && isPathActive(child),
-      );
-    }
-
-    return false;
-  };
-
-  const hasChildren = item.children && item.children.length > 0;
   // Ensure initiallyOpen is always boolean
-  const initiallyOpen = hasChildren ? isPathActive(item) : false;
+  const initiallyOpen = React.useMemo(() => {
+    return hasChildren ? isPathActive(item, currentPathname) : false;
+  }, [hasChildren, item, currentPathname]);
+
   const [open, setOpen] = useState<boolean>(initiallyOpen);
 
-  const linkPath = item.pattern || (item.segment ? (item.segment.startsWith('/') ? item.segment : `/${item.segment}`) : "#"); // Fallback to '#' if no path
+  const linkPath = React.useMemo(() => {
+    return (
+      item.pattern ||
+      (item.segment
+        ? item.segment.startsWith("/")
+          ? item.segment
+          : `/${item.segment}`
+        : "#")
+    );
+  }, [item.pattern, item.segment]);
 
-  const itemIsActive = !hasChildren && isPathActive(item); // Only leaf nodes show direct active state visually
+  const itemIsActive = React.useMemo(() => {
+    return !hasChildren && isPathActive(item, currentPathname);
+  }, [hasChildren, item, currentPathname]);
 
-  const handleClick = () => {
+  const handleClick = React.useCallback(() => {
     if (hasChildren) {
       setOpen(!open);
     }
     // Navigation happens via NavLink for leaf nodes
-  };
-
-  const navLinkStyle: React.CSSProperties = {};
+  }, [hasChildren, open]);
 
   return (
     <>
@@ -111,7 +97,6 @@ const NavItem: React.FC<{
               },
             }}
             onClick={handleClick}
-            style={navLinkStyle}
           >
             {item.icon && (
               <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>

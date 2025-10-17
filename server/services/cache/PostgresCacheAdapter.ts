@@ -111,7 +111,7 @@ export class PostgresCacheAdapter implements ICacheService {
     commands: Array<{ command: string; args: (string | number)[] }>,
   ): Promise<unknown[]> {
     try {
-      return await db.transaction(async (tx) => {
+      return await db.transaction(async () => {
         const results: unknown[] = [];
 
         for (const cmd of commands) {

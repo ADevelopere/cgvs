@@ -33,21 +33,29 @@ export const useTemplateVariableService = () => {
       input: Graphql.CreateTemplateTextVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateTextVariable | null> => {
       try {
-        const result = await apollo.createTemplateTextVariableMutation({ input });
+        const result = await apollo.createTemplateTextVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableAddedSuccessfully || "Variable added successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableAddedSuccessfully || "Variable added successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.createTemplateTextVariable;
         }
 
         logger.error("Error creating text variable:", result.errors);
-        notifications.show(strings.variableAddFailed || "Failed to add variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableAddFailed || "Failed to add variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -80,21 +88,30 @@ export const useTemplateVariableService = () => {
       input: Graphql.UpdateTemplateTextVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateTextVariable | null> => {
       try {
-        const result = await apollo.updateTemplateTextVariableMutation({ input });
+        const result = await apollo.updateTemplateTextVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableUpdatedSuccessfully || "Variable updated successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableUpdatedSuccessfully ||
+              "Variable updated successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.updateTemplateTextVariable;
         }
 
         logger.error("Error updating text variable:", result.errors);
-        notifications.show(strings.variableUpdateFailed || "Failed to update variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableUpdateFailed || "Failed to update variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -129,21 +146,29 @@ export const useTemplateVariableService = () => {
       input: Graphql.CreateTemplateNumberVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateNumberVariable | null> => {
       try {
-        const result = await apollo.createTemplateNumberVariableMutation({ input });
+        const result = await apollo.createTemplateNumberVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableAddedSuccessfully || "Variable added successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableAddedSuccessfully || "Variable added successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.createTemplateNumberVariable;
         }
 
         logger.error("Error creating number variable:", result.errors);
-        notifications.show(strings.variableAddFailed || "Failed to add variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableAddFailed || "Failed to add variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -176,21 +201,30 @@ export const useTemplateVariableService = () => {
       input: Graphql.UpdateTemplateNumberVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateNumberVariable | null> => {
       try {
-        const result = await apollo.updateTemplateNumberVariableMutation({ input });
+        const result = await apollo.updateTemplateNumberVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableUpdatedSuccessfully || "Variable updated successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableUpdatedSuccessfully ||
+              "Variable updated successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.updateTemplateNumberVariable;
         }
 
         logger.error("Error updating number variable:", result.errors);
-        notifications.show(strings.variableUpdateFailed || "Failed to update variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableUpdateFailed || "Failed to update variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -225,21 +259,29 @@ export const useTemplateVariableService = () => {
       input: Graphql.CreateTemplateDateVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateDateVariable | null> => {
       try {
-        const result = await apollo.createTemplateDateVariableMutation({ input });
+        const result = await apollo.createTemplateDateVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableAddedSuccessfully || "Variable added successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableAddedSuccessfully || "Variable added successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.createTemplateDateVariable;
         }
 
         logger.error("Error creating date variable:", result.errors);
-        notifications.show(strings.variableAddFailed || "Failed to add variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableAddFailed || "Failed to add variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -272,21 +314,30 @@ export const useTemplateVariableService = () => {
       input: Graphql.UpdateTemplateDateVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateDateVariable | null> => {
       try {
-        const result = await apollo.updateTemplateDateVariableMutation({ input });
+        const result = await apollo.updateTemplateDateVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableUpdatedSuccessfully || "Variable updated successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableUpdatedSuccessfully ||
+              "Variable updated successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.updateTemplateDateVariable;
         }
 
         logger.error("Error updating date variable:", result.errors);
-        notifications.show(strings.variableUpdateFailed || "Failed to update variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableUpdateFailed || "Failed to update variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -321,21 +372,29 @@ export const useTemplateVariableService = () => {
       input: Graphql.CreateTemplateSelectVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateSelectVariable | null> => {
       try {
-        const result = await apollo.createTemplateSelectVariableMutation({ input });
+        const result = await apollo.createTemplateSelectVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableAddedSuccessfully || "Variable added successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableAddedSuccessfully || "Variable added successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.createTemplateSelectVariable;
         }
 
         logger.error("Error creating select variable:", result.errors);
-        notifications.show(strings.variableAddFailed || "Failed to add variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableAddFailed || "Failed to add variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -368,21 +427,30 @@ export const useTemplateVariableService = () => {
       input: Graphql.UpdateTemplateSelectVariableMutationVariables["input"],
     ): Promise<Graphql.TemplateSelectVariable | null> => {
       try {
-        const result = await apollo.updateTemplateSelectVariableMutation({ input });
+        const result = await apollo.updateTemplateSelectVariableMutation({
+          input,
+        });
 
         if (result.data) {
-          notifications.show(strings.variableUpdatedSuccessfully || "Variable updated successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableUpdatedSuccessfully ||
+              "Variable updated successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return result.data.updateTemplateSelectVariable;
         }
 
         logger.error("Error updating select variable:", result.errors);
-        notifications.show(strings.variableUpdateFailed || "Failed to update variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableUpdateFailed || "Failed to update variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return null;
       } catch (error) {
         const gqlError = error as {
@@ -418,18 +486,25 @@ export const useTemplateVariableService = () => {
         const result = await apollo.deleteTemplateVariableMutation({ id });
 
         if (result.data) {
-          notifications.show(strings.variableDeletedSuccessfully || "Variable deleted successfully", {
-            severity: "success",
-            autoHideDuration: 3000,
-          });
+          notifications.show(
+            strings.variableDeletedSuccessfully ||
+              "Variable deleted successfully",
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            },
+          );
           return true;
         }
 
         logger.error("Error deleting variable:", result.errors);
-        notifications.show(strings.variableDeleteFailed || "Failed to delete variable", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
+        notifications.show(
+          strings.variableDeleteFailed || "Failed to delete variable",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          },
+        );
         return false;
       } catch (error) {
         const gqlError = error as {
@@ -483,4 +558,3 @@ export const useTemplateVariableService = () => {
     ],
   );
 };
-

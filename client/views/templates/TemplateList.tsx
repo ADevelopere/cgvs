@@ -9,7 +9,7 @@ import {
   Drawer,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
+import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { useAppTranslation } from "@/client/locale";
 import TemplateListContent from "./TemplateListContent";
 import SplitPane from "@/client/components/splitPane/SplitPane";
