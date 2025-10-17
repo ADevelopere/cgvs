@@ -1,42 +1,25 @@
 "use client";
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
-import { useStorageGraphQL } from "../../graphql/apollo/storage.apollo";
+import { useCallback } from "react";
+import { useStorageApolloQueries, useStorageApolloMutations } from "./storage.operations";
+import { useStorageDataStore } from "../stores/useStorageDataStore";
+import { useStorageUIStore } from "../stores/useStorageUIStore";
+import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  DirectoryTreeNode,
-  StorageManagementCoreContextType,
-} from "./storage.type";
+import { DirectoryTreeNode, StorageItem } from "./storage.type";
 
-const StorageManagementCoreContext = createContext<
-  StorageManagementCoreContextType | undefined
->(undefined);
-
-export const useStorageManagementCore = () => {
-  const context = useContext(StorageManagementCoreContext);
-  if (!context) {
-    throw new Error(
-      "useStorageManagementCore must be used within a StorageManagementCoreProvider",
-    );
-  }
-  return context;
-};
-
-export const StorageManagementCoreProvider: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
-  const storageGraphQL = useStorageGraphQL();
+export const useStorageDataOperations = () => {
+  const queries = useStorageApolloQueries();
+  const mutations = useStorageApolloMutations();
   const notifications = useNotifications();
   const { management: translations } = useAppTranslation("storageTranslations");
-  const [stats, setStats] = useState<Graphql.StorageStats | null>(null);
+
+  // Store actions
+  const { setItems, setPagination, setStats } = useStorageDataStore();
+  const { updateLoading, updateError } = useStorageUIStore();
+  const { setDirectoryTree, addChildToNode } = useStorageTreeStore();
 
   // Helper function to transform GraphQL DirectoryInfo to DirectoryTreeNode
   const transformDirectoryToTreeNode = useCallback(
@@ -83,7 +66,7 @@ export const StorageManagementCoreProvider: React.FC<{
           fileType: params.fileType?.toString(),
         };
 
-        const result = await storageGraphQL.listFiles({ input });
+        const result = await queries.listFiles({ input });
 
         if (!result.data?.listFiles) {
           return null;
@@ -111,13 +94,13 @@ export const StorageManagementCoreProvider: React.FC<{
         return null;
       }
     },
-    [storageGraphQL],
+    [queries],
   );
 
   const fetchDirectoryChildren = useCallback(
     async (path?: string): Promise<DirectoryTreeNode[] | null> => {
       try {
-        const result = await storageGraphQL.fetchDirectoryChildren({
+        const result = await queries.fetchDirectoryChildren({
           path: path || "",
         });
 
@@ -130,13 +113,13 @@ export const StorageManagementCoreProvider: React.FC<{
         return null;
       }
     },
-    [storageGraphQL, transformDirectoryToTreeNode],
+    [queries, transformDirectoryToTreeNode],
   );
 
   const fetchStats = useCallback(
     async (path?: string): Promise<Graphql.StorageStats | null> => {
       try {
-        const result = await storageGraphQL.getStorageStats({ path });
+        const result = await queries.getStorageStats({ path });
 
         if (!result.data?.storageStats) {
           return null;
@@ -150,18 +133,14 @@ export const StorageManagementCoreProvider: React.FC<{
         return null;
       }
     },
-    [
-      storageGraphQL,
-      showNotification,
-      translations.failedToFetchStorageStatistics,
-    ],
+    [queries, setStats, showNotification, translations.failedToFetchStorageStatistics],
   );
 
   // File Operations
   const rename = useCallback(
     async (path: string, newName: string): Promise<boolean> => {
       try {
-        const result = await storageGraphQL.renameFile({
+        const result = await mutations.renameFile({
           input: {
             currentPath: path,
             newName,
@@ -186,18 +165,13 @@ export const StorageManagementCoreProvider: React.FC<{
         return false;
       }
     },
-    [
-      storageGraphQL,
-      showNotification,
-      translations.successfullyRenamedTo,
-      translations.failedToRenameFile,
-    ],
+    [mutations, showNotification, translations.successfullyRenamedTo, translations.failedToRenameFile],
   );
 
   const remove = useCallback(
     async (paths: string[]): Promise<boolean> => {
       try {
-        const result = await storageGraphQL.deleteStorageItems({
+        const result = await mutations.deleteStorageItems({
           input: {
             paths,
             force: false, // Default to false, could be made configurable
@@ -242,7 +216,7 @@ export const StorageManagementCoreProvider: React.FC<{
       }
     },
     [
-      storageGraphQL,
+      mutations,
       showNotification,
       translations.successfullyDeleted,
       translations.item,
@@ -258,7 +232,7 @@ export const StorageManagementCoreProvider: React.FC<{
       destinationPath: string,
     ): Promise<boolean> => {
       try {
-        const result = await storageGraphQL.moveStorageItems({
+        const result = await mutations.moveStorageItems({
           input: {
             sourcePaths,
             destinationPath,
@@ -303,7 +277,7 @@ export const StorageManagementCoreProvider: React.FC<{
       }
     },
     [
-      storageGraphQL,
+      mutations,
       showNotification,
       translations.successfullyMoved,
       translations.item,
@@ -319,7 +293,7 @@ export const StorageManagementCoreProvider: React.FC<{
       destinationPath: string,
     ): Promise<boolean> => {
       try {
-        const result = await storageGraphQL.copyStorageItems({
+        const result = await mutations.copyStorageItems({
           input: {
             sourcePaths,
             destinationPath,
@@ -364,7 +338,7 @@ export const StorageManagementCoreProvider: React.FC<{
       }
     },
     [
-      storageGraphQL,
+      mutations,
       showNotification,
       translations.successfullyCopied,
       translations.item,
@@ -377,7 +351,7 @@ export const StorageManagementCoreProvider: React.FC<{
   const createFolder = useCallback(
     async (path: string, name: string): Promise<boolean> => {
       try {
-        const result = await storageGraphQL.createFolder({
+        const result = await mutations.createFolder({
           input: { path: path + "/" + name },
         });
 
@@ -400,7 +374,7 @@ export const StorageManagementCoreProvider: React.FC<{
       }
     },
     [
-      storageGraphQL,
+      mutations,
       showNotification,
       translations.successfullyCreatedFolder,
       translations.failedToCreateFolder,
@@ -417,7 +391,7 @@ export const StorageManagementCoreProvider: React.FC<{
       totalCount: number;
     } | null> => {
       try {
-        const result = await storageGraphQL.searchFiles({
+        const result = await queries.searchFiles({
           searchTerm: query,
           folder: path,
           limit: 100, // Default search limit
@@ -439,46 +413,23 @@ export const StorageManagementCoreProvider: React.FC<{
         return null;
       }
     },
-    [storageGraphQL, showNotification, translations.failedToSearchFiles],
+    [queries, showNotification, translations.failedToSearchFiles],
   );
 
-  const contextValue: StorageManagementCoreContextType = useMemo(
-    () => ({
-      // State
-      stats,
+  return {
+    // Data Fetching
+    fetchList,
+    fetchDirectoryChildren,
+    fetchStats,
 
-      // Data Fetching
-      fetchList,
-      fetchDirectoryChildren,
-      fetchStats,
+    // File Operations
+    rename,
+    remove,
+    move,
+    copy,
+    createFolder,
 
-      // File Operations
-      rename,
-      remove,
-      move,
-      copy,
-      createFolder,
-
-      // Search
-      search,
-    }),
-    [
-      stats,
-      fetchList,
-      fetchDirectoryChildren,
-      fetchStats,
-      rename,
-      remove,
-      move,
-      copy,
-      createFolder,
-      search,
-    ],
-  );
-
-  return (
-    <StorageManagementCoreContext.Provider value={contextValue}>
-      {children}
-    </StorageManagementCoreContext.Provider>
-  );
+    // Search
+    search,
+  };
 };

@@ -5,8 +5,12 @@ import {
   BaseTreeItem,
   TreeViewItemRenderer,
 } from "@/client/components/treeView/TreeView";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { DirectoryTreeNode } from "@/client/contexts/storage/storage.type";
+import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageTreeStore } from "@/client/views/storage/stores/useStorageTreeStore";
+import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
+import { useStorageTreeOperations } from "@/client/views/storage/hooks/useStorageTreeOperations";
+import { DirectoryTreeNode } from "@/client/views/storage/hooks/storage.type";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -22,17 +26,11 @@ type DirectoryTreeItemRendererProps = Pick<
 >;
 
 const StorageDirectoryTree: React.FC = () => {
-  const {
-    directoryTree,
-    params,
-    navigateTo,
-    expandDirectoryNode,
-    collapseDirectoryNode,
-    prefetchDirectoryChildren,
-    expandedNodes,
-    loading,
-    queueStates,
-  } = useStorageManagementUI();
+  const { params } = useStorageDataStore();
+  const { directoryTree, expandedNodes, queueStates } = useStorageTreeStore();
+  const { navigateTo } = useStorageNavigation();
+  const { expandDirectoryNode, collapseDirectoryNode, prefetchDirectoryChildren } = useStorageTreeOperations();
+  const { loading } = useStorageUIStore();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   const handleRetryFetchTree = useCallback(() => {

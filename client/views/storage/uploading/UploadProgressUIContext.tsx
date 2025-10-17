@@ -7,7 +7,7 @@ import React, {
     useCallback,
     useMemo,
 } from "react";
-import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
+import { useStorageUpload } from "@/client/views/storage/hooks/StorageUploadContext";
 
 export interface UploadFileDisplayInfo {
     fileKey: string;

@@ -29,7 +29,10 @@ import {
     Sort as SortIcon,
     ViewList as ListViewIcon,
 } from "@mui/icons-material";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
+import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
+import { useStorageSorting } from "@/client/views/storage/hooks/useStorageSorting";
+import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
@@ -38,7 +41,7 @@ import { StorageManagementUITranslations } from "@/client/locale/components/Stor
 import {
     StorageItem as StorageItemType,
     ViewMode,
-} from "@/client/contexts/storage/storage.type";
+} from "@/client/views/storage/hooks/storage.type";
 import { FilesListInput } from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
@@ -456,29 +459,10 @@ const GridView: React.FC<{
  * Supports both grid and list views with client-side sorting.
  */
 const StorageItemsView: React.FC = () => {
-    const {
-        searchMode,
-        viewMode,
-        setViewMode,
-        sortBy,
-        sortDirection,
-        setSortBy,
-        setSortDirection,
-        getSortedItems,
-        loading,
-        operationErrors,
-        params,
-        selectedItems,
-        focusedItem,
-        setFocusedItem,
-        toggleSelect,
-        selectRange,
-        clearSelection,
-        selectAll,
-        navigateTo,
-        lastSelectedItem,
-        refresh,
-    } = useStorageManagementUI();
+    const { searchMode, viewMode, setViewMode, loading, operationErrors, params } = useStorageUIStore();
+    const { selectedItems, focusedItem, setFocusedItem, toggleSelect, selectRange, clearSelection, selectAll, lastSelectedItem } = useStorageSelection();
+    const { getSortedItems, sortBy, sortDirection, setSortBy, setSortDirection } = useStorageSorting();
+    const { navigateTo, refresh } = useStorageNavigation();
     const { ui: translations } = useAppTranslation("storageTranslations");
     const theme = useTheme();
 

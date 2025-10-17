@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
+import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -15,7 +16,25 @@ import HistoryIcon from "@mui/icons-material/History";
 const STORAGE_SEARCH_HISTORY_KEY = "storage-search-history";
 
 const StorageSearch: React.FC = () => {
-    const { search, searchMode, exitSearchMode } = useStorageManagementUI();
+    const { searchMode, setSearchMode, setSearchResults, clearSelection, setLastSelectedItem } = useStorageUIStore();
+    const { search: searchOperation } = useStorageDataOperations();
+    
+    const search = async (term: string) => {
+        const result = await searchOperation(term, "");
+        if (result) {
+            setSearchResults(result.items);
+            setSearchMode(true);
+            clearSelection();
+            setLastSelectedItem(null);
+        }
+    };
+    
+    const exitSearchMode = () => {
+        setSearchMode(false);
+        setSearchResults([]);
+        clearSelection();
+        setLastSelectedItem(null);
+    };
     const { ui: translations } = useAppTranslation("storageTranslations");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchHistory, setSearchHistory] = useState<string[]>([]);

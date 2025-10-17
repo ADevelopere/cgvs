@@ -16,9 +16,12 @@ import {
     Refresh as RefreshIcon,
     SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { useStorageManagementCore } from "@/client/contexts/storage/StorageManagementCoreContext";
-import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
+import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
+import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
+import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
+import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
+import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/lib/logger";
 
@@ -42,10 +45,12 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
 }) => {
     const theme = useTheme();
     const { ui: translations } = useAppTranslation("storageTranslations");
-    const { pasteItems, refresh, selectAll, clipboard, params } =
-        useStorageManagementUI();
-    const { createFolder } = useStorageManagementCore();
-    const { startUpload } = useStorageUpload();
+    const { params } = useStorageDataStore();
+    const { selectAll } = useStorageSelection();
+    const { clipboard, pasteItems } = useStorageClipboard();
+    const { refresh } = useStorageNavigation();
+    const { createFolder } = useStorageDataOperations();
+    const { startUpload } = useStorageUploadOperations();
 
     const [isPasting, setIsPasting] = useState(false);
     const [isCreatingFolder, setIsCreatingFolder] = useState(false);
