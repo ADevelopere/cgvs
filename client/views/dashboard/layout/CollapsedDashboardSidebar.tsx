@@ -19,6 +19,7 @@ import {
   NavigationItem,
   NavigationPageItem,
 } from "@/client/contexts/adminLayout.types";
+import logger from "@/lib/logger";
 
 const NavItem: React.FC<{
   item: NavigationPageItem;
@@ -53,7 +54,7 @@ const NavItem: React.FC<{
     return false;
   };
 
-  const linkPath = item.pattern || (item.segment ? `/${item.segment}` : "#");
+  const linkPath = item.pattern || (item.segment ? (item.segment.startsWith('/') ? item.segment : `/${item.segment}`) : "#");
   const itemIsActive = isPathActive(item);
 
   return (
@@ -142,6 +143,13 @@ export const CollapsedDashboardSidebar: React.FC = () => {
   const { theme } = useAppTheme();
   const pathname = usePathname();
   const { navigation, slots } = useDashboardLayout();
+
+  logger.log(
+    "CollapsedDashboardSidebar",
+    JSON.stringify(
+      navigation?.map((item) => (item  as NavigationPageItem).segment),
+    ),
+  );
 
   if (slots?.collapsedSidebar) {
     return <>{slots.collapsedSidebar}</>;

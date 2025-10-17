@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import logger from "@/lib/logger";
 
 /**
  * Navigation state structure for each page
@@ -35,10 +36,12 @@ interface NavigationStateStore {
  */
 export const useNavigationStateStore = create<NavigationStateStore>()(
   persist(
-    (set, get) => ({
-      // Initial state
-      pageStates: {},
-      lastVisitedChildren: {},
+    (set, get) => {
+      logger.log('[NavigationStateStore] Store initialized');
+      return {
+        // Initial state
+        pageStates: {},
+        lastVisitedChildren: {},
 
       /**
        * Save current page's URL parameters
@@ -64,12 +67,26 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
        * @param childPath - Last visited child path (e.g., '/admin/templates/15/manage?tab=editor')
        */
       saveLastVisitedChild: (parentPath: string, childPath: string) => {
-        set((state) => ({
-          lastVisitedChildren: {
-            ...state.lastVisitedChildren,
-            [parentPath]: childPath,
-          },
-        }));
+        logger.log('[NavigationStateStore] saveLastVisitedChild called:', {
+          parentPath,
+          childPath,
+          timestamp: new Date().toISOString()
+        });
+        set((state) => {
+          const newState = {
+            lastVisitedChildren: {
+              ...state.lastVisitedChildren,
+              [parentPath]: childPath,
+            },
+          };
+          logger.log('[NavigationStateStore] saveLastVisitedChild updating state:', {
+            parentPath,
+            childPath,
+            previousChildren: state.lastVisitedChildren,
+            newChildren: newState.lastVisitedChildren
+          });
+          return newState;
+        });
       },
 
       /**
@@ -90,7 +107,17 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
        */
       restoreLastVisitedChild: (parentPath: string): string | null => {
         const state = get();
-        return state.lastVisitedChildren[parentPath] || null;
+        const result = state.lastVisitedChildren[parentPath];
+        // Return null if the value is empty string or undefined
+        const finalResult = (result && result !== "") ? result : null;
+        logger.log('[NavigationStateStore] restoreLastVisitedChild called:', {
+          parentPath,
+          result,
+          finalResult,
+          allChildren: state.lastVisitedChildren,
+          timestamp: new Date().toISOString()
+        });
+        return finalResult;
       },
 
       /**
@@ -110,12 +137,14 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
        * Useful for logout or reset scenarios
        */
       clearAllStates: () => {
+        logger.log('[NavigationStateStore] clearAllStates called');
         set({
           pageStates: {},
           lastVisitedChildren: {},
         });
       },
-    }),
+    };
+    },
     {
       name: "navigation-state-store",
       storage: createJSONStorage(() => sessionStorage),
@@ -124,6 +153,15 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
         pageStates: state.pageStates,
         lastVisitedChildren: state.lastVisitedChildren,
       }),
+      onRehydrateStorage: () => (state) => {
+        logger.log('[NavigationStateStore] Store rehydrated from sessionStorage:', {
+          state: state ? {
+            pageStatesCount: Object.keys(state.pageStates || {}).length,
+            lastVisitedChildrenCount: Object.keys(state.lastVisitedChildren || {}).length,
+            lastVisitedChildren: state.lastVisitedChildren
+          } : 'No state'
+        });
+      },
     },
   ),
 );

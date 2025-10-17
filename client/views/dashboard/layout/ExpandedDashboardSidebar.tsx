@@ -62,7 +62,7 @@ const NavItem: React.FC<{
   const initiallyOpen = hasChildren ? isPathActive(item) : false;
   const [open, setOpen] = useState<boolean>(initiallyOpen);
 
-  const linkPath = item.pattern || (item.segment ? `/${item.segment}` : "#"); // Fallback to '#' if no path
+  const linkPath = item.pattern || (item.segment ? (item.segment.startsWith('/') ? item.segment : `/${item.segment}`) : "#"); // Fallback to '#' if no path
 
   const itemIsActive = !hasChildren && isPathActive(item); // Only leaf nodes show direct active state visually
 
