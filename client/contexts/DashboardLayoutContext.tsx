@@ -80,9 +80,85 @@ export const DashboardLayoutProvider: React.FC<
     });
     logger.log('[DashboardLayoutProvider] Initial sidebar state:', sidebarState);
     
-    // Use initialNavigation directly - no need to modify it
-    const navigation = initialNavigation;
-    logger.log('[DashboardLayoutProvider] Using initial navigation:', navigation);
+    // Compute navigation with dynamic segments based on current path and saved state
+    const computedNavigation = useMemo(() => {
+        if (!initialNavigation) {
+            logger.log('[DashboardLayoutProvider] No initialNavigation, returning undefined');
+            return initialNavigation;
+        }
+
+        const normalizedPathname = pathname.replace(/\/$/, "");
+        logger.log('[DashboardLayoutProvider] Computing navigation:', {
+            pathname,
+            normalizedPathname,
+            navigationItemCount: initialNavigation.length
+        });
+
+        return initialNavigation.map((navItem, index) => {
+            // Skip non-page items (headers and dividers)
+            if (navItem.kind === 'header' || navItem.kind === 'divider') {
+                logger.log(`[DashboardLayoutProvider] Item ${index}: Skipping ${navItem.kind} item`);
+                return navItem;
+            }
+            
+            // If no segment property, skip (shouldn't happen for page items but be safe)
+            if (!('segment' in navItem) || !navItem.segment) {
+                logger.log(`[DashboardLayoutProvider] Item ${index}: Skipping item without segment`);
+                return navItem;
+            }
+
+            const baseSegment = navItem.segment || "";
+            const basePath = baseSegment.startsWith('/') ? baseSegment : `/${baseSegment}`;
+
+            logger.log(`[DashboardLayoutProvider] Item ${index} (${navItem.title}):`, {
+                baseSegment,
+                basePath,
+                normalizedPathname,
+                isExactMatch: normalizedPathname === basePath,
+                isChildPath: normalizedPathname.startsWith(basePath + "/")
+            });
+
+            // If we're currently on this exact parent path, use base segment (keep original)
+            if (normalizedPathname === basePath) {
+                logger.log(`[DashboardLayoutProvider] Item ${index}: On parent path, keeping original`);
+                return navItem; // Keep original segment
+            }
+
+            // If we're on a child of this path, update segment to current pathname (without leading slash for consistency)
+            if (normalizedPathname.startsWith(basePath + "/")) {
+                const newSegment = normalizedPathname.substring(1); // Remove leading slash
+                logger.log(`[DashboardLayoutProvider] Item ${index}: On child path, updating to:`, newSegment);
+                return {
+                    ...navItem,
+                    segment: newSegment,
+                };
+            }
+
+            // Otherwise, check if there's a saved child path
+            const savedChild = restoreLastVisitedChild(basePath);
+            logger.log(`[DashboardLayoutProvider] Item ${index}: Checking saved child for ${basePath}:`, savedChild);
+            
+            if (savedChild) {
+                // Remove leading slash from savedChild if it exists
+                const childSegment = savedChild.startsWith('/') ? savedChild.substring(1) : savedChild;
+                logger.log(`[DashboardLayoutProvider] Item ${index}: Using saved child:`, childSegment);
+                return {
+                    ...navItem,
+                    segment: childSegment,
+                };
+            }
+
+            // Default to base path (keep original segment)
+            logger.log(`[DashboardLayoutProvider] Item ${index}: No match, keeping original segment:`, navItem.segment);
+            return navItem; // Keep original segment
+        });
+    }, [initialNavigation, pathname, restoreLastVisitedChild]);
+
+    logger.log('[DashboardLayoutProvider] Computed navigation:', computedNavigation?.map(item => ({
+        kind: item.kind,
+        title: 'title' in item ? item.title : 'N/A',
+        segment: 'segment' in item ? item.segment : 'N/A'
+    })));
 
     const [headerHeight, setHeaderHeight] = useState<number>(0);
     const [sideBarToggleWidth, setSideBarToggleWidth] = useState<number>(0);
@@ -271,7 +347,7 @@ export const DashboardLayoutProvider: React.FC<
 
     const value = useMemo(() => {
         const contextValue = {
-            navigation,
+            navigation: computedNavigation,
             slots,
             title: titleState,
             sidebarState,
@@ -293,7 +369,7 @@ export const DashboardLayoutProvider: React.FC<
         };
         
         logger.log('[DashboardLayoutProvider] Context value memoized:', {
-            navigation: navigation?.map(item => ({
+            navigation: computedNavigation?.map(item => ({
                 kind: item.kind,
                 id: 'id' in item ? item.id : 'N/A',
                 segment: 'segment' in item ? item.segment : 'N/A',
@@ -309,7 +385,7 @@ export const DashboardLayoutProvider: React.FC<
         
         return contextValue;
     }, [
-        navigation,
+        computedNavigation,
         slots,
         titleState,
         sidebarState,
