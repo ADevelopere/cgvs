@@ -19,9 +19,9 @@ import { CalendarTranslations, useAppTranslation } from "@/client/locale";
 import { Calendar } from "@/lib/enum";
 
 export type DateScrollPickerProps = {
-    setCalendar: (calendar: Calendar) => void;
+    setCalendarAction: (calendar: Calendar) => void;
     selectedDate: moment.Moment;
-    onChange: (birthDate: moment.Moment) => void;
+    onChangeAction: (birthDate: moment.Moment) => void;
     calendar?: Calendar;
     minDate?: moment.Moment;
     maxDate?: moment.Moment;
@@ -39,10 +39,10 @@ const maxPossibleGregorianDate = moment("2075-12-31", "YYYY-MM-DD");
  * Supports both Gregorian and Hijri calendars.
  * @param {DateScrollPickerProps} props - The properties for the component.
  */
-const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
-    setCalendar,
+export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
+    setCalendarAction: setCalendar,
     selectedDate,
-    onChange,
+    onChangeAction: onChange,
     calendar = Calendar.Gregorian,
     minDate,
     maxDate,
@@ -655,5 +655,3 @@ const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
         </Box>
     );
 };
-
-export default DateScrollPicker;
