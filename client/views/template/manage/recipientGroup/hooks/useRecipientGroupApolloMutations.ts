@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useMutation } from "@apollo/client/react";
-import * as Document from "./hooks/recipientGroup.documents";
+import * as Document from "./recipientGroup.documents";
 
 /**
  * A custom React hook that provides mutation functions for managing
@@ -60,13 +59,15 @@ export const useRecipientGroupApolloMutations = () => {
             variables: { templateId },
           },
           (existing) => {
-            if (!existing?.templateRecipientGroupsByTemplateId)
-              return existing;
-            const existingIndex = existing.templateRecipientGroupsByTemplateId.findIndex(
-              (g) => g.id === updated.id,
-            );
+            if (!existing?.templateRecipientGroupsByTemplateId) return existing;
+            const existingIndex =
+              existing.templateRecipientGroupsByTemplateId.findIndex(
+                (g) => g.id === updated.id,
+              );
             if (existingIndex > -1) {
-              const newGroups = [...existing.templateRecipientGroupsByTemplateId];
+              const newGroups = [
+                ...existing.templateRecipientGroupsByTemplateId,
+              ];
               newGroups[existingIndex] = {
                 ...newGroups[existingIndex],
                 ...updated,
@@ -100,9 +101,10 @@ export const useRecipientGroupApolloMutations = () => {
           (existing) => {
             if (!existing?.templateRecipientGroupsByTemplateId) return existing;
             return {
-              templateRecipientGroupsByTemplateId: existing.templateRecipientGroupsByTemplateId.filter(
-                (g) => g.id !== deleted.id,
-              ),
+              templateRecipientGroupsByTemplateId:
+                existing.templateRecipientGroupsByTemplateId.filter(
+                  (g) => g.id !== deleted.id,
+                ),
             };
           },
         );

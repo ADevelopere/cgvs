@@ -9,7 +9,6 @@ import {
   Button,
 } from "@mui/material";
 import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
-import { useTemplateVariableDataStore } from "@/client/views/template/manage/variables/stores/useTemplateVariableDataStore";
 import { useAppTranslation } from "@/client/locale";
 import {
   isNumberVariableDifferent,
@@ -18,22 +17,23 @@ import {
 import {
   TemplateNumberVariable,
   TemplateNumberVariableCreateInput,
+  TemplateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 
 type TemplateNumberVariableFormProps = {
   editingVariableID?: number;
   onDispose: () => void;
   templateId: number;
+  variables: TemplateVariable[];
 };
 
 const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
   onDispose,
   editingVariableID,
   templateId,
+  variables,
 }) => {
-  const { variables } = useTemplateVariableDataStore();
-  const { createVariable, updateVariable } =
-    useTemplateVariableOperations(templateId);
+  const { createVariable, updateVariable } = useTemplateVariableOperations();
 
   const editingVariable: TemplateNumberVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
@@ -88,18 +88,16 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    let success = false;
-
-    if (editingVariableID) {
-      const result = await updateVariable(editingVariableID, "NUMBER", state);
-      success = !!result;
-    } else {
-      const result = await createVariable("NUMBER", state);
-      success = !!result;
-    }
-
-    if (success) {
+    try {
+      if (editingVariableID) {
+        await updateVariable("NUMBER", state);
+      } else {
+        await createVariable("NUMBER", state);
+      }
       onDispose();
+    } catch (error) {
+      // Error handling is done in the operations hook
+      console.error("Error saving variable:", error);
     }
   }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
 

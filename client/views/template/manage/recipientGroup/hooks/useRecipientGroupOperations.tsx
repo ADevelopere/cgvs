@@ -6,7 +6,7 @@ import logger from "@/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useRecipientGroupApolloMutations } from "./useRecipientGroupApolloMutations";
-import { useRecipientGroupDialogStore } from "./stores/useRecipientGroupDialogStore";
+import { useRecipientGroupDialogStore } from "../stores/useRecipientGroupDialogStore";
 
 /**
  * Template Recipient Group Service Hook

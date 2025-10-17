@@ -14,7 +14,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 

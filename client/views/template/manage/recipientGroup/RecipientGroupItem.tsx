@@ -8,7 +8,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import GroupIcon from "@mui/icons-material/Group";
 import { EditableTypography } from "@/client/components";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/lib/logger";
