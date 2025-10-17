@@ -8,7 +8,8 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-import { useTemplateVariableManagement } from "@/client/contexts";
+import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
+import { useTemplateVariableDataStore } from "@/client/views/template/manage/variables/stores/useTemplateVariableDataStore";
 import { useAppTranslation } from "@/client/locale";
 import {
   isNumberVariableDifferent,
@@ -22,31 +23,26 @@ import {
 type TemplateNumberVariableFormProps = {
   editingVariableID?: number;
   onDispose: () => void;
+  templateId: number;
 };
 
 const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
   onDispose,
   editingVariableID,
+  templateId,
 }) => {
-  // const editingVariable: TemplateNumberVariable | null = useMemo(() => {
-  //     if (!template?.variables || !editingVariableID) return null;
-
-  //     return (
-  //         template.variables.find((v) => v.id === editingVariableID) ?? null
-  //     );
-  // }, [template, editingVariableID]);
+  const { variables } = useTemplateVariableDataStore();
+  const { createVariable, updateVariable } =
+    useTemplateVariableOperations(templateId);
 
   const editingVariable: TemplateNumberVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
-    return {
-      id: editingVariableID,
-      name: "Test Variable",
-      description: "Test Description",
-    } as TemplateNumberVariable;
-  }, [editingVariableID]);
-
-  const { createTemplateNumberVariable, updateTemplateNumberVariable } =
-    useTemplateVariableManagement();
+    return (
+      (variables.find(
+        (v) => v.id === editingVariableID,
+      ) as TemplateNumberVariable) || null
+    );
+  }, [editingVariableID, variables]);
 
   const strings = useAppTranslation("templateVariableTranslations");
 
@@ -56,7 +52,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
     }
     return {
       name: "",
-      templateId: 1,
+      templateId: templateId,
       required: false,
     };
   });
@@ -95,28 +91,17 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
     let success = false;
 
     if (editingVariableID) {
-      success = await updateTemplateNumberVariable({
-        input: {
-          id: editingVariableID,
-          ...state,
-        },
-      });
+      const result = await updateVariable(editingVariableID, "NUMBER", state);
+      success = !!result;
     } else {
-      success = await createTemplateNumberVariable({
-        input: state,
-      });
+      const result = await createVariable("NUMBER", state);
+      success = !!result;
     }
 
     if (success) {
       onDispose();
     }
-  }, [
-    state,
-    editingVariableID,
-    createTemplateNumberVariable,
-    updateTemplateNumberVariable,
-    onDispose,
-  ]);
+  }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {
     if (!editingVariableID) return true;

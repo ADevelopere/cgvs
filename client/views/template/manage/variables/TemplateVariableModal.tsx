@@ -22,15 +22,19 @@ import { TemplateVariableType } from "@/client/graphql/generated/gql/graphql";
 interface TemplateVariableModalProps {
     open: boolean;
     onClose: () => void;
-    editingVariableID?: number;
+    editingVariableId?: number | null;
     type: TemplateVariableType;
+    templateId: number;
+    onSave?: (data: any) => Promise<void>;
 }
 
 const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
     open,
     onClose,
-    editingVariableID,
+    editingVariableId,
     type,
+    templateId,
+    onSave,
 }) => {
     const strings = useAppTranslation("templateVariableTranslations");
 
@@ -59,11 +63,11 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
 
     const modalTitle = useMemo(
         () =>
-            `${editingVariableID ? strings.editVariable : strings.createVariable} ${
+            `${editingVariableId ? strings.editVariable : strings.createVariable} ${
                 typeToLabelMap[type]
             }`,
         [
-            editingVariableID,
+            editingVariableId,
             strings.createVariable,
             strings.editVariable,
             type,
@@ -109,26 +113,30 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     {type === "TEXT" && (
                         <TextTemplateVariableForm
-                            editingVariableID={editingVariableID}
+                            editingVariableID={editingVariableId}
                             onDispose={onClose}
+                            templateId={templateId}
                         />
                     )}
                     {type === "NUMBER" && (
                         <NumberTemplateVariableForm
-                            editingVariableID={editingVariableID}
+                            editingVariableID={editingVariableId}
                             onDispose={onClose}
+                            templateId={templateId}
                         />
                     )}
                     {type === "SELECT" && (
                         <SelectTemplateVariableForm
-                            editingVariableID={editingVariableID}
+                            editingVariableID={editingVariableId}
                             onDispose={onClose}
+                            templateId={templateId}
                         />
                     )}
                     {type === "DATE" && (
                         <DateTemplateVariableForm
-                            editingVariableID={editingVariableID}
+                            editingVariableID={editingVariableId}
                             onDispose={onClose}
+                            templateId={templateId}
                         />
                     )}
                 </LocalizationProvider>

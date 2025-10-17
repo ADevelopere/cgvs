@@ -13,33 +13,22 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
+import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
 const GroupSettingsDialog: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const {
-        settingsDialogOpen,
-        closeSettingsDialog,
-        updateGroup,
-        loading,
-        selectedGroupId,
-    } = useRecipientGroupManagement();
-
-    // const selectedGroup = useMemo(() => {
-    //     if (!selectedGroupId || !template?.recipientGroups) return null;
-    //     return template.recipientGroups.find((g) => g.id === selectedGroupId);
-    // }, [selectedGroupId, template]);
+    const { settingsDialogOpen, closeSettingsDialog, selectedGroupId } = useRecipientGroupDialogs();
+    const { groups } = useRecipientGroupDataStore();
+    const { updateGroup, loading } = useRecipientGroupOperations(0); // templateId not needed for update
 
     const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
         if (!selectedGroupId) return null;
-        return {
-            id: selectedGroupId,
-            name: "Test Group",
-            studentCount: 0,
-        } as TemplateRecipientGroup;
-    }, [selectedGroupId]);
+        return groups.find((g) => g.id === selectedGroupId) || null;
+    }, [selectedGroupId, groups]);
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

@@ -3,12 +3,10 @@
 import React from "react";
 import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {
-    RecipientGroupManagementProvider,
-    useRecipientGroupManagement,
-} from "@/client/contexts/recipientGroup";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
+import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import EmptyGroupsState from "../recipient/EmptyGroupsState";
 import RecipientGroupList from "./RecipientGroupList";
 import CreateGroupDialog from "./CreateGroupDialog";
@@ -22,10 +20,10 @@ interface RecipientGroupTabContentProps {
 
 const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({ template }) => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const { openCreateDialog } = useRecipientGroupManagement();
+    const operations = useRecipientGroupOperations(template.id);
+    const dialogs = useRecipientGroupDialogs();
 
-    const hasGroups =
-        template?.recipientGroups && template.recipientGroups.length > 0;
+    const hasGroups = operations.groups && operations.groups.length > 0;
 
     return (
         <Box
@@ -45,7 +43,7 @@ const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({ tem
                     <Fab
                         color="primary"
                         aria-label="add"
-                        onClick={openCreateDialog}
+                        onClick={dialogs.openCreateDialog}
                         sx={{
                             position: "fixed",
                             bottom: 32,
@@ -75,11 +73,8 @@ const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({ template }) => {
         return null;
     }
 
-    return (
-        <RecipientGroupManagementProvider templateId={template.id}>
-            <RecipientGroupTabContent template={template} />
-        </RecipientGroupManagementProvider>
-    );
+    // No provider needed, hooks access stores directly
+    return <RecipientGroupTabContent template={template} />;
 };
 
 export default RecipientGroupTab;

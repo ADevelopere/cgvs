@@ -3,22 +3,18 @@
 import React from "react";
 import { Box } from "@mui/material";
 import RecipientGroupItem from "./RecipientGroupItem";
-import { Template } from "@/client/graphql/generated/gql/graphql";
+import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
 
 const RecipientGroupList: React.FC = () => {
-    const template: Template = {
-        id: 1,
-        name: "Test Template",
-        recipientGroups: [],
-    } as Template;
+    const { groups } = useRecipientGroupDataStore();
 
-    if (!template?.recipientGroups || template.recipientGroups.length === 0) {
+    if (!groups || groups.length === 0) {
         return null;
     }
 
     return (
         <Box sx={{ width: "100%" }}>
-            {template.recipientGroups.map((group) => (
+            {groups.map((group) => (
                 <RecipientGroupItem key={group.id} group={group} />
             ))}
         </Box>
