@@ -334,10 +334,14 @@ export const useStudentOperations = () => {
    */
   const setSearchFilter = useCallback(
     (filterClause: FilterClause | null) => {
+      logger.info("🔍 setSearchFilter called with:", filterClause);
       if (!filterClause) {
-        store.clearAllFilters();
+        // Only clear the search filter (name column), not all filters
+        logger.info("🔍 Clearing name filter only");
+        store.clearFilter("name");
       } else {
         // This replaces all other filters, which is the desired behavior for the search bar.
+        logger.info("🔍 Setting search filter:", filterClause);
         store.setFilters({ [filterClause.columnId]: filterClause });
       }
       // Sync filters to query parameters
@@ -377,6 +381,7 @@ export const useStudentOperations = () => {
     store.clearAllFilters();
     store.setQueryParams({
       filterArgs: {},
+      // Only reset pagination, preserve orderBy and other query params
       paginationArgs: {
         first: 100,
         page: 1,

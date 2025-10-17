@@ -50,6 +50,9 @@ type TableProviderProps = {
     rowsPerPageOptions?: number[];
     initialPageSize?: number;
 
+    // Sorting
+    initialOrderBy?: { column: string; order: "ASC" | "DESC" }[];
+
     // Custom footer content
     footerStartContent?: ReactNode;
     footerEndContent?: ReactNode;
@@ -68,6 +71,7 @@ export const TableProvider = ({
     onRowsPerPageChange,
     rowsPerPageOptions = [10, 25, 50, 100, 200],
     initialPageSize = 50,
+    initialOrderBy,
     footerStartContent,
     footerEndContent,
 }: TableProviderProps) => {
@@ -103,7 +107,7 @@ export const TableProvider = ({
         <TableContext.Provider value={value}>
             <TableRowsProvider {...rowsProps}>
                 <TableColumnsProvider {...columnProps}>
-                    <TableDataProvider {...dataProps}>
+                    <TableDataProvider {...dataProps} initialOrderBy={initialOrderBy}>
                         {children}
                     </TableDataProvider>
                 </TableColumnsProvider>

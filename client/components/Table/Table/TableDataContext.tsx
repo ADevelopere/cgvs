@@ -97,6 +97,7 @@ export type TableDataProviderProps = {
   onSort?: (orderByClause: OrderByClause[]) => void;
   children: React.ReactNode;
   filters?: Record<string, FilterClause<unknown, unknown> | null>;
+  initialOrderBy?: OrderByClause[];
 };
 
 export const TableDataProvider = ({
@@ -104,10 +105,11 @@ export const TableDataProvider = ({
   onSort,
   children,
   filters = {},
+  initialOrderBy = [],
 }: TableDataProviderProps) => {
   const { columns } = useTableContext();
 
-  const [orderByClause, setOrderByClause] = useState<OrderByClause[]>([]);
+  const [orderByClause, setOrderByClause] = useState<OrderByClause[]>(initialOrderBy);
   const [tempFilterValues, setTempFilterValues] = useState<
     Record<string, string>
   >({});
@@ -120,7 +122,14 @@ export const TableDataProvider = ({
   const onSortRef = useRef(onSort);
   onSortRef.current = onSort;
 
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
+    // Skip calling onSort on initial mount to avoid resetting the parent's state
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     onSortRef.current?.(orderByClause);
   }, [orderByClause]);
 

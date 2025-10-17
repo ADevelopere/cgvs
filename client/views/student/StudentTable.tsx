@@ -170,6 +170,11 @@ const StudentTable: React.FC = () => {
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
         // initialPageSize={100}
+        // Sorting props
+        initialOrderBy={queryParams.orderBy?.map(clause => ({
+          column: clause.column.toLowerCase(),
+          order: clause.order,
+        }))}
       >
       <Paper
         sx={{
