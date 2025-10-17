@@ -2,13 +2,16 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import { useRecipientManagement } from "@/client/contexts/recipient";
+import { useRecipientStore } from "./stores/useRecipientStore";
 import RecipientGroupSelector from "./RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
 import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
 
 const AddStudentsToGroupTab: React.FC = () => {
- const { selectedGroupId, invalidGroupId } = useRecipientManagement();
+ const { selectedGroupId } = useRecipientStore();
+ 
+ // No invalidGroupId in the new store - this was specific to the old context
+ const invalidGroupId = null;
 
  return (
   <Box

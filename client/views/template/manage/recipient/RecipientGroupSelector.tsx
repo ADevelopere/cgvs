@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
-import { useRecipientManagement } from "@/client/contexts/recipient";
+import { useRecipientStore } from "./stores/useRecipientStore";
 import { useAppTranslation } from "@/client/locale";
 import {
   TemplateRecipientGroup,
@@ -11,7 +11,7 @@ import {
 
 const RecipientGroupSelector: React.FC = () => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { selectedGroupId, setSelectedGroupId } = useRecipientManagement();
+  const { selectedGroupId, setSelectedGroupId } = useRecipientStore();
 
   const template: Template = React.useMemo(() => {
     return {

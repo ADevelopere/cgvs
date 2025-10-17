@@ -145,3 +145,6 @@ export const deleteRecipientsMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+// Import studentsNotInRecipientGroupQueryDocument
+export { studentsNotInRecipientGroupQueryDocument } from "@/client/views/student/hook/student.documents";
