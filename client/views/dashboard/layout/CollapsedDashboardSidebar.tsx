@@ -26,6 +26,7 @@ const NavItem: React.FC<{
 }> = ({ item }) => {
   const { theme } = useAppTheme();
   const currentPathname = usePathname();
+  const { restoreLastVisitedChild } = useDashboardLayout();
 
   // Simple isPathActive function
   const isPathActive = (navItem: NavigationPageItem): boolean => {
@@ -54,7 +55,51 @@ const NavItem: React.FC<{
     return false;
   };
 
-  const linkPath = item.pattern || (item.segment ? (item.segment.startsWith('/') ? item.segment : `/${item.segment}`) : "#");
+  // Compute the link path dynamically
+  const getLinkPath = (): string => {
+    // Get the base segment
+    const baseSegment = item.segment || "";
+    const basePath = baseSegment.startsWith('/') ? baseSegment : `/${baseSegment}`;
+    
+    // If we're currently on this exact parent path, just use the base path
+    const normalizedPathname = currentPathname.replace(/\/$/, "");
+    if (normalizedPathname === basePath) {
+      logger.log('[NavItem] Currently on parent path, using base:', {
+        basePath,
+        currentPathname: normalizedPathname
+      });
+      return basePath;
+    }
+    
+    // If we're on a child of this path, use current pathname
+    if (normalizedPathname.startsWith(basePath + "/")) {
+      logger.log('[NavItem] Currently on child path, using current:', {
+        currentPathname: normalizedPathname,
+        basePath
+      });
+      return normalizedPathname;
+    }
+    
+    // Otherwise, check if there's a saved child path
+    const savedChild = restoreLastVisitedChild(basePath);
+    if (savedChild) {
+      logger.log('[NavItem] Not on this path, using saved child:', {
+        savedChild,
+        basePath,
+        currentPathname: normalizedPathname
+      });
+      return savedChild;
+    }
+    
+    // Default to base path
+    logger.log('[NavItem] No saved child, using base:', {
+      basePath,
+      currentPathname: normalizedPathname
+    });
+    return basePath;
+  };
+
+  const linkPath = item.pattern || getLinkPath();
   const itemIsActive = isPathActive(item);
 
   return (

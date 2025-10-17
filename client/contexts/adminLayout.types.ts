@@ -82,4 +82,6 @@ export type DashboardLayoutContextProps = {
     setSideBarToggleWidth: (width: number) => void;
     sideBarWidth: number;
     setSideBarWidth: (width: number) => void;
+    // navigation state
+    restoreLastVisitedChild: (parentPath: string) => string | null;
 };
