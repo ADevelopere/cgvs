@@ -13,10 +13,10 @@ import { Gender } from "@/lib/enum";
  * @property {React.Dispatch<React.SetStateAction<boolean>>} setError - Function to update the error state.
  */
 export type GenderSelectorProps = {
-    gender: Gender;
-    setGender: (gender: Gender) => void;
-    error: boolean;
-    setError: React.Dispatch<React.SetStateAction<boolean>>;
+  gender: Gender;
+  setGender: (gender: Gender) => void;
+  error: boolean;
+  setError: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 /**
@@ -27,76 +27,72 @@ export type GenderSelectorProps = {
  * @param {GenderSelectorProps} props - The props for the component.
  * @returns {JSX.Element} The rendered GenderSelector component.
  */
-const GenderSelector: React.FC<GenderSelectorProps> = ({
-    gender,
-    setGender,
-    error,
-    setError,
+export const GenderSelector: React.FC<GenderSelectorProps> = ({
+  gender,
+  setGender,
+  error,
+  setError,
 }) => {
-    const strings = useAppTranslation("genderTranslations");
-    return (
-        <Box
-            sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 1,
-                width: "100%",
-                flexWrap: "wrap",
-                minWidth: 0,
-            }}
+  const strings = useAppTranslation("genderTranslations");
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 1,
+        width: "100%",
+        flexWrap: "wrap",
+        minWidth: 0,
+      }}
+    >
+      {/* title */}
+      <Typography
+        color={error ? "error" : "default"}
+        sx={{
+          overflow: "show",
+          textOverflow: "ellipsis",
+          display: "-webkit-box",
+          WebkitLineClamp: 1,
+          WebkitBoxOrient: "vertical",
+        }}
+        variant={"subtitle1"}
+      >
+        {strings.title}
+      </Typography>
+      {/* buttons */}
+      <ButtonGroup
+        color={error ? "error" : "primary"}
+        disableElevation
+        variant="outlined"
+        aria-label="gender selection button group"
+        sx={{
+          width: "70%",
+        }}
+      >
+        {/* male button */}
+        <Button
+          onClick={() => {
+            setGender(Gender.MALE);
+            setError(false);
+          }}
+          variant={gender === Gender.MALE ? "contained" : "outlined"}
+          sx={{ width: "50%", minWidth: 0 }}
         >
-            {/* title */}
-            <Typography
-                color={error ? "error" : "default"}
-                sx={{
-                    overflow: "show",
-                    textOverflow: "ellipsis",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 1,
-                    WebkitBoxOrient: "vertical",
-                }}
-                variant={"subtitle1"}
-            >
-                {strings.title}
-            </Typography>
-            {/* buttons */}
-            <ButtonGroup
-                color={error ? "error" : "primary"}
-                disableElevation
-                variant="outlined"
-                aria-label="gender selection button group"
-                sx={{
-                    width: "70%",
-                }}
-            >
-                {/* male button */}
-                <Button
-                    onClick={() => {
-                        setGender(Gender.MALE);
-                        setError(false);
-                    }}
-                    variant={gender === Gender.MALE ? "contained" : "outlined"}
-                    sx={{ width: "50%", minWidth: 0 }}
-                >
-                    {strings.male}
-                </Button>
-                {/* female button */}
-                <Button
-                    onClick={() => {
-                        setGender(Gender.FEMALE);
-                        setError(false);
-                    }}
-                    variant={
-                        gender === Gender.FEMALE ? "contained" : "outlined"
-                    }
-                    sx={{ width: "50%", minWidth: 0 }}
-                >
-                    {strings.female}
-                </Button>
-            </ButtonGroup>
-        </Box>
-    );
+          {strings.male}
+        </Button>
+        {/* female button */}
+        <Button
+          onClick={() => {
+            setGender(Gender.FEMALE);
+            setError(false);
+          }}
+          variant={gender === Gender.FEMALE ? "contained" : "outlined"}
+          sx={{ width: "50%", minWidth: 0 }}
+        >
+          {strings.female}
+        </Button>
+      </ButtonGroup>
+    </Box>
+  );
 };
-
-export default GenderSelector;

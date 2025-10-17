@@ -2,7 +2,9 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 
-const EmptyStateIllustration: React.FC<{ message: string }> = ({ message }) => {
+export const EmptyStateIllustration: React.FC<{ message: string }> = ({
+  message,
+}) => {
   return (
     <Box
       sx={{
@@ -22,5 +24,3 @@ const EmptyStateIllustration: React.FC<{ message: string }> = ({ message }) => {
     </Box>
   );
 };
-
-export default EmptyStateIllustration;

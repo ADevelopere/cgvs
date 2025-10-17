@@ -67,7 +67,7 @@ const Template: StoryFn<EditableTypographyStoryProps> = (args) => {
             minRows: args.multiline ? 3 : 1,
           }}
           value={value}
-          onSave={setValue}
+          onSaveAction={setValue}
           doubleClickToEdit={args.doubleClickToEdit}
           startEditing={args.startEditing}
         />
