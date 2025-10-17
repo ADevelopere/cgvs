@@ -9,12 +9,12 @@ import {
 } from "@/client/contexts/recipientGroup";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
-import EmptyGroupsState from "./EmptyGroupsState";
+import EmptyGroupsState from "../recipient/EmptyGroupsState";
 import RecipientGroupList from "./RecipientGroupList";
 import CreateGroupDialog from "./CreateGroupDialog";
 import GroupInfoDialog from "./GroupInfoDialog";
 import GroupSettingsDialog from "./GroupSettingsDialog";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import DeleteConfirmationDialog from "../recipient/DeleteConfirmationDialog";
 
 interface RecipientGroupTabContentProps {
     template: Template;

@@ -9,7 +9,7 @@ import {
     useState,
 } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStudentGraphQL } from "../../graphql/apollo/student.apollo";
+import { useStudentGraphQL } from "../../../graphql/apollo/student.apollo";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { isAbortError } from "@/client/utils/errorUtils";
 

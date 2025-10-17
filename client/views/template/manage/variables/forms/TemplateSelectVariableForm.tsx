@@ -11,7 +11,7 @@ import {
     SelectChangeEvent,
     Button,
 } from "@mui/material";
-import { useTemplateVariableManagement } from "@/client/contexts/templateVariable/TemplateVariableManagementContext";
+import { useTemplateVariableManagement } from "@/client/views/template/manage/variables/TemplateVariableManagementContext";
 import TagInput from "@/client/components/input/TagInput";
 import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
