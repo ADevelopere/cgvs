@@ -19,18 +19,16 @@ import {
 } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
 import Link from "next/link";
+import { useQuery } from "@apollo/client/react";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import Table from "@/client/components/Table/Table/Table";
-import { useRecipientManagement } from "@/client/contexts/recipient";
+import { useRecipientStore } from "./stores/useRecipientStore";
+import { useRecipientOperations } from "./hooks/useRecipientOperations";
+import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
 import { BaseColumn } from "@/client/types/table.type";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  FilterClause,
-  TextFilterOperation,
-  DateFilterOperation,
-} from "@/client/types/filters";
-import * as StudentUtils from "@/client/views/student/hook/utils/filter";
+import { FilterClause } from "@/client/types/filters";
 import logger from "@/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import { useTableRowsContext } from "@/client/components/Table/Table/TableRowsContext";
@@ -125,15 +123,26 @@ const FooterStartContent: React.FC = () => {
 const FooterEndContent: React.FC = () => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { selectedRowIds } = useTableRowsContext();
-  const { addStudentsToGroup, loading } = useRecipientManagement();
+  const { addStudentsToGroup } = useRecipientOperations();
+  const { studentsNotInGroupQueryParams } = useRecipientStore();
   const [openAddDialog, setOpenAddDialog] = useState(false);
+
+  // Get loading state from the query
+  const { loading } = useQuery(studentsNotInRecipientGroupQueryDocument, {
+    variables: {
+      ...studentsNotInGroupQueryParams,
+      recipientGroupId: studentsNotInGroupQueryParams.recipientGroupId,
+    },
+    skip: !studentsNotInGroupQueryParams.recipientGroupId,
+    fetchPolicy: "cache-first",
+  });
 
   const handleAddClick = () => {
     setOpenAddDialog(true);
   };
 
   const handleAddConfirm = async () => {
-    const success = await addStudentsToGroup(selectedRowIds);
+    const success = await addStudentsToGroup(selectedRowIds.map(Number));
     if (success) {
       setOpenAddDialog(false);
       // Table selection will be automatically cleared after data refresh
@@ -203,20 +212,27 @@ const FooterEndContent: React.FC = () => {
 };
 
 const StudentsNotInGroupTable: React.FC = () => {
-  const {
-    students,
-    pageInfo,
-    loading,
-    onPageChange,
-    onRowsPerPageChange,
-    setFilters,
-    setSort,
-    selectedGroupId,
-  } = useRecipientManagement();
+  const store = useRecipientStore();
+  const operations = useRecipientOperations();
 
-  const [activeFilters, setActiveFilters] = useState<
-    Record<string, FilterClause | null>
-  >({});
+  // Get query variables from store
+  const { studentsNotInGroupQueryParams, selectedGroupId, filters } = store;
+
+  // Fetch students directly with useQuery - Apollo handles refetch automatically
+  const { data, loading } = useQuery(studentsNotInRecipientGroupQueryDocument, {
+    variables: {
+      ...studentsNotInGroupQueryParams,
+      recipientGroupId: studentsNotInGroupQueryParams.recipientGroupId,
+    },
+    skip: !selectedGroupId, // Don't query if no group selected
+    fetchPolicy: "cache-first",
+  });
+
+  const students = data?.studentsNotInRecipientGroup?.data ?? [];
+  const pageInfo = data?.studentsNotInRecipientGroup?.pageInfo;
+
+  const [activeFilters, setActiveFilters] =
+    useState<Record<string, FilterClause | null>>(filters);
   const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
     {},
   );
@@ -332,46 +348,16 @@ const StudentsNotInGroupTable: React.FC = () => {
         ...prev,
         [columnId]: filterClause,
       }));
+      operations.setColumnFilter(columnId, filterClause);
     },
-    [],
+    [operations],
   );
 
   // Convert active filters to StudentFilterArgs
   useEffect(() => {
     if (!selectedGroupId) return;
-
-    const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
-
-    Object.values(activeFilters).forEach((filterClause) => {
-      if (!filterClause) return;
-
-      const columnId = filterClause.columnId as keyof Graphql.Student;
-      const column = baseColumns.find((col) => col.id === columnId);
-      if (!column) return;
-
-      let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
-      if (column.type === "text") {
-        mappedFilter = StudentUtils.mapTextFilter(
-          columnId,
-          filterClause.operation as TextFilterOperation,
-          filterClause.value as string,
-        );
-      } else if (column.type === "date") {
-        mappedFilter = StudentUtils.mapDateFilter(
-          columnId,
-          filterClause.operation as DateFilterOperation,
-          filterClause.value as { from?: Date; to?: Date },
-        );
-      }
-      Object.assign(newFilterArgs, mappedFilter);
-    });
-
-    setFilters(
-      Object.keys(newFilterArgs).length > 0
-        ? (newFilterArgs as Graphql.StudentFilterArgs)
-        : null,
-    );
-  }, [activeFilters, selectedGroupId, setFilters, baseColumns]);
+    operations.syncFiltersToQueryParams(activeFilters, baseColumns);
+  }, [activeFilters, selectedGroupId, operations, baseColumns]);
 
   // Handle sort changes
   const handleSort = useCallback(
@@ -399,9 +385,9 @@ const StudentsNotInGroupTable: React.FC = () => {
         });
       });
 
-      setSort(graphqlOrderBy.length > 0 ? graphqlOrderBy : null);
+      operations.setSort(graphqlOrderBy.length > 0 ? graphqlOrderBy : null);
     },
-    [selectedGroupId, setSort],
+    [selectedGroupId, operations],
   );
 
   return (
@@ -422,9 +408,9 @@ const StudentsNotInGroupTable: React.FC = () => {
         rowSelectionEnabled: true,
         rowIdKey: "id",
       }}
-      pageInfo={pageInfo || undefined}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
+      pageInfo={pageInfo}
+      onPageChange={operations.onPageChange}
+      onRowsPerPageChange={operations.onRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
       footerStartContent={<FooterStartContent />}
       footerEndContent={<FooterEndContent />}
