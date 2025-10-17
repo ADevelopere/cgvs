@@ -4,12 +4,12 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AddIcon from "@mui/icons-material/Add";
-import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import { useRecipientGroupDialogs } from "../recipientGroup/hooks/useRecipientGroupDialogs";
 import { useAppTranslation } from "@/client/locale";
 
 const EmptyGroupsState: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const { openCreateDialog } = useRecipientGroupManagement();
+    const { openCreateDialog } = useRecipientGroupDialogs();
 
     return (
         <Box

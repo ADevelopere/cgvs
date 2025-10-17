@@ -10,32 +10,22 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
-import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import { useRecipientGroupDialogs } from "../recipientGroup/hooks/useRecipientGroupDialogs";
+import { useRecipientGroupOperations } from "../recipientGroup/hooks/useRecipientGroupOperations";
+import { useRecipientGroupDataStore } from "../recipientGroup/stores/useRecipientGroupDataStore";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
-const DeleteConfirmationDialog: React.FC<{
-  templateId: number;
-}> = ({ templateId }) => {
+const DeleteConfirmationDialog: React.FC = () => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const {
-    deleteDialogOpen,
-    closeDeleteDialog,
-    deleteGroup,
-    loading,
-    selectedGroupId,
-  } = useRecipientGroupManagement();
+  const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } = useRecipientGroupDialogs();
+  const { groups } = useRecipientGroupDataStore();
+  const { deleteGroup, loading } = useRecipientGroupOperations(0); // templateId not needed for delete
 
-  // todo, fix this
   const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
-    // if (!selectedGroupId || !template?.recipientGroups) return null;
-    // return template.recipientGroups.find((g) => g.id === selectedGroupId);
-    return {
-      id: selectedGroupId,
-      name: "Test Group",
-      studentCount: 0,
-    } as TemplateRecipientGroup;
-  }, [selectedGroupId]);
+    if (!selectedGroupId) return null;
+    return groups.find((g) => g.id === selectedGroupId) || null;
+  }, [selectedGroupId, groups]);
 
   const handleDelete = useCallback(async () => {
     if (!selectedGroupId) return;
