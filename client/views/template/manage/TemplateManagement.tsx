@@ -14,28 +14,32 @@ import ManagementHeader from "./ManagementHeader";
 // import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
 // import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useTemplateUIStore, TemplateManagementTabType } from "../hooks";
+import {
+  TemplateManagementTabType,
+  useTemplateUIStore,
+} from "./useTemplateManagementStore";
 
 interface TemplateManagementProps {
   template: Graphql.Template;
 }
 
-const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => {
+const TemplateManagement: React.FC<TemplateManagementProps> = ({
+  template,
+}) => {
   const theme = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { activeTab, setActiveTab, setTabError } = useTemplateUIStore();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
- useEffect(() => {
-  const handleScroll = () => {
-   setShowScrollTop(Boolean(window.scrollY > 300));
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(Boolean(window.scrollY > 300));
+    };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
- }, []);
-
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
@@ -46,7 +50,6 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
       const params = new URLSearchParams(searchParams.toString());
       params.set("tab", newValue);
 
-
       router.push(`?${params.toString()}`);
     } catch {
       setTabError(newValue, {
@@ -55,12 +58,12 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
     }
   };
 
- const scrollToTop = () => {
-  window.scrollTo({
-   top: 0,
-   behavior: "smooth",
-  });
- };
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <Box id="template-management" sx={{ width: "100%" }}>
@@ -117,27 +120,27 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
         </Box>
       </TabContext>
 
-   {/* Scroll to top button */}
-   <Fade in={showScrollTop}>
-    <IconButton
-     onClick={scrollToTop}
-     sx={{
-      position: "fixed",
-      bottom: 16,
-      right: 16,
-      bgcolor: "primary.main",
-      color: "white",
-      "&:hover": {
-       bgcolor: "primary.dark",
-      },
-      zIndex: theme.zIndex.speedDial,
-     }}
-    >
-     <KeyboardArrowUpIcon />
-    </IconButton>
-   </Fade>
-  </Box>
- );
+      {/* Scroll to top button */}
+      <Fade in={showScrollTop}>
+        <IconButton
+          onClick={scrollToTop}
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+            bgcolor: "primary.main",
+            color: "white",
+            "&:hover": {
+              bgcolor: "primary.dark",
+            },
+            zIndex: theme.zIndex.speedDial,
+          }}
+        >
+          <KeyboardArrowUpIcon />
+        </IconButton>
+      </Fade>
+    </Box>
+  );
 };
 
 export default TemplateManagement;

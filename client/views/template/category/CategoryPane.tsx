@@ -18,11 +18,9 @@ import { ReactiveCategoryTree, EditableTypography } from "@/client/components";
 import CategoryEditDialog from "./CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
 
-import {
-  CategoryDocuments,
-  useTemplateCategoryStore,
-  useTemplateCategoryOperations,
-} from "@/client/views/template/hooks";
+import { CategoryDocuments } from "@/client/views/template/hooks";
+import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
+import { useTemplateCategoryOperations } from "./useTemplateCategoryOperations";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const { theme } = useAppTheme();

@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import { EmptyStateIllustration } from "@/client/components";
-import { useTemplateListStore } from "../hooks/useTemplateListStore";
+import { useTemplateListStore } from "./useTemplateListStore";
 import { templatesByCategoryIdQueryDocument } from "../hooks/template.documents";
 
 type TemplateListProps = {

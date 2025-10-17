@@ -34,14 +34,11 @@ import {
   TemplateUpdateInput,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
-import {
-  useTemplateCategoryOperations,
-  TemplateDocuments,
-  CategoryDocuments,
-  useTemplateCategoryStore,
-} from "../hooks";
+import { TemplateDocuments, CategoryDocuments } from "../hooks";
 import { TemplateUtils } from "../utils";
 import TemplateEditDialog from "./TemplateEditDialog";
+import { useTemplateCategoryOperations } from "./useTemplateCategoryOperations";
+import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const {
@@ -51,18 +48,22 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     manageTemplate,
   } = useTemplateCategoryOperations();
 
-  const { setIsAddingTemplate, setOnNewTemplateCancel, currentCategory } =
-    useTemplateCategoryStore();
-
-  const store = useTemplateCategoryStore();
+  const {
+    currentCategory,
+    setIsAddingTemplate,
+    setOnNewTemplateCancel,
+    getTemplateQueryVariables,
+    setTemplateQueryVariables,
+    selectCategory,
+  } = useTemplateCategoryStore();
 
   // Get query variables from store for the current category
   const queryVariables = React.useMemo(
     () =>
       currentCategory
-        ? store.getTemplateQueryVariables(currentCategory.id)
+        ? getTemplateQueryVariables(currentCategory.id)
         : undefined,
-    [currentCategory, store],
+    [currentCategory, getTemplateQueryVariables],
   );
 
   // Fetch templates for current category
@@ -239,7 +240,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     (_event: React.ChangeEvent<unknown>, page: number) => {
       if (!currentCategory) return;
       const currentVars = queryVariables || {};
-      store.setTemplateQueryVariables(currentCategory.id, {
+      setTemplateQueryVariables(currentCategory.id, {
         ...currentVars,
         paginationArgs: {
           ...currentVars.paginationArgs,
@@ -247,7 +248,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategory, queryVariables, store],
+    [currentCategory, queryVariables, setTemplateQueryVariables],
   );
 
   const handlePageSizeChange = React.useCallback(
@@ -255,7 +256,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
       if (!currentCategory) return;
       const pageSize = event.target.value as number;
       const currentVars = queryVariables || {};
-      store.setTemplateQueryVariables(currentCategory.id, {
+      setTemplateQueryVariables(currentCategory.id, {
         ...currentVars,
         paginationArgs: {
           first: pageSize,
@@ -263,7 +264,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategory, queryVariables, store],
+    [currentCategory, queryVariables, setTemplateQueryVariables],
   );
 
   return (
@@ -315,7 +316,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             }
             onChange={(_, newValue: TemplateCategoryWithParentTree | null) => {
               if (newValue) {
-                store.selectCategory(newValue);
+                selectCategory(newValue);
               }
             }}
             inputValue={categorySearchTerm}

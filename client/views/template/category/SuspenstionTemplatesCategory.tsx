@@ -14,7 +14,8 @@ import { formatDate } from "@/client/utils/dateUtils";
 import { useAppTheme } from "@/client/contexts";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { TemplateUtils } from "../utils";
-import { useTemplateCategoryOperations, TemplateDocuments } from "../hooks";
+import { TemplateDocuments } from "../hooks";
+import { useTemplateCategoryOperations } from "./useTemplateCategoryOperations";
 
 interface TemplateRow {
   id: number;
