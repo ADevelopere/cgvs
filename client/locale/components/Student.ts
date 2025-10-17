@@ -56,4 +56,8 @@ export type StudentTranslations = {
     creating: string;
     studentCreatedSuccess: string;
     studentCreateError: string;
+    studentUpdatedSuccess: string;
+    studentUpdateError: string;
+    studentDeletedSuccess: string;
+    studentDeleteError: string;
 };

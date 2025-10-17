@@ -1,15 +1,17 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, ReactNode } from 'react';
-import { TableLocale, SupportedLocale } from './tableLocale.types';
-import { defaultLocaleResources } from './defaultTableLocales';
+import React, { createContext, useContext, useMemo, ReactNode } from "react";
+import { TableLocale, SupportedLocale } from "./tableLocale.types";
+import { defaultLocaleResources } from "./defaultTableLocales";
 
 interface TableLocaleContextValue {
   locale: SupportedLocale;
   strings: TableLocale;
 }
 
-const TableLocaleContext = createContext<TableLocaleContextValue | undefined>(undefined);
+const TableLocaleContext = createContext<TableLocaleContextValue | undefined>(
+  undefined,
+);
 
 interface TableLocaleProviderProps {
   children: ReactNode;
@@ -19,24 +21,27 @@ interface TableLocaleProviderProps {
 
 export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
   children,
-  locale: activeLocale = 'ar',
+  locale: activeLocale = "ar",
   customStrings,
 }) => {
   const strings = useMemo(() => {
-    const baseStrings = defaultLocaleResources[activeLocale] || defaultLocaleResources.en;
+    const baseStrings =
+      defaultLocaleResources[activeLocale] || defaultLocaleResources.en;
 
     if (!customStrings) {
       return baseStrings;
     }
 
     const isObject = (obj: unknown): obj is Record<string, unknown> => {
-      return obj !== null && typeof obj === 'object';
+      return obj !== null && typeof obj === "object";
     };
 
     const mergeDeep = (target: unknown, source: unknown): TableLocale => {
-      const output: Record<string, unknown> = isObject(target) ? { ...target } : {};
+      const output: Record<string, unknown> = isObject(target)
+        ? { ...target }
+        : {};
       if (isObject(target) && isObject(source)) {
-        Object.keys(source).forEach(key => {
+        Object.keys(source).forEach((key) => {
           const sourceValue = source[key];
           const targetValue = target[key];
           if (isObject(sourceValue)) {
@@ -50,16 +55,19 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
           }
         });
       }
-  return output as unknown as TableLocale;
+      return output as unknown as TableLocale;
     };
 
     return mergeDeep(baseStrings, customStrings);
   }, [activeLocale, customStrings]);
 
-  const contextValue = useMemo(() => ({
-    locale: activeLocale,
-    strings,
-  }), [activeLocale, strings]);
+  const contextValue = useMemo(
+    () => ({
+      locale: activeLocale,
+      strings,
+    }),
+    [activeLocale, strings],
+  );
 
   return (
     <TableLocaleContext.Provider value={contextValue}>
@@ -72,7 +80,7 @@ export const useTableLocale = (): TableLocaleContextValue => {
   const context = useContext(TableLocaleContext);
   if (context === undefined) {
     return {
-      locale: 'en',
+      locale: "en",
       strings: defaultLocaleResources.en,
     };
   }

@@ -56,4 +56,8 @@ export const student: StudentTranslations = {
     creating: "جاري الإنشاء...",
     studentCreatedSuccess: "تم إنشاء الطالب بنجاح!",
     studentCreateError: "حدث خطأ أثناء إنشاء الطالب",
+    studentUpdatedSuccess: "تم تحديث الطالب بنجاح!",
+    studentUpdateError: "حدث خطأ أثناء تحديث الطالب",
+    studentDeletedSuccess: "تم حذف الطالب بنجاح!",
+    studentDeleteError: "حدث خطأ أثناء حذف الطالب",
 };

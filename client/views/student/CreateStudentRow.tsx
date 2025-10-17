@@ -17,10 +17,10 @@ import {
   Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
 } from "@mui/icons-material";
-import { useStudentManagement } from "@/client/views/student/hook/StudentManagementContext";
 import { TextFilterOperation } from "@/client/types/filters";
-import { useStudentTableManagement } from "@/client/views/student/hook/StudentTableManagementContext";
 import { useAppTranslation } from "@/client/locale";
+import { useStudentOperations } from "./useStudentOperations";
+import { useStudentTable } from "./useStudentTable";
 import {
   TextFieldComponent,
   DateFieldComponent,
@@ -38,7 +38,6 @@ import {
 } from "./components/CreateStudentRow.styles";
 import { HammerIcon } from "lucide-react";
 import { StudentCreateInput } from "@/client/graphql/generated/gql/graphql";
-import { useStudentFilter } from "./hook/StudentFilterContext";
 
 const MemoizedTextField = React.memo(TextFieldComponent);
 const MemoizedDateField = React.memo(DateFieldComponent);
@@ -51,9 +50,8 @@ const initialStudentState: StudentCreateInput = {
 };
 
 const CreateStudentRow = () => {
-  const { createStudent } = useStudentManagement();
-  const { setSearchFilter } = useStudentFilter();
-  const { columns } = useStudentTableManagement();
+  const { createStudent, setSearchFilter } = useStudentOperations();
+  const { columns } = useStudentTable();
   const strings = useAppTranslation("studentTranslations");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
