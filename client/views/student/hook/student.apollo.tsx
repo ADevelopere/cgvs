@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import * as Document from "@/client/graphql/sharedDocuments";
+import * as Document from "./student.documents";
 import { ApolloClient } from "@apollo/client";
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 

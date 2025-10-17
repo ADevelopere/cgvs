@@ -8,7 +8,7 @@ import validator from "validator";
 import {
   isValidCountryCode,
   isValidPhoneNumber,
-} from "@/client/utils/student/validators";
+} from "@/client/views/student/validators";
 import { useAppTranslation } from "@/client/locale";
 import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 
