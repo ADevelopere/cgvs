@@ -124,15 +124,15 @@ export const useStudentStore = create<StudentStoreState>()(
       // Custom merge to handle state restoration
       merge: (persistedState, currentState) => {
         const typedPersistedState = persistedState as Partial<State>;
-        
+
         logger.info(
           "🔄 Merging student store state:",
           JSON.stringify(persistedState, null, 2),
           JSON.stringify(currentState, null, 2),
         );
-        
+
         // Deep merge the queryParams to preserve nested objects
-        const mergedQueryParams = typedPersistedState?.queryParams 
+        const mergedQueryParams = typedPersistedState?.queryParams
           ? {
               ...currentState.queryParams,
               ...typedPersistedState.queryParams,
@@ -142,9 +142,13 @@ export const useStudentStore = create<StudentStoreState>()(
                 ...typedPersistedState.queryParams.paginationArgs,
               },
               // Preserve orderBy from persisted state
-              orderBy: typedPersistedState.queryParams.orderBy || currentState.queryParams.orderBy,
+              orderBy:
+                typedPersistedState.queryParams.orderBy ||
+                currentState.queryParams.orderBy,
               // Preserve filterArgs from persisted state
-              filterArgs: typedPersistedState.queryParams.filterArgs || currentState.queryParams.filterArgs,
+              filterArgs:
+                typedPersistedState.queryParams.filterArgs ||
+                currentState.queryParams.filterArgs,
             }
           : currentState.queryParams;
 
@@ -152,10 +156,15 @@ export const useStudentStore = create<StudentStoreState>()(
           ...currentState,
           queryParams: mergedQueryParams,
           filters: typedPersistedState?.filters || currentState.filters,
-          selectedStudents: typedPersistedState?.selectedStudents || currentState.selectedStudents,
+          selectedStudents:
+            typedPersistedState?.selectedStudents ||
+            currentState.selectedStudents,
         };
-        
-        logger.info("✅ Final merged state:", JSON.stringify(mergedState, null, 2));
+
+        logger.info(
+          "✅ Final merged state:",
+          JSON.stringify(mergedState, null, 2),
+        );
         return mergedState;
       },
     },
