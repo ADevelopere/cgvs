@@ -10,9 +10,9 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 // import EditorTab from "./editor/EditorTab";
 import BasicInfoTab from "./BasicInfoTab";
 import ManagementHeader from "./ManagementHeader";
-import RecipientGroupTab from "./recipient/RecipientGroupTab";
-import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
-import TemplateVariableManagement from "./variables/TemplateVariableManagement";
+// import RecipientGroupTab from "./recipient/RecipientGroupTab";
+// import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
+// import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useTemplateUIStore, TemplateManagementTabType } from "../hooks";
 
@@ -86,13 +86,13 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({ template }) => 
             <BasicInfoTab template={template} />
           </TabPanel>
           <TabPanel value="variables">
-            <TemplateVariableManagement template={template} />
+            {/* <TemplateVariableManagement template={template} /> */}
           </TabPanel>
           <TabPanel value="recipients">
-            <RecipientGroupTab template={template} />
+            {/* <RecipientGroupTab template={template} /> */}
           </TabPanel>
           <TabPanel value="recipientsManagement">
-            <RecipientsManagementTab />
+            {/* <RecipientsManagementTab /> */}
           </TabPanel>
           {/* <TabPanel value="editor">
                                     <EditorTab />

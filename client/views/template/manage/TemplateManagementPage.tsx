@@ -6,8 +6,6 @@ import { Box, CircularProgress, Typography, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useQuery } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { TemplateVariableManagementProvider } from "../../../contexts/templateVariable";
-import { RecipientManagementProvider } from "../../../contexts/recipient";
 import TemplateManagement from "./TemplateManagement";
 import { templateQueryDocument } from "../hooks/template.documents";
 
@@ -18,7 +16,6 @@ import { templateQueryDocument } from "../hooks/template.documents";
 export const TemplateManagementPage: React.FC = () => {
   const pathParams = useParams<{ id: string }>();
   const id = pathParams?.id;
-
 
   // Apollo query for template data
   const { data: templateQuery, loading: apolloLoading } = useQuery(
@@ -94,13 +91,7 @@ export const TemplateManagementPage: React.FC = () => {
   }
 
   // Wrap providers and pass template to TemplateManagement
-  return (
-    <TemplateVariableManagementProvider>
-      <RecipientManagementProvider templateId={template.id}>
-        <TemplateManagement template={template} />
-      </RecipientManagementProvider>
-    </TemplateVariableManagementProvider>
-  );
+  return <TemplateManagement template={template} />;
 };
 
 export default TemplateManagementPage;
