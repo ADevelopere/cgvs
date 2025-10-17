@@ -15,13 +15,13 @@ export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
  * @returns {boolean} - True if the name is valid, false otherwise.
  */
 export const isArabicNameValid = (
-    name: string,
-    isRequired: boolean,
+  name: string,
+  isRequired: boolean,
 ): boolean => {
-    if (name.trim().length === 0) {
-        return !isRequired;
-    }
-    return ARABIC_REGEX.test(name);
+  if (name.trim().length === 0) {
+    return !isRequired;
+  }
+  return ARABIC_REGEX.test(name);
 };
 
 // Function to validate date
@@ -33,29 +33,26 @@ export const isArabicNameValid = (
  * @returns {boolean} - True if the date is valid, false otherwise.
  */
 export const isValidDate = (
-    date: moment.Moment,
-    maxDate: moment.Moment,
-    calendar: Calendar,
+  date: moment.Moment,
+  maxDate: moment.Moment,
+  calendar: Calendar,
 ): boolean => {
-    maxDate.add(6, "months");
+  maxDate.add(6, "months");
 
-    if (calendar === Calendar.Hijri) {
-        const hijriDate = moment(date.format("iYYYY/iM/iD"), "iYYYY/iM/iD");
-        const maxHijriDate = moment(
-            maxDate.format("iYYYY/iM/iD"),
-            "iYYYY/iM/iD",
-        );
-        return hijriDate.isValid() && hijriDate.isSameOrBefore(maxHijriDate);
-    }
+  if (calendar === Calendar.Hijri) {
+    const hijriDate = moment(date.format("iYYYY/iM/iD"), "iYYYY/iM/iD");
+    const maxHijriDate = moment(maxDate.format("iYYYY/iM/iD"), "iYYYY/iM/iD");
+    return hijriDate.isValid() && hijriDate.isSameOrBefore(maxHijriDate);
+  }
 
-    return date.isValid() && date.isSameOrBefore(maxDate);
+  return date.isValid() && date.isSameOrBefore(maxDate);
 };
 
 export const isValidCountryCode = (countryCode: string): boolean => {
-    if(!countryCode) return false;
-    return countries.some(
-        (country) => country.code.toLowerCase() === countryCode.toLowerCase(),
-    );
+  if (!countryCode) return false;
+  return countries.some(
+    (country) => country.code.toLowerCase() === countryCode.toLowerCase(),
+  );
 };
 
 // Function to validate country
@@ -65,10 +62,7 @@ export const isValidCountryCode = (countryCode: string): boolean => {
  * @returns {boolean} - True if the country is valid, false otherwise.
  */
 export const isValidCountry = (country: CountryType): boolean => {
-    return country?.code
-        ?
-          country.code !== "IL" as CountryCode
-        : false;
+  return country?.code ? country.code !== ("IL" as CountryCode) : false;
 };
 
 // Function to validate phone number
@@ -78,6 +72,6 @@ export const isValidCountry = (country: CountryType): boolean => {
  * @returns {boolean} - True if the phone number is valid, false otherwise.
  */
 export const isValidPhoneNumber = (phone: string): boolean => {
-    if (!phone) return false;
-    return matchIsValidTel(phone, { excludedCountries: ["IL"] });
+  if (!phone) return false;
+  return matchIsValidTel(phone, { excludedCountries: ["IL"] });
 };
