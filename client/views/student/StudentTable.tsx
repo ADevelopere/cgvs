@@ -5,7 +5,7 @@ import { Box, Paper, Stack, Typography } from "@mui/material";
 import { People } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
 import { useStudentManagement } from "@/client/contexts/student/StudentManagementContext";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
+import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import Table from "@/client/components/Table/Table/Table";

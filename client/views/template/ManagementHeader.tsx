@@ -12,7 +12,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
 import { TemplateManagementTabType } from "@/client/views/template/useTemplateUIStore";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
+import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import { useAppTranslation } from "@/client/locale";
 import { useRouter } from "next/navigation";

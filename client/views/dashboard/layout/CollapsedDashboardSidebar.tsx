@@ -14,12 +14,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { useDashboardLayout } from "@/client/contexts/DashboardLayoutContext";
-import {
-  NavigationItem,
-  NavigationPageItem,
-} from "@/client/contexts/adminLayout.types";
-import logger from "@/lib/logger";
+import { useDashboardLayout } from "./DashboardLayoutContext";
+import { NavigationItem, NavigationPageItem } from "./types";
+import { isPathActive } from "./utilts";
 
 const NavItem: React.FC<{
   item: NavigationPageItem;
@@ -27,36 +24,23 @@ const NavItem: React.FC<{
   const { theme } = useAppTheme();
   const currentPathname = usePathname();
 
-  // Simple isPathActive function
-  const isPathActive = (navItem: NavigationPageItem): boolean => {
-    const normalizedPathname = currentPathname.replace(/\/$/, "");
-    const itemPath =
-      navItem.pattern || (navItem.segment ? `/${navItem.segment}` : "");
-
-    if (itemPath) {
-      // Direct match
-      if (normalizedPathname === itemPath) {
-        return true;
-      }
-      // Check if current path starts with the item path (for nested routes)
-      if (normalizedPathname.startsWith(itemPath + "/")) {
-        return true;
-      }
-    }
-
-    // Check children recursively
-    if (navItem.children) {
-      return navItem.children.some(
-        (child) => child.kind === "page" && isPathActive(child),
-      );
-    }
-
-    return false;
-  };
-
   // Use segment directly from navigation (already computed in context)
-  const linkPath = item.pattern || (item.segment ? (item.segment.startsWith('/') ? item.segment : `/${item.segment}`) : "#");
-  const itemIsActive = isPathActive(item);
+  const linkPath = React.useMemo(
+    () =>
+      item.pattern ||
+      item.pattern ||
+      (item.segment
+        ? item.segment.startsWith("/")
+          ? item.segment
+          : `/${item.segment}`
+        : "#"),
+    [item],
+  );
+
+  const itemIsActive = React.useMemo(
+    () => isPathActive(item, currentPathname),
+    [item, currentPathname],
+  );
 
   return (
     <ListItem disablePadding sx={{ width: "100%" }}>
@@ -144,13 +128,6 @@ export const CollapsedDashboardSidebar: React.FC = () => {
   const { theme } = useAppTheme();
   const pathname = usePathname();
   const { navigation, slots } = useDashboardLayout();
-
-  logger.log(
-    "CollapsedDashboardSidebar",
-    JSON.stringify(
-      navigation?.map((item) => (item  as NavigationPageItem).segment),
-    ),
-  );
 
   if (slots?.collapsedSidebar) {
     return <>{slots.collapsedSidebar}</>;
