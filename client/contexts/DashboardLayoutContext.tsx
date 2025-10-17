@@ -19,7 +19,6 @@ import {
     SlotName,
     DashboardLayoutContextProps,
     Title,
-    Navigation,
 } from "./adminLayout.types";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useNavigationStateStore } from "./navigation/useNavigationStateStore";
@@ -49,13 +48,15 @@ export const DashboardLayoutProvider: React.FC<
     // Navigation state store
     const { 
         savePageState, 
-        saveLastVisitedChild, 
+        saveLastVisitedChild,
+        clearLastVisitedChild,
         restoreLastVisitedChild 
     } = useNavigationStateStore();
     
     logger.log('[DashboardLayoutProvider] Navigation state store methods:', {
         savePageState: typeof savePageState,
         saveLastVisitedChild: typeof saveLastVisitedChild,
+        clearLastVisitedChild: typeof clearLastVisitedChild,
         restoreLastVisitedChild: typeof restoreLastVisitedChild
     });
     
@@ -79,11 +80,9 @@ export const DashboardLayoutProvider: React.FC<
     });
     logger.log('[DashboardLayoutProvider] Initial sidebar state:', sidebarState);
     
-    // Dynamic navigation that gets updated based on saved state
-    const [navigation, setNavigation] = useState<Navigation | undefined>(
-        initialNavigation,
-    );
-    logger.log('[DashboardLayoutProvider] Initial navigation state:', navigation);
+    // Use initialNavigation directly - no need to modify it
+    const navigation = initialNavigation;
+    logger.log('[DashboardLayoutProvider] Using initial navigation:', navigation);
 
     const [headerHeight, setHeaderHeight] = useState<number>(0);
     const [sideBarToggleWidth, setSideBarToggleWidth] = useState<number>(0);
@@ -144,177 +143,12 @@ export const DashboardLayoutProvider: React.FC<
                 clearingChild: true
             });
             
-            // Clear the saved child by setting it to null or removing it
-            // We'll use a special marker to indicate "no saved child"
-            saveLastVisitedChild(parentPath, "");
+            // Clear the saved child completely
+            clearLastVisitedChild(parentPath);
         } else {
             logger.log('[DashboardLayoutProvider] EFFECT 1: No sub-pages detected, skipping last visited child save');
         }
-    }, [pathname, searchParams, savePageState, saveLastVisitedChild]);
-    
-    // ============================================================================
-    // EFFECT 2: Update navigation items with saved state
-    // ============================================================================
-    useEffect(() => {
-        logger.log('[DashboardLayoutProvider] EFFECT 2: Updating navigation items - triggered by:', {
-            initialNavigation: initialNavigation?.map(item => ({
-                kind: item.kind,
-                id: 'id' in item ? item.id : 'N/A',
-                segment: 'segment' in item ? item.segment : 'N/A'
-            })),
-            timestamp: new Date().toISOString()
-        });
-        
-        if (!initialNavigation) {
-            logger.log('[DashboardLayoutProvider] EFFECT 2: No initial navigation, skipping update');
-            return;
-        }
-        
-        logger.log('[DashboardLayoutProvider] EFFECT 2: Processing navigation items:', {
-            itemCount: initialNavigation.length,
-            items: initialNavigation.map(item => ({
-                kind: item.kind,
-                id: 'id' in item ? item.id : 'N/A',
-                segment: 'segment' in item ? item.segment : 'N/A',
-                title: 'title' in item ? item.title : 'N/A'
-            }))
-        });
-        
-        const updatedNavigation = initialNavigation.map((navItem, index) => {
-            logger.log(`[DashboardLayoutProvider] EFFECT 2: Processing item ${index}:`, {
-                kind: navItem.kind,
-                id: 'id' in navItem ? navItem.id : 'N/A',
-                segment: 'segment' in navItem ? navItem.segment : 'N/A'
-            });
-            
-            if (navItem.kind === 'header' || navItem.kind === 'divider') {
-                logger.log(`[DashboardLayoutProvider] EFFECT 2: Skipping ${navItem.kind} item`);
-                return navItem;
-            }
-            
-            // Only process page items that have segments
-            if ('segment' in navItem && navItem.segment) {
-                // Convert segment to full path format (add leading slash if missing)
-                const fullPath = navItem.segment.startsWith('/') ? navItem.segment : `/${navItem.segment}`;
-                logger.log(`[DashboardLayoutProvider] EFFECT 2: Checking for saved child for segment: ${navItem.segment} -> ${fullPath}`);
-                
-                // Get the saved last visited child for this navigation item
-                const savedChild = restoreLastVisitedChild(fullPath);
-                
-                logger.log(`[DashboardLayoutProvider] EFFECT 2: Restored child for ${navItem.segment}:`, {
-                    savedChild,
-                    hasSavedChild: !!savedChild && savedChild !== ""
-                });
-                
-                if (savedChild && savedChild !== "") {
-                    // Update the segment to point to the last visited child
-                    const updatedItem = {
-                        ...navItem,
-                        segment: savedChild,
-                    };
-                    
-                    logger.log(`[DashboardLayoutProvider] EFFECT 2: Updated item segment:`, {
-                        original: navItem.segment,
-                        updated: savedChild,
-                        itemId: navItem.id
-                    });
-                    
-                    return updatedItem;
-                }
-            }
-            
-            logger.log(`[DashboardLayoutProvider] EFFECT 2: No changes for item ${index}`);
-            return navItem;
-        });
-        
-        logger.log('[DashboardLayoutProvider] EFFECT 2: Setting updated navigation:', {
-            updatedNavigation: updatedNavigation.map(item => ({
-                kind: item.kind,
-                id: 'id' in item ? item.id : 'N/A',
-                segment: 'segment' in item ? item.segment : 'N/A',
-                title: 'title' in item ? item.title : 'N/A'
-            }))
-        });
-        
-        setNavigation(updatedNavigation);
-    }, [initialNavigation, restoreLastVisitedChild]);
-
-    // ============================================================================
-    // EFFECT 3: Update navigation when saved state changes (after EFFECT 1 saves)
-    // ============================================================================
-    useEffect(() => {
-        logger.log('[DashboardLayoutProvider] EFFECT 3: Checking for navigation updates - triggered by pathname change:', {
-            pathname,
-            timestamp: new Date().toISOString()
-        });
-        
-        if (!initialNavigation) {
-            logger.log('[DashboardLayoutProvider] EFFECT 3: No initial navigation, skipping update');
-            return;
-        }
-        
-        // Only update navigation if we're on a parent path (e.g., /admin/templates)
-        const segments = pathname.split('/').filter(Boolean);
-        if (segments.length !== 2) {
-            logger.log('[DashboardLayoutProvider] EFFECT 3: Not on parent path, skipping navigation update:', {
-                segmentCount: segments.length,
-                pathname
-            });
-            return;
-        }
-        
-        logger.log('[DashboardLayoutProvider] EFFECT 3: On parent path, checking for saved children');
-        
-        const updatedNavigation = initialNavigation.map((navItem, index) => {
-            if (navItem.kind === 'header' || navItem.kind === 'divider') {
-                return navItem;
-            }
-            
-            if ('segment' in navItem && navItem.segment) {
-                // Convert segment to full path format (add leading slash if missing)
-                const fullPath = navItem.segment.startsWith('/') ? navItem.segment : `/${navItem.segment}`;
-                const savedChild = restoreLastVisitedChild(fullPath);
-                logger.log(`[DashboardLayoutProvider] EFFECT 3: Checking saved child for ${navItem.segment} -> ${fullPath}:`, {
-                    savedChild,
-                    hasSavedChild: !!savedChild && savedChild !== ""
-                });
-                
-                if (savedChild && savedChild !== "") {
-                    logger.log(`[DashboardLayoutProvider] EFFECT 3: Updating navigation item ${index}:`, {
-                        original: navItem.segment,
-                        updated: savedChild
-                    });
-                    return {
-                        ...navItem,
-                        segment: savedChild,
-                    };
-                }
-            }
-            
-            return navItem;
-        });
-        
-        // Only update if there are changes
-        const hasChanges = updatedNavigation.some((item, index) => {
-            if (initialNavigation[index] && 'segment' in item && 'segment' in initialNavigation[index]) {
-                return item.segment !== initialNavigation[index].segment;
-            }
-            return false;
-        });
-        
-        if (hasChanges) {
-            logger.log('[DashboardLayoutProvider] EFFECT 3: Navigation has changes, updating:', {
-                updatedNavigation: updatedNavigation.map(item => ({
-                    kind: item.kind,
-                    id: 'id' in item ? item.id : 'N/A',
-                    segment: 'segment' in item ? item.segment : 'N/A'
-                }))
-            });
-            setNavigation(updatedNavigation);
-        } else {
-            logger.log('[DashboardLayoutProvider] EFFECT 3: No navigation changes needed');
-        }
-    }, [pathname, initialNavigation, restoreLastVisitedChild]);
+    }, [pathname, searchParams, savePageState, saveLastVisitedChild, clearLastVisitedChild]);
 
     const toggleSidebar = useCallback(() => {
         logger.log('[DashboardLayoutProvider] toggleSidebar called');
@@ -454,6 +288,8 @@ export const DashboardLayoutProvider: React.FC<
             setSideBarToggleWidth,
             sideBarWidth,
             setSideBarWidth,
+            // Navigation state store methods
+            restoreLastVisitedChild,
         };
         
         logger.log('[DashboardLayoutProvider] Context value memoized:', {
@@ -489,6 +325,7 @@ export const DashboardLayoutProvider: React.FC<
         setSideBarToggleWidth,
         sideBarWidth,
         setSideBarWidth,
+        restoreLastVisitedChild,
     ]);
 
     logger.log('[DashboardLayoutProvider] Rendering provider with context value:', {

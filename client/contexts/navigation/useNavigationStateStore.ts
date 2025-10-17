@@ -27,6 +27,7 @@ interface NavigationStateStore {
   restorePageState: (pathname: string) => string | null;
   restoreLastVisitedChild: (parentPath: string) => string | null;
   clearPageState: (pathname: string) => void;
+  clearLastVisitedChild: (parentPath: string) => void;
   clearAllStates: () => void;
 }
 
@@ -129,6 +130,27 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
           const newPageStates = { ...state.pageStates };
           delete newPageStates[pathname];
           return { pageStates: newPageStates };
+        });
+      },
+
+      /**
+       * Clear the last visited child for a parent path
+       * @param parentPath - Parent path to clear
+       */
+      clearLastVisitedChild: (parentPath: string) => {
+        logger.log('[NavigationStateStore] clearLastVisitedChild called:', {
+          parentPath,
+          timestamp: new Date().toISOString()
+        });
+        set((state) => {
+          const newLastVisitedChildren = { ...state.lastVisitedChildren };
+          delete newLastVisitedChildren[parentPath];
+          logger.log('[NavigationStateStore] clearLastVisitedChild updating state:', {
+            parentPath,
+            previousChildren: state.lastVisitedChildren,
+            newChildren: newLastVisitedChildren
+          });
+          return { lastVisitedChildren: newLastVisitedChildren };
         });
       },
 
