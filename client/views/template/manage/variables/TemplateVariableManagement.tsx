@@ -20,7 +20,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
-import { useTemplateVariableManagement } from "@/client/views/template/manage/variables/hooks/TemplateVariableManagementContext";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import TemplateVariableModal from "./TemplateVariableModal";
 import { useAppTranslation } from "@/client/locale";
@@ -29,15 +28,17 @@ import {
   TemplateVariable,
   TemplateVariableType,
 } from "@/client/graphql/generated/gql/graphql";
+import { useTemplateVariableOperations, useTemplateVariableModal } from "./hooks";
 
 interface ContentProps {
   onOpenModal: (variable: TemplateVariable) => void;
   strings: TemplateVariableTranslation;
-  template: Template;
+  variables: TemplateVariable[];
+  loading: boolean;
+  onDelete: (id: number) => Promise<boolean>;
 }
 
-const Content: FC<ContentProps> = ({ onOpenModal, strings, template }) => {
-  const { deleteTemplateVariable } = useTemplateVariableManagement();
+const Content: FC<ContentProps> = ({ onOpenModal, strings, variables, loading, onDelete }) => {
   const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
     useState(false);
   const [variableToDelete, setVariableToDelete] = useState<number | null>(null);
@@ -71,13 +72,13 @@ const Content: FC<ContentProps> = ({ onOpenModal, strings, template }) => {
 
   const handleConfirmDelete = useCallback(async () => {
     if (variableToDelete) {
-      await deleteTemplateVariable(variableToDelete);
+      await onDelete(variableToDelete);
       setIsDeleteConfirmationDialogOpen(false);
       setVariableToDelete(null);
     }
-  }, [variableToDelete, deleteTemplateVariable]);
+  }, [variableToDelete, onDelete]);
 
-  if (!template?.variables) {
+  if (loading) {
     return (
       <Box
         sx={{
@@ -93,7 +94,7 @@ const Content: FC<ContentProps> = ({ onOpenModal, strings, template }) => {
     );
   }
 
-  if (template.variables.length === 0) {
+  if (variables.length === 0) {
     return (
       <Box
         sx={{
@@ -123,7 +124,7 @@ const Content: FC<ContentProps> = ({ onOpenModal, strings, template }) => {
           borderRadius: 1,
         }}
       >
-        {template.variables.map((variable: TemplateVariable) => {
+        {variables.map((variable: TemplateVariable) => {
           if (!variable.type || !variable.id) return null;
           const variableId = variable.id;
           const type = variable.type;
@@ -261,30 +262,9 @@ interface TemplateVariableManagementProps {
 const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   template,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingVariableID, setEditingVariableID] = useState<
-    number | undefined
-  >(undefined);
-  const [type, setType] = useState<TemplateVariableType>("TEXT");
+  const operations = useTemplateVariableOperations(template.id);
+  const modal = useTemplateVariableModal(template.id);
   const strings = useAppTranslation("templateVariableTranslations");
-
-  const handleEdit = (variable: TemplateVariable) => {
-    if (!variable.id || !variable.type) return;
-    setEditingVariableID(variable.id);
-    setModalOpen(true);
-    setType(variable.type);
-  };
-
-  const handleCreate = (type: TemplateVariableType) => {
-    setEditingVariableID(undefined);
-    setModalOpen(true);
-    setType(type);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setEditingVariableID(undefined);
-  };
 
   return (
     <>
@@ -297,7 +277,7 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
           height: "100%",
         }}
       >
-        <Header onOpenModal={handleCreate} strings={strings} />
+        <Header onOpenModal={modal.openCreateModal} strings={strings} />
         <Box
           sx={{
             overflow: "auto",
@@ -309,18 +289,22 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
           }}
         >
           <Content
-            onOpenModal={handleEdit}
+            onOpenModal={modal.openEditModal}
             strings={strings}
-            template={template}
+            variables={operations.variables}
+            loading={operations.loading}
+            onDelete={operations.deleteVariable}
           />
         </Box>
       </Box>
 
       <TemplateVariableModal
-        open={modalOpen}
-        onClose={handleCloseModal}
-        editingVariableID={editingVariableID}
-        type={type}
+        open={modal.isOpen}
+        onClose={modal.closeModal}
+        editingVariableId={modal.editingVariableId}
+        type={modal.variableType}
+        templateId={template.id}
+        onSave={modal.handleSave}
       />
     </>
   );

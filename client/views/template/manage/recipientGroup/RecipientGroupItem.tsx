@@ -7,7 +7,8 @@ import InfoIcon from "@mui/icons-material/Info";
 import SettingsIcon from "@mui/icons-material/Settings";
 import GroupIcon from "@mui/icons-material/Group";
 import { EditableTypography } from "@/client/components";
-import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/lib/logger";
@@ -18,12 +19,8 @@ interface RecipientGroupItemProps {
 
 const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const {
-    openInfoDialog,
-    openSettingsDialog,
-    openDeleteDialog,
-    updateGroupName,
-  } = useRecipientGroupManagement();
+  const { openInfoDialog, openSettingsDialog, openDeleteDialog } = useRecipientGroupDialogs();
+  const { updateGroupName } = useRecipientGroupOperations(0); // templateId not needed for updateName
 
   const handleNameSave = useCallback(
     async (value: string) => {

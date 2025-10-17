@@ -13,17 +13,16 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
+import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
 import { useAppTranslation } from "@/client/locale";
 
-const CreateGroupDialog: React.FC<{
-    templateId: number;
-}> = ({
-    templateId,
-}) => {
+const CreateGroupDialog: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const { createDialogOpen, closeCreateDialog, createGroup, loading } =
-        useRecipientGroupManagement();
+    const { createDialogOpen, closeCreateDialog } = useRecipientGroupDialogs();
+    const { templateId } = useRecipientGroupDataStore();
+    const { createGroup, loading } = useRecipientGroupOperations(templateId || 0);
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

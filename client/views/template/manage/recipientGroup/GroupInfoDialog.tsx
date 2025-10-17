@@ -12,29 +12,21 @@ import {
     Box,
     Chip,
 } from "@mui/material";
-import { useRecipientGroupManagement } from "@/client/contexts/recipientGroup";
+import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
+import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
 import { useAppTranslation } from "@/client/locale";
 import { format } from "date-fns";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
 const GroupInfoDialog: React.FC = () => {
     const strings = useAppTranslation("recipientGroupTranslations");
-    const { infoDialogOpen, closeInfoDialog, selectedGroupId } =
-        useRecipientGroupManagement();
-
-    // const selectedGroup = useMemo(() => {
-    //     if (!selectedGroupId || !template?.recipientGroups) return null;
-    //     return template.recipientGroups.find((g) => g.id === selectedGroupId);
-    // }, [selectedGroupId, template]);
+    const { infoDialogOpen, closeInfoDialog, selectedGroupId } = useRecipientGroupDialogs();
+    const { groups } = useRecipientGroupDataStore();
 
     const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
         if (!selectedGroupId) return null;
-        return {
-            id: selectedGroupId,
-            name: "Test Group",
-            studentCount: 0,
-        } as TemplateRecipientGroup;
-    }, [selectedGroupId]);
+        return groups.find((g) => g.id === selectedGroupId) || null;
+    }, [selectedGroupId, groups]);
 
     const formatDate = (date: string | Date | null | undefined) => {
         if (!date) return "-";
