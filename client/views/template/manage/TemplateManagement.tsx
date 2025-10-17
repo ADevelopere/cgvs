@@ -95,7 +95,7 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({
             <RecipientGroupTab template={template} />
           </TabPanel>
           <TabPanel value="recipientsManagement">
-            {/* <RecipientsManagementTab templateId={template.id} /> */}
+            <RecipientsManagementTab />
           </TabPanel>
           {/* <TabPanel value="editor">
                                     <EditorTab />

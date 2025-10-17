@@ -20,6 +20,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
+import { useQuery } from "@apollo/client/react";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import TemplateVariableModal from "./TemplateVariableModal";
 import { useAppTranslation } from "@/client/locale";
@@ -28,17 +29,27 @@ import {
   TemplateVariable,
   TemplateVariableType,
 } from "@/client/graphql/generated/gql/graphql";
-import { useTemplateVariableOperations, useTemplateVariableModal } from "./hooks";
+import {
+  useTemplateVariableOperations,
+  useTemplateVariableModal,
+} from "./hooks";
+import { templateVariablesByTemplateIdQueryDocument } from "./hooks/templateVariable.documents";
 
 interface ContentProps {
   onOpenModal: (variable: TemplateVariable) => void;
   strings: TemplateVariableTranslation;
   variables: TemplateVariable[];
   loading: boolean;
-  onDelete: (id: number) => Promise<boolean>;
+  onDelete: (id: number) => Promise<void>;
 }
 
-const Content: FC<ContentProps> = ({ onOpenModal, strings, variables, loading, onDelete }) => {
+const Content: FC<ContentProps> = ({
+  onOpenModal,
+  strings,
+  variables,
+  loading,
+  onDelete,
+}) => {
   const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
     useState(false);
   const [variableToDelete, setVariableToDelete] = useState<number | null>(null);
@@ -262,9 +273,21 @@ interface TemplateVariableManagementProps {
 const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   template,
 }) => {
-  const operations = useTemplateVariableOperations(template.id);
+  const operations = useTemplateVariableOperations();
   const modal = useTemplateVariableModal(template.id);
   const strings = useAppTranslation("templateVariableTranslations");
+
+  // Direct query - Apollo auto-refetches, no manual sync
+  const { data, loading } = useQuery(
+    templateVariablesByTemplateIdQueryDocument,
+    {
+      variables: { templateId: template.id },
+      skip: !template.id,
+      fetchPolicy: "cache-first",
+    },
+  );
+
+  const variables = data?.templateVariablesByTemplateId || [];
 
   return (
     <>
@@ -291,8 +314,8 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
           <Content
             onOpenModal={modal.openEditModal}
             strings={strings}
-            variables={operations.variables}
-            loading={operations.loading}
+            variables={variables}
+            loading={loading}
             onDelete={operations.deleteVariable}
           />
         </Box>
@@ -304,6 +327,7 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
         editingVariableId={modal.editingVariableId}
         type={modal.variableType}
         templateId={template.id}
+        variables={variables}
         onSave={modal.handleSave}
       />
     </>

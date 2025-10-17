@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useQuery } from "@apollo/client/react";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
-import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import * as Document from "./hooks/recipientGroup.documents";
 import EmptyGroupsState from "../recipient/EmptyGroupsState";

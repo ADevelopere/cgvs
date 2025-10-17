@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
-import { useTemplateVariableDataStore } from "@/client/views/template/manage/variables/stores/useTemplateVariableDataStore";
 import { useAppTranslation } from "@/client/locale";
 import {
   TemplateDateVariable,
   TemplateDateVariableCreateInput,
+  TemplateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 import {
   mapToTemplateDateVariableCreateInput,
@@ -32,16 +32,16 @@ type TemplateDateVariableFormProps = {
   editingVariableID?: number;
   onDispose: () => void;
   templateId: number;
+  variables: TemplateVariable[];
 };
 
 const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
   onDispose,
   editingVariableID,
   templateId,
+  variables,
 }) => {
-  const { variables } = useTemplateVariableDataStore();
-  const { createVariable, updateVariable } =
-    useTemplateVariableOperations(templateId);
+  const { createVariable, updateVariable } = useTemplateVariableOperations();
 
   const editingVariable: TemplateDateVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
@@ -92,18 +92,16 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    let success = false;
-
-    if (editingVariableID) {
-      const result = await updateVariable(editingVariableID, "DATE", state);
-      success = !!result;
-    } else {
-      const result = await createVariable("DATE", state);
-      success = !!result;
-    }
-
-    if (success) {
+    try {
+      if (editingVariableID) {
+        await updateVariable("DATE", state);
+      } else {
+        await createVariable("DATE", state);
+      }
       onDispose();
+    } catch (error) {
+      // Error handling is done in the operations hook
+      console.error("Error saving variable:", error);
     }
   }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
 

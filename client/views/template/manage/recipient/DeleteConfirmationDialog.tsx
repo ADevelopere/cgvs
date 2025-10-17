@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useRecipientGroupDialogs } from "../recipientGroup/hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "../recipientGroup/useRecipientGroupOperations";
+import { useRecipientGroupOperations } from "../recipientGroup/hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 

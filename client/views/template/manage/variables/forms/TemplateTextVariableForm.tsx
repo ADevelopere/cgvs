@@ -9,7 +9,6 @@ import {
   Button,
 } from "@mui/material";
 import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
-import { useTemplateVariableDataStore } from "@/client/views/template/manage/variables/stores/useTemplateVariableDataStore";
 
 import { mapToTemplateTextVariableCreateInput } from "@/client/utils/templateVariable";
 import { isTextVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
@@ -17,22 +16,23 @@ import { useAppTranslation } from "@/client/locale";
 import {
   TemplateTextVariable,
   TemplateTextVariableCreateInput,
+  TemplateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 
 type TemplateTextVariableFormProps = {
   editingVariableID?: number;
   onDispose: () => void;
   templateId: number;
+  variables: TemplateVariable[];
 };
 
 const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
   onDispose,
   editingVariableID,
   templateId,
+  variables,
 }) => {
-  const { variables } = useTemplateVariableDataStore();
-  const { createVariable, updateVariable } =
-    useTemplateVariableOperations(templateId);
+  const { createVariable, updateVariable } = useTemplateVariableOperations();
 
   const editingVariable: TemplateTextVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
@@ -90,18 +90,16 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    let success = false;
-
-    if (editingVariableID) {
-      const result = await updateVariable(editingVariableID, "TEXT", state);
-      success = !!result;
-    } else {
-      const result = await createVariable("TEXT", state);
-      success = !!result;
-    }
-
-    if (success) {
+    try {
+      if (editingVariableID) {
+        await updateVariable("TEXT", state);
+      } else {
+        await createVariable("TEXT", state);
+      }
       onDispose();
+    } catch (error) {
+      // Error handling is done in the operations hook
+      console.error("Error saving variable:", error);
     }
   }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
 

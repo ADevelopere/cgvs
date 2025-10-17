@@ -12,7 +12,6 @@ import {
   Button,
 } from "@mui/material";
 import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
-import { useTemplateVariableDataStore } from "@/client/views/template/manage/variables/stores/useTemplateVariableDataStore";
 import TagInput from "@/client/components/input/TagInput";
 import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
@@ -20,22 +19,23 @@ import { useAppTranslation } from "@/client/locale";
 import {
   TemplateSelectVariable,
   TemplateSelectVariableCreateInput,
+  TemplateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 
 type TemplateSelectVariableFormProps = {
   editingVariableID?: number;
   onDispose: () => void;
   templateId: number;
+  variables: TemplateVariable[];
 };
 
 const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
   onDispose,
   editingVariableID,
   templateId,
+  variables,
 }) => {
-  const { variables } = useTemplateVariableDataStore();
-  const { createVariable, updateVariable } =
-    useTemplateVariableOperations(templateId);
+  const { createVariable, updateVariable } = useTemplateVariableOperations();
 
   const editingVariable: TemplateSelectVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
@@ -95,20 +95,30 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    let success = false;
-
-    if (editingVariableID) {
-      const result = await updateVariable(editingVariableID, "SELECT", state);
-      success = !!result;
-    } else {
-      const result = await createVariable("SELECT", state);
-      success = !!result;
-    }
-
-    if (success) {
+    try {
+      if (editingVariableID) {
+        await updateVariable("SELECT", {
+          id: editingVariableID,
+          ...state,
+        });
+      } else {
+        await createVariable("SELECT", {
+          ...state,
+          templateId: templateId,
+        });
+      }
       onDispose();
+    } catch {
+      // Error handling is done in the operations hook
     }
-  }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
+  }, [
+    editingVariableID,
+    onDispose,
+    updateVariable,
+    state,
+    createVariable,
+    templateId,
+  ]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {
     if (!editingVariableID) {

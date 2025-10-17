@@ -1,67 +1,24 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/lib/logger";
-import {
-  useTemplateVariableDataStore,
-  useTemplateVariableUIStore,
-} from "../stores";
-import {
-  useTemplateVariableApolloQueries,
-  useTemplateVariableApolloMutations,
-} from "./templateVariable.operations";
+import { useTemplateVariableUIStore } from "../stores";
+import { useTemplateVariableApolloMutations } from "./useTemplateVariableApolloMutations";
 
 /**
- * Main operations hook for template variables
- * Combines data store + Apollo queries/mutations with error handling
+ * Template Variable Operations Hook
+ * Follows TemplatePane pattern - only handles mutations and notifications
  */
-export const useTemplateVariableOperations = (templateId: number) => {
-  // Track previous templateId to avoid unnecessary updates
-  const prevTemplateIdRef = useRef<number | null>(null);
-
-  // Extract stable action references from stores
-  const setTemplateId = useTemplateVariableDataStore(
-    (state) => state.setTemplateId,
-  );
-  const setVariables = useTemplateVariableDataStore(
-    (state) => state.setVariables,
-  );
-  const setLoading = useTemplateVariableDataStore((state) => state.setLoading);
-  const setError = useTemplateVariableDataStore((state) => state.setError);
-  const storeVariables = useTemplateVariableDataStore(
-    (state) => state.variables,
-  );
-  const storeLoading = useTemplateVariableDataStore((state) => state.loading);
-  const storeError = useTemplateVariableDataStore((state) => state.error);
-
+export const useTemplateVariableOperations = () => {
+  const apollo = useTemplateVariableApolloMutations();
   const setOperationError = useTemplateVariableUIStore(
     (state) => state.setOperationError,
   );
-
-  const { variables, loading, error, refetch } =
-    useTemplateVariableApolloQueries(templateId);
-  const mutations = useTemplateVariableApolloMutations();
   const notifications = useNotifications();
   const strings = useAppTranslation("templateVariableTranslations");
-
-  // Sync query data with store
-  useEffect(() => {
-    // Only update if templateId actually changed
-    if (prevTemplateIdRef.current !== templateId) {
-      setTemplateId(templateId);
-      prevTemplateIdRef.current = templateId;
-    }
-
-    setVariables(variables);
-    setLoading(loading);
-    setError(error?.message ?? null);
-    // Zustand setters are stable and don't need to be in deps
-    // Only include data that actually changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateId, variables, loading, error]);
 
   // Create variable helper
   const createVariable = useCallback(
@@ -72,36 +29,35 @@ export const useTemplateVariableOperations = (templateId: number) => {
         | Graphql.TemplateNumberVariableCreateInput
         | Graphql.TemplateDateVariableCreateInput
         | Graphql.TemplateSelectVariableCreateInput,
-    ): Promise<Graphql.TemplateVariable | null> => {
+    ): Promise<void> => {
       try {
         setOperationError("create", null);
-        setLoading(true);
 
         let result;
         switch (type) {
           case "TEXT":
-            result = await mutations.createTextVariable({
+            result = await apollo.createTextVariableMutation({
               variables: {
                 input: input as Graphql.TemplateTextVariableCreateInput,
               },
             });
             break;
           case "NUMBER":
-            result = await mutations.createNumberVariable({
+            result = await apollo.createNumberVariableMutation({
               variables: {
                 input: input as Graphql.TemplateNumberVariableCreateInput,
               },
             });
             break;
           case "DATE":
-            result = await mutations.createDateVariable({
+            result = await apollo.createDateVariableMutation({
               variables: {
                 input: input as Graphql.TemplateDateVariableCreateInput,
               },
             });
             break;
           case "SELECT":
-            result = await mutations.createSelectVariable({
+            result = await apollo.createSelectVariableMutation({
               variables: {
                 input: input as Graphql.TemplateSelectVariableCreateInput,
               },
@@ -112,27 +68,20 @@ export const useTemplateVariableOperations = (templateId: number) => {
         }
 
         if (result.data) {
-          const createdVariable = result.data[
-            `createTemplate${type}Variable` as keyof typeof result.data
-          ] as Graphql.TemplateVariable;
-
           notifications.show(strings.variableAddedSuccessfully, {
             severity: "success",
             autoHideDuration: 3000,
           });
-
-          return createdVariable;
+        } else {
+          logger.error(
+            `Error creating ${type.toLowerCase()} variable:`,
+            result.error,
+          );
+          notifications.show(strings.variableAddFailed, {
+            severity: "error",
+            autoHideDuration: 3000,
+          });
         }
-
-        logger.error(
-          `Error creating ${type.toLowerCase()} variable:`,
-          result.error,
-        );
-        notifications.show(strings.variableAddFailed, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-        return null;
       } catch (error) {
         const gqlError = error as {
           message?: string;
@@ -149,12 +98,9 @@ export const useTemplateVariableOperations = (templateId: number) => {
           severity: "error",
           autoHideDuration: 5000,
         });
-        return null;
-      } finally {
-        setLoading(false);
       }
     },
-    [mutations, notifications, strings, setOperationError, setLoading],
+    [apollo, notifications, strings, setOperationError],
   );
 
   // Update variable helper
@@ -166,36 +112,35 @@ export const useTemplateVariableOperations = (templateId: number) => {
         | Graphql.TemplateNumberVariableUpdateInput
         | Graphql.TemplateDateVariableUpdateInput
         | Graphql.TemplateSelectVariableUpdateInput,
-    ): Promise<Graphql.TemplateVariable | null> => {
+    ): Promise<void> => {
       try {
         setOperationError("update", null);
-        setLoading(true);
 
         let result;
         switch (type) {
           case "TEXT":
-            result = await mutations.updateTextVariable({
+            result = await apollo.updateTextVariableMutation({
               variables: {
                 input: input as Graphql.TemplateTextVariableUpdateInput,
               },
             });
             break;
           case "NUMBER":
-            result = await mutations.updateNumberVariable({
+            result = await apollo.updateNumberVariableMutation({
               variables: {
                 input: input as Graphql.TemplateNumberVariableUpdateInput,
               },
             });
             break;
           case "DATE":
-            result = await mutations.updateDateVariable({
+            result = await apollo.updateDateVariableMutation({
               variables: {
                 input: input as Graphql.TemplateDateVariableUpdateInput,
               },
             });
             break;
           case "SELECT":
-            result = await mutations.updateSelectVariable({
+            result = await apollo.updateSelectVariableMutation({
               variables: {
                 input: input as Graphql.TemplateSelectVariableUpdateInput,
               },
@@ -206,27 +151,20 @@ export const useTemplateVariableOperations = (templateId: number) => {
         }
 
         if (result.data) {
-          const updatedVariable = result.data[
-            `updateTemplate${type}Variable` as keyof typeof result.data
-          ] as Graphql.TemplateVariable;
-
           notifications.show(strings.variableUpdatedSuccessfully, {
             severity: "success",
             autoHideDuration: 3000,
           });
-
-          return updatedVariable;
+        } else {
+          logger.error(
+            `Error updating ${type.toLowerCase()} variable:`,
+            result.error,
+          );
+          notifications.show(strings.variableUpdateFailed, {
+            severity: "error",
+            autoHideDuration: 3000,
+          });
         }
-
-        logger.error(
-          `Error updating ${type.toLowerCase()} variable:`,
-          result.error,
-        );
-        notifications.show(strings.variableUpdateFailed, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-        return null;
       } catch (error) {
         const gqlError = error as {
           message?: string;
@@ -243,37 +181,33 @@ export const useTemplateVariableOperations = (templateId: number) => {
           severity: "error",
           autoHideDuration: 5000,
         });
-        return null;
-      } finally {
-        setLoading(false);
       }
     },
-    [mutations, notifications, strings, setOperationError, setLoading],
+    [apollo, notifications, strings, setOperationError],
   );
 
   // Delete variable helper
   const deleteVariable = useCallback(
-    async (id: number): Promise<boolean> => {
+    async (id: number): Promise<void> => {
       try {
         setOperationError("delete", null);
-        setLoading(true);
 
-        const result = await mutations.deleteVariable({ variables: { id } });
+        const result = await apollo.deleteVariableMutation({
+          variables: { id },
+        });
 
         if (result.data) {
           notifications.show(strings.variableDeletedSuccessfully, {
             severity: "success",
             autoHideDuration: 3000,
           });
-          return true;
+        } else {
+          logger.error("Error deleting variable:", result.error);
+          notifications.show(strings.variableDeleteFailed, {
+            severity: "error",
+            autoHideDuration: 3000,
+          });
         }
-
-        logger.error("Error deleting variable:", result.error);
-        notifications.show(strings.variableDeleteFailed, {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-        return false;
       } catch (error) {
         const gqlError = error as {
           message?: string;
@@ -290,24 +224,17 @@ export const useTemplateVariableOperations = (templateId: number) => {
           severity: "error",
           autoHideDuration: 5000,
         });
-        return false;
-      } finally {
-        setLoading(false);
       }
     },
-    [mutations, notifications, strings, setOperationError, setLoading],
+    [apollo, notifications, strings, setOperationError],
   );
 
-  return {
-    // Data from store
-    variables: storeVariables,
-    loading: storeLoading,
-    error: storeError,
-
-    // Operations
-    createVariable,
-    updateVariable,
-    deleteVariable,
-    refetch,
-  };
+  return useMemo(
+    () => ({
+      createVariable,
+      updateVariable,
+      deleteVariable,
+    }),
+    [createVariable, updateVariable, deleteVariable],
+  );
 };

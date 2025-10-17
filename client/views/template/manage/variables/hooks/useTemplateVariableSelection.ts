@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback } from "react";
-import { useTemplateVariableUIStore, useTemplateVariableDataStore } from "../stores";
+import { useTemplateVariableUIStore } from "../stores";
+import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Selection management hook for template variables
  * Wraps UI store selection logic
  */
-export const useTemplateVariableSelection = () => {
+export const useTemplateVariableSelection = (variables: TemplateVariable[]) => {
   // Extract stable action references from stores
   const toggleSelectAction = useTemplateVariableUIStore((state) => state.toggleSelect);
   const selectAllAction = useTemplateVariableUIStore((state) => state.selectAll);
@@ -18,8 +19,6 @@ export const useTemplateVariableSelection = () => {
   const selectedVariables = useTemplateVariableUIStore((state) => state.selectedVariables);
   const lastSelectedVariable = useTemplateVariableUIStore((state) => state.lastSelectedVariable);
   const focusedVariable = useTemplateVariableUIStore((state) => state.focusedVariable);
-
-  const variables = useTemplateVariableDataStore((state) => state.variables);
 
   const toggleSelect = useCallback((id: number) => {
     toggleSelectAction(id);
