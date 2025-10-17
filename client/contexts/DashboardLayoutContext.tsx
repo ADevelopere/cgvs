@@ -6,7 +6,9 @@ import React, {
     useState,
     useCallback,
     useMemo,
+    useEffect,
 } from "react";
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import {
     DashboardLayoutProviderProps,
@@ -19,7 +21,7 @@ import {
     Navigation,
 } from "./adminLayout.types";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
-import { AutomatedNavigationProvider } from "./navigation/AutomatedNavigationProvider";
+import { useNavigationStateStore } from "./navigation/useNavigationStateStore";
 
 const DashboardLayoutContext = createContext<
     DashboardLayoutContextProps | undefined
@@ -28,6 +30,16 @@ const DashboardLayoutContext = createContext<
 export const DashboardLayoutProvider: React.FC<
     DashboardLayoutProviderProps
 > = ({ initialTitle, initialNavigation, initialSlots, children }) => {
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    
+    // Navigation state store
+    const { 
+        savePageState, 
+        saveLastVisitedChild, 
+        restoreLastVisitedChild 
+    } = useNavigationStateStore();
+    
     const [slots, setSlots] = useState<DashboardLayoutSlots>({
         ...initialSlots,
     });
@@ -39,13 +51,65 @@ export const DashboardLayoutProvider: React.FC<
         const saved = loadFromLocalStorage(SIDEBAR_STATE_STORAGE_KEY);
         return (saved as SidebarState) || "expanded";
     });
-    const [navigation] = useState<Navigation | undefined>(
+    
+    // Dynamic navigation that gets updated based on saved state
+    const [navigation, setNavigation] = useState<Navigation | undefined>(
         initialNavigation,
     );
 
     const [headerHeight, setHeaderHeight] = useState<number>(0);
     const [sideBarToggleWidth, setSideBarToggleWidth] = useState<number>(0);
     const [sideBarWidth, setSideBarWidth] = useState<number>(0);
+    
+    
+    // ============================================================================
+    // EFFECT 1: Continuously save current page state to store
+    // ============================================================================
+    useEffect(() => {
+        const paramsString = searchParams.toString();
+        
+        // Always save current state to store
+        savePageState(pathname, paramsString);
+        
+        // Also update parent segment's "last visited child" for sidebar
+        const segments = pathname.split('/').filter(Boolean);
+        if (segments.length > 2) { // Has sub-pages (e.g., /admin/templates/15/manage)
+            const parentPath = `/${segments.slice(0, 2).join('/')}`; // e.g., /admin/templates
+            const fullPath = paramsString ? `${pathname}?${paramsString}` : pathname;
+            saveLastVisitedChild(parentPath, fullPath);
+        }
+    }, [pathname, searchParams, savePageState, saveLastVisitedChild]);
+    
+    // ============================================================================
+    // EFFECT 2: Update navigation items with saved state
+    // ============================================================================
+    useEffect(() => {
+        if (!initialNavigation) return;
+        
+        const updatedNavigation = initialNavigation.map(navItem => {
+            if (navItem.kind === 'header' || navItem.kind === 'divider') {
+                return navItem;
+            }
+            
+            // Only process page items that have segments
+            if ('segment' in navItem && navItem.segment) {
+                // Get the saved last visited child for this navigation item
+                const savedChild = restoreLastVisitedChild(navItem.segment);
+                
+                if (savedChild) {
+                    // Update the segment to point to the last visited child
+                    return {
+                        ...navItem,
+                        segment: savedChild,
+                    };
+                }
+            }
+            
+            return navItem;
+        });
+        
+        setNavigation(updatedNavigation);
+    }, [initialNavigation, restoreLastVisitedChild]);
 
     const toggleSidebar = useCallback(() => {
         setSidebarState((current) => {
@@ -142,11 +206,9 @@ export const DashboardLayoutProvider: React.FC<
     ]);
 
     return (
-        <AutomatedNavigationProvider>
-            <DashboardLayoutContext.Provider value={value}>
-                {children}
-            </DashboardLayoutContext.Provider>
-        </AutomatedNavigationProvider>
+        <DashboardLayoutContext.Provider value={value}>
+            {children}
+        </DashboardLayoutContext.Provider>
     );
 };
 

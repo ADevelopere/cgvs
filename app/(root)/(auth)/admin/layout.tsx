@@ -62,6 +62,18 @@ const TITLE: Title = {
  textColor: "text.primary",
 };
 
+const AdminLayoutContent: React.FC<{ children: React.ReactNode }> = ({
+ children,
+}: {
+ children: React.ReactNode;
+}) => {
+ return (
+   <StudentProvider>
+    <DashboardLayout>{children}</DashboardLayout>
+   </StudentProvider>
+ );
+};
+
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
  children,
 }: {
@@ -75,9 +87,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
      endActions: <DashboardEndActions />,
     }}
    >
-     <StudentProvider>
-      <DashboardLayout>{children}</DashboardLayout>
-     </StudentProvider>
+     <AdminLayoutContent>{children}</AdminLayoutContent>
    </DashboardLayoutProvider>
  );
 };

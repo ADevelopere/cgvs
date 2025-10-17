@@ -13,7 +13,7 @@ interface PageState {
  * Navigation State Store
  *
  * Automatically tracks and persists URL parameters for every page.
- * Used by AutomatedNavigationProvider to save/restore page states.
+ * Used by DashboardLayoutContext to save/restore page states.
  */
 interface NavigationStateStore {
   // State
