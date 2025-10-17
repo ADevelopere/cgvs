@@ -11,7 +11,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import BasicInfoTab from "./BasicInfoTab";
 import ManagementHeader from "./ManagementHeader";
 import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
-import TemplateVariableManagement from "./variables/TemplateVariableManagement";
+// import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
   TemplateManagementTabType,
@@ -89,13 +89,13 @@ const TemplateManagement: React.FC<TemplateManagementProps> = ({
             <BasicInfoTab template={template} />
           </TabPanel>
           <TabPanel value="variables">
-            <TemplateVariableManagement template={template} />
+            {/* <TemplateVariableManagement template={template} /> */}
           </TabPanel>
           <TabPanel value="recipients">
             <RecipientGroupTab template={template} />
           </TabPanel>
           <TabPanel value="recipientsManagement">
-            <RecipientsManagementTab templateId={template.id} />
+            {/* <RecipientsManagementTab templateId={template.id} /> */}
           </TabPanel>
           {/* <TabPanel value="editor">
                                     <EditorTab />

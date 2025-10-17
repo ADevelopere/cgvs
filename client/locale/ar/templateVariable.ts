@@ -49,4 +49,12 @@ export const templateVariable: TemplateVariableTranslation = {
 
     // edit/create modal
     editVariable: "تعديل متغير",
+
+    // operation results
+    variableAddedSuccessfully: "تمت إضافة المتغير بنجاح",
+    variableAddFailed: "فشل في إضافة المتغير",
+    variableUpdatedSuccessfully: "تم تحديث المتغير بنجاح",
+    variableUpdateFailed: "فشل في تحديث المتغير",
+    variableDeletedSuccessfully: "تم حذف المتغير بنجاح",
+    variableDeleteFailed: "فشل في حذف المتغير",
 };
