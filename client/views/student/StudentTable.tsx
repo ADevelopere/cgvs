@@ -4,16 +4,17 @@ import type React from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import { People } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
-import { useStudentManagement } from "@/client/views/student/hook/StudentManagementContext";
 import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@apollo/client/react";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import Table from "@/client/components/Table/Table/Table";
-import { useStudentTableManagement } from "@/client/views/student/hook/StudentTableManagementContext";
 import CreateStudentRow from "./CreateStudentRow";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
-import { useStudentFilter } from "./hook/StudentFilterContext";
+import { useStudentOperations } from "./useStudentOperations";
+import { useStudentTable } from "./useStudentTable";
+import * as Document from "./hook/student.documents";
 
 const StudentManagementDashboardTitle: React.FC = () => {
   const strings = useAppTranslation("studentTranslations");
@@ -34,8 +35,24 @@ const StudentManagementDashboardTitle: React.FC = () => {
 };
 
 const StudentTable: React.FC = () => {
-  const { students, pageInfo, loading } = useStudentManagement();
-  const { setColumnFilter, updateSort, filters } = useStudentFilter();
+  // Get operations and store state
+  const {
+    queryParams,
+    filters,
+    onPageChange,
+    onRowsPerPageChange,
+    setColumnFilter,
+    updateSort,
+  } = useStudentOperations();
+
+  // Fetch students directly with useQuery - Apollo handles refetch automatically
+  const { data, loading } = useQuery(Document.studentsQueryDocument, {
+    variables: queryParams,
+    fetchPolicy: "cache-first",
+  });
+
+  const students = data?.students?.data ?? [];
+  const pageInfo = data?.students?.pageInfo;
 
   const { setDashboardSlot } = useDashboardLayout();
   useEffect(() => {
@@ -46,8 +63,8 @@ const StudentTable: React.FC = () => {
     };
   }, [setDashboardSlot]);
 
-  const { columns, onPageChange, onRowsPerPageChange } =
-    useStudentTableManagement();
+  // Get columns from table hook
+  const { columns } = useStudentTable();
 
   const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
     {},
