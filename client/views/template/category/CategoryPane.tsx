@@ -9,6 +9,7 @@ import { useAppTheme } from "@/client/contexts/ThemeContext";
 
 import {
   CategoryChildrenQuery,
+  TemplateCategoryUpdateInput,
   CategoryChildrenQueryVariables,
   TemplateCategoryWithParentTree,
 } from "@/client/graphql/generated/gql/graphql";
@@ -137,7 +138,13 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     category: TemplateCategoryWithParentTree,
     newName: string,
   ) => {
-    updateCategory({ ...category, name: newName });
+    const input: TemplateCategoryUpdateInput = {
+      id: category.id,
+      name: newName.trim(),
+      description: category.description,
+      parentCategoryId: category.parentCategoryId,
+    };
+    updateCategory(input);
   };
 
   const handleToggleExpanded = React.useCallback(
