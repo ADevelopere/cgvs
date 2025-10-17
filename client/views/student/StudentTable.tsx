@@ -15,6 +15,7 @@ import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import { useStudentOperations } from "./useStudentOperations";
 import { useStudentTable } from "./useStudentTable";
 import * as Document from "./hook/student.documents";
+import { TableLocaleProvider } from "@/client/locale/table/TableLocaleContext";
 
 const StudentManagementDashboardTitle: React.FC = () => {
   const strings = useAppTranslation("studentTranslations");
@@ -136,39 +137,40 @@ const StudentTable: React.FC = () => {
   }, [columns, indexColWidth, tableContainerRef]);
 
   return (
-    <TableProvider
-      data={students}
-      isLoading={loading}
-      columns={columns}
-      dataProps={{
-        onFilterChange: setColumnFilter,
-        onSort: updateSort,
-        filters,
-      }}
-      columnProps={{
-        initialWidths: initialWidths,
-      }}
-      rowsProps={{
-        // rowIdKey: rowIdKey,
-        // onLoadMoreRows: loadMoreRows,
-        // getRowStyle: getRowStyle,
-        // rowSelectionEnabled: enableRowSelection,
-        // selectedRowIds={selectedRowIds}
-        // totalRows: filteredTotalRows,
-        // pageSize: 50,
-        enableRowResizing: false,
-      }}
-      // Server operation props
-      // serverFilterUi={serverFilterUi}
-      // Selection props
-      // onSelectionChange={handleSelectionChange}
-      // Pagination props
-      pageInfo={pageInfo}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
-      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-      // initialPageSize={100}
-    >
+    <TableLocaleProvider>
+      <TableProvider
+        data={students}
+        isLoading={loading}
+        columns={columns}
+        dataProps={{
+          onFilterChange: setColumnFilter,
+          onSort: updateSort,
+          filters,
+        }}
+        columnProps={{
+          initialWidths: initialWidths,
+        }}
+        rowsProps={{
+          // rowIdKey: rowIdKey,
+          // onLoadMoreRows: loadMoreRows,
+          // getRowStyle: getRowStyle,
+          // rowSelectionEnabled: enableRowSelection,
+          // selectedRowIds={selectedRowIds}
+          // totalRows: filteredTotalRows,
+          // pageSize: 50,
+          enableRowResizing: false,
+        }}
+        // Server operation props
+        // serverFilterUi={serverFilterUi}
+        // Selection props
+        // onSelectionChange={handleSelectionChange}
+        // Pagination props
+        pageInfo={pageInfo}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+        rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+        // initialPageSize={100}
+      >
       <Paper
         sx={{
           display: "flex",
@@ -214,7 +216,8 @@ const StudentTable: React.FC = () => {
             )}
         </Box>
       </Paper>
-    </TableProvider>
+      </TableProvider>
+    </TableLocaleProvider>
   );
 };
 

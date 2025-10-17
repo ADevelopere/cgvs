@@ -2,6 +2,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { FilterClause } from "@/client/types/filters";
+import logger from "@/lib/logger";
 
 /**
  * Student UI Store State
@@ -108,10 +109,55 @@ export const useStudentStore = create<StudentStoreState>()(
       name: "student-ui-store",
       storage: createJSONStorage(() => sessionStorage),
       // Persist query parameters for restoration
-      partialize: (state) => ({
-        queryParams: state.queryParams,
-        filters: state.filters,
-      }),
+      partialize: (state) => {
+        logger.info(
+          "💾 Persisting student store state:",
+          JSON.stringify(state, null, 2),
+        );
+        const persistedState = {
+          queryParams: state.queryParams,
+          filters: state.filters,
+          selectedStudents: state.selectedStudents,
+        };
+        return persistedState;
+      },
+      // Custom merge to handle state restoration
+      merge: (persistedState, currentState) => {
+        const typedPersistedState = persistedState as Partial<State>;
+        
+        logger.info(
+          "🔄 Merging student store state:",
+          JSON.stringify(persistedState, null, 2),
+          JSON.stringify(currentState, null, 2),
+        );
+        
+        // Deep merge the queryParams to preserve nested objects
+        const mergedQueryParams = typedPersistedState?.queryParams 
+          ? {
+              ...currentState.queryParams,
+              ...typedPersistedState.queryParams,
+              // Deep merge paginationArgs
+              paginationArgs: {
+                ...currentState.queryParams.paginationArgs,
+                ...typedPersistedState.queryParams.paginationArgs,
+              },
+              // Preserve orderBy from persisted state
+              orderBy: typedPersistedState.queryParams.orderBy || currentState.queryParams.orderBy,
+              // Preserve filterArgs from persisted state
+              filterArgs: typedPersistedState.queryParams.filterArgs || currentState.queryParams.filterArgs,
+            }
+          : currentState.queryParams;
+
+        const mergedState = {
+          ...currentState,
+          queryParams: mergedQueryParams,
+          filters: typedPersistedState?.filters || currentState.filters,
+          selectedStudents: typedPersistedState?.selectedStudents || currentState.selectedStudents,
+        };
+        
+        logger.info("✅ Final merged state:", JSON.stringify(mergedState, null, 2));
+        return mergedState;
+      },
     },
   ),
 );
