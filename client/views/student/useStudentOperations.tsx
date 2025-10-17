@@ -295,6 +295,8 @@ export const useStudentOperations = () => {
         first: 100,
         page: 1,
       },
+      // Preserve existing orderBy
+      orderBy: store.queryParams.orderBy,
     });
   }, [store]);
 
@@ -379,6 +381,8 @@ export const useStudentOperations = () => {
         first: 100,
         page: 1,
       },
+      // Preserve existing orderBy
+      orderBy: store.queryParams.orderBy,
     });
   }, [store]);
 
@@ -419,7 +423,12 @@ export const useStudentOperations = () => {
       setColumnFilter,
       clearFilter,
       clearAllFilters,
-      store,
+      store.queryParams,
+      store.filters,
+      store.selectedStudents,
+      store.toggleStudentSelect,
+      store.selectAllStudents,
+      store.clearSelectedStudents,
     ],
   );
 };
