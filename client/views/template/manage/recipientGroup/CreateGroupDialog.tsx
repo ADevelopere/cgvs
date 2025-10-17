@@ -14,15 +14,17 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
-import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
+import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 
-const CreateGroupDialog: React.FC = () => {
+interface CreateGroupDialogProps {
+    templateId: number;
+}
+
+const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ templateId }) => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const { createDialogOpen, closeCreateDialog } = useRecipientGroupDialogs();
-    const { templateId } = useRecipientGroupDataStore();
-    const { createGroup, loading } = useRecipientGroupOperations(templateId || 0);
+    const { createGroup } = useRecipientGroupOperations();
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -47,16 +49,12 @@ const CreateGroupDialog: React.FC = () => {
             return;
         }
 
-        const success = await createGroup({
+        await createGroup({
             templateId: templateId,
             name: name.trim(),
             description: description.trim() || null,
             date: date || null,
         });
-
-        if (success) {
-            handleClose();
-        }
     }, [name, description, date, templateId, createGroup, handleClose, strings]);
 
     return (
@@ -101,13 +99,12 @@ const CreateGroupDialog: React.FC = () => {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} disabled={loading}>
+                    <Button onClick={handleClose}>
                         {strings.cancel}
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         variant="contained"
-                        disabled={loading}
                     >
                         {strings.createGroup}
                     </Button>

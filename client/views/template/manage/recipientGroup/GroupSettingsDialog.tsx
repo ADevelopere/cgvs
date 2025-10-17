@@ -14,16 +14,18 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
-import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
+import { useRecipientGroupOperations } from "./useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
-const GroupSettingsDialog: React.FC = () => {
+interface GroupSettingsDialogProps {
+    groups: TemplateRecipientGroup[];
+}
+
+const GroupSettingsDialog: React.FC<GroupSettingsDialogProps> = ({ groups }) => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const { settingsDialogOpen, closeSettingsDialog, selectedGroupId } = useRecipientGroupDialogs();
-    const { groups } = useRecipientGroupDataStore();
-    const { updateGroup, loading } = useRecipientGroupOperations(0); // templateId not needed for update
+    const { updateGroup } = useRecipientGroupOperations();
 
     const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
         if (!selectedGroupId) return null;
@@ -71,16 +73,12 @@ const GroupSettingsDialog: React.FC = () => {
             return;
         }
 
-        const success = await updateGroup({
+        await updateGroup({
             id: selectedGroupId,
             name: trimmedName,
             description: trimmedDescription,
             date: date || null,
         });
-
-        if (success) {
-            handleClose();
-        }
     }, [name, description, date, selectedGroupId, selectedGroup, updateGroup, handleClose, strings]);
 
     return (
@@ -130,13 +128,12 @@ const GroupSettingsDialog: React.FC = () => {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} disabled={loading}>
+                    <Button onClick={handleClose}>
                         {strings.cancel}
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         variant="contained"
-                        disabled={loading}
                     >
                         {strings.save}
                     </Button>

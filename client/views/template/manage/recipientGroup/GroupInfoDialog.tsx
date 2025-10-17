@@ -13,15 +13,17 @@ import {
     Chip,
 } from "@mui/material";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
-import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
 import { useAppTranslation } from "@/client/locale";
 import { format } from "date-fns";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
-const GroupInfoDialog: React.FC = () => {
+interface GroupInfoDialogProps {
+    groups: TemplateRecipientGroup[];
+}
+
+const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
     const strings = useAppTranslation("recipientGroupTranslations");
     const { infoDialogOpen, closeInfoDialog, selectedGroupId } = useRecipientGroupDialogs();
-    const { groups } = useRecipientGroupDataStore();
 
     const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
         if (!selectedGroupId) return null;

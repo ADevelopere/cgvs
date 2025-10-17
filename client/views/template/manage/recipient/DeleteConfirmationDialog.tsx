@@ -11,16 +11,18 @@ import {
   Alert,
 } from "@mui/material";
 import { useRecipientGroupDialogs } from "../recipientGroup/hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "../recipientGroup/hooks/useRecipientGroupOperations";
-import { useRecipientGroupDataStore } from "../recipientGroup/stores/useRecipientGroupDataStore";
+import { useRecipientGroupOperations } from "../recipientGroup/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
-const DeleteConfirmationDialog: React.FC = () => {
+interface DeleteConfirmationDialogProps {
+  groups: TemplateRecipientGroup[];
+}
+
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ groups }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } = useRecipientGroupDialogs();
-  const { groups } = useRecipientGroupDataStore();
-  const { deleteGroup, loading } = useRecipientGroupOperations(0); // templateId not needed for delete
+  const { deleteGroup } = useRecipientGroupOperations();
 
   const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
     if (!selectedGroupId) return null;
@@ -77,7 +79,7 @@ const DeleteConfirmationDialog: React.FC = () => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeDeleteDialog} disabled={loading}>
+        <Button onClick={closeDeleteDialog}>
           {selectedGroup &&
           selectedGroup.studentCount &&
           selectedGroup.studentCount > 0
@@ -91,7 +93,6 @@ const DeleteConfirmationDialog: React.FC = () => {
             onClick={handleDelete}
             variant="contained"
             color="error"
-            disabled={loading}
           >
             {strings.delete}
           </Button>

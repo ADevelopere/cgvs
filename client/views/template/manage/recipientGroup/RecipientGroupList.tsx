@@ -1,12 +1,23 @@
 "use client";
 
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import RecipientGroupItem from "./RecipientGroupItem";
-import { useRecipientGroupDataStore } from "./stores/useRecipientGroupDataStore";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-const RecipientGroupList: React.FC = () => {
-    const { groups } = useRecipientGroupDataStore();
+interface RecipientGroupListProps {
+    groups: Graphql.TemplateRecipientGroup[];
+    loading?: boolean;
+}
+
+const RecipientGroupList: React.FC<RecipientGroupListProps> = ({ groups, loading = false }) => {
+    if (loading) {
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     if (!groups || groups.length === 0) {
         return null;
