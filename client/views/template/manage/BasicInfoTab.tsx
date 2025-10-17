@@ -7,7 +7,7 @@ import { useAppTheme } from "@/client/contexts";
 import { useQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
-import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
+// import FilePickerDialog from "@/storage/dialogs/FilePickerDialog";
 import {
   FileInfo,
   TemplateUpdateInput,
@@ -350,13 +350,13 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       </Mui.Box>
 
       {/* File Picker Dialog */}
-      <FilePickerDialog
+      {/* <FilePickerDialog
         open={filePickerOpen}
         onClose={() => setFilePickerOpen(false)}
         onFileSelect={handleFileSelect}
         allowedFileTypes={["image/*"]} // Only allow image files for template covers
         title={storageStrings.ui.filePickerDialogSelectFile}
-      />
+      /> */}
     </Mui.Box>
   );
 };
