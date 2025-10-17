@@ -5,7 +5,7 @@ import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { StorageItem } from "@/client/contexts/storage/storage.type";
+import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 
 interface StorageItemGridProps {
         item: StorageItem;

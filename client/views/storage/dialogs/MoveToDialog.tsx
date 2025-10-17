@@ -30,9 +30,9 @@ import {
     ArrowUpward as ArrowUpwardIcon,
     Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useStorageManagementCore } from "@/client/contexts/storage/StorageManagementCoreContext";
+import { useStorageManagementCore } from "@/client/views/storage/hooks/StorageManagementCoreContext";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { DirectoryTreeNode, StorageItem } from "@/client/contexts/storage/storage.type";
+import { DirectoryTreeNode, StorageItem } from "@/client/views/storage/hooks/storage.type";
 import { useAppTranslation } from "@/client/locale";
 export interface MoveToDialogProps {
     open: boolean;

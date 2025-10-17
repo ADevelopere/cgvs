@@ -24,7 +24,7 @@ import {
     Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { StorageItem } from "@/client/contexts/storage/storage.type";
+import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 

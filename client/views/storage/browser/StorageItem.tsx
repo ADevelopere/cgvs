@@ -1,9 +1,12 @@
 import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
+import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
+import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
+import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
-import { StorageItem as StorageItemType } from "@/client/contexts/storage/storage.type";
+import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
 interface StorageItemProps {
     item: StorageItemType;
 }
@@ -14,17 +17,10 @@ interface StorageItemProps {
  * Manages drag-and-drop functionality and context menus.
  */
 const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
-    const {
-        selectedItems,
-        lastSelectedItem,
-        viewMode,
-        toggleSelect,
-        selectRange,
-        clearSelection,
-        navigateTo,
-        setFocusedItem,
-        clipboard,
-    } = useStorageManagementUI();
+    const { viewMode } = useStorageUIStore();
+    const { selectedItems, lastSelectedItem, toggleSelect, selectRange, clearSelection, setFocusedItem } = useStorageSelection();
+    const { navigateTo } = useStorageNavigation();
+    const { clipboard } = useStorageClipboard();
 
     const isCut = React.useMemo(
         () =>

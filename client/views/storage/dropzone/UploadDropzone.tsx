@@ -12,7 +12,7 @@ import {
     Fade,
 } from "@mui/material";
 import { CloudUpload as UploadIcon } from "@mui/icons-material";
-import { useStorageUpload } from "@/client/contexts/storage/StorageUploadContext";
+import { useStorageUpload } from "@/client/views/storage/hooks/StorageUploadContext";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/lib/logger";
 

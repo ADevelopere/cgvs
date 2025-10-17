@@ -8,8 +8,8 @@ import {
     Archive as ArchiveIcon,
 } from "@mui/icons-material";
 import { SvgIconProps } from "@mui/material/SvgIcon";
-import { mimeToContentType } from "@/client/contexts/storage/storage.constant";
-import { StorageItem } from "@/client/contexts/storage/storage.type";
+import { mimeToContentType } from "@/client/views/storage/hooks/storage.constant";
+import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 interface FileTypeIconProps extends Omit<SvgIconProps, "component"> {
     item: StorageItem;
 }

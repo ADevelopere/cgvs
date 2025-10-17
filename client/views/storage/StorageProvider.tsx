@@ -1,21 +1,18 @@
 import React from "react";
-import { StorageManagementCoreProvider } from "@/client/contexts/storage/StorageManagementCoreContext";
-import { StorageManagementUIProvider } from "@/client/contexts/storage/StorageManagementUIContext";
-import { StorageUploadProvider } from "@/client/contexts/storage/StorageUploadContext";
 import { UploadProgressUIProvider } from "@/client/views/storage/uploading/UploadProgressUIContext";
+import { useStorageInitialization } from "./hooks/useStorageInitialization";
 
 export default function StorageProvider({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Initialize storage data on mount
+  useStorageInitialization();
+  
   return (
-    <StorageManagementCoreProvider>
-      <StorageUploadProvider>
-        <UploadProgressUIProvider>
-          <StorageManagementUIProvider>{children}</StorageManagementUIProvider>
-        </UploadProgressUIProvider>
-      </StorageUploadProvider>
-    </StorageManagementCoreProvider>
+    <UploadProgressUIProvider>
+      {children}
+    </UploadProgressUIProvider>
   );
 }

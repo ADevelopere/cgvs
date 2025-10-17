@@ -13,7 +13,7 @@ import {
     Box,
 } from "@mui/material";
 import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
-import { StorageItem } from "@/client/contexts/storage/storage.type";
+import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
 export interface DeleteConfirmationDialogProps {

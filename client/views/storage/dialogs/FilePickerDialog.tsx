@@ -30,12 +30,12 @@ import {
 import {
  StorageManagementCoreProvider,
  useStorageManagementCore,
-} from "@/client/contexts/storage/StorageManagementCoreContext";
+} from "@/client/views/storage/hooks/StorageManagementCoreContext";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem as StorageItemType } from "@/client/contexts/storage/storage.type";
-import { StorageGraphQLProvider } from "@/client/graphql/apollo/storage.apollo";
+import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
+import { StorageGraphQLProvider } from "@/client/views/storage/hooks/storage.apollo";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
 
 export interface FilePickerDialogProps {

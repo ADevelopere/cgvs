@@ -8,7 +8,7 @@ import {
     Checkbox,
     Button,
 } from "@mui/material";
-import { useTemplateVariableManagement } from "@/client/views/template/manage/variables/TemplateVariableManagementContext";
+import { useTemplateVariableManagement } from "@/client/views/template/manage/variables/hooks/TemplateVariableManagementContext";
 
 import { mapToTemplateTextVariableCreateInput } from "@/client/utils/templateVariable";
 import { isTextVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
