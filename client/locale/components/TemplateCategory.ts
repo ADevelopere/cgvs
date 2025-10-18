@@ -169,4 +169,10 @@ export type TemplateCategoryTranslation = {
   of: string;
   perPage: string;
   goToPage: string;
+
+  // Template loading and error states
+  loadingTemplate: string;
+  templateNotFoundTitle: string;
+  templateNotFoundMessage: string;
+  backToTemplates: string;
 };
