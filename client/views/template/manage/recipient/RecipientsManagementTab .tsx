@@ -5,14 +5,14 @@ import { Box } from "@mui/material";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import RecipientGroupSelector from "./RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
-import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
+import StudentsNotInGroupTable from "./add/StudentsNotInGroupTable";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
-interface AddStudentsToGroupTabProps {
+interface RecipientsManagementTabProps {
   template: Template;
 }
 
-const AddStudentsToGroupTab: React.FC<AddStudentsToGroupTabProps> = ({
+const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   template,
 }) => {
   const { selectedGroup } = useRecipientStore();
@@ -51,4 +51,4 @@ const AddStudentsToGroupTab: React.FC<AddStudentsToGroupTabProps> = ({
   );
 };
 
-export default AddStudentsToGroupTab;
+export default RecipientsManagementTab;

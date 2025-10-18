@@ -5,14 +5,14 @@ import { Box } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import Table from "@/client/components/Table/Table/Table";
-import { useRecipientStore } from "./stores/useRecipientStore";
-import { useRecipientOperations } from "./hooks/useRecipientOperations";
-import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
+import { useRecipientStore } from "../stores/useRecipientStore";
+import { useRecipientOperations } from "../hooks/useRecipientOperations";
+import { studentsNotInRecipientGroupQueryDocument } from "../hooks/recipient.documents";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
 import logger from "@/lib/logger";
-import { mapColumnIdToGraphQLColumn, recipientBaseColumns } from "./columns";
+import { mapColumnIdToGraphQLColumn, recipientBaseColumns } from "../columns";
 import { FooterEndContent, FooterStartContent } from "./Footer";
 
 interface StudentsNotInGroupTableProps {

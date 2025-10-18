@@ -14,9 +14,9 @@ import {
 import { OpenInNew } from "@mui/icons-material";
 import Link from "next/link";
 import { useQuery } from "@apollo/client/react";
-import { useRecipientStore } from "./stores/useRecipientStore";
-import { useRecipientOperations } from "./hooks/useRecipientOperations";
-import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
+import { useRecipientStore } from "../stores/useRecipientStore";
+import { useRecipientOperations } from "../hooks/useRecipientOperations";
+import { studentsNotInRecipientGroupQueryDocument } from "../hooks/recipient.documents";
 import { useAppTranslation } from "@/client/locale";
 import { useTableRowsContext } from "@/client/components/Table/Table/TableRowsContext";
 
