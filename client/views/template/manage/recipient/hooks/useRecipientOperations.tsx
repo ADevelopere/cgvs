@@ -14,8 +14,8 @@ import {
 } from "@/client/types/filters";
 import { BaseColumn } from "@/client/types/table.type";
 
-export const useRecipientOperations = () => {
-  const apollo = useRecipientApolloMutations();
+export const useRecipientOperations = (templateId?: number) => {
+  const apollo = useRecipientApolloMutations(templateId);
   const store = useRecipientStore();
   const notifications = useNotifications();
   const strings = useAppTranslation("recipientTranslations");

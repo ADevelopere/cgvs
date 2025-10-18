@@ -3,8 +3,25 @@
 import { useMutation } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "./recipient.documents";
+import { templateRecipientGroupsByTemplateIdQueryDocument } from "../../recipientGroup/hooks/recipientGroup.documents";
+import { ApolloCache } from "@apollo/client";
+import { useRecipientStore } from "../stores/useRecipientStore";
 
-export const useRecipientApolloMutations = () => {
+export const useRecipientApolloMutations = (templateId?: number) => {
+  const { studentsNotInGroupQueryParams } = useRecipientStore();
+
+  // Utility function to evict studentsNotInRecipientGroupQueryDocument cache
+  const evictStudentsNotInGroupQuery = (cache: ApolloCache) => {
+    try {
+      cache.evict({
+        fieldName: "studentsNotInRecipientGroup",
+        args: studentsNotInGroupQueryParams,
+      });
+      cache.gc(); // Garbage collect to clean up evicted data
+    } catch {
+      // Cache doesn't exist yet, will be populated on next query
+    }
+  };
   const [createMutation] = useMutation(
     Document.createRecipientMutationDocument,
     {
@@ -37,6 +54,42 @@ export const useRecipientApolloMutations = () => {
         } catch {
           // Cache doesn't exist yet, will be populated on next query
         }
+
+        // Update templateRecipientGroupsByTemplateId query cache - increment studentCount
+        if (templateId) {
+          try {
+            const existingGroupsData = cache.readQuery({
+              query: templateRecipientGroupsByTemplateIdQueryDocument,
+              variables: { templateId },
+            });
+
+            if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
+              const updatedGroups =
+                existingGroupsData.templateRecipientGroupsByTemplateId.map(
+                  (group) =>
+                    group.id === recipientGroupId
+                      ? {
+                          ...group,
+                          studentCount: (group.studentCount || 0) + 1,
+                        }
+                      : group,
+                );
+
+              cache.writeQuery({
+                query: templateRecipientGroupsByTemplateIdQueryDocument,
+                variables: { templateId },
+                data: {
+                  templateRecipientGroupsByTemplateId: updatedGroups,
+                },
+              });
+            }
+          } catch {
+            // Cache doesn't exist yet, will be populated on next query
+          }
+        }
+
+        // Evict studentsNotInRecipientGroup query to force refetch
+        evictStudentsNotInGroupQuery(cache);
       },
     },
   );
@@ -74,6 +127,43 @@ export const useRecipientApolloMutations = () => {
         } catch {
           // Cache doesn't exist yet
         }
+
+        // Update templateRecipientGroupsByTemplateId query cache - increment studentCount
+        if (templateId) {
+          try {
+            const existingGroupsData = cache.readQuery({
+              query: templateRecipientGroupsByTemplateIdQueryDocument,
+              variables: { templateId },
+            });
+
+            if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
+              const updatedGroups =
+                existingGroupsData.templateRecipientGroupsByTemplateId.map(
+                  (group) =>
+                    group.id === recipientGroupId
+                      ? {
+                          ...group,
+                          studentCount:
+                            (group.studentCount || 0) + newRecipients.length,
+                        }
+                      : group,
+                );
+
+              cache.writeQuery({
+                query: templateRecipientGroupsByTemplateIdQueryDocument,
+                variables: { templateId },
+                data: {
+                  templateRecipientGroupsByTemplateId: updatedGroups,
+                },
+              });
+            }
+          } catch {
+            // Cache doesn't exist yet, will be populated on next query
+          }
+        }
+
+        // Evict studentsNotInRecipientGroup query to force refetch
+        evictStudentsNotInGroupQuery(cache);
       },
     },
   );
@@ -109,6 +199,45 @@ export const useRecipientApolloMutations = () => {
         } catch {
           // Cache doesn't exist yet
         }
+
+        // Update templateRecipientGroupsByTemplateId query cache - decrement studentCount
+        if (templateId) {
+          try {
+            const existingGroupsData = cache.readQuery({
+              query: templateRecipientGroupsByTemplateIdQueryDocument,
+              variables: { templateId },
+            });
+
+            if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
+              const updatedGroups =
+                existingGroupsData.templateRecipientGroupsByTemplateId.map(
+                  (group) =>
+                    group.id === recipientGroupId
+                      ? {
+                          ...group,
+                          studentCount: Math.max(
+                            (group.studentCount || 0) - 1,
+                            0,
+                          ),
+                        }
+                      : group,
+                );
+
+              cache.writeQuery({
+                query: templateRecipientGroupsByTemplateIdQueryDocument,
+                variables: { templateId },
+                data: {
+                  templateRecipientGroupsByTemplateId: updatedGroups,
+                },
+              });
+            }
+          } catch {
+            // Cache doesn't exist yet, will be populated on next query
+          }
+        }
+
+        // Evict studentsNotInRecipientGroup query to force refetch since we don't have student data
+        evictStudentsNotInGroupQuery(cache);
       },
     },
   );
@@ -146,6 +275,46 @@ export const useRecipientApolloMutations = () => {
         } catch {
           // Cache doesn't exist yet
         }
+
+        // Update templateRecipientGroupsByTemplateId query cache - decrement studentCount
+        if (templateId) {
+          try {
+            const existingGroupsData = cache.readQuery({
+              query: templateRecipientGroupsByTemplateIdQueryDocument,
+              variables: { templateId },
+            });
+
+            if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
+              const updatedGroups =
+                existingGroupsData.templateRecipientGroupsByTemplateId.map(
+                  (group) =>
+                    group.id === recipientGroupId
+                      ? {
+                          ...group,
+                          studentCount: Math.max(
+                            (group.studentCount || 0) -
+                              deletedRecipients.length,
+                            0,
+                          ),
+                        }
+                      : group,
+                );
+
+              cache.writeQuery({
+                query: templateRecipientGroupsByTemplateIdQueryDocument,
+                variables: { templateId },
+                data: {
+                  templateRecipientGroupsByTemplateId: updatedGroups,
+                },
+              });
+            }
+          } catch {
+            // Cache doesn't exist yet, will be populated on next query
+          }
+        }
+
+        // Evict studentsNotInRecipientGroup query to force refetch since we don't have student data
+        evictStudentsNotInGroupQuery(cache);
       },
     },
   );

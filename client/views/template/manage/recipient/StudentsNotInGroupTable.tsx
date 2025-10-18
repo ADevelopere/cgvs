@@ -15,9 +15,15 @@ import logger from "@/lib/logger";
 import { mapColumnIdToGraphQLColumn, recipientBaseColumns } from "./columns";
 import { FooterEndContent, FooterStartContent } from "./Footer";
 
-const StudentsNotInGroupTable: React.FC = () => {
+interface StudentsNotInGroupTableProps {
+  templateId?: number;
+}
+
+const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
+  templateId,
+}) => {
   const store = useRecipientStore();
-  const operations = useRecipientOperations();
+  const operations = useRecipientOperations(templateId);
   const { syncFiltersToQueryParams } = operations;
   const syncFiltersToQueryParamsRef = useRef(syncFiltersToQueryParams);
 
@@ -146,7 +152,7 @@ const StudentsNotInGroupTable: React.FC = () => {
       onRowsPerPageChange={operations.onRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
       footerStartContent={<FooterStartContent />}
-      footerEndContent={<FooterEndContent />}
+      footerEndContent={<FooterEndContent templateId={templateId} />}
     >
       <Box
         sx={{
