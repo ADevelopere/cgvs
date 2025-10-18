@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React from "react";
 import { Autocomplete, TextField, Chip, Box, Alert } from "@mui/material";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import { useAppTranslation } from "@/client/locale";
@@ -19,7 +19,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
   template,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { selectedGroupId, setSelectedGroupId } = useRecipientStore();
+  const { selectedGroup, setSelectedGroup } = useRecipientStore();
 
   const {
     data,
@@ -29,31 +29,13 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
     variables: {
       templateId: template.id,
     },
+    fetchPolicy: "cache-and-network", // Ensure we have the latest data
   });
 
-  const [updating, setUpdating] = useState(true);
-  const loading = useMemo(() => {
-    return updating || apolloLoading;
-  }, [updating, apolloLoading]);
-
-  const groups: TemplateRecipientGroup[] = useMemo(() => {
-    if (data?.templateRecipientGroupsByTemplateId) {
-      setUpdating(false);
-      return data.templateRecipientGroupsByTemplateId;
-    }
-    setUpdating(false);
-    return [];
-  }, [data, setUpdating]);
-
-  const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
-    if (!selectedGroupId) return null;
-    return groups.find((g) => g.id === selectedGroupId) || null;
-  }, [selectedGroupId, groups]);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const handleSearch = useCallback((searchTerm: string) => {
-    setSearchTerm(searchTerm);
-  }, []);
+  const groups: readonly TemplateRecipientGroup[] = React.useMemo(
+    () => data?.templateRecipientGroupsByTemplateId ?? [],
+    [data],
+  );
 
   // Show error state if there's an error
   if (error) {
@@ -67,17 +49,14 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
   return (
     <Autocomplete
       value={selectedGroup}
+      // u cant use selectGroupId here, cause it will need a computed opject, so we need to pass the whole object so it will be the same reference
       onChange={(_, newValue: TemplateRecipientGroup | null) => {
         if (newValue) {
-          setSelectedGroupId(newValue.id ?? null);
+          setSelectedGroup(newValue);
         }
       }}
-      inputValue={searchTerm}
-      onInputChange={(_, newInputValue) => {
-        handleSearch(newInputValue);
-      }}
       options={groups}
-      loading={loading}
+      loading={apolloLoading}
       openOnFocus
       getOptionLabel={(option) => option.name || ""}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -86,7 +65,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
         <TextField
           {...params}
           label={strings.selectGroup}
-          placeholder={strings.selectGroupToAddStudents}
+          placeholder={strings.selectGroup}
         />
       )}
       renderOption={(props, option) => (
