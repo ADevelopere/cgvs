@@ -309,7 +309,11 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
     },
   );
 
-  const variables = data?.templateVariablesByTemplateId || [];
+
+  const variables = useMemo(
+    () => data?.templateVariablesByTemplateId || [],
+    [data],
+  );
 
   return (
     <>
