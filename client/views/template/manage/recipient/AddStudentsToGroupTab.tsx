@@ -15,7 +15,7 @@ interface AddStudentsToGroupTabProps {
 const AddStudentsToGroupTab: React.FC<AddStudentsToGroupTabProps> = ({
   template,
 }) => {
-  const { selectedGroupId } = useRecipientStore();
+  const { selectedGroup } = useRecipientStore();
 
   return (
     <Box
@@ -32,7 +32,7 @@ const AddStudentsToGroupTab: React.FC<AddStudentsToGroupTabProps> = ({
       </Box>
 
       {/* Content Area */}
-      {selectedGroupId ? (
+      {selectedGroup ? (
         <Box
           sx={{
             flex: 1,
