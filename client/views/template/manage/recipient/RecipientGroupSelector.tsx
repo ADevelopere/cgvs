@@ -21,6 +21,12 @@ const RecipientGroupSelector: React.FC = () => {
     } as Template;
   }, []);
 
+  const { data: recipientGroups } = useTemplateRecipientGroupsByTemplateIdQuery({
+    variables: {
+      templateId: template.id,
+    },
+  });
+
   const groups = useMemo(() => {
     return template?.recipientGroups || [];
   }, [template]);

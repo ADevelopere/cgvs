@@ -17,7 +17,7 @@ import {
 import { TabList as MuiTabList, TabContext } from "@mui/lab";
 import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { useAppTranslation } from "@/client/locale";
-import { TemplateManagementTabType } from "../hooks";
+import { TemplateManagementTabType } from "./useTemplateManagementStore";
 
 interface TabListProps {
   onChange: (
