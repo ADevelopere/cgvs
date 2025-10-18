@@ -14,5 +14,9 @@ export type RecipientTranslation = {
   errorAddingToGroup: string;
   errorFetchingStudentsNotInGroup: string;
   errorFetchingStudentsInGroup: string;
+
+  // Tab labels
+  tabManageAdded: string;
+  tabAddNew: string;
 };
 

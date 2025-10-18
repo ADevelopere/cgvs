@@ -16,5 +16,9 @@ export const recipient: RecipientTranslation = {
   errorAddingToGroup: "فشل في إضافة الطلاب إلى المجموعة",
   errorFetchingStudentsNotInGroup: "فشل في جلب الطلاب غير الموجودين في المجموعة",
   errorFetchingStudentsInGroup: "فشل في جلب الطلاب في المجموعة",
+
+  // Tab labels
+  tabManageAdded: "تمت اضافتهم",
+  tabAddNew: "اضافة",
 };
 
