@@ -171,4 +171,10 @@ export const templateCategory: TemplateCategoryTranslation = {
   of: "من",
   perPage: "لكل صفحة",
   goToPage: "الذهاب إلى الصفحة",
+
+  // Template loading and error states
+  loadingTemplate: "جاري تحميل القالب...",
+  templateNotFoundTitle: "القالب غير موجود",
+  templateNotFoundMessage: "لم يتم العثور على القالب المطلوب. يرجى العودة لاستكشاف قوالب أخرى.",
+  backToTemplates: "العودة إلى القوالب",
 };
