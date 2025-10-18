@@ -6,8 +6,15 @@ import { useRecipientStore } from "./stores/useRecipientStore";
 import RecipientGroupSelector from "./RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
 import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
+import { Template } from "@/client/graphql/generated/gql/graphql";
 
-const AddStudentsToGroupTab: React.FC = () => {
+interface AddStudentsToGroupTabProps {
+  template: Template;
+}
+
+const AddStudentsToGroupTab: React.FC<AddStudentsToGroupTabProps> = ({
+  template,
+}) => {
   const { selectedGroupId } = useRecipientStore();
 
   return (
@@ -21,11 +28,11 @@ const AddStudentsToGroupTab: React.FC = () => {
     >
       {/* Group Selector */}
       <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-        <RecipientGroupSelector />
+        <RecipientGroupSelector template={template} />
       </Box>
 
       {/* Content Area */}
-      { selectedGroupId ? (
+      {selectedGroupId ? (
         <Box
           sx={{
             flex: 1,
