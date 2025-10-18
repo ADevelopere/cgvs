@@ -3,14 +3,14 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
-import { useAppTranslation } from "@/client/locale";
 import {
   useRecipientStore,
   useRecipientStoreInitializer,
 } from "./stores/useRecipientStore";
 import RecipientGroupSelector from "./RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
-import StudentsNotInGroupTable from "./add/StudentsNotInGroupTable";
+import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
+import StudentsInGroupTable from "./StudentsInGroupTable";
 import { RecipientSubTabList } from "./components/RecipientSubTabList";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
@@ -23,7 +23,6 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
 }) => {
   const { selectedGroup, activeSubTab, setActiveSubTab } = useRecipientStore();
   const { loading: initializing } = useRecipientStoreInitializer();
-  const strings = useAppTranslation("recipientTranslations");
 
   const handleTabChange = (
     _: React.SyntheticEvent,
@@ -100,19 +99,8 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
         >
           <TabContext value={activeSubTab}>
             <TabPanel value="manage" sx={{ flex: 1, p: 0, overflow: "hidden" }}>
-              <Box
-                sx={{
-                  p: 3,
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "background.default",
-                }}
-              >
-                <Typography variant="h6" color="text.secondary">
-                  {strings.tabManageAdded}
-                </Typography>
+              <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
+                <StudentsInGroupTable templateId={template.id} />
               </Box>
             </TabPanel>
             <TabPanel value="add" sx={{ flex: 1, p: 0, overflow: "hidden" }}>

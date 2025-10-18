@@ -17,8 +17,16 @@ interface RecipientState {
   // Query variables for students NOT in group
   studentsNotInGroupQueryParams: Graphql.StudentsNotInRecipientGroupQueryVariables;
 
-  // Filter state for UI
-  filters: Record<string, FilterClause | null>;
+  // Query variables for students IN group
+  studentsInGroupQueryParams: Graphql.StudentsInRecipientGroupQueryVariables;
+
+  // Filter state for UI - separate for each tab
+  filtersNotInGroup: Record<string, FilterClause | null>;
+  filtersInGroup: Record<string, FilterClause | null>;
+
+  // Selected student IDs - separate for each tab (not persisted)
+  selectedStudentIdsNotInGroup: number[];
+  selectedStudentIdsInGroup: number[];
 
   // Sub-tab state
   activeSubTab: "manage" | "add";
@@ -30,10 +38,21 @@ interface RecipientActions {
   setStudentsNotInGroupQueryParams: (
     params: Partial<Graphql.StudentsNotInRecipientGroupQueryVariables>,
   ) => void;
-  setFilters: (filters: Record<string, FilterClause | null>) => void;
-  setFilter: (columnId: string, filter: FilterClause | null) => void;
-  clearFilter: (columnId: string) => void;
-  clearAllFilters: () => void;
+  setStudentsInGroupQueryParams: (
+    params: Partial<Graphql.StudentsInRecipientGroupQueryVariables>,
+  ) => void;
+  setFiltersNotInGroup: (filters: Record<string, FilterClause | null>) => void;
+  setFiltersInGroup: (filters: Record<string, FilterClause | null>) => void;
+  setFilterNotInGroup: (columnId: string, filter: FilterClause | null) => void;
+  setFilterInGroup: (columnId: string, filter: FilterClause | null) => void;
+  clearFilterNotInGroup: (columnId: string) => void;
+  clearFilterInGroup: (columnId: string) => void;
+  clearAllFiltersNotInGroup: () => void;
+  clearAllFiltersInGroup: () => void;
+  setSelectedStudentIdsNotInGroup: (ids: number[]) => void;
+  setSelectedStudentIdsInGroup: (ids: number[]) => void;
+  clearSelectedStudentIdsNotInGroup: () => void;
+  clearSelectedStudentIdsInGroup: () => void;
   setActiveSubTab: (tab: "manage" | "add") => void;
   reset: () => void;
 }
@@ -76,7 +95,14 @@ const initialState: RecipientState = {
     recipientGroupId: 0, // Will be set when a group is selected
     paginationArgs: { page: 1, first: 50 },
   },
-  filters: {},
+  studentsInGroupQueryParams: {
+    recipientGroupId: 0, // Will be set when a group is selected
+    paginationArgs: { page: 1, first: 50 },
+  },
+  filtersNotInGroup: {},
+  filtersInGroup: {},
+  selectedStudentIdsNotInGroup: [],
+  selectedStudentIdsInGroup: [],
   activeSubTab: getPersistedActiveSubTab(),
 };
 
@@ -96,6 +122,11 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
             recipientGroupId: group?.id || 0,
             paginationArgs: { page: 1, first: 50 },
           },
+          studentsInGroupQueryParams: {
+            ...state.studentsInGroupQueryParams,
+            recipientGroupId: group?.id || 0,
+            paginationArgs: { page: 1, first: 50 },
+          },
         };
       }),
 
@@ -106,6 +137,11 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
           selectedGroupId: groupId,
           studentsNotInGroupQueryParams: {
             ...state.studentsNotInGroupQueryParams,
+            recipientGroupId: groupId || 0,
+            paginationArgs: { page: 1, first: 50 },
+          },
+          studentsInGroupQueryParams: {
+            ...state.studentsInGroupQueryParams,
             recipientGroupId: groupId || 0,
             paginationArgs: { page: 1, first: 50 },
           },
@@ -120,21 +156,53 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
         },
       })),
 
-    setFilters: (filters) => set({ filters }),
-
-    setFilter: (columnId, filter) =>
+    setStudentsInGroupQueryParams: (params) =>
       set((state) => ({
-        filters: { ...state.filters, [columnId]: filter },
+        studentsInGroupQueryParams: {
+          ...state.studentsInGroupQueryParams,
+          ...params,
+        },
       })),
 
-    clearFilter: (columnId) =>
+    setFiltersNotInGroup: (filters) => set({ filtersNotInGroup: filters }),
+
+    setFiltersInGroup: (filters) => set({ filtersInGroup: filters }),
+
+    setFilterNotInGroup: (columnId, filter) =>
+      set((state) => ({
+        filtersNotInGroup: { ...state.filtersNotInGroup, [columnId]: filter },
+      })),
+
+    setFilterInGroup: (columnId, filter) =>
+      set((state) => ({
+        filtersInGroup: { ...state.filtersInGroup, [columnId]: filter },
+      })),
+
+    clearFilterNotInGroup: (columnId) =>
       set((state) => {
-        const newFilters = { ...state.filters };
+        const newFilters = { ...state.filtersNotInGroup };
         delete newFilters[columnId];
-        return { filters: newFilters };
+        return { filtersNotInGroup: newFilters };
       }),
 
-    clearAllFilters: () => set({ filters: {} }),
+    clearFilterInGroup: (columnId) =>
+      set((state) => {
+        const newFilters = { ...state.filtersInGroup };
+        delete newFilters[columnId];
+        return { filtersInGroup: newFilters };
+      }),
+
+    clearAllFiltersNotInGroup: () => set({ filtersNotInGroup: {} }),
+
+    clearAllFiltersInGroup: () => set({ filtersInGroup: {} }),
+
+    setSelectedStudentIdsNotInGroup: (ids) => set({ selectedStudentIdsNotInGroup: ids }),
+
+    setSelectedStudentIdsInGroup: (ids) => set({ selectedStudentIdsInGroup: ids }),
+
+    clearSelectedStudentIdsNotInGroup: () => set({ selectedStudentIdsNotInGroup: [] }),
+
+    clearSelectedStudentIdsInGroup: () => set({ selectedStudentIdsInGroup: [] }),
 
     setActiveSubTab: (tab) => {
       setPersistedActiveSubTab(tab);
