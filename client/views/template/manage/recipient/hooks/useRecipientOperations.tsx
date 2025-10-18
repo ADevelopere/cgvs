@@ -1,13 +1,18 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useRecipientStore } from "../stores/useRecipientStore";
 import { useRecipientApolloMutations } from "./useRecipientApolloMutations";
 import * as StudentUtils from "@/client/views/student/hook/utils/filter";
-import { FilterClause, TextFilterOperation, DateFilterOperation } from "@/client/types/filters";
+import {
+  FilterClause,
+  TextFilterOperation,
+  DateFilterOperation,
+} from "@/client/types/filters";
+import { BaseColumn } from "@/client/types/table.type";
 
 export const useRecipientOperations = () => {
   const apollo = useRecipientApolloMutations();
@@ -22,62 +27,68 @@ export const useRecipientOperations = () => {
         if (result.data) {
           notifications.show(strings.recipientCreated, {
             severity: "success",
-            autoHideDuration: 3000
+            autoHideDuration: 3000,
           });
           return true;
         }
         notifications.show(strings.errorCreatingRecipient, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
-      } catch (error) {
+      } catch {
         notifications.show(strings.errorCreatingRecipient, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
       }
     },
-    [apollo, notifications, strings]
+    [apollo, notifications, strings],
   );
 
   const addStudentsToGroup = useCallback(
     async (studentIds: number[]): Promise<boolean> => {
-      if (!store.selectedGroupId || studentIds.length === 0) {
+      if (!store.selectedGroup?.id || studentIds.length === 0) {
         return false;
       }
 
       try {
         const result = await apollo.createRecipients({
           input: {
-            recipientGroupId: store.selectedGroupId,
-            studentIds
-          }
+            recipientGroupId: store.selectedGroup.id,
+            studentIds,
+          },
         });
 
         if (result.data && result.data.createRecipients.length > 0) {
           notifications.show(strings.addedToGroup, {
             severity: "success",
-            autoHideDuration: 3000
+            autoHideDuration: 3000,
           });
           return true;
         }
 
         notifications.show(strings.errorAddingToGroup, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
-      } catch (error) {
+      } catch {
         notifications.show(strings.errorAddingToGroup, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
       }
     },
-    [apollo, store.selectedGroupId, notifications, strings]
+    [
+      store.selectedGroup?.id,
+      apollo,
+      notifications,
+      strings.errorAddingToGroup,
+      strings.addedToGroup,
+    ],
   );
 
   const deleteRecipient = useCallback(
@@ -87,24 +98,24 @@ export const useRecipientOperations = () => {
         if (result.data) {
           notifications.show(strings.recipientDeleted, {
             severity: "success",
-            autoHideDuration: 3000
+            autoHideDuration: 3000,
           });
           return true;
         }
         notifications.show(strings.errorDeletingRecipient, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
-      } catch (error) {
+      } catch {
         notifications.show(strings.errorDeletingRecipient, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
       }
     },
-    [apollo, notifications, strings]
+    [apollo, notifications, strings],
   );
 
   const deleteRecipients = useCallback(
@@ -116,24 +127,24 @@ export const useRecipientOperations = () => {
         if (result.data) {
           notifications.show(strings.recipientsDeleted, {
             severity: "success",
-            autoHideDuration: 3000
+            autoHideDuration: 3000,
           });
           return true;
         }
         notifications.show(strings.errorDeletingRecipients, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
-      } catch (error) {
+      } catch {
         notifications.show(strings.errorDeletingRecipients, {
           severity: "error",
-          autoHideDuration: 3000
+          autoHideDuration: 3000,
         });
         return false;
       }
     },
-    [apollo, notifications, strings]
+    [apollo, notifications, strings],
   );
 
   // Pagination operations
@@ -142,20 +153,20 @@ export const useRecipientOperations = () => {
       store.setStudentsNotInGroupQueryParams({
         paginationArgs: {
           ...store.studentsNotInGroupQueryParams.paginationArgs,
-          page
-        }
+          page,
+        },
       });
     },
-    [store]
+    [store],
   );
 
   const onRowsPerPageChange = useCallback(
     (rowsPerPage: number) => {
       store.setStudentsNotInGroupQueryParams({
-        paginationArgs: { first: rowsPerPage, page: 1 }
+        paginationArgs: { first: rowsPerPage, page: 1 },
       });
     },
-    [store]
+    [store],
   );
 
   // Filter operations
@@ -163,12 +174,15 @@ export const useRecipientOperations = () => {
     (columnId: string, filterClause: FilterClause | null) => {
       store.setFilter(columnId, filterClause);
     },
-    [store]
+    [store],
   );
 
   // Sync filters to GraphQL query params
   const syncFiltersToQueryParams = useCallback(
-    (activeFilters: Record<string, FilterClause | null>, baseColumns: any[]) => {
+    (
+      activeFilters: Record<string, FilterClause | null>,
+      baseColumns: BaseColumn[],
+    ) => {
       const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
       Object.values(activeFilters).forEach((filterClause) => {
@@ -183,26 +197,27 @@ export const useRecipientOperations = () => {
           mappedFilter = StudentUtils.mapTextFilter(
             columnId,
             filterClause.operation as TextFilterOperation,
-            filterClause.value as string
+            filterClause.value as string,
           );
         } else if (column.type === "date") {
           mappedFilter = StudentUtils.mapDateFilter(
             columnId,
             filterClause.operation as DateFilterOperation,
-            filterClause.value as { from?: Date; to?: Date }
+            filterClause.value as { from?: Date; to?: Date },
           );
         }
         Object.assign(newFilterArgs, mappedFilter);
       });
 
       store.setStudentsNotInGroupQueryParams({
-        filterArgs: Object.keys(newFilterArgs).length > 0
-          ? (newFilterArgs as Graphql.StudentFilterArgs)
-          : null,
-        paginationArgs: { page: 1, first: 50 }
+        filterArgs:
+          Object.keys(newFilterArgs).length > 0
+            ? (newFilterArgs as Graphql.StudentFilterArgs)
+            : null,
+        paginationArgs: { page: 1, first: 50 },
       });
     },
-    [store]
+    [store],
   );
 
   // Sort operations
@@ -210,18 +225,32 @@ export const useRecipientOperations = () => {
     (orderBy: Graphql.StudentsOrderByClause[] | null) => {
       store.setStudentsNotInGroupQueryParams({ orderBy });
     },
-    [store]
+    [store],
   );
 
-  return {
-    addSingleStudentToGroup,
-    addStudentsToGroup,
-    deleteRecipient,
-    deleteRecipients,
-    onPageChange,
-    onRowsPerPageChange,
-    setColumnFilter,
-    syncFiltersToQueryParams,
-    setSort
-  };
+  // Return a stable object using useMemo
+  return useMemo(
+    () => ({
+      addSingleStudentToGroup,
+      addStudentsToGroup,
+      deleteRecipient,
+      deleteRecipients,
+      onPageChange,
+      onRowsPerPageChange,
+      setColumnFilter,
+      syncFiltersToQueryParams,
+      setSort,
+    }),
+    [
+      addSingleStudentToGroup,
+      addStudentsToGroup,
+      deleteRecipient,
+      deleteRecipients,
+      onPageChange,
+      onRowsPerPageChange,
+      setColumnFilter,
+      syncFiltersToQueryParams,
+      setSort,
+    ],
+  );
 };
