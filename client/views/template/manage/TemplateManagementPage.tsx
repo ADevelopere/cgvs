@@ -26,7 +26,7 @@ import {
   useTemplateUIStore,
 } from "./useTemplateManagementStore";
 import BasicInfoTab from "./BasicInfoTab";
-import RecipientsManagementTab from "./recipient/RecipientsManagementTab";
+import AddStudentsToGroupTab from "./recipient/AddStudentsToGroupTab";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
 import { ManagementTabList } from "./ManagementTabList";
@@ -317,7 +317,7 @@ export const TemplateManagementPage: React.FC = () => {
           <RecipientGroupTab template={template} />
         </TabPanel>
         <TabPanel value="recipientsManagement">
-          <RecipientsManagementTab />
+          <AddStudentsToGroupTab template={template} />
         </TabPanel>
         <TabPanel value="preview">
           <Box

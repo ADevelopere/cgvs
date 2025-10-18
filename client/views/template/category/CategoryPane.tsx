@@ -142,7 +142,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       id: category.id,
       name: newName.trim(),
       description: category.description,
-      parentCategoryId: category.parentCategoryId,
+      parentCategoryId: category.parentTree[0],
     };
     updateCategory(input);
   };

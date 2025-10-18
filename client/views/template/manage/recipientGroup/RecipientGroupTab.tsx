@@ -15,11 +15,11 @@ import GroupInfoDialog from "./GroupInfoDialog";
 import GroupSettingsDialog from "./GroupSettingsDialog";
 import DeleteConfirmationDialog from "../recipient/DeleteConfirmationDialog";
 
-interface RecipientGroupTabContentProps {
+interface RecipientGroupTabProps {
   template: Template;
 }
 
-const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({
+const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({
   template,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
@@ -86,19 +86,6 @@ const RecipientGroupTabContent: React.FC<RecipientGroupTabContentProps> = ({
       <DeleteConfirmationDialog groups={groups} />
     </Box>
   );
-};
-
-interface RecipientGroupTabProps {
-  template: Template;
-}
-
-const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({ template }) => {
-  if (!template?.id) {
-    return null;
-  }
-
-  // No provider needed, hooks access stores directly
-  return <RecipientGroupTabContent template={template} />;
 };
 
 export default RecipientGroupTab;
