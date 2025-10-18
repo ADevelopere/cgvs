@@ -18,6 +18,12 @@ import { FooterEndContent, FooterStartContent } from "./Footer";
 const StudentsNotInGroupTable: React.FC = () => {
   const store = useRecipientStore();
   const operations = useRecipientOperations();
+  const { syncFiltersToQueryParams } = operations;
+  const syncFiltersToQueryParamsRef = useRef(syncFiltersToQueryParams);
+
+  useEffect(() => {
+    syncFiltersToQueryParamsRef.current = syncFiltersToQueryParams;
+  }, [syncFiltersToQueryParams]);
 
   // Get query variables from store
   const { studentsNotInGroupQueryParams, selectedGroup, filters } = store;
@@ -83,8 +89,8 @@ const StudentsNotInGroupTable: React.FC = () => {
   // Convert active filters to StudentFilterArgs
   useEffect(() => {
     if (!selectedGroup) return;
-    operations.syncFiltersToQueryParams(activeFilters, recipientBaseColumns);
-  }, [activeFilters, selectedGroup, operations]);
+    syncFiltersToQueryParamsRef.current(activeFilters, recipientBaseColumns);
+  }, [activeFilters, selectedGroup]);
 
   // Handle sort changes
   const handleSort = useCallback(
