@@ -4,6 +4,7 @@ export type RecipientTranslation = {
   recipientDeleted: string;
   recipientsDeleted: string;
   addedToGroup: string;
+  removedFromGroup: string;
 
   // Error messages
   errorFetchingRecipient: string;
@@ -12,8 +13,17 @@ export type RecipientTranslation = {
   errorDeletingRecipient: string;
   errorDeletingRecipients: string;
   errorAddingToGroup: string;
+  errorRemovingFromGroup: string;
   errorFetchingStudentsNotInGroup: string;
   errorFetchingStudentsInGroup: string;
+
+  // Action buttons and dialogs
+  addToGroup: string;
+  removeFromGroup: string;
+  confirmAddStudents: string;
+  confirmAddStudentsMessage: string;
+  confirmRemoveStudents: string;
+  confirmRemoveStudentsMessage: string;
 
   // Tab labels
   tabManageAdded: string;

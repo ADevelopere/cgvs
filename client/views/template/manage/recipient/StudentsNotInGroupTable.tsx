@@ -3,17 +3,21 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import Table from "@/client/components/Table/Table/Table";
-import { useRecipientStore } from "../stores/useRecipientStore";
-import { useRecipientOperations } from "../hooks/useRecipientOperations";
-import { studentsNotInRecipientGroupQueryDocument } from "../hooks/recipient.documents";
+import RecipientTableWithSelection from "./components/RecipientTableWithSelection";
+import { useRecipientStore } from "./stores/useRecipientStore";
+import { useRecipientOperations } from "./hooks/useRecipientOperations";
+import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
 import logger from "@/lib/logger";
-import { mapColumnIdToGraphQLColumn, recipientBaseColumns } from "../columns";
-import { FooterEndContent, FooterStartContent } from "./Footer";
+import { mapColumnIdToGraphQLColumn, recipientBaseColumns } from "./columns";
+import {
+  RecipientTableFooterEnd,
+  RecipientTableFooterStart,
+} from "./components/RecipientTableFooter";
+import { useAppTranslation } from "@/client/locale";
 
 interface StudentsNotInGroupTableProps {
   templateId?: number;
@@ -26,13 +30,15 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
   const operations = useRecipientOperations(templateId);
   const { syncFiltersToQueryParams } = operations;
   const syncFiltersToQueryParamsRef = useRef(syncFiltersToQueryParams);
+  const strings = useAppTranslation("recipientGroupTranslations");
 
   useEffect(() => {
     syncFiltersToQueryParamsRef.current = syncFiltersToQueryParams;
   }, [syncFiltersToQueryParams]);
 
   // Get query variables from store
-  const { studentsNotInGroupQueryParams, selectedGroup, filters } = store;
+  const { studentsNotInGroupQueryParams, selectedGroup, filtersNotInGroup } =
+    store;
 
   // Fetch students directly with useQuery - Apollo handles refetch automatically
   const { data, loading } = useQuery(studentsNotInRecipientGroupQueryDocument, {
@@ -48,7 +54,7 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
   const pageInfo = data?.studentsNotInRecipientGroup?.pageInfo;
 
   const [activeFilters, setActiveFilters] =
-    useState<Record<string, FilterClause | null>>(filters);
+    useState<Record<string, FilterClause | null>>(filtersNotInGroup);
   const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
     {},
   );
@@ -130,7 +136,8 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
   );
 
   return (
-    <TableProvider
+    <RecipientTableWithSelection
+      tabType="add"
       data={students}
       isLoading={loading}
       columns={recipientBaseColumns}
@@ -151,8 +158,19 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
       onPageChange={operations.onPageChange}
       onRowsPerPageChange={operations.onRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-      footerStartContent={<FooterStartContent />}
-      footerEndContent={<FooterEndContent templateId={templateId} />}
+      footerStartContent={<RecipientTableFooterStart tabType="add" />}
+      footerEndContent={
+        <RecipientTableFooterEnd
+          templateId={templateId}
+          mode="add"
+          onAction={operations.addStudentsToGroup}
+          actionButtonLabel={strings.addToGroup}
+          confirmDialogTitle={strings.confirmAddStudents}
+          confirmDialogMessage={strings.confirmAddStudentsMessage}
+          queryDocument={studentsNotInRecipientGroupQueryDocument}
+          queryVariables={studentsNotInGroupQueryParams}
+        />
+      }
     >
       <Box
         sx={{
@@ -184,7 +202,7 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
             )}
         </Box>
       </Box>
-    </TableProvider>
+    </RecipientTableWithSelection>
   );
 };
 

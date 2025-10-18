@@ -20,10 +20,22 @@ import { studentsNotInRecipientGroupQueryDocument } from "../hooks/recipient.doc
 import { useAppTranslation } from "@/client/locale";
 import { useTableRowsContext } from "@/client/components/Table/Table/TableRowsContext";
 
+interface RecipientTableFooterEndProps {
+  templateId?: number;
+  mode: "add" | "remove";
+  onAction: (selectedRowIds: number[]) => Promise<boolean>;
+  actionButtonLabel: string;
+  confirmDialogTitle: string;
+  confirmDialogMessage: string;
+  queryDocument: any; // The GraphQL query document to use for loading state
+  queryVariables: any; // The variables for the query
+}
+
 // Footer start content component - shows selection count and clear button
-export const FooterStartContent: React.FC = () => {
+export const RecipientTableFooterStart: React.FC<{ tabType?: "add" | "manage" }> = ({ tabType }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { selectedRowIds, clearAllSelections } = useTableRowsContext();
+  const store = useRecipientStore();
   const [openClearDialog, setOpenClearDialog] = useState(false);
 
   const handleClearClick = () => {
@@ -32,6 +44,12 @@ export const FooterStartContent: React.FC = () => {
 
   const handleClearConfirm = () => {
     clearAllSelections();
+    // Also clear the store selection
+    if (tabType === "add") {
+      store.clearSelectedStudentIdsNotInGroup();
+    } else if (tabType === "manage") {
+      store.clearSelectedStudentIdsInGroup();
+    }
     setOpenClearDialog(false);
   };
 
@@ -90,39 +108,47 @@ export const FooterStartContent: React.FC = () => {
 };
 
 // Footer end content component - shows action buttons
-export const FooterEndContent: React.FC<{ templateId?: number }> = ({
+export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = ({
   templateId,
+  mode,
+  onAction,
+  actionButtonLabel,
+  confirmDialogTitle,
+  confirmDialogMessage,
+  queryDocument,
+  queryVariables,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { selectedRowIds } = useTableRowsContext();
-  const { addStudentsToGroup } = useRecipientOperations(templateId);
-  const { studentsNotInGroupQueryParams } = useRecipientStore();
-  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const store = useRecipientStore();
+  const [openActionDialog, setOpenActionDialog] = useState(false);
 
   // Get loading state from the query
-  const { loading } = useQuery(studentsNotInRecipientGroupQueryDocument, {
-    variables: {
-      ...studentsNotInGroupQueryParams,
-      recipientGroupId: studentsNotInGroupQueryParams.recipientGroupId,
-    },
-    skip: !studentsNotInGroupQueryParams.recipientGroupId,
+  const { loading } = useQuery(queryDocument, {
+    variables: queryVariables,
+    skip: !queryVariables.recipientGroupId,
     fetchPolicy: "cache-first",
   });
 
-  const handleAddClick = () => {
-    setOpenAddDialog(true);
+  const handleActionClick = () => {
+    setOpenActionDialog(true);
   };
 
-  const handleAddConfirm = async () => {
-    const success = await addStudentsToGroup(selectedRowIds.map(Number));
+  const handleActionConfirm = async () => {
+    const success = await onAction(selectedRowIds.map(Number));
     if (success) {
-      setOpenAddDialog(false);
-      // Table selection will be automatically cleared after data refresh
+      setOpenActionDialog(false);
+      // Clear the appropriate selection in store
+      if (mode === "add") {
+        store.clearSelectedStudentIdsNotInGroup();
+      } else {
+        store.clearSelectedStudentIdsInGroup();
+      }
     }
   };
 
-  const handleAddCancel = () => {
-    setOpenAddDialog(false);
+  const handleActionCancel = () => {
+    setOpenActionDialog(false);
   };
 
   return (
@@ -152,30 +178,30 @@ export const FooterEndContent: React.FC<{ templateId?: number }> = ({
           variant="contained"
           size="small"
           disabled={selectedRowIds.length === 0 || loading}
-          onClick={handleAddClick}
+          onClick={handleActionClick}
         >
-          {strings.addToGroup}
+          {actionButtonLabel}
         </Button>
       </Box>
 
-      <Dialog open={openAddDialog} onClose={handleAddCancel}>
-        <DialogTitle>{strings.confirmAddStudents}</DialogTitle>
+      <Dialog open={openActionDialog} onClose={handleActionCancel}>
+        <DialogTitle>{confirmDialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {strings.confirmAddStudentsMessage}
+            {confirmDialogMessage}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleAddCancel} color="primary">
+          <Button onClick={handleActionCancel} color="primary">
             {strings.cancel}
           </Button>
           <Button
-            onClick={handleAddConfirm}
+            onClick={handleActionConfirm}
             color="primary"
             variant="contained"
             disabled={loading}
           >
-            {strings.addToGroup}
+            {actionButtonLabel}
           </Button>
         </DialogActions>
       </Dialog>
