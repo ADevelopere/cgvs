@@ -40,7 +40,14 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
   // Show error state if there's an error
   if (error) {
     return (
-      <Alert severity="error" sx={{ minWidth: 300 }}>
+      <Alert
+        severity="error"
+        sx={{
+          minWidth: { xs: 200, sm: 250, md: 300 },
+          width: "100%",
+          maxWidth: "100%",
+        }}
+      >
         {strings.errorFetchingGroups}
       </Alert>
     );
@@ -88,7 +95,11 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
           </Box>
         </li>
       )}
-      sx={{ minWidth: 300 }}
+      sx={{
+        minWidth: { xs: 200, sm: 250, md: 300 },
+        width: "100%",
+        maxWidth: "100%",
+      }}
     />
   );
 };
