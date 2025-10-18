@@ -10,8 +10,8 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
-import { useRecipientGroupDialogs } from "../recipientGroup/hooks/useRecipientGroupDialogs";
-import { useRecipientGroupOperations } from "../recipientGroup/hooks/useRecipientGroupOperations";
+import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
+import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 

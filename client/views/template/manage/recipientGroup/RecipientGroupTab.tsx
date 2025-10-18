@@ -8,12 +8,12 @@ import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import * as Document from "./hooks/recipientGroup.documents";
-import EmptyGroupsState from "../recipient/EmptyGroupsState";
+import EmptyGroupsState from "./EmptyGroupsState";
 import RecipientGroupList from "./RecipientGroupList";
 import CreateGroupDialog from "./CreateGroupDialog";
 import GroupInfoDialog from "./GroupInfoDialog";
 import GroupSettingsDialog from "./GroupSettingsDialog";
-import DeleteConfirmationDialog from "../recipient/DeleteConfirmationDialog";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 interface RecipientGroupTabProps {
   template: Template;
