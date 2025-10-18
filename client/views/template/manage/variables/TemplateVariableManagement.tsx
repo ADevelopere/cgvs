@@ -29,10 +29,7 @@ import {
   TemplateVariable,
   TemplateVariableType,
 } from "@/client/graphql/generated/gql/graphql";
-import {
-  useTemplateVariableOperations,
-  useTemplateVariableModal,
-} from "./hooks";
+import { useTemplateVariableOperations } from "./hooks";
 import { templateVariablesByTemplateIdQueryDocument } from "./hooks/templateVariable.documents";
 
 interface ContentProps {
@@ -273,9 +270,34 @@ interface TemplateVariableManagementProps {
 const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   template,
 }) => {
-  const operations = useTemplateVariableOperations();
-  const modal = useTemplateVariableModal(template.id);
+  const { deleteVariable } = useTemplateVariableOperations();
   const strings = useAppTranslation("templateVariableTranslations");
+
+  // Modal state management
+  const [isOpen, setIsOpen] = useState(false);
+  const [editingVariableId, setEditingVariableId] = useState<number | null>(
+    null,
+  );
+  const [variableType, setVariableType] =
+    useState<TemplateVariableType>("TEXT");
+
+  // Modal control functions
+  const openCreateModal = useCallback((type: TemplateVariableType) => {
+    setIsOpen(true);
+    setEditingVariableId(null);
+    setVariableType(type);
+  }, []);
+
+  const openEditModal = useCallback((variable: TemplateVariable) => {
+    setIsOpen(true);
+    setEditingVariableId(variable.id || null);
+    setVariableType(variable.type || "TEXT");
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false);
+    setEditingVariableId(null);
+  }, []);
 
   // Direct query - Apollo auto-refetches, no manual sync
   const { data, loading } = useQuery(
@@ -300,7 +322,7 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
           height: "100%",
         }}
       >
-        <Header onOpenModal={modal.openCreateModal} strings={strings} />
+        <Header onOpenModal={openCreateModal} strings={strings} />
         <Box
           sx={{
             overflow: "auto",
@@ -312,23 +334,22 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
           }}
         >
           <Content
-            onOpenModal={modal.openEditModal}
+            onOpenModal={openEditModal}
             strings={strings}
             variables={variables}
             loading={loading}
-            onDelete={operations.deleteVariable}
+            onDelete={deleteVariable}
           />
         </Box>
       </Box>
 
       <TemplateVariableModal
-        open={modal.isOpen}
-        onClose={modal.closeModal}
-        editingVariableId={modal.editingVariableId}
-        type={modal.variableType}
+        open={isOpen}
+        onClose={closeModal}
+        editingVariableId={editingVariableId}
+        type={variableType}
         templateId={template.id}
         variables={variables}
-        onSave={modal.handleSave}
       />
     </>
   );

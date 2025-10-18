@@ -9,7 +9,6 @@ import {
   Button,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
 import { useAppTranslation } from "@/client/locale";
 import {
   TemplateDateVariable,
@@ -30,19 +29,21 @@ const isDateValid = (dateStr: string | null): boolean => {
 
 type TemplateDateVariableFormProps = {
   editingVariableID?: number;
-  onDispose: () => void;
   templateId: number;
   variables: TemplateVariable[];
+  onCreate: (data: TemplateDateVariableCreateInput) => Promise<void>;
+  onUpdate: (
+    data: TemplateDateVariableCreateInput & { id: number },
+  ) => Promise<void>;
 };
 
 const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
-  onDispose,
   editingVariableID,
   templateId,
   variables,
+  onCreate,
+  onUpdate,
 }) => {
-  const { createVariable, updateVariable } = useTemplateVariableOperations();
-
   const editingVariable: TemplateDateVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
     return (
@@ -94,16 +95,14 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
   const handleSave = useCallback(async () => {
     try {
       if (editingVariableID) {
-        await updateVariable("DATE", state);
+        await onUpdate({ id: editingVariableID, ...state });
       } else {
-        await createVariable("DATE", state);
+        await onCreate(state);
       }
-      onDispose();
-    } catch (error) {
+    } catch {
       // Error handling is done in the operations hook
-      console.error("Error saving variable:", error);
     }
-  }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
+  }, [state, editingVariableID, onCreate, onUpdate]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {
     if (!editingVariableID) {

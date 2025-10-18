@@ -8,6 +8,18 @@ import logger from "@/lib/logger";
 import { useTemplateVariableUIStore } from "../stores";
 import { useTemplateVariableApolloMutations } from "./useTemplateVariableApolloMutations";
 
+export type TemplateVariableCreateInputUnion =
+  | Graphql.TemplateTextVariableCreateInput
+  | Graphql.TemplateNumberVariableCreateInput
+  | Graphql.TemplateDateVariableCreateInput
+  | Graphql.TemplateSelectVariableCreateInput;
+
+export type TemplateVariableUpdateInputUnion =
+  | Graphql.TemplateTextVariableUpdateInput
+  | Graphql.TemplateNumberVariableUpdateInput
+  | Graphql.TemplateDateVariableUpdateInput
+  | Graphql.TemplateSelectVariableUpdateInput;
+
 /**
  * Template Variable Operations Hook
  * Follows TemplatePane pattern - only handles mutations and notifications
@@ -24,11 +36,7 @@ export const useTemplateVariableOperations = () => {
   const createVariable = useCallback(
     async (
       type: Graphql.TemplateVariableType,
-      input:
-        | Graphql.TemplateTextVariableCreateInput
-        | Graphql.TemplateNumberVariableCreateInput
-        | Graphql.TemplateDateVariableCreateInput
-        | Graphql.TemplateSelectVariableCreateInput,
+      input: TemplateVariableCreateInputUnion,
     ): Promise<void> => {
       try {
         setOperationError("create", null);
@@ -107,11 +115,7 @@ export const useTemplateVariableOperations = () => {
   const updateVariable = useCallback(
     async (
       type: Graphql.TemplateVariableType,
-      input:
-        | Graphql.TemplateTextVariableUpdateInput
-        | Graphql.TemplateNumberVariableUpdateInput
-        | Graphql.TemplateDateVariableUpdateInput
-        | Graphql.TemplateSelectVariableUpdateInput,
+      input: TemplateVariableUpdateInputUnion,
     ): Promise<void> => {
       try {
         setOperationError("update", null);

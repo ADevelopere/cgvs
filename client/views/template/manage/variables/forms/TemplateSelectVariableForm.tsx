@@ -11,7 +11,6 @@ import {
   SelectChangeEvent,
   Button,
 } from "@mui/material";
-import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
 import TagInput from "@/client/components/input/TagInput";
 import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
@@ -24,19 +23,21 @@ import {
 
 type TemplateSelectVariableFormProps = {
   editingVariableID?: number;
-  onDispose: () => void;
   templateId: number;
   variables: TemplateVariable[];
+  onCreate: (data: TemplateSelectVariableCreateInput) => Promise<void>;
+  onUpdate: (
+    data: TemplateSelectVariableCreateInput & { id: number },
+  ) => Promise<void>;
 };
 
 const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
-  onDispose,
   editingVariableID,
   templateId,
   variables,
+  onCreate,
+  onUpdate,
 }) => {
-  const { createVariable, updateVariable } = useTemplateVariableOperations();
-
   const editingVariable: TemplateSelectVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
     return (
@@ -97,28 +98,14 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
   const handleSave = useCallback(async () => {
     try {
       if (editingVariableID) {
-        await updateVariable("SELECT", {
-          id: editingVariableID,
-          ...state,
-        });
+        await onUpdate({ id: editingVariableID, ...state });
       } else {
-        await createVariable("SELECT", {
-          ...state,
-          templateId: templateId,
-        });
+        await onCreate(state);
       }
-      onDispose();
     } catch {
       // Error handling is done in the operations hook
     }
-  }, [
-    editingVariableID,
-    onDispose,
-    updateVariable,
-    state,
-    createVariable,
-    templateId,
-  ]);
+  }, [editingVariableID, onUpdate, state, onCreate]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {
     if (!editingVariableID) {
