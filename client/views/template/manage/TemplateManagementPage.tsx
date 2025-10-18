@@ -18,29 +18,33 @@ export const TemplateManagementPage: React.FC = () => {
   const id = pathParams?.id;
 
   // Apollo query for template data
-  const { data: templateQuery, loading: apolloLoading } = useQuery(
-    templateQueryDocument,
-    {
-      variables: { id: id ? parseInt(id, 10) : 0 },
-      skip: !id,
-      fetchPolicy: "cache-first",
-    },
-  );
+  const {
+    data: templateQuery,
+    loading: apolloLoading,
+    error: apolloError,
+  } = useQuery(templateQueryDocument, {
+    variables: { id: id ? parseInt(id, 10) : 0 },
+    skip: !id,
+    fetchPolicy: "cache-first",
+  });
 
   const [template, setTemplate] = useState<Graphql.Template | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (apolloLoading || !templateQuery?.template) return;
+    if (apolloLoading || !templateQuery) return;
     if (templateQuery.template) {
       setTemplate(templateQuery.template);
       setLoading(false);
-    } else {
+    } else if (!templateQuery.template) {
       setError("Template not found");
       setLoading(false);
+    } else if (apolloError) {
+      setError(apolloError.message);
+      setLoading(false);
     }
-  }, [apolloLoading, templateQuery]);
+  }, [apolloLoading, templateQuery, apolloError]);
 
   // Show loading spinner during Apollo query
   if (apolloLoading || loading) {
