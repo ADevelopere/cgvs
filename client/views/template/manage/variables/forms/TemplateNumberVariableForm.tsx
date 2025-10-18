@@ -8,7 +8,6 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
 import { useAppTranslation } from "@/client/locale";
 import {
   isNumberVariableDifferent,
@@ -22,19 +21,21 @@ import {
 
 type TemplateNumberVariableFormProps = {
   editingVariableID?: number;
-  onDispose: () => void;
   templateId: number;
   variables: TemplateVariable[];
+  onCreate: (data: TemplateNumberVariableCreateInput) => Promise<void>;
+  onUpdate: (
+    data: TemplateNumberVariableCreateInput & { id: number },
+  ) => Promise<void>;
 };
 
 const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
-  onDispose,
   editingVariableID,
   templateId,
   variables,
+  onCreate,
+  onUpdate,
 }) => {
-  const { createVariable, updateVariable } = useTemplateVariableOperations();
-
   const editingVariable: TemplateNumberVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
     return (
@@ -90,16 +91,14 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
   const handleSave = useCallback(async () => {
     try {
       if (editingVariableID) {
-        await updateVariable("NUMBER", state);
+        await onUpdate({ id: editingVariableID, ...state });
       } else {
-        await createVariable("NUMBER", state);
+        await onCreate(state);
       }
-      onDispose();
-    } catch (error) {
+    } catch {
       // Error handling is done in the operations hook
-      console.error("Error saving variable:", error);
     }
-  }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
+  }, [state, editingVariableID, onCreate, onUpdate]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {
     if (!editingVariableID) return true;

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo } from "react";
+import { FC, useCallback, useMemo } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -21,6 +21,11 @@ import {
   TemplateVariableType,
   TemplateVariable,
 } from "@/client/graphql/generated/gql/graphql";
+import {
+  TemplateVariableCreateInputUnion,
+  TemplateVariableUpdateInputUnion,
+  useTemplateVariableOperations,
+} from "./hooks/useTemplateVariableOperations";
 
 interface TemplateVariableModalProps {
   open: boolean;
@@ -29,7 +34,6 @@ interface TemplateVariableModalProps {
   type: TemplateVariableType;
   templateId: number;
   variables: TemplateVariable[];
-  onSave?: (data: any) => Promise<void>;
 }
 
 const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
@@ -39,17 +43,26 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
   type,
   templateId,
   variables,
-  onSave,
 }) => {
   const strings = useAppTranslation("templateVariableTranslations");
+  const operations = useTemplateVariableOperations();
 
-  // Close modal when template variables are updated (indicating successful operation)
-  useEffect(() => {
-    if (!open) return;
+  // Create callbacks for forms
+  const onCreate = useCallback(
+    async (data: TemplateVariableCreateInputUnion) => {
+      await operations.createVariable(type, data);
+      onClose();
+    },
+    [operations, type, onClose],
+  );
 
-    // You might want to add logic here to close modal after successful operations
-    // This could be based on listening to template.variables changes or notifications
-  }, [open]);
+  const onUpdate = useCallback(
+    async (data: TemplateVariableUpdateInputUnion) => {
+      await operations.updateVariable(type, data);
+      onClose();
+    },
+    [operations, type, onClose],
+  );
 
   const typeToLabelMap: Record<TemplateVariableType, string> = useMemo(
     () => ({
@@ -118,34 +131,38 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           {type === "TEXT" && (
             <TextTemplateVariableForm
-              editingVariableID={editingVariableId}
-              onDispose={onClose}
+              editingVariableID={editingVariableId || undefined}
               templateId={templateId}
               variables={variables}
+              onCreate={onCreate}
+              onUpdate={onUpdate}
             />
           )}
           {type === "NUMBER" && (
             <NumberTemplateVariableForm
-              editingVariableID={editingVariableId}
-              onDispose={onClose}
+              editingVariableID={editingVariableId || undefined}
               templateId={templateId}
               variables={variables}
+              onCreate={onCreate}
+              onUpdate={onUpdate}
             />
           )}
           {type === "SELECT" && (
             <SelectTemplateVariableForm
-              editingVariableID={editingVariableId}
-              onDispose={onClose}
+              editingVariableID={editingVariableId || undefined}
               templateId={templateId}
               variables={variables}
+              onCreate={onCreate}
+              onUpdate={onUpdate}
             />
           )}
           {type === "DATE" && (
             <DateTemplateVariableForm
-              editingVariableID={editingVariableId}
-              onDispose={onClose}
+              editingVariableID={editingVariableId || undefined}
               templateId={templateId}
               variables={variables}
+              onCreate={onCreate}
+              onUpdate={onUpdate}
             />
           )}
         </LocalizationProvider>

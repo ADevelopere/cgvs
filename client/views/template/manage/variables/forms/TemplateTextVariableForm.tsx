@@ -8,8 +8,6 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-import { useTemplateVariableOperations } from "@/client/views/template/manage/variables/hooks/useTemplateVariableOperations";
-
 import { mapToTemplateTextVariableCreateInput } from "@/client/utils/templateVariable";
 import { isTextVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
 import { useAppTranslation } from "@/client/locale";
@@ -21,18 +19,19 @@ import {
 
 type TemplateTextVariableFormProps = {
   editingVariableID?: number;
-  onDispose: () => void;
   templateId: number;
   variables: TemplateVariable[];
+  onCreate: (data: TemplateTextVariableCreateInput) => Promise<void>;
+  onUpdate: (data: TemplateTextVariableCreateInput & { id: number }) => Promise<void>;
 };
 
 const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
-  onDispose,
   editingVariableID,
   templateId,
   variables,
+  onCreate,
+  onUpdate,
 }) => {
-  const { createVariable, updateVariable } = useTemplateVariableOperations();
 
   const editingVariable: TemplateTextVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
@@ -92,16 +91,12 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
   const handleSave = useCallback(async () => {
     try {
       if (editingVariableID) {
-        await updateVariable("TEXT", state);
+        await onUpdate({ id: editingVariableID, ...state });
       } else {
-        await createVariable("TEXT", state);
+        await onCreate(state);
       }
-      onDispose();
-    } catch (error) {
-      // Error handling is done in the operations hook
-      console.error("Error saving variable:", error);
-    }
-  }, [state, editingVariableID, createVariable, updateVariable, onDispose]);
+    } catch {}
+  }, [state, editingVariableID, onCreate, onUpdate]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {
     if (!editingVariableID) {
