@@ -90,10 +90,12 @@ export const FooterStartContent: React.FC = () => {
 };
 
 // Footer end content component - shows action buttons
-export const FooterEndContent: React.FC = () => {
+export const FooterEndContent: React.FC<{ templateId?: number }> = ({
+  templateId,
+}) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { selectedRowIds } = useTableRowsContext();
-  const { addStudentsToGroup } = useRecipientOperations();
+  const { addStudentsToGroup } = useRecipientOperations(templateId);
   const { studentsNotInGroupQueryParams } = useRecipientStore();
   const [openAddDialog, setOpenAddDialog] = useState(false);
 

@@ -42,7 +42,7 @@ const AddStudentsToGroupTab: React.FC<AddStudentsToGroupTabProps> = ({
             p: 2,
           }}
         >
-          <StudentsNotInGroupTable />
+          <StudentsNotInGroupTable templateId={template.id} />
         </Box>
       ) : (
         <SelectGroupPrompt />
