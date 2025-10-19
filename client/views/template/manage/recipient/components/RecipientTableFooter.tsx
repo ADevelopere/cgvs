@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   Box,
   Button,
@@ -15,47 +15,57 @@ import { OpenInNew } from "@mui/icons-material";
 import Link from "next/link";
 import { useQuery } from "@apollo/client/react";
 import { useRecipientStore } from "../stores/useRecipientStore";
-import { useRecipientOperations } from "../hooks/useRecipientOperations";
-import { studentsNotInRecipientGroupQueryDocument } from "../hooks/recipient.documents";
 import { useAppTranslation } from "@/client/locale";
-import { useTableRowsContext } from "@/client/components/Table/Table/TableRowsContext";
+import { DocumentNode } from "graphql";
 
 interface RecipientTableFooterEndProps {
-  templateId?: number;
   mode: "add" | "remove";
   onAction: (selectedRowIds: number[]) => Promise<boolean>;
   actionButtonLabel: string;
   confirmDialogTitle: string;
   confirmDialogMessage: string;
-  queryDocument: any; // The GraphQL query document to use for loading state
-  queryVariables: any; // The variables for the query
+  queryDocument: DocumentNode; // The GraphQL query document to use for loading state
+  queryVariables: Record<string, unknown>; // The variables for the query
 }
 
 // Footer start content component - shows selection count and clear button
-export const RecipientTableFooterStart: React.FC<{ tabType?: "add" | "manage" }> = ({ tabType }) => {
+export const RecipientTableFooterStart: React.FC<{
+  tabType?: "add" | "manage";
+}> = ({ tabType }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { selectedRowIds, clearAllSelections } = useTableRowsContext();
   const store = useRecipientStore();
   const [openClearDialog, setOpenClearDialog] = useState(false);
 
-  const handleClearClick = () => {
-    setOpenClearDialog(true);
-  };
+  // Get the appropriate selected IDs based on tab type
+  const selectedRowIds = useMemo(
+    () =>
+      tabType === "add"
+        ? store.selectedStudentIdsNotInGroup
+        : store.selectedStudentIdsInGroup,
+    [
+      tabType,
+      store.selectedStudentIdsNotInGroup,
+      store.selectedStudentIdsInGroup,
+    ],
+  );
 
-  const handleClearConfirm = () => {
-    clearAllSelections();
-    // Also clear the store selection
+  const handleClearClick = useCallback(() => {
+    setOpenClearDialog(true);
+  }, []);
+
+  const handleClearConfirm = useCallback(() => {
+    // Clear the store selection
     if (tabType === "add") {
       store.clearSelectedStudentIdsNotInGroup();
     } else if (tabType === "manage") {
       store.clearSelectedStudentIdsInGroup();
     }
     setOpenClearDialog(false);
-  };
+  }, [tabType, store]);
 
-  const handleClearCancel = () => {
+  const handleClearCancel = useCallback(() => {
     setOpenClearDialog(false);
-  };
+  }, []);
 
   return (
     <>
@@ -108,8 +118,9 @@ export const RecipientTableFooterStart: React.FC<{ tabType?: "add" | "manage" }>
 };
 
 // Footer end content component - shows action buttons
-export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = ({
-  templateId,
+export const RecipientTableFooterEnd: React.FC<
+  RecipientTableFooterEndProps
+> = ({
   mode,
   onAction,
   actionButtonLabel,
@@ -119,23 +130,43 @@ export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = (
   queryVariables,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { selectedRowIds } = useTableRowsContext();
   const store = useRecipientStore();
   const [openActionDialog, setOpenActionDialog] = useState(false);
 
+  // Get the appropriate selected IDs based on mode
+  const selectedRowIds = useMemo(
+    () =>
+      mode === "add"
+        ? store.selectedStudentIdsNotInGroup
+        : store.selectedStudentIdsInGroup,
+    [mode, store.selectedStudentIdsNotInGroup, store.selectedStudentIdsInGroup],
+  );
+
+  // Memoize the query variables to prevent unnecessary re-renders
+  const memoizedQueryVariables = useMemo(
+    () => queryVariables,
+    [queryVariables],
+  );
+
   // Get loading state from the query
   const { loading } = useQuery(queryDocument, {
-    variables: queryVariables,
-    skip: !queryVariables.recipientGroupId,
+    variables: memoizedQueryVariables,
+    skip: !memoizedQueryVariables.recipientGroupId,
     fetchPolicy: "cache-first",
   });
 
-  const handleActionClick = () => {
-    setOpenActionDialog(true);
-  };
+  // Memoize the converted selected row IDs
+  const convertedSelectedRowIds = useMemo(
+    () => selectedRowIds.map(Number),
+    [selectedRowIds],
+  );
 
-  const handleActionConfirm = async () => {
-    const success = await onAction(selectedRowIds.map(Number));
+  const handleActionClick = useCallback(() => {
+    setOpenActionDialog(true);
+  }, []);
+
+  const handleActionConfirm = useCallback(async () => {
+    const success = await onAction(convertedSelectedRowIds);
     if (success) {
       setOpenActionDialog(false);
       // Clear the appropriate selection in store
@@ -145,11 +176,17 @@ export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = (
         store.clearSelectedStudentIdsInGroup();
       }
     }
-  };
+  }, [onAction, convertedSelectedRowIds, mode, store]);
 
-  const handleActionCancel = () => {
+  const handleActionCancel = useCallback(() => {
     setOpenActionDialog(false);
-  };
+  }, []);
+
+  // Memoize the disabled state for the action button
+  const isActionButtonDisabled = useMemo(
+    () => selectedRowIds.length === 0 || loading,
+    [selectedRowIds.length, loading],
+  );
 
   return (
     <>
@@ -177,7 +214,7 @@ export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = (
         <Button
           variant="contained"
           size="small"
-          disabled={selectedRowIds.length === 0 || loading}
+          disabled={isActionButtonDisabled}
           onClick={handleActionClick}
         >
           {actionButtonLabel}
@@ -187,9 +224,7 @@ export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = (
       <Dialog open={openActionDialog} onClose={handleActionCancel}>
         <DialogTitle>{confirmDialogTitle}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {confirmDialogMessage}
-          </DialogContentText>
+          <DialogContentText>{confirmDialogMessage}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleActionCancel} color="primary">

@@ -15,7 +15,6 @@ import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import { useStudentOperations } from "./useStudentOperations";
 import { useStudentTable } from "./useStudentTable";
 import * as Document from "./hook/student.documents";
-import { TableLocaleProvider } from "@/client/locale/table/TableLocaleContext";
 
 const StudentManagementDashboardTitle: React.FC = () => {
   const strings = useAppTranslation("studentTranslations");
@@ -137,45 +136,57 @@ const StudentTable: React.FC = () => {
   }, [columns, indexColWidth, tableContainerRef]);
 
   return (
-    <TableLocaleProvider>
-      <TableProvider
-        data={students}
-        isLoading={loading}
-        columns={columns}
-        dataProps={{
-          onFilterChange: setColumnFilter,
-          onSort: updateSort,
-          filters,
-        }}
-        columnProps={{
-          initialWidths: initialWidths,
-        }}
-        rowsProps={{
-          // rowIdKey: rowIdKey,
-          // onLoadMoreRows: loadMoreRows,
-          // getRowStyle: getRowStyle,
-          // rowSelectionEnabled: enableRowSelection,
-          // selectedRowIds={selectedRowIds}
-          // totalRows: filteredTotalRows,
-          // pageSize: 50,
-          enableRowResizing: false,
-        }}
-        // Server operation props
-        // serverFilterUi={serverFilterUi}
-        // Selection props
-        // onSelectionChange={handleSelectionChange}
-        // Pagination props
-        pageInfo={pageInfo}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-        // initialPageSize={100}
-        // Sorting props
-        initialOrderBy={queryParams.orderBy?.map(clause => ({
-          column: clause.column.toLowerCase(),
-          order: clause.order,
-        }))}
-      >
+    <TableProvider
+      data={students}
+      isLoading={loading}
+      columns={columns}
+      dataProps={{
+        onFilterChange: setColumnFilter,
+        onSort: updateSort,
+        filters,
+      }}
+      columnProps={{
+        initialWidths: initialWidths,
+      }}
+      rowsProps={{
+        // rowIdKey: rowIdKey,
+        // onLoadMoreRows: loadMoreRows,
+        // getRowStyle: getRowStyle,
+        // rowSelectionEnabled: enableRowSelection,
+        // selectedRowIds={selectedRowIds}
+        // totalRows: filteredTotalRows,
+        // pageSize: 50,
+        enableRowResizing: false,
+      }}
+      // Server operation props
+      // serverFilterUi={serverFilterUi}
+      // Selection props
+      // onSelectionChange={handleSelectionChange}
+      // Pagination props
+      pageInfo={pageInfo}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+      // initialPageSize={100}
+      // Sorting props
+      initialOrderBy={
+        Array.isArray(queryParams.orderBy)
+          ? queryParams.orderBy
+              .filter((clause) => clause.order) // Filter out null/undefined orders
+              .map((clause) => ({
+                column: clause.column.toLowerCase(),
+                order: clause.order as "ASC" | "DESC",
+              }))
+          : queryParams.orderBy?.order
+            ? [
+                {
+                  column: queryParams.orderBy.column.toLowerCase(),
+                  order: queryParams.orderBy.order as "ASC" | "DESC",
+                },
+              ]
+            : []
+      }
+    >
       <Paper
         sx={{
           display: "flex",
@@ -221,8 +232,7 @@ const StudentTable: React.FC = () => {
             )}
         </Box>
       </Paper>
-      </TableProvider>
-    </TableLocaleProvider>
+    </TableProvider>
   );
 };
 

@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import Table from "@/client/components/Table/Table/Table";
-import RecipientTableWithSelection from "./components/RecipientTableWithSelection";
+import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import { useRecipientOperations } from "./hooks/useRecipientOperations";
 import { studentsInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
@@ -28,13 +28,7 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
 }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
-  const { syncFiltersToQueryParamsInGroup } = operations;
-  const syncFiltersToQueryParamsRef = useRef(syncFiltersToQueryParamsInGroup);
   const strings = useAppTranslation("recipientTranslations");
-
-  useEffect(() => {
-    syncFiltersToQueryParamsRef.current = syncFiltersToQueryParamsInGroup;
-  }, [syncFiltersToQueryParamsInGroup]);
 
   // Get query variables from store
   const { studentsInGroupQueryParams, selectedGroup, filtersInGroup } = store;
@@ -51,6 +45,23 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
 
   const students = data?.studentsInRecipientGroup?.data ?? [];
   const pageInfo = data?.studentsInRecipientGroup?.pageInfo;
+
+  // Convert GraphQL orderBy to table format
+  const initialOrderBy = Array.isArray(studentsInGroupQueryParams.orderBy)
+    ? studentsInGroupQueryParams.orderBy
+        .filter((order) => order.order) // Filter out null/undefined orders
+        .map((order) => ({
+          column: order.column.toLowerCase(), // Convert GraphQL enum to lowercase
+          order: order.order as "ASC" | "DESC",
+        }))
+    : studentsInGroupQueryParams.orderBy?.order
+      ? [
+          {
+            column: studentsInGroupQueryParams.orderBy.column.toLowerCase(),
+            order: studentsInGroupQueryParams.orderBy.order as "ASC" | "DESC",
+          },
+        ]
+      : [];
 
   const [activeFilters, setActiveFilters] =
     useState<Record<string, FilterClause | null>>(filtersInGroup);
@@ -97,12 +108,6 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
     [operations],
   );
 
-  // Convert active filters to StudentFilterArgs
-  useEffect(() => {
-    if (!selectedGroup) return;
-    syncFiltersToQueryParamsRef.current(activeFilters, recipientBaseColumns);
-  }, [activeFilters, selectedGroup]);
-
   // Handle sort changes
   const handleSort = useCallback(
     (
@@ -137,8 +142,7 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
   );
 
   return (
-    <RecipientTableWithSelection
-      tabType="manage"
+    <TableProvider
       data={students}
       isLoading={loading}
       columns={recipientBaseColumns}
@@ -159,10 +163,10 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
       onPageChange={operations.onPageChangeInGroup}
       onRowsPerPageChange={operations.onRowsPerPageChangeInGroup}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+      initialOrderBy={initialOrderBy}
       footerStartContent={<RecipientTableFooterStart tabType="manage" />}
       footerEndContent={
         <RecipientTableFooterEnd
-          templateId={templateId}
           mode="remove"
           onAction={operations.deleteRecipients}
           actionButtonLabel={strings.removeFromGroup}
@@ -171,6 +175,10 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
           queryDocument={studentsInRecipientGroupQueryDocument}
           queryVariables={studentsInGroupQueryParams}
         />
+      }
+      selectedRowIds={store.selectedStudentIdsInGroup}
+      onSelectionChange={(selectedIds) =>
+        store.setSelectedStudentIdsInGroup(selectedIds.map(Number))
       }
     >
       <Box
@@ -203,7 +211,7 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
             )}
         </Box>
       </Box>
-    </RecipientTableWithSelection>
+    </TableProvider>
   );
 };
 

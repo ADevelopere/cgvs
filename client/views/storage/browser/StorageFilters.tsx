@@ -39,7 +39,7 @@ const FILE_TYPE: Record<Graphql.FileType, Graphql.FileType> = {
  */
 const StorageFilters: React.FC = () => {
     const { params, updateParams } = useStorageDataStore();
-    
+
     const setFilterType = (type?: Graphql.FileType) => {
         updateParams({ fileType: type, offset: 0 });
     };
