@@ -7,6 +7,7 @@
  * It processes TypeScript/TSX files and replaces component tags with their MUI.Component equivalents.
  */
 
+import logger from "@/lib/logger";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { resolve, extname } from "path";
 
@@ -132,7 +133,7 @@ const MUI_COMPONENTS = [
   "NoSsr",
 ];
 
-// Colors for console output
+// Colors for logger output
 const colors = {
   red: "\x1b[31m",
   green: "\x1b[32m",
@@ -294,51 +295,49 @@ class MUIComponentConverter {
    * Print conversion results
    */
   private printResults(): void {
-    console.log("\n" + "=".repeat(50));
-    console.log(
-      `${colors.bold}${colors.blue}Conversion Results${colors.reset}`,
-    );
-    console.log("=".repeat(50));
+    logger.log("\n" + "=".repeat(50));
+    logger.log(`${colors.bold}${colors.blue}Conversion Results${colors.reset}`);
+    logger.log("=".repeat(50));
 
-    console.log(`${colors.cyan}File:${colors.reset} ${this.filePath}`);
-    console.log(
+    logger.log(`${colors.cyan}File:${colors.reset} ${this.filePath}`);
+    logger.log(
       `${colors.cyan}Total replacements:${colors.reset} ${colors.bold}${this.stats.totalReplacements}${colors.reset}`,
     );
-    console.log(
+    logger.log(
       `${colors.cyan}Components converted:${colors.reset} ${this.stats.componentsFound.size}`,
     );
 
     if (this.stats.componentsFound.size > 0) {
-      console.log(`${colors.cyan}Converted components:${colors.reset}`);
+      logger.log(`${colors.cyan}Converted components:${colors.reset}`);
       Array.from(this.stats.componentsFound).forEach((component) => {
-        console.log(
+        logger.log(
           `  - ${colors.green}${component}${colors.reset} → ${colors.green}MUI.${component}${colors.reset}`,
         );
       });
     }
 
     if (this.stats.hasMuiImport) {
-      console.log(
+      logger.log(
         `${colors.yellow}Note:${colors.reset} File already has 'import * as MUI from "@mui/material"' - this is perfect!`,
       );
     } else if (this.stats.hasIndividualImports) {
-      console.log(
+      logger.log(
         `${colors.yellow}Warning:${colors.reset} File has individual imports from @mui/material. Consider adding 'import * as MUI from "@mui/material"' for better organization.`,
       );
     } else {
-      console.log(
+      logger.log(
         `${colors.yellow}Warning:${colors.reset} File doesn't import from @mui/material. Make sure to add the necessary imports.`,
       );
     }
 
-    console.log("\n" + "=".repeat(50));
+    logger.log("\n" + "=".repeat(50));
 
     if (this.stats.totalReplacements > 0) {
-      console.log(
+      logger.log(
         `${colors.bold}${colors.green}✅ Conversion completed successfully!${colors.reset}`,
       );
     } else {
-      console.log(
+      logger.log(
         `${colors.bold}${colors.yellow}⚠️  No MUI components found to convert.${colors.reset}`,
       );
     }
@@ -348,21 +347,21 @@ class MUIComponentConverter {
    * Log info message
    */
   private logInfo(message: string): void {
-    console.log(`${colors.blue}ℹ${colors.reset} ${message}`);
+    logger.log(`${colors.blue}ℹ${colors.reset} ${message}`);
   }
 
   /**
    * Log success message
    */
   private logSuccess(message: string): void {
-    console.log(`${colors.green}✅${colors.reset} ${message}`);
+    logger.log(`${colors.green}✅${colors.reset} ${message}`);
   }
 
   /**
    * Log error message
    */
   private logError(message: string): void {
-    console.error(`${colors.red}❌${colors.reset} ${message}`);
+    logger.error(`${colors.red}❌${colors.reset} ${message}`);
   }
 }
 
@@ -373,20 +372,20 @@ function main(): void {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error(
+    logger.error(
       `${colors.red}Error:${colors.reset} Please provide a file path as an argument.`,
     );
-    console.log(
+    logger.log(
       `${colors.yellow}Usage:${colors.reset} bun run convert-mui-components.ts <file-path>`,
     );
     process.exit(1);
   }
 
   const filePath = args[0];
-  console.log(
+  logger.log(
     `${colors.bold}${colors.blue}MUI Component Converter${colors.reset}`,
   );
-  console.log(
+  logger.log(
     `${colors.bold}${colors.blue}======================${colors.reset}\n`,
   );
 
@@ -394,7 +393,7 @@ function main(): void {
     const converter = new MUIComponentConverter(filePath);
     converter.convert();
   } catch (error) {
-    console.error(`${colors.red}Error:${colors.reset} ${error}`);
+    logger.error(`${colors.red}Error:${colors.reset} ${error}`);
     process.exit(1);
   }
 }

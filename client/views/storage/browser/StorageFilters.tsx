@@ -40,9 +40,13 @@ const FILE_TYPE: Record<Graphql.FileType, Graphql.FileType> = {
 const StorageFilters: React.FC = () => {
   const { params, updateParams } = useStorageDataStore();
 
-  const setFilterType = (type?: Graphql.FileType) => {
-    updateParams({ fileType: type, offset: 0 });
-  };
+  const setFilterType = React.useCallback(
+    (type?: Graphql.FileType) => {
+      updateParams({ fileType: type, offset: 0 });
+    },
+    [updateParams],
+  );
+
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   // Local state for date filter (not in URL params yet, but can be extended)

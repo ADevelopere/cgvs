@@ -8,7 +8,7 @@ import { useAppTranslation } from "@/client/locale";
 import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { UploadFileState, UploadBatchState } from "./storage-upload.types";
+import { UploadFileState } from "./storage-upload.types";
 import logger from "@/lib/logger";
 
 export const useStorageUploadOperations = () => {
@@ -45,11 +45,10 @@ export const useStorageUploadOperations = () => {
         });
 
         try {
-          const storageTargetParent = getStoragePath(targetPath);
-          const destinationStoragePath = storageTargetParent
-            ? `${storageTargetParent}/${file.name}`
-            : file.name;
-
+          // const storageTargetParent = getStoragePath(targetPath);
+          // const destinationStoragePath = storageTargetParent
+          //   ? `${storageTargetParent}/${file.name}`
+          //   : file.name;
           // Check for conflicts (simplified - would need listFiles query)
           // This is a placeholder for the conflict check logic
         } catch {}

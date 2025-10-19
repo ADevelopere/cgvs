@@ -2,9 +2,7 @@
 
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 import * as Document from "./storage.documents";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useQueryWrapper, useMutationWrapper } from "@/client/graphql/utils";
-import { ApolloClient } from "@apollo/client";
 
 export const useStorageApolloQueries = () => {
   const checkFileUsage = useQueryWrapper(

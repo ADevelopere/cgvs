@@ -28,65 +28,78 @@ const initialState: TemplateVariableUIState = {
   operationErrors: {},
 };
 
-export const useTemplateVariableUIStore = create<TemplateVariableUIState & TemplateVariableUIActions>((set, get) => ({
+export const useTemplateVariableUIStore = create<
+  TemplateVariableUIState & TemplateVariableUIActions
+>((set) => ({
   ...initialState,
 
-  toggleSelect: (id) => set((state) => {
-    const isSelected = state.selectedVariables.includes(id);
-    if (isSelected) {
+  toggleSelect: (id) =>
+    set((state) => {
+      const isSelected = state.selectedVariables.includes(id);
+      if (isSelected) {
+        return {
+          selectedVariables: state.selectedVariables.filter(
+            (variableId) => variableId !== id,
+          ),
+          lastSelectedVariable:
+            state.lastSelectedVariable === id
+              ? null
+              : state.lastSelectedVariable,
+        };
+      } else {
+        return {
+          selectedVariables: [...state.selectedVariables, id],
+          lastSelectedVariable: id,
+        };
+      }
+    }),
+
+  selectAll: (ids) =>
+    set({
+      selectedVariables: ids,
+      lastSelectedVariable: ids.length > 0 ? ids[ids.length - 1] : null,
+    }),
+
+  clearSelection: () =>
+    set({
+      selectedVariables: [],
+      lastSelectedVariable: null,
+    }),
+
+  selectRange: (startId, endId, allIds) =>
+    set((state) => {
+      const startIndex = allIds.indexOf(startId);
+      const endIndex = allIds.indexOf(endId);
+
+      if (startIndex === -1 || endIndex === -1) return state;
+
+      const start = Math.min(startIndex, endIndex);
+      const end = Math.max(startIndex, endIndex);
+      const rangeIds = allIds.slice(start, end + 1);
+
+      const newSelection = new Set([...state.selectedVariables, ...rangeIds]);
       return {
-        selectedVariables: state.selectedVariables.filter((variableId) => variableId !== id),
-        lastSelectedVariable: state.lastSelectedVariable === id ? null : state.lastSelectedVariable,
+        selectedVariables: Array.from(newSelection),
+        lastSelectedVariable: endId,
       };
-    } else {
-      return {
-        selectedVariables: [...state.selectedVariables, id],
-        lastSelectedVariable: id,
-      };
-    }
-  }),
-
-  selectAll: (ids) => set({
-    selectedVariables: ids,
-    lastSelectedVariable: ids.length > 0 ? ids[ids.length - 1] : null,
-  }),
-
-  clearSelection: () => set({
-    selectedVariables: [],
-    lastSelectedVariable: null,
-  }),
-
-  selectRange: (startId, endId, allIds) => set((state) => {
-    const startIndex = allIds.indexOf(startId);
-    const endIndex = allIds.indexOf(endId);
-    
-    if (startIndex === -1 || endIndex === -1) return state;
-
-    const start = Math.min(startIndex, endIndex);
-    const end = Math.max(startIndex, endIndex);
-    const rangeIds = allIds.slice(start, end + 1);
-    
-    const newSelection = new Set([...state.selectedVariables, ...rangeIds]);
-    return {
-      selectedVariables: Array.from(newSelection),
-      lastSelectedVariable: endId,
-    };
-  }),
+    }),
 
   setFocusedVariable: (id) => set({ focusedVariable: id }),
 
-  setOperationError: (operation, error) => set((state) => ({
-    operationErrors: {
-      ...state.operationErrors,
-      [operation]: error || "",
-    },
-  })),
+  setOperationError: (operation, error) =>
+    set((state) => ({
+      operationErrors: {
+        ...state.operationErrors,
+        [operation]: error || "",
+      },
+    })),
 
-  clearOperationError: (operation) => set((state) => {
-    const newErrors = { ...state.operationErrors };
-    delete newErrors[operation];
-    return { operationErrors: newErrors };
-  }),
+  clearOperationError: (operation) =>
+    set((state) => {
+      const newErrors = { ...state.operationErrors };
+      delete newErrors[operation];
+      return { operationErrors: newErrors };
+    }),
 
   clearAllErrors: () => set({ operationErrors: {} }),
 

@@ -12,9 +12,9 @@ export class CacheServiceFactory {
   /**
    * Get cache service instance (singleton)
    */
-  static getInstance(): ICacheService {
+  static async getInstance(): Promise<ICacheService> {
     if (!this.instance) {
-      this.instance = this.createCacheService();
+      this.instance = await this.createCacheService();
     }
     return this.instance;
   }
@@ -22,7 +22,7 @@ export class CacheServiceFactory {
   /**
    * Create cache service based on provider type
    */
-  private static createCacheService(): ICacheService {
+  private static async createCacheService(): Promise<ICacheService> {
     const provider = this.getCacheProvider();
 
     logger.log(`🔧 Initializing Cache with provider: ${provider}`);
@@ -32,13 +32,13 @@ export class CacheServiceFactory {
         return this.createPostgresCache();
 
       case "redis":
-        return this.createRedisCache();
+        return await this.createRedisCache();
 
       default:
         logger.warn(
           `Unknown cache provider: ${provider}, falling back to redis`,
         );
-        return this.createRedisCache();
+        return await this.createRedisCache();
     }
   }
 
@@ -53,10 +53,10 @@ export class CacheServiceFactory {
   /**
    * Create Redis cache adapter (lazy import to avoid loading Redis when using PostgreSQL)
    */
-  private static createRedisCache(): ICacheService {
+  private static async createRedisCache(): Promise<ICacheService> {
     logger.log("Connecting to Redis cache");
-    // Use require to avoid importing Redis module when using PostgreSQL
-    const { RedisCacheAdapter } = require("./RedisCacheAdapter");
+    // Use dynamic import to avoid importing Redis module when using PostgreSQL
+    const { RedisCacheAdapter } = await import("./RedisCacheAdapter");
     return new RedisCacheAdapter();
   }
 
@@ -93,7 +93,7 @@ export class CacheServiceFactory {
    */
   static async healthCheck(): Promise<boolean> {
     try {
-      const cache = this.getInstance();
+      const cache = await this.getInstance();
       return await cache.ping();
     } catch (error) {
       logger.error("Cache health check failed:", error);
@@ -103,6 +103,6 @@ export class CacheServiceFactory {
 }
 
 /**
- * Export singleton instance
+ * Export singleton instance getter
  */
-export const cacheService = CacheServiceFactory.getInstance();
+export const getCacheService = () => CacheServiceFactory.getInstance();
