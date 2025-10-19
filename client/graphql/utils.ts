@@ -9,7 +9,7 @@ export function useQueryWrapper<T, V extends OperationVariables>(
 ) {
     const [execute] = lazyQueryResult;
     return useCallback(
-        async (variables: V): Promise<ApolloClient.QueryResult<T, V>> => {
+        async (variables: V): Promise<ApolloClient.QueryResult<T>> => {
             return execute({ variables });
         },
         [execute],

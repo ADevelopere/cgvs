@@ -126,9 +126,9 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
         // Can't move folder into itself or its children
         return items.some(item => {
             if ("contentType" in item) return false; // Files can't create cycles
-            
+
             // Check if destination is the item itself or a child of the item
-            return destinationPath === item.path || 
+            return destinationPath === item.path ||
                    destinationPath.startsWith(item.path + "/");
         });
     }, [items]);
@@ -254,7 +254,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
                             </Tooltip>
                         </Box>
                     </Box>
-                    
+
                     <Breadcrumbs
                         separator={<NavigateNextIcon fontSize="small" />}
                         sx={{ fontSize: "0.875rem" }}
@@ -266,8 +266,8 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
                                 variant="body2"
                                 onClick={() => navigateToDirectory(segment.path)}
                                 sx={{
-                                    color: index === breadcrumbSegments.length - 1 
-                                        ? theme.palette.text.primary 
+                                    color: index === breadcrumbSegments.length - 1
+                                        ? theme.palette.text.primary
                                         : theme.palette.primary.main,
                                     textDecoration: "none",
                                     cursor: "pointer",
@@ -310,10 +310,10 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
                             {directories.map((directory, index) => {
                                 const isHovered = hoveredItemPath === directory.path;
                                 const isInvalid = isPathInvalid(directory.path);
-                                
+
                                 return (
                                     <React.Fragment key={directory.path}>
-                                        <ListItem 
+                                        <ListItem
                                             disablePadding
                                             onMouseEnter={() => setHoveredItemPath(directory.path)}
                                             onMouseLeave={() => setHoveredItemPath(null)}
@@ -325,26 +325,26 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items }) => 
                                                     py: 1.5,
                                                     px: 3,
                                                     opacity: isInvalid ? 0.5 : 1,
-                                                    backgroundColor: isHovered && !isInvalid 
-                                                        ? theme.palette.action.hover 
+                                                    backgroundColor: isHovered && !isInvalid
+                                                        ? theme.palette.action.hover
                                                         : "transparent",
                                                 }}
                                             >
                                                 <ListItemIcon sx={{ minWidth: 40 }}>
-                                                    <FolderIcon 
-                                                        sx={{ 
-                                                            color: isInvalid 
-                                                                ? theme.palette.text.disabled 
-                                                                : theme.palette.warning.main 
-                                                        }} 
+                                                    <FolderIcon
+                                                        sx={{
+                                                            color: isInvalid
+                                                                ? theme.palette.text.disabled
+                                                                : theme.palette.warning.main
+                                                        }}
                                                     />
                                                 </ListItemIcon>
                                                 <ListItemText
                                                     primary={directory.name}
                                                     sx={{
                                                         "& .MuiListItemText-primary": {
-                                                            color: isInvalid 
-                                                                ? theme.palette.text.disabled 
+                                                            color: isInvalid
+                                                                ? theme.palette.text.disabled
                                                                 : theme.palette.text.primary,
                                                         },
                                                     }}
