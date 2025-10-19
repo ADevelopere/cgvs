@@ -8,7 +8,7 @@ import {
 } from "react-dropzone";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 
 export interface UseUploadDropzoneOptions {
   /**

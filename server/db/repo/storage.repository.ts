@@ -5,7 +5,7 @@ import {
   storageDirectories,
 } from "@/server/db/schema/storage";
 import { eq, and, sql, inArray } from "drizzle-orm";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import * as StorageTypes from "@/server/types";
 
 export namespace StorageDbRepository {

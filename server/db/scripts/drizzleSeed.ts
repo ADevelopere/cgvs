@@ -13,7 +13,7 @@
 
 import { config } from "dotenv";
 import { resolve } from "path";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 // from server/db/seed/drizzleSeed.ts
 config({ path: resolve(__dirname, "../../../.env") });

@@ -2,7 +2,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { FilterClause } from "@/client/types/filters";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 
 /**
  * Student UI Store State

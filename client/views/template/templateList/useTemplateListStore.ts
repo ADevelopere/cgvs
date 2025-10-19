@@ -1,5 +1,5 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 

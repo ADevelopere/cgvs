@@ -15,7 +15,7 @@ import {
   TemplatesWithFiltersResponse,
   TemplatePothosDefintion,
 } from "@/server/types";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { PaginationArgs } from "../../types/pagination.types";
 import { PaginationArgsDefault } from "../../graphql/pothos/pagination.objects";
 import {

@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { resolve } from "path";
 import { Pool } from "pg";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { runMigrations } from "./migrate";
 
 config({ path: resolve(__dirname, "../../.env") });

@@ -120,23 +120,18 @@ class ServerLogger {
 
     switch (level) {
       case "log":
-         
         console.log(...consoleArgs);
         break;
       case "info":
-         
         console.info(...consoleArgs);
         break;
       case "warn":
-         
         console.warn(...consoleArgs);
         break;
       case "error":
-         
         console.error(...consoleArgs);
         break;
       case "debug":
-         
         console.debug(...consoleArgs);
         break;
     }

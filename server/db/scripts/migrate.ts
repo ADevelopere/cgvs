@@ -1,4 +1,4 @@
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { db, drizzleDbPool } from "../drizzleDb";
 

@@ -1,7 +1,7 @@
 import { ICacheService } from "./ICacheService";
 import { CacheDbRepository } from "@/server/db/repo/cache.repository";
 import { db } from "@/server/db/drizzleDb";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 /**
  * PostgreSQL Cache Adapter

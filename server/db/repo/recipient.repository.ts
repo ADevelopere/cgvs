@@ -7,7 +7,7 @@ import {
   templateRecipientGroups,
   students,
 } from "../schema";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { eq, and, inArray } from "drizzle-orm";
 
 export namespace RecipientRepository {

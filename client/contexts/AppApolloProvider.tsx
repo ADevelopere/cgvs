@@ -21,7 +21,27 @@ import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { ConnectivityTranslations } from "@/client/locale/components/Connectivity";
 import { useAppTranslation } from "@/client/locale";
+import logger from "@/client/lib/logger";
+import { isNetworkError } from "@/client/utils/errorUtils";
+import { Box, CircularProgress, Typography } from "@mui/material";
 // import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
+
+// Loading UI shown during initial connectivity check
+const InitializingUI: React.FC = () => (
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100vh",
+      gap: 2,
+    }}
+  >
+    <CircularProgress size={48} />
+    <Typography>Initializing...</Typography>
+  </Box>
+);
 
 export type NetworkConnectivityContextType = {
   isConnected: boolean;
@@ -263,20 +283,22 @@ export const AppApolloProvider: React.FC<{
     });
 
     // Error link to catch network errors and show notifications
-    const errorLink = new ErrorLink(({ error }) => {
-      // Check if this is a network error
-      const isNetworkError =
-        error &&
-        (error.message?.includes("fetch") ||
-          error.message?.includes("NetworkError") ||
-          error.message?.includes("Failed to fetch") ||
-          error.message?.includes("Network request failed") ||
-          error.message?.includes("ERR_CONNECTION_REFUSED"));
+    const errorLink = new ErrorLink(({ error, operation }) => {
+      // Check if this is a network error using utility function
+      if (isNetworkError(error)) {
+        logger.error(`[Network Error]`, {
+          message: error.message,
+          operation: operation.operationName,
+        });
 
-      if (isNetworkError) {
         setIsConnected(false);
         isConnectedRef.current = false;
         notifyIfDisconnected();
+      } else {
+        logger.error(`[GraphQL Error]`, {
+          message: error.message,
+          operation: operation.operationName,
+        });
       }
     });
 
@@ -375,9 +397,9 @@ export const AppApolloProvider: React.FC<{
     ]
   );
 
-  // Don't render until initial connectivity check is complete
+  // Show loading UI until initial connectivity check is complete
   if (!initialCheckDoneRef.current) {
-    return null;
+    return <InitializingUI />;
   }
 
   return (

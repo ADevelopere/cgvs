@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@toolpad/core/useNotifications";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useTemplateMutations, useTemplateOperations } from "../hooks/index";

@@ -1,4 +1,4 @@
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { getStorageService, type StorageService } from "../storage.service";

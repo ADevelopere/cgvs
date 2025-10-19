@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 import { useTemplateVariableUIStore } from "../stores";
 import { useTemplateVariableApolloMutations } from "./useTemplateVariableApolloMutations";
 

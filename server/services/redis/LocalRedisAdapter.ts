@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { IRedisService } from "./IRedisService";
 
 /**
