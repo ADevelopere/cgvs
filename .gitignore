@@ -71,3 +71,6 @@ out/
 schemaGenerate.graphql
 
 tsconfig.tsbuildinfo
+
+# Logs directory
+/logs/
