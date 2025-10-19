@@ -6,8 +6,12 @@ import StorageMainView from "./browser/StorageMainView";
 import StorageSearch from "./browser/StorageSearch";
 import { SplitPane } from "@/client/components";
 import UploadProgress from "./uploading/UploadProgress";
+import { useStorageInitialization } from "./hooks/useStorageInitialization";
 
 const StorageBrowserView: React.FC = () => {
+  // Initialize storage data on mount
+  useStorageInitialization();
+
   return (
     <>
       <Box

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, useTheme, Portal, Box } from "@mui/material";
-import { useUploadProgressUI } from "./UploadProgressUIContext";
+import { useUploadProgressUIOperations } from "../hooks/useUploadProgressUIOperations";
 import UploadProgressHeader from "./UploadProgressHeader";
 import UploadProgressSummary from "./UploadProgressSummary";
 import UploadProgressFileList from "./UploadProgressFileList";
@@ -23,7 +23,7 @@ const UploadProgress: React.FC = () => {
     onCancelFile,
     onConfirmCancel,
     onDismissDialog,
-  } = useUploadProgressUI();
+  } = useUploadProgressUIOperations();
 
   // Don't render if there are no files
   if (totalCount === 0) {
