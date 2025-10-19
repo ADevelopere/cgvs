@@ -47,15 +47,15 @@ export type TemplateCategoryTranslation = {
   idAsc: string;
   idDesc: string;
 
-    // Action buttons
-    cancel: string;
-    add: string;
-    save: string;
-    saving: string;
-    retry: string;
-    refresh: string;
-    filter: string;
-    loading: string;
+  // Action buttons
+  cancel: string;
+  add: string;
+  save: string;
+  saving: string;
+  retry: string;
+  refresh: string;
+  filter: string;
+  loading: string;
 
   // Success messages
   categoryAddedSuccessfully: string;

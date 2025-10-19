@@ -19,7 +19,8 @@ interface RecipientGroupItemProps {
 
 const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { openInfoDialog, openSettingsDialog, openDeleteDialog } = useRecipientGroupDialogs();
+  const { openInfoDialog, openSettingsDialog, openDeleteDialog } =
+    useRecipientGroupDialogs();
   const { updateGroup } = useRecipientGroupOperations();
 
   const handleNameSave = useCallback(
@@ -39,7 +40,7 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
         name: value.trim(),
       });
     },
-    [group.id, group.name, updateGroup, strings],
+    [group.id, group.name, updateGroup, strings]
   );
 
   const handleManageClick = useCallback(() => {

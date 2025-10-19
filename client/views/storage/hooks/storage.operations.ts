@@ -8,43 +8,43 @@ export const useStorageApolloQueries = () => {
   const checkFileUsage = useQueryWrapper(
     useLazyQuery(Document.fileUsageQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   const fetchDirectoryChildren = useQueryWrapper(
     useLazyQuery(Document.directoryChildrenQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   const getFileInfo = useQueryWrapper(
     useLazyQuery(Document.fileInfoQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   const getFolderInfo = useQueryWrapper(
     useLazyQuery(Document.folderInfoQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   const getStorageStats = useQueryWrapper(
     useLazyQuery(Document.storageStatsQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   const listFiles = useQueryWrapper(
     useLazyQuery(Document.listFilesQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   const searchFiles = useQueryWrapper(
     useLazyQuery(Document.searchFilesQueryDocument, {
       fetchPolicy: "network-only",
-    }),
+    })
   );
 
   return {
@@ -60,31 +60,31 @@ export const useStorageApolloQueries = () => {
 
 export const useStorageApolloMutations = () => {
   const copyStorageItems = useMutationWrapper(
-    useMutation(Document.copyStorageItemsMutationDocument),
+    useMutation(Document.copyStorageItemsMutationDocument)
   );
   const createFolder = useMutationWrapper(
-    useMutation(Document.createFolderMutationDocument),
+    useMutation(Document.createFolderMutationDocument)
   );
   const deleteFile = useMutationWrapper(
-    useMutation(Document.deleteFileMutationDocument),
+    useMutation(Document.deleteFileMutationDocument)
   );
   const deleteStorageItems = useMutationWrapper(
-    useMutation(Document.deleteStorageItemsMutationDocument),
+    useMutation(Document.deleteStorageItemsMutationDocument)
   );
   const generateUploadSignedUrl = useMutationWrapper(
-    useMutation(Document.generateUploadSignedUrlMutationDocument),
+    useMutation(Document.generateUploadSignedUrlMutationDocument)
   );
   const moveStorageItems = useMutationWrapper(
-    useMutation(Document.moveStorageItemsMutationDocument),
+    useMutation(Document.moveStorageItemsMutationDocument)
   );
   const renameFile = useMutationWrapper(
-    useMutation(Document.renameFileMutationDocument),
+    useMutation(Document.renameFileMutationDocument)
   );
   const setStorageItemProtection = useMutationWrapper(
-    useMutation(Document.setStorageItemProtectionMutationDocument),
+    useMutation(Document.setStorageItemProtectionMutationDocument)
   );
   const updateDirectoryPermissions = useMutationWrapper(
-    useMutation(Document.updateDirectoryPermissionsMutationDocument),
+    useMutation(Document.updateDirectoryPermissionsMutationDocument)
   );
 
   return {

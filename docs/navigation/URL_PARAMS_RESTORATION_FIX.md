@@ -43,13 +43,13 @@ const hasSavedState = savedState && Object.keys(savedState).length > 0;
 
 // If we have saved state but no current params, restore the URL
 if (hasSavedState && !hasCurrentParams) {
-    params = { ...savedState };
-    
-    // Update the URL with restored params using router.replace
-    const newUrl = buildUrlWithParams(currentPathname || "", params);
-    routerRef.current.replace(newUrl);
-    
-    logger.info(`Restored URL params for ${normalizedPath}:`, params);
+  params = { ...savedState };
+
+  // Update the URL with restored params using router.replace
+  const newUrl = buildUrlWithParams(currentPathname || "", params);
+  routerRef.current.replace(newUrl);
+
+  logger.info(`Restored URL params for ${normalizedPath}:`, params);
 }
 ```
 
@@ -67,20 +67,20 @@ if (hasSavedState && !hasCurrentParams) {
 ```typescript
 // Sync params from registry when they change
 useEffect(() => {
-    const syncParams = () => {
-        const currentParams = registryRef.current.getParams();
-        const currentParamsString = JSON.stringify(currentParams);
-        
-        // Only update if params actually changed
-        if (currentParamsString !== paramsStringRef.current) {
-            paramsStringRef.current = currentParamsString;
-            setParams(currentParams);
-        }
-    };
+  const syncParams = () => {
+    const currentParams = registryRef.current.getParams();
+    const currentParamsString = JSON.stringify(currentParams);
 
-    syncParams();
-    const interval = setInterval(syncParams, 200);
-    return () => clearInterval(interval);
+    // Only update if params actually changed
+    if (currentParamsString !== paramsStringRef.current) {
+      paramsStringRef.current = currentParamsString;
+      setParams(currentParams);
+    }
+  };
+
+  syncParams();
+  const interval = setInterval(syncParams, 200);
+  return () => clearInterval(interval);
 }, []);
 ```
 
@@ -94,33 +94,33 @@ useEffect(() => {
 
 ```typescript
 const updateParams = useCallback(
-    (params: RouteParams, options?: { replace?: boolean; merge?: boolean }) => {
-        const { replace = false, merge = true } = options || {};
-        
-        const currentPathname = pathnameRef.current;
-        const currentSearchParams = searchParamsRef.current;
-        const currentRouter = routerRef.current;
+  (params: RouteParams, options?: { replace?: boolean; merge?: boolean }) => {
+    const { replace = false, merge = true } = options || {};
 
-        let newParams = params;
-        if (merge) {
-            const currentParams = parseSearchParams(currentSearchParams);
-            newParams = { ...currentParams, ...params };
-        }
+    const currentPathname = pathnameRef.current;
+    const currentSearchParams = searchParamsRef.current;
+    const currentRouter = routerRef.current;
 
-        const newUrl = buildUrlWithParams(currentPathname || "", newParams);
+    let newParams = params;
+    if (merge) {
+      const currentParams = parseSearchParams(currentSearchParams);
+      newParams = { ...currentParams, ...params };
+    }
 
-        if (replace) {
-            currentRouter.replace(newUrl);
-        } else {
-            currentRouter.push(newUrl);
-        }
+    const newUrl = buildUrlWithParams(currentPathname || "", newParams);
 
-        setState((prev) => ({
-            ...prev,
-            currentParams: newParams,
-        }));
-    },
-    [],
+    if (replace) {
+      currentRouter.replace(newUrl);
+    } else {
+      currentRouter.push(newUrl);
+    }
+
+    setState(prev => ({
+      ...prev,
+      currentParams: newParams,
+    }));
+  },
+  []
 );
 ```
 
@@ -151,7 +151,7 @@ const updateParams = useCallback(
 ✅ Sharing URLs includes all parameters  
 ✅ Browser back/forward buttons work correctly  
 ✅ No dependency issues (uses refs)  
-✅ No infinite loops  
+✅ No infinite loops
 
 ## Testing
 

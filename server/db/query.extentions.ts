@@ -3,11 +3,11 @@ import { sql, SQL, Column } from "drizzle-orm";
 import { PaginationArgs } from "../types/pagination.types";
 
 export function queryWithPagination<T extends PgSelect>(
-    qb: T,
-    args?: PaginationArgs | null,
+  qb: T,
+  args?: PaginationArgs | null
 ) {
-    if (!args) return qb;
-    return qb.limit(args.perPage).offset(args.offset);
+  if (!args) return qb;
+  return qb.limit(args.perPage).offset(args.offset);
 }
 
 /**
@@ -29,36 +29,39 @@ export function queryWithPagination<T extends PgSelect>(
  * ```
  */
 export function fullTextSearch(
-    column: SQL | SQL.Aliased | Column,
-    searchText: string,
-    config: string = "simple",
+  column: SQL | SQL.Aliased | Column,
+  searchText: string,
+  config: string = "simple"
 ): SQL | null {
-    if (!searchText || searchText.trim() === "") {
-        return null;
-    }
+  if (!searchText || searchText.trim() === "") {
+    return null;
+  }
 
-    // Sanitize and split the search text into words
-    const words = searchText.trim().split(/\s+/).filter((w) => w);
+  // Sanitize and split the search text into words
+  const words = searchText
+    .trim()
+    .split(/\s+/)
+    .filter(w => w);
 
-    // For each word, remove FTS special characters and append the prefix operator
-    const queryParts = words
-        .map((word) => {
-            // Remove characters that have special meaning in tsquery
-            const sanitizedWord = word.replace(/[&|!():]/g, "");
-            if (sanitizedWord) {
-                // Append prefix operator for partial matching
-                return `${sanitizedWord}:*`;
-            }
-            return null;
-        })
-        .filter((part) => part !== null);
+  // For each word, remove FTS special characters and append the prefix operator
+  const queryParts = words
+    .map(word => {
+      // Remove characters that have special meaning in tsquery
+      const sanitizedWord = word.replace(/[&|!():]/g, "");
+      if (sanitizedWord) {
+        // Append prefix operator for partial matching
+        return `${sanitizedWord}:*`;
+      }
+      return null;
+    })
+    .filter(part => part !== null);
 
-    // Join the parts with the 'AND' operator
-    const tsQueryString = queryParts.join(" & ");
+  // Join the parts with the 'AND' operator
+  const tsQueryString = queryParts.join(" & ");
 
-    if (!tsQueryString) {
-        return null;
-    }
+  if (!tsQueryString) {
+    return null;
+  }
 
-    return sql`to_tsvector(${config}, ${column}) @@ to_tsquery(${config}, ${tsQueryString})`;
+  return sql`to_tsvector(${config}, ${column}) @@ to_tsquery(${config}, ${tsQueryString})`;
 }

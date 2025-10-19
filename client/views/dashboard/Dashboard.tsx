@@ -37,7 +37,7 @@ function NotifyButton() {
     // preview-end
   }, [notifications, online]);
 
-  return <Button onClick={() => setOnline((prev) => !prev)}>Notify</Button>;
+  return <Button onClick={() => setOnline(prev => !prev)}>Notify</Button>;
 }
 
 interface DashboardStats {

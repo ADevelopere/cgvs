@@ -9,123 +9,127 @@ This document provides concrete examples for implementing the new navigation sys
 import { usePageNavigation } from "../usePageNavigation";
 
 export const StorageManagementUIProvider: React.FC<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }> = ({ children }) => {
-    const coreContext = useStorageManagementCore();
-    const { ui: translations } = useAppTranslation("storageTranslations");
-    
-    // Add the navigation hook
-    const { registerResolver, updateParams } = usePageNavigation();
-    
-    // ... existing state ...
-    
-    // Register navigation resolver
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/storage",
-            resolver: async (params) => {
-                try {
-                    // Handle directory path
-                    if (params.path && params.path !== queryParams.path) {
-                        const path = params.path as string;
-                        setQueryParams((prev) => ({ ...prev, path, offset: 0 }));
-                    }
-                    
-                    // Handle view mode
-                    if (params.view) {
-                        const view = params.view as ViewMode;
-                        if (["grid", "list"].includes(view)) {
-                            setViewMode(view);
-                        }
-                    }
-                    
-                    // Handle sort parameters
-                    if (params.sortBy) {
-                        setSortBy(params.sortBy as string);
-                    }
-                    
-                    if (params.sortDirection) {
-                        const direction = params.sortDirection as Graphql.OrderSortDirection;
-                        if (["ASC", "DESC"].includes(direction)) {
-                            setSortDirection(direction);
-                        }
-                    }
-                    
-                    // Handle file type filter
-                    if (params.fileType) {
-                        setParams({ fileType: params.fileType as Graphql.FileType });
-                    }
-                    
-                    return { success: true };
-                } catch (error) {
-                    return {
-                        success: false,
-                        error: error instanceof Error ? error.message : "Navigation failed",
-                    };
-                }
-            },
-            priority: 10,
-            recursive: true, // Handle nested directory paths
-        });
-        
-        return unregister;
-    }, [registerResolver, queryParams.path]);
-    
-    // Update navigateTo to also update URL params
-    const navigateTo = useCallback(
-        async (path: string) => {
-            // Avoid unnecessary navigation to the same path
-            if (queryParams.path === path) {
-                return;
+  const coreContext = useStorageManagementCore();
+  const { ui: translations } = useAppTranslation("storageTranslations");
+
+  // Add the navigation hook
+  const { registerResolver, updateParams } = usePageNavigation();
+
+  // ... existing state ...
+
+  // Register navigation resolver
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/storage",
+      resolver: async params => {
+        try {
+          // Handle directory path
+          if (params.path && params.path !== queryParams.path) {
+            const path = params.path as string;
+            setQueryParams(prev => ({ ...prev, path, offset: 0 }));
+          }
+
+          // Handle view mode
+          if (params.view) {
+            const view = params.view as ViewMode;
+            if (["grid", "list"].includes(view)) {
+              setViewMode(view);
             }
-            
-            // Update state
-            const newParams = { ...queryParams, path, offset: 0 };
-            setQueryParams(newParams);
-            
-            // Update URL
-            updateParams({ path }, { replace: true, merge: true });
-            
-            // Clear selection and search state
-            setSelectedItems([]);
-            setLastSelectedItem(null);
-            
-            if (searchMode) {
-                setSearchMode(false);
-                setSearchResults([]);
+          }
+
+          // Handle sort parameters
+          if (params.sortBy) {
+            setSortBy(params.sortBy as string);
+          }
+
+          if (params.sortDirection) {
+            const direction =
+              params.sortDirection as Graphql.OrderSortDirection;
+            if (["ASC", "DESC"].includes(direction)) {
+              setSortDirection(direction);
             }
-        },
-        [queryParams, searchMode, updateParams],
-    );
-    
-    // Update setViewMode to update URL
-    const changeViewMode = useCallback(
-        (view: ViewMode) => {
-            setViewMode(view);
-            updateParams({ view }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    // Update setSortBy to update URL
-    const changeSortBy = useCallback(
-        (field: string) => {
-            setSortBy(field);
-            updateParams({ sortBy: field }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    // Update setSortDirection to update URL
-    const changeSortDirection = useCallback(
-        (direction: Graphql.OrderSortDirection) => {
-            setSortDirection(direction);
-            updateParams({ sortDirection: direction }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    // ... rest of implementation ...
+          }
+
+          // Handle file type filter
+          if (params.fileType) {
+            setParams({ fileType: params.fileType as Graphql.FileType });
+          }
+
+          return { success: true };
+        } catch (error) {
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Navigation failed",
+          };
+        }
+      },
+      priority: 10,
+      recursive: true, // Handle nested directory paths
+    });
+
+    return unregister;
+  }, [registerResolver, queryParams.path]);
+
+  // Update navigateTo to also update URL params
+  const navigateTo = useCallback(
+    async (path: string) => {
+      // Avoid unnecessary navigation to the same path
+      if (queryParams.path === path) {
+        return;
+      }
+
+      // Update state
+      const newParams = { ...queryParams, path, offset: 0 };
+      setQueryParams(newParams);
+
+      // Update URL
+      updateParams({ path }, { replace: true, merge: true });
+
+      // Clear selection and search state
+      setSelectedItems([]);
+      setLastSelectedItem(null);
+
+      if (searchMode) {
+        setSearchMode(false);
+        setSearchResults([]);
+      }
+    },
+    [queryParams, searchMode, updateParams]
+  );
+
+  // Update setViewMode to update URL
+  const changeViewMode = useCallback(
+    (view: ViewMode) => {
+      setViewMode(view);
+      updateParams({ view }, { replace: true, merge: true });
+    },
+    [updateParams]
+  );
+
+  // Update setSortBy to update URL
+  const changeSortBy = useCallback(
+    (field: string) => {
+      setSortBy(field);
+      updateParams({ sortBy: field }, { replace: true, merge: true });
+    },
+    [updateParams]
+  );
+
+  // Update setSortDirection to update URL
+  const changeSortDirection = useCallback(
+    (direction: Graphql.OrderSortDirection) => {
+      setSortDirection(direction);
+      updateParams(
+        { sortDirection: direction },
+        { replace: true, merge: true }
+      );
+    },
+    [updateParams]
+  );
+
+  // ... rest of implementation ...
 };
 ```
 
@@ -143,147 +147,147 @@ export const StorageManagementUIProvider: React.FC<{
 import { usePageNavigation } from "../usePageNavigation";
 
 export const TemplateCategoryManagementProvider: React.FC<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }> = ({ children }) => {
-    const messages = useAppTranslation("templateCategoryTranslations");
-    const notifications = useNotifications();
-    const { setNavigation } = useDashboardLayout();
-    const router = useRouter();
-    
-    // Add the navigation hook
-    const { registerResolver, updateParams } = usePageNavigation();
-    
-    // ... existing state ...
-    
-    // Add a state for active view
-    const [activeView, setActiveView] = useState<"categories" | "suspended">("categories");
-    
-    // Register navigation resolver
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/categories",
-            resolver: async (params) => {
-                try {
-                    // Handle view parameter (categories vs suspended templates)
-                    if (params.view) {
-                        const view = params.view as "categories" | "suspended";
-                        if (["categories", "suspended"].includes(view)) {
-                            setActiveView(view);
-                        }
-                    }
-                    
-                    // Handle category selection
-                    if (params.categoryId) {
-                        const categoryId = parseInt(params.categoryId as string, 10);
-                        if (!isNaN(categoryId)) {
-                            // Find and select the category
-                            const category = findCategoryInTreeById(
-                                allCategoriesFromCache,
-                                categoryId,
-                            );
-                            if (category) {
-                                setCurrentCategory(category);
-                            }
-                        }
-                    }
-                    
-                    // Handle template selection within category
-                    if (params.templateId) {
-                        const templateId = parseInt(params.templateId as string, 10);
-                        if (!isNaN(templateId)) {
-                            const template = allTemplatesFromCache.find(
-                                (t) => t.id === templateId,
-                            );
-                            if (template) {
-                                setCurrentTemplate(template);
-                            }
-                        }
-                    }
-                    
-                    return { success: true };
-                } catch (error) {
-                    return {
-                        success: false,
-                        error: error instanceof Error ? error.message : "Navigation failed",
-                    };
-                }
-            },
-            priority: 10,
-        });
-        
-        return unregister;
-    }, [
-        registerResolver,
-        allCategoriesFromCache,
-        allTemplatesFromCache,
-        setCurrentCategory,
-    ]);
-    
-    // Update trySelectCategory to update URL
-    const trySelectCategory = useCallback(
-        async (category: Graphql.TemplateCategory | null): Promise<boolean> => {
-            if (isAddingTemplate) {
-                setIsSwitchWarningOpen(true);
-                setPendingCategory(category);
-                return false;
+  const messages = useAppTranslation("templateCategoryTranslations");
+  const notifications = useNotifications();
+  const { setNavigation } = useDashboardLayout();
+  const router = useRouter();
+
+  // Add the navigation hook
+  const { registerResolver, updateParams } = usePageNavigation();
+
+  // ... existing state ...
+
+  // Add a state for active view
+  const [activeView, setActiveView] = useState<"categories" | "suspended">(
+    "categories"
+  );
+
+  // Register navigation resolver
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/categories",
+      resolver: async params => {
+        try {
+          // Handle view parameter (categories vs suspended templates)
+          if (params.view) {
+            const view = params.view as "categories" | "suspended";
+            if (["categories", "suspended"].includes(view)) {
+              setActiveView(view);
             }
-            
-            setCurrentCategory(category);
-            
-            // Update URL with selected category
-            if (category) {
-                updateParams(
-                    { categoryId: String(category.id) },
-                    { replace: true, merge: true },
-                );
-            } else {
-                updateParams({ categoryId: undefined }, { replace: true, merge: true });
+          }
+
+          // Handle category selection
+          if (params.categoryId) {
+            const categoryId = parseInt(params.categoryId as string, 10);
+            if (!isNaN(categoryId)) {
+              // Find and select the category
+              const category = findCategoryInTreeById(
+                allCategoriesFromCache,
+                categoryId
+              );
+              if (category) {
+                setCurrentCategory(category);
+              }
             }
-            
-            return true;
-        },
-        [isAddingTemplate, setCurrentCategory, updateParams],
-    );
-    
-    // Add a function to switch views
-    const switchView = useCallback(
-        (view: "categories" | "suspended") => {
-            setActiveView(view);
-            updateParams({ view }, { replace: true, merge: true });
-            
-            // When switching to suspended, show the suspension category
-            if (view === "suspended" && suspensionCategoryFromCache) {
-                setCurrentCategory(suspensionCategoryFromCache);
-            } else if (view === "categories") {
-                // Clear current category or select first regular category
-                setCurrentCategory(
-                    sortedRegularCategories[0] || null,
-                );
+          }
+
+          // Handle template selection within category
+          if (params.templateId) {
+            const templateId = parseInt(params.templateId as string, 10);
+            if (!isNaN(templateId)) {
+              const template = allTemplatesFromCache.find(
+                t => t.id === templateId
+              );
+              if (template) {
+                setCurrentTemplate(template);
+              }
             }
-        },
-        [
-            updateParams,
-            suspensionCategoryFromCache,
-            sortedRegularCategories,
-            setCurrentCategory,
-        ],
-    );
-    
-    // Update context value to include new functions
-    const value: TemplateCategoryManagementContextType = useMemo(
-        () => ({
-            // ... existing values ...
-            activeView,
-            switchView,
-        }),
-        [
-            // ... existing deps ...
-            activeView,
-            switchView,
-        ],
-    );
-    
-    // ... rest of implementation ...
+          }
+
+          return { success: true };
+        } catch (error) {
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Navigation failed",
+          };
+        }
+      },
+      priority: 10,
+    });
+
+    return unregister;
+  }, [
+    registerResolver,
+    allCategoriesFromCache,
+    allTemplatesFromCache,
+    setCurrentCategory,
+  ]);
+
+  // Update trySelectCategory to update URL
+  const trySelectCategory = useCallback(
+    async (category: Graphql.TemplateCategory | null): Promise<boolean> => {
+      if (isAddingTemplate) {
+        setIsSwitchWarningOpen(true);
+        setPendingCategory(category);
+        return false;
+      }
+
+      setCurrentCategory(category);
+
+      // Update URL with selected category
+      if (category) {
+        updateParams(
+          { categoryId: String(category.id) },
+          { replace: true, merge: true }
+        );
+      } else {
+        updateParams({ categoryId: undefined }, { replace: true, merge: true });
+      }
+
+      return true;
+    },
+    [isAddingTemplate, setCurrentCategory, updateParams]
+  );
+
+  // Add a function to switch views
+  const switchView = useCallback(
+    (view: "categories" | "suspended") => {
+      setActiveView(view);
+      updateParams({ view }, { replace: true, merge: true });
+
+      // When switching to suspended, show the suspension category
+      if (view === "suspended" && suspensionCategoryFromCache) {
+        setCurrentCategory(suspensionCategoryFromCache);
+      } else if (view === "categories") {
+        // Clear current category or select first regular category
+        setCurrentCategory(sortedRegularCategories[0] || null);
+      }
+    },
+    [
+      updateParams,
+      suspensionCategoryFromCache,
+      sortedRegularCategories,
+      setCurrentCategory,
+    ]
+  );
+
+  // Update context value to include new functions
+  const value: TemplateCategoryManagementContextType = useMemo(
+    () => ({
+      // ... existing values ...
+      activeView,
+      switchView,
+    }),
+    [
+      // ... existing deps ...
+      activeView,
+      switchView,
+    ]
+  );
+
+  // ... rest of implementation ...
 };
 ```
 
@@ -301,71 +305,75 @@ export const TemplateCategoryManagementProvider: React.FC<{
 import { usePageNavigation } from "../usePageNavigation";
 
 export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
-    children,
+  children,
 }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    
-    const [activeTab, setActiveTab] = useState<"all" | "groups" | "archived">("all");
-    const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
-    
-    // Register navigation resolver
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/students",
-            resolver: async (params) => {
-                // Handle tab
-                if (params.tab) {
-                    const tab = params.tab as "all" | "groups" | "archived";
-                    if (["all", "groups", "archived"].includes(tab)) {
-                        setActiveTab(tab);
-                    }
-                }
-                
-                // Handle student selection
-                if (params.studentId) {
-                    const studentId = parseInt(params.studentId as string, 10);
-                    if (!isNaN(studentId)) {
-                        setSelectedStudentId(studentId);
-                    }
-                }
-                
-                // Handle group filter
-                if (params.groupId && params.tab === "groups") {
-                    // Could filter by group
-                }
-                
-                return { success: true };
-            },
-            priority: 10,
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    const changeTab = useCallback(
-        (tab: "all" | "groups" | "archived") => {
+  const { registerResolver, updateParams } = usePageNavigation();
+
+  const [activeTab, setActiveTab] = useState<"all" | "groups" | "archived">(
+    "all"
+  );
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
+    null
+  );
+
+  // Register navigation resolver
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/students",
+      resolver: async params => {
+        // Handle tab
+        if (params.tab) {
+          const tab = params.tab as "all" | "groups" | "archived";
+          if (["all", "groups", "archived"].includes(tab)) {
             setActiveTab(tab);
-            updateParams({ tab }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    const selectStudent = useCallback(
-        (studentId: number | null) => {
+          }
+        }
+
+        // Handle student selection
+        if (params.studentId) {
+          const studentId = parseInt(params.studentId as string, 10);
+          if (!isNaN(studentId)) {
             setSelectedStudentId(studentId);
-            if (studentId) {
-                updateParams(
-                    { studentId: String(studentId) },
-                    { replace: true, merge: true },
-                );
-            } else {
-                updateParams({ studentId: undefined }, { replace: true, merge: true });
-            }
-        },
-        [updateParams],
-    );
-    
-    // ... rest of implementation ...
+          }
+        }
+
+        // Handle group filter
+        if (params.groupId && params.tab === "groups") {
+          // Could filter by group
+        }
+
+        return { success: true };
+      },
+      priority: 10,
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  const changeTab = useCallback(
+    (tab: "all" | "groups" | "archived") => {
+      setActiveTab(tab);
+      updateParams({ tab }, { replace: true, merge: true });
+    },
+    [updateParams]
+  );
+
+  const selectStudent = useCallback(
+    (studentId: number | null) => {
+      setSelectedStudentId(studentId);
+      if (studentId) {
+        updateParams(
+          { studentId: String(studentId) },
+          { replace: true, merge: true }
+        );
+      } else {
+        updateParams({ studentId: undefined }, { replace: true, merge: true });
+      }
+    },
+    [updateParams]
+  );
+
+  // ... rest of implementation ...
 };
 ```
 
@@ -386,68 +394,64 @@ For a deeply nested component that needs to respond to URL params:
 import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const TemplateVariableEditor: React.FC = () => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    const [selectedVariable, setSelectedVariable] = useState<number | null>(null);
-    const [editMode, setEditMode] = useState<"edit" | "preview">("edit");
-    
-    // Register resolver with lower priority
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/templates/:id/manage",
-            resolver: async (params) => {
-                // Only handle if we're on the variables tab
-                if (params.tab !== "variables") {
-                    return { success: true };
-                }
-                
-                // Handle variable selection
-                if (params.variableId) {
-                    const variableId = parseInt(params.variableId as string, 10);
-                    if (!isNaN(variableId)) {
-                        setSelectedVariable(variableId);
-                    }
-                }
-                
-                // Handle edit mode
-                if (params.mode) {
-                    const mode = params.mode as "edit" | "preview";
-                    if (["edit", "preview"].includes(mode)) {
-                        setEditMode(mode);
-                    }
-                }
-                
-                return { success: true };
-            },
-            priority: 5, // Lower than parent
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    const selectVariable = useCallback(
-        (variableId: number) => {
+  const { registerResolver, updateParams } = usePageNavigation();
+  const [selectedVariable, setSelectedVariable] = useState<number | null>(null);
+  const [editMode, setEditMode] = useState<"edit" | "preview">("edit");
+
+  // Register resolver with lower priority
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/templates/:id/manage",
+      resolver: async params => {
+        // Only handle if we're on the variables tab
+        if (params.tab !== "variables") {
+          return { success: true };
+        }
+
+        // Handle variable selection
+        if (params.variableId) {
+          const variableId = parseInt(params.variableId as string, 10);
+          if (!isNaN(variableId)) {
             setSelectedVariable(variableId);
-            updateParams(
-                { variableId: String(variableId) },
-                { replace: true, merge: true },
-            );
-        },
-        [updateParams],
-    );
-    
-    const changeMode = useCallback(
-        (mode: "edit" | "preview") => {
+          }
+        }
+
+        // Handle edit mode
+        if (params.mode) {
+          const mode = params.mode as "edit" | "preview";
+          if (["edit", "preview"].includes(mode)) {
             setEditMode(mode);
-            updateParams({ mode }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    return (
-        <div>
-            {/* Variable editor UI */}
-        </div>
-    );
+          }
+        }
+
+        return { success: true };
+      },
+      priority: 5, // Lower than parent
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  const selectVariable = useCallback(
+    (variableId: number) => {
+      setSelectedVariable(variableId);
+      updateParams(
+        { variableId: String(variableId) },
+        { replace: true, merge: true }
+      );
+    },
+    [updateParams]
+  );
+
+  const changeMode = useCallback(
+    (mode: "edit" | "preview") => {
+      setEditMode(mode);
+      updateParams({ mode }, { replace: true, merge: true });
+    },
+    [updateParams]
+  );
+
+  return <div>{/* Variable editor UI */}</div>;
 };
 ```
 
@@ -463,14 +467,14 @@ export const TemplateVariableEditor: React.FC = () => {
 
 ```tsx
 const handleStateChange = useCallback(
-    (newValue: string) => {
-        // Update internal state
-        setState(newValue);
-        
-        // Update URL to reflect state
-        updateParams({ param: newValue }, { replace: true, merge: true });
-    },
-    [updateParams],
+  (newValue: string) => {
+    // Update internal state
+    setState(newValue);
+
+    // Update URL to reflect state
+    updateParams({ param: newValue }, { replace: true, merge: true });
+  },
+  [updateParams]
 );
 ```
 
@@ -478,57 +482,57 @@ const handleStateChange = useCallback(
 
 ```tsx
 useEffect(() => {
-    const unregister = registerResolver({
-        segment: "your/route",
-        resolver: async (params) => {
-            // Sync internal state from URL params
-            if (params.someParam) {
-                setState(params.someParam as StateType);
-            }
-            return { success: true };
-        },
-    });
-    
-    return unregister;
+  const unregister = registerResolver({
+    segment: "your/route",
+    resolver: async params => {
+      // Sync internal state from URL params
+      if (params.someParam) {
+        setState(params.someParam as StateType);
+      }
+      return { success: true };
+    },
+  });
+
+  return unregister;
 }, [registerResolver]);
 ```
 
 ### Pattern 3: Conditional Param Handling
 
 ```tsx
-resolver: async (params) => {
-    // Only handle certain params if on a specific tab
-    if (params.tab === "editor") {
-        if (params.variableId) {
-            handleVariableSelection(params.variableId);
-        }
-        if (params.zoom) {
-            handleZoomLevel(params.zoom);
-        }
+resolver: async params => {
+  // Only handle certain params if on a specific tab
+  if (params.tab === "editor") {
+    if (params.variableId) {
+      handleVariableSelection(params.variableId);
     }
-    return { success: true };
-}
+    if (params.zoom) {
+      handleZoomLevel(params.zoom);
+    }
+  }
+  return { success: true };
+};
 ```
 
 ### Pattern 4: Param Validation
 
 ```tsx
-resolver: async (params) => {
-    // Validate params before using
-    const id = params.id as string;
-    if (id && isNaN(Number(id))) {
-        return {
-            success: false,
-            error: "Invalid ID parameter",
-        };
-    }
-    
-    // Use validated param
-    const numericId = parseInt(id, 10);
-    await loadData(numericId);
-    
-    return { success: true };
-}
+resolver: async params => {
+  // Validate params before using
+  const id = params.id as string;
+  if (id && isNaN(Number(id))) {
+    return {
+      success: false,
+      error: "Invalid ID parameter",
+    };
+  }
+
+  // Use validated param
+  const numericId = parseInt(id, 10);
+  await loadData(numericId);
+
+  return { success: true };
+};
 ```
 
 ## Testing Deep Links

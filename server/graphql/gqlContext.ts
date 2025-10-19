@@ -2,45 +2,45 @@ import { db } from "@/server/db/drizzleDb";
 import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 
 export type BaseContext = {
-    user?: {
-        id: number;
-    };
-    roles: string[];
-    refreshToken?: string;
-    sessionId?: string;
-    cookies?: ResponseCookies;
+  user?: {
+    id: number;
+  };
+  roles: string[];
+  refreshToken?: string;
+  sessionId?: string;
+  cookies?: ResponseCookies;
 };
 
 export type AuthContexts = {
-    loggedIn: BaseContext & { user: object };
-    role: BaseContext & { user: object };
+  loggedIn: BaseContext & { user: object };
+  role: BaseContext & { user: object };
 };
 
 export async function createContext({
-    userId,
+  userId,
 }: {
-    userId?: number | null;
+  userId?: number | null;
 }): Promise<BaseContext> {
-    if (!userId) {
-        return {
-            roles: [],
-        };
-    }
-
-    const user = await db.query.users.findFirst({
-        columns: {
-            id: true,
-        },
-        with: {
-            roles: true,
-        },
-        where: {
-            id: userId,
-        },
-    });
-
+  if (!userId) {
     return {
-        user: user ?? undefined,
-        roles: user?.roles.map((role) => role.name) ?? [],
+      roles: [],
     };
+  }
+
+  const user = await db.query.users.findFirst({
+    columns: {
+      id: true,
+    },
+    with: {
+      roles: true,
+    },
+    where: {
+      id: userId,
+    },
+  });
+
+  return {
+    user: user ?? undefined,
+    roles: user?.roles.map(role => role.name) ?? [],
+  };
 }

@@ -139,9 +139,7 @@
         "certificate_verification_code_unique": {
           "name": "certificate_verification_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "verification_code"
-          ]
+          "columns": ["verification_code"]
         }
       },
       "policies": {},
@@ -203,9 +201,7 @@
         "roles_name_unique": {
           "name": "roles_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -315,12 +311,8 @@
           "name": "user_roles_user_id_users_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -328,12 +320,8 @@
           "name": "user_roles_role_id_roles_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "roles",
-          "columnsFrom": [
-            "role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -341,10 +329,7 @@
       "compositePrimaryKeys": {
         "user_roles_user_id_role_id_pk": {
           "name": "user_roles_user_id_role_id_pk",
-          "columns": [
-            "user_id",
-            "role_id"
-          ]
+          "columns": ["user_id", "role_id"]
         }
       },
       "uniqueConstraints": {},
@@ -412,9 +397,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1639,9 +1622,7 @@
         "storage_directory_path_unique": {
           "name": "storage_directory_path_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "path"
-          ]
+          "columns": ["path"]
         }
       },
       "policies": {},
@@ -1679,9 +1660,7 @@
         "storage_file_path_unique": {
           "name": "storage_file_path_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "path"
-          ]
+          "columns": ["path"]
         }
       },
       "policies": {},
@@ -1945,57 +1924,32 @@
     "public.gender": {
       "name": "gender",
       "schema": "public",
-      "values": [
-        "MALE",
-        "FEMALE",
-        "OTHER"
-      ]
+      "values": ["MALE", "FEMALE", "OTHER"]
     },
     "public.category_special_type": {
       "name": "category_special_type",
       "schema": "public",
-      "values": [
-        "Main",
-        "Suspension"
-      ]
+      "values": ["Main", "Suspension"]
     },
     "public.template_config_key": {
       "name": "template_config_key",
       "schema": "public",
-      "values": [
-        "MAX_BACKGROUND_SIZE",
-        "ALLOWED_FILE_TYPES"
-      ]
+      "values": ["MAX_BACKGROUND_SIZE", "ALLOWED_FILE_TYPES"]
     },
     "public.template_variable_type": {
       "name": "template_variable_type",
       "schema": "public",
-      "values": [
-        "TEXT",
-        "NUMBER",
-        "DATE",
-        "SELECT"
-      ]
+      "values": ["TEXT", "NUMBER", "DATE", "SELECT"]
     },
     "public.template_element_type": {
       "name": "template_element_type",
       "schema": "public",
-      "values": [
-        "static_text",
-        "data_text",
-        "data_date",
-        "image",
-        "qr_code"
-      ]
+      "values": ["static_text", "data_text", "data_date", "image", "qr_code"]
     },
     "public.template_element_source_type": {
       "name": "template_element_source_type",
       "schema": "public",
-      "values": [
-        "student",
-        "variable",
-        "certificate"
-      ]
+      "values": ["student", "variable", "certificate"]
     }
   },
   "schemas": {},

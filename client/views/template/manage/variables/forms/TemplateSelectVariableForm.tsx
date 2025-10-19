@@ -27,7 +27,7 @@ type TemplateSelectVariableFormProps = {
   variables: TemplateVariable[];
   onCreate: (data: TemplateSelectVariableCreateInput) => Promise<void>;
   onUpdate: (
-    data: TemplateSelectVariableCreateInput & { id: number },
+    data: TemplateSelectVariableCreateInput & { id: number }
   ) => Promise<void>;
 };
 
@@ -42,7 +42,7 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
     if (!editingVariableID) return null;
     return (
       (variables.find(
-        (v) => v.id === editingVariableID,
+        v => v.id === editingVariableID
       ) as TemplateSelectVariable) || null
     );
   }, [editingVariableID, variables]);
@@ -70,16 +70,16 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
             ? event.target.checked
             : event.target.value;
 
-        setState((prevState) => ({
+        setState(prevState => ({
           ...prevState,
           [field]: value,
         }));
       },
-    [],
+    []
   );
 
   const handleOptionsChange = useCallback((options: string[]) => {
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       options,
     }));
@@ -87,12 +87,12 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
 
   const handlePreviewValueChange = useCallback(
     (event: SelectChangeEvent<string>) => {
-      setState((prevState) => ({
+      setState(prevState => ({
         ...prevState,
         previewValue: event.target.value,
       }));
     },
-    [],
+    []
   );
 
   const handleSave = useCallback(async () => {
@@ -158,7 +158,7 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
           displayEmpty
           label={strings?.previewValue ?? "Preview Value"}
         >
-          {state.options.map((option) => (
+          {state.options.map(option => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>

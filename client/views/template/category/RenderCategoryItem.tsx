@@ -34,7 +34,7 @@ type RenderCategoryItemProps = {
   validateCategoryName: (name: string) => string;
   handleCategoryNameEdit: (
     category: TemplateCategoryWithParentTree,
-    newValue: string,
+    newValue: string
   ) => void;
   createCategory: (input: TemplateCategoryCreateInput) => Promise<void>;
 };
@@ -66,14 +66,14 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
       skip: !category.id,
       fetchPolicy: "cache-only",
       nextFetchPolicy: "cache-only",
-    },
+    }
   );
 
   const hasTemplates: boolean = React.useMemo(
     () =>
       (templatesByCategoryIdQuery?.templatesByCategoryId?.data?.length ?? 0) >
       0,
-    [templatesByCategoryIdQuery?.templatesByCategoryId?.data],
+    [templatesByCategoryIdQuery?.templatesByCategoryId?.data]
   );
 
   const handleCreateSubCategory = (e: React.MouseEvent) => {
@@ -156,7 +156,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
               sx: { minWidth: "150px", width: "max-content" },
             }}
             value={category.name}
-            onSaveAction={(newValue) =>
+            onSaveAction={newValue =>
               handleCategoryNameEdit(category, newValue)
             }
             isValidAction={validateCategoryName}
@@ -168,7 +168,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
         <Tooltip title="Delete">
           <span>
             <IconButton
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 deleteCategory(category.id);
               }}
@@ -192,7 +192,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
         {/* edit button */}
         <Tooltip title={strings.edit}>
           <IconButton
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               handleOpenEditDialog(category);
             }}
@@ -224,7 +224,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
               label={strings.name}
               fullWidth
               value={newCategoryName}
-              onChange={(e) => {
+              onChange={e => {
                 setNewCategoryName(e.target.value);
                 setError("");
               }}
@@ -238,7 +238,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
               multiline
               rows={3}
               value={newCategoryDescription}
-              onChange={(e) => setNewCategoryDescription(e.target.value)}
+              onChange={e => setNewCategoryDescription(e.target.value)}
             />
           </Box>
         </DialogContent>

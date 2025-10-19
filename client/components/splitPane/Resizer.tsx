@@ -18,7 +18,7 @@ type ResizerProps = {
   normalWidth?: number;
 };
 
-export const Resizer: React.FC<ResizerProps> = (props) => {
+export const Resizer: React.FC<ResizerProps> = props => {
   const [isResizing, setIsResizing] = useState(false);
   const { theme } = useAppTheme();
   const {
@@ -70,17 +70,17 @@ export const Resizer: React.FC<ResizerProps> = (props) => {
         ...containerStyle,
       }}
       onMouseDown={handleMouseDown}
-      onTouchStart={(e) => {
+      onTouchStart={e => {
         e.preventDefault();
         setIsResizing(true);
         onTouchStart?.(e as unknown as TouchEvent<HTMLButtonElement>);
       }}
-      onTouchEnd={(e) => {
+      onTouchEnd={e => {
         e.preventDefault();
         setIsResizing(false);
         onTouchEnd?.(e as unknown as TouchEvent<HTMLButtonElement>);
       }}
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
         onClick?.(e);
       }}

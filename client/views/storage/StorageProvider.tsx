@@ -9,10 +9,6 @@ export default function StorageProvider({
 }>) {
   // Initialize storage data on mount
   useStorageInitialization();
-  
-  return (
-    <UploadProgressUIProvider>
-      {children}
-    </UploadProgressUIProvider>
-  );
+
+  return <UploadProgressUIProvider>{children}</UploadProgressUIProvider>;
 }

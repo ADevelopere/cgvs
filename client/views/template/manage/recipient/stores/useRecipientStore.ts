@@ -36,10 +36,10 @@ interface RecipientActions {
   setSelectedGroup: (group: Graphql.TemplateRecipientGroup | null) => void;
   setSelectedGroupId: (groupId: number | null) => void;
   setStudentsNotInGroupQueryParams: (
-    params: Partial<Graphql.StudentsNotInRecipientGroupQueryVariables>,
+    params: Partial<Graphql.StudentsNotInRecipientGroupQueryVariables>
   ) => void;
   setStudentsInGroupQueryParams: (
-    params: Partial<Graphql.StudentsInRecipientGroupQueryVariables>,
+    params: Partial<Graphql.StudentsInRecipientGroupQueryVariables>
   ) => void;
   setFiltersNotInGroup: (filters: Record<string, FilterClause | null>) => void;
   setFiltersInGroup: (filters: Record<string, FilterClause | null>) => void;
@@ -107,11 +107,11 @@ const initialState: RecipientState = {
 };
 
 export const useRecipientStore = create<RecipientState & RecipientActions>(
-  (set) => ({
+  set => ({
     ...initialState,
 
-    setSelectedGroup: (group) =>
-      set((state) => {
+    setSelectedGroup: group =>
+      set(state => {
         const groupId = group?.id || null;
         setPersistedGroupId(groupId);
         return {
@@ -134,8 +134,8 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
         };
       }),
 
-    setSelectedGroupId: (groupId) =>
-      set((state) => {
+    setSelectedGroupId: groupId =>
+      set(state => {
         setPersistedGroupId(groupId);
         return {
           selectedGroupId: groupId,
@@ -156,45 +156,45 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
         };
       }),
 
-    setStudentsNotInGroupQueryParams: (params) =>
-      set((state) => ({
+    setStudentsNotInGroupQueryParams: params =>
+      set(state => ({
         studentsNotInGroupQueryParams: {
           ...state.studentsNotInGroupQueryParams,
           ...params,
         },
       })),
 
-    setStudentsInGroupQueryParams: (params) =>
-      set((state) => ({
+    setStudentsInGroupQueryParams: params =>
+      set(state => ({
         studentsInGroupQueryParams: {
           ...state.studentsInGroupQueryParams,
           ...params,
         },
       })),
 
-    setFiltersNotInGroup: (filters) => set({ filtersNotInGroup: filters }),
+    setFiltersNotInGroup: filters => set({ filtersNotInGroup: filters }),
 
-    setFiltersInGroup: (filters) => set({ filtersInGroup: filters }),
+    setFiltersInGroup: filters => set({ filtersInGroup: filters }),
 
     setFilterNotInGroup: (columnId, filter) =>
-      set((state) => ({
+      set(state => ({
         filtersNotInGroup: { ...state.filtersNotInGroup, [columnId]: filter },
       })),
 
     setFilterInGroup: (columnId, filter) =>
-      set((state) => ({
+      set(state => ({
         filtersInGroup: { ...state.filtersInGroup, [columnId]: filter },
       })),
 
-    clearFilterNotInGroup: (columnId) =>
-      set((state) => {
+    clearFilterNotInGroup: columnId =>
+      set(state => {
         const newFilters = { ...state.filtersNotInGroup };
         delete newFilters[columnId];
         return { filtersNotInGroup: newFilters };
       }),
 
-    clearFilterInGroup: (columnId) =>
-      set((state) => {
+    clearFilterInGroup: columnId =>
+      set(state => {
         const newFilters = { ...state.filtersInGroup };
         delete newFilters[columnId];
         return { filtersInGroup: newFilters };
@@ -204,21 +204,25 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
 
     clearAllFiltersInGroup: () => set({ filtersInGroup: {} }),
 
-    setSelectedStudentIdsNotInGroup: (ids) => set({ selectedStudentIdsNotInGroup: ids }),
+    setSelectedStudentIdsNotInGroup: ids =>
+      set({ selectedStudentIdsNotInGroup: ids }),
 
-    setSelectedStudentIdsInGroup: (ids) => set({ selectedStudentIdsInGroup: ids }),
+    setSelectedStudentIdsInGroup: ids =>
+      set({ selectedStudentIdsInGroup: ids }),
 
-    clearSelectedStudentIdsNotInGroup: () => set({ selectedStudentIdsNotInGroup: [] }),
+    clearSelectedStudentIdsNotInGroup: () =>
+      set({ selectedStudentIdsNotInGroup: [] }),
 
-    clearSelectedStudentIdsInGroup: () => set({ selectedStudentIdsInGroup: [] }),
+    clearSelectedStudentIdsInGroup: () =>
+      set({ selectedStudentIdsInGroup: [] }),
 
-    setActiveSubTab: (tab) => {
+    setActiveSubTab: tab => {
       setPersistedActiveSubTab(tab);
       set({ activeSubTab: tab });
     },
 
     reset: () => set(initialState),
-  }),
+  })
 );
 
 // Hook to initialize the store with persisted group data

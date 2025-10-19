@@ -48,11 +48,11 @@ export const TemplateManagementPage: React.FC = () => {
   const [updating, setUpdating] = useState(true);
   const loading = React.useMemo(
     () => updating || apolloLoading,
-    [updating, apolloLoading],
+    [updating, apolloLoading]
   );
   const templateNotFound = React.useMemo(
     () => !template && !loading && !error,
-    [template, loading, error],
+    [template, loading, error]
   );
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export const TemplateManagementPage: React.FC = () => {
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
-    newValue: TemplateManagementTabType,
+    newValue: TemplateManagementTabType
   ) => {
     setActiveTab(newValue);
     const params = new URLSearchParams(searchParams.toString());
@@ -86,7 +86,7 @@ export const TemplateManagementPage: React.FC = () => {
         isLoading={loading}
         isError={Boolean(error || templateNotFound)}
         onBackAction={handleBack}
-      />,
+      />
     );
 
     return () => {

@@ -48,15 +48,15 @@ A function that takes URL params and returns a resolution result:
 
 ```typescript
 type NavigationResolver = (
-    params: RouteParams,
-    context?: unknown,
+  params: RouteParams,
+  context?: unknown
 ) => Promise<NavigationResolution> | NavigationResolution;
 
 interface NavigationResolution {
-    success: boolean;
-    params?: RouteParams;
-    error?: string;
-    redirect?: string;
+  success: boolean;
+  params?: RouteParams;
+  error?: string;
+  redirect?: string;
 }
 ```
 
@@ -69,41 +69,47 @@ interface NavigationResolution {
 import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const TemplateManagementProvider = ({ children }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    const [activeTab, setActiveTab] = useState<TemplateManagementTabType>("basic");
-    
-    // Register resolver for this route
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/templates/:id/manage",
-            resolver: async (params) => {
-                // Handle tab parameter
-                const tab = params.tab as TemplateManagementTabType;
-                if (tab && ["basic", "variables", "editor", "recipients", "preview"].includes(tab)) {
-                    setActiveTab(tab);
-                }
-                
-                // Handle nested params (e.g., variable selection within editor tab)
-                if (tab === "editor" && params.variableId) {
-                    const variableId = parseInt(params.variableId as string, 10);
-                    // Sub-component can register its own resolver for this
-                }
-                
-                return { success: true };
-            },
-            priority: 10,
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    // When user changes tab
-    const changeTab = (tab: TemplateManagementTabType) => {
-        setActiveTab(tab);
-        updateParams({ tab }, { replace: true, merge: true });
-    };
-    
-    // ...
+  const { registerResolver, updateParams } = usePageNavigation();
+  const [activeTab, setActiveTab] =
+    useState<TemplateManagementTabType>("basic");
+
+  // Register resolver for this route
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/templates/:id/manage",
+      resolver: async params => {
+        // Handle tab parameter
+        const tab = params.tab as TemplateManagementTabType;
+        if (
+          tab &&
+          ["basic", "variables", "editor", "recipients", "preview"].includes(
+            tab
+          )
+        ) {
+          setActiveTab(tab);
+        }
+
+        // Handle nested params (e.g., variable selection within editor tab)
+        if (tab === "editor" && params.variableId) {
+          const variableId = parseInt(params.variableId as string, 10);
+          // Sub-component can register its own resolver for this
+        }
+
+        return { success: true };
+      },
+      priority: 10,
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  // When user changes tab
+  const changeTab = (tab: TemplateManagementTabType) => {
+    setActiveTab(tab);
+    updateParams({ tab }, { replace: true, merge: true });
+  };
+
+  // ...
 };
 ```
 
@@ -120,53 +126,53 @@ export const TemplateManagementProvider = ({ children }) => {
 import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const StorageManagementUIProvider = ({ children }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    const [currentPath, setCurrentPath] = useState("");
-    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-    
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/storage",
-            resolver: async (params) => {
-                // Handle directory path
-                if (params.path) {
-                    const path = params.path as string;
-                    await navigateToDirectory(path);
-                }
-                
-                // Handle view mode
-                if (params.view) {
-                    const view = params.view as "grid" | "list";
-                    setViewMode(view);
-                }
-                
-                // Handle sort params
-                if (params.sortBy) {
-                    setSortBy(params.sortBy as string);
-                }
-                
-                return { success: true };
-            },
-            priority: 10,
-            recursive: true, // Also handle nested directories
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    // When navigating to a directory
-    const navigateTo = async (path: string) => {
-        setCurrentPath(path);
-        updateParams({ path }, { replace: true, merge: true });
-    };
-    
-    // When changing view mode
-    const changeViewMode = (view: "grid" | "list") => {
-        setViewMode(view);
-        updateParams({ view }, { replace: true, merge: true });
-    };
-    
-    // ...
+  const { registerResolver, updateParams } = usePageNavigation();
+  const [currentPath, setCurrentPath] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/storage",
+      resolver: async params => {
+        // Handle directory path
+        if (params.path) {
+          const path = params.path as string;
+          await navigateToDirectory(path);
+        }
+
+        // Handle view mode
+        if (params.view) {
+          const view = params.view as "grid" | "list";
+          setViewMode(view);
+        }
+
+        // Handle sort params
+        if (params.sortBy) {
+          setSortBy(params.sortBy as string);
+        }
+
+        return { success: true };
+      },
+      priority: 10,
+      recursive: true, // Also handle nested directories
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  // When navigating to a directory
+  const navigateTo = async (path: string) => {
+    setCurrentPath(path);
+    updateParams({ path }, { replace: true, merge: true });
+  };
+
+  // When changing view mode
+  const changeViewMode = (view: "grid" | "list") => {
+    setViewMode(view);
+    updateParams({ view }, { replace: true, merge: true });
+  };
+
+  // ...
 };
 ```
 
@@ -183,49 +189,56 @@ export const StorageManagementUIProvider = ({ children }) => {
 import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const TemplateCategoryManagementProvider = ({ children }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    const [activeView, setActiveView] = useState<"categories" | "suspended">("categories");
-    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-    
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/categories",
-            resolver: async (params) => {
-                // Handle view parameter (categories vs suspended)
-                if (params.view) {
-                    const view = params.view as "categories" | "suspended";
-                    setActiveView(view);
-                }
-                
-                // Handle category selection
-                if (params.categoryId) {
-                    const categoryId = parseInt(params.categoryId as string, 10);
-                    setSelectedCategoryId(categoryId);
-                    
-                    // Could also auto-expand category tree to show selected category
-                }
-                
-                return { success: true };
-            },
-            priority: 10,
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    // When selecting a category
-    const selectCategory = (categoryId: number) => {
-        setSelectedCategoryId(categoryId);
-        updateParams({ categoryId: String(categoryId) }, { replace: true, merge: true });
-    };
-    
-    // When switching views
-    const switchView = (view: "categories" | "suspended") => {
-        setActiveView(view);
-        updateParams({ view }, { replace: true, merge: true });
-    };
-    
-    // ...
+  const { registerResolver, updateParams } = usePageNavigation();
+  const [activeView, setActiveView] = useState<"categories" | "suspended">(
+    "categories"
+  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null
+  );
+
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/categories",
+      resolver: async params => {
+        // Handle view parameter (categories vs suspended)
+        if (params.view) {
+          const view = params.view as "categories" | "suspended";
+          setActiveView(view);
+        }
+
+        // Handle category selection
+        if (params.categoryId) {
+          const categoryId = parseInt(params.categoryId as string, 10);
+          setSelectedCategoryId(categoryId);
+
+          // Could also auto-expand category tree to show selected category
+        }
+
+        return { success: true };
+      },
+      priority: 10,
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  // When selecting a category
+  const selectCategory = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+    updateParams(
+      { categoryId: String(categoryId) },
+      { replace: true, merge: true }
+    );
+  };
+
+  // When switching views
+  const switchView = (view: "categories" | "suspended") => {
+    setActiveView(view);
+    updateParams({ view }, { replace: true, merge: true });
+  };
+
+  // ...
 };
 ```
 
@@ -243,45 +256,50 @@ export const TemplateCategoryManagementProvider = ({ children }) => {
 import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const VariableEditor = () => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    const [selectedVariableId, setSelectedVariableId] = useState<number | null>(null);
-    const [editorMode, setEditorMode] = useState<"edit" | "preview">("edit");
-    
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/templates/:id/manage",
-            resolver: async (params) => {
-                // Only handle if we're on the variables tab
-                if (params.tab !== "variables") {
-                    return { success: true };
-                }
-                
-                // Handle variable selection
-                if (params.variableId) {
-                    const variableId = parseInt(params.variableId as string, 10);
-                    setSelectedVariableId(variableId);
-                }
-                
-                // Handle editor mode
-                if (params.mode) {
-                    setEditorMode(params.mode as "edit" | "preview");
-                }
-                
-                return { success: true };
-            },
-            priority: 5, // Lower priority than parent resolver
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    // When selecting a variable
-    const selectVariable = (variableId: number) => {
-        setSelectedVariableId(variableId);
-        updateParams({ variableId: String(variableId) }, { replace: true, merge: true });
-    };
-    
-    // ...
+  const { registerResolver, updateParams } = usePageNavigation();
+  const [selectedVariableId, setSelectedVariableId] = useState<number | null>(
+    null
+  );
+  const [editorMode, setEditorMode] = useState<"edit" | "preview">("edit");
+
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/templates/:id/manage",
+      resolver: async params => {
+        // Only handle if we're on the variables tab
+        if (params.tab !== "variables") {
+          return { success: true };
+        }
+
+        // Handle variable selection
+        if (params.variableId) {
+          const variableId = parseInt(params.variableId as string, 10);
+          setSelectedVariableId(variableId);
+        }
+
+        // Handle editor mode
+        if (params.mode) {
+          setEditorMode(params.mode as "edit" | "preview");
+        }
+
+        return { success: true };
+      },
+      priority: 5, // Lower priority than parent resolver
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  // When selecting a variable
+  const selectVariable = (variableId: number) => {
+    setSelectedVariableId(variableId);
+    updateParams(
+      { variableId: String(variableId) },
+      { replace: true, merge: true }
+    );
+  };
+
+  // ...
 };
 ```
 
@@ -325,16 +343,16 @@ updateParams({ tab: "editor" }, { replace: true, merge: true });
 Always check if params exist before using them:
 
 ```tsx
-resolver: async (params) => {
-    const tab = params.tab as string | undefined;
-    if (tab && validTabs.includes(tab)) {
-        setActiveTab(tab);
-    } else {
-        // Use default or show error
-        setActiveTab("basic");
-    }
-    return { success: true };
-}
+resolver: async params => {
+  const tab = params.tab as string | undefined;
+  if (tab && validTabs.includes(tab)) {
+    setActiveTab(tab);
+  } else {
+    // Use default or show error
+    setActiveTab("basic");
+  }
+  return { success: true };
+};
 ```
 
 ### 5. Use Recursive Resolvers for Hierarchical Routes
@@ -343,9 +361,11 @@ For pages with nested routes (like storage directories), use `recursive: true`:
 
 ```tsx
 registerResolver({
-    segment: "admin/storage",
-    resolver: async (params) => { /* ... */ },
-    recursive: true, // Will handle admin/storage/any/nested/path
+  segment: "admin/storage",
+  resolver: async params => {
+    /* ... */
+  },
+  recursive: true, // Will handle admin/storage/any/nested/path
 });
 ```
 
@@ -354,16 +374,16 @@ registerResolver({
 Add validation to ensure params are in the expected format:
 
 ```tsx
-resolver: async (params) => {
-    const categoryId = params.categoryId as string;
-    if (categoryId && isNaN(Number(categoryId))) {
-        return { 
-            success: false, 
-            error: "Invalid category ID" 
-        };
-    }
-    // ...
-}
+resolver: async params => {
+  const categoryId = params.categoryId as string;
+  if (categoryId && isNaN(Number(categoryId))) {
+    return {
+      success: false,
+      error: "Invalid category ID",
+    };
+  }
+  // ...
+};
 ```
 
 ## Advanced Patterns
@@ -373,15 +393,15 @@ resolver: async (params) => {
 Resolvers can conditionally handle params based on other params:
 
 ```tsx
-resolver: async (params) => {
-    // Only handle if on a specific tab
-    if (params.tab === "editor") {
-        // Handle editor-specific params
-    } else if (params.tab === "preview") {
-        // Handle preview-specific params
-    }
-    return { success: true };
-}
+resolver: async params => {
+  // Only handle if on a specific tab
+  if (params.tab === "editor") {
+    // Handle editor-specific params
+  } else if (params.tab === "preview") {
+    // Handle preview-specific params
+  }
+  return { success: true };
+};
 ```
 
 ### Pattern 2: Async Resolution with Data Fetching
@@ -389,26 +409,26 @@ resolver: async (params) => {
 Resolvers can fetch data before resolving:
 
 ```tsx
-resolver: async (params) => {
-    const templateId = params.id as string;
-    
-    try {
-        const template = await fetchTemplate(parseInt(templateId, 10));
-        setTemplate(template);
-        
-        // Then handle tab
-        if (params.tab) {
-            setActiveTab(params.tab as TabType);
-        }
-        
-        return { success: true };
-    } catch (error) {
-        return { 
-            success: false, 
-            error: "Failed to load template" 
-        };
+resolver: async params => {
+  const templateId = params.id as string;
+
+  try {
+    const template = await fetchTemplate(parseInt(templateId, 10));
+    setTemplate(template);
+
+    // Then handle tab
+    if (params.tab) {
+      setActiveTab(params.tab as TabType);
     }
-}
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: "Failed to load template",
+    };
+  }
+};
 ```
 
 ### Pattern 3: Redirect on Invalid State
@@ -416,19 +436,19 @@ resolver: async (params) => {
 Resolvers can trigger redirects if params are invalid:
 
 ```tsx
-resolver: async (params) => {
-    const tab = params.tab as string;
-    
-    if (tab && !validTabs.includes(tab)) {
-        return {
-            success: false,
-            error: "Invalid tab",
-            redirect: "/admin/templates", // Redirect to templates list
-        };
-    }
-    
-    return { success: true };
-}
+resolver: async params => {
+  const tab = params.tab as string;
+
+  if (tab && !validTabs.includes(tab)) {
+    return {
+      success: false,
+      error: "Invalid tab",
+      redirect: "/admin/templates", // Redirect to templates list
+    };
+  }
+
+  return { success: true };
+};
 ```
 
 ### Pattern 4: Param Normalization
@@ -436,21 +456,21 @@ resolver: async (params) => {
 Resolvers can normalize params and return them to update the URL:
 
 ```tsx
-resolver: async (params) => {
-    let normalizedParams = { ...params };
-    
-    // Normalize view param
-    if (params.view === "g") {
-        normalizedParams.view = "grid";
-    } else if (params.view === "l") {
-        normalizedParams.view = "list";
-    }
-    
-    return {
-        success: true,
-        params: normalizedParams, // Will update URL with normalized params
-    };
-}
+resolver: async params => {
+  let normalizedParams = { ...params };
+
+  // Normalize view param
+  if (params.view === "g") {
+    normalizedParams.view = "grid";
+  } else if (params.view === "l") {
+    normalizedParams.view = "list";
+  }
+
+  return {
+    success: true,
+    params: normalizedParams, // Will update URL with normalized params
+  };
+};
 ```
 
 ## Helper Hooks
@@ -486,13 +506,18 @@ Register a resolver with automatic cleanup:
 ```tsx
 import { useNavigationResolver } from "@/client/contexts/usePageNavigation";
 
-useNavigationResolver({
+useNavigationResolver(
+  {
     segment: "admin/templates/:id/manage",
-    resolver: async (params) => {
-        // Handle params
-        return { success: true };
+    resolver: async params => {
+      // Handle params
+      return { success: true };
     },
-}, [/* deps */]);
+  },
+  [
+    /* deps */
+  ]
+);
 ```
 
 ## Debugging
@@ -537,7 +562,7 @@ const searchParams = useSearchParams();
 const tab = searchParams.get("tab") || "basic";
 
 useEffect(() => {
-    setActiveTab(tab);
+  setActiveTab(tab);
 }, [tab]);
 ```
 
@@ -547,15 +572,15 @@ useEffect(() => {
 const { registerResolver, updateParams } = usePageNavigation();
 
 useEffect(() => {
-    return registerResolver({
-        segment: "admin/templates/:id/manage",
-        resolver: async (params) => {
-            if (params.tab) {
-                setActiveTab(params.tab as TabType);
-            }
-            return { success: true };
-        },
-    });
+  return registerResolver({
+    segment: "admin/templates/:id/manage",
+    resolver: async params => {
+      if (params.tab) {
+        setActiveTab(params.tab as TabType);
+      }
+      return { success: true };
+    },
+  });
 }, [registerResolver]);
 
 // When changing tab:

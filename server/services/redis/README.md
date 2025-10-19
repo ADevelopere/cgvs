@@ -70,81 +70,77 @@ server/services/redis/
 ### Basic Usage
 
 ```typescript
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // Set a value
-await redisService.set('user:123', 'John Doe', { ex: 3600 });
+await redisService.set("user:123", "John Doe", { ex: 3600 });
 
 // Get a value
-const name = await redisService.get('user:123');
+const name = await redisService.get("user:123");
 
 // Increment counter
-const count = await redisService.incr('page:views');
+const count = await redisService.incr("page:views");
 
 // Delete a key
-await redisService.del('user:123');
+await redisService.del("user:123");
 ```
 
 ### Rate Limiting Example
 
 ```typescript
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 async function checkRateLimit(userId: string): Promise<boolean> {
-    const key = `ratelimit:${userId}`;
-    const current = await redisService.get(key);
-    
-    if (!current) {
-        await redisService.set(key, '1', { ex: 60 });
-        return true;
-    }
-    
-    const count = parseInt(current, 10);
-    if (count >= 100) {
-        return false; // Rate limit exceeded
-    }
-    
-    await redisService.incr(key);
+  const key = `ratelimit:${userId}`;
+  const current = await redisService.get(key);
+
+  if (!current) {
+    await redisService.set(key, "1", { ex: 60 });
     return true;
+  }
+
+  const count = parseInt(current, 10);
+  if (count >= 100) {
+    return false; // Rate limit exceeded
+  }
+
+  await redisService.incr(key);
+  return true;
 }
 ```
 
 ### Caching Example
 
 ```typescript
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 async function getCachedData(key: string) {
-    // Try cache first
-    const cached = await redisService.get(`cache:${key}`);
-    if (cached) {
-        return JSON.parse(cached);
-    }
-    
-    // Fetch from database
-    const data = await fetchFromDatabase(key);
-    
-    // Cache for 1 hour
-    await redisService.set(
-        `cache:${key}`,
-        JSON.stringify(data),
-        { ex: 3600 }
-    );
-    
-    return data;
+  // Try cache first
+  const cached = await redisService.get(`cache:${key}`);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  // Fetch from database
+  const data = await fetchFromDatabase(key);
+
+  // Cache for 1 hour
+  await redisService.set(`cache:${key}`, JSON.stringify(data), { ex: 3600 });
+
+  return data;
 }
 ```
 
 ### Pipeline Operations
 
 ```typescript
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // Execute multiple commands atomically
 await redisService.pipeline([
-    { command: 'set', args: ['key1', 'value1'] },
-    { command: 'set', args: ['key2', 'value2'] },
-    { command: 'incr', args: ['counter'] },
+  { command: "set", args: ["key1", "value1"] },
+  { command: "set", args: ["key2", "value2"] },
+  { command: "incr", args: ["counter"] },
 ]);
 ```
 
@@ -172,6 +168,7 @@ docker compose down
 ### Configuration
 
 Edit `containers/redis/redis.conf` to customize:
+
 - Memory limits
 - Eviction policies
 - Persistence settings
@@ -200,6 +197,7 @@ UPSTASH_REDIS_REST_TOKEN=your-token-here
 ### 4. Deploy
 
 Upstash works seamlessly with:
+
 - Vercel
 - Netlify
 - AWS Lambda
@@ -211,58 +209,65 @@ Upstash works seamlessly with:
 
 ```typescript
 interface IRedisService {
-    // Get a value
-    get(key: string): Promise<string | null>;
-    
-    // Set a value with optional expiration
-    set(key: string, value: string, options?: {
-        ex?: number;  // Expiration in seconds
-        px?: number;  // Expiration in milliseconds
-    }): Promise<void>;
-    
-    // Increment a numeric value
-    incr(key: string): Promise<number>;
-    
-    // Set expiration on existing key
-    expire(key: string, seconds: number): Promise<void>;
-    
-    // Get time-to-live
-    ttl(key: string): Promise<number>;
-    
-    // Delete a key
-    del(key: string): Promise<void>;
-    
-    // Execute pipeline of commands
-    pipeline(commands: Array<{
-        command: string;
-        args: string[] | number[];
-    }>): Promise<unknown[]>;
-    
-    // Health check
-    ping(): Promise<boolean>;
-    
-    // Close connection
-    disconnect(): Promise<void>;
+  // Get a value
+  get(key: string): Promise<string | null>;
+
+  // Set a value with optional expiration
+  set(
+    key: string,
+    value: string,
+    options?: {
+      ex?: number; // Expiration in seconds
+      px?: number; // Expiration in milliseconds
+    }
+  ): Promise<void>;
+
+  // Increment a numeric value
+  incr(key: string): Promise<number>;
+
+  // Set expiration on existing key
+  expire(key: string, seconds: number): Promise<void>;
+
+  // Get time-to-live
+  ttl(key: string): Promise<number>;
+
+  // Delete a key
+  del(key: string): Promise<void>;
+
+  // Execute pipeline of commands
+  pipeline(
+    commands: Array<{
+      command: string;
+      args: string[] | number[];
+    }>
+  ): Promise<unknown[]>;
+
+  // Health check
+  ping(): Promise<boolean>;
+
+  // Close connection
+  disconnect(): Promise<void>;
 }
 ```
 
 ## Provider Comparison
 
-| Feature | Local Redis | Upstash Redis |
-|---------|------------|---------------|
-| **Setup** | Docker required | Cloud-based |
-| **Cost** | Free (self-hosted) | Free tier + pay-as-you-go |
-| **Latency** | Low (local) | Medium (REST API) |
-| **Scalability** | Manual | Auto-scaling |
-| **Maintenance** | Self-managed | Fully managed |
-| **Best For** | Development, self-hosted prod | Serverless deployments |
-| **Connection** | TCP (persistent) | REST API (stateless) |
+| Feature         | Local Redis                   | Upstash Redis             |
+| --------------- | ----------------------------- | ------------------------- |
+| **Setup**       | Docker required               | Cloud-based               |
+| **Cost**        | Free (self-hosted)            | Free tier + pay-as-you-go |
+| **Latency**     | Low (local)                   | Medium (REST API)         |
+| **Scalability** | Manual                        | Auto-scaling              |
+| **Maintenance** | Self-managed                  | Fully managed             |
+| **Best For**    | Development, self-hosted prod | Serverless deployments    |
+| **Connection**  | TCP (persistent)              | REST API (stateless)      |
 
 ## Best Practices
 
 ### 1. Key Naming
 
 Use consistent prefixes:
+
 ```typescript
 const userKey = `user:${userId}`;
 const cacheKey = `cache:templates:${id}`;
@@ -272,6 +277,7 @@ const rateLimitKey = `ratelimit:api:${ip}`;
 ### 2. Expiration
 
 Always set TTL for temporary data:
+
 ```typescript
 await redisService.set(key, value, { ex: 3600 });
 ```
@@ -279,25 +285,27 @@ await redisService.set(key, value, { ex: 3600 });
 ### 3. Error Handling
 
 Handle Redis failures gracefully:
+
 ```typescript
 try {
-    const value = await redisService.get(key);
+  const value = await redisService.get(key);
 } catch (error) {
-    logger.error('Redis error:', error);
-    // Fallback to database or return default
+  logger.error("Redis error:", error);
+  // Fallback to database or return default
 }
 ```
 
 ### 4. Testing
 
 Mock the Redis service in tests:
+
 ```typescript
-jest.mock('@/server/services/redis', () => ({
-    redisService: {
-        get: jest.fn(),
-        set: jest.fn(),
-        // ... other methods
-    }
+jest.mock("@/server/services/redis", () => ({
+  redisService: {
+    get: jest.fn(),
+    set: jest.fn(),
+    // ... other methods
+  },
 }));
 ```
 
@@ -306,7 +314,7 @@ jest.mock('@/server/services/redis', () => ({
 ### Health Check
 
 ```typescript
-import { RedisServiceFactory } from '@/server/services/redis';
+import { RedisServiceFactory } from "@/server/services/redis";
 
 const isHealthy = await RedisServiceFactory.healthCheck();
 ```
@@ -315,7 +323,7 @@ const isHealthy = await RedisServiceFactory.healthCheck();
 
 ```typescript
 const isPong = await redisService.ping();
-console.log('Redis connected:', isPong);
+console.log("Redis connected:", isPong);
 ```
 
 ## Troubleshooting
@@ -323,11 +331,13 @@ console.log('Redis connected:', isPong);
 ### Local Redis Not Connecting
 
 1. Check if Docker is running:
+
    ```bash
    docker ps | grep cgvs_redis
    ```
 
 2. Check logs:
+
    ```bash
    docker compose logs redis
    ```
@@ -388,4 +398,3 @@ When adding new Redis operations:
 ## License
 
 Part of the CGVS project.
-

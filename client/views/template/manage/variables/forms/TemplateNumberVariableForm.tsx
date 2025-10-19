@@ -25,7 +25,7 @@ type TemplateNumberVariableFormProps = {
   variables: TemplateVariable[];
   onCreate: (data: TemplateNumberVariableCreateInput) => Promise<void>;
   onUpdate: (
-    data: TemplateNumberVariableCreateInput & { id: number },
+    data: TemplateNumberVariableCreateInput & { id: number }
   ) => Promise<void>;
 };
 
@@ -40,7 +40,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
     if (!editingVariableID) return null;
     return (
       (variables.find(
-        (v) => v.id === editingVariableID,
+        v => v.id === editingVariableID
       ) as TemplateNumberVariable) || null
     );
   }, [editingVariableID, variables]);
@@ -66,12 +66,12 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
             ? event.target.checked
             : event.target.value;
 
-        setState((prevState) => ({
+        setState(prevState => ({
           ...prevState,
           [field]: value,
         }));
       },
-    [],
+    []
   );
 
   const handleNumericChange = useCallback(
@@ -80,12 +80,12 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
         const value = event.target.value;
         const numericValue = value === "" ? null : Number(value);
 
-        setState((prevState) => ({
+        setState(prevState => ({
           ...prevState,
           [field]: numericValue,
         }));
       },
-    [],
+    []
   );
 
   const handleSave = useCallback(async () => {

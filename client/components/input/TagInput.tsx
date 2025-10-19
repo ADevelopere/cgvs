@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 import {
   useState,
   useRef,
@@ -8,14 +8,22 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
-} from "react"
-import { Box, Chip, Typography, Paper, InputBase, styled, useTheme } from "@mui/material"
+} from "react";
+import {
+  Box,
+  Chip,
+  Typography,
+  Paper,
+  InputBase,
+  styled,
+  useTheme,
+} from "@mui/material";
 
 interface TagInputProps {
-  readonly label?: string
-  readonly placeholder?: string
-  readonly onChange?: (tags: string[]) => void
-  readonly initialTags?: string[]
+  readonly label?: string;
+  readonly placeholder?: string;
+  readonly onChange?: (tags: string[]) => void;
+  readonly initialTags?: string[];
 }
 
 const TagContainer = styled(Paper)(({ theme }) => ({
@@ -27,13 +35,16 @@ const TagContainer = styled(Paper)(({ theme }) => ({
   cursor: "text",
   border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.23)" : "rgba(0, 0, 0, 0.23)"}`,
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)",
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, 0.05)"
+      : "rgba(0, 0, 0, 0.02)",
   transition: theme.transitions.create(["border-color", "box-shadow"]),
   "&:focus-within": {
     borderColor: theme.palette.primary.main,
     boxShadow: `0 0 0 2px ${theme.palette.primary.main}${theme.palette.mode === "dark" ? "40" : "20"}`,
   },
-}))
+}));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   flex: 1,
@@ -41,7 +52,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   padding: theme.spacing(0.5),
   minWidth: "120px",
   height: "32px",
-}))
+}));
 
 const ChipEditInput = styled(InputBase)(({ theme }) => ({
   fontSize: 14,
@@ -53,7 +64,7 @@ const ChipEditInput = styled(InputBase)(({ theme }) => ({
   width: "auto",
   minWidth: "60px",
   height: "24px",
-}))
+}));
 
 export default function TagInput({
   label = "Add items",
@@ -61,135 +72,147 @@ export default function TagInput({
   onChange,
   initialTags = [],
 }: TagInputProps) {
-  const [tags, setTags] = useState<string[]>(initialTags)
-  const [inputValue, setInputValue] = useState("")
-  const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const [editingValue, setEditingValue] = useState("")
-  const inputRef = useRef<HTMLInputElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const editInputRef = useRef<HTMLInputElement>(null)
-  const theme = useTheme()
+  const [tags, setTags] = useState<string[]>(initialTags);
+  const [inputValue, setInputValue] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingValue, setEditingValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (onChange) {
-      onChange(tags)
+      onChange(tags);
     }
-  }, [tags, onChange])
+  }, [tags, onChange]);
 
   useEffect(() => {
     if (editingIndex !== null && editInputRef.current) {
-      editInputRef.current.focus()
+      editInputRef.current.focus();
     }
-  }, [editingIndex])
+  }, [editingIndex]);
 
   const handleContainerClick = useCallback(() => {
     if (inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [])
+  }, []);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
-  }, [])
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.target.value);
+    },
+    []
+  );
 
-  const handleEditInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditingValue(e.target.value)
-  }, [])
+  const handleEditInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEditingValue(e.target.value);
+    },
+    []
+  );
 
   const addTag = useCallback(
     (tag: string) => {
-      const trimmedTag = tag.trim()
+      const trimmedTag = tag.trim();
       if (trimmedTag && !tags.includes(trimmedTag)) {
-        setTags([...tags, trimmedTag])
-        setInputValue("")
+        setTags([...tags, trimmedTag]);
+        setInputValue("");
       }
     },
-    [tags],
-  )
+    [tags]
+  );
 
   const cancelEdit = useCallback(() => {
-    setEditingIndex(null)
-    setEditingValue("")
+    setEditingIndex(null);
+    setEditingValue("");
     if (inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [])
+  }, []);
 
   const updateTag = useCallback(
     (index: number) => {
-      const trimmedValue = editingValue.trim()
+      const trimmedValue = editingValue.trim();
       if (trimmedValue && !tags.includes(trimmedValue)) {
-        const newTags = [...tags]
-        newTags[index] = trimmedValue
-        setTags(newTags)
+        const newTags = [...tags];
+        newTags[index] = trimmedValue;
+        setTags(newTags);
       }
-      cancelEdit()
+      cancelEdit();
     },
-    [editingValue, tags, cancelEdit],
-  )
+    [editingValue, tags, cancelEdit]
+  );
 
   const handleInputKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if ((e.key === "Enter" || e.key === ",") && inputValue) {
-        e.preventDefault()
-        addTag(inputValue)
+        e.preventDefault();
+        addTag(inputValue);
       } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
-        e.preventDefault()
-        const lastTag = tags[tags.length - 1]
-        setTags(tags.slice(0, -1))
-        setInputValue(lastTag)
+        e.preventDefault();
+        const lastTag = tags[tags.length - 1];
+        setTags(tags.slice(0, -1));
+        setInputValue(lastTag);
       }
     },
-    [inputValue, tags, addTag],
-  )
+    [inputValue, tags, addTag]
+  );
 
   const handleEditKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    (
+      e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+      index: number
+    ) => {
       if (e.key === "Enter") {
-        e.preventDefault()
-        updateTag(index)
+        e.preventDefault();
+        updateTag(index);
       } else if (e.key === "Escape") {
-        e.preventDefault()
-        cancelEdit()
+        e.preventDefault();
+        cancelEdit();
       }
     },
-    [updateTag, cancelEdit],
-  )
+    [updateTag, cancelEdit]
+  );
 
   const handleChipDoubleClick = useCallback(
     (index: number) => {
-      setEditingIndex(index)
-      setEditingValue(tags[index])
+      setEditingIndex(index);
+      setEditingValue(tags[index]);
     },
-    [tags],
-  )
+    [tags]
+  );
 
   const handleDelete = useCallback(
     (index: number) => (e: MouseEvent) => {
-      e.stopPropagation()
-      const newTags = [...tags]
-      newTags.splice(index, 1)
-      setTags(newTags)
+      e.stopPropagation();
+      const newTags = [...tags];
+      newTags.splice(index, 1);
+      setTags(newTags);
     },
-    [tags],
-  )
+    [tags]
+  );
 
   const handleBlur = useCallback(
     (e: React.FocusEvent) => {
       // Only add tag on blur if there's a value and we're not clicking inside the container
-      if (inputValue && !containerRef.current?.contains(e.relatedTarget as Node)) {
-        addTag(inputValue)
+      if (
+        inputValue &&
+        !containerRef.current?.contains(e.relatedTarget as Node)
+      ) {
+        addTag(inputValue);
       }
     },
-    [inputValue, addTag],
-  )
+    [inputValue, addTag]
+  );
 
   const handleEditBlur = useCallback(
     (index: number) => {
-      updateTag(index)
+      updateTag(index);
     },
-    [updateTag],
-  )
+    [updateTag]
+  );
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -204,7 +227,11 @@ export default function TagInput({
         {label}
       </Typography>
 
-      <TagContainer ref={containerRef} onClick={handleContainerClick} elevation={0}>
+      <TagContainer
+        ref={containerRef}
+        onClick={handleContainerClick}
+        elevation={0}
+      >
         {tags.map((tag, index) =>
           editingIndex === index ? (
             <ChipEditInput
@@ -212,7 +239,7 @@ export default function TagInput({
               inputRef={editInputRef}
               value={editingValue}
               onChange={handleEditInputChange}
-              onKeyDown={(e) => handleEditKeyDown(e, index)}
+              onKeyDown={e => handleEditKeyDown(e, index)}
               onBlur={() => handleEditBlur(index)}
               autoFocus
             />
@@ -221,7 +248,7 @@ export default function TagInput({
               key={`${tag}-${index}`}
               label={tag}
               onDelete={handleDelete(index)}
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
               onDoubleClick={() => handleChipDoubleClick(index)}
               size="small"
               sx={{
@@ -240,7 +267,7 @@ export default function TagInput({
                 },
               }}
             />
-          ),
+          )
         )}
         <StyledInputBase
           inputRef={inputRef}
@@ -256,5 +283,5 @@ export default function TagInput({
         />
       </TagContainer>
     </Box>
-  )
+  );
 }

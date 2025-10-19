@@ -191,7 +191,7 @@ class MUIComponentConverter {
     const ext = extname(this.filePath);
     if (![".ts", ".tsx", ".js", ".jsx"].includes(ext)) {
       this.logError(
-        `Unsupported file type: ${ext}. Only .ts, .tsx, .js, .jsx files are supported.`,
+        `Unsupported file type: ${ext}. Only .ts, .tsx, .js, .jsx files are supported.`
       );
       process.exit(1);
     }
@@ -211,7 +211,7 @@ class MUIComponentConverter {
   private analyzeFile(): void {
     // Check for MUI imports
     this.stats.hasMuiImport = this.content.includes(
-      'import * as MUI from "@mui/material"',
+      'import * as MUI from "@mui/material"'
     );
     this.stats.hasIndividualImports =
       /import\s*{[^}]*}\s*from\s*["']@mui\/material["']/.test(this.content);
@@ -230,11 +230,11 @@ class MUIComponentConverter {
     }
 
     this.logInfo(
-      `Found ${this.stats.componentsFound.size} MUI components in use`,
+      `Found ${this.stats.componentsFound.size} MUI components in use`
     );
     if (this.stats.componentsFound.size > 0) {
       this.logInfo(
-        `Components: ${Array.from(this.stats.componentsFound).join(", ")}`,
+        `Components: ${Array.from(this.stats.componentsFound).join(", ")}`
       );
     }
   }
@@ -252,7 +252,7 @@ class MUIComponentConverter {
       if (matches) {
         convertedContent = convertedContent.replace(
           openingRegex,
-          `<MUI.${component}`,
+          `<MUI.${component}`
         );
         this.stats.totalReplacements += matches.length;
         this.logInfo(`Converted ${matches.length} opening <${component}> tags`);
@@ -266,11 +266,11 @@ class MUIComponentConverter {
       if (matches) {
         convertedContent = convertedContent.replace(
           closingRegex,
-          `</MUI.${component}>`,
+          `</MUI.${component}>`
         );
         this.stats.totalReplacements += matches.length;
         this.logInfo(
-          `Converted ${matches.length} closing </${component}> tags`,
+          `Converted ${matches.length} closing </${component}> tags`
         );
       }
     }
@@ -301,32 +301,32 @@ class MUIComponentConverter {
 
     logger.log(`${colors.cyan}File:${colors.reset} ${this.filePath}`);
     logger.log(
-      `${colors.cyan}Total replacements:${colors.reset} ${colors.bold}${this.stats.totalReplacements}${colors.reset}`,
+      `${colors.cyan}Total replacements:${colors.reset} ${colors.bold}${this.stats.totalReplacements}${colors.reset}`
     );
     logger.log(
-      `${colors.cyan}Components converted:${colors.reset} ${this.stats.componentsFound.size}`,
+      `${colors.cyan}Components converted:${colors.reset} ${this.stats.componentsFound.size}`
     );
 
     if (this.stats.componentsFound.size > 0) {
       logger.log(`${colors.cyan}Converted components:${colors.reset}`);
-      Array.from(this.stats.componentsFound).forEach((component) => {
+      Array.from(this.stats.componentsFound).forEach(component => {
         logger.log(
-          `  - ${colors.green}${component}${colors.reset} → ${colors.green}MUI.${component}${colors.reset}`,
+          `  - ${colors.green}${component}${colors.reset} → ${colors.green}MUI.${component}${colors.reset}`
         );
       });
     }
 
     if (this.stats.hasMuiImport) {
       logger.log(
-        `${colors.yellow}Note:${colors.reset} File already has 'import * as MUI from "@mui/material"' - this is perfect!`,
+        `${colors.yellow}Note:${colors.reset} File already has 'import * as MUI from "@mui/material"' - this is perfect!`
       );
     } else if (this.stats.hasIndividualImports) {
       logger.log(
-        `${colors.yellow}Warning:${colors.reset} File has individual imports from @mui/material. Consider adding 'import * as MUI from "@mui/material"' for better organization.`,
+        `${colors.yellow}Warning:${colors.reset} File has individual imports from @mui/material. Consider adding 'import * as MUI from "@mui/material"' for better organization.`
       );
     } else {
       logger.log(
-        `${colors.yellow}Warning:${colors.reset} File doesn't import from @mui/material. Make sure to add the necessary imports.`,
+        `${colors.yellow}Warning:${colors.reset} File doesn't import from @mui/material. Make sure to add the necessary imports.`
       );
     }
 
@@ -334,11 +334,11 @@ class MUIComponentConverter {
 
     if (this.stats.totalReplacements > 0) {
       logger.log(
-        `${colors.bold}${colors.green}✅ Conversion completed successfully!${colors.reset}`,
+        `${colors.bold}${colors.green}✅ Conversion completed successfully!${colors.reset}`
       );
     } else {
       logger.log(
-        `${colors.bold}${colors.yellow}⚠️  No MUI components found to convert.${colors.reset}`,
+        `${colors.bold}${colors.yellow}⚠️  No MUI components found to convert.${colors.reset}`
       );
     }
   }
@@ -373,20 +373,20 @@ function main(): void {
 
   if (args.length === 0) {
     logger.error(
-      `${colors.red}Error:${colors.reset} Please provide a file path as an argument.`,
+      `${colors.red}Error:${colors.reset} Please provide a file path as an argument.`
     );
     logger.log(
-      `${colors.yellow}Usage:${colors.reset} bun run convert-mui-components.ts <file-path>`,
+      `${colors.yellow}Usage:${colors.reset} bun run convert-mui-components.ts <file-path>`
     );
     process.exit(1);
   }
 
   const filePath = args[0];
   logger.log(
-    `${colors.bold}${colors.blue}MUI Component Converter${colors.reset}`,
+    `${colors.bold}${colors.blue}MUI Component Converter${colors.reset}`
   );
   logger.log(
-    `${colors.bold}${colors.blue}======================${colors.reset}\n`,
+    `${colors.bold}${colors.blue}======================${colors.reset}\n`
   );
 
   try {

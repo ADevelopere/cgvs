@@ -36,7 +36,7 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId: [
@@ -44,10 +44,10 @@ export const useTemplateVariableApolloMutations = () => {
                 newVariable,
               ],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Create number variable mutation
@@ -65,7 +65,7 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId: [
@@ -73,10 +73,10 @@ export const useTemplateVariableApolloMutations = () => {
                 newVariable,
               ],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Create date variable mutation
@@ -94,7 +94,7 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId: [
@@ -102,10 +102,10 @@ export const useTemplateVariableApolloMutations = () => {
                 newVariable,
               ],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Create select variable mutation
@@ -123,7 +123,7 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId: [
@@ -131,10 +131,10 @@ export const useTemplateVariableApolloMutations = () => {
                 newVariable,
               ],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Update text variable mutation
@@ -152,18 +152,18 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map((v) =>
-                  v.id === updated.id ? updated : v,
+                existing.templateVariablesByTemplateId.map(v =>
+                  v.id === updated.id ? updated : v
                 ),
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Update number variable mutation
@@ -181,18 +181,18 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map((v) =>
-                  v.id === updated.id ? updated : v,
+                existing.templateVariablesByTemplateId.map(v =>
+                  v.id === updated.id ? updated : v
                 ),
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Update date variable mutation
@@ -210,18 +210,18 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map((v) =>
-                  v.id === updated.id ? updated : v,
+                existing.templateVariablesByTemplateId.map(v =>
+                  v.id === updated.id ? updated : v
                 ),
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Update select variable mutation
@@ -239,18 +239,18 @@ export const useTemplateVariableApolloMutations = () => {
             query: templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map((v) =>
-                  v.id === updated.id ? updated : v,
+                existing.templateVariablesByTemplateId.map(v =>
+                  v.id === updated.id ? updated : v
                 ),
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Delete variable mutation (common for all types)
@@ -266,15 +266,15 @@ export const useTemplateVariableApolloMutations = () => {
           query: templateVariablesByTemplateIdQueryDocument,
           variables: { templateId },
         },
-        (existing) => {
+        existing => {
           if (!existing?.templateVariablesByTemplateId) return existing;
           return {
             templateVariablesByTemplateId:
               existing.templateVariablesByTemplateId.filter(
-                (v) => v.id !== deleted.id,
+                v => v.id !== deleted.id
               ),
           };
-        },
+        }
       );
     },
   });
@@ -328,6 +328,6 @@ export const useTemplateVariableApolloMutations = () => {
       updateDateMutation,
       updateSelectMutation,
       deleteMutation,
-    ],
+    ]
   );
 };

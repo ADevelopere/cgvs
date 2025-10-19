@@ -51,8 +51,8 @@ const StorageSelectionActions: React.FC = () => {
   const currentItems = searchMode ? searchResults : items;
 
   // Get selected item objects
-  const selectedItemObjects: StorageItem[] = currentItems.filter((item) =>
-    selectedItems.includes(item.path),
+  const selectedItemObjects: StorageItem[] = currentItems.filter(item =>
+    selectedItems.includes(item.path)
   );
 
   const selectedCount = selectedItems.length;
@@ -74,7 +74,7 @@ const StorageSelectionActions: React.FC = () => {
 
   // Handle download action
   const handleDownload = () => {
-    selectedItemObjects.forEach((item) => {
+    selectedItemObjects.forEach(item => {
       if (
         item.__typename === "FileInfo" &&
         "mediaLink" in item &&
@@ -128,8 +128,8 @@ const StorageSelectionActions: React.FC = () => {
 
   // Check if download is available for selected items
   const canDownload = selectedItemObjects.some(
-    (item) =>
-      item.__typename === "FileInfo" && "mediaLink" in item && item.mediaLink,
+    item =>
+      item.__typename === "FileInfo" && "mediaLink" in item && item.mediaLink
   );
 
   return (
@@ -147,7 +147,7 @@ const StorageSelectionActions: React.FC = () => {
           <Typography variant="body2" color="primary" fontWeight="medium">
             {translations.selectedItems.replace(
               "%{count}",
-              selectedCount.toString(),
+              selectedCount.toString()
             )}
           </Typography>
 
@@ -277,11 +277,11 @@ const StorageSelectionActions: React.FC = () => {
             {clipboard.operation === "copy"
               ? translations.itemsCopied.replace(
                   "%{count}",
-                  clipboard.items.length.toString(),
+                  clipboard.items.length.toString()
                 )
               : translations.itemsCut.replace(
                   "%{count}",
-                  clipboard.items.length.toString(),
+                  clipboard.items.length.toString()
                 )}
           </Typography>
         </Box>

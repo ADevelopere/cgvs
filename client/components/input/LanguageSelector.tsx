@@ -46,12 +46,12 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         }
       }}
       style={style}
-      getOptionLabel={(option) => strings[option] || option}
+      getOptionLabel={option => strings[option] || option}
       renderOption={(
         props: React.HTMLAttributes<HTMLLIElement> & {
           key: string | number;
         },
-        option: AppLanguage,
+        option: AppLanguage
       ) => {
         // key is extracted from props to prevent it from being passed to the DOM
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,7 +80,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           </Box>
         );
       }}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           label={label ?? strings.selectLanguage}

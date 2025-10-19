@@ -63,14 +63,14 @@ const Content: FC<ContentProps> = ({
       strings.numberTypeLabel,
       strings.selectTypeLabel,
       strings.textTypeLabel,
-    ],
+    ]
   );
 
   const handleVariableClick = useCallback(
     (variable: TemplateVariable) => {
       onOpenModal(variable);
     },
-    [onOpenModal],
+    [onOpenModal]
   );
 
   const handleDeleteClick = useCallback((id: number) => {
@@ -145,7 +145,7 @@ const Content: FC<ContentProps> = ({
                 <IconButton
                   edge="end"
                   aria-label={strings.delete}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleDeleteClick(variableId);
                   }}
@@ -276,7 +276,7 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   // Modal state management
   const [isOpen, setIsOpen] = useState(false);
   const [editingVariableId, setEditingVariableId] = useState<number | null>(
-    null,
+    null
   );
   const [variableType, setVariableType] =
     useState<TemplateVariableType>("TEXT");
@@ -306,13 +306,12 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
       variables: { templateId: template.id },
       skip: !template.id,
       fetchPolicy: "cache-first",
-    },
+    }
   );
-
 
   const variables = useMemo(
     () => data?.templateVariablesByTemplateId || [],
-    [data],
+    [data]
   );
 
   return (

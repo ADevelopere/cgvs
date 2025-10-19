@@ -4,64 +4,60 @@ import { BaseFieldProps } from "./types";
 import { createStyledTextField } from "./StyledBaseField";
 
 const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
-    value,
-    errorMessage,
-    label,
-    helperText,
-    placeholder,
-    required = false,
-    disabled = false,
-    width,
-    onValueChange,
-    onBlur,
-    getIsValid,
+  value,
+  errorMessage,
+  label,
+  helperText,
+  placeholder,
+  required = false,
+  disabled = false,
+  width,
+  onValueChange,
+  onBlur,
+  getIsValid,
 }) => {
-    const theme = useTheme();
+  const theme = useTheme();
 
-    const StyledDateField = useMemo(
-        () => createStyledTextField(theme.palette.info.main),
-        [theme.palette.info.main],
-    );
+  const StyledDateField = useMemo(
+    () => createStyledTextField(theme.palette.info.main),
+    [theme.palette.info.main]
+  );
 
-    const handleChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = e.target.value ?? "";
-            let validationError: string | null | undefined = null;
-            // Only validate if newValue is not null/empty string
-            if (
-                newValue !== null &&
-                newValue !== undefined &&
-                newValue !== ""
-            ) {
-                validationError = getIsValid?.(newValue) ?? null;
-            }
-            onValueChange(newValue, validationError);
-        },
-        [getIsValid, onValueChange],
-    );
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value ?? "";
+      let validationError: string | null | undefined = null;
+      // Only validate if newValue is not null/empty string
+      if (newValue !== null && newValue !== undefined && newValue !== "") {
+        validationError = getIsValid?.(newValue) ?? null;
+      }
+      onValueChange(newValue, validationError);
+    },
+    [getIsValid, onValueChange]
+  );
 
-    return (
-        <Box sx={{ position: "relative", width }}>
-            <StyledDateField
-                label={label}
-                value={value ?? ""}
-                onChange={handleChange}
-                onBlur={onBlur}
-                variant="outlined"
-                size="small"
-                fullWidth
-                required={required}
-                disabled={disabled}
-                type="date"
-                error={!!errorMessage}
-                helperText={errorMessage ?? helperText}
-                placeholder={placeholder}
-                slotProps={{
-                    inputLabel: { shrink: true },
-                }}
-            />
-        </Box>
-    );
+  return (
+    <Box sx={{ position: "relative", width }}>
+      <StyledDateField
+        label={label}
+        value={value ?? ""}
+        onChange={handleChange}
+        onBlur={onBlur}
+        variant="outlined"
+        size="small"
+        fullWidth
+        required={required}
+        disabled={disabled}
+        type="date"
+        error={!!errorMessage}
+        helperText={errorMessage ?? helperText}
+        placeholder={placeholder}
+        slotProps={{
+          inputLabel: { shrink: true },
+        }}
+      />
+    </Box>
+  );
 };
 
 export default DateFieldComponent;

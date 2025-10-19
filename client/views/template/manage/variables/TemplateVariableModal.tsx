@@ -53,7 +53,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
       await operations.createVariable(type, data);
       onClose();
     },
-    [operations, type, onClose],
+    [operations, type, onClose]
   );
 
   const onUpdate = useCallback(
@@ -61,7 +61,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
       await operations.updateVariable(type, data);
       onClose();
     },
-    [operations, type, onClose],
+    [operations, type, onClose]
   );
 
   const typeToLabelMap: Record<TemplateVariableType, string> = useMemo(
@@ -76,7 +76,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
       strings.numberTypeLabel,
       strings.selectTypeLabel,
       strings.textTypeLabel,
-    ],
+    ]
   );
 
   const modalTitle = useMemo(
@@ -90,7 +90,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
       strings.editVariable,
       type,
       typeToLabelMap,
-    ],
+    ]
   );
 
   return (

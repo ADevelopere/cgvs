@@ -2,15 +2,15 @@
 
 import React, { useMemo } from "react";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    Stack,
-    Typography,
-    Box,
-    Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Stack,
+  Typography,
+  Box,
+  Chip,
 } from "@mui/material";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import { useAppTranslation } from "@/client/locale";
@@ -18,103 +18,106 @@ import { format } from "date-fns";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
 interface GroupInfoDialogProps {
-    groups: TemplateRecipientGroup[];
+  groups: TemplateRecipientGroup[];
 }
 
 const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
-    const strings = useAppTranslation("recipientGroupTranslations");
-    const { infoDialogOpen, closeInfoDialog, selectedGroupId } = useRecipientGroupDialogs();
+  const strings = useAppTranslation("recipientGroupTranslations");
+  const { infoDialogOpen, closeInfoDialog, selectedGroupId } =
+    useRecipientGroupDialogs();
 
-    const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
-        if (!selectedGroupId) return null;
-        return groups.find((g) => g.id === selectedGroupId) || null;
-    }, [selectedGroupId, groups]);
+  const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
+    if (!selectedGroupId) return null;
+    return groups.find(g => g.id === selectedGroupId) || null;
+  }, [selectedGroupId, groups]);
 
-    const formatDate = (date: string | Date | null | undefined) => {
-        if (!date) return "-";
-        try {
-            return format(new Date(date), "PPP");
-        } catch {
-            return "-";
-        }
-    };
+  const formatDate = (date: string | Date | null | undefined) => {
+    if (!date) return "-";
+    try {
+      return format(new Date(date), "PPP");
+    } catch {
+      return "-";
+    }
+  };
 
-    return (
-        <Dialog open={infoDialogOpen} onClose={closeInfoDialog} maxWidth="sm" fullWidth>
-            <DialogTitle>{strings.groupInfoTitle}</DialogTitle>
-            <DialogContent>
-                {selectedGroup && (
-                    <Stack spacing={2} sx={{ mt: 1 }}>
-                        <Box>
-                            <Typography variant="caption" color="text.secondary">
-                                {strings.name}
-                            </Typography>
-                            <Typography variant="body1">
-                                {selectedGroup.name}
-                            </Typography>
-                        </Box>
+  return (
+    <Dialog
+      open={infoDialogOpen}
+      onClose={closeInfoDialog}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle>{strings.groupInfoTitle}</DialogTitle>
+      <DialogContent>
+        {selectedGroup && (
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                {strings.name}
+              </Typography>
+              <Typography variant="body1">{selectedGroup.name}</Typography>
+            </Box>
 
-                        {selectedGroup.description && (
-                            <Box>
-                                <Typography variant="caption" color="text.secondary">
-                                    {strings.description}
-                                </Typography>
-                                <Typography variant="body1">
-                                    {selectedGroup.description}
-                                </Typography>
-                            </Box>
-                        )}
+            {selectedGroup.description && (
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  {strings.description}
+                </Typography>
+                <Typography variant="body1">
+                  {selectedGroup.description}
+                </Typography>
+              </Box>
+            )}
 
-                        <Box>
-                            <Typography variant="caption" color="text.secondary">
-                                {strings.date}
-                            </Typography>
-                            <Typography variant="body1">
-                                {formatDate(selectedGroup.date)}
-                            </Typography>
-                        </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                {strings.date}
+              </Typography>
+              <Typography variant="body1">
+                {formatDate(selectedGroup.date)}
+              </Typography>
+            </Box>
 
-                        <Box>
-                            <Typography variant="caption" color="text.secondary">
-                                {strings.studentCount}
-                            </Typography>
-                            <Box sx={{ mt: 0.5 }}>
-                                <Chip
-                                    label={selectedGroup.studentCount || 0}
-                                    color="primary"
-                                    size="small"
-                                />
-                            </Box>
-                        </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                {strings.studentCount}
+              </Typography>
+              <Box sx={{ mt: 0.5 }}>
+                <Chip
+                  label={selectedGroup.studentCount || 0}
+                  color="primary"
+                  size="small"
+                />
+              </Box>
+            </Box>
 
-                        <Box>
-                            <Typography variant="caption" color="text.secondary">
-                                {strings.createdAt}
-                            </Typography>
-                            <Typography variant="body1">
-                                {formatDate(selectedGroup.createdAt)}
-                            </Typography>
-                        </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                {strings.createdAt}
+              </Typography>
+              <Typography variant="body1">
+                {formatDate(selectedGroup.createdAt)}
+              </Typography>
+            </Box>
 
-                        {selectedGroup.updatedAt && (
-                            <Box>
-                                <Typography variant="caption" color="text.secondary">
-                                    {strings.updatedAt}
-                                </Typography>
-                                <Typography variant="body1">
-                                    {formatDate(selectedGroup.updatedAt)}
-                                </Typography>
-                            </Box>
-                        )}
-                    </Stack>
-                )}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={closeInfoDialog}>{strings.close}</Button>
-            </DialogActions>
-        </Dialog>
-    );
+            {selectedGroup.updatedAt && (
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  {strings.updatedAt}
+                </Typography>
+                <Typography variant="body1">
+                  {formatDate(selectedGroup.updatedAt)}
+                </Typography>
+              </Box>
+            )}
+          </Stack>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeInfoDialog}>{strings.close}</Button>
+      </DialogActions>
+    </Dialog>
+  );
 };
 
 export default GroupInfoDialog;
-

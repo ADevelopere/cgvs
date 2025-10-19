@@ -117,7 +117,7 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
       uploadPath,
       startUpload,
       onUploadComplete,
-    ],
+    ]
   );
 
   // Global drag event handlers
@@ -184,7 +184,7 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
         handleFilesUpload(files);
       }
     },
-    [disabled, handleFilesUpload],
+    [disabled, handleFilesUpload]
   );
 
   // Attach global event listeners

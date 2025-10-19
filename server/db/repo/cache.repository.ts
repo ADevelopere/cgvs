@@ -8,7 +8,7 @@ export namespace CacheDbRepository {
    * Get cache entry by key
    */
   export const get = async (
-    key: string,
+    key: string
   ): Promise<{ value: string; expiresAt: Date } | null> => {
     try {
       const result = await db
@@ -46,7 +46,7 @@ export namespace CacheDbRepository {
   export const set = async (
     key: string,
     value: string,
-    expiresAt: Date,
+    expiresAt: Date
   ): Promise<void> => {
     try {
       await db

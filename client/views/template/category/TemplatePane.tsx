@@ -63,7 +63,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
       currentCategory
         ? getTemplateQueryVariables(currentCategory.id)
         : undefined,
-    [currentCategory, getTemplateQueryVariables],
+    [currentCategory, getTemplateQueryVariables]
   );
 
   // Fetch templates for current category
@@ -79,12 +79,12 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   const templates = React.useMemo(
     () => templatesByCategoryIdQuery?.templatesByCategoryId?.data ?? [],
-    [templatesByCategoryIdQuery?.templatesByCategoryId?.data],
+    [templatesByCategoryIdQuery?.templatesByCategoryId?.data]
   );
 
   const pageInfo = React.useMemo(
     () => templatesByCategoryIdQuery?.templatesByCategoryId?.pageInfo,
-    [templatesByCategoryIdQuery?.templatesByCategoryId?.pageInfo],
+    [templatesByCategoryIdQuery?.templatesByCategoryId?.pageInfo]
   );
 
   const { theme } = useAppTheme();
@@ -98,7 +98,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [templateToEdit, setTemplateToEdit] = React.useState<Template | null>(
-    null,
+    null
   );
 
   // Category search for autocomplete
@@ -111,7 +111,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
-    [searchCategoriesData?.searchTemplateCategories],
+    [searchCategoriesData?.searchTemplateCategories]
   );
 
   // Debounced search handler
@@ -134,7 +134,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         }, 300);
       }
     },
-    [searchCategories],
+    [searchCategories]
   );
 
   // Cleanup timeout on unmount
@@ -195,7 +195,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   const handleTemplateNameEdit = async (
     template: Template,
-    newName: string,
+    newName: string
   ) => {
     const error = validateTemplateName(newName);
     if (error) {
@@ -204,7 +204,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
     try {
       updateTemplate(
-        TemplateUtils.mapTemplateToUpdateInput({ ...template, name: newName }),
+        TemplateUtils.mapTemplateToUpdateInput({ ...template, name: newName })
       );
       return ""; // success
     } catch (error: unknown) {
@@ -248,7 +248,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategory, queryVariables, setTemplateQueryVariables],
+    [currentCategory, queryVariables, setTemplateQueryVariables]
   );
 
   const handlePageSizeChange = React.useCallback(
@@ -264,7 +264,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         },
       });
     },
-    [currentCategory, queryVariables, setTemplateQueryVariables],
+    [currentCategory, queryVariables, setTemplateQueryVariables]
   );
 
   return (
@@ -323,12 +323,12 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
             onInputChange={(_, newInputValue) => {
               handleCategorySearch(newInputValue);
             }}
-            getOptionLabel={(option) => option.name ?? strings.unnamed}
+            getOptionLabel={option => option.name ?? strings.unnamed}
             loading={searchLoading}
             loadingText={strings.loading}
             noOptionsText={strings.noCategories}
             sx={{ width: "100%" }}
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 label={strings.selectCategory}
@@ -366,7 +366,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         }}
       >
         {templates &&
-          templates.map((template) => (
+          templates.map(template => (
             <ListItem
               key={template?.id}
               sx={{
@@ -395,7 +395,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                     sx: { minWidth: 150 },
                   }}
                   value={template?.name ?? ""}
-                  onSaveAction={(newValue) =>
+                  onSaveAction={newValue =>
                     handleTemplateNameEdit(template, newValue)
                   }
                   isValidAction={validateTemplateName}

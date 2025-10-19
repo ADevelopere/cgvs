@@ -32,7 +32,7 @@ const ColumnVisibilityPanel: React.FC<ColumnVisibilityPanelProps> = ({
       <DialogTitle>{strings.general.columnVisibility}</DialogTitle>
       <DialogContent>
         <List>
-          {allColumns.map((column) => (
+          {allColumns.map(column => (
             <ListItem key={column.id}>
               <ListItemIcon>
                 <Checkbox

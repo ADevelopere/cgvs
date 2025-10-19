@@ -67,6 +67,7 @@ Visit `http://localhost:3000` to see the application.
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **Framework:** Next.js 15 (App Router)
 - **UI Library:** Material-UI (MUI) v6
 - **State Management:** React Context + Apollo Client
@@ -74,6 +75,7 @@ Visit `http://localhost:3000` to see the application.
 - **Language:** TypeScript
 
 ### Backend
+
 - **API:** GraphQL (Apollo Server)
 - **Schema Builder:** Pothos GraphQL
 - **Database:** PostgreSQL
@@ -82,12 +84,14 @@ Visit `http://localhost:3000` to see the application.
 - **Authentication:** JWT
 
 ### DevOps & Tools
+
 - **Runtime:** Bun
 - **Code Generation:** GraphQL Code Generator
 - **Linting:** ESLint
 - **Type Checking:** TypeScript strict mode
 
 ---
+
 ---
 
 ## 🙏 Acknowledgments
@@ -111,6 +115,7 @@ If you encounter issues while running scripts that interact with Google Cloud se
 Before you can use Google Cloud services, you need to install the `gcloud` CLI tool.
 
 **On Ubuntu/Debian:**
+
 ```bash
 # Add the Cloud SDK distribution URI as a package source
 echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -123,6 +128,7 @@ sudo apt-get update && sudo apt-get install google-cloud-cli
 ```
 
 **On CentOS/RHEL/Fedora:**
+
 ```bash
 # Add the Cloud SDK repository
 sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
@@ -141,12 +147,14 @@ sudo yum install google-cloud-cli
 ```
 
 **On Arch Linux:**
+
 ```bash
 # Install using pacman
 sudo pacman -S google-cloud-cli
 ```
 
 **Initialize gcloud:**
+
 ```bash
 # After installation, initialize gcloud
 gcloud init
@@ -154,12 +162,14 @@ gcloud init
 
 **Automated Setup Script:**
 For convenience, you can use the provided script that handles installation and authentication automatically:
+
 ```bash
 # Run the setup script from the project root
 ./scripts/setup-gcloud.sh
 ```
 
 This script will:
+
 - Detect your operating system
 - Check if gcloud is already installed
 - Install gcloud if needed (supports Ubuntu/Debian, CentOS/RHEL/Fedora, Arch Linux, and macOS)
@@ -170,18 +180,21 @@ This script will:
 Once the script completes or after manual installation, you'll need to complete these additional steps:
 
 1. **Set your Google Cloud project:**
+
 ```bash
 # Replace with your actual project ID
 gcloud config set project YOUR_PROJECT_ID
 ```
 
 2. **Set the quota project for Application Default Credentials:**
+
 ```bash
 # This ensures proper billing and quota management
 gcloud auth application-default set-quota-project YOUR_PROJECT_ID
 ```
 
 **Important Notes:**
+
 - Replace `YOUR_PROJECT_ID` with your actual Google Cloud project ID
 - The quota project setting is crucial for proper billing and quota management
 - These commands will save credentials to `~/.config/gcloud/application_default_credentials.json`
@@ -192,12 +205,12 @@ gcloud auth application-default set-quota-project YOUR_PROJECT_ID
 
 This error occurs when the Google Cloud client libraries within the application cannot find authentication credentials, even if you have already logged in via the `gcloud` CLI.
 
-* **Cause:** The initial `gcloud init` command authenticates **you** for using the command-line tool. However, the application code requires a separate credential file known as **Application Default Credentials (ADC)** to authenticate **itself**.
-* **Solution:** Generate the ADC file by running the following command. This will open a browser for you to log in and grant permissions.
+- **Cause:** The initial `gcloud init` command authenticates **you** for using the command-line tool. However, the application code requires a separate credential file known as **Application Default Credentials (ADC)** to authenticate **itself**.
+- **Solution:** Generate the ADC file by running the following command. This will open a browser for you to log in and grant permissions.
 
-    ```bash
-    gcloud auth application-default login
-    ```
+  ```bash
+  gcloud auth application-default login
+  ```
 
 ---
 
@@ -205,13 +218,13 @@ This error occurs when the Google Cloud client libraries within the application 
 
 After resolving the first issue, you might encounter an error related to an invalid JSON Web Token (JWT).
 
-* **Cause:** This error almost always means your computer's system clock is out of sync with Google's servers. For security, authentication tokens are timestamped and have a very short lifespan. If your clock is off by even a few minutes, Google will reject the token as invalid.
-* **Solution:** You must force your operating system to synchronize its clock with an internet time server.
+- **Cause:** This error almost always means your computer's system clock is out of sync with Google's servers. For security, authentication tokens are timestamped and have a very short lifespan. If your clock is off by even a few minutes, Google will reject the token as invalid.
+- **Solution:** You must force your operating system to synchronize its clock with an internet time server.
 
-    **On Windows:**
-    1.  Go to **Settings** > **Time & Language** > **Date & time**.
-    2.  Ensure **"Set time automatically"** is enabled.
-    3.  Click the **"Sync now"** button to update your clock.
+  **On Windows:**
+  1.  Go to **Settings** > **Time & Language** > **Date & time**.
+  2.  Ensure **"Set time automatically"** is enabled.
+  3.  Click the **"Sync now"** button to update your clock.
 
 ## Setting up a Redis-Compatible Service on Native Windows
 
@@ -225,3 +238,4 @@ Install the free Memurai Developer Edition using the Windows Package Manager (`w
 
 ```sh
 winget install -e --id Memurai.MemuraiDeveloper
+```

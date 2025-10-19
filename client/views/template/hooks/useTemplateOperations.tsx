@@ -22,7 +22,7 @@ export const useTemplateOperations = () => {
    */
   const updateTemplate = useCallback(
     async (
-      input: Graphql.UpdateTemplateMutationVariables["input"],
+      input: Graphql.UpdateTemplateMutationVariables["input"]
     ): Promise<Graphql.Template | undefined> => {
       try {
         const result = await apollo.updateTemplateMutation({
@@ -55,13 +55,13 @@ export const useTemplateOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [apollo, notifications, strings],
+    [apollo, notifications, strings]
   );
 
   return useMemo(
     () => ({
       updateTemplate,
     }),
-    [updateTemplate],
+    [updateTemplate]
   );
 };

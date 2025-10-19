@@ -19,10 +19,10 @@ import { OrderSortDirection } from "@/lib/enum";
 export const TemplatePothosObject = gqlSchemaBuilder
   .loadableObjectRef<Types.TemplatePothosDefintion, number>("Template", {
     load: async (ids: number[]) => TemplateRepository.loadByIds(ids),
-    sort: (t) => t.id,
+    sort: t => t.id,
   })
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       id: t.exposeInt("id", { nullable: false }),
       name: t.exposeString("name", { nullable: true }),
       description: t.exposeString("description", { nullable: true }),
@@ -37,7 +37,7 @@ export const TemplatePothosObject = gqlSchemaBuilder
       }),
       imageUrl: t.string({
         nullable: true,
-        resolve: async (template) => {
+        resolve: async template => {
           if (template.imageFileId) {
             const imageFileInfo = await (
               await getStorageService()
@@ -50,30 +50,30 @@ export const TemplatePothosObject = gqlSchemaBuilder
     }),
   });
 
-gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
+gqlSchemaBuilder.objectFields(TemplatePothosObject, t => ({
   category: t.loadable({
     type: TemplateCategoryPothosObject,
     load: (ids: number[], ctx) =>
       TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
-    resolve: (template) => template.categoryId,
+    resolve: template => template.categoryId,
   }),
 
   preSuspensionCategory: t.loadable({
     type: TemplateCategoryPothosObject,
     load: (ids: number[], ctx) =>
       TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
-    resolve: (template) => template.preSuspensionCategoryId,
+    resolve: template => template.preSuspensionCategoryId,
   }),
 
   variables: t.loadableList({
     type: TemplateVariablePothosInterface,
     load: (ids: number[]) => TemplateVariableRepository.loadForTemplates(ids),
-    resolve: (template) => template.id,
+    resolve: template => template.id,
   }),
 
   imageFile: t.field({
     type: FileInfoPothosObject,
-    resolve: async (template) => {
+    resolve: async template => {
       if (!template.imageFileId) return null;
       const s = await getStorageService();
       return await s.fileInfoByDbFileId(template.imageFileId);
@@ -82,14 +82,14 @@ gqlSchemaBuilder.objectFields(TemplatePothosObject, (t) => ({
   recipientGroups: t.loadableList({
     type: TemplateRecipientGroupPothosObject,
     load: (ids: number[]) => RecipientGroupRepository.loadForTemplates(ids),
-    resolve: (template) => template.id,
+    resolve: template => template.id,
   }),
 }));
 
 export const TemplateCreateInputPothosObject = gqlSchemaBuilder
   .inputRef<Types.TemplateCreateInput>("TemplateCreateInput")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       name: t.string({ required: true }),
       description: t.string({ required: false }),
       categoryId: t.int({ required: true }),
@@ -99,7 +99,7 @@ export const TemplateCreateInputPothosObject = gqlSchemaBuilder
 export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
   .inputRef<Types.TemplateUpdateInput>("TemplateUpdateInput")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       id: t.int({ required: true }),
       name: t.string({ required: true }),
       categoryId: t.int({ required: true }),
@@ -110,7 +110,7 @@ export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
 export const PaginatedTemplatesResponsePothosObject = gqlSchemaBuilder
   .objectRef<Types.PaginatedTemplatesResponse>("PaginatedTemplatesResponse")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       data: t.expose("data", { type: [TemplatePothosObject] }),
       pageInfo: t.expose("pageInfo", { type: PageInfoObject }),
     }),
@@ -120,13 +120,13 @@ export const TemplatesConfigsKeyPothosObject = gqlSchemaBuilder.enumType(
   "TemplatesConfigsKey",
   {
     values: Types.TemplatesConfigsKeyValues,
-  },
+  }
 );
 
 export const TemplatesConfigPothosObject = gqlSchemaBuilder
   .objectRef<Types.TemplatesConfigPothosDefinition>("TemplatesConfig")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       key: t.expose("key", { type: TemplatesConfigsKeyPothosObject }),
       value: t.exposeString("value"),
     }),
@@ -135,7 +135,7 @@ export const TemplatesConfigPothosObject = gqlSchemaBuilder
 export const TemplatesConfigsPothosObject = gqlSchemaBuilder
   .objectRef<Types.TemplatesConfigsPothosDefinition>("TemplatesConfigs")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       configs: t.expose("configs", {
         type: [TemplatesConfigPothosObject],
       }),
@@ -145,7 +145,7 @@ export const TemplatesConfigsPothosObject = gqlSchemaBuilder
 export const TemplatesWithFiltersPothosObject = gqlSchemaBuilder
   .objectRef<Types.TemplatesWithFiltersResponse>("TemplatesWithFiltersResponse")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       data: t.expose("data", { type: [TemplatePothosObject], nullable: false }),
       pageInfo: t.expose("pageInfo", { type: PageInfoObject, nullable: false }),
     }),
@@ -154,7 +154,7 @@ export const TemplatesWithFiltersPothosObject = gqlSchemaBuilder
 export const TemplateFilterArgsPothosObject = gqlSchemaBuilder
   .inputRef<Types.TemplateFilterArgs>("TemplateFilterArgs")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       name: t.string(),
     }),
   });
@@ -163,13 +163,13 @@ export const TemplatesOrderByColumnPothosObject = gqlSchemaBuilder.enumType(
   "TemplatesOrderByColumn",
   {
     values: Object.values(Types.TemplatesOrderByColumn),
-  },
+  }
 );
 
 export const TemplatesOrderByClausePothosObject = gqlSchemaBuilder
   .inputRef<Types.TemplatesOrderByClause>("TemplatesOrderByClause")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       column: t.field({
         type: TemplatesOrderByColumnPothosObject,
         required: true,

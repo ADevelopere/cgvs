@@ -44,7 +44,7 @@ const StorageFilters: React.FC = () => {
     (type?: Graphql.FileType) => {
       updateParams({ fileType: type, offset: 0 });
     },
-    [updateParams],
+    [updateParams]
   );
 
   const { ui: translations } = useAppTranslation("storageTranslations");
@@ -71,7 +71,7 @@ const StorageFilters: React.FC = () => {
       translations.otherTypes,
       translations.photos,
       translations.videos,
-    ],
+    ]
   );
 
   // Date filter options
@@ -102,7 +102,7 @@ const StorageFilters: React.FC = () => {
       translations.lastYear,
       translations.thisYear,
       translations.today,
-    ],
+    ]
   );
 
   // Handle file type filter change
@@ -112,7 +112,7 @@ const StorageFilters: React.FC = () => {
       const fileType = value ? (value as Graphql.FileType) : undefined;
       setFilterType(fileType);
     },
-    [setFilterType],
+    [setFilterType]
   );
 
   // Handle date filter change
@@ -125,7 +125,7 @@ const StorageFilters: React.FC = () => {
       // but this is where you would update the query params with date range
       // setParams({ dateFilter: value, offset: 0 });
     },
-    [],
+    []
   );
   // Clear all filters
   const handleClearFilters = React.useCallback(() => {
@@ -149,7 +149,7 @@ const StorageFilters: React.FC = () => {
     // File type filter chip
     if (params.fileType) {
       const fileTypeOption = fileTypeOptions.find(
-        (option) => option.value === params.fileType,
+        option => option.value === params.fileType
       );
       if (fileTypeOption) {
         chips.push({
@@ -162,7 +162,7 @@ const StorageFilters: React.FC = () => {
     // Date filter chip
     if (dateFilter) {
       const dateOption = dateFilterOptions.find(
-        (option) => option.value === dateFilter,
+        option => option.value === dateFilter
       );
       if (dateOption) {
         chips.push({
@@ -251,7 +251,7 @@ const StorageFilters: React.FC = () => {
             }
             onChange={handleFileTypeChange}
           >
-            {fileTypeOptions.map((option) => (
+            {fileTypeOptions.map(option => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -290,7 +290,7 @@ const StorageFilters: React.FC = () => {
             }
             onChange={handleDateFilterChange}
           >
-            {dateFilterOptions.map((option) => (
+            {dateFilterOptions.map(option => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

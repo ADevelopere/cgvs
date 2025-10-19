@@ -5,10 +5,10 @@ import { EditableColumn } from "@/client/types/table.type";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCellValue = (column: EditableColumn, rowData: any) => {
-    if (typeof column.accessor === "function") {
-        return column.accessor(rowData);
-    }
-    return rowData[column.accessor];
+  if (typeof column.accessor === "function") {
+    return column.accessor(rowData);
+  }
+  return rowData[column.accessor];
 };
 
 /**
@@ -18,52 +18,52 @@ export const getCellValue = (column: EditableColumn, rowData: any) => {
  * @returns {string} The country name.
  */
 export function countryNameByCode(
-    strings: CountryTranslations,
-    code: string,
+  strings: CountryTranslations,
+  code: string
 ): string {
-    return strings[code] || code;
+  return strings[code] || code;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatCellValue = (value: any, type: string) => {
-    if (value === null || value === undefined) {
-        return "";
-    }
-    switch (type) {
-        case "date":
-            try {
-                const date = new Date(value);
-                if (!isNaN(date.getTime())) {
-                    return date.toLocaleDateString();
-                }
-            } catch {
-                throw new Error("Invalid date:", value);
-            }
-            return value;
-        case "text":
-        default:
-            return value.toString();
-    }
+  if (value === null || value === undefined) {
+    return "";
+  }
+  switch (type) {
+    case "date":
+      try {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString();
+        }
+      } catch {
+        throw new Error("Invalid date:", value);
+      }
+      return value;
+    case "text":
+    default:
+      return value.toString();
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatInputValue = (value: any, type: string) => {
-    if (value === null || value === undefined) {
-        return "";
-    }
-    switch (type) {
-        case "date":
-            try {
-                const date = new Date(value);
-                if (!isNaN(date.getTime())) {
-                    return date.toISOString().split("T")[0];
-                }
-            } catch {
-                throw new Error("Invalid date:", value);
-            }
-            return value;
-        case "text":
-        default:
-            return value.toString();
-    }
+  if (value === null || value === undefined) {
+    return "";
+  }
+  switch (type) {
+    case "date":
+      try {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return date.toISOString().split("T")[0];
+        }
+      } catch {
+        throw new Error("Invalid date:", value);
+      }
+      return value;
+    case "text":
+    default:
+      return value.toString();
+  }
 };

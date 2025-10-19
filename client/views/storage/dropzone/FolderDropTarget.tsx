@@ -80,7 +80,7 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
           onFilesDropped?.(files);
 
           logger.info(
-            `Uploading ${files.length} files to folder: ${folderPath}`,
+            `Uploading ${files.length} files to folder: ${folderPath}`
           );
 
           await startUpload(files, folderPath, {
@@ -101,7 +101,7 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
       folderPath,
       startUpload,
       onUploadComplete,
-    ],
+    ]
   );
 
   // Configure react-dropzone
@@ -133,7 +133,7 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
                 isDragReject
                   ? theme.palette.error.main
                   : theme.palette.primary.main,
-                0.05,
+                0.05
               )
             : "transparent",
         borderRadius: theme.shape.borderRadius,

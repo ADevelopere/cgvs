@@ -7,23 +7,29 @@ import { StorageItem } from "./storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 export const useStorageSorting = () => {
-  const { 
-    sortBy, 
-    sortDirection, 
-    searchMode, 
+  const {
+    sortBy,
+    sortDirection,
+    searchMode,
     searchResults,
     setSortBy: setSortByAction,
     setSortDirection: setSortDirectionAction,
   } = useStorageUIStore();
   const { items } = useStorageDataStore();
 
-  const setSortBy = useCallback((field: string) => {
-    setSortByAction(field);
-  }, [setSortByAction]);
+  const setSortBy = useCallback(
+    (field: string) => {
+      setSortByAction(field);
+    },
+    [setSortByAction]
+  );
 
-  const setSortDirection = useCallback((direction: Graphql.OrderSortDirection) => {
-    setSortDirectionAction(direction);
-  }, [setSortDirectionAction]);
+  const setSortDirection = useCallback(
+    (direction: Graphql.OrderSortDirection) => {
+      setSortDirectionAction(direction);
+    },
+    [setSortDirectionAction]
+  );
 
   const getSortedItems = useCallback((): StorageItem[] => {
     const currentItems = searchMode ? searchResults : items;

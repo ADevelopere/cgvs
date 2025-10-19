@@ -38,10 +38,10 @@ type Actions = {
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
   selectCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null,
+    category: Graphql.TemplateCategoryWithParentTree | null
   ) => void;
   updateSelectedCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null,
+    category: Graphql.TemplateCategoryWithParentTree | null
   ) => void;
   setCurrentTemplateId: (id: number | null) => void;
   setActiveCategoryTab: (tab: CategoryTabType) => void;
@@ -62,10 +62,10 @@ type Actions = {
   // Template query variables actions
   setTemplateQueryVariables: (
     categoryId: number,
-    vars: Graphql.TemplatesByCategoryIdQueryVariables,
+    vars: Graphql.TemplatesByCategoryIdQueryVariables
   ) => void;
   getTemplateQueryVariables: (
-    categoryId: number,
+    categoryId: number
   ) => Graphql.TemplatesByCategoryIdQueryVariables | undefined;
   resetTemplateQueryVariables: (categoryId: number) => void;
 
@@ -100,20 +100,20 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
     (set, get) => ({
       ...initialState,
 
-      setCurrentTemplateId: (id) => set({ currentTemplateId: id }),
+      setCurrentTemplateId: id => set({ currentTemplateId: id }),
 
-      setActiveCategoryTab: (tab) =>
+      setActiveCategoryTab: tab =>
         set({
           activeCategoryTab: tab,
         }),
 
-      setIsAddingTemplate: (adding) => set({ isAddingTemplate: adding }),
+      setIsAddingTemplate: adding => set({ isAddingTemplate: adding }),
 
-      setOnNewTemplateCancel: (callback) =>
+      setOnNewTemplateCancel: callback =>
         set({ onNewTemplateCancel: callback }),
 
-      selectCategory: (category) => {
-        set((state) => {
+      selectCategory: category => {
+        set(state => {
           // Early return if selecting the same category
           if (category?.id === state.currentCategory?.id) {
             return state;
@@ -139,7 +139,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           const newExpandedIds = new Set(state.expandedCategoryIds);
           const newFetchedIds = new Set(state.fetchedCategoryIds);
 
-          category?.parentTree.forEach((id) => {
+          category?.parentTree.forEach(id => {
             newExpandedIds.add(id);
             newFetchedIds.add(id);
           });
@@ -153,8 +153,8 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
         });
       },
 
-      updateSelectedCategory: (category) => {
-        set((state) => {
+      updateSelectedCategory: category => {
+        set(state => {
           logger.log("updateSelectedCategory", category);
           logger.log("state.currentCategory", state.currentCategory);
           // Only update if we have a current category and the new category has the same ID
@@ -198,10 +198,10 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           pendingCategory: null,
         }),
 
-      setExpandedCategoryIds: (ids) => set({ expandedCategoryIds: ids }),
+      setExpandedCategoryIds: ids => set({ expandedCategoryIds: ids }),
 
-      toggleExpanded: (id) =>
-        set((state) => {
+      toggleExpanded: id =>
+        set(state => {
           const newSet = new Set(state.expandedCategoryIds);
           if (newSet.has(id)) {
             newSet.delete(id);
@@ -211,30 +211,30 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           return { expandedCategoryIds: newSet };
         }),
 
-      markAsFetched: (id) =>
-        set((state) => {
+      markAsFetched: id =>
+        set(state => {
           const newSet = new Set(state.fetchedCategoryIds);
           newSet.add(id);
           return { fetchedCategoryIds: newSet };
         }),
 
-      isFetched: (id) => {
+      isFetched: id => {
         return get().fetchedCategoryIds.has(id);
       },
 
       setTemplateQueryVariables: (categoryId, vars) =>
-        set((state) => {
+        set(state => {
           const newMap = new Map(state.templateQueryVariables);
           newMap.set(categoryId, vars);
           return { templateQueryVariables: newMap };
         }),
 
-      getTemplateQueryVariables: (categoryId) => {
+      getTemplateQueryVariables: categoryId => {
         return get().templateQueryVariables.get(categoryId);
       },
 
-      resetTemplateQueryVariables: (categoryId) =>
-        set((state) => {
+      resetTemplateQueryVariables: categoryId =>
+        set(state => {
           const newMap = new Map(state.templateQueryVariables);
           newMap.delete(categoryId);
           return { templateQueryVariables: newMap };
@@ -248,7 +248,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
       // Persist selections for restoration
       // Exclude non-serializable function from persistence
       // expandedCategoryIds and fetchedCategoryIds are in-memory only (not persisted)
-      partialize: (state) => {
+      partialize: state => {
         const { ...rest } = state;
         return {
           currentCategoryId: rest.currentCategory?.id,
@@ -256,7 +256,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           activeCategoryTab: rest.activeCategoryTab,
           currentCategory: rest.currentCategory,
           templateQueryVariables: Array.from(
-            rest.templateQueryVariables.entries(),
+            rest.templateQueryVariables.entries()
           ), // Convert Map to Array for JSON
         };
       },
@@ -277,7 +277,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
         const fetchedCategoryIds = new Set<number>();
 
         if (currentCategory?.parentTree) {
-          currentCategory.parentTree.forEach((id) => {
+          currentCategory.parentTree.forEach(id => {
             expandedCategoryIds.add(id);
             fetchedCategoryIds.add(id);
           });
@@ -290,12 +290,12 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           expandedCategoryIds,
           fetchedCategoryIds,
           templateQueryVariables: new Map(
-            typedPersistedState?.templateQueryVariables || [],
+            typedPersistedState?.templateQueryVariables || []
           ), // Convert Array back to Map
         };
       },
-    },
-  ),
+    }
+  )
 );
 
 /**

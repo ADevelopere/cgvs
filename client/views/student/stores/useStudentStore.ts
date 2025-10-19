@@ -48,25 +48,25 @@ const initialState: State = {
  */
 export const useStudentStore = create<StudentStoreState>()(
   persist(
-    (set) => ({
+    set => ({
       ...initialState,
 
-      setQueryParams: (params) =>
-        set((state) => ({
+      setQueryParams: params =>
+        set(state => ({
           queryParams: {
             ...state.queryParams,
             ...params,
           },
         })),
 
-      toggleStudentSelect: (id) =>
-        set((state) => {
+      toggleStudentSelect: id =>
+        set(state => {
           const isSelected = state.selectedStudents.includes(id);
           if (isSelected) {
             // Remove from selection
             return {
               selectedStudents: state.selectedStudents.filter(
-                (studentId) => studentId !== id,
+                studentId => studentId !== id
               ),
             };
           } else {
@@ -77,14 +77,14 @@ export const useStudentStore = create<StudentStoreState>()(
           }
         }),
 
-      selectAllStudents: (studentIds) => set({ selectedStudents: studentIds }),
+      selectAllStudents: studentIds => set({ selectedStudents: studentIds }),
 
       clearSelectedStudents: () => set({ selectedStudents: [] }),
 
-      setFilters: (filters) => set({ filters }),
+      setFilters: filters => set({ filters }),
 
       setColumnFilter: (clause, columnId) =>
-        set((state) => {
+        set(state => {
           const newFilters = { ...state.filters };
           if (clause) {
             newFilters[columnId] = clause;
@@ -94,8 +94,8 @@ export const useStudentStore = create<StudentStoreState>()(
           return { filters: newFilters };
         }),
 
-      clearFilter: (columnId) =>
-        set((state) => {
+      clearFilter: columnId =>
+        set(state => {
           const newFilters = { ...state.filters };
           delete newFilters[columnId];
           return { filters: newFilters };
@@ -109,10 +109,10 @@ export const useStudentStore = create<StudentStoreState>()(
       name: "student-ui-store",
       storage: createJSONStorage(() => sessionStorage),
       // Persist query parameters for restoration
-      partialize: (state) => {
+      partialize: state => {
         logger.info(
           "💾 Persisting student store state:",
-          JSON.stringify(state, null, 2),
+          JSON.stringify(state, null, 2)
         );
         const persistedState = {
           queryParams: state.queryParams,
@@ -128,7 +128,7 @@ export const useStudentStore = create<StudentStoreState>()(
         logger.info(
           "🔄 Merging student store state:",
           JSON.stringify(persistedState, null, 2),
-          JSON.stringify(currentState, null, 2),
+          JSON.stringify(currentState, null, 2)
         );
 
         // Deep merge the queryParams to preserve nested objects
@@ -163,10 +163,10 @@ export const useStudentStore = create<StudentStoreState>()(
 
         logger.info(
           "✅ Final merged state:",
-          JSON.stringify(mergedState, null, 2),
+          JSON.stringify(mergedState, null, 2)
         );
         return mergedState;
       },
-    },
-  ),
+    }
+  )
 );

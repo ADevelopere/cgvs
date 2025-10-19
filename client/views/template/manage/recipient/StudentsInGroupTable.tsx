@@ -49,8 +49,8 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
   // Convert GraphQL orderBy to table format
   const initialOrderBy = Array.isArray(studentsInGroupQueryParams.orderBy)
     ? studentsInGroupQueryParams.orderBy
-        .filter((order) => order.order) // Filter out null/undefined orders
-        .map((order) => ({
+        .filter(order => order.order) // Filter out null/undefined orders
+        .map(order => ({
           column: order.column.toLowerCase(), // Convert GraphQL enum to lowercase
           order: order.order as "ASC" | "DESC",
         }))
@@ -66,7 +66,7 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
   const [activeFilters, setActiveFilters] =
     useState<Record<string, FilterClause | null>>(filtersInGroup);
   const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
-    {},
+    {}
   );
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const widthsInitialized = useRef(false);
@@ -83,11 +83,11 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
     // Calculate the sum of all initial width ratios
     const totalRatio = recipientBaseColumns.reduce(
       (sum, col) => sum + (col.initialWidth || 100),
-      0,
+      0
     );
 
     // Calculate actual widths based on ratios
-    recipientBaseColumns.forEach((column) => {
+    recipientBaseColumns.forEach(column => {
       const ratio = (column.initialWidth || 100) / totalRatio;
       newWidths[column.id] = Math.floor(containerWidth * ratio);
     });
@@ -99,13 +99,13 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
   // Handle filter changes
   const handleFilterChange = useCallback(
     (filterClause: FilterClause | null, columnId: string) => {
-      setActiveFilters((prev) => ({
+      setActiveFilters(prev => ({
         ...prev,
         [columnId]: filterClause,
       }));
       operations.setColumnFilterInGroup(columnId, filterClause);
     },
-    [operations],
+    [operations]
   );
 
   // Handle sort changes
@@ -114,17 +114,17 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
       orderByClause: {
         column: string;
         order: Graphql.OrderSortDirection;
-      }[],
+      }[]
     ) => {
       if (!selectedGroup) return;
 
       const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
 
-      orderByClause.forEach((clause) => {
+      orderByClause.forEach(clause => {
         const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
         if (!graphqlColumn) {
           logger.warn(
-            `Column ${clause.column} is not sortable in GraphQL schema`,
+            `Column ${clause.column} is not sortable in GraphQL schema`
           );
           return;
         }
@@ -135,10 +135,10 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
       });
 
       operations.setSortInGroup(
-        graphqlOrderBy.length > 0 ? graphqlOrderBy : null,
+        graphqlOrderBy.length > 0 ? graphqlOrderBy : null
       );
     },
-    [selectedGroup, operations],
+    [selectedGroup, operations]
   );
 
   return (
@@ -177,7 +177,7 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
         />
       }
       selectedRowIds={store.selectedStudentIdsInGroup}
-      onSelectionChange={(selectedIds) =>
+      onSelectionChange={selectedIds =>
         store.setSelectedStudentIdsInGroup(selectedIds.map(Number))
       }
     >

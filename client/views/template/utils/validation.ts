@@ -3,7 +3,7 @@ import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
 export const validateVariableValue = (
   variable: TemplateVariable,
   value: unknown,
-  existingValues?: Set<string>,
+  existingValues?: Set<string>
 ): { isValid: boolean; error?: string } => {
   // Handle empty values
 

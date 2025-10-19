@@ -3,6 +3,7 @@
 ## Current WRONG Pattern (Same as Recipient Groups)
 
 **Files violating pattern:**
+
 - `hooks/templateVariable.operations.ts` - Contains `useTemplateVariableApolloQueries` (queries in hook) ❌
 - `hooks/useTemplateVariableOperations.ts` - Has `useEffect` to sync query data to store ❌
 - Stores hold data (`variables`, `loading`, `error`) instead of just UI state ❌
@@ -58,7 +59,7 @@ export const useTemplateVariableApolloMutations = () => {
             query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateVariablesByTemplateId) return existing;
             return {
               templateVariablesByTemplateId: [
@@ -88,7 +89,17 @@ export const useTemplateVariableApolloMutations = () => {
       updateSelectVariable: updateSelectMutation,
       deleteVariable: deleteMutation,
     }),
-    [createTextMutation, createNumberMutation, createDateMutation, createSelectMutation, updateTextMutation, updateNumberMutation, updateDateMutation, updateSelectMutation, deleteMutation]
+    [
+      createTextMutation,
+      createNumberMutation,
+      createDateMutation,
+      createSelectMutation,
+      updateTextMutation,
+      updateNumberMutation,
+      updateDateMutation,
+      updateSelectMutation,
+      deleteMutation,
+    ]
   );
 };
 ```
@@ -98,12 +109,14 @@ export const useTemplateVariableApolloMutations = () => {
 **MODIFY:** `client/views/template/manage/variables/stores/useTemplateVariableDataStore.ts`
 
 **Remove:**
+
 - `variables: TemplateVariable[]`
 - `loading: boolean`
 - `error: string | null`
 - `setVariables`, `setLoading`, `setError`, `addVariable`, `updateVariable`, `removeVariable`
 
 **Keep only:**
+
 - `templateId: number | null`
 - `setTemplateId: (id: number) => void`
 
@@ -112,11 +125,13 @@ export const useTemplateVariableApolloMutations = () => {
 **REWRITE:** `client/views/template/manage/variables/hooks/useTemplateVariableOperations.ts`
 
 **Remove:**
+
 - Import and call to `useTemplateVariableApolloQueries`
 - `useEffect` that syncs query data to store
 - Return values: `variables`, `loading`, `error`, `refetch`
 
 **Keep only:**
+
 - Mutation operations: `createVariable`, `updateVariable`, `deleteVariable`
 - UI state management via stores
 
@@ -125,6 +140,7 @@ export const useTemplateVariableApolloMutations = () => {
 **MODIFY:** `client/views/template/manage/variables/TemplateVariableManagement.tsx`
 
 Add direct `useQuery` call:
+
 ```typescript
 const TemplateVariableManagement: React.FC<Props> = ({ template }) => {
   const operations = useTemplateVariableOperations();
@@ -164,17 +180,12 @@ const TemplateVariableManagement: React.FC<Props> = ({ template }) => {
 ## Files to Modify/Create
 
 **CREATE:**
+
 1. `hooks/useTemplateVariableApolloMutations.ts` - NEW Apollo mutations hook
 
-**REWRITE:**
-2. `hooks/useTemplateVariableOperations.ts` - Remove useEffect sync, only mutations
-3. `stores/useTemplateVariableDataStore.ts` - Remove data storage
-4. `TemplateVariableManagement.tsx` - Add direct useQuery
-5. `VariableList.tsx` - Accept variables prop
-6. `VariableModal.tsx` - Use useQuery if needed
+**REWRITE:** 2. `hooks/useTemplateVariableOperations.ts` - Remove useEffect sync, only mutations 3. `stores/useTemplateVariableDataStore.ts` - Remove data storage 4. `TemplateVariableManagement.tsx` - Add direct useQuery 5. `VariableList.tsx` - Accept variables prop 6. `VariableModal.tsx` - Use useQuery if needed
 
-**DELETE:**
-7. `hooks/templateVariable.operations.ts` - Contains queries, violates pattern
+**DELETE:** 7. `hooks/templateVariable.operations.ts` - Contains queries, violates pattern
 
 ## Benefits
 

@@ -12,12 +12,12 @@ Successfully implemented a **clean, adapter-based Redis service architecture** w
 
 ```md
 server/services/redis/
-├── IRedisService.ts           ✅ Interface definition
-├── LocalRedisAdapter.ts       ✅ ioredis implementation
-├── UpstashRedisAdapter.ts     ✅ @upstash/redis implementation
-├── RedisServiceFactory.ts     ✅ Factory + Singleton pattern
-├── index.ts                   ✅ Public exports
-└── README.md                  ✅ Service documentation
+├── IRedisService.ts ✅ Interface definition
+├── LocalRedisAdapter.ts ✅ ioredis implementation
+├── UpstashRedisAdapter.ts ✅ @upstash/redis implementation
+├── RedisServiceFactory.ts ✅ Factory + Singleton pattern
+├── index.ts ✅ Public exports
+└── README.md ✅ Service documentation
 ```
 
 **Benefits:**
@@ -87,11 +87,11 @@ REDIS_URL=redis://localhost:6379
 
 ```typescript
 // Import the service
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // Use it anywhere
-await redisService.set('key', 'value', { ex: 3600 });
-const value = await redisService.get('key');
+await redisService.set("key", "value", { ex: 3600 });
+const value = await redisService.get("key");
 ```
 
 ### Switch Providers
@@ -120,8 +120,8 @@ UPSTASH_REDIS_REST_TOKEN=your-token
 ```json
 {
   "dependencies": {
-    "ioredis": "^5.8.1",           // ✅ Local Redis client
-    "@upstash/redis": "^1.35.5",   // ✅ Upstash Redis client
+    "ioredis": "^5.8.1", // ✅ Local Redis client
+    "@upstash/redis": "^1.35.5", // ✅ Upstash Redis client
     "@upstash/ratelimit": "^2.0.6" // ✅ Rate limiting utilities
   }
 }
@@ -162,11 +162,11 @@ docker compose down    # Stop Redis
 
 ## 🔧 Configuration Matrix
 
-| Environment | REDIS_PROVIDER | Required Variables | Setup |
-|-------------|----------------|-------------------|-------|
-| **Development** | `local` | `REDIS_URL` | Docker Compose |
-| **Self-Hosted Prod** | `local` | `REDIS_URL` | Redis server |
-| **Serverless Prod** | `upstash` | `UPSTASH_REDIS_REST_URL` `UPSTASH_REDIS_REST_TOKEN` | Upstash account |
+| Environment          | REDIS_PROVIDER | Required Variables                                  | Setup           |
+| -------------------- | -------------- | --------------------------------------------------- | --------------- |
+| **Development**      | `local`        | `REDIS_URL`                                         | Docker Compose  |
+| **Self-Hosted Prod** | `local`        | `REDIS_URL`                                         | Redis server    |
+| **Serverless Prod**  | `upstash`      | `UPSTASH_REDIS_REST_URL` `UPSTASH_REDIS_REST_TOKEN` | Upstash account |
 
 ---
 
@@ -251,19 +251,19 @@ docker exec -it cgvs_redis redis-cli keys 'ratelimit:*'
 
 ```typescript
 // Mock the Redis service
-jest.mock('@/server/services/redis', () => ({
-    redisService: {
-        get: jest.fn(),
-        set: jest.fn(),
-        incr: jest.fn(),
-    }
+jest.mock("@/server/services/redis", () => ({
+  redisService: {
+    get: jest.fn(),
+    set: jest.fn(),
+    incr: jest.fn(),
+  },
 }));
 
 // Test
-it('should limit requests', async () => {
-    redisService.get.mockResolvedValue('100');
-    const result = await checkRateLimit('test-ip');
-    expect(result.success).toBe(false);
+it("should limit requests", async () => {
+  redisService.get.mockResolvedValue("100");
+  const result = await checkRateLimit("test-ip");
+  expect(result.success).toBe(false);
 });
 ```
 
@@ -293,12 +293,12 @@ REDIS_URL=redis://:your-strong-password@localhost:6379
 
 ### Benchmarks
 
-| Operation | Local Redis | Upstash Redis |
-|-----------|-------------|---------------|
-| GET | ~1ms | ~50-200ms |
-| SET | ~1ms | ~50-200ms |
-| INCR | ~1ms | ~50-200ms |
-| Pipeline (10 ops) | ~2ms | ~100-300ms |
+| Operation         | Local Redis | Upstash Redis |
+| ----------------- | ----------- | ------------- |
+| GET               | ~1ms        | ~50-200ms     |
+| SET               | ~1ms        | ~50-200ms     |
+| INCR              | ~1ms        | ~50-200ms     |
+| Pipeline (10 ops) | ~2ms        | ~100-300ms    |
 
 ### Optimization
 
@@ -358,41 +358,37 @@ echo $REDIS_URL
 ### Example 1: Basic Usage
 
 ```typescript
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // Set with TTL
-await redisService.set('user:123', 'John Doe', { ex: 3600 });
+await redisService.set("user:123", "John Doe", { ex: 3600 });
 
 // Get value
-const name = await redisService.get('user:123');
+const name = await redisService.get("user:123");
 
 // Increment counter
-const views = await redisService.incr('post:456:views');
+const views = await redisService.incr("post:456:views");
 ```
 
 ### Example 2: Caching
 
 ```typescript
 async function getCachedTemplate(id: string) {
-    const cacheKey = `cache:template:${id}`;
-    
-    // Try cache
-    const cached = await redisService.get(cacheKey);
-    if (cached) return JSON.parse(cached);
-    
-    // Fetch from DB
-    const template = await db.query.templates.findFirst({
-        where: eq(templates.id, id)
-    });
-    
-    // Cache for 1 hour
-    await redisService.set(
-        cacheKey,
-        JSON.stringify(template),
-        { ex: 3600 }
-    );
-    
-    return template;
+  const cacheKey = `cache:template:${id}`;
+
+  // Try cache
+  const cached = await redisService.get(cacheKey);
+  if (cached) return JSON.parse(cached);
+
+  // Fetch from DB
+  const template = await db.query.templates.findFirst({
+    where: eq(templates.id, id),
+  });
+
+  // Cache for 1 hour
+  await redisService.set(cacheKey, JSON.stringify(template), { ex: 3600 });
+
+  return template;
 }
 ```
 
@@ -400,11 +396,11 @@ async function getCachedTemplate(id: string) {
 
 ```typescript
 // Already implemented in server/lib/ratelimit.ts
-import { checkRateLimit } from '@/server/lib/ratelimit';
+import { checkRateLimit } from "@/server/lib/ratelimit";
 
 const { success, remaining } = await checkRateLimit(ipAddress);
 if (!success) {
-    return new Response('Too Many Requests', { status: 429 });
+  return new Response("Too Many Requests", { status: 429 });
 }
 ```
 
@@ -496,14 +492,14 @@ This implementation demonstrates:
 
 ## 💪 Benefits Achieved
 
-| Before | After |
-|--------|-------|
-| ❌ Upstash-only | ✅ Multi-provider support |
-| ❌ Hard to test | ✅ Easy mocking |
-| ❌ Tight coupling | ✅ Clean interfaces |
-| ❌ No local dev | ✅ Docker Redis |
-| ❌ No validation | ✅ Environment validation |
-| ❌ Limited docs | ✅ Comprehensive docs |
+| Before            | After                     |
+| ----------------- | ------------------------- |
+| ❌ Upstash-only   | ✅ Multi-provider support |
+| ❌ Hard to test   | ✅ Easy mocking           |
+| ❌ Tight coupling | ✅ Clean interfaces       |
+| ❌ No local dev   | ✅ Docker Redis           |
+| ❌ No validation  | ✅ Environment validation |
+| ❌ Limited docs   | ✅ Comprehensive docs     |
 
 ---
 

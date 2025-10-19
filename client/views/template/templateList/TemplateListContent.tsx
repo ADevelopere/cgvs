@@ -48,12 +48,12 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
 
   const templates = React.useMemo(
     () => data?.templatesByCategoryId?.data ?? [],
-    [data?.templatesByCategoryId?.data],
+    [data?.templatesByCategoryId?.data]
   );
 
   const pageInfo = React.useMemo(
     () => data?.templatesByCategoryId?.pageInfo,
-    [data?.templatesByCategoryId?.pageInfo],
+    [data?.templatesByCategoryId?.pageInfo]
   );
 
   // Sync local input value with actual current page when pageInfo changes
@@ -66,14 +66,14 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
   // Search query from filter args
   const searchQuery = React.useMemo(
     () => templateQueryVariables.filterArgs?.name ?? "",
-    [templateQueryVariables.filterArgs?.name],
+    [templateQueryVariables.filterArgs?.name]
   );
 
   // Handle search input change
   const handleSearchChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const searchValue = event.target.value;
-      updateTemplateQueryVariables((current) => ({
+      updateTemplateQueryVariables(current => ({
         ...current,
         filterArgs: {
           ...current.filterArgs,
@@ -85,25 +85,25 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
         },
       }));
     },
-    [updateTemplateQueryVariables],
+    [updateTemplateQueryVariables]
   );
 
   const handleViewChange = React.useCallback(
     (
       _: React.MouseEvent<HTMLElement>,
-      newView: "card" | "grid" | "list" | null,
+      newView: "card" | "grid" | "list" | null
     ): void => {
       if (newView !== null) {
         setViewMode(newView);
       }
     },
-    [setViewMode],
+    [setViewMode]
   );
 
   // Pagination handlers
   const handlePageChange = React.useCallback(
     (_event: React.ChangeEvent<unknown>, page: number) => {
-      updateTemplateQueryVariables((current) => ({
+      updateTemplateQueryVariables(current => ({
         ...current,
         paginationArgs: {
           ...current.paginationArgs,
@@ -111,13 +111,13 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
         },
       }));
     },
-    [updateTemplateQueryVariables],
+    [updateTemplateQueryVariables]
   );
 
   const handlePageSizeChange = React.useCallback(
     (event: Mui.SelectChangeEvent<number>) => {
       const pageSize = event.target.value as number;
-      updateTemplateQueryVariables((current) => ({
+      updateTemplateQueryVariables(current => ({
         ...current,
         paginationArgs: {
           first: pageSize,
@@ -125,7 +125,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
         },
       }));
     },
-    [updateTemplateQueryVariables],
+    [updateTemplateQueryVariables]
   );
 
   const handlePageInputChange = React.useCallback(
@@ -141,7 +141,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
         setPageInputValue(pageNumber);
       }
     },
-    [],
+    []
   );
 
   const handlePageInputSubmit = React.useCallback(() => {
@@ -150,7 +150,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     const coercedPage = Math.min(Math.max(pageInputValue, 1), maxPage);
 
     // Update pagination args with the coerced value
-    updateTemplateQueryVariables((current) => ({
+    updateTemplateQueryVariables(current => ({
       ...current,
       paginationArgs: {
         ...current.paginationArgs,
@@ -169,7 +169,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
         handlePageInputSubmit();
       }
     },
-    [handlePageInputSubmit],
+    [handlePageInputSubmit]
   );
 
   const handlePageInputBlur = React.useCallback(() => {
@@ -200,7 +200,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     (templateId: number) => {
       router.push(`/admin/templates/${templateId}/manage`);
     },
-    [router],
+    [router]
   );
 
   const renderTemplateView = React.useMemo(() => {

@@ -1,8 +1,8 @@
 // Main components
 export { default as UploadProgress } from "./UploadProgress";
 export {
-    UploadProgressUIProvider,
-    useUploadProgressUI,
+  UploadProgressUIProvider,
+  useUploadProgressUI,
 } from "./UploadProgressUIContext";
 
 // Child components (optional exports for advanced use cases)
@@ -14,9 +14,9 @@ export { default as CancelUploadDialog } from "./CancelUploadDialog";
 
 // Types
 export type {
-    UploadProgressUIContextType,
-    UploadFileDisplayInfo,
-    CancelTarget,
+  UploadProgressUIContextType,
+  UploadFileDisplayInfo,
+  CancelTarget,
 } from "./UploadProgressUIContext";
 
 export type { UploadProgressHeaderProps } from "./UploadProgressHeader";

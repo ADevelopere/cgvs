@@ -72,11 +72,11 @@ This document outlines a comprehensive security hardening plan for the Next.js f
 ```typescript
 // Update cookie settings:
 const cookieOptions = {
-  httpOnly: true,        // Prevent XSS access
-  secure: process.env.NODE_ENV === 'production', // HTTPS only
-  sameSite: 'strict',    // CSRF protection
+  httpOnly: true, // Prevent XSS access
+  secure: process.env.NODE_ENV === "production", // HTTPS only
+  sameSite: "strict", // CSRF protection
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  path: '/',
+  path: "/",
   domain: process.env.COOKIE_DOMAIN, // Restrict domain
 };
 ```
@@ -146,15 +146,15 @@ const cookieOptions = {
 **Implementation:**
 
 ```typescript
-import depthLimit from 'graphql-depth-limit';
-import { createComplexityLimitRule } from 'graphql-validation-complexity';
+import depthLimit from "graphql-depth-limit";
+import { createComplexityLimitRule } from "graphql-validation-complexity";
 
 const server = new ApolloServer({
   schema: graphQLSchema,
   validationRules: [
     depthLimit(7),
     createComplexityLimitRule(1000, {
-      onCost: (cost) => {
+      onCost: cost => {
         logger.log(`Query cost: ${cost}`);
       },
     }),
@@ -178,7 +178,7 @@ const server = new ApolloServer({
 ```typescript
 const server = new ApolloServer({
   schema: graphQLSchema,
-  introspection: process.env.NODE_ENV !== 'production',
+  introspection: process.env.NODE_ENV !== "production",
 });
 ```
 
@@ -355,16 +355,16 @@ const cspHeader = `
 // Hybrid identifier
 function getIdentifier(request: Request, userId?: number): string {
   const ip = getClientIdentifier(request);
-  const fingerprint = request.headers.get('x-fingerprint');
-  
+  const fingerprint = request.headers.get("x-fingerprint");
+
   if (userId) {
     return `user:${userId}`;
   }
-  
+
   if (fingerprint) {
     return `fp:${fingerprint}:${ip}`;
   }
-  
+
   return `ip:${ip}`;
 }
 ```
@@ -522,10 +522,10 @@ CREATE POLICY user_isolation_policy ON students
 
 ```typescript
 const ALLOWED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'application/pdf',
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "application/pdf",
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -683,7 +683,7 @@ maxmemory-policy allkeys-lru
 
 **Action Items:**
 
-- [ ] Audit NEXT_PUBLIC_ variables
+- [ ] Audit NEXT*PUBLIC* variables
 - [ ] Remove unnecessary public vars
 - [ ] Use server-side config injection
 - [ ] Add webpack plugin to strip secrets
@@ -788,14 +788,14 @@ maxmemory-policy allkeys-lru
 **Implementation:**
 
 ```typescript
-import winston from 'winston';
+import winston from "winston";
 
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: process.env.LOG_LEVEL || "info",
   format: winston.format.json(),
   transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' }),
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
   ],
 });
 ```
@@ -912,13 +912,13 @@ const logger = winston.createLogger({
 
 ```typescript
 const BLOCKED_IP_RANGES = [
-  '0.0.0.0/8',
-  '10.0.0.0/8',
-  '127.0.0.0/8',
-  '169.254.0.0/16',
-  '172.16.0.0/12',
-  '192.168.0.0/16',
-  '224.0.0.0/4',
+  "0.0.0.0/8",
+  "10.0.0.0/8",
+  "127.0.0.0/8",
+  "169.254.0.0/16",
+  "172.16.0.0/12",
+  "192.168.0.0/16",
+  "224.0.0.0/4",
 ];
 ```
 
@@ -997,17 +997,17 @@ const BLOCKED_IP_RANGES = [
 async function withLock(key: string, callback: () => Promise<void>) {
   const lockKey = `lock:${key}`;
   const lockValue = crypto.randomUUID();
-  
+
   // Acquire lock
   const acquired = await redisService.set(lockKey, lockValue, {
     nx: true,
     ex: 10,
   });
-  
+
   if (!acquired) {
-    throw new Error('Could not acquire lock');
+    throw new Error("Could not acquire lock");
   }
-  
+
   try {
     await callback();
   } finally {
@@ -1312,20 +1312,20 @@ jobs:
 
 ## Approval & Sign-off
 
-| Role | Name | Signature | Date |
-|------|------|-----------|------|
-| Security Lead | | | |
-| Tech Lead | | | |
-| Product Manager | | | |
-| CTO | | | |
+| Role            | Name | Signature | Date |
+| --------------- | ---- | --------- | ---- |
+| Security Lead   |      |           |      |
+| Tech Lead       |      |           |      |
+| Product Manager |      |           |      |
+| CTO             |      |           |      |
 
 ---
 
 ## Revision History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2025-10-10 | Security Audit | Initial security hardening plan |
+| Version | Date       | Author         | Changes                         |
+| ------- | ---------- | -------------- | ------------------------------- |
+| 1.0     | 2025-10-10 | Security Audit | Initial security hardening plan |
 
 ---
 

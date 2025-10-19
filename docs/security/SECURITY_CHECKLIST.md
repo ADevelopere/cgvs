@@ -99,7 +99,7 @@ Quick reference checklist for implementing security measures. See [SECURITY_HARD
 - [ ] Use secrets manager (AWS/Vault)
 - [ ] Remove secrets from logs
 - [ ] Implement log sanitization
-- [ ] Audit NEXT_PUBLIC_ variables
+- [ ] Audit NEXT*PUBLIC* variables
 - [ ] Add secret scanning to CI/CD
 - [ ] Add pre-commit hooks
 

@@ -15,7 +15,7 @@ export interface IRedisService {
   set(
     key: string,
     value: string,
-    options?: { ex?: number; px?: number },
+    options?: { ex?: number; px?: number }
   ): Promise<void>;
 
   /**
@@ -42,7 +42,7 @@ export interface IRedisService {
    * Execute a pipeline of commands (for atomic operations)
    */
   pipeline(
-    commands: Array<{ command: string; args: (string | number)[] }>,
+    commands: Array<{ command: string; args: (string | number)[] }>
   ): Promise<unknown[]>;
 
   /**

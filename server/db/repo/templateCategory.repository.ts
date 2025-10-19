@@ -1,5 +1,15 @@
 import { db } from "@/server/db/drizzleDb";
-import { eq, inArray, max, isNull, count, and, not, or, ilike } from "drizzle-orm";
+import {
+  eq,
+  inArray,
+  max,
+  isNull,
+  count,
+  and,
+  not,
+  or,
+  ilike,
+} from "drizzle-orm";
 import { templateCategories, templates } from "@/server/db/schema";
 import {
   TemplateCategoryCreateInput,
@@ -13,14 +23,14 @@ import logger from "@/lib/logger";
 
 export namespace TemplateCategoryRepository {
   export const findById = async (
-    id?: number | null,
+    id?: number | null
   ): Promise<TemplateCategorySelectType | null> => {
     if (!id) return null;
     const category = await db
       .select()
       .from(templateCategories)
       .where(eq(templateCategories.id, id))
-      .then((res) => res[0]);
+      .then(res => res[0]);
     return category || null;
   };
 
@@ -38,7 +48,7 @@ export namespace TemplateCategoryRepository {
   };
 
   export const findCategoryChildren = async (
-    parentCategoryId?: number | null,
+    parentCategoryId?: number | null
   ): Promise<TemplateCategorySelectType[]> => {
     if (!parentCategoryId) {
       return db
@@ -49,14 +59,14 @@ export namespace TemplateCategoryRepository {
             isNull(templateCategories.parentCategoryId),
             or(
               isNull(templateCategories.specialType),
-              not(eq(templateCategories.specialType, "Suspension")),
-            ),
-          ),
+              not(eq(templateCategories.specialType, "Suspension"))
+            )
+          )
         )
         .orderBy(templateCategories.order);
     }
 
-    await existsById(parentCategoryId).then((exists) => {
+    await existsById(parentCategoryId).then(exists => {
       if (!exists) {
         throw new Error(`Category with ID ${parentCategoryId} does not exist.`);
       }
@@ -70,7 +80,7 @@ export namespace TemplateCategoryRepository {
   };
 
   export const loadByIds = async (
-    ids: number[],
+    ids: number[]
   ): Promise<(TemplateCategorySelectType | Error)[]> => {
     if (ids.length === 0) return [];
     const filteredCategories = await db
@@ -78,9 +88,9 @@ export namespace TemplateCategoryRepository {
       .from(templateCategories)
       .where(inArray(templateCategories.id, ids));
 
-    const categories: (TemplateCategorySelectType | Error)[] = ids.map((id) => {
+    const categories: (TemplateCategorySelectType | Error)[] = ids.map(id => {
       const matchingCategory: TemplateCategorySelectType | undefined =
-        filteredCategories.find((c) => c.id === id);
+        filteredCategories.find(c => c.id === id);
       if (!matchingCategory)
         return new Error(`TemplateCategory ${id} not found`);
       return matchingCategory;
@@ -89,7 +99,7 @@ export namespace TemplateCategoryRepository {
   };
 
   export const loadSubForParents = async (
-    parentCategoryIds: number[],
+    parentCategoryIds: number[]
   ): Promise<TemplateCategorySelectType[][]> => {
     if (parentCategoryIds.length === 0) return [];
     const subCategories = await db
@@ -98,8 +108,8 @@ export namespace TemplateCategoryRepository {
       .where(inArray(templateCategories.parentCategoryId, parentCategoryIds))
       .orderBy(templateCategories.order);
 
-    return parentCategoryIds.map((parentId) =>
-      subCategories.filter((cat) => cat.parentCategoryId === parentId),
+    return parentCategoryIds.map(parentId =>
+      subCategories.filter(cat => cat.parentCategoryId === parentId)
     );
   };
 
@@ -128,7 +138,7 @@ export namespace TemplateCategoryRepository {
     };
 
   export const create = async (
-    input: TemplateCategoryCreateInput,
+    input: TemplateCategoryCreateInput
   ): Promise<TemplateCategorySelectType> => {
     TemplateCategoryUtils.validateName(input.name);
 
@@ -145,14 +155,14 @@ export namespace TemplateCategoryRepository {
       const existingParentCategory = await findById(parentCategoryId);
       if (!existingParentCategory) {
         throw new Error(
-          `Parent category with ID ${input.parentCategoryId} does not exist.`,
+          `Parent category with ID ${input.parentCategoryId} does not exist.`
         );
       }
 
       // Validate not suspension category
       if (existingParentCategory.specialType === "Suspension") {
         throw new Error(
-          "Cannot create a category under the suspension category.",
+          "Cannot create a category under the suspension category."
         );
       }
 
@@ -190,7 +200,7 @@ export namespace TemplateCategoryRepository {
   };
 
   export const update = async (
-    input: TemplateCategoryUpdateInput,
+    input: TemplateCategoryUpdateInput
   ): Promise<TemplateCategorySelectType> => {
     const existingCategory = await findById(input.id);
     if (!existingCategory) {
@@ -207,14 +217,14 @@ export namespace TemplateCategoryRepository {
       const existingParentCategory = await findById(newParentCategoryId);
       if (!existingParentCategory) {
         throw new Error(
-          `Parent category with ID ${newParentCategoryId} does not exist.`,
+          `Parent category with ID ${newParentCategoryId} does not exist.`
         );
       }
 
       // Validate not suspension category
       if (existingParentCategory.specialType === "Suspension") {
         throw new Error(
-          "Cannot set the parent category to the suspension category.",
+          "Cannot set the parent category to the suspension category."
         );
       }
 
@@ -230,7 +240,7 @@ export namespace TemplateCategoryRepository {
       if (newParentCategoryId != null) {
         const maxOrderResult =
           await findTemplateCategoryMaxOrderByParentCategoryId(
-            newParentCategoryId,
+            newParentCategoryId
           );
         newOrder = maxOrderResult + 1;
       } else {
@@ -320,7 +330,7 @@ export namespace TemplateCategoryRepository {
     };
 
   export const deleteById = async (
-    id: number,
+    id: number
   ): Promise<TemplateCategorySelectType> => {
     const existingCategory = await findById(id);
 
@@ -340,11 +350,11 @@ export namespace TemplateCategoryRepository {
       .select({ count: count() })
       .from(templateCategories)
       .where(eq(templateCategories.parentCategoryId, id))
-      .then((res) => res[0]);
+      .then(res => res[0]);
 
     if (subCategoryCountResult.count > 0) {
       throw new Error(
-        "Cannot delete category with existing sub-categories. Please remove or reassign sub-categories first.",
+        "Cannot delete category with existing sub-categories. Please remove or reassign sub-categories first."
       );
     }
 
@@ -353,11 +363,11 @@ export namespace TemplateCategoryRepository {
       .select({ count: count() })
       .from(templates)
       .where(eq(templates.categoryId, id))
-      .then((res) => res[0]);
+      .then(res => res[0]);
 
     if (templateCountResult.count > 0) {
       throw new Error(
-        "Cannot delete category with existing templates. Please remove or reassign templates first.",
+        "Cannot delete category with existing templates. Please remove or reassign templates first."
       );
     }
 
@@ -371,7 +381,7 @@ export namespace TemplateCategoryRepository {
   };
 
   export const findTemplateCategoryMaxOrderByParentCategoryId = async (
-    parentCategoryId: number | null,
+    parentCategoryId: number | null
   ): Promise<number> => {
     const [{ maxOrder }] = await db
       .select({ maxOrder: max(templateCategories.order) })
@@ -379,7 +389,7 @@ export namespace TemplateCategoryRepository {
       .where(
         parentCategoryId === null
           ? isNull(templateCategories.parentCategoryId)
-          : eq(templateCategories.parentCategoryId, parentCategoryId),
+          : eq(templateCategories.parentCategoryId, parentCategoryId)
       );
 
     // if root categories, then max order to start with is 2, (1, 2) reserved for main and suspenstion categories
@@ -389,7 +399,7 @@ export namespace TemplateCategoryRepository {
   export const searchByName = async (
     searchTerm: string,
     limit: number = 10,
-    includeParentTree: boolean = false,
+    includeParentTree: boolean = false
   ): Promise<TemplateCategoryWithParentTree[]> => {
     // Search for categories by name, excluding Suspension category
     const categories = await db
@@ -400,9 +410,9 @@ export namespace TemplateCategoryRepository {
           ilike(templateCategories.name, `%${searchTerm}%`),
           or(
             isNull(templateCategories.specialType),
-            not(eq(templateCategories.specialType, "Suspension")),
-          ),
-        ),
+            not(eq(templateCategories.specialType, "Suspension"))
+          )
+        )
       )
       .orderBy(templateCategories.name)
       .limit(limit);

@@ -78,7 +78,7 @@ const CreateStudentRow = () => {
     if (!("name" in fieldValidity) || fieldValidity["name"] !== null)
       return false;
     // All fields must be valid (errorMessage === null)
-    return Object.values(fieldValidity).every((err) => err === null);
+    return Object.values(fieldValidity).every(err => err === null);
   }, [fieldValidity]);
 
   // Get field width based on type and screen size
@@ -100,7 +100,7 @@ const CreateStudentRow = () => {
           return isTablet ? 200 : 220;
       }
     },
-    [isMobile, isTablet],
+    [isMobile, isTablet]
   );
 
   const lastFilteredValue = useRef<string | undefined>(undefined);
@@ -108,9 +108,9 @@ const CreateStudentRow = () => {
 
   const handleNameChange = useCallback(
     (value: string | undefined, errorMessage: string | null) => {
-      setNewStudent((prev) => ({ ...prev, name: value ?? "" }));
+      setNewStudent(prev => ({ ...prev, name: value ?? "" }));
       setIsDirty(true);
-      setFieldValidity((prev) => ({ ...prev, name: errorMessage }));
+      setFieldValidity(prev => ({ ...prev, name: errorMessage }));
 
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
@@ -133,7 +133,7 @@ const CreateStudentRow = () => {
         }
       }, 1500);
     },
-    [setSearchFilter],
+    [setSearchFilter]
   );
 
   // Cleanup the debounce timer on unmount
@@ -143,17 +143,17 @@ const CreateStudentRow = () => {
         clearTimeout(debounceTimer.current);
       }
     },
-    [],
+    []
   );
 
   const handleChange = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (value: any, columnId: string, errorMessage: string | null) => {
-      setNewStudent((prev) => ({ ...prev, [columnId]: value }));
+      setNewStudent(prev => ({ ...prev, [columnId]: value }));
       setIsDirty(true);
-      setFieldValidity((prev) => ({ ...prev, [columnId]: errorMessage }));
+      setFieldValidity(prev => ({ ...prev, [columnId]: errorMessage }));
     },
-    [],
+    []
   );
 
   // Create a memoized map of handlers for all fields except 'name'
@@ -164,12 +164,12 @@ const CreateStudentRow = () => {
       (value: any, errorMessage: string | null) => void
     > = {};
     columns
-      .filter((c) => c.editable && c.id !== "name")
-      .forEach((col) => {
+      .filter(c => c.editable && c.id !== "name")
+      .forEach(col => {
         handlers[col.id] = (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           value: any,
-          errorMessage: string | null,
+          errorMessage: string | null
         ) => {
           handleChange(value, col.id, errorMessage);
         };
@@ -201,7 +201,7 @@ const CreateStudentRow = () => {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب",
+        error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب"
       );
       setShowError(true);
     } finally {
@@ -213,22 +213,22 @@ const CreateStudentRow = () => {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter" && e.ctrlKey && isFormValid) {
-        handleCreate().then((r) => r);
+        handleCreate().then(r => r);
       }
     },
-    [handleCreate, isFormValid],
+    [handleCreate, isFormValid]
   );
 
   const editableColumns = useMemo(
-    () => columns.filter((c) => c.editable),
-    [columns],
+    () => columns.filter(c => c.editable),
+    [columns]
   );
 
   return (
     <>
       <_StyledPaper elevation={2} isMobile={isMobile} onKeyDown={handleKeyDown}>
         <_FieldsContainer isMobile={isMobile}>
-          {editableColumns.map((col) => (
+          {editableColumns.map(col => (
             <_FieldWrapper
               key={col.id}
               isMobile={isMobile}

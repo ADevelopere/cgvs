@@ -29,7 +29,11 @@ const StorageDirectoryTree: React.FC = () => {
   const { params } = useStorageDataStore();
   const { directoryTree, expandedNodes, queueStates } = useStorageTreeStore();
   const { navigateTo } = useStorageNavigation();
-  const { expandDirectoryNode, collapseDirectoryNode, prefetchDirectoryChildren } = useStorageTreeOperations();
+  const {
+    expandDirectoryNode,
+    collapseDirectoryNode,
+    prefetchDirectoryChildren,
+  } = useStorageTreeOperations();
   const { loading } = useStorageUIStore();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
@@ -44,7 +48,7 @@ const StorageDirectoryTree: React.FC = () => {
       const node = item as DirectoryTreeNode;
       navigateTo(node.path);
     },
-    [navigateTo],
+    [navigateTo]
   );
 
   const handleExpandItem = useCallback(
@@ -54,7 +58,7 @@ const StorageDirectoryTree: React.FC = () => {
         expandDirectoryNode(node.path);
       }
     },
-    [expandedNodes, expandDirectoryNode],
+    [expandedNodes, expandDirectoryNode]
   );
 
   const handleCollapseItem = useCallback(
@@ -62,7 +66,7 @@ const StorageDirectoryTree: React.FC = () => {
       const node = item as DirectoryTreeNode;
       collapseDirectoryNode(node.path);
     },
-    [collapseDirectoryNode],
+    [collapseDirectoryNode]
   );
 
   const debouncedPrefetch = useDebouncedCallback((path: string) => {
@@ -76,7 +80,7 @@ const StorageDirectoryTree: React.FC = () => {
         debouncedPrefetch(node.path);
       }
     },
-    [expandedNodes, debouncedPrefetch],
+    [expandedNodes, debouncedPrefetch]
   );
 
   const itemRenderer = React.useCallback(
@@ -116,7 +120,7 @@ const StorageDirectoryTree: React.FC = () => {
       loading.prefetchingNode,
       queueStates.expansionQueue,
       queueStates.currentlyFetching,
-    ],
+    ]
   );
 
   return (

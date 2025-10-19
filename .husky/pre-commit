@@ -1,0 +1,3 @@
+#!/usr/bin/env bun
+
+bun lint-staged

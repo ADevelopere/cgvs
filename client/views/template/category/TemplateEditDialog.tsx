@@ -53,12 +53,12 @@ const TemplateEditDialog: React.FC<Props> = ({
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
-    [searchCategoriesData?.searchTemplateCategories],
+    [searchCategoriesData?.searchTemplateCategories]
   );
 
   const selectedCategory = React.useMemo(
-    () => categoryOptions.find((c) => c.id === categoryId) ?? null,
-    [categoryOptions, categoryId],
+    () => categoryOptions.find(c => c.id === categoryId) ?? null,
+    [categoryOptions, categoryId]
   );
 
   // Debounced search handler
@@ -81,7 +81,7 @@ const TemplateEditDialog: React.FC<Props> = ({
         }, 300);
       }
     },
-    [searchCategories],
+    [searchCategories]
   );
 
   // Cleanup timeout on unmount
@@ -147,7 +147,7 @@ const TemplateEditDialog: React.FC<Props> = ({
             label={strings.name}
             fullWidth
             value={name}
-            onChange={(e) => {
+            onChange={e => {
               setName(e.target.value);
               setError("");
             }}
@@ -161,7 +161,7 @@ const TemplateEditDialog: React.FC<Props> = ({
             multiline
             rows={3}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
           />
           <Autocomplete
             value={selectedCategory}
@@ -173,11 +173,11 @@ const TemplateEditDialog: React.FC<Props> = ({
               handleCategorySearch(newInputValue);
             }}
             options={categoryOptions}
-            getOptionLabel={(option) => option.name ?? strings.unnamed}
+            getOptionLabel={option => option.name ?? strings.unnamed}
             loading={searchLoading}
             loadingText={strings.loading}
             noOptionsText={strings.noCategories}
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 label={strings.parentCategory}

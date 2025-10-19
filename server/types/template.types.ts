@@ -1,9 +1,9 @@
 import { TemplateCategoryPothosDefintion } from "./templateCategory.types";
 import { PageInfo } from "./pagination.types";
 import {
-    templates,
-    templatesConfigs,
-    templatesConfigsKeyEnum,
+  templates,
+  templatesConfigs,
+  templatesConfigsKeyEnum,
 } from "@/server/db/schema";
 import { OrderSortDirection } from "@/lib/enum";
 
@@ -11,42 +11,42 @@ export type TemplateEntity = typeof templates.$inferSelect;
 export type TemplateEntityInput = typeof templates.$inferInsert;
 
 export type TemplatePothosDefintion = TemplateEntity & {
-    //relations
-    category?: TemplateCategoryPothosDefintion;
-    // imageFile?: FileInfo | null;
-    preSuspensionCategory?: TemplateCategoryPothosDefintion | null;
-    // variables
-    // recipientGroups
-    // driven
-    imageUrl?: string | null;
+  //relations
+  category?: TemplateCategoryPothosDefintion;
+  // imageFile?: FileInfo | null;
+  preSuspensionCategory?: TemplateCategoryPothosDefintion | null;
+  // variables
+  // recipientGroups
+  // driven
+  imageUrl?: string | null;
 };
 
 export type TemplateCreateInput = {
-    name: string;
-    description?: string | null;
-    categoryId: number;
+  name: string;
+  description?: string | null;
+  categoryId: number;
 };
 
 export type TemplateUpdateInput = {
-    id: number;
-    name: string;
-    categoryId: number;
-    description?: string | null;
-    imagePath?: bigint | null;
+  id: number;
+  name: string;
+  categoryId: number;
+  description?: string | null;
+  imagePath?: bigint | null;
 };
 
 export type PaginatedTemplatesEntityResponse = {
-    data: TemplateEntity[];
-    pageInfo: PageInfo;
+  data: TemplateEntity[];
+  pageInfo: PageInfo;
 };
 
 export type PaginatedTemplatesResponse = {
-    data: TemplatePothosDefintion[];
-    pageInfo: PageInfo;
+  data: TemplatePothosDefintion[];
+  pageInfo: PageInfo;
 };
 
 export type TemplatesConfigsKey =
-    (typeof templatesConfigsKeyEnum.enumValues)[number];
+  (typeof templatesConfigsKeyEnum.enumValues)[number];
 export const TemplatesConfigsKeyValues = templatesConfigsKeyEnum.enumValues;
 
 export type TemplatesConfigSelectType = typeof templatesConfigs.$inferSelect;
@@ -54,29 +54,29 @@ export type TemplatesCongigInsertInput = typeof templatesConfigs.$inferInsert;
 export type TemplatesConfigPothosDefinition = TemplatesConfigSelectType;
 
 export type TemplatesConfigsPothosDefinition = {
-    configs: TemplatesConfigSelectType[];
+  configs: TemplatesConfigSelectType[];
 };
 
 export type TemplatesWithFiltersResponse = {
-    data: TemplatePothosDefintion[];
-    pageInfo: PageInfo;
+  data: TemplatePothosDefintion[];
+  pageInfo: PageInfo;
 };
 
 export type TemplateFilterArgs = {
-    name?: string | null;
+  name?: string | null;
 };
 
 /**
  * Represents a clause for ordering template results.
  */
 export type TemplatesOrderByClause = {
-    column: TemplatesOrderByColumn;
-    order?: OrderSortDirection | null;
+  column: TemplatesOrderByColumn;
+  order?: OrderSortDirection | null;
 };
 
 export enum TemplatesOrderByColumn {
-    NAME = "NAME",
-    ORDER = "ORDER",
-    CREATED_AT = "CREATED_AT",
-    UPDATED_AT = "UPDATED_AT",
+  NAME = "NAME",
+  ORDER = "ORDER",
+  CREATED_AT = "CREATED_AT",
+  UPDATED_AT = "UPDATED_AT",
 }

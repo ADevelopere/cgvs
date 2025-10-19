@@ -46,7 +46,7 @@ export const RecipientTableFooterStart: React.FC<{
       tabType,
       store.selectedStudentIdsNotInGroup,
       store.selectedStudentIdsInGroup,
-    ],
+    ]
   );
 
   const handleClearClick = useCallback(() => {
@@ -139,13 +139,13 @@ export const RecipientTableFooterEnd: React.FC<
       mode === "add"
         ? store.selectedStudentIdsNotInGroup
         : store.selectedStudentIdsInGroup,
-    [mode, store.selectedStudentIdsNotInGroup, store.selectedStudentIdsInGroup],
+    [mode, store.selectedStudentIdsNotInGroup, store.selectedStudentIdsInGroup]
   );
 
   // Memoize the query variables to prevent unnecessary re-renders
   const memoizedQueryVariables = useMemo(
     () => queryVariables,
-    [queryVariables],
+    [queryVariables]
   );
 
   // Get loading state from the query
@@ -158,7 +158,7 @@ export const RecipientTableFooterEnd: React.FC<
   // Memoize the converted selected row IDs
   const convertedSelectedRowIds = useMemo(
     () => selectedRowIds.map(Number),
-    [selectedRowIds],
+    [selectedRowIds]
   );
 
   const handleActionClick = useCallback(() => {
@@ -185,7 +185,7 @@ export const RecipientTableFooterEnd: React.FC<
   // Memoize the disabled state for the action button
   const isActionButtonDisabled = useMemo(
     () => selectedRowIds.length === 0 || loading,
-    [selectedRowIds.length, loading],
+    [selectedRowIds.length, loading]
   );
 
   return (

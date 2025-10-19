@@ -22,7 +22,7 @@ export const useStorageSelection = () => {
     (path: string) => {
       toggleSelectAction(path);
     },
-    [toggleSelectAction],
+    [toggleSelectAction]
   );
 
   const selectAll = useCallback(() => {
@@ -37,7 +37,7 @@ export const useStorageSelection = () => {
     (fromPath: string, toPath: string) => {
       selectRangeAction(fromPath, toPath, items);
     },
-    [selectRangeAction, items],
+    [selectRangeAction, items]
   );
 
   return {

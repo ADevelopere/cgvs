@@ -26,15 +26,15 @@ export const useTemplateCategoryApolloMutations = () => {
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: { parentCategoryId: parentId ?? null },
           },
-          (existing) => {
+          existing => {
             if (!existing?.categoryChildren) return existing;
             return {
               categoryChildren: [...existing.categoryChildren, newCategory],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Update category mutation
@@ -71,11 +71,11 @@ export const useTemplateCategoryApolloMutations = () => {
               query: CategoryDocuments.categoryChildrenQueryDocument,
               variables: { parentCategoryId: oldParentId ?? null },
             },
-            (existing) => ({
+            existing => ({
               categoryChildren:
-                existing?.categoryChildren.filter((c) => c.id !== updated.id) ??
+                existing?.categoryChildren.filter(c => c.id !== updated.id) ??
                 [],
-            }),
+            })
           );
         }
 
@@ -85,11 +85,11 @@ export const useTemplateCategoryApolloMutations = () => {
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: { parentCategoryId: newParentId ?? null },
           },
-          (existing) => {
+          existing => {
             if (!existing?.categoryChildren)
               return { categoryChildren: [updated] };
             const existingIndex = existing.categoryChildren.findIndex(
-              (c) => c.id === updated.id,
+              c => c.id === updated.id
             );
             if (existingIndex > -1) {
               const newChildren = [...existing.categoryChildren];
@@ -102,10 +102,10 @@ export const useTemplateCategoryApolloMutations = () => {
             return {
               categoryChildren: [...existing.categoryChildren, updated],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Delete category mutation
@@ -123,17 +123,17 @@ export const useTemplateCategoryApolloMutations = () => {
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: { parentCategoryId: parentId ?? null },
           },
-          (existing) => {
+          existing => {
             if (!existing?.categoryChildren) return existing;
             return {
               categoryChildren: existing.categoryChildren.filter(
-                (c) => c.id !== deleted.id,
+                c => c.id !== deleted.id
               ),
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // useMemo ensures the hook returns a stable object, preventing unnecessary re-renders
@@ -159,6 +159,6 @@ export const useTemplateCategoryApolloMutations = () => {
       createTemplateCategoryMutation,
       updateTemplateCategoryMutation,
       deleteTemplateCategoryMutation,
-    ],
+    ]
   );
 };

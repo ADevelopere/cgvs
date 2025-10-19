@@ -16,17 +16,17 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 const { registerResolver, updateParams } = usePageNavigation();
 
 useEffect(() => {
-    const unregister = registerResolver({
-        segment: "admin/your-route",
-        resolver: async (params) => {
-            if (params.tab) {
-                setActiveTab(params.tab as string);
-            }
-            return { success: true };
-        },
-    });
-    
-    return unregister;
+  const unregister = registerResolver({
+    segment: "admin/your-route",
+    resolver: async params => {
+      if (params.tab) {
+        setActiveTab(params.tab as string);
+      }
+      return { success: true };
+    },
+  });
+
+  return unregister;
 }, [registerResolver]);
 ```
 
@@ -34,8 +34,8 @@ useEffect(() => {
 
 ```tsx
 const changeTab = (tab: string) => {
-    setActiveTab(tab);
-    updateParams({ tab }, { replace: true, merge: true });
+  setActiveTab(tab);
+  updateParams({ tab }, { replace: true, merge: true });
 };
 ```
 
@@ -67,34 +67,34 @@ This system provides:
 
 ```tsx
 export const TemplateManagementProvider = ({ children }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    const [activeTab, setActiveTab] = useState<TabType>("basic");
-    
-    // Register resolver
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/templates/:id/manage",
-            resolver: async (params) => {
-                if (params.tab) {
-                    setActiveTab(params.tab as TabType);
-                }
-                return { success: true };
-            },
-            priority: 10,
-        });
-        return unregister;
-    }, [registerResolver]);
-    
-    // Update URL on tab change
-    const changeTab = useCallback(
-        (tab: TabType) => {
-            setActiveTab(tab);
-            updateParams({ tab }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    // ... rest of context
+  const { registerResolver, updateParams } = usePageNavigation();
+  const [activeTab, setActiveTab] = useState<TabType>("basic");
+
+  // Register resolver
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/templates/:id/manage",
+      resolver: async params => {
+        if (params.tab) {
+          setActiveTab(params.tab as TabType);
+        }
+        return { success: true };
+      },
+      priority: 10,
+    });
+    return unregister;
+  }, [registerResolver]);
+
+  // Update URL on tab change
+  const changeTab = useCallback(
+    (tab: TabType) => {
+      setActiveTab(tab);
+      updateParams({ tab }, { replace: true, merge: true });
+    },
+    [updateParams]
+  );
+
+  // ... rest of context
 };
 ```
 
@@ -108,7 +108,7 @@ export const TemplateManagementProvider = ({ children }) => {
 📖 [Quick Start Guide](../../docs/NAVIGATION_QUICK_START.md) - 5-step implementation guide  
 📚 [Complete Documentation](../../docs/PAGE_NAVIGATION_SYSTEM.md) - Full system reference  
 💡 [Implementation Examples](../../docs/NAVIGATION_IMPLEMENTATION_EXAMPLES.md) - Examples for all contexts  
-📝 [System Summary](../../docs/NAVIGATION_SYSTEM_SUMMARY.md) - Architecture and design decisions  
+📝 [System Summary](../../docs/NAVIGATION_SYSTEM_SUMMARY.md) - Architecture and design decisions
 
 ## Helper Hooks
 
@@ -128,10 +128,15 @@ setTab("editor"); // Updates both state and URL
 ### useNavigationResolver
 
 ```tsx
-useNavigationResolver({
+useNavigationResolver(
+  {
     segment: "admin/page",
-    resolver: async (params) => { /* ... */ },
-}, [deps]);
+    resolver: async params => {
+      /* ... */
+    },
+  },
+  [deps]
+);
 ```
 
 ## Common Use Cases
@@ -139,12 +144,12 @@ useNavigationResolver({
 ### Tab Navigation
 
 ```tsx
-resolver: async (params) => {
-    if (params.tab) {
-        setActiveTab(params.tab as TabType);
-    }
-    return { success: true };
-}
+resolver: async params => {
+  if (params.tab) {
+    setActiveTab(params.tab as TabType);
+  }
+  return { success: true };
+};
 ```
 
 ### Directory Navigation
@@ -162,13 +167,13 @@ recursive: true // Handle nested paths
 ### Item Selection
 
 ```tsx
-resolver: async (params) => {
-    if (params.itemId) {
-        const id = parseInt(params.itemId as string, 10);
-        setSelectedItem(id);
-    }
-    return { success: true };
-}
+resolver: async params => {
+  if (params.itemId) {
+    const id = parseInt(params.itemId as string, 10);
+    setSelectedItem(id);
+  }
+  return { success: true };
+};
 ```
 
 ## Migration from Old System
@@ -187,13 +192,13 @@ useEffect(() => setActiveTab(tab), [tab]);
 const { registerResolver, updateParams } = usePageNavigation();
 
 useEffect(() => {
-    return registerResolver({
-        segment: "admin/page",
-        resolver: async (params) => {
-            if (params.tab) setActiveTab(params.tab as TabType);
-            return { success: true };
-        },
-    });
+  return registerResolver({
+    segment: "admin/page",
+    resolver: async params => {
+      if (params.tab) setActiveTab(params.tab as TabType);
+      return { success: true };
+    },
+  });
 }, [registerResolver]);
 
 // When changing tab:

@@ -33,7 +33,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
     setError(null);
 
     try {
-      const itemPaths = items.map((item) => item.path);
+      const itemPaths = items.map(item => item.path);
       const success = await remove(itemPaths);
 
       if (success) {
@@ -41,13 +41,13 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       } else {
         setError(
           translations.deleteDialogFailedToDelete ||
-            "Failed to delete the item(s). Please try again.",
+            "Failed to delete the item(s). Please try again."
         );
       }
     } catch {
       setError(
         translations.deleteDialogUnexpectedError ||
-          "An unexpected error occurred. Please try again.",
+          "An unexpected error occurred. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -73,7 +73,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         handleClose();
       }
     },
-    [handleDelete, handleClose, isDeleting],
+    [handleDelete, handleClose, isDeleting]
   );
 
   if (items.length === 0) {
@@ -87,11 +87,11 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       return {
         title: translations.deleteConfirmation.replace(
           "%{fileName}",
-          item.name,
+          item.name
         ),
         message: translations.deleteConfirmationMessage.replace(
           "%{fileName}",
-          item.name,
+          item.name
         ),
       };
     } else {

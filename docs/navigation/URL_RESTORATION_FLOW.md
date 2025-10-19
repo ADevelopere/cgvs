@@ -89,34 +89,34 @@
 
 ```typescript
 // 1. Get current URL and saved state
-const normalizedPath = "admin/categories"
-const params = parseSearchParams(searchParams)  // {}
-const savedState = pageStates.get(normalizedPath)  // { tab: 'all' }
+const normalizedPath = "admin/categories";
+const params = parseSearchParams(searchParams); // {}
+const savedState = pageStates.get(normalizedPath); // { tab: 'all' }
 
 // 2. Check conditions
-const hasCurrentParams = Object.keys(params).length > 0  // false
-const hasSavedState = savedState && Object.keys(savedState).length > 0  // true
+const hasCurrentParams = Object.keys(params).length > 0; // false
+const hasSavedState = savedState && Object.keys(savedState).length > 0; // true
 
 // 3. Restore URL if needed
 if (hasSavedState && !hasCurrentParams) {
-    params = { ...savedState }  // { tab: 'all' }
-    
-    // Build new URL: /admin/categories?tab=all
-    const newUrl = buildUrlWithParams(pathname, params)
-    
-    // Update URL without adding to history
-    router.replace(newUrl)  // ← KEY FIX!
+  params = { ...savedState }; // { tab: 'all' }
+
+  // Build new URL: /admin/categories?tab=all
+  const newUrl = buildUrlWithParams(pathname, params);
+
+  // Update URL without adding to history
+  router.replace(newUrl); // ← KEY FIX!
 }
 
 // 4. Pass restored params to resolvers
-await resolveRoute(normalizedPath, params)  // params = { tab: 'all' }
+await resolveRoute(normalizedPath, params); // params = { tab: 'all' }
 ```
 
 ## Why Use `router.replace()` Instead of `router.push()`?
 
-| Method | Effect | Use Case |
-|--------|--------|----------|
-| `router.push()` | Adds new entry to history | User intentionally navigating to new page |
+| Method             | Effect                         | Use Case                                      |
+| ------------------ | ------------------------------ | --------------------------------------------- |
+| `router.push()`    | Adds new entry to history      | User intentionally navigating to new page     |
 | `router.replace()` | Replaces current history entry | Correcting URL without creating history entry |
 
 **For URL restoration, we use `replace()` because:**
@@ -161,18 +161,18 @@ The fix uses `useRef` to avoid React dependency issues:
 ```typescript
 // Before: Dependencies cause re-render loops
 useEffect(() => {
-    resolveCurrentRoute()
-}, [pathname, searchParams, router, state.pageStates])  // ← Problematic!
+  resolveCurrentRoute();
+}, [pathname, searchParams, router, state.pageStates]); // ← Problematic!
 
 // After: Refs prevent dependency hell
-const routerRef = useRef(router)
-const pageStatesRef = useRef(state.pageStates)
+const routerRef = useRef(router);
+const pageStatesRef = useRef(state.pageStates);
 
 useEffect(() => {
-    // Use refs inside callback
-    const currentRouter = routerRef.current
-    const savedState = pageStatesRef.current.get(path)
-}, [])  // ← No dependencies!
+  // Use refs inside callback
+  const currentRouter = routerRef.current;
+  const savedState = pageStatesRef.current.get(path);
+}, []); // ← No dependencies!
 ```
 
 **Why This Works:**

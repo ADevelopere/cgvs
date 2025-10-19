@@ -37,7 +37,7 @@ export class RedisServiceFactory {
 
       default:
         logger.warn(
-          `Unknown Redis provider: ${provider}, falling back to local`,
+          `Unknown Redis provider: ${provider}, falling back to local`
         );
         return this.createLocalRedis();
     }
@@ -64,7 +64,7 @@ export class RedisServiceFactory {
     if (!url || !token) {
       throw new Error(
         "Upstash Redis requires UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN. " +
-          "Get these from https://console.upstash.com/",
+          "Get these from https://console.upstash.com/"
       );
     }
 
@@ -113,5 +113,5 @@ export const redisService = new Proxy(
       const service = getRedisService();
       return service[prop as keyof typeof service];
     },
-  },
+  }
 );

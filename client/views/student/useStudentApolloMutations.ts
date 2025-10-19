@@ -60,8 +60,8 @@ export const useStudentApolloMutations = () => {
 
         if (!existingData?.students?.data) return;
 
-        const updatedStudents = existingData.students.data.map((student) =>
-          student.id === updatedStudent.id ? updatedStudent : student,
+        const updatedStudents = existingData.students.data.map(student =>
+          student.id === updatedStudent.id ? updatedStudent : student
         );
 
         cache.writeQuery({
@@ -78,7 +78,7 @@ export const useStudentApolloMutations = () => {
           },
         });
       },
-    },
+    }
   );
 
   // Delete student mutation
@@ -108,7 +108,7 @@ export const useStudentApolloMutations = () => {
           students: {
             ...existingData.students,
             data: existingData.students.data.filter(
-              (student) => student.id !== deletedStudent.id,
+              student => student.id !== deletedStudent.id
             ),
           },
         },

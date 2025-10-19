@@ -21,7 +21,7 @@ export const useStorageFileOperations = () => {
       }
       return success;
     },
-    [rename, refresh, updateLoading],
+    [rename, refresh, updateLoading]
   );
 
   const deleteItems = useCallback(
@@ -37,13 +37,13 @@ export const useStorageFileOperations = () => {
       }
       return success;
     },
-    [remove, refresh, updateLoading, clearSelection],
+    [remove, refresh, updateLoading, clearSelection]
   );
 
   const moveItems = useCallback(
     async (
       sourcePaths: string[],
-      destinationPath: string,
+      destinationPath: string
     ): Promise<boolean> => {
       updateLoading("move", true);
       const success = await move(sourcePaths, destinationPath);
@@ -54,13 +54,13 @@ export const useStorageFileOperations = () => {
       }
       return success;
     },
-    [move, refresh, updateLoading],
+    [move, refresh, updateLoading]
   );
 
   const copyItemsTo = useCallback(
     async (
       sourcePaths: string[],
-      destinationPath: string,
+      destinationPath: string
     ): Promise<boolean> => {
       updateLoading("copy", true);
       const success = await copy(sourcePaths, destinationPath);
@@ -71,7 +71,7 @@ export const useStorageFileOperations = () => {
       }
       return success;
     },
-    [copy, refresh, updateLoading],
+    [copy, refresh, updateLoading]
   );
 
   return {

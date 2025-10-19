@@ -30,14 +30,14 @@ import { queryWithPagination } from "@/server/db/query.extentions";
 
 export namespace TemplateRepository {
   export const findById = async (
-    id: number,
+    id: number
   ): Promise<TemplateEntity | null> => {
     try {
       return await db
         .select()
         .from(templates)
         .where(eq(templates.id, id))
-        .then((res) => {
+        .then(res => {
           const t = res[0];
           if (!t) {
             return null;
@@ -50,10 +50,10 @@ export namespace TemplateRepository {
   };
 
   export const findByIdOrThrow = async (
-    id: number,
+    id: number
   ): Promise<TemplateEntity> => {
     try {
-      return await findById(id).then((t) => {
+      return await findById(id).then(t => {
         if (!t) {
           throw new Error(`Template with ID ${id} does not exist.`);
         }
@@ -83,7 +83,7 @@ export namespace TemplateRepository {
   };
 
   export const loadByIds = async (
-    ids: number[],
+    ids: number[]
   ): Promise<(TemplateEntity | Error)[]> => {
     if (ids.length === 0) return [];
     const filteredTemplates = await db
@@ -91,8 +91,8 @@ export namespace TemplateRepository {
       .from(templates)
       .where(inArray(templates.id, ids));
 
-    const templateList: (TemplateEntity | Error)[] = ids.map((id) => {
-      const matchingTemplate = filteredTemplates.find((c) => c.id === id);
+    const templateList: (TemplateEntity | Error)[] = ids.map(id => {
+      const matchingTemplate = filteredTemplates.find(c => c.id === id);
       if (!matchingTemplate) return new Error(`Template ${id} not found`);
       return matchingTemplate;
     });
@@ -100,7 +100,7 @@ export namespace TemplateRepository {
   };
 
   export const findByCategoryId = async (
-    categoryId: number,
+    categoryId: number
   ): Promise<TemplateEntity[]> => {
     const templatesList = await db
       .select()
@@ -122,7 +122,7 @@ export namespace TemplateRepository {
   };
 
   export const loadForTemplateCategories = async (
-    templateCategoryIds: number[],
+    templateCategoryIds: number[]
   ): Promise<TemplateEntity[][]> => {
     if (templateCategoryIds.length === 0) return [];
     const templatesList = await db
@@ -131,13 +131,13 @@ export namespace TemplateRepository {
       .where(inArray(templates.categoryId, templateCategoryIds))
       .orderBy(templates.order);
 
-    return templateCategoryIds.map((categoryId) =>
-      templatesList.filter((template) => template.categoryId === categoryId),
+    return templateCategoryIds.map(categoryId =>
+      templatesList.filter(template => template.categoryId === categoryId)
     );
   };
 
   export const findAllPaginated = async (
-    paginationArgs?: PaginationArgs | null,
+    paginationArgs?: PaginationArgs | null
   ): Promise<PaginatedTemplatesEntityResponse> => {
     const { first, skip, page, maxCount } = paginationArgs ?? {};
 
@@ -146,7 +146,7 @@ export namespace TemplateRepository {
     // Figure out pagination
     const perPage = Math.min(
       first ?? PaginationArgsDefault.first,
-      maxCount ?? PaginationArgsDefault.maxCount,
+      maxCount ?? PaginationArgsDefault.maxCount
     );
     const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
     const offset = (currentPage - 1) * perPage;
@@ -178,7 +178,7 @@ export namespace TemplateRepository {
   };
 
   export const findMaxOrderInCategory = async (
-    categoryId: number,
+    categoryId: number
   ): Promise<number> => {
     const [{ maxOrder }] = await db
       .select({ maxOrder: max(templates.order) })
@@ -188,14 +188,14 @@ export namespace TemplateRepository {
   };
 
   export const create = async (
-    input: TemplateCreateInput,
+    input: TemplateCreateInput
   ): Promise<TemplateEntity> => {
     const { name, description, categoryId } = input;
 
     // Validate name length
     if (name.length < 3 || name.length > 255) {
       throw new Error(
-        "Template name must be between 3 and 255 characters long.",
+        "Template name must be between 3 and 255 characters long."
       );
     }
     const newOrder = (await findMaxOrderInCategory(categoryId)) + 1;
@@ -207,7 +207,7 @@ export namespace TemplateRepository {
       })
       .from(templateCategories)
       .where(eq(templateCategories.id, categoryId))
-      .then((res) => res[0]);
+      .then(res => res[0]);
 
     // Validate category exists
     if (!category) {
@@ -244,7 +244,7 @@ export namespace TemplateRepository {
   };
 
   export const internalCreateWithImageFileId = async (
-    input: TemplateCreateInputWithImageFileId,
+    input: TemplateCreateInputWithImageFileId
   ): Promise<TemplateEntity> => {
     const storageService = await getStorageService();
     const file = await storageService.fileInfoByDbFileId(input.imageFileId);
@@ -273,12 +273,12 @@ export namespace TemplateRepository {
     }
 
     throw new Error(
-      `Failed to create template, name: ${input.name}, imageFileId: ${input.imageFileId}`,
+      `Failed to create template, name: ${input.name}, imageFileId: ${input.imageFileId}`
     );
   };
 
   export const update = async (
-    input: TemplateUpdateInput,
+    input: TemplateUpdateInput
   ): Promise<TemplateEntity> => {
     const {
       id,
@@ -302,7 +302,7 @@ export namespace TemplateRepository {
       // Validate not suspension category
       if (category.specialType === "Suspension") {
         throw new Error(
-          "updateTemplate: Cannot move template to a suspension category.",
+          "updateTemplate: Cannot move template to a suspension category."
         );
       }
     }
@@ -382,7 +382,7 @@ export namespace TemplateRepository {
     }
 
     const preSuspensionCategory = await TemplateCategoryRepository.findById(
-      existingTemplate.preSuspensionCategoryId,
+      existingTemplate.preSuspensionCategoryId
     );
 
     const targetCategoryId = preSuspensionCategory?.id || mainCategoryId;
@@ -404,7 +404,7 @@ export namespace TemplateRepository {
     return await db
       .select()
       .from(templatesConfigs)
-      .then((res) => res);
+      .then(res => res);
   };
 
   export const existsById = async (id: number): Promise<boolean> => {
@@ -415,7 +415,7 @@ export namespace TemplateRepository {
     categoryId?: number | null,
     paginationArgs?: Types.PaginationArgs | null,
     filters?: Types.TemplateFilterArgs | null,
-    orderBy?: Types.TemplatesOrderByClause[] | null,
+    orderBy?: Types.TemplatesOrderByClause[] | null
   ): Promise<TemplatesWithFiltersResponse> => {
     // Build base query
     let baseQuery = db
@@ -448,7 +448,7 @@ export namespace TemplateRepository {
       // Apply user-specified ordering
       processedQuery = TemplateFilterUtils.applyOrdering(
         processedQuery,
-        orderBy,
+        orderBy
       );
     }
 
@@ -458,7 +458,7 @@ export namespace TemplateRepository {
     const results = await processedQuery;
 
     const total = (results[0] as { total: number })?.total ?? 0;
-    const items: TemplatePothosDefintion[] = results.map((r) => {
+    const items: TemplatePothosDefintion[] = results.map(r => {
       const t: TemplateEntity = (r as { template: TemplateEntity }).template;
       return t;
     });
@@ -466,7 +466,7 @@ export namespace TemplateRepository {
     const pageInfo = PaginationUtils.buildPageInfoFromArgs(
       paginationArgs,
       items.length,
-      total,
+      total
     );
 
     return {

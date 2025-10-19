@@ -44,7 +44,7 @@ export const useRecipientOperations = (templateId?: number) => {
         return false;
       }
     },
-    [apollo, notifications, strings],
+    [apollo, notifications, strings]
   );
 
   const addStudentsToGroup = useCallback(
@@ -88,7 +88,7 @@ export const useRecipientOperations = (templateId?: number) => {
       notifications,
       strings.errorAddingToGroup,
       strings.addedToGroup,
-    ],
+    ]
   );
 
   const deleteRecipient = useCallback(
@@ -115,7 +115,7 @@ export const useRecipientOperations = (templateId?: number) => {
         return false;
       }
     },
-    [apollo, notifications, strings],
+    [apollo, notifications, strings]
   );
 
   const deleteRecipients = useCallback(
@@ -144,7 +144,7 @@ export const useRecipientOperations = (templateId?: number) => {
         return false;
       }
     },
-    [apollo, notifications, strings],
+    [apollo, notifications, strings]
   );
 
   // Pagination operations for students NOT in group
@@ -157,7 +157,7 @@ export const useRecipientOperations = (templateId?: number) => {
         },
       });
     },
-    [store],
+    [store]
   );
 
   const onRowsPerPageChange = useCallback(
@@ -166,7 +166,7 @@ export const useRecipientOperations = (templateId?: number) => {
         paginationArgs: { first: rowsPerPage, page: 1 },
       });
     },
-    [store],
+    [store]
   );
 
   // Pagination operations for students IN group
@@ -179,7 +179,7 @@ export const useRecipientOperations = (templateId?: number) => {
         },
       });
     },
-    [store],
+    [store]
   );
 
   const onRowsPerPageChangeInGroup = useCallback(
@@ -188,7 +188,7 @@ export const useRecipientOperations = (templateId?: number) => {
         paginationArgs: { first: rowsPerPage, page: 1 },
       });
     },
-    [store],
+    [store]
   );
 
   // Filter operations for students NOT in group
@@ -198,14 +198,17 @@ export const useRecipientOperations = (templateId?: number) => {
       store.setFilterNotInGroup(columnId, filterClause);
 
       // Update query params directly - no sync needed!
-      const newFilters = { ...store.filtersNotInGroup, [columnId]: filterClause };
+      const newFilters = {
+        ...store.filtersNotInGroup,
+        [columnId]: filterClause,
+      };
       const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
-      Object.values(newFilters).forEach((filterClause) => {
+      Object.values(newFilters).forEach(filterClause => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const column = recipientBaseColumns.find((col) => col.id === columnId);
+        const column = recipientBaseColumns.find(col => col.id === columnId);
         if (!column) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
@@ -213,28 +216,29 @@ export const useRecipientOperations = (templateId?: number) => {
           mappedFilter = StudentUtils.mapTextFilter(
             columnId,
             filterClause.operation as TextFilterOperation,
-            filterClause.value as string,
+            filterClause.value as string
           );
         } else if (column.type === "date") {
           mappedFilter = StudentUtils.mapDateFilter(
             columnId,
             filterClause.operation as DateFilterOperation,
-            filterClause.value as { from?: Date; to?: Date },
+            filterClause.value as { from?: Date; to?: Date }
           );
         }
         Object.assign(newFilterArgs, mappedFilter);
       });
 
       store.setStudentsNotInGroupQueryParams({
-        filterArgs: Object.keys(newFilterArgs).length > 0
-          ? (newFilterArgs as Graphql.StudentFilterArgs)
-          : null,
+        filterArgs:
+          Object.keys(newFilterArgs).length > 0
+            ? (newFilterArgs as Graphql.StudentFilterArgs)
+            : null,
         // Preserve existing pagination and orderBy
         paginationArgs: store.studentsNotInGroupQueryParams.paginationArgs,
         orderBy: store.studentsNotInGroupQueryParams.orderBy,
       });
     },
-    [store],
+    [store]
   );
 
   // Filter operations for students IN group
@@ -247,11 +251,11 @@ export const useRecipientOperations = (templateId?: number) => {
       const newFilters = { ...store.filtersInGroup, [columnId]: filterClause };
       const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
-      Object.values(newFilters).forEach((filterClause) => {
+      Object.values(newFilters).forEach(filterClause => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const column = recipientBaseColumns.find((col) => col.id === columnId);
+        const column = recipientBaseColumns.find(col => col.id === columnId);
         if (!column) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
@@ -259,37 +263,37 @@ export const useRecipientOperations = (templateId?: number) => {
           mappedFilter = StudentUtils.mapTextFilter(
             columnId,
             filterClause.operation as TextFilterOperation,
-            filterClause.value as string,
+            filterClause.value as string
           );
         } else if (column.type === "date") {
           mappedFilter = StudentUtils.mapDateFilter(
             columnId,
             filterClause.operation as DateFilterOperation,
-            filterClause.value as { from?: Date; to?: Date },
+            filterClause.value as { from?: Date; to?: Date }
           );
         }
         Object.assign(newFilterArgs, mappedFilter);
       });
 
       store.setStudentsInGroupQueryParams({
-        filterArgs: Object.keys(newFilterArgs).length > 0
-          ? (newFilterArgs as Graphql.StudentFilterArgs)
-          : null,
+        filterArgs:
+          Object.keys(newFilterArgs).length > 0
+            ? (newFilterArgs as Graphql.StudentFilterArgs)
+            : null,
         // Preserve existing pagination and orderBy
         paginationArgs: store.studentsInGroupQueryParams.paginationArgs,
         orderBy: store.studentsInGroupQueryParams.orderBy,
       });
     },
-    [store],
+    [store]
   );
-
 
   // Sort operations for students NOT in group
   const setSort = useCallback(
     (orderBy: Graphql.StudentsOrderByClause[] | null) => {
       store.setStudentsNotInGroupQueryParams({ orderBy });
     },
-    [store],
+    [store]
   );
 
   // Sort operations for students IN group
@@ -297,7 +301,7 @@ export const useRecipientOperations = (templateId?: number) => {
     (orderBy: Graphql.StudentsOrderByClause[] | null) => {
       store.setStudentsInGroupQueryParams({ orderBy });
     },
-    [store],
+    [store]
   );
 
   // Return a stable object using useMemo
@@ -329,6 +333,6 @@ export const useRecipientOperations = (templateId?: number) => {
       setColumnFilterInGroup,
       setSort,
       setSortInGroup,
-    ],
+    ]
   );
 };

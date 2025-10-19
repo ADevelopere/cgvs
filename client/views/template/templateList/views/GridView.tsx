@@ -49,7 +49,7 @@ const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate }) => {
         paddingInlineEnd: 1,
       }}
     >
-      {templates.map((template) => {
+      {templates.map(template => {
         if (!template.name) {
           throw new Error("Template name is required");
         }

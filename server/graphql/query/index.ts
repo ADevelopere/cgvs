@@ -1,5 +1,5 @@
 import "./auth.query";
-import "./recipient.query"
+import "./recipient.query";
 import "./recipientGroup.query";
 import "./storage.query";
 import "./student.query";

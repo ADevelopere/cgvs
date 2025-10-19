@@ -99,7 +99,7 @@ export interface UseUploadDropzoneReturn {
  * @returns Object with react-dropzone props and helper functions
  */
 export const useUploadDropzone = (
-  options: UseUploadDropzoneOptions,
+  options: UseUploadDropzoneOptions
 ): UseUploadDropzoneReturn => {
   const {
     uploadPath,
@@ -128,7 +128,7 @@ export const useUploadDropzone = (
           onFilesSelected?.(files);
 
           logger.info(
-            `Starting upload of ${files.length} files to ${uploadPath}`,
+            `Starting upload of ${files.length} files to ${uploadPath}`
           );
 
           await startUpload(files, uploadPath, {
@@ -149,7 +149,7 @@ export const useUploadDropzone = (
       uploadPath,
       startUpload,
       onUploadComplete,
-    ],
+    ]
   );
 
   // Configure react-dropzone
@@ -174,14 +174,14 @@ export const useUploadDropzone = (
               }
               return acc;
             },
-            {} as Record<string, string[]>,
+            {} as Record<string, string[]>
           ),
         }
       : undefined,
-    onDropRejected: (fileRejections) => {
+    onDropRejected: fileRejections => {
       const errors: string[] = [];
       fileRejections.forEach(({ file, errors: rejectionErrors }) => {
-        rejectionErrors.forEach((error) => {
+        rejectionErrors.forEach(error => {
           let message = "";
           switch (error.code) {
             case "file-too-large":
@@ -192,7 +192,7 @@ export const useUploadDropzone = (
             case "file-invalid-type":
               message = translations.invalidFileType.replace(
                 "%{fileName}",
-                file.name,
+                file.name
               );
               break;
             case "too-many-files":

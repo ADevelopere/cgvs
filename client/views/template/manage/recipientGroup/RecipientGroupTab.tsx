@@ -19,9 +19,7 @@ interface RecipientGroupTabProps {
   template: Template;
 }
 
-const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({
-  template,
-}) => {
+const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({ template }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const dialogs = useRecipientGroupDialogs();
 
@@ -31,7 +29,7 @@ const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({
     {
       variables: { templateId: template.id },
       skip: !template.id,
-    },
+    }
   );
 
   const groups = data?.templateRecipientGroupsByTemplateId || [];

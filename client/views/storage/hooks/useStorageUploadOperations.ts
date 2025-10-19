@@ -29,7 +29,7 @@ export const useStorageUploadOperations = () => {
     async (
       file: File,
       location: Graphql.UploadLocationPath,
-      targetPath: string,
+      targetPath: string
     ): Promise<void> => {
       const fileKey = getFileKey(file);
       const contentType = inferContentType(file);
@@ -82,7 +82,7 @@ export const useStorageUploadOperations = () => {
           xhr,
         });
 
-        currentXhr.upload.onprogress = (event) => {
+        currentXhr.upload.onprogress = event => {
           if (event.lengthComputable) {
             const progress = Math.round((event.loaded / event.total) * 100);
 
@@ -111,7 +111,7 @@ export const useStorageUploadOperations = () => {
         currentXhr.open("PUT", signedUrl);
         currentXhr.setRequestHeader(
           "Content-Type",
-          file.type || "application/octet-stream",
+          file.type || "application/octet-stream"
         );
         currentXhr.send(file);
 
@@ -133,7 +133,7 @@ export const useStorageUploadOperations = () => {
             } else {
               const errorMsg = translations.uploadFailedWithStatus.replace(
                 "%{status}",
-                String(currentXhr.status),
+                String(currentXhr.status)
               );
               handleError(errorMsg);
               uploadXhrsRef.current.delete(fileKey);
@@ -174,7 +174,7 @@ export const useStorageUploadOperations = () => {
       updateFileState,
       updateBatchProgress,
       translations,
-    ],
+    ]
   );
 
   const startUpload = useCallback(
@@ -183,12 +183,12 @@ export const useStorageUploadOperations = () => {
       targetPath: string,
       callbacks?: { onComplete?: () => void },
       maxConcurrentUploads: number = 5,
-      maxAllowedFileSize: number = 10 * 1024 * 1024,
+      maxAllowedFileSize: number = 10 * 1024 * 1024
     ) => {
       const validFiles: File[] = [];
       const oversizedFiles: File[] = [];
 
-      files.forEach((file) => {
+      files.forEach(file => {
         if (file.size > maxAllowedFileSize) {
           oversizedFiles.push(file);
         } else {
@@ -218,7 +218,7 @@ export const useStorageUploadOperations = () => {
 
       const fileMap = new Map<string, UploadFileState>();
       let totalSize = 0;
-      validFiles.forEach((file) => {
+      validFiles.forEach(file => {
         fileMap.set(getFileKey(file), {
           file,
           progress: 0,
@@ -250,17 +250,17 @@ export const useStorageUploadOperations = () => {
 
         for (const chunk of chunks) {
           await Promise.all(
-            chunk.map((file) => uploadSingleFile(file, location, targetPath)),
+            chunk.map(file => uploadSingleFile(file, location, targetPath))
           );
         }
 
         // Update completion status
         if (uploadBatch) {
           const successCount = Array.from(uploadBatch.files.values()).filter(
-            (f: UploadFileState) => f.status === "success",
+            (f: UploadFileState) => f.status === "success"
           ).length;
           const errorCount = Array.from(uploadBatch.files.values()).filter(
-            (f: UploadFileState) => f.status === "error",
+            (f: UploadFileState) => f.status === "error"
           ).length;
 
           setTimeout(() => {
@@ -268,9 +268,9 @@ export const useStorageUploadOperations = () => {
               notifications.show(
                 translations.uploadSuccessCount.replace(
                   "%{count}",
-                  String(successCount),
+                  String(successCount)
                 ),
-                { severity: "success", autoHideDuration: 3000 },
+                { severity: "success", autoHideDuration: 3000 }
               );
               callbacks?.onComplete?.();
             }
@@ -278,9 +278,9 @@ export const useStorageUploadOperations = () => {
               notifications.show(
                 translations.uploadFailedCount.replace(
                   "%{count}",
-                  String(errorCount),
+                  String(errorCount)
                 ),
-                { severity: "warning", autoHideDuration: 5000 },
+                { severity: "warning", autoHideDuration: 5000 }
               );
             }
           }, 0);
@@ -298,13 +298,7 @@ export const useStorageUploadOperations = () => {
         }
       }
     },
-    [
-      notifications,
-      translations,
-      uploadSingleFile,
-      setUploadBatch,
-      uploadBatch,
-    ],
+    [notifications, translations, uploadSingleFile, setUploadBatch, uploadBatch]
   );
 
   const cancelUpload = useCallback(
@@ -361,12 +355,7 @@ export const useStorageUploadOperations = () => {
         });
       }
     },
-    [
-      updateFileState,
-      setUploadBatch,
-      uploadBatch,
-      translations.uploadCancelled,
-    ],
+    [updateFileState, setUploadBatch, uploadBatch, translations.uploadCancelled]
   );
 
   const retryFile = useCallback(
@@ -386,13 +375,13 @@ export const useStorageUploadOperations = () => {
         await uploadSingleFile(
           fileState.file,
           uploadBatch.location,
-          uploadBatch.targetPath,
+          uploadBatch.targetPath
         );
       } catch {
         // uploadSingleFile handles setting error state; nothing more to do here
       }
     },
-    [uploadBatch, updateFileState, uploadSingleFile],
+    [uploadBatch, updateFileState, uploadSingleFile]
   );
 
   const retryFailedUploads = useCallback(async (): Promise<void> => {
@@ -414,7 +403,7 @@ export const useStorageUploadOperations = () => {
     }
 
     // Reset failed files to pending
-    failedFiles.forEach((file) => {
+    failedFiles.forEach(file => {
       const key = getFileKey(file);
       updateFileState(key, {
         status: "pending",
@@ -432,13 +421,9 @@ export const useStorageUploadOperations = () => {
 
       for (const chunk of chunks) {
         await Promise.all(
-          chunk.map((file) =>
-            uploadSingleFile(
-              file,
-              uploadBatch.location,
-              uploadBatch.targetPath,
-            ),
-          ),
+          chunk.map(file =>
+            uploadSingleFile(file, uploadBatch.location, uploadBatch.targetPath)
+          )
         );
       }
       notifications.show(translations.retryCompletedUploads, {

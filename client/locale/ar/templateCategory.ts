@@ -175,6 +175,7 @@ export const templateCategory: TemplateCategoryTranslation = {
   // Template loading and error states
   loadingTemplate: "جاري تحميل القالب...",
   templateNotFoundTitle: "القالب غير موجود",
-  templateNotFoundMessage: "لم يتم العثور على القالب المطلوب. يرجى العودة لاستكشاف قوالب أخرى.",
+  templateNotFoundMessage:
+    "لم يتم العثور على القالب المطلوب. يرجى العودة لاستكشاف قوالب أخرى.",
   backToTemplates: "العودة إلى القوالب",
 };

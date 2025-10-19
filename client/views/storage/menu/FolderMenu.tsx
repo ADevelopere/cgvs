@@ -246,7 +246,7 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
           >
             {translations.deleteConfirmationMessage.replace(
               "%{fileName}",
-              folder.name,
+              folder.name
             )}
           </DialogContentText>
         </DialogContent>

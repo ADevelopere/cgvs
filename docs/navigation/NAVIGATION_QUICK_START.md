@@ -25,12 +25,12 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 ```tsx
 export const YourContextProvider = ({ children }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    
-    // Your state...
-    const [activeTab, setActiveTab] = useState("default");
-    
-    // ... rest of your context
+  const { registerResolver, updateParams } = usePageNavigation();
+
+  // Your state...
+  const [activeTab, setActiveTab] = useState("default");
+
+  // ... rest of your context
 };
 ```
 
@@ -38,20 +38,20 @@ export const YourContextProvider = ({ children }) => {
 
 ```tsx
 useEffect(() => {
-    const unregister = registerResolver({
-        segment: "admin/your-page", // Your route segment
-        resolver: async (params) => {
-            // Handle URL params here
-            if (params.tab) {
-                setActiveTab(params.tab as string);
-            }
-            
-            return { success: true };
-        },
-        priority: 10, // Higher = runs first
-    });
-    
-    return unregister; // Cleanup on unmount
+  const unregister = registerResolver({
+    segment: "admin/your-page", // Your route segment
+    resolver: async params => {
+      // Handle URL params here
+      if (params.tab) {
+        setActiveTab(params.tab as string);
+      }
+
+      return { success: true };
+    },
+    priority: 10, // Higher = runs first
+  });
+
+  return unregister; // Cleanup on unmount
 }, [registerResolver]);
 ```
 
@@ -59,17 +59,18 @@ useEffect(() => {
 
 ```tsx
 const changeTab = useCallback(
-    (tab: string) => {
-        setActiveTab(tab);
-        updateParams({ tab }, { replace: true, merge: true });
-    },
-    [updateParams],
+  (tab: string) => {
+    setActiveTab(tab);
+    updateParams({ tab }, { replace: true, merge: true });
+  },
+  [updateParams]
 );
 ```
 
 ### Step 5: Test Deep Linking
 
 Open your app with URL params:
+
 - `http://localhost:3000/admin/your-page?tab=editor`
 - It should work immediately!
 
@@ -82,25 +83,26 @@ Open your app with URL params:
 const [activeTab, setActiveTab] = useState<TabType>("default");
 
 useEffect(() => {
-    return registerResolver({
-        segment: "admin/templates/:id/manage",
-        resolver: async (params) => {
-            if (params.tab) {
-                setActiveTab(params.tab as TabType);
-            }
-            return { success: true };
-        },
-    });
+  return registerResolver({
+    segment: "admin/templates/:id/manage",
+    resolver: async params => {
+      if (params.tab) {
+        setActiveTab(params.tab as TabType);
+      }
+      return { success: true };
+    },
+  });
 }, [registerResolver]);
 
 // When user clicks a tab
 const handleTabChange = (tab: TabType) => {
-    setActiveTab(tab);
-    updateParams({ tab }, { replace: true, merge: true });
+  setActiveTab(tab);
+  updateParams({ tab }, { replace: true, merge: true });
 };
 ```
 
 **URLs:**
+
 - `/admin/templates/123/manage?tab=editor`
 - `/admin/templates/123/manage?tab=preview`
 
@@ -111,26 +113,27 @@ const handleTabChange = (tab: TabType) => {
 const [currentPath, setCurrentPath] = useState("");
 
 useEffect(() => {
-    return registerResolver({
-        segment: "admin/storage",
-        resolver: async (params) => {
-            if (params.path) {
-                await navigateToPath(params.path as string);
-            }
-            return { success: true };
-        },
-        recursive: true, // Important for nested paths!
-    });
+  return registerResolver({
+    segment: "admin/storage",
+    resolver: async params => {
+      if (params.path) {
+        await navigateToPath(params.path as string);
+      }
+      return { success: true };
+    },
+    recursive: true, // Important for nested paths!
+  });
 }, [registerResolver]);
 
 // When user navigates
 const navigateTo = (path: string) => {
-    setCurrentPath(path);
-    updateParams({ path }, { replace: true, merge: true });
+  setCurrentPath(path);
+  updateParams({ path }, { replace: true, merge: true });
 };
 ```
 
 **URLs:**
+
 - `/admin/storage?path=documents`
 - `/admin/storage?path=documents/2024/reports`
 
@@ -141,31 +144,29 @@ const navigateTo = (path: string) => {
 const [selectedId, setSelectedId] = useState<number | null>(null);
 
 useEffect(() => {
-    return registerResolver({
-        segment: "admin/categories",
-        resolver: async (params) => {
-            if (params.categoryId) {
-                const id = parseInt(params.categoryId as string, 10);
-                if (!isNaN(id)) {
-                    setSelectedId(id);
-                }
-            }
-            return { success: true };
-        },
-    });
+  return registerResolver({
+    segment: "admin/categories",
+    resolver: async params => {
+      if (params.categoryId) {
+        const id = parseInt(params.categoryId as string, 10);
+        if (!isNaN(id)) {
+          setSelectedId(id);
+        }
+      }
+      return { success: true };
+    },
+  });
 }, [registerResolver]);
 
 // When user selects an item
 const selectItem = (id: number) => {
-    setSelectedId(id);
-    updateParams(
-        { categoryId: String(id) },
-        { replace: true, merge: true },
-    );
+  setSelectedId(id);
+  updateParams({ categoryId: String(id) }, { replace: true, merge: true });
 };
 ```
 
 **URLs:**
+
 - `/admin/categories?categoryId=5`
 - `/admin/categories?categoryId=5&templateId=10`
 
@@ -173,27 +174,28 @@ const selectItem = (id: number) => {
 
 ```tsx
 useEffect(() => {
-    return registerResolver({
-        segment: "admin/storage",
-        resolver: async (params) => {
-            // Handle multiple params
-            if (params.path) {
-                setPath(params.path as string);
-            }
-            if (params.view) {
-                setView(params.view as "grid" | "list");
-            }
-            if (params.sortBy) {
-                setSortBy(params.sortBy as string);
-            }
-            
-            return { success: true };
-        },
-    });
+  return registerResolver({
+    segment: "admin/storage",
+    resolver: async params => {
+      // Handle multiple params
+      if (params.path) {
+        setPath(params.path as string);
+      }
+      if (params.view) {
+        setView(params.view as "grid" | "list");
+      }
+      if (params.sortBy) {
+        setSortBy(params.sortBy as string);
+      }
+
+      return { success: true };
+    },
+  });
 }, [registerResolver]);
 ```
 
 **URLs:**
+
 - `/admin/storage?path=docs&view=list&sortBy=date`
 
 ## Helper Hooks
@@ -222,10 +224,10 @@ setTab("editor");
 
 ```tsx
 registerResolver({
-    segment: "admin/your-page",      // Route pattern
-    resolver: async (params) => {},  // Handler function
-    priority: 10,                     // Execution order (optional)
-    recursive: false,                 // Handle child routes (optional)
+  segment: "admin/your-page", // Route pattern
+  resolver: async params => {}, // Handler function
+  priority: 10, // Execution order (optional)
+  recursive: false, // Handle child routes (optional)
 });
 ```
 
@@ -239,6 +241,7 @@ registerResolver({
 ### Recursive
 
 Set `recursive: true` for routes that have nested children:
+
 - Storage directories: `/admin/storage/path/to/nested/folder`
 - Category hierarchies: `/admin/categories/parent/child/grandchild`
 
@@ -247,7 +250,7 @@ Set `recursive: true` for routes that have nested children:
 ### Static Routes
 
 ```tsx
-segment: "admin/templates"
+segment: "admin/templates";
 ```
 
 Matches: `/admin/templates`
@@ -255,10 +258,11 @@ Matches: `/admin/templates`
 ### Dynamic Routes (with params)
 
 ```tsx
-segment: "admin/templates/:id/manage"
+segment: "admin/templates/:id/manage";
 ```
 
 Matches:
+
 - `/admin/templates/123/manage`
 - `/admin/templates/456/manage`
 
@@ -267,11 +271,12 @@ Params extracted: `{ id: "123" }`
 ### Nested Routes
 
 ```tsx
-segment: "admin/storage"
-recursive: true
+segment: "admin/storage";
+recursive: true;
 ```
 
 Matches:
+
 - `/admin/storage`
 - `/admin/storage/documents`
 - `/admin/storage/documents/2024/reports`
@@ -315,12 +320,13 @@ updateParams({ tab: "editor" }, { replace: true, merge: true });
 Your resolver might not be handling the param:
 
 ```tsx
-resolver: async (params) => {
-    if (params.tab) {  // <- Check this
-        setActiveTab(params.tab as string);
-    }
-    return { success: true };
-}
+resolver: async params => {
+  if (params.tab) {
+    // <- Check this
+    setActiveTab(params.tab as string);
+  }
+  return { success: true };
+};
 ```
 
 ### "Multiple resolvers conflicting"
@@ -351,91 +357,92 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 export type TabType = "basic" | "advanced" | "settings";
 
 export const MyFeatureProvider: React.FC<{ children: React.ReactNode }> = ({
-    children,
+  children,
 }) => {
-    const { registerResolver, updateParams } = usePageNavigation();
-    
-    // State
-    const [activeTab, setActiveTab] = useState<TabType>("basic");
-    const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
-    
-    // Register navigation resolver
-    useEffect(() => {
-        const unregister = registerResolver({
-            segment: "admin/my-feature",
-            resolver: async (params) => {
-                try {
-                    // Handle tab param
-                    if (params.tab) {
-                        const tab = params.tab as TabType;
-                        if (["basic", "advanced", "settings"].includes(tab)) {
-                            setActiveTab(tab);
-                        }
-                    }
-                    
-                    // Handle selection param
-                    if (params.itemId) {
-                        const id = parseInt(params.itemId as string, 10);
-                        if (!isNaN(id)) {
-                            setSelectedItemId(id);
-                        }
-                    }
-                    
-                    return { success: true };
-                } catch (error) {
-                    return {
-                        success: false,
-                        error: error instanceof Error ? error.message : "Failed",
-                    };
-                }
-            },
-            priority: 10,
-        });
-        
-        return unregister;
-    }, [registerResolver]);
-    
-    // Change tab function
-    const changeTab = useCallback(
-        (tab: TabType) => {
-            setActiveTab(tab);
-            updateParams({ tab }, { replace: true, merge: true });
-        },
-        [updateParams],
-    );
-    
-    // Select item function
-    const selectItem = useCallback(
-        (itemId: number | null) => {
-            setSelectedItemId(itemId);
-            if (itemId !== null) {
-                updateParams(
-                    { itemId: String(itemId) },
-                    { replace: true, merge: true },
-                );
-            } else {
-                updateParams({ itemId: undefined }, { replace: true, merge: true });
+  const { registerResolver, updateParams } = usePageNavigation();
+
+  // State
+  const [activeTab, setActiveTab] = useState<TabType>("basic");
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+
+  // Register navigation resolver
+  useEffect(() => {
+    const unregister = registerResolver({
+      segment: "admin/my-feature",
+      resolver: async params => {
+        try {
+          // Handle tab param
+          if (params.tab) {
+            const tab = params.tab as TabType;
+            if (["basic", "advanced", "settings"].includes(tab)) {
+              setActiveTab(tab);
             }
-        },
-        [updateParams],
-    );
-    
-    const value = {
-        activeTab,
-        selectedItemId,
-        changeTab,
-        selectItem,
-    };
-    
-    return (
-        <MyFeatureContext.Provider value={value}>
-            {children}
-        </MyFeatureContext.Provider>
-    );
+          }
+
+          // Handle selection param
+          if (params.itemId) {
+            const id = parseInt(params.itemId as string, 10);
+            if (!isNaN(id)) {
+              setSelectedItemId(id);
+            }
+          }
+
+          return { success: true };
+        } catch (error) {
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed",
+          };
+        }
+      },
+      priority: 10,
+    });
+
+    return unregister;
+  }, [registerResolver]);
+
+  // Change tab function
+  const changeTab = useCallback(
+    (tab: TabType) => {
+      setActiveTab(tab);
+      updateParams({ tab }, { replace: true, merge: true });
+    },
+    [updateParams]
+  );
+
+  // Select item function
+  const selectItem = useCallback(
+    (itemId: number | null) => {
+      setSelectedItemId(itemId);
+      if (itemId !== null) {
+        updateParams(
+          { itemId: String(itemId) },
+          { replace: true, merge: true }
+        );
+      } else {
+        updateParams({ itemId: undefined }, { replace: true, merge: true });
+      }
+    },
+    [updateParams]
+  );
+
+  const value = {
+    activeTab,
+    selectedItemId,
+    changeTab,
+    selectItem,
+  };
+
+  return (
+    <MyFeatureContext.Provider value={value}>
+      {children}
+    </MyFeatureContext.Provider>
+  );
 };
 ```
 
 **Test URLs:**
+
 - `/admin/my-feature` → Default state
 - `/admin/my-feature?tab=advanced` → Advanced tab
 - `/admin/my-feature?tab=settings&itemId=5` → Settings tab with item 5 selected
@@ -443,4 +450,3 @@ export const MyFeatureProvider: React.FC<{ children: React.ReactNode }> = ({
 ---
 
 **Ready to implement?** Start with Step 1 and you'll have it working in minutes!
-

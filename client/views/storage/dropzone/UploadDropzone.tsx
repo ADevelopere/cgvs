@@ -120,7 +120,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
           onFilesSelected?.(files);
 
           logger.info(
-            `Starting upload of ${files.length} files to ${uploadPath}`,
+            `Starting upload of ${files.length} files to ${uploadPath}`
           );
 
           await startUpload(files, uploadPath, {
@@ -141,7 +141,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
       uploadPath,
       startUpload,
       onUploadComplete,
-    ],
+    ]
   );
 
   // Configure react-dropzone
@@ -173,7 +173,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
               }
               return acc;
             },
-            {} as Record<string, string[]>,
+            {} as Record<string, string[]>
           ),
         }
       : undefined,
@@ -183,7 +183,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
   useEffect(() => {
     if (fileRejections.length > 0) {
       fileRejections.forEach(({ file, errors }) => {
-        errors.forEach((error) => {
+        errors.forEach(error => {
           let message = "";
           switch (error.code) {
             case "file-too-large":
@@ -194,7 +194,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             case "file-invalid-type":
               message = translations.invalidFileType.replace(
                 "%{fileName}",
-                file.name,
+                file.name
               );
               break;
             case "too-many-files":
@@ -301,7 +301,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                 isDragReject
                   ? theme.palette.error.main
                   : theme.palette.primary.main,
-                0.05,
+                0.05
               )
             : "transparent",
           transition: theme.transitions.create([
@@ -356,7 +356,11 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             </MUI.Typography>
 
             {!isUploading && allowClick && (
-              <MUI.Typography variant="body2" align="center" color="textSecondary">
+              <MUI.Typography
+                variant="body2"
+                align="center"
+                color="textSecondary"
+              >
                 {translations.orClickToSelect}
               </MUI.Typography>
             )}

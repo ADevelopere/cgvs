@@ -36,7 +36,7 @@ export type TableRowsContextType = {
   totalRows: number; // Total number of rows in the dataset
   loadMoreRowsIfNeeded: (
     visibleStartIndex: number,
-    visibleStopIndex: number,
+    visibleStopIndex: number
   ) => Promise<void>;
 
   // Configuration
@@ -88,12 +88,14 @@ export const TableRowsProvider = ({
 }: TableRowsProviderProps) => {
   const { data, isLoading } = useTableContext();
   const [rowHeights, setRowHeights] = useState<Record<string | number, number>>(
-    {},
+    {}
   );
   const loadingMoreRef = useRef(false);
 
   // Use external selection state if provided, otherwise use internal state
-  const [internalSelectedRowIds, setInternalSelectedRowIds] = useState<(string | number)[]>([]);
+  const [internalSelectedRowIds, setInternalSelectedRowIds] = useState<
+    (string | number)[]
+  >([]);
   const selectedRowIds = externalSelectedRowIds ?? internalSelectedRowIds;
 
   // Use pageInfo.total if available, otherwise use provided totalRows or data.length
@@ -114,13 +116,13 @@ export const TableRowsProvider = ({
 
   const resizeRowHeight = useCallback(
     (rowId: number | string, newHeight: number) => {
-      setRowHeights((prevHeights) => ({
+      setRowHeights(prevHeights => ({
         ...prevHeights,
         [rowId]: Math.max(newHeight, 30), // Ensure minimum height of 30px
       }));
       onRowResize?.(rowId, newHeight);
     },
-    [onRowResize],
+    [onRowResize]
   );
 
   // Function to load more rows when scrolling near the end
@@ -192,7 +194,7 @@ export const TableRowsProvider = ({
             visibleStartIndex: data.length,
             visibleStopIndex: Math.min(
               data.length + pageSize - 1,
-              effectiveTotalRows - 1,
+              effectiveTotalRows - 1
             ),
           });
         } finally {
@@ -207,7 +209,7 @@ export const TableRowsProvider = ({
       pageSize,
       effectiveTotalRows,
       pageInfo,
-    ],
+    ]
   );
 
   // Rest of the component...
@@ -216,12 +218,12 @@ export const TableRowsProvider = ({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!data) return;
 
-      const currentPageIds = data.map((row) => row[rowIdKey]);
+      const currentPageIds = data.map(row => row[rowIdKey]);
 
       if (event.target.checked) {
         // Select all rows in the current page, preserving selections from other pages
         const newSelections = [...selectedRowIds];
-        currentPageIds.forEach((id) => {
+        currentPageIds.forEach(id => {
           if (!newSelections.includes(id)) {
             newSelections.push(id);
           }
@@ -234,7 +236,9 @@ export const TableRowsProvider = ({
         }
       } else {
         // Deselect only rows in the current page, keeping selections from other pages
-        const newSelections = selectedRowIds.filter((id) => !currentPageIds.includes(id));
+        const newSelections = selectedRowIds.filter(
+          id => !currentPageIds.includes(id)
+        );
 
         if (onSelectionChange) {
           onSelectionChange(newSelections);
@@ -243,20 +247,23 @@ export const TableRowsProvider = ({
         }
       }
     },
-    [data, rowIdKey, selectedRowIds, onSelectionChange],
+    [data, rowIdKey, selectedRowIds, onSelectionChange]
   );
 
-  const toggleRowSelection = useCallback((rowId: string | number) => {
-    const newSelections = selectedRowIds.includes(rowId)
-      ? selectedRowIds.filter((id) => id !== rowId)
-      : [...selectedRowIds, rowId];
+  const toggleRowSelection = useCallback(
+    (rowId: string | number) => {
+      const newSelections = selectedRowIds.includes(rowId)
+        ? selectedRowIds.filter(id => id !== rowId)
+        : [...selectedRowIds, rowId];
 
-    if (onSelectionChange) {
-      onSelectionChange(newSelections);
-    } else {
-      setInternalSelectedRowIds(newSelections);
-    }
-  }, [selectedRowIds, onSelectionChange]);
+      if (onSelectionChange) {
+        onSelectionChange(newSelections);
+      } else {
+        setInternalSelectedRowIds(newSelections);
+      }
+    },
+    [selectedRowIds, onSelectionChange]
+  );
 
   // Clear all selections
   const clearAllSelections = useCallback(() => {
@@ -312,7 +319,7 @@ export const TableRowsProvider = ({
       loadMoreRowsIfNeeded,
       rowIdKey,
       enableRowResizing,
-    ],
+    ]
   );
 
   return (
