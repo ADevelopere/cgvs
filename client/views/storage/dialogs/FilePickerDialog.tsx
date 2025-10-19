@@ -1,26 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import {
- Dialog,
- DialogTitle,
- DialogContent,
- DialogActions,
- Button,
- Alert,
- Box,
- Typography,
- Table,
- TableBody,
- TableRow,
- TableCell,
- Breadcrumbs,
- Link,
- CircularProgress,
- useTheme,
- IconButton,
- Tooltip,
-} from "@mui/material";
+import { useTheme } from "@mui/material";
+import * as MUI from "@mui/material";
 import {
  Home as HomeIcon,
  NavigateNext as NavigateNextIcon,
@@ -32,7 +14,10 @@ import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
 import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
-import { useStorageApolloQueries, useStorageApolloMutations } from "@/client/views/storage/hooks/storage.operations";
+import {
+  useStorageApolloQueries,
+  useStorageApolloMutations,
+} from "@/client/views/storage/hooks/storage.operations";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
 
 export interface FilePickerDialogProps {
@@ -243,7 +228,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
  const canSelect = selectedFile && !isLoading && !isSelecting;
 
  return (
-  <Dialog
+    <MUI.Dialog
    open={open}
    onClose={handleClose}
    maxWidth="md"
@@ -261,7 +246,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     },
    }}
   >
-   <DialogTitle
+      <MUI.DialogTitle
     sx={{
      fontSize: "1.25rem",
      fontWeight: 600,
@@ -270,20 +255,20 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     }}
    >
     {dialogTitle}
-   </DialogTitle>
+      </MUI.DialogTitle>
 
-   <DialogContent
+      <MUI.DialogContent
     sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}
    >
     {/* Breadcrumb Navigation */}
-    <Box
+        <MUI.Box
      sx={{
       px: 3,
       py: 2,
       borderBottom: `1px solid ${theme.palette.divider}`,
      }}
     >
-     <Box
+          <MUI.Box
       sx={{
        display: "flex",
        alignItems: "center",
@@ -291,39 +276,39 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
        mb: 1,
       }}
      >
-      <Typography variant="subtitle2" color="text.secondary">
+            <MUI.Typography variant="subtitle2" color="text.secondary">
        {translations.filePickerDialogSelectFile || "Select a file"}
-      </Typography>
-      <Box sx={{ display: "flex", gap: 1 }}>
-       <Tooltip title={translations.moveDialogGoUp || "Go up"}>
+            </MUI.Typography>
+            <MUI.Box sx={{ display: "flex", gap: 1 }}>
+              <MUI.Tooltip title={translations.moveDialogGoUp || "Go up"}>
         <span>
-         <IconButton
+                  <MUI.IconButton
           size="small"
           onClick={navigateUp}
           disabled={!currentPath || isLoading}
          >
           <ArrowUpwardIcon fontSize="small" />
-         </IconButton>
+                  </MUI.IconButton>
         </span>
-       </Tooltip>
-       <Tooltip title={translations.moveDialogRefresh || "Refresh"}>
-        <IconButton
+              </MUI.Tooltip>
+              <MUI.Tooltip title={translations.moveDialogRefresh || "Refresh"}>
+                <MUI.IconButton
          size="small"
          onClick={refreshDirectory}
          disabled={isLoading}
         >
          <RefreshIcon fontSize="small" />
-        </IconButton>
-       </Tooltip>
-      </Box>
-     </Box>
+                </MUI.IconButton>
+              </MUI.Tooltip>
+            </MUI.Box>
+          </MUI.Box>
 
-     <Breadcrumbs
+          <MUI.Breadcrumbs
       separator={<NavigateNextIcon fontSize="small" />}
       sx={{ fontSize: "0.875rem" }}
      >
       {breadcrumbSegments.map((segment, index) => (
-       <Link
+              <MUI.Link
         key={segment.path}
         component="button"
         variant="body2"
@@ -346,15 +331,15 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
        >
         {index === 0 && <HomeIcon fontSize="small" />}
         {segment.name}
-       </Link>
+              </MUI.Link>
       ))}
-     </Breadcrumbs>
-    </Box>
+          </MUI.Breadcrumbs>
+        </MUI.Box>
 
     {/* Items List */}
-    <Box sx={{ flex: 1, overflow: "auto" }}>
+        <MUI.Box sx={{ flex: 1, overflow: "auto" }}>
      {isLoading ? (
-      <Box
+            <MUI.Box
        sx={{
         display: "flex",
         justifyContent: "center",
@@ -362,36 +347,36 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         py: 4,
        }}
       >
-       <CircularProgress size={40} />
-      </Box>
+              <MUI.CircularProgress size={40} />
+            </MUI.Box>
      ) : error ? (
-      <Box sx={{ p: 3 }}>
-       <Alert severity="error" sx={{ borderRadius: 1 }}>
+            <MUI.Box sx={{ p: 3 }}>
+              <MUI.Alert severity="error" sx={{ borderRadius: 1 }}>
         {error}
-       </Alert>
-      </Box>
+              </MUI.Alert>
+            </MUI.Box>
      ) : filteredItems.length === 0 ? (
-      <Box sx={{ p: 3, textAlign: "center" }}>
-       <Typography color="text.secondary">
+            <MUI.Box sx={{ p: 3, textAlign: "center" }}>
+              <MUI.Typography color="text.secondary">
         {translations.filePickerDialogNoFiles ||
          "No files found in this folder"}
-       </Typography>
-      </Box>
+              </MUI.Typography>
+            </MUI.Box>
      ) : (
-      <Box>
+            <MUI.Box>
        {/* Folders - Table format for navigation */}
        {folders.length > 0 && (
-        <Box sx={{ mb: 2 }}>
-         <Typography
+                <MUI.Box sx={{ mb: 2 }}>
+                  <MUI.Typography
           variant="subtitle2"
           sx={{ mb: 1, px: 2, color: "text.secondary" }}
          >
           Folders
-         </Typography>
-         <Table size="small">
-          <TableBody>
+                  </MUI.Typography>
+                  <MUI.Table size="small">
+                    <MUI.TableBody>
            {folders.map((folder) => (
-            <TableRow
+                        <MUI.TableRow
              key={folder.path}
              hover
              onClick={() => navigateToDirectory(folder.path)}
@@ -402,8 +387,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
               },
              }}
             >
-             <TableCell>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <MUI.TableCell>
+                            <MUI.Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
                <FileTypeIcon
                 item={folder}
                 sx={{
@@ -411,36 +402,43 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                  color: theme.palette.warning.main,
                 }}
                />
-               <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              <MUI.Typography
+                                variant="body2"
+                                sx={{ fontWeight: 500 }}
+                              >
                 {folder.name}
-               </Typography>
-              </Box>
-             </TableCell>
-             <TableCell align="right">
-              <Typography variant="body2" color="text.secondary">
+                              </MUI.Typography>
+                            </MUI.Box>
+                          </MUI.TableCell>
+                          <MUI.TableCell align="right">
+                            <MUI.Typography
+                              variant="body2"
+                              color="text.secondary"
+                            >
                Folder
-              </Typography>
-             </TableCell>
-            </TableRow>
-           ))}
-          </TableBody>
-         </Table>
-        </Box>
+                            </MUI.Typography>
+                          </MUI.TableCell>
+                        </MUI.TableRow>
+                      ))}
+                    </MUI.TableBody>
+                  </MUI.Table>
+                </MUI.Box>
        )}
 
        {/* Files - Grid format with previews */}
        {files.length > 0 && (
-        <Box>
-         <Typography
+                <MUI.Box>
+                  <MUI.Typography
           variant="subtitle2"
           sx={{ mb: 1, px: 2, color: "text.secondary" }}
          >
           Files
-         </Typography>
-         <Box
+                  </MUI.Typography>
+                  <MUI.Box
           sx={{
            display: "grid",
-           gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(150px, 1fr))",
            gap: 2,
            p: 2,
           }}
@@ -452,7 +450,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
            const isSelected = selectedFile?.path === file.path;
 
            return (
-            <Box
+                        <MUI.Box
              key={file.path}
              onClick={() => setSelectedFile(file)}
              onDoubleClick={() => {
@@ -461,13 +459,19 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
              }}
              sx={{
               border: 1,
-              borderColor: isSelected ? "primary.main" : "divider",
+                            borderColor: isSelected
+                              ? "primary.main"
+                              : "divider",
               borderRadius: 1,
               p: 1,
               cursor: "pointer",
-              backgroundColor: isSelected ? "action.selected" : "transparent",
+                            backgroundColor: isSelected
+                              ? "action.selected"
+                              : "transparent",
               "&:hover": {
-               backgroundColor: isSelected ? "action.selected" : "action.hover",
+                              backgroundColor: isSelected
+                                ? "action.selected"
+                                : "action.hover",
               },
               transition: "all 0.2s ease",
              }}
@@ -476,8 +480,8 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
              <FilePreview item={file} height={100} />
 
              {/* File Info */}
-             <Box sx={{ mt: 1 }}>
-              <Typography
+                          <MUI.Box sx={{ mt: 1 }}>
+                            <MUI.Typography
                variant="caption"
                sx={{
                 fontWeight: 500,
@@ -489,57 +493,66 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                }}
               >
                {file.name}
-              </Typography>
-              <Typography
+                            </MUI.Typography>
+                            <MUI.Typography
                variant="caption"
                color="text.secondary"
                sx={{ display: "block", mt: 0.5 }}
               >
-               {file.size ? `${Math.round(file.size / 1024)} KB` : ""}
-              </Typography>
-             </Box>
-            </Box>
+                              {file.size
+                                ? `${Math.round(file.size / 1024)} KB`
+                                : ""}
+                            </MUI.Typography>
+                          </MUI.Box>
+                        </MUI.Box>
            );
           })}
-         </Box>
-        </Box>
+                  </MUI.Box>
+                </MUI.Box>
        )}
-      </Box>
+            </MUI.Box>
      )}
-    </Box>
+        </MUI.Box>
 
     {/* Show message when there are only folders but no files */}
-    {filteredItems.length > 0 && files.length === 0 && folders.length > 0 && (
-     <Box sx={{ p: 3, textAlign: "center" }}>
-      <Typography variant="body2" color="text.secondary">
-       No files found in this folder. Navigate to a folder to browse for files.
-      </Typography>
-     </Box>
+        {filteredItems.length > 0 &&
+          files.length === 0 &&
+          folders.length > 0 && (
+            <MUI.Box sx={{ p: 3, textAlign: "center" }}>
+              <MUI.Typography variant="body2" color="text.secondary">
+                No files found in this folder. Navigate to a folder to browse
+                for files.
+              </MUI.Typography>
+            </MUI.Box>
     )}
 
     {/* Selected File Info */}
     {selectedFile && (
-     <Box
+          <MUI.Box
       sx={{
        px: 3,
        py: 2,
        borderTop: `1px solid ${theme.palette.divider}`,
       }}
      >
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            <MUI.Typography
+              variant="subtitle2"
+              color="text.secondary"
+              gutterBottom
+            >
        {translations.filePickerDialogSelectFile || "Selected file:"}
-      </Typography>
-      <Typography variant="body2" color="text.primary">
+            </MUI.Typography>
+            <MUI.Typography variant="body2" color="text.primary">
        {selectedFile.name}
-      </Typography>
-      <Typography variant="caption" color="text.secondary">
+            </MUI.Typography>
+            <MUI.Typography variant="caption" color="text.secondary">
        {selectedFile.contentType}
-      </Typography>
-     </Box>
+            </MUI.Typography>
+          </MUI.Box>
     )}
-   </DialogContent>
+      </MUI.DialogContent>
 
-   <DialogActions
+      <MUI.DialogActions
     sx={{
      px: 3,
      pb: 3,
@@ -549,7 +562,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
      borderTop: `1px solid ${theme.palette.divider}`,
     }}
    >
-    <Button
+        <MUI.Button
      onClick={handleClose}
      disabled={isLoading || isSelecting}
      variant="outlined"
@@ -559,8 +572,8 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
      }}
     >
      {translations.filePickerDialogCancel || "Cancel"}
-    </Button>
-    <Button
+        </MUI.Button>
+        <MUI.Button
      onClick={() => selectedFile && handleFileSelect(selectedFile)}
      disabled={!canSelect}
      variant="contained"
@@ -571,26 +584,20 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     >
      {isSelecting ? (
       <>
-       <CircularProgress size={16} sx={{ mr: 1 }} />
+              <MUI.CircularProgress size={16} sx={{ mr: 1 }} />
        {translations.selecting || "Selecting..."}
       </>
      ) : (
       translations.filePickerDialogSelect || "Select"
      )}
-    </Button>
-   </DialogActions>
-  </Dialog>
+        </MUI.Button>
+      </MUI.DialogActions>
+    </MUI.Dialog>
  );
 };
 
 const FilePickerDialog: React.FC<FilePickerDialogProps> = (props) => {
- return (
-  <StorageGraphQLProvider>
-   <StorageManagementCoreProvider>
-    <FilePickerDialogContent {...props} />
-   </StorageManagementCoreProvider>
-  </StorageGraphQLProvider>
- );
+  return <FilePickerDialogContent {...props} />;
 };
 
 export default FilePickerDialog;

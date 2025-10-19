@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  Alert,
-  useTheme,
-  Box,
-} from "@mui/material";
+import * as MUI from "@mui/material";
 import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 import { useAppTranslation } from "@/client/locale";
@@ -27,7 +17,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   onClose,
   items,
 }) => {
-  const theme = useTheme();
+  const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
   const { remove } = useStorageDataOperations();
 
@@ -115,7 +105,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   const { title, message } = getDialogContent();
 
   return (
-    <Dialog
+    <MUI.Dialog
       open={open}
       onClose={handleClose}
       maxWidth="sm"
@@ -132,7 +122,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         },
       }}
     >
-      <DialogTitle
+      <MUI.DialogTitle
         id="delete-confirmation-dialog-title"
         sx={{
           fontSize: "1.25rem",
@@ -142,11 +132,11 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         }}
       >
         {title}
-      </DialogTitle>
+      </MUI.DialogTitle>
 
-      <DialogContent>
-        <Box sx={{ pt: 1 }}>
-          <DialogContentText
+      <MUI.DialogContent>
+        <MUI.Box sx={{ pt: 1 }}>
+          <MUI.DialogContentText
             id="delete-confirmation-dialog-description"
             sx={{
               color: theme.palette.text.secondary,
@@ -155,10 +145,10 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
             }}
           >
             {message}
-          </DialogContentText>
+          </MUI.DialogContentText>
 
           {error && (
-            <Alert
+            <MUI.Alert
               severity="error"
               sx={{
                 mt: 2,
@@ -166,12 +156,12 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
               }}
             >
               {error}
-            </Alert>
+            </MUI.Alert>
           )}
-        </Box>
-      </DialogContent>
+        </MUI.Box>
+      </MUI.DialogContent>
 
-      <DialogActions
+      <MUI.DialogActions
         sx={{
           px: 3,
           pb: 3,
@@ -179,7 +169,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
           gap: 1,
         }}
       >
-        <Button
+        <MUI.Button
           onClick={handleClose}
           disabled={isDeleting}
           variant="outlined"
@@ -193,8 +183,8 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
           }}
         >
           {translations.renameDialogCancel}
-        </Button>
-        <Button
+        </MUI.Button>
+        <MUI.Button
           onClick={handleDelete}
           disabled={isDeleting}
           variant="contained"
@@ -214,9 +204,9 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
           }}
         >
           {isDeleting ? translations.loading : translations.delete}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </MUI.Button>
+      </MUI.DialogActions>
+    </MUI.Dialog>
   );
 };
 
