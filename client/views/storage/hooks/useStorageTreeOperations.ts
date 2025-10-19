@@ -31,7 +31,7 @@ export const useStorageTreeOperations = () => {
         // Check if children are available in the tree
         const hasChildrenInTree = (
           nodes: DirectoryTreeNode[],
-          targetPath: string,
+          targetPath: string
         ): boolean => {
           for (const node of nodes) {
             if (node.path === targetPath && node.children !== undefined) {
@@ -51,7 +51,12 @@ export const useStorageTreeOperations = () => {
         }
       }
     },
-    [queueStates.expansionQueue, directoryTree, expandNode, removeFromExpansionQueue],
+    [
+      queueStates.expansionQueue,
+      directoryTree,
+      expandNode,
+      removeFromExpansionQueue,
+    ]
   );
 
   const prefetchDirectoryChildren = useCallback(
@@ -74,10 +79,12 @@ export const useStorageTreeOperations = () => {
           // Cache the children for instant expansion later
           if (directoryTree.length === 0 && path === "") {
             // If nodes array is empty and this is the root path, return the children directly
-            setDirectoryTree(children.map((child) => ({
-              ...child,
-              isPrefetched: true,
-            })));
+            setDirectoryTree(
+              children.map(child => ({
+                ...child,
+                isPrefetched: true,
+              }))
+            );
           } else {
             addChildToNode(path, children);
           }
@@ -104,7 +111,7 @@ export const useStorageTreeOperations = () => {
       addChildToNode,
       processExpansionQueue,
       removeFromFetchQueue,
-    ],
+    ]
   );
 
   const expandDirectoryNode = useCallback(
@@ -114,7 +121,7 @@ export const useStorageTreeOperations = () => {
       // Check if children are already available in the tree
       const findNodeInTree = (
         nodes: DirectoryTreeNode[],
-        targetPath: string,
+        targetPath: string
       ): DirectoryTreeNode | null => {
         for (const node of nodes) {
           if (node.path === targetPath) {
@@ -156,12 +163,15 @@ export const useStorageTreeOperations = () => {
       queueStates.fetchQueue,
       prefetchDirectoryChildren,
       expandNode,
-    ],
+    ]
   );
 
-  const collapseDirectoryNode = useCallback((path: string) => {
-    collapseNode(path);
-  }, [collapseNode]);
+  const collapseDirectoryNode = useCallback(
+    (path: string) => {
+      collapseNode(path);
+    },
+    [collapseNode]
+  );
 
   return {
     prefetchDirectoryChildren,

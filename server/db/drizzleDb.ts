@@ -6,11 +6,15 @@ import logger from "@/lib/logger";
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
-    logger.error("server/db/drizzleDb.ts:❌ Error: DATABASE_URL is not set in environment variables");
-    logger.error("   Please check your .env file");
-    process.exit(1);
+  logger.error(
+    "server/db/drizzleDb.ts:❌ Error: DATABASE_URL is not set in environment variables"
+  );
+  logger.error("   Please check your .env file");
+  process.exit(1);
 } else {
-    logger.log("server/db/drizzleDb.ts Environment variables loaded successfully");
+  logger.log(
+    "server/db/drizzleDb.ts Environment variables loaded successfully"
+  );
 }
 
 import { relations } from "./drizzleRelations";
@@ -19,15 +23,15 @@ import { drizzle } from "drizzle-orm/node-postgres";
 // import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
 
 export const drizzleDbPool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 10,
-    // other pool options...
+  connectionString: process.env.DATABASE_URL,
+  max: 10,
+  // other pool options...
 });
 
 export const drizzleLogs: string[] = [];
 
 export function clearDrizzleLogs() {
-    drizzleLogs.length = 0;
+  drizzleLogs.length = 0;
 }
 
 // class MyLogWriter implements LogWriter {
@@ -42,8 +46,8 @@ export function clearDrizzleLogs() {
 
 // const logger = new DefaultLogger({ writer: new MyLogWriter() });
 export const db = drizzle(drizzleDbPool, {
-    relations,
-    // logger
+  relations,
+  // logger
 });
 
 export { relations };

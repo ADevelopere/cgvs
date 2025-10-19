@@ -8,14 +8,14 @@ import { useAppTranslation } from "@/client/locale";
 
 export const useStorageNavigation = () => {
   const { params, setParams, setItems, setPagination } = useStorageDataStore();
-  const { 
-    clearSelection, 
-    setLastSelectedItem, 
-    setSearchMode, 
+  const {
+    clearSelection,
+    setLastSelectedItem,
+    setSearchMode,
     setSearchResults,
     setFocusedItem,
     updateLoading,
-    updateError
+    updateError,
   } = useStorageUIStore();
   const { fetchList } = useStorageDataOperations();
   const { ui: translations } = useAppTranslation("storageTranslations");
@@ -51,9 +51,7 @@ export const useStorageNavigation = () => {
           // Set focus to first item if no item is currently focused
           // or if the currently focused item no longer exists
           if (result.items.length > 0) {
-            if (
-              !result.items.some((item) => item.path === params.path)
-            ) {
+            if (!result.items.some(item => item.path === params.path)) {
               setFocusedItem(result.items[0].path);
             }
           } else {
@@ -82,7 +80,7 @@ export const useStorageNavigation = () => {
       setItems,
       setPagination,
       translations.failedToNavigateToDirectory,
-    ],
+    ]
   );
 
   const goUp = useCallback(async () => {
@@ -96,9 +94,7 @@ export const useStorageNavigation = () => {
 
     // Remove trailing slashes and calculate parent path
     const cleanPath = currentPath.replace(/\/+$/, "");
-    const pathSegments = cleanPath
-      .split("/")
-      .filter((segment) => segment !== "");
+    const pathSegments = cleanPath.split("/").filter(segment => segment !== "");
 
     // Calculate parent path
     const parentPath =

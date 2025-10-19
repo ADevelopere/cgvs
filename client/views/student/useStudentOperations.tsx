@@ -24,7 +24,7 @@ import { useStudentStore } from "./stores/useStudentStore";
  * Helper function to map table column IDs to GraphQL OrderStudentsByColumn enum values
  */
 const mapColumnIdToGraphQLColumn = (
-  columnId: string,
+  columnId: string
 ): Graphql.StudentsOrderByColumn | null => {
   const columnMap: Record<string, Graphql.StudentsOrderByColumn> = {
     id: "ID",
@@ -74,7 +74,7 @@ export const useStudentOperations = () => {
    */
   const createStudent = useCallback(
     async (
-      variables: Graphql.CreateStudentMutationVariables,
+      variables: Graphql.CreateStudentMutationVariables
     ): Promise<boolean> => {
       try {
         const result = await apollo.createStudentMutation({ variables });
@@ -106,7 +106,7 @@ export const useStudentOperations = () => {
       notifications,
       strings.studentCreatedSuccess,
       strings.studentCreateError,
-    ],
+    ]
   );
 
   /**
@@ -114,7 +114,7 @@ export const useStudentOperations = () => {
    */
   const partialUpdateStudent = useCallback(
     async (
-      variables: Graphql.PartiallyUpdateStudentMutationVariables,
+      variables: Graphql.PartiallyUpdateStudentMutationVariables
     ): Promise<boolean> => {
       try {
         const result = await apollo.partialUpdateStudentMutation({ variables });
@@ -145,7 +145,7 @@ export const useStudentOperations = () => {
       notifications,
       strings.studentUpdatedSuccess,
       strings.studentUpdateError,
-    ],
+    ]
   );
 
   /**
@@ -184,7 +184,7 @@ export const useStudentOperations = () => {
       notifications,
       strings.studentDeletedSuccess,
       strings.studentDeleteError,
-    ],
+    ]
   );
 
   /**
@@ -199,7 +199,7 @@ export const useStudentOperations = () => {
         },
       });
     },
-    [store],
+    [store]
   );
 
   /**
@@ -215,7 +215,7 @@ export const useStudentOperations = () => {
         },
       });
     },
-    [store],
+    [store]
   );
 
   /**
@@ -226,15 +226,15 @@ export const useStudentOperations = () => {
       orderByClause: {
         column: string;
         order: Graphql.OrderSortDirection;
-      }[],
+      }[]
     ) => {
       // Convert generic OrderByClause to GraphQL-specific OrderStudentsByClauseInput
       const graphqlOrderBy: Graphql.StudentsOrderByClause[] = orderByClause
-        .map((clause) => {
+        .map(clause => {
           const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
           if (!graphqlColumn) {
             logger.warn(
-              `Column ${clause.column} is not sortable in GraphQL schema`,
+              `Column ${clause.column} is not sortable in GraphQL schema`
             );
             return null;
           }
@@ -245,7 +245,7 @@ export const useStudentOperations = () => {
           return result;
         })
         .filter(
-          (clause): clause is Graphql.StudentsOrderByClause => clause !== null,
+          (clause): clause is Graphql.StudentsOrderByClause => clause !== null
         );
 
       store.setQueryParams({
@@ -256,7 +256,7 @@ export const useStudentOperations = () => {
         },
       });
     },
-    [store],
+    [store]
   );
 
   /**
@@ -265,7 +265,7 @@ export const useStudentOperations = () => {
   const syncFiltersToQueryParams = useCallback(() => {
     const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
-    Object.values(store.filters).forEach((filterClause) => {
+    Object.values(store.filters).forEach(filterClause => {
       if (!filterClause) return;
 
       const columnId = filterClause.columnId as keyof Graphql.Student;
@@ -277,13 +277,13 @@ export const useStudentOperations = () => {
         mappedFilter = mapTextFilter(
           columnId,
           filterClause.operation as TextFilterOperation,
-          filterClause.value,
+          filterClause.value
         );
       } else if (columnDef.type === "date") {
         mappedFilter = mapDateFilter(
           columnId,
           filterClause.operation as DateFilterOperation,
-          filterClause.value,
+          filterClause.value
         );
       }
       Object.assign(newFilterArgs, mappedFilter);
@@ -326,7 +326,7 @@ export const useStudentOperations = () => {
       // Sync filters to query parameters
       setTimeout(() => syncFiltersToQueryParams(), 0);
     },
-    [store, syncFiltersToQueryParams],
+    [store, syncFiltersToQueryParams]
   );
 
   /**
@@ -347,7 +347,7 @@ export const useStudentOperations = () => {
       // Sync filters to query parameters
       setTimeout(() => syncFiltersToQueryParams(), 0);
     },
-    [store, syncFiltersToQueryParams],
+    [store, syncFiltersToQueryParams]
   );
 
   /**
@@ -359,7 +359,7 @@ export const useStudentOperations = () => {
       // Sync filters to query parameters
       setTimeout(() => syncFiltersToQueryParams(), 0);
     },
-    [store, syncFiltersToQueryParams],
+    [store, syncFiltersToQueryParams]
   );
 
   /**
@@ -371,7 +371,7 @@ export const useStudentOperations = () => {
       // Sync filters to query parameters
       setTimeout(() => syncFiltersToQueryParams(), 0);
     },
-    [store, syncFiltersToQueryParams],
+    [store, syncFiltersToQueryParams]
   );
 
   /**
@@ -434,6 +434,6 @@ export const useStudentOperations = () => {
       store.toggleStudentSelect,
       store.selectAllStudents,
       store.clearSelectedStudents,
-    ],
+    ]
   );
 };

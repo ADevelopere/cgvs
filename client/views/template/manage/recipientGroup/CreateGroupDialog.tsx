@@ -76,7 +76,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               fullWidth
               label={strings.name}
               value={name}
-              onChange={(e) => {
+              onChange={e => {
                 setName(e.target.value);
                 if (e.target.value.trim()) {
                   setNameError("");
@@ -91,12 +91,12 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               rows={3}
               label={strings.description}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
             />
             <DatePicker
               label={strings.date}
               value={date}
-              onChange={(newValue) => setDate(newValue)}
+              onChange={newValue => setDate(newValue)}
               slotProps={{
                 textField: {
                   fullWidth: true,

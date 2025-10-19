@@ -385,20 +385,20 @@ CLIENT                                    SERVER
 
 ```typescript
 // server/lib/ratelimit.ts
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // Auth endpoints: 10 requests per 15 minutes
 export const authRateLimiter = new RateLimiter({
-    limit: 10,
-    window: 15 * 60, // 15 minutes
-    keyPrefix: 'ratelimit:auth:'
+  limit: 10,
+  window: 15 * 60, // 15 minutes
+  keyPrefix: "ratelimit:auth:",
 });
 
 // GraphQL API: 100 requests per minute
 export const graphqlRateLimiter = new RateLimiter({
-    limit: 100,
-    window: 60, // 1 minute
-    keyPrefix: 'ratelimit:graphql:'
+  limit: 100,
+  window: 60, // 1 minute
+  keyPrefix: "ratelimit:graphql:",
 });
 ```
 
@@ -456,16 +456,16 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 ```typescript
 export function middleware(request: NextRequest) {
-    const start = Date.now();
-    const requestId = crypto.randomUUID();
-    
-    logger.log(`[${requestId}] ${method} ${pathname}`);
-    logger.log(`  IP: ${ip}`);
-    logger.log(`  User-Agent: ${userAgent}`);
-    
-    // ... process request
-    
-    logger.log(`[${requestId}] ${status} (${Date.now() - start}ms)`);
+  const start = Date.now();
+  const requestId = crypto.randomUUID();
+
+  logger.log(`[${requestId}] ${method} ${pathname}`);
+  logger.log(`  IP: ${ip}`);
+  logger.log(`  User-Agent: ${userAgent}`);
+
+  // ... process request
+
+  logger.log(`[${requestId}] ${status} (${Date.now() - start}ms)`);
 }
 ```
 
@@ -484,21 +484,21 @@ export function middleware(request: NextRequest) {
 ```typescript
 // server/services/redis/IRedisService.ts
 export interface IRedisService {
-    get(key: string): Promise<string | null>;
-    set(key: string, value: string, options?: { ex?: number }): Promise<void>;
-    incr(key: string): Promise<number>;
-    del(key: string): Promise<void>;
-    expire(key: string, seconds: number): Promise<void>;
-    ping(): Promise<boolean>;
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string, options?: { ex?: number }): Promise<void>;
+  incr(key: string): Promise<number>;
+  del(key: string): Promise<void>;
+  expire(key: string, seconds: number): Promise<void>;
+  ping(): Promise<boolean>;
 }
 ```
 
 **Providers:**
 
-| Provider | Use Case | Connection |
-|----------|----------|------------|
-| **LocalRedisAdapter** (ioredis) | Development, self-hosted | TCP (persistent) |
-| **UpstashRedisAdapter** (@upstash) | Serverless production | REST (stateless) |
+| Provider                           | Use Case                 | Connection       |
+| ---------------------------------- | ------------------------ | ---------------- |
+| **LocalRedisAdapter** (ioredis)    | Development, self-hosted | TCP (persistent) |
+| **UpstashRedisAdapter** (@upstash) | Serverless production    | REST (stateless) |
 
 **Environment Configuration:**
 
@@ -527,22 +527,22 @@ UPSTASH_REDIS_REST_TOKEN=your-token
 
 ```typescript
 export function validateEnvironment(): EnvironmentConfig {
-    // Validate JWT_SECRET
-    if (NODE_ENV === 'production' && JWT_SECRET.length < 32) {
-        throw new Error('JWT_SECRET must be at least 32 characters');
+  // Validate JWT_SECRET
+  if (NODE_ENV === "production" && JWT_SECRET.length < 32) {
+    throw new Error("JWT_SECRET must be at least 32 characters");
+  }
+
+  // Validate DATABASE_URL
+  if (!DATABASE_URL.startsWith("postgresql://")) {
+    throw new Error("Invalid DATABASE_URL format");
+  }
+
+  // Validate Redis configuration
+  if (REDIS_PROVIDER === "upstash") {
+    if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) {
+      logger.warn("Upstash credentials missing, falling back to local");
     }
-    
-    // Validate DATABASE_URL
-    if (!DATABASE_URL.startsWith('postgresql://')) {
-        throw new Error('Invalid DATABASE_URL format');
-    }
-    
-    // Validate Redis configuration
-    if (REDIS_PROVIDER === 'upstash') {
-        if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) {
-            logger.warn('Upstash credentials missing, falling back to local');
-        }
-    }
+  }
 }
 ```
 
@@ -634,20 +634,20 @@ Layer 7: Request Monitoring
 
 #### 3. **Attack Scenarios & Mitigation**
 
-| Scenario             | Impact     | Mitigation                                            |
-| -------------------- | ---------- | ----------------------------------------------------- |
-| **Brute force login** | BLOCKED | Rate limiting: 10 attempts/15min, account lockout |
-| **DDoS attack** | MITIGATED | Rate limiting: 100 req/min GraphQL, graceful degradation |
-| **XSS attack** | MINIMAL | Memory-only access token, httpOnly cookies, CSP headers |
-| **CSRF attack** | BLOCKED | SameSite cookies, CORS headers, token verification |
-| **Access token stolen** | MINIMAL | Expires in 15 minutes, stored in React state only |
-| **Refresh token stolen** | LOW-MEDIUM | Rotation detects reuse, httpOnly prevents theft |
-| **Clickjacking** | BLOCKED | X-Frame-Options: DENY header |
-| **MIME sniffing** | BLOCKED | X-Content-Type-Options: nosniff header |
-| **Man-in-the-middle** | BLOCKED | HTTPS enforcement, Strict-Transport-Security |
-| **Database compromised** | HIGH | Passwords bcrypt hashed, sessions can be cleared |
-| **Session hijacked** | LOW-MEDIUM | Token rotation, session validation, activity tracking |
-| **Credential stuffing** | BLOCKED | Rate limiting, password breach detection (future) |
+| Scenario                 | Impact     | Mitigation                                               |
+| ------------------------ | ---------- | -------------------------------------------------------- |
+| **Brute force login**    | BLOCKED    | Rate limiting: 10 attempts/15min, account lockout        |
+| **DDoS attack**          | MITIGATED  | Rate limiting: 100 req/min GraphQL, graceful degradation |
+| **XSS attack**           | MINIMAL    | Memory-only access token, httpOnly cookies, CSP headers  |
+| **CSRF attack**          | BLOCKED    | SameSite cookies, CORS headers, token verification       |
+| **Access token stolen**  | MINIMAL    | Expires in 15 minutes, stored in React state only        |
+| **Refresh token stolen** | LOW-MEDIUM | Rotation detects reuse, httpOnly prevents theft          |
+| **Clickjacking**         | BLOCKED    | X-Frame-Options: DENY header                             |
+| **MIME sniffing**        | BLOCKED    | X-Content-Type-Options: nosniff header                   |
+| **Man-in-the-middle**    | BLOCKED    | HTTPS enforcement, Strict-Transport-Security             |
+| **Database compromised** | HIGH       | Passwords bcrypt hashed, sessions can be cleared         |
+| **Session hijacked**     | LOW-MEDIUM | Token rotation, session validation, activity tracking    |
+| **Credential stuffing**  | BLOCKED    | Rate limiting, password breach detection (future)        |
 
 #### 4. **Memory-Only Access Token Storage**
 
@@ -714,10 +714,10 @@ const newRefreshToken = await generateRefreshToken(user.id, user.email);
 
 // Old token in cookie is replaced
 ctx.cookies.set("cgvs_refresh_token", newRefreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  maxAge: 60 * 60 * 24 * 7,
 });
 ```
 
@@ -984,7 +984,7 @@ Future Enhancements:
 - [x] **Rate limiting** on auth endpoints (10 req/15min)
 - [x] **Rate limiting** on GraphQL API (100 req/min)
 - [x] **Redis-based rate limiting** (distributed, scalable)
-- [x] **Rate limit headers** (X-RateLimit-*)
+- [x] **Rate limit headers** (X-RateLimit-\*)
 - [x] **Graceful degradation** (works without Redis)
 - [x] **IP-based rate limiting** (prevents brute force)
 
@@ -1098,11 +1098,11 @@ const JWT_REFRESH_TOKEN_EXPIRY = "7d"; // Refresh token
 ```typescript
 // server/graphql/auth/auth.mutation.ts
 ctx.cookies.set("cgvs_refresh_token", refreshToken, {
-    httpOnly: true, // XSS protection
-    secure: NODE_ENV === "production", // HTTPS only
-    sameSite: "lax", // CSRF protection
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/", // Available site-wide
+  httpOnly: true, // XSS protection
+  secure: NODE_ENV === "production", // HTTPS only
+  sameSite: "lax", // CSRF protection
+  maxAge: 60 * 60 * 24 * 7, // 7 days
+  path: "/", // Available site-wide
 });
 ```
 
@@ -1360,23 +1360,23 @@ vercel --prod
 
 #### Redis Hosting
 
-| Option | Best For | Setup | Cost |
-|--------|----------|-------|------|
-| **Local Docker** | Development | Easy | Free |
-| **Self-hosted** | Traditional VPS | Moderate | Server cost |
-| **Upstash** | Serverless (Vercel, Netlify) | Easy | Free tier + usage |
-| **AWS ElastiCache** | Enterprise | Complex | Pay per hour |
-| **Redis Cloud** | Managed service | Easy | Free tier + usage |
+| Option              | Best For                     | Setup    | Cost              |
+| ------------------- | ---------------------------- | -------- | ----------------- |
+| **Local Docker**    | Development                  | Easy     | Free              |
+| **Self-hosted**     | Traditional VPS              | Moderate | Server cost       |
+| **Upstash**         | Serverless (Vercel, Netlify) | Easy     | Free tier + usage |
+| **AWS ElastiCache** | Enterprise                   | Complex  | Pay per hour      |
+| **Redis Cloud**     | Managed service              | Easy     | Free tier + usage |
 
 #### Database Hosting
 
-| Option | Best For | Setup | Cost |
-|--------|----------|-------|------|
-| **Local PostgreSQL** | Development | Easy | Free |
-| **Supabase** | Serverless + features | Easy | Free tier + usage |
-| **Neon** | Serverless PostgreSQL | Easy | Free tier + usage |
-| **AWS RDS** | Enterprise | Moderate | Pay per hour |
-| **DigitalOcean** | Traditional hosting | Easy | $15/month |
+| Option               | Best For              | Setup    | Cost              |
+| -------------------- | --------------------- | -------- | ----------------- |
+| **Local PostgreSQL** | Development           | Easy     | Free              |
+| **Supabase**         | Serverless + features | Easy     | Free tier + usage |
+| **Neon**             | Serverless PostgreSQL | Easy     | Free tier + usage |
+| **AWS RDS**          | Enterprise            | Moderate | Pay per hour      |
+| **DigitalOcean**     | Traditional hosting   | Easy     | $15/month         |
 
 ### Monitoring & Maintenance
 
@@ -1384,19 +1384,19 @@ vercel --prod
 
 ```typescript
 // Add health check endpoint: app/api/health/route.ts
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 export async function GET() {
-    const redisHealth = await redisService.ping();
-    
-    return Response.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        services: {
-            redis: redisHealth ? 'up' : 'down',
-            database: 'up', // Add DB check
-        }
-    });
+  const redisHealth = await redisService.ping();
+
+  return Response.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    services: {
+      redis: redisHealth ? "up" : "down",
+      database: "up", // Add DB check
+    },
+  });
 }
 ```
 

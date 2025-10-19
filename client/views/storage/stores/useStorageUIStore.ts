@@ -55,7 +55,7 @@ interface StorageUIActions {
   // Loading and error actions
   updateLoading: (
     key: keyof LoadingStates,
-    value: boolean | string | null,
+    value: boolean | string | null
   ) => void;
   updateError: (key: keyof OperationErrors, error?: string) => void;
   clearErrors: () => void;
@@ -91,15 +91,15 @@ const initialState: StorageUIState = {
 };
 
 export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
-  (set) => ({
+  set => ({
     ...initialState,
 
     // Selection actions
-    toggleSelect: (path) =>
-      set((state) => {
+    toggleSelect: path =>
+      set(state => {
         const isSelected = state.selectedItems.includes(path);
         const newSelection = isSelected
-          ? state.selectedItems.filter((p) => p !== path)
+          ? state.selectedItems.filter(p => p !== path)
           : [...state.selectedItems, path];
 
         return {
@@ -108,9 +108,9 @@ export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
         };
       }),
 
-    selectAll: (items) =>
+    selectAll: items =>
       set({
-        selectedItems: items.map((item) => item.path),
+        selectedItems: items.map(item => item.path),
       }),
 
     clearSelection: () =>
@@ -120,15 +120,15 @@ export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
       }),
 
     selectRange: (fromPath, toPath, items) =>
-      set((state) => {
-        const fromIndex = items.findIndex((item) => item.path === fromPath);
-        const toIndex = items.findIndex((item) => item.path === toPath);
+      set(state => {
+        const fromIndex = items.findIndex(item => item.path === fromPath);
+        const toIndex = items.findIndex(item => item.path === toPath);
 
         if (fromIndex === -1 || toIndex === -1) return state;
 
         const start = Math.min(fromIndex, toIndex);
         const end = Math.max(fromIndex, toIndex);
-        const rangePaths = items.slice(start, end + 1).map((item) => item.path);
+        const rangePaths = items.slice(start, end + 1).map(item => item.path);
 
         const newSelection = new Set([...state.selectedItems, ...rangePaths]);
         return {
@@ -136,30 +136,30 @@ export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
         };
       }),
 
-    setLastSelectedItem: (path) => set({ lastSelectedItem: path }),
-    setFocusedItem: (path) => set({ focusedItem: path }),
+    setLastSelectedItem: path => set({ lastSelectedItem: path }),
+    setFocusedItem: path => set({ focusedItem: path }),
 
     // UI interaction actions
-    setViewMode: (mode) => set({ viewMode: mode }),
-    setSearchMode: (mode) => set({ searchMode: mode }),
-    setSearchResults: (results) => set({ searchResults: results }),
+    setViewMode: mode => set({ viewMode: mode }),
+    setSearchMode: mode => set({ searchMode: mode }),
+    setSearchResults: results => set({ searchResults: results }),
 
-    copyItems: (items) => set({ clipboard: { operation: "copy", items } }),
-    cutItems: (items) => set({ clipboard: { operation: "cut", items } }),
+    copyItems: items => set({ clipboard: { operation: "copy", items } }),
+    cutItems: items => set({ clipboard: { operation: "cut", items } }),
     clearClipboard: () => set({ clipboard: null }),
 
     // Sorting actions
-    setSortBy: (field) => set({ sortBy: field }),
-    setSortDirection: (direction) => set({ sortDirection: direction }),
+    setSortBy: field => set({ sortBy: field }),
+    setSortDirection: direction => set({ sortDirection: direction }),
 
     // Loading and error actions
     updateLoading: (key, value) =>
-      set((state) => ({
+      set(state => ({
         loading: { ...state.loading, [key]: value },
       })),
 
     updateError: (key, error) =>
-      set((state) => ({
+      set(state => ({
         operationErrors: { ...state.operationErrors, [key]: error },
       })),
 
@@ -167,5 +167,5 @@ export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
 
     // Utility actions
     reset: () => set(initialState),
-  }),
+  })
 );

@@ -6,4 +6,3 @@ export type {
   ItemResolver,
   QueryResolverOptions,
 } from "./types";
-

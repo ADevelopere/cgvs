@@ -5,134 +5,134 @@ import { TemplatePothosDefintion } from "./template.types";
 type TemplateVariableEntity = typeof Db.templateVariableBases.$inferSelect;
 
 export type TemplateVariableEntityInput =
-    typeof Db.templateVariableBases.$inferInsert;
+  typeof Db.templateVariableBases.$inferInsert;
 
 type TemplateTextVariableEntity = typeof Db.templateTextVariables.$inferSelect;
 export type TemplateTextVariableEntityInput =
-    typeof Db.templateTextVariables.$inferInsert;
+  typeof Db.templateTextVariables.$inferInsert;
 
 type TemplateNumberVariableEntity =
-    typeof Db.templateNumberVariables.$inferSelect;
+  typeof Db.templateNumberVariables.$inferSelect;
 export type TemplateNumberVariableEntityInput =
-    typeof Db.templateNumberVariables.$inferInsert;
+  typeof Db.templateNumberVariables.$inferInsert;
 
 type TemplateDateVariableEntity = typeof Db.templateDateVariables.$inferSelect;
 export type TemplateDateVariableEntityInput =
-    typeof Db.templateDateVariables.$inferInsert;
+  typeof Db.templateDateVariables.$inferInsert;
 
 type TemplateSelectVariableEntity =
-    typeof Db.templateSelectVariables.$inferSelect;
+  typeof Db.templateSelectVariables.$inferSelect;
 export type TemplateSelectVariableEntityInput =
-    typeof Db.templateSelectVariables.$inferInsert;
+  typeof Db.templateSelectVariables.$inferInsert;
 
 export enum TemplateVariableType {
-    TEXT = "TEXT",
-    NUMBER = "NUMBER",
-    DATE = "DATE",
-    SELECT = "SELECT",
+  TEXT = "TEXT",
+  NUMBER = "NUMBER",
+  DATE = "DATE",
+  SELECT = "SELECT",
 }
 
 // Pothos defintion
 export type TemplateVariablePothosDefinition = TemplateVariableEntity & {
-    type: TemplateVariableType;
-    template?: TemplatePothosDefintion | null;
+  type: TemplateVariableType;
+  template?: TemplatePothosDefintion | null;
 };
 
 export type TemplateTextVariablePothosDefinition =
-    TemplateVariablePothosDefinition & TemplateTextVariableEntity;
+  TemplateVariablePothosDefinition & TemplateTextVariableEntity;
 
 export type TemplateNumberVariablePothosDefinition =
-    TemplateNumberVariableEntity & TemplateVariablePothosDefinition;
+  TemplateNumberVariableEntity & TemplateVariablePothosDefinition;
 
 export type TemplateDateVariablePothosDefinition = TemplateDateVariableEntity &
-    TemplateVariablePothosDefinition;
+  TemplateVariablePothosDefinition;
 
 export type TemplateSelectVariablePothosDefinition = Omit<
-    TemplateSelectVariableEntity,
-    "options"
+  TemplateSelectVariableEntity,
+  "options"
 > &
-    TemplateVariablePothosDefinition & {
-        options: string[];
-    };
+  TemplateVariablePothosDefinition & {
+    options: string[];
+  };
 
 export type TemplateVariablePothosUnion =
-    | TemplateTextVariablePothosDefinition
-    | TemplateNumberVariablePothosDefinition
-    | TemplateDateVariablePothosDefinition
-    | TemplateSelectVariablePothosDefinition;
+  | TemplateTextVariablePothosDefinition
+  | TemplateNumberVariablePothosDefinition
+  | TemplateDateVariablePothosDefinition
+  | TemplateSelectVariablePothosDefinition;
 
 // Create and update inputs
 export type TemplateVariableCreateInput = {
-    templateId: number;
-    name: string;
-    required: boolean;
-    description?: string | null;
-    previewValue?: string | null;
+  templateId: number;
+  name: string;
+  required: boolean;
+  description?: string | null;
+  previewValue?: string | null;
 };
 
 export type TemplateVariableUpdateInput = {
-    id: number;
-    name: string;
-    required: boolean;
-    description?: string | null;
-    previewValue?: string | null;
+  id: number;
+  name: string;
+  required: boolean;
+  description?: string | null;
+  previewValue?: string | null;
 };
 
 type TemplateTextVariableProps = {
-    minLength?: number | null;
-    maxLength?: number | null;
-    pattern?: string | null;
+  minLength?: number | null;
+  maxLength?: number | null;
+  pattern?: string | null;
 };
 
 export type TextTemplaeVariableCreateInput = TemplateVariableCreateInput &
-    TemplateTextVariableProps;
+  TemplateTextVariableProps;
 export type TextTemplaeVariableUpdateInput = TemplateVariableUpdateInput &
-    TemplateTextVariableProps;
+  TemplateTextVariableProps;
 
 type TemplateNumberVariableProps = {
-    previewValue?: number | null;
-    minValue?: number | null;
-    maxValue?: number | null;
-    decimalPlaces?: number | null;
+  previewValue?: number | null;
+  minValue?: number | null;
+  maxValue?: number | null;
+  decimalPlaces?: number | null;
 };
 
 export type TemplateNumberVariableCreateInput = Omit<
-    TemplateVariableCreateInput,
-    "previewValue"
+  TemplateVariableCreateInput,
+  "previewValue"
 > &
-    TemplateNumberVariableProps;
+  TemplateNumberVariableProps;
 
 export type TemplateNumberVariableUpdateInput = Omit<
-    TemplateVariableUpdateInput,
-    "previewValue"
+  TemplateVariableUpdateInput,
+  "previewValue"
 > &
-    TemplateNumberVariableProps;
+  TemplateNumberVariableProps;
 
 type TemplateDateVariableProps = {
-    previewValue?: Date | null;
-    minDate?: Date | null;
-    maxDate?: Date | null;
-    format?: string | null;
+  previewValue?: Date | null;
+  minDate?: Date | null;
+  maxDate?: Date | null;
+  format?: string | null;
 };
 export type TemplateDateVariableCreateInput = Omit<
-    TemplateVariableCreateInput,
-    "previewValue"
+  TemplateVariableCreateInput,
+  "previewValue"
 > &
-    TemplateDateVariableProps;
+  TemplateDateVariableProps;
 
 export type TemplateDateVariableUpdateInput = Omit<
-    TemplateVariableUpdateInput,
-    "previewValue"
+  TemplateVariableUpdateInput,
+  "previewValue"
 > &
-    TemplateDateVariableProps;
+  TemplateDateVariableProps;
 
 type TemplateSelectVariableProps = {
-    options?: string[] | null;
-    multiple?: boolean | null;
+  options?: string[] | null;
+  multiple?: boolean | null;
 };
 
 export type TemplateSelectVariableCreateInput = TemplateVariableCreateInput &
-    TemplateSelectVariableProps;
+  TemplateSelectVariableProps;
 
 export type TemplateSelectVariableUpdateInput = TemplateVariableUpdateInput &
-    TemplateSelectVariableProps;
+  TemplateSelectVariableProps;

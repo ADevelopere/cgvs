@@ -29,4 +29,3 @@ export type RecipientTranslation = {
   tabManageAdded: string;
   tabAddNew: string;
 };
-

@@ -4,28 +4,28 @@
  * @returns Formatted date string or 'N/A' if invalid
  */
 export const formatDate = (dateString: string | null | undefined): string => {
-    if (!dateString) {
-        return "N/A";
+  if (!dateString) {
+    return "N/A";
+  }
+
+  try {
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+      return "N/A";
     }
 
-    try {
-        const date = new Date(dateString);
+    const formatted = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
 
-        if (isNaN(date.getTime())) {
-            return "N/A";
-        }
-
-        const formatted = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-        }).format(date);
-
-        return formatted;
-    } catch {
-        return "N/A";
-    }
+    return formatted;
+  } catch {
+    return "N/A";
+  }
 };

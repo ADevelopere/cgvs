@@ -19,30 +19,39 @@ export const useRecipientGroupOperations = () => {
   const strings = useAppTranslation("recipientGroupTranslations");
 
   // Get the dialog store setters
-  const { closeCreateDialog, closeSettingsDialog, closeDeleteDialog } = useRecipientGroupDialogStore();
+  const { closeCreateDialog, closeSettingsDialog, closeDeleteDialog } =
+    useRecipientGroupDialogStore();
 
   /**
    * Create a new template recipient group.
    */
   const createGroup = useCallback(
-    async (
-      input: Graphql.TemplateRecipientGroupCreateInput,
-    ): Promise<void> => {
+    async (input: Graphql.TemplateRecipientGroupCreateInput): Promise<void> => {
       try {
-        const result = await recipientGroupApollo.createTemplateRecipientGroupMutation({
-          variables: { input },
-        });
+        const result =
+          await recipientGroupApollo.createTemplateRecipientGroupMutation({
+            variables: { input },
+          });
 
         if (result.data) {
-          notifications.show(strings.groupCreated || "Group created successfully", {
-            severity: "success",
-          });
+          notifications.show(
+            strings.groupCreated || "Group created successfully",
+            {
+              severity: "success",
+            }
+          );
           closeCreateDialog();
         } else {
-          logger.error("Error creating template recipient group:", result.error);
-          notifications.show(strings.errorCreating || "Failed to create group", { 
-            severity: "error" 
-          });
+          logger.error(
+            "Error creating template recipient group:",
+            result.error
+          );
+          notifications.show(
+            strings.errorCreating || "Failed to create group",
+            {
+              severity: "error",
+            }
+          );
         }
       } catch (error) {
         const gqlError = error as {
@@ -59,7 +68,7 @@ export const useRecipientGroupOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [recipientGroupApollo, notifications, strings, closeCreateDialog],
+    [recipientGroupApollo, notifications, strings, closeCreateDialog]
   );
 
   /**
@@ -68,20 +77,30 @@ export const useRecipientGroupOperations = () => {
   const updateGroup = useCallback(
     async (input: Graphql.TemplateRecipientGroupUpdateInput): Promise<void> => {
       try {
-        const result = await recipientGroupApollo.updateTemplateRecipientGroupMutation({
-          variables: { input },
-        });
+        const result =
+          await recipientGroupApollo.updateTemplateRecipientGroupMutation({
+            variables: { input },
+          });
 
         if (result.data) {
-          notifications.show(strings.groupUpdated || "Group updated successfully", {
-            severity: "success",
-          });
+          notifications.show(
+            strings.groupUpdated || "Group updated successfully",
+            {
+              severity: "success",
+            }
+          );
           closeSettingsDialog();
         } else {
-          logger.error("Error updating template recipient group:", result.error);
-          notifications.show(strings.errorUpdating || "Failed to update group", {
-            severity: "error",
-          });
+          logger.error(
+            "Error updating template recipient group:",
+            result.error
+          );
+          notifications.show(
+            strings.errorUpdating || "Failed to update group",
+            {
+              severity: "error",
+            }
+          );
         }
       } catch (error) {
         const gqlError = error as {
@@ -98,7 +117,7 @@ export const useRecipientGroupOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [recipientGroupApollo, notifications, strings, closeSettingsDialog],
+    [recipientGroupApollo, notifications, strings, closeSettingsDialog]
   );
 
   /**
@@ -107,20 +126,30 @@ export const useRecipientGroupOperations = () => {
   const deleteGroup = useCallback(
     async (id: number): Promise<void> => {
       try {
-        const result = await recipientGroupApollo.deleteTemplateRecipientGroupMutation({
-          variables: { id },
-        });
+        const result =
+          await recipientGroupApollo.deleteTemplateRecipientGroupMutation({
+            variables: { id },
+          });
 
         if (result.data) {
-          notifications.show(strings.groupDeleted || "Group deleted successfully", {
-            severity: "success",
-          });
+          notifications.show(
+            strings.groupDeleted || "Group deleted successfully",
+            {
+              severity: "success",
+            }
+          );
           closeDeleteDialog();
         } else {
-          logger.error("Error deleting template recipient group:", result.error);
-          notifications.show(strings.errorDeleting || "Failed to delete group", {
-            severity: "error",
-          });
+          logger.error(
+            "Error deleting template recipient group:",
+            result.error
+          );
+          notifications.show(
+            strings.errorDeleting || "Failed to delete group",
+            {
+              severity: "error",
+            }
+          );
         }
       } catch (error) {
         const gqlError = error as {
@@ -137,7 +166,7 @@ export const useRecipientGroupOperations = () => {
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [recipientGroupApollo, notifications, strings, closeDeleteDialog],
+    [recipientGroupApollo, notifications, strings, closeDeleteDialog]
   );
 
   return useMemo(
@@ -146,10 +175,6 @@ export const useRecipientGroupOperations = () => {
       updateGroup,
       deleteGroup,
     }),
-    [
-      createGroup,
-      updateGroup,
-      deleteGroup,
-    ],
+    [createGroup, updateGroup, deleteGroup]
   );
 };

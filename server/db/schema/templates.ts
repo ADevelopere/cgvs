@@ -29,19 +29,19 @@ export const templateCategories = pgTable(
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
   },
-  (table) => [
+  table => [
     uniqueIndex("template_category_special_type_key").on(table.specialType),
     // GIN index for Full-Text Search on 'name' column
     index("idx_template_categories_name_fts").using(
       "gin",
-      sql`to_tsvector('simple', ${table.name})`,
+      sql`to_tsvector('simple', ${table.name})`
     ),
     // GiST index for faster LIKE/ILIKE on name using pg_trgm
     index("idx_template_categories_name_trgm").using(
       "gist",
-      table.name.op("gist_trgm_ops"),
+      table.name.op("gist_trgm_ops")
     ),
-  ],
+  ]
 );
 
 export const templates = pgTable(
@@ -57,19 +57,19 @@ export const templates = pgTable(
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
   },
-  (table) => [
+  table => [
     // GIN index for Full-Text Search on 'name' column
     index("idx_templates_name_fts").using(
       "gin",
-      sql`to_tsvector('simple', ${table.name})`,
+      sql`to_tsvector('simple', ${table.name})`
     ),
 
     // GiST index for faster LIKE/ILIKE on name using pg_trgm
     index("idx_templates_name_trgm").using(
       "gist",
-      table.name.op("gist_trgm_ops"),
+      table.name.op("gist_trgm_ops")
     ),
-  ],
+  ]
 );
 
 export const templatesConfigsKeyEnum = pgEnum("template_config_key", [

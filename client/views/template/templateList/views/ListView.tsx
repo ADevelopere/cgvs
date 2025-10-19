@@ -54,7 +54,7 @@ const ListView: React.FC<ListViewProps> = ({ templates, manageTemplate }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {templates.map((template) => {
+          {templates.map(template => {
             if (!template.name) {
               throw new Error("Template name is required");
             }

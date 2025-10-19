@@ -50,14 +50,14 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
           setDirectories(result);
         } else {
           setError(
-            translations.moveDialogFailedToLoad || "Failed to load directories",
+            translations.moveDialogFailedToLoad || "Failed to load directories"
           );
           setDirectories([]);
         }
       } catch {
         setError(
           translations.moveDialogUnexpectedError ||
-            "An unexpected error occurred",
+            "An unexpected error occurred"
         );
         setDirectories([]);
       } finally {
@@ -68,7 +68,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       fetchDirectoryChildren,
       translations.moveDialogFailedToLoad,
       translations.moveDialogUnexpectedError,
-    ],
+    ]
   );
 
   // Reset state when dialog opens/closes
@@ -91,7 +91,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       setCurrentPath(path);
       loadDirectories(path);
     },
-    [loadDirectories],
+    [loadDirectories]
   );
 
   // Get breadcrumb segments
@@ -117,10 +117,10 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
     (destinationPath: string) => {
       // Can't move to same location
       if (
-        items.some((item) => {
+        items.some(item => {
           const itemParentPath = item.path.substring(
             0,
-            item.path.lastIndexOf("/"),
+            item.path.lastIndexOf("/")
           );
           return itemParentPath === destinationPath;
         })
@@ -129,7 +129,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       }
 
       // Can't move folder into itself or its children
-      return items.some((item) => {
+      return items.some(item => {
         if ("contentType" in item) return false; // Files can't create cycles
 
         // Check if destination is the item itself or a child of the item
@@ -139,14 +139,14 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
         );
       });
     },
-    [items],
+    [items]
   );
 
   // Handle move operation
   const handleMove = useCallback(async () => {
     if (isPathInvalid(currentPath)) {
       setError(
-        translations.moveDialogInvalidDestination || "Invalid destination",
+        translations.moveDialogInvalidDestination || "Invalid destination"
       );
       return;
     }
@@ -155,7 +155,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
     setError(null);
 
     try {
-      const sourcePaths = items.map((item) => item.path);
+      const sourcePaths = items.map(item => item.path);
       const success = await move(sourcePaths, currentPath);
 
       if (success) {
@@ -165,8 +165,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       }
     } catch {
       setError(
-        translations.moveDialogUnexpectedError ||
-          "An unexpected error occurred",
+        translations.moveDialogUnexpectedError || "An unexpected error occurred"
       );
     } finally {
       setIsMoving(false);
@@ -197,7 +196,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
         handleClose();
       }
     },
-    [handleClose, isLoading, isMoving],
+    [handleClose, isLoading, isMoving]
   );
 
   // Navigate up one level

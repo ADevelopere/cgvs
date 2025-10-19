@@ -43,7 +43,7 @@ export const useNetworkConnectivity = (): NetworkConnectivityContextType => {
   const context = useContext(NetworkConnectivityContext);
   if (!context) {
     throw new Error(
-      "useNetworkConnectivity must be used within a NetworkConnectivityProvider",
+      "useNetworkConnectivity must be used within a NetworkConnectivityProvider"
     );
   }
   return context;
@@ -70,7 +70,7 @@ export const AppApolloProvider: React.FC<{
 }> = ({ children }) => {
   const notifications = useNotifications();
   const strings: ConnectivityTranslations = useAppTranslation(
-    "connectivityTranslations",
+    "connectivityTranslations"
   );
 
   const [isConnected, setIsConnected] = useState(true); // Start optimistically
@@ -103,7 +103,7 @@ export const AppApolloProvider: React.FC<{
       const controller = new AbortController();
       const timeoutId = setTimeout(
         () => controller.abort(),
-        CONNECTIVITY_CHECK_TIMEOUT,
+        CONNECTIVITY_CHECK_TIMEOUT
       );
 
       const response = await fetch(CONNECTIVITY_CHECK_URL, {
@@ -154,7 +154,7 @@ export const AppApolloProvider: React.FC<{
           autoHideDuration: 5000, // Auto-hide after 5 seconds for less spam
           actionText: strings.retry,
           onAction: () => {
-            checkConnectivity().then((connected) => {
+            checkConnectivity().then(connected => {
               if (connected) {
                 notifications.show(strings.connectionRestored, {
                   severity: "success",
@@ -163,7 +163,7 @@ export const AppApolloProvider: React.FC<{
               }
             });
           },
-        },
+        }
       );
     }
   }, [notifications, checkConnectivity, strings]);
@@ -207,16 +207,16 @@ export const AppApolloProvider: React.FC<{
 
     // Connectivity check link - only check if we think we're disconnected
     const connectivityCheckLink = new ApolloLink((operation, forward) => {
-      return new Observable((observer) => {
+      return new Observable(observer => {
         function proceedWithRequest() {
           const subscription = forward(operation).subscribe({
-            next: (result) => {
+            next: result => {
               // Successful response means we're still connected
               setIsConnected(true);
               isConnectedRef.current = true;
               observer.next(result);
             },
-            error: (error) => {
+            error: error => {
               observer.error(error);
             },
             complete: () => {
@@ -230,7 +230,7 @@ export const AppApolloProvider: React.FC<{
         // If we're already marked as disconnected, check connectivity
         if (!isConnectedRef.current) {
           checkConnectivity()
-            .then((isConnected) => {
+            .then(isConnected => {
               if (!isConnected) {
                 notifyIfDisconnected();
                 observer.next({
@@ -252,7 +252,7 @@ export const AppApolloProvider: React.FC<{
               // If connected, proceed with the GraphQL request
               proceedWithRequest();
             })
-            .catch((error) => {
+            .catch(error => {
               observer.error(error);
             });
         } else {
@@ -372,7 +372,7 @@ export const AppApolloProvider: React.FC<{
       authToken,
       updateAuthToken,
       clearAuthData,
-    ],
+    ]
   );
 
   // Don't render until initial connectivity check is complete

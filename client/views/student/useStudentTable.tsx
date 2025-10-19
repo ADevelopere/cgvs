@@ -26,17 +26,17 @@ export const useStudentTable = () => {
       if (!value) return strings?.nameRequired;
       const words = value.trim().split(/\s+/);
       if (words.length < 3) return strings?.fullNameMinWords;
-      if (!words.every((word) => word.length >= 3)) {
+      if (!words.every(word => word.length >= 3)) {
         return strings?.nameMinLength;
       }
       // Unicode regex for letters from any language plus allowed special characters
       const nameRegex = /^[\p{L}\p{M}'-]+$/u;
-      if (!words.every((word) => nameRegex.test(word))) {
+      if (!words.every(word => nameRegex.test(word))) {
         return strings?.nameInvalidChars;
       }
       return null;
     },
-    [strings],
+    [strings]
   );
 
   const validateEmail = useCallback(
@@ -57,7 +57,7 @@ export const useStudentTable = () => {
       // Validate email format
       return validator.isEmail(trimmedValue) ? null : strings?.emailInvalid;
     },
-    [strings],
+    [strings]
   );
 
   const validateGender = useCallback(
@@ -67,14 +67,14 @@ export const useStudentTable = () => {
         ? null
         : strings?.genderInvalid;
     },
-    [strings],
+    [strings]
   );
 
   const validateNationality = useCallback(
     (value: string): string | null | undefined => {
       return isValidCountryCode(value) ? null : strings?.nationalityInvalid;
     },
-    [strings],
+    [strings]
   );
 
   const validateDateOfBirth = useCallback(
@@ -84,14 +84,14 @@ export const useStudentTable = () => {
       const now = new Date();
       return date <= now ? null : strings?.dateOfBirthFuture;
     },
-    [strings],
+    [strings]
   );
 
   const validatePhoneNumber = useCallback(
     (value: string): string | null | undefined => {
       return isValidPhoneNumber(value) ? null : strings?.phoneNumberInvalid;
     },
-    [strings],
+    [strings]
   );
 
   /**
@@ -102,7 +102,7 @@ export const useStudentTable = () => {
       rowId: number,
       columnId: string,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      value: any,
+      value: any
     ): Promise<void> => {
       const input: Graphql.PartialStudentUpdateInput = {
         id: rowId,
@@ -126,7 +126,7 @@ export const useStudentTable = () => {
 
       await partialUpdateStudent({ input });
     },
-    [partialUpdateStudent],
+    [partialUpdateStudent]
   );
 
   /**
@@ -158,7 +158,7 @@ export const useStudentTable = () => {
       validateNationality,
       validateDateOfBirth,
       validatePhoneNumber,
-    ],
+    ]
   );
 
   /**
@@ -179,7 +179,7 @@ export const useStudentTable = () => {
 
         return enhancedColumn;
       }),
-    [handleUpdateCell, getValidatorForColumn],
+    [handleUpdateCell, getValidatorForColumn]
   );
 
   return {

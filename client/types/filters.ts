@@ -49,26 +49,26 @@ export type FilterClause<TValue = any, TOperation = any> = {
 
 // Type guard functions to check filter operation types
 export function isTextFilterOperation(
-  operation: any,
+  operation: any
 ): operation is TextFilterOperation {
   return Object.values(TextFilterOperation).includes(operation);
 }
 
 export function isNumberFilterOperation(
-  operation: any,
+  operation: any
 ): operation is NumberFilterOperation {
   return Object.values(NumberFilterOperation).includes(operation);
 }
 
 export function isDateFilterOperation(
-  operation: any,
+  operation: any
 ): operation is DateFilterOperation {
   return Object.values(DateFilterOperation).includes(operation);
 }
 
 // Helper to check if an operation requires a value
 export function operationRequiresValue(
-  operation: TextFilterOperation | NumberFilterOperation | DateFilterOperation,
+  operation: TextFilterOperation | NumberFilterOperation | DateFilterOperation
 ): boolean {
   return ![
     TextFilterOperation.isEmpty,

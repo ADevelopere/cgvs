@@ -1,35 +1,35 @@
 import {
-    templateCategories,
-    templatecategorySpecialTypeEnum,
+  templateCategories,
+  templatecategorySpecialTypeEnum,
 } from "@/server/db/schema";
 import { TemplatePothosDefintion } from "@/server/types";
 
 export type TemplateSpecialCategoryType =
-    (typeof templatecategorySpecialTypeEnum.enumValues)[number];
+  (typeof templatecategorySpecialTypeEnum.enumValues)[number];
 
 export type TemplateCategorySelectType = typeof templateCategories.$inferSelect;
 export type TemplateCategoryInsertInput =
-    typeof templateCategories.$inferInsert;
+  typeof templateCategories.$inferInsert;
 
 export type TemplateCategoryPothosDefintion = TemplateCategorySelectType & {
-    templates?: TemplatePothosDefintion[];
-    parentCategory?: TemplateCategoryPothosDefintion | null;
-    subCategories?: TemplateCategoryPothosDefintion[];
+  templates?: TemplatePothosDefintion[];
+  parentCategory?: TemplateCategoryPothosDefintion | null;
+  subCategories?: TemplateCategoryPothosDefintion[];
 };
 
 export type TemplateCategoryCreateInput = {
-    name: string;
-    description?: string | null;
-    parentCategoryId?: number | null;
+  name: string;
+  description?: string | null;
+  parentCategoryId?: number | null;
 };
 
 export type TemplateCategoryUpdateInput = {
-    id: number;
-    name: string;
-    description?: string | null;
-    parentCategoryId?: number | null;
+  id: number;
+  name: string;
+  description?: string | null;
+  parentCategoryId?: number | null;
 };
 
 export type TemplateCategoryWithParentTree = TemplateCategorySelectType & {
-    parentTree: number[]; // [currentId, parentId, grandparentId, ...]
+  parentTree: number[]; // [currentId, parentId, grandparentId, ...]
 };

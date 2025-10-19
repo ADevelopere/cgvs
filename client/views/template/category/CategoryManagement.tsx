@@ -37,7 +37,7 @@ const This: React.FC = () => {
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
-    newValue: TemplateCategoryManagementTabType,
+    newValue: TemplateCategoryManagementTabType
   ) => {
     setActiveCategoryTab(newValue);
   };

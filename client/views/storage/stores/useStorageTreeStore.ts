@@ -15,7 +15,7 @@ interface StorageTreeActions {
   setDirectoryTree: (tree: DirectoryTreeNode[]) => void;
   updateTreeNode: (
     path: string,
-    updater: (node: DirectoryTreeNode) => DirectoryTreeNode,
+    updater: (node: DirectoryTreeNode) => DirectoryTreeNode
   ) => void;
   addChildToNode: (parentPath: string, children: DirectoryTreeNode[]) => void;
 
@@ -51,18 +51,18 @@ const initialState: StorageTreeState = {
 
 export const useStorageTreeStore = create<
   StorageTreeState & StorageTreeActions
->((set) => ({
+>(set => ({
   ...initialState,
 
   // Tree management actions
-  setDirectoryTree: (tree) => set({ directoryTree: tree }),
+  setDirectoryTree: tree => set({ directoryTree: tree }),
 
   updateTreeNode: (path, updater) =>
-    set((state) => {
+    set(state => {
       const updateTreeNode = (
-        nodes: DirectoryTreeNode[],
+        nodes: DirectoryTreeNode[]
       ): DirectoryTreeNode[] => {
-        return nodes.map((node) => {
+        return nodes.map(node => {
           if (node.path === path) {
             return updater(node);
           }
@@ -82,11 +82,11 @@ export const useStorageTreeStore = create<
     }),
 
   addChildToNode: (parentPath, children) =>
-    set((state) => {
+    set(state => {
       const updateTreeNode = (
-        nodes: DirectoryTreeNode[],
+        nodes: DirectoryTreeNode[]
       ): DirectoryTreeNode[] => {
-        return nodes.map((node) => {
+        return nodes.map(node => {
           if (node.path === parentPath) {
             return {
               ...node,
@@ -110,20 +110,20 @@ export const useStorageTreeStore = create<
     }),
 
   // Node state actions
-  expandNode: (path) =>
-    set((state) => ({
+  expandNode: path =>
+    set(state => ({
       expandedNodes: new Set([...state.expandedNodes, path]),
     })),
 
-  collapseNode: (path) =>
-    set((state) => {
+  collapseNode: path =>
+    set(state => {
       const newSet = new Set(state.expandedNodes);
       newSet.delete(path);
       return { expandedNodes: newSet };
     }),
 
   setPrefetchedNode: (path, isPrefetched) =>
-    set((state) => {
+    set(state => {
       const newSet = new Set(state.prefetchedNodes);
       if (isPrefetched) {
         newSet.add(path);
@@ -134,44 +134,44 @@ export const useStorageTreeStore = create<
     }),
 
   // Queue management actions
-  addToFetchQueue: (path) =>
-    set((state) => ({
+  addToFetchQueue: path =>
+    set(state => ({
       queueStates: {
         ...state.queueStates,
         fetchQueue: new Set([...state.queueStates.fetchQueue, path]),
       },
     })),
 
-  removeFromFetchQueue: (path) =>
-    set((state) => ({
+  removeFromFetchQueue: path =>
+    set(state => ({
       queueStates: {
         ...state.queueStates,
         fetchQueue: new Set(
-          [...state.queueStates.fetchQueue].filter((p) => p !== path),
+          [...state.queueStates.fetchQueue].filter(p => p !== path)
         ),
       },
     })),
 
-  addToExpansionQueue: (path) =>
-    set((state) => ({
+  addToExpansionQueue: path =>
+    set(state => ({
       queueStates: {
         ...state.queueStates,
         expansionQueue: new Set([...state.queueStates.expansionQueue, path]),
       },
     })),
 
-  removeFromExpansionQueue: (path) =>
-    set((state) => ({
+  removeFromExpansionQueue: path =>
+    set(state => ({
       queueStates: {
         ...state.queueStates,
         expansionQueue: new Set(
-          [...state.queueStates.expansionQueue].filter((p) => p !== path),
+          [...state.queueStates.expansionQueue].filter(p => p !== path)
         ),
       },
     })),
 
   setCurrentlyFetching: (path, isFetching) =>
-    set((state) => {
+    set(state => {
       const newSet = new Set(state.queueStates.currentlyFetching);
       if (isFetching) {
         newSet.add(path);
@@ -187,7 +187,7 @@ export const useStorageTreeStore = create<
     }),
 
   clearQueues: () =>
-    set((state) => ({
+    set(state => ({
       queueStates: {
         ...state.queueStates,
         fetchQueue: new Set(),

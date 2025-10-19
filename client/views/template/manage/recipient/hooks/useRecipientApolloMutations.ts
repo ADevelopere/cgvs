@@ -66,13 +66,13 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
               const updatedGroups =
                 existingGroupsData.templateRecipientGroupsByTemplateId.map(
-                  (group) =>
+                  group =>
                     group.id === recipientGroupId
                       ? {
                           ...group,
                           studentCount: (group.studentCount || 0) + 1,
                         }
-                      : group,
+                      : group
                 );
 
               cache.writeQuery({
@@ -91,7 +91,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         // Evict studentsNotInRecipientGroup query to force refetch
         evictStudentsNotInGroupQuery(cache);
       },
-    },
+    }
   );
 
   const [createMultipleMutation] = useMutation(
@@ -139,14 +139,14 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
               const updatedGroups =
                 existingGroupsData.templateRecipientGroupsByTemplateId.map(
-                  (group) =>
+                  group =>
                     group.id === recipientGroupId
                       ? {
                           ...group,
                           studentCount:
                             (group.studentCount || 0) + newRecipients.length,
                         }
-                      : group,
+                      : group
                 );
 
               cache.writeQuery({
@@ -165,7 +165,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         // Evict studentsNotInRecipientGroup query to force refetch
         evictStudentsNotInGroupQuery(cache);
       },
-    },
+    }
   );
 
   const [deleteMutation] = useMutation(
@@ -191,7 +191,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
               variables: { recipientGroupId },
               data: {
                 recipientsByGroupId: existingData.recipientsByGroupId.filter(
-                  (r) => r.id !== deletedRecipient.id,
+                  r => r.id !== deletedRecipient.id
                 ),
               },
             });
@@ -211,16 +211,16 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
               const updatedGroups =
                 existingGroupsData.templateRecipientGroupsByTemplateId.map(
-                  (group) =>
+                  group =>
                     group.id === recipientGroupId
                       ? {
                           ...group,
                           studentCount: Math.max(
                             (group.studentCount || 0) - 1,
-                            0,
+                            0
                           ),
                         }
-                      : group,
+                      : group
                 );
 
               cache.writeQuery({
@@ -239,7 +239,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         // Evict studentsNotInRecipientGroup query to force refetch since we don't have student data
         evictStudentsNotInGroupQuery(cache);
       },
-    },
+    }
   );
 
   const [deleteMultipleMutation] = useMutation(
@@ -250,7 +250,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
           return;
         const deletedRecipients = data.deleteRecipients;
         const recipientGroupId = deletedRecipients[0]?.recipientGroupId;
-        const deletedIds = deletedRecipients.map((r) => r.id);
+        const deletedIds = deletedRecipients.map(r => r.id);
 
         if (!recipientGroupId) return;
 
@@ -267,7 +267,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
               variables: { recipientGroupId },
               data: {
                 recipientsByGroupId: existingData.recipientsByGroupId.filter(
-                  (r) => !deletedIds.includes(r.id),
+                  r => !deletedIds.includes(r.id)
                 ),
               },
             });
@@ -287,17 +287,17 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             if (existingGroupsData?.templateRecipientGroupsByTemplateId) {
               const updatedGroups =
                 existingGroupsData.templateRecipientGroupsByTemplateId.map(
-                  (group) =>
+                  group =>
                     group.id === recipientGroupId
                       ? {
                           ...group,
                           studentCount: Math.max(
                             (group.studentCount || 0) -
                               deletedRecipients.length,
-                            0,
+                            0
                           ),
                         }
-                      : group,
+                      : group
                 );
 
               cache.writeQuery({
@@ -316,7 +316,7 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         // Evict studentsNotInRecipientGroup query to force refetch since we don't have student data
         evictStudentsNotInGroupQuery(cache);
       },
-    },
+    }
   );
 
   return {

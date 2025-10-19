@@ -64,15 +64,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   // Handle sidebar visibility based on state
   const isCollapsedSidebarVisible = useMemo(
     () => !isMobile && sidebarState === "collapsed",
-    [isMobile, sidebarState],
+    [isMobile, sidebarState]
   );
   const isFullSidebarVisible = useMemo(
     () => !isMobile && sidebarState === "expanded",
-    [isMobile, sidebarState],
+    [isMobile, sidebarState]
   );
   const isFloatingSidebarVisible = useMemo(
     () => isMobile && sidebarState === "expanded",
-    [isMobile, sidebarState],
+    [isMobile, sidebarState]
   );
 
   useEffect(() => {

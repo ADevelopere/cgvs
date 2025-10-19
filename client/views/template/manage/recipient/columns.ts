@@ -75,10 +75,9 @@ export const recipientBaseColumns: BaseColumn[] = [
   },
 ];
 
-
 // Map column IDs to GraphQL column names for sorting
-export  const mapColumnIdToGraphQLColumn = (
-  columnId: string,
+export const mapColumnIdToGraphQLColumn = (
+  columnId: string
 ): StudentsOrderByColumn | null => {
   const columnMap: Record<string, StudentsOrderByColumn> = {
     id: "ID",

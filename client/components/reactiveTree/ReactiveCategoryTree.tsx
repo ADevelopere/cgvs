@@ -37,14 +37,14 @@ export function ReactiveCategoryTree<
 
   const rootItems = useMemo(
     () => (data ? getItems(data as TResult, undefined) : []),
-    [data, getItems],
+    [data, getItems]
   );
 
   // Auto-select or update item if it matches selectedItemId after data updates
   useEffect(() => {
     if (selectedItemId && rootItems.length > 0) {
       const selectedItem = rootItems.find(
-        (item: TNode) => item.id === selectedItemId,
+        (item: TNode) => item.id === selectedItemId
       );
       if (selectedItem) {
         // Use update handler if available, otherwise use select handler

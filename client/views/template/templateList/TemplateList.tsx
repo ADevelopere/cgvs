@@ -34,7 +34,7 @@ const TemplateList: React.FC = () => {
   }, [dashboardsidebarState, isMobile, isTablet]);
 
   const toggleSidebar = () => {
-    setOpen((prev) => !prev);
+    setOpen(prev => !prev);
   };
 
   return (

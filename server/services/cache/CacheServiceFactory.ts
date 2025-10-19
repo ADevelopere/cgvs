@@ -36,7 +36,7 @@ export class CacheServiceFactory {
 
       default:
         logger.warn(
-          `Unknown cache provider: ${provider}, falling back to redis`,
+          `Unknown cache provider: ${provider}, falling back to redis`
         );
         return await this.createRedisCache();
     }
@@ -70,7 +70,7 @@ export class CacheServiceFactory {
 
     if (provider !== "redis" && provider !== "postgres") {
       logger.warn(
-        `⚠️  Invalid CACHE_PROVIDER: ${provider}. Must be 'redis' or 'postgres'. Using 'redis'.`,
+        `⚠️  Invalid CACHE_PROVIDER: ${provider}. Must be 'redis' or 'postgres'. Using 'redis'.`
       );
       return "redis";
     }

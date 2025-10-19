@@ -67,31 +67,31 @@ const initialState = {
  */
 export const useTemplateUIStore = create<TemplateUIState>()(
   persist(
-    (set) => ({
+    set => ({
       ...initialState,
 
-      setActiveTab: (tab) => set({ activeTab: tab }),
+      setActiveTab: tab => set({ activeTab: tab }),
 
-      setUnsavedChanges: (hasChanges) => set({ unsavedChanges: hasChanges }),
+      setUnsavedChanges: hasChanges => set({ unsavedChanges: hasChanges }),
 
-      setTabLoaded: (tab) =>
-        set((state) => ({
+      setTabLoaded: tab =>
+        set(state => ({
           loadedTabs: state.loadedTabs.includes(tab)
             ? state.loadedTabs
             : [...state.loadedTabs, tab],
         })),
 
       setTabError: (tab, error) =>
-        set((state) => ({
+        set(state => ({
           tabErrors: { ...state.tabErrors, [tab]: error },
         })),
 
-      clearTabError: (tab) =>
-        set((state) => ({
+      clearTabError: tab =>
+        set(state => ({
           tabErrors: { ...state.tabErrors, [tab]: undefined },
         })),
 
-      setInitializedFromURL: (initialized) =>
+      setInitializedFromURL: initialized =>
         set({ initializedFromURL: initialized }),
 
       reset: () => set(initialState),
@@ -100,11 +100,11 @@ export const useTemplateUIStore = create<TemplateUIState>()(
       name: "template-ui-store",
       storage: createJSONStorage(() => sessionStorage),
       // Only persist activeTab for restoration
-      partialize: (state) => ({
+      partialize: state => ({
         activeTab: state.activeTab,
       }),
-    },
-  ),
+    }
+  )
 );
 
 /**

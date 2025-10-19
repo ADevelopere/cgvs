@@ -101,12 +101,12 @@ export const EditableTypography: React.FC<EditableTypographyProps> = ({
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
-        handleSave().then((r) => r);
+        handleSave().then(r => r);
       } else if (e.key === "Escape") {
         handleCancel();
       }
     },
-    [handleSave, handleCancel],
+    [handleSave, handleCancel]
   );
 
   const endAdornment = useMemo(
@@ -120,7 +120,7 @@ export const EditableTypography: React.FC<EditableTypographyProps> = ({
         </IconButton>
       </InputAdornment>
     ),
-    [handleSave, handleCancel],
+    [handleSave, handleCancel]
   );
 
   if (isEditing) {
@@ -128,7 +128,7 @@ export const EditableTypography: React.FC<EditableTypographyProps> = ({
       <TextField
         {...textField}
         value={inputValue}
-        onChange={(e) => {
+        onChange={e => {
           setInputValue(e.target.value);
           if (isValid) {
             setError(isValid(e.target.value));

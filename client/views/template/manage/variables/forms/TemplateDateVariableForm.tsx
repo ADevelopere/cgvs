@@ -33,7 +33,7 @@ type TemplateDateVariableFormProps = {
   variables: TemplateVariable[];
   onCreate: (data: TemplateDateVariableCreateInput) => Promise<void>;
   onUpdate: (
-    data: TemplateDateVariableCreateInput & { id: number },
+    data: TemplateDateVariableCreateInput & { id: number }
   ) => Promise<void>;
 };
 
@@ -48,7 +48,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
     if (!editingVariableID) return null;
     return (
       (variables.find(
-        (v) => v.id === editingVariableID,
+        v => v.id === editingVariableID
       ) as TemplateDateVariable) || null
     );
   }, [editingVariableID, variables]);
@@ -74,22 +74,22 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
             ? event.target.checked
             : event.target.value;
 
-        setState((prevState) => ({
+        setState(prevState => ({
           ...prevState,
           [field]: value,
         }));
       },
-    [],
+    []
   );
 
   const handleDateChange = useCallback(
     (field: "minDate" | "maxDate" | "previewValue") => (date: Date | null) => {
-      setState((prevState) => ({
+      setState(prevState => ({
         ...prevState,
         [field]: date ? date.toISOString().split("T")[0] : null,
       }));
     },
-    [],
+    []
   );
 
   const handleSave = useCallback(async () => {
@@ -166,7 +166,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
       <DatePicker
         label={strings?.minimumDate ?? "Minimum Date"}
         value={state.minDate ? new Date(state.minDate) : null}
-        onChange={(date) => handleDateChange("minDate")(date)}
+        onChange={date => handleDateChange("minDate")(date)}
         slotProps={{
           textField: {
             fullWidth: true,
@@ -181,7 +181,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
       <DatePicker
         label={strings?.maximumDate ?? "Maximum Date"}
         value={state.maxDate ? new Date(state.maxDate) : null}
-        onChange={(date) => handleDateChange("maxDate")(date)}
+        onChange={date => handleDateChange("maxDate")(date)}
         slotProps={{
           textField: {
             fullWidth: true,
@@ -196,7 +196,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
       <DatePicker
         label={strings?.previewValue ?? "Preview Value"}
         value={state.previewValue ? new Date(state.previewValue) : null}
-        onChange={(date) => handleDateChange("previewValue")(date)}
+        onChange={date => handleDateChange("previewValue")(date)}
         minDate={state.minDate ? new Date(state.minDate) : undefined}
         maxDate={state.maxDate ? new Date(state.maxDate) : undefined}
         slotProps={{

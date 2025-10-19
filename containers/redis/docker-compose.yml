@@ -27,4 +27,3 @@ volumes:
 networks:
   cgvs_network:
     driver: bridge
-

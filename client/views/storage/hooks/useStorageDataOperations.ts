@@ -34,24 +34,24 @@ export const useStorageDataOperations = () => {
         isPrefetched: false,
       };
     },
-    [],
+    []
   );
 
   // Helper function to show notifications
   const showNotification = useCallback(
     (
       message: string,
-      severity: "success" | "error" | "info" | "warning" = "info",
+      severity: "success" | "error" | "info" | "warning" = "info"
     ) => {
       notifications.show(message, { severity });
     },
-    [notifications],
+    [notifications]
   );
 
   // Data Fetching Functions
   const fetchList = useCallback(
     async (
-      params: Graphql.FilesListInput,
+      params: Graphql.FilesListInput
     ): Promise<{
       items: Graphql.StorageObject[];
       pagination: Graphql.PageInfo;
@@ -79,10 +79,10 @@ export const useStorageDataOperations = () => {
           firstItem: result.data?.listFiles.offset,
           currentPage:
             Math.floor(
-              result.data?.listFiles.totalCount / result.data?.listFiles.limit,
+              result.data?.listFiles.totalCount / result.data?.listFiles.limit
             ) + 1,
           lastPage: Math.ceil(
-            result.data?.listFiles.totalCount / result.data?.listFiles.limit,
+            result.data?.listFiles.totalCount / result.data?.listFiles.limit
           ),
         };
 
@@ -95,7 +95,7 @@ export const useStorageDataOperations = () => {
         return null;
       }
     },
-    [queries],
+    [queries]
   );
 
   const fetchDirectoryChildren = useCallback(
@@ -114,7 +114,7 @@ export const useStorageDataOperations = () => {
         return null;
       }
     },
-    [queries, transformDirectoryToTreeNode],
+    [queries, transformDirectoryToTreeNode]
   );
 
   const fetchStats = useCallback(
@@ -139,7 +139,7 @@ export const useStorageDataOperations = () => {
       setStats,
       showNotification,
       translations.failedToFetchStorageStatistics,
-    ],
+    ]
   );
 
   // File Operations
@@ -156,13 +156,13 @@ export const useStorageDataOperations = () => {
         if (result.data?.renameFile?.success) {
           showNotification(
             translations.successfullyRenamedTo.replace("%{newName}", newName),
-            "success",
+            "success"
           );
           return true;
         } else {
           showNotification(
             result.data?.renameFile?.message || translations.failedToRenameFile,
-            "error",
+            "error"
           );
           return false;
         }
@@ -176,7 +176,7 @@ export const useStorageDataOperations = () => {
       showNotification,
       translations.successfullyRenamedTo,
       translations.failedToRenameFile,
-    ],
+    ]
   );
 
   const remove = useCallback(
@@ -196,15 +196,15 @@ export const useStorageDataOperations = () => {
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
           const errorMessages =
-            failures?.map((f) => f.error).filter(Boolean) ?? [];
+            failures?.map(f => f.error).filter(Boolean) ?? [];
 
           if (safeFailureCount === 0) {
             showNotification(
               translations.successfullyDeleted.replace(
                 "%{count}",
-                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`,
+                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`
               ),
-              "success",
+              "success"
             );
             return true;
           } else {
@@ -213,7 +213,7 @@ export const useStorageDataOperations = () => {
                 .replace("%{successCount}", safeSuccessCount.toString())
                 .replace("%{failureCount}", safeFailureCount.toString())
                 .replace("%{errors}", errorMessages.join(", ")),
-              "warning",
+              "warning"
             );
             return safeSuccessCount > 0; // Partial success
           }
@@ -234,13 +234,13 @@ export const useStorageDataOperations = () => {
       translations.items,
       translations.deletedPartial,
       translations.failedToDeleteItems,
-    ],
+    ]
   );
 
   const move = useCallback(
     async (
       sourcePaths: string[],
-      destinationPath: string,
+      destinationPath: string
     ): Promise<boolean> => {
       try {
         const result = await mutations.moveStorageItems({
@@ -257,15 +257,15 @@ export const useStorageDataOperations = () => {
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
           const errorMessages =
-            failures?.map((f) => f.error).filter(Boolean) ?? [];
+            failures?.map(f => f.error).filter(Boolean) ?? [];
 
           if (safeFailureCount === 0) {
             showNotification(
               translations.successfullyMoved.replace(
                 "%{count}",
-                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`,
+                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`
               ),
-              "success",
+              "success"
             );
             return true;
           } else {
@@ -274,7 +274,7 @@ export const useStorageDataOperations = () => {
                 .replace("%{successCount}", safeSuccessCount.toString())
                 .replace("%{failureCount}", safeFailureCount.toString())
                 .replace("%{errors}", errorMessages.join(", ")),
-              "warning",
+              "warning"
             );
             return safeSuccessCount > 0; // Partial success
           }
@@ -295,13 +295,13 @@ export const useStorageDataOperations = () => {
       translations.items,
       translations.movedPartial,
       translations.failedToMoveItems,
-    ],
+    ]
   );
 
   const copy = useCallback(
     async (
       sourcePaths: string[],
-      destinationPath: string,
+      destinationPath: string
     ): Promise<boolean> => {
       try {
         const result = await mutations.copyStorageItems({
@@ -318,15 +318,15 @@ export const useStorageDataOperations = () => {
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
           const errorMessages =
-            failures?.map((f) => f.error).filter(Boolean) ?? [];
+            failures?.map(f => f.error).filter(Boolean) ?? [];
 
           if (safeFailureCount === 0) {
             showNotification(
               translations.successfullyCopied.replace(
                 "%{count}",
-                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`,
+                `${safeSuccessCount} ${safeSuccessCount === 1 ? translations.item : translations.items}`
               ),
-              "success",
+              "success"
             );
             return true;
           } else {
@@ -335,7 +335,7 @@ export const useStorageDataOperations = () => {
                 .replace("%{successCount}", safeSuccessCount.toString())
                 .replace("%{failureCount}", safeFailureCount.toString())
                 .replace("%{errors}", errorMessages.join(", ")),
-              "warning",
+              "warning"
             );
             return safeSuccessCount > 0; // Partial success
           }
@@ -356,7 +356,7 @@ export const useStorageDataOperations = () => {
       translations.items,
       translations.copiedPartial,
       translations.failedToCopyItems,
-    ],
+    ]
   );
 
   const createFolder = useCallback(
@@ -369,14 +369,14 @@ export const useStorageDataOperations = () => {
         if (result.data?.createFolder?.success) {
           showNotification(
             translations.successfullyCreatedFolder.replace("%{name}", name),
-            "success",
+            "success"
           );
           return true;
         } else {
           showNotification(
             result.data?.createFolder?.message ||
               translations.failedToCreateFolder,
-            "error",
+            "error"
           );
           return false;
         }
@@ -390,14 +390,14 @@ export const useStorageDataOperations = () => {
       showNotification,
       translations.successfullyCreatedFolder,
       translations.failedToCreateFolder,
-    ],
+    ]
   );
 
   // Search Function
   const search = useCallback(
     async (
       query: string,
-      path?: string,
+      path?: string
     ): Promise<{
       items: Graphql.StorageObject[];
       totalCount: number;
@@ -426,7 +426,7 @@ export const useStorageDataOperations = () => {
         return null;
       }
     },
-    [queries, showNotification, translations.failedToSearchFiles],
+    [queries, showNotification, translations.failedToSearchFiles]
   );
 
   return {

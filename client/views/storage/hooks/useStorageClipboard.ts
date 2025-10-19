@@ -7,22 +7,33 @@ import { useStorageNavigation } from "./useStorageNavigation";
 import { StorageItem } from "./storage.type";
 
 export const useStorageClipboard = () => {
-  const { clipboard, copyItems: copyItemsAction, cutItems: cutItemsAction, clearClipboard } = useStorageUIStore();
+  const {
+    clipboard,
+    copyItems: copyItemsAction,
+    cutItems: cutItemsAction,
+    clearClipboard,
+  } = useStorageUIStore();
   const { copy, move } = useStorageDataOperations();
   const { refresh } = useStorageNavigation();
 
-  const copyItems = useCallback((items: StorageItem[]) => {
-    copyItemsAction(items);
-  }, [copyItemsAction]);
+  const copyItems = useCallback(
+    (items: StorageItem[]) => {
+      copyItemsAction(items);
+    },
+    [copyItemsAction]
+  );
 
-  const cutItems = useCallback((items: StorageItem[]) => {
-    cutItemsAction(items);
-  }, [cutItemsAction]);
+  const cutItems = useCallback(
+    (items: StorageItem[]) => {
+      cutItemsAction(items);
+    },
+    [cutItemsAction]
+  );
 
   const pasteItems = useCallback(async (): Promise<boolean> => {
     if (!clipboard) return false;
 
-    const sourcePaths = clipboard.items.map((item) => item.path);
+    const sourcePaths = clipboard.items.map(item => item.path);
     const destinationPath = ""; // This should come from current path in data store
 
     if (clipboard.operation === "copy") {

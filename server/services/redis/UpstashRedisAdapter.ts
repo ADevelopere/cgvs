@@ -15,7 +15,7 @@ export class UpstashRedisAdapter implements IRedisService {
     if (!url.startsWith("https://")) {
       throw new Error(
         "Upstash Redis requires HTTPS URL. " +
-          "Get your URL from https://console.upstash.com/",
+          "Get your URL from https://console.upstash.com/"
       );
     }
 
@@ -38,7 +38,7 @@ export class UpstashRedisAdapter implements IRedisService {
   async set(
     key: string,
     value: string,
-    options?: { ex?: number; px?: number },
+    options?: { ex?: number; px?: number }
   ): Promise<void> {
     if (options?.ex) {
       await this.client.set(key, value, { ex: options.ex });
@@ -66,7 +66,7 @@ export class UpstashRedisAdapter implements IRedisService {
   }
 
   async pipeline(
-    commands: Array<{ command: string; args: string[] | number[] }>,
+    commands: Array<{ command: string; args: string[] | number[] }>
   ): Promise<unknown[]> {
     const pipeline = this.client.pipeline();
 

@@ -35,7 +35,7 @@ export class PostgresCacheAdapter implements ICacheService {
   async set(
     key: string,
     value: string,
-    options?: { ex?: number; px?: number },
+    options?: { ex?: number; px?: number }
   ): Promise<void> {
     try {
       const ttlSeconds =
@@ -108,7 +108,7 @@ export class PostgresCacheAdapter implements ICacheService {
    * Uses database transactions for atomicity
    */
   async pipeline(
-    commands: Array<{ command: string; args: (string | number)[] }>,
+    commands: Array<{ command: string; args: (string | number)[] }>
   ): Promise<unknown[]> {
     try {
       return await db.transaction(async () => {
@@ -197,7 +197,7 @@ export class PostgresCacheAdapter implements ICacheService {
           logger.error("Cache cleanup error:", error);
         }
       },
-      5 * 60 * 1000,
+      5 * 60 * 1000
     );
   }
 }

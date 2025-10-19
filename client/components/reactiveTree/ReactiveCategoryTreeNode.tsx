@@ -87,22 +87,21 @@ export function ReactiveCategoryTreeNode<
       >,
       skip: !hasFetched || !mightHaveChildren,
       fetchPolicy: childQueryOptions.fetchPolicy || "cache-first",
-    },
+    }
   );
 
   const children = useMemo(
     () => (childData ? getItems(childData as TResult, node) : []),
-    [childData, getItems, node],
+    [childData, getItems, node]
   );
   const hasLoadedChildren = isExpanded && children.length > 0;
   const isLoading = hasFetched && childLoading;
-
 
   // Update child item if it matches selectedItemId after data updates
   useEffect(() => {
     if (selectedItemId && children.length > 0) {
       const selectedItem = children.find(
-        (item: TNode) => item.id === selectedItemId,
+        (item: TNode) => item.id === selectedItemId
       );
       if (selectedItem) {
         if (onUpdateItem) {

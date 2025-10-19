@@ -36,7 +36,7 @@ export const useStorageInitialization = () => {
 
     const initializeStorageData = async () => {
       // Wait for hydration to complete
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
 
       // Check if the component is still mounted
       if (!isMounted) return;
@@ -87,7 +87,7 @@ export const useStorageInitialization = () => {
               // Only set focus to first item if no item is currently focused
               // or if the currently focused item no longer exists
               if (result.items.length > 0) {
-                if (!result.items.some((item) => item.path === params.path)) {
+                if (!result.items.some(item => item.path === params.path)) {
                   setUIFocusedItem(result.items[0].path);
                 }
               } else {
@@ -97,7 +97,7 @@ export const useStorageInitialization = () => {
               // Handle null result - this shouldn't happen but prevents empty state
               updateError(
                 "fetchList",
-                translations.failedToNavigateToDirectory,
+                translations.failedToNavigateToDirectory
               );
             }
           }

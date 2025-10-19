@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Box,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import React from "react";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 
@@ -15,7 +11,14 @@ const ToggleSideBarButton: React.FC<{
   zIndex: number;
   isMobile: boolean;
   title: string;
-}> = ({ open, toggleSidebar, dashboardsidebarState, isMobile, zIndex, title }) => {
+}> = ({
+  open,
+  toggleSidebar,
+  dashboardsidebarState,
+  isMobile,
+  zIndex,
+  title,
+}) => {
   if (dashboardsidebarState === "expanded" && isMobile) {
     return null;
   }

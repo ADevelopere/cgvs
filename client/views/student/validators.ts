@@ -16,7 +16,7 @@ export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
  */
 export const isArabicNameValid = (
   name: string,
-  isRequired: boolean,
+  isRequired: boolean
 ): boolean => {
   if (name.trim().length === 0) {
     return !isRequired;
@@ -35,7 +35,7 @@ export const isArabicNameValid = (
 export const isValidDate = (
   date: moment.Moment,
   maxDate: moment.Moment,
-  calendar: Calendar,
+  calendar: Calendar
 ): boolean => {
   maxDate.add(6, "months");
 
@@ -51,7 +51,7 @@ export const isValidDate = (
 export const isValidCountryCode = (countryCode: string): boolean => {
   if (!countryCode) return false;
   return countries.some(
-    (country) => country.code.toLowerCase() === countryCode.toLowerCase(),
+    country => country.code.toLowerCase() === countryCode.toLowerCase()
   );
 };
 

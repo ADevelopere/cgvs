@@ -8,7 +8,7 @@ import { fullTextSearch } from "@/server/db/query.extentions";
 export namespace TemplateFilterUtils {
   export function applyFilters<T extends PgSelect>(
     qb: T,
-    args?: Types.TemplateFilterArgs | null,
+    args?: Types.TemplateFilterArgs | null
   ) {
     if (!args) return qb;
     const ftsLang = "simple"; // Use "simple" for language-agnostic
@@ -26,11 +26,11 @@ export namespace TemplateFilterUtils {
 
   export function applyOrdering<T extends PgSelect>(
     qb: T,
-    orderBy?: Types.TemplatesOrderByClause[] | null,
+    orderBy?: Types.TemplatesOrderByClause[] | null
   ) {
     if (!orderBy || orderBy.length === 0) return qb;
 
-    orderBy.forEach((clause) => {
+    orderBy.forEach(clause => {
       let column;
       switch (clause.column) {
         case Types.TemplatesOrderByColumn.NAME:
@@ -49,7 +49,7 @@ export namespace TemplateFilterUtils {
           return;
       }
       qb = qb.orderBy(
-        clause.order === OrderSortDirection.ASC ? asc(column) : desc(column),
+        clause.order === OrderSortDirection.ASC ? asc(column) : desc(column)
       );
     });
     return qb;

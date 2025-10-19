@@ -14,43 +14,45 @@ import { useTemplateListStore } from "../templateList/useTemplateListStore";
  */
 export const useTemplateMutations = () => {
   // Extract stable references from stores
-  const getTemplateQueryVariables = useTemplateCategoryStore((state) => state.getTemplateQueryVariables);
-  const currentCategory = useTemplateListStore((state) => state.currentCategory);
-  const templateQueryVariables = useTemplateListStore((state) => state.templateQueryVariables);
+  const getTemplateQueryVariables = useTemplateCategoryStore(
+    state => state.getTemplateQueryVariables
+  );
+  const currentCategory = useTemplateListStore(state => state.currentCategory);
+  const templateQueryVariables = useTemplateListStore(
+    state => state.templateQueryVariables
+  );
 
   // Helper function to evict template queries from the cache
-  const evictTemplateQueries = React.useCallback((
-    cache: ApolloCache,
-    categoryId: number | null | undefined,
-  ) => {
-    if (categoryId === undefined) return;
+  const evictTemplateQueries = React.useCallback(
+    (cache: ApolloCache, categoryId: number | null | undefined) => {
+      if (categoryId === undefined) return;
 
-    // Evict for the specific category's view
-    const categoryQueryVars = getTemplateQueryVariables(
-      categoryId as number,
-    );
-    cache.evict({
-      id: "ROOT_QUERY",
-      fieldName: "templatesByCategoryId",
-      args: { categoryId, ...categoryQueryVars },
-    });
-
-    // Evict for the main templates page view if it's showing this category or all categories
-    const templatesPageCategoryId = currentCategory?.id;
-    if (
-      templatesPageCategoryId === categoryId ||
-      templatesPageCategoryId === null
-    ) {
+      // Evict for the specific category's view
+      const categoryQueryVars = getTemplateQueryVariables(categoryId as number);
       cache.evict({
         id: "ROOT_QUERY",
         fieldName: "templatesByCategoryId",
-        args: {
-          categoryId: templatesPageCategoryId ?? undefined,
-          ...templateQueryVariables,
-        },
+        args: { categoryId, ...categoryQueryVars },
       });
-    }
-  }, [getTemplateQueryVariables, currentCategory, templateQueryVariables]);
+
+      // Evict for the main templates page view if it's showing this category or all categories
+      const templatesPageCategoryId = currentCategory?.id;
+      if (
+        templatesPageCategoryId === categoryId ||
+        templatesPageCategoryId === null
+      ) {
+        cache.evict({
+          id: "ROOT_QUERY",
+          fieldName: "templatesByCategoryId",
+          args: {
+            categoryId: templatesPageCategoryId ?? undefined,
+            ...templateQueryVariables,
+          },
+        });
+      }
+    },
+    [getTemplateQueryVariables, currentCategory, templateQueryVariables]
+  );
 
   // Update template mutation
   const [updateTemplateMutation] = useMutation(
@@ -73,7 +75,7 @@ export const useTemplateMutations = () => {
         }
         cache.gc();
       },
-    },
+    }
   );
 
   // Create template mutation
@@ -85,7 +87,7 @@ export const useTemplateMutations = () => {
         evictTemplateQueries(cache, data.createTemplate.category?.id);
         cache.gc();
       },
-    },
+    }
   );
 
   // Delete template mutation
@@ -97,7 +99,7 @@ export const useTemplateMutations = () => {
         evictTemplateQueries(cache, data.deleteTemplate.category?.id);
         cache.gc();
       },
-    },
+    }
   );
 
   // Suspend template mutation
@@ -108,12 +110,12 @@ export const useTemplateMutations = () => {
         if (!data?.suspendTemplate) return;
         evictTemplateQueries(
           cache,
-          data.suspendTemplate.preSuspensionCategory?.id,
+          data.suspendTemplate.preSuspensionCategory?.id
         );
         cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
         cache.gc();
       },
-    },
+    }
   );
 
   // Unsuspend template mutation
@@ -126,7 +128,7 @@ export const useTemplateMutations = () => {
         cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
         cache.gc();
       },
-    },
+    }
   );
 
   return React.useMemo(
@@ -143,6 +145,6 @@ export const useTemplateMutations = () => {
       deleteTemplateMutation,
       suspendTemplateMutation,
       unsuspendTemplateMutation,
-    ],
+    ]
   );
 };

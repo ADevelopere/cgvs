@@ -1,8 +1,13 @@
-import type React from "react"
-import { Menu, MenuItem, Typography, Divider } from "@mui/material"
-import { PushPin, VisibilityOff, FitScreen, PinDrop } from "@mui/icons-material"
-import type { ColumnOptionsMenuProps } from "./types"
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext"
+import type React from "react";
+import { Menu, MenuItem, Typography, Divider } from "@mui/material";
+import {
+  PushPin,
+  VisibilityOff,
+  FitScreen,
+  PinDrop,
+} from "@mui/icons-material";
+import type { ColumnOptionsMenuProps } from "./types";
+import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 
 const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
   anchorEl,
@@ -19,8 +24,8 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
   onAutosize,
   onShowColumnManager,
 }) => {
-  const { strings } = useTableLocale()
-  if (!columnId) return null
+  const { strings } = useTableLocale();
+  if (!columnId) return null;
   return (
     <Menu
       anchorEl={anchorEl}
@@ -43,12 +48,18 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
       {/* Pin options */}
       {isPinnedLeft ? (
         <MenuItem onClick={() => onUnpin(columnId)}>
-          <PushPin style={{ marginRight: 8, transform: "rotate(45deg)" }} fontSize="small" />
+          <PushPin
+            style={{ marginRight: 8, transform: "rotate(45deg)" }}
+            fontSize="small"
+          />
           {strings.column.unpin}
         </MenuItem>
       ) : (
         <MenuItem onClick={() => onPinLeft(columnId)}>
-          <PushPin style={{ marginRight: 8, transform: "rotate(45deg)" }} fontSize="small" />
+          <PushPin
+            style={{ marginRight: 8, transform: "rotate(45deg)" }}
+            fontSize="small"
+          />
           {strings.column.pinLeft}
         </MenuItem>
       )}
@@ -87,7 +98,7 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
         {strings.column.showColumnManager}
       </MenuItem>
     </Menu>
-  )
-}
+  );
+};
 
-export default ColumnOptionsMenu
+export default ColumnOptionsMenu;

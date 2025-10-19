@@ -67,7 +67,7 @@ const StudentTable: React.FC = () => {
   const { columns } = useStudentTable();
 
   const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
-    {},
+    {}
   );
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const widthsInitialized = useRef(false);
@@ -91,7 +91,7 @@ const StudentTable: React.FC = () => {
 
     // First, handle non-resizable columns and load from localStorage
     let totalFixedWidth = 0;
-    columns.forEach((column) => {
+    columns.forEach(column => {
       if (!column.resizable) {
         if (column.initialWidth) {
           newWidths[column.id] = column.initialWidth;
@@ -106,21 +106,21 @@ const StudentTable: React.FC = () => {
 
     // Then distribute remaining width among resizable columns
     const resizableColumns = columns.filter(
-      (col) => col.resizable && !newWidths[col.id], // Only include columns not already set
+      col => col.resizable && !newWidths[col.id] // Only include columns not already set
     );
 
     if (resizableColumns.length > 0) {
       const remainingWidth = Math.max(totalWidth - totalFixedWidth, 0);
       const widthPerColumn = Math.floor(
-        remainingWidth / resizableColumns.length,
+        remainingWidth / resizableColumns.length
       );
 
-      resizableColumns.forEach((column) => {
+      resizableColumns.forEach(column => {
         newWidths[column.id] = Math.max(widthPerColumn, 50); // Ensure minimum width
       });
     }
 
-    columns.forEach((column) => {
+    columns.forEach(column => {
       if (column.widthStorageKey) {
         const savedWidth = loadFromLocalStorage<string>(column.widthStorageKey);
         if (savedWidth) {
@@ -172,8 +172,8 @@ const StudentTable: React.FC = () => {
       initialOrderBy={
         Array.isArray(queryParams.orderBy)
           ? queryParams.orderBy
-              .filter((clause) => clause.order) // Filter out null/undefined orders
-              .map((clause) => ({
+              .filter(clause => clause.order) // Filter out null/undefined orders
+              .map(clause => ({
                 column: clause.column.toLowerCase(),
                 order: clause.order as "ASC" | "DESC",
               }))

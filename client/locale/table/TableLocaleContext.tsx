@@ -10,7 +10,7 @@ interface TableLocaleContextValue {
 }
 
 const TableLocaleContext = createContext<TableLocaleContextValue | undefined>(
-  undefined,
+  undefined
 );
 
 interface TableLocaleProviderProps {
@@ -41,7 +41,7 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
         ? { ...target }
         : {};
       if (isObject(target) && isObject(source)) {
-        Object.keys(source).forEach((key) => {
+        Object.keys(source).forEach(key => {
           const sourceValue = source[key];
           const targetValue = target[key];
           if (isObject(sourceValue)) {
@@ -66,7 +66,7 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
       locale: activeLocale,
       strings,
     }),
-    [activeLocale, strings],
+    [activeLocale, strings]
   );
 
   return (

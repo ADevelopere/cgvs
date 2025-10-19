@@ -22,10 +22,10 @@ type State = {
 type Actions = {
   // Category selection actions
   selectCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null,
+    category: Graphql.TemplateCategoryWithParentTree | null
   ) => void;
   updateSelectedCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null,
+    category: Graphql.TemplateCategoryWithParentTree | null
   ) => void;
 
   // Lazy loading actions
@@ -36,12 +36,12 @@ type Actions = {
 
   // Template query variables actions
   setTemplateQueryVariables: (
-    vars: Graphql.TemplatesByCategoryIdQueryVariables,
+    vars: Graphql.TemplatesByCategoryIdQueryVariables
   ) => void;
   updateTemplateQueryVariables: (
     updater: (
-      current: Graphql.TemplatesByCategoryIdQueryVariables,
-    ) => Graphql.TemplatesByCategoryIdQueryVariables,
+      current: Graphql.TemplatesByCategoryIdQueryVariables
+    ) => Graphql.TemplatesByCategoryIdQueryVariables
   ) => void;
 
   // View mode actions
@@ -80,8 +80,8 @@ export const useTemplateListStore = create<TemplateListState>()(
     (set, get) => ({
       ...initialState,
 
-      selectCategory: (category) => {
-        set((state) => {
+      selectCategory: category => {
+        set(state => {
           // Early return if selecting the same category
           if (category?.id === state.currentCategory?.id) {
             return state;
@@ -102,7 +102,7 @@ export const useTemplateListStore = create<TemplateListState>()(
           const newFetchedIds = new Set(state.fetchedCategoryIds);
 
           // Mark all IDs in parentTree as fetched and expanded
-          category.parentTree.forEach((id) => {
+          category.parentTree.forEach(id => {
             newExpandedIds.add(id);
             newFetchedIds.add(id);
           });
@@ -119,8 +119,8 @@ export const useTemplateListStore = create<TemplateListState>()(
         });
       },
 
-      updateSelectedCategory: (category) => {
-        set((state) => {
+      updateSelectedCategory: category => {
+        set(state => {
           logger.log("updateSelectedCategory", category);
           logger.log("state.currentCategory", state.currentCategory);
           // Only update if we have a current category and the new category has the same ID
@@ -144,10 +144,10 @@ export const useTemplateListStore = create<TemplateListState>()(
         });
       },
 
-      setExpandedCategoryIds: (ids) => set({ expandedCategoryIds: ids }),
+      setExpandedCategoryIds: ids => set({ expandedCategoryIds: ids }),
 
-      toggleExpanded: (id) =>
-        set((state) => {
+      toggleExpanded: id =>
+        set(state => {
           const newSet = new Set(state.expandedCategoryIds);
           if (newSet.has(id)) {
             newSet.delete(id);
@@ -157,18 +157,18 @@ export const useTemplateListStore = create<TemplateListState>()(
           return { expandedCategoryIds: newSet };
         }),
 
-      markAsFetched: (id) =>
-        set((state) => {
+      markAsFetched: id =>
+        set(state => {
           const newSet = new Set(state.fetchedCategoryIds);
           newSet.add(id);
           return { fetchedCategoryIds: newSet };
         }),
 
-      isFetched: (id) => {
+      isFetched: id => {
         return get().fetchedCategoryIds.has(id);
       },
 
-      setTemplateQueryVariables: (vars) =>
+      setTemplateQueryVariables: vars =>
         set({
           templateQueryVariables: {
             ...vars,
@@ -176,12 +176,12 @@ export const useTemplateListStore = create<TemplateListState>()(
           },
         }),
 
-      updateTemplateQueryVariables: (updater) =>
-        set((state) => ({
+      updateTemplateQueryVariables: updater =>
+        set(state => ({
           templateQueryVariables: updater(state.templateQueryVariables),
         })),
 
-      setViewMode: (mode) => set({ viewMode: mode }),
+      setViewMode: mode => set({ viewMode: mode }),
 
       reset: () => set(initialState),
     }),
@@ -190,7 +190,7 @@ export const useTemplateListStore = create<TemplateListState>()(
       storage: createJSONStorage(() => sessionStorage),
       // Persist selections for restoration
       // expandedCategoryIds and fetchedCategoryIds are in-memory only (not persisted)
-      partialize: (state) => ({
+      partialize: state => ({
         currentCategory: state.currentCategory,
         templateQueryVariables: state.templateQueryVariables,
         viewMode: state.viewMode,
@@ -207,7 +207,7 @@ export const useTemplateListStore = create<TemplateListState>()(
         const fetchedCategoryIds = new Set<number>();
 
         if (currentCategory?.parentTree) {
-          currentCategory.parentTree.forEach((id) => {
+          currentCategory.parentTree.forEach(id => {
             expandedCategoryIds.add(id);
             fetchedCategoryIds.add(id);
           });
@@ -221,6 +221,6 @@ export const useTemplateListStore = create<TemplateListState>()(
           fetchedCategoryIds,
         };
       },
-    },
-  ),
+    }
+  )
 );

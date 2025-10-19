@@ -4,7 +4,7 @@ import {
 } from "@/client/graphql/generated/gql/graphql";
 
 export const mapTemplateToUpdateInput = (
-  template: Template,
+  template: Template
 ): TemplateUpdateInput => {
   if (!template.category) {
     throw new Error("Template category is required");
@@ -34,7 +34,7 @@ type TemplateParam = {
  */
 export function getTemplateImageUrl(
   template: TemplateParam,
-  isDark: boolean,
+  isDark: boolean
 ): string {
   // If template has an imageUrl, use it
   if (template.imageUrl) {

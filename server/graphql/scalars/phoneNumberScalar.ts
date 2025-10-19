@@ -3,47 +3,47 @@ import { GraphQLScalarType, Kind } from "graphql";
 
 // Pothos custom scalar for PhoneNumber
 export const PhoneNumberScalar = new GraphQLScalarType({
-    name: "PhoneNumber",
-    description: "A type representing a validated phone number",
-    serialize(value: unknown): string {
-        if (value instanceof PhoneNumber) {
-            return value.number;
+  name: "PhoneNumber",
+  description: "A type representing a validated phone number",
+  serialize(value: unknown): string {
+    if (value instanceof PhoneNumber) {
+      return value.number;
+    }
+    throw new TypeError(`Cannot serialize value as PhoneNumber: ${value}`);
+  },
+  parseValue(value: unknown): PhoneNumber {
+    if (typeof value === "string") {
+      try {
+        const phone = new PhoneNumber(value);
+        // Validate using google-libphonenumber
+        if (PhoneNumber.util.isValidNumber(phone.googlePhoneNumber)) {
+          return phone;
         }
-        throw new TypeError(`Cannot serialize value as PhoneNumber: ${value}`);
-    },
-    parseValue(value: unknown): PhoneNumber {
-        if (typeof value === "string") {
-            try {
-                const phone = new PhoneNumber(value);
-                // Validate using google-libphonenumber
-                if (PhoneNumber.util.isValidNumber(phone.googlePhoneNumber)) {
-                    return phone;
-                }
-                throw new TypeError("Invalid phone number");
-            } catch (err) {
-                throw new TypeError(
-                    `Invalid phone number: ${value}: ${(err as Error).message}`,
-                );
-            }
-        }
+        throw new TypeError("Invalid phone number");
+      } catch (err) {
         throw new TypeError(
-            `Expected string for PhoneNumber, got: ${typeof value}`,
+          `Invalid phone number: ${value}: ${(err as Error).message}`
         );
-    },
-    parseLiteral(ast): PhoneNumber {
-        if (ast.kind === Kind.STRING) {
-            try {
-                const phone = new PhoneNumber(ast.value);
-                if (PhoneNumber.util.isValidNumber(phone.googlePhoneNumber)) {
-                    return phone;
-                }
-                throw new TypeError("Invalid phone number");
-            } catch (err) {
-                throw new TypeError(
-                    `Invalid phone number literal: ${ast.value}: ${(err as Error).message}`,
-                );
-            }
+      }
+    }
+    throw new TypeError(
+      `Expected string for PhoneNumber, got: ${typeof value}`
+    );
+  },
+  parseLiteral(ast): PhoneNumber {
+    if (ast.kind === Kind.STRING) {
+      try {
+        const phone = new PhoneNumber(ast.value);
+        if (PhoneNumber.util.isValidNumber(phone.googlePhoneNumber)) {
+          return phone;
         }
-        throw new TypeError("PhoneNumber literal must be a string");
-    },
+        throw new TypeError("Invalid phone number");
+      } catch (err) {
+        throw new TypeError(
+          `Invalid phone number literal: ${ast.value}: ${(err as Error).message}`
+        );
+      }
+    }
+    throw new TypeError("PhoneNumber literal must be a string");
+  },
 });

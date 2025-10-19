@@ -35,21 +35,21 @@ const initialState: StorageDataState = {
 
 export const useStorageDataStore = create<
   StorageDataState & StorageDataActions
->((set) => ({
+>(set => ({
   ...initialState,
 
-  setItems: (items) => set({ items }),
+  setItems: items => set({ items }),
 
-  setPagination: (pagination) => set({ pagination }),
+  setPagination: pagination => set({ pagination }),
 
-  setParams: (params) => set({ params }),
+  setParams: params => set({ params }),
 
-  updateParams: (partial) =>
-    set((state) => ({
+  updateParams: partial =>
+    set(state => ({
       params: { ...state.params, ...partial },
     })),
 
-  setStats: (stats) => set({ stats }),
+  setStats: stats => set({ stats }),
 
   reset: () => set(initialState),
 }));

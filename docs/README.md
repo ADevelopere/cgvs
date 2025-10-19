@@ -134,16 +134,20 @@ Guidelines for developers contributing to the project.
 **Status:** Draft | Review | Approved
 
 ## Overview
+
 Brief description
 
 ## Table of Contents
+
 - [Section 1](#section-1)
 - [Section 2](#section-2)
 
 ## Content
+
 ...
 
 ## References
+
 Links to related documents
 ```
 
@@ -177,11 +181,11 @@ Links to related documents
 
 ## 📅 Document Review Schedule
 
-| Document | Last Review | Next Review | Owner |
-|----------|-------------|-------------|-------|
-| Security Hardening Plan | 2025-10-10 | 2025-11-10 | Security Team |
-| Auth Flow | TBD | TBD | Backend Team |
-| Redis Architecture | TBD | TBD | Backend Team |
+| Document                | Last Review | Next Review | Owner         |
+| ----------------------- | ----------- | ----------- | ------------- |
+| Security Hardening Plan | 2025-10-10  | 2025-11-10  | Security Team |
+| Auth Flow               | TBD         | TBD         | Backend Team  |
+| Redis Architecture      | TBD         | TBD         | Backend Team  |
 
 ---
 

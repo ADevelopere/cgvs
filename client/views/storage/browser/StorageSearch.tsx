@@ -41,7 +41,7 @@ const StorageSearch: React.FC = () => {
       setLastSelectedItem,
       setSearchMode,
       setSearchResults,
-    ],
+    ]
   );
 
   const exitSearchMode = React.useCallback(() => {
@@ -68,17 +68,17 @@ const StorageSearch: React.FC = () => {
     (query: string) => {
       const newHistory = [
         query,
-        ...searchHistory.filter((item) => item !== query),
+        ...searchHistory.filter(item => item !== query),
       ].slice(0, 10);
       setSearchHistory(newHistory);
       try {
         localStorage.setItem(
           STORAGE_SEARCH_HISTORY_KEY,
-          JSON.stringify(newHistory),
+          JSON.stringify(newHistory)
         );
       } catch {}
     },
-    [searchHistory],
+    [searchHistory]
   );
 
   const handleSearch = React.useCallback(
@@ -88,7 +88,7 @@ const StorageSearch: React.FC = () => {
         updateSearchHistory(query);
       }
     },
-    [search, updateSearchHistory],
+    [search, updateSearchHistory]
   );
 
   const handleClearSearch = React.useCallback(() => {
@@ -102,7 +102,7 @@ const StorageSearch: React.FC = () => {
         handleSearch(searchQuery);
       }
     },
-    [handleSearch, searchQuery],
+    [handleSearch, searchQuery]
   );
 
   return (
@@ -118,7 +118,7 @@ const StorageSearch: React.FC = () => {
             handleSearch(newValue);
           }
         }}
-        renderInput={(params) => (
+        renderInput={params => (
           <TextField
             {...params}
             placeholder={translations.searchPlaceholder}

@@ -11,7 +11,7 @@ import { TemplateManagementTabType } from "./useTemplateManagementStore";
 interface ManagementTabListProps {
   onChange: (
     event: React.SyntheticEvent,
-    newValue: TemplateManagementTabType,
+    newValue: TemplateManagementTabType
   ) => void;
   activeTab: TemplateManagementTabType;
   isLoading: boolean;

@@ -88,16 +88,16 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   const handleInputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         [name]: value,
       }));
     },
-    [],
+    []
   );
 
   const handleFileSelect = React.useCallback((file: FileInfo) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       imageUrl: file.url,
       imagePath: file.path,
@@ -106,7 +106,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   }, []);
 
   const handleRemoveImage = React.useCallback((): void => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       imageUrl: undefined,
       imagePath: undefined,

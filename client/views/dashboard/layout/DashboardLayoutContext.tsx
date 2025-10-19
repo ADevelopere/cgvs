@@ -45,7 +45,7 @@ export const DashboardLayoutProvider: React.FC<
   });
 
   const [titleState, setTitleState] = useState<Title | undefined>(
-    initialTitle || undefined,
+    initialTitle || undefined
   );
 
   const [sidebarState, setSidebarState] = useState<SidebarState>(() => {
@@ -62,7 +62,7 @@ export const DashboardLayoutProvider: React.FC<
 
     const normalizedPathname = pathname.replace(/\/$/, "");
 
-    return initialNavigation.map((navItem) => {
+    return initialNavigation.map(navItem => {
       // Skip non-page items (headers and dividers)
       if (navItem.kind === "header" || navItem.kind === "divider") {
         return navItem;
@@ -151,7 +151,7 @@ export const DashboardLayoutProvider: React.FC<
   ]);
 
   const toggleSidebar = useCallback(() => {
-    setSidebarState((current) => {
+    setSidebarState(current => {
       const newState = current === "expanded" ? "collapsed" : "expanded";
 
       localStorage.setItem(SIDEBAR_STATE_STORAGE_KEY, newState);
@@ -161,7 +161,7 @@ export const DashboardLayoutProvider: React.FC<
 
   const setDashboardSlot = useCallback(
     (slotName: SlotName, component: React.ReactNode | null) => {
-      setSlots((prevSlots) => {
+      setSlots(prevSlots => {
         const newSlots = {
           ...prevSlots,
           [slotName]: component || undefined,
@@ -171,21 +171,21 @@ export const DashboardLayoutProvider: React.FC<
       });
 
       return () => {
-        setSlots((prevSlots) => {
+        setSlots(prevSlots => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [slotName]: _, ...rest } = prevSlots;
           return rest;
         });
       };
     },
-    [],
+    []
   );
 
   const resetSlots = useCallback(() => {
-    setSlots((prevSlots) => {
+    setSlots(prevSlots => {
       const newSlots = { ...prevSlots };
 
-      Object.keys(newSlots).forEach((key) => {
+      Object.keys(newSlots).forEach(key => {
         newSlots[key as SlotName] = undefined;
       });
 
@@ -194,7 +194,7 @@ export const DashboardLayoutProvider: React.FC<
   }, []);
 
   const setTitleSlot = useCallback((slot: React.ReactNode) => {
-    setSlots((prevSlots) => {
+    setSlots(prevSlots => {
       const newSlots = {
         ...prevSlots,
         titleRenderer: slot,
@@ -204,7 +204,7 @@ export const DashboardLayoutProvider: React.FC<
     });
 
     return () => {
-      setSlots((prevSlots) => {
+      setSlots(prevSlots => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { titleRenderer: _, ...rest } = prevSlots;
         return rest;
@@ -214,7 +214,7 @@ export const DashboardLayoutProvider: React.FC<
 
   const setTitle = useCallback((newTitle: Title) => {
     return () => {
-      setTitleState((prev) => {
+      setTitleState(prev => {
         const updatedTitle = { ...prev, ...newTitle };
         return updatedTitle;
       });
@@ -276,7 +276,7 @@ export const useDashboardLayout = () => {
   const context = useContext(DashboardLayoutContext);
   if (!context) {
     throw new Error(
-      "useDashboardLayout must be used within a DashboardLayoutProvider",
+      "useDashboardLayout must be used within a DashboardLayoutProvider"
     );
   }
   return context;

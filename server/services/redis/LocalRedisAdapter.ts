@@ -16,7 +16,7 @@ export class LocalRedisAdapter implements IRedisService {
       retryStrategy: (times: number) => {
         const delay = Math.min(times * 50, 2000);
         logger.warn(
-          `Redis connection retry attempt ${times}, waiting ${delay}ms`,
+          `Redis connection retry attempt ${times}, waiting ${delay}ms`
         );
         return delay;
       },
@@ -46,7 +46,7 @@ export class LocalRedisAdapter implements IRedisService {
   async set(
     key: string,
     value: string,
-    options?: { ex?: number; px?: number },
+    options?: { ex?: number; px?: number }
   ): Promise<void> {
     if (options?.ex) {
       await this.client.set(key, value, "EX", options.ex);
@@ -74,7 +74,7 @@ export class LocalRedisAdapter implements IRedisService {
   }
 
   async pipeline(
-    commands: Array<{ command: string; args: string[] | number[] }>,
+    commands: Array<{ command: string; args: string[] | number[] }>
   ): Promise<unknown[]> {
     const pipeline = this.client.pipeline();
 

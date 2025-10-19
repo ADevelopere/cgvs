@@ -41,7 +41,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
     TemplateDocuments.suspendedTemplatesQueryDocument,
     {
       fetchPolicy: "cache-first",
-    },
+    }
   );
   const templates = suspendedData?.suspendedTemplates ?? [];
 
@@ -63,7 +63,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
             component="img"
             src={TemplateUtils.getTemplateImageUrl(
               { imageUrl: params.row.imageUrl },
-              theme.palette.mode === "dark",
+              theme.palette.mode === "dark"
             )}
             alt={`${params.row.name} ${strings.image}`}
             sx={{
@@ -113,7 +113,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
     },
   ];
 
-  const rows: TemplateRow[] = templates.map((template) => {
+  const rows: TemplateRow[] = templates.map(template => {
     if (!template.name) {
       throw new Error("Template name is required");
     }
@@ -140,7 +140,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
         columns={columns}
         loading={suspensionTemplatesLoading}
         sortModel={sortModel}
-        onSortModelChange={(model) => setSortModel(model)}
+        onSortModelChange={model => setSortModel(model)}
         initialState={{
           pagination: {
             paginationModel: {

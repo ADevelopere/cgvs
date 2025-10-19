@@ -8,7 +8,7 @@ export type QueryResolverOptions<TVariables> = {
 };
 
 export type ItemResolver<TNode extends ReactiveTreeNode, TVariables> = (
-  parent: TNode | undefined,
+  parent: TNode | undefined
 ) => QueryResolverOptions<TVariables>;
 
 export interface ReactiveTreeNode<TId = string | number> {
@@ -41,17 +41,17 @@ export interface ReactiveTreeProps<
   }) => React.ReactNode;
 
   // Selection
-  selectedItemId?: TNode['id'] | null;
+  selectedItemId?: TNode["id"] | null;
   onSelectItem?: (node: TNode) => void;
   onUpdateItem?: (node: TNode) => void;
 
   // Expansion state management (optional - uses internal state if not provided)
-  expandedItemIds?: Set<TNode['id']>;
-  onToggleExpand?: (nodeId: TNode['id']) => void;
+  expandedItemIds?: Set<TNode["id"]>;
+  onToggleExpand?: (nodeId: TNode["id"]) => void;
 
   // Fetch tracking (optional - uses internal state if not provided)
-  isFetched?: (nodeId: TNode['id']) => boolean;
-  onMarkAsFetched?: (nodeId: TNode['id']) => void;
+  isFetched?: (nodeId: TNode["id"]) => boolean;
+  onMarkAsFetched?: (nodeId: TNode["id"]) => void;
 
   // Styling
   itemHeight?: number;

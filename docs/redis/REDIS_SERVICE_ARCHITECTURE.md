@@ -168,45 +168,45 @@ UPSTASH_REDIS_REST_TOKEN=your-rest-token-here
 ### 1. Basic Operations
 
 ```typescript
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // Set with expiration
-await redisService.set('session:123', 'user-data', { ex: 3600 });
+await redisService.set("session:123", "user-data", { ex: 3600 });
 
 // Get value
-const data = await redisService.get('session:123');
+const data = await redisService.get("session:123");
 
 // Increment counter
-const views = await redisService.incr('page:views');
+const views = await redisService.incr("page:views");
 
 // Delete key
-await redisService.del('session:123');
+await redisService.del("session:123");
 ```
 
 ### 2. Rate Limiting (Current Implementation)
 
 ```typescript
 // server/lib/ratelimit.ts
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 class RateLimiter {
-    async limitSimple(identifier: string) {
-        const key = `ratelimit:${identifier}`;
-        const count = await redisService.get(key);
-        
-        if (!count) {
-            await redisService.set(key, '1', { ex: 60 });
-            return { success: true, remaining: 99 };
-        }
-        
-        const current = parseInt(count, 10);
-        if (current >= 100) {
-            return { success: false, remaining: 0 };
-        }
-        
-        await redisService.incr(key);
-        return { success: true, remaining: 100 - current };
+  async limitSimple(identifier: string) {
+    const key = `ratelimit:${identifier}`;
+    const count = await redisService.get(key);
+
+    if (!count) {
+      await redisService.set(key, "1", { ex: 60 });
+      return { success: true, remaining: 99 };
     }
+
+    const current = parseInt(count, 10);
+    if (current >= 100) {
+      return { success: false, remaining: 0 };
+    }
+
+    await redisService.incr(key);
+    return { success: true, remaining: 100 - current };
+  }
 }
 ```
 
@@ -214,27 +214,23 @@ class RateLimiter {
 
 ```typescript
 async function getTemplateWithCache(id: string) {
-    const cacheKey = `cache:template:${id}`;
-    
-    // Try cache first
-    const cached = await redisService.get(cacheKey);
-    if (cached) {
-        return JSON.parse(cached);
-    }
-    
-    // Fetch from database
-    const template = await db.query.templates.findFirst({
-        where: eq(templates.id, id)
-    });
-    
-    // Cache for 1 hour
-    await redisService.set(
-        cacheKey,
-        JSON.stringify(template),
-        { ex: 3600 }
-    );
-    
-    return template;
+  const cacheKey = `cache:template:${id}`;
+
+  // Try cache first
+  const cached = await redisService.get(cacheKey);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  // Fetch from database
+  const template = await db.query.templates.findFirst({
+    where: eq(templates.id, id),
+  });
+
+  // Cache for 1 hour
+  await redisService.set(cacheKey, JSON.stringify(template), { ex: 3600 });
+
+  return template;
 }
 ```
 
@@ -278,17 +274,17 @@ async function getTemplateWithCache(id: string) {
 
 ## 🔄 Provider Comparison
 
-| Aspect | Local Redis | Upstash Redis |
-|--------|-------------|---------------|
-| **Package** | ioredis | @upstash/redis |
-| **Connection** | TCP (persistent) | REST (stateless) |
-| **Setup** | Docker required | Cloud-based |
-| **Cost** | Free (self-hosted) | Free tier + usage-based |
-| **Latency** | ~1ms (local) | ~50-200ms (network) |
-| **Scaling** | Manual | Automatic |
-| **Maintenance** | Self-managed | Fully managed |
-| **Best For** | Dev, self-hosted prod | Serverless deployments |
-| **Deployment** | VPS, Docker, K8s | Vercel, Netlify, Lambda |
+| Aspect          | Local Redis           | Upstash Redis           |
+| --------------- | --------------------- | ----------------------- |
+| **Package**     | ioredis               | @upstash/redis          |
+| **Connection**  | TCP (persistent)      | REST (stateless)        |
+| **Setup**       | Docker required       | Cloud-based             |
+| **Cost**        | Free (self-hosted)    | Free tier + usage-based |
+| **Latency**     | ~1ms (local)          | ~50-200ms (network)     |
+| **Scaling**     | Manual                | Automatic               |
+| **Maintenance** | Self-managed          | Fully managed           |
+| **Best For**    | Dev, self-hosted prod | Serverless deployments  |
+| **Deployment**  | VPS, Docker, K8s      | Vercel, Netlify, Lambda |
 
 ---
 
@@ -331,22 +327,22 @@ async function getTemplateWithCache(id: string) {
 
 ```typescript
 // In tests
-jest.mock('@/server/services/redis', () => ({
-    redisService: {
-        get: jest.fn(),
-        set: jest.fn(),
-        incr: jest.fn(),
-        del: jest.fn(),
-    }
+jest.mock("@/server/services/redis", () => ({
+  redisService: {
+    get: jest.fn(),
+    set: jest.fn(),
+    incr: jest.fn(),
+    del: jest.fn(),
+  },
 }));
 
 // Test rate limiting
-it('should limit requests', async () => {
-    const { redisService } = require('@/server/services/redis');
-    redisService.get.mockResolvedValue('100');
-    
-    const result = await checkRateLimit('user-ip');
-    expect(result.success).toBe(false);
+it("should limit requests", async () => {
+  const { redisService } = require("@/server/services/redis");
+  redisService.get.mockResolvedValue("100");
+
+  const result = await checkRateLimit("user-ip");
+  expect(result.success).toBe(false);
 });
 ```
 
@@ -355,14 +351,14 @@ it('should limit requests', async () => {
 ```typescript
 // Add to API routes
 export async function GET() {
-    const redisHealth = await RedisServiceFactory.healthCheck();
-    
-    return Response.json({
-        status: redisHealth ? 'healthy' : 'unhealthy',
-        services: {
-            redis: redisHealth
-        }
-    });
+  const redisHealth = await RedisServiceFactory.healthCheck();
+
+  return Response.json({
+    status: redisHealth ? "healthy" : "unhealthy",
+    services: {
+      redis: redisHealth,
+    },
+  });
 }
 ```
 
@@ -404,9 +400,9 @@ REDIS_URL=redis://:your-strong-password@localhost:6379
 ```typescript
 // Batch multiple operations
 await redisService.pipeline([
-    { command: 'set', args: ['key1', 'val1'] },
-    { command: 'set', args: ['key2', 'val2'] },
-    { command: 'incr', args: ['counter'] },
+  { command: "set", args: ["key1", "val1"] },
+  { command: "set", args: ["key2", "val2"] },
+  { command: "incr", args: ["counter"] },
 ]);
 ```
 
@@ -485,8 +481,8 @@ docker exec -it cgvs_redis redis-cli keys 'ratelimit:*'
 
 ```typescript
 // ❌ Tightly coupled to Upstash
-import { Redis } from '@upstash/redis';
-const redis = new Redis({ url: '...', token: '...' });
+import { Redis } from "@upstash/redis";
+const redis = new Redis({ url: "...", token: "..." });
 
 // ❌ Doesn't work with local Redis
 // ❌ Hard to test
@@ -497,7 +493,7 @@ const redis = new Redis({ url: '...', token: '...' });
 
 ```typescript
 // ✅ Works with any provider
-import { redisService } from '@/server/services/redis';
+import { redisService } from "@/server/services/redis";
 
 // ✅ Environment-based provider selection
 // ✅ Easy to test with mocks

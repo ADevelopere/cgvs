@@ -16,7 +16,7 @@ interface StorageUploadActions {
   updateBatchProgress: (
     fileKey: string,
     progress: number,
-    bytesUploaded: number,
+    bytesUploaded: number
   ) => void;
   clearUploadBatch: () => void;
   reset: () => void;
@@ -28,13 +28,13 @@ const initialState: StorageUploadState = {
 
 export const useStorageUploadStore = create<
   StorageUploadState & StorageUploadActions
->((set) => ({
+>(set => ({
   ...initialState,
 
-  setUploadBatch: (batch) => set({ uploadBatch: batch }),
+  setUploadBatch: batch => set({ uploadBatch: batch }),
 
   updateFileState: (fileKey, updates) =>
-    set((state) => {
+    set(state => {
       if (!state.uploadBatch) return state;
 
       const updatedFiles = new Map(state.uploadBatch.files);
@@ -52,7 +52,7 @@ export const useStorageUploadStore = create<
     }),
 
   updateBatchProgress: (fileKey, progress, bytesUploaded) =>
-    set((state) => {
+    set(state => {
       if (!state.uploadBatch) return state;
 
       const updatedFiles = new Map(state.uploadBatch.files);

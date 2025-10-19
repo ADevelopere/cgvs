@@ -27,41 +27,49 @@ const initialState: RecipientGroupDialogState = {
   infoDialogOpen: false,
   settingsDialogOpen: false,
   deleteDialogOpen: false,
-  selectedGroupId: null
+  selectedGroupId: null,
 };
 
-export const useRecipientGroupDialogStore = create<RecipientGroupDialogState & RecipientGroupDialogActions>((set) => ({
+export const useRecipientGroupDialogStore = create<
+  RecipientGroupDialogState & RecipientGroupDialogActions
+>(set => ({
   ...initialState,
-  
+
   openCreateDialog: () => set({ createDialogOpen: true }),
   closeCreateDialog: () => set({ createDialogOpen: false }),
-  
-  openInfoDialog: (groupId) => set({ 
-    infoDialogOpen: true, 
-    selectedGroupId: groupId 
-  }),
-  closeInfoDialog: () => set({ 
-    infoDialogOpen: false, 
-    selectedGroupId: null 
-  }),
-  
-  openSettingsDialog: (groupId) => set({ 
-    settingsDialogOpen: true, 
-    selectedGroupId: groupId 
-  }),
-  closeSettingsDialog: () => set({ 
-    settingsDialogOpen: false, 
-    selectedGroupId: null 
-  }),
-  
-  openDeleteDialog: (groupId) => set({ 
-    deleteDialogOpen: true, 
-    selectedGroupId: groupId 
-  }),
-  closeDeleteDialog: () => set({ 
-    deleteDialogOpen: false, 
-    selectedGroupId: null 
-  }),
-  
-  reset: () => set(initialState)
+
+  openInfoDialog: groupId =>
+    set({
+      infoDialogOpen: true,
+      selectedGroupId: groupId,
+    }),
+  closeInfoDialog: () =>
+    set({
+      infoDialogOpen: false,
+      selectedGroupId: null,
+    }),
+
+  openSettingsDialog: groupId =>
+    set({
+      settingsDialogOpen: true,
+      selectedGroupId: groupId,
+    }),
+  closeSettingsDialog: () =>
+    set({
+      settingsDialogOpen: false,
+      selectedGroupId: null,
+    }),
+
+  openDeleteDialog: groupId =>
+    set({
+      deleteDialogOpen: true,
+      selectedGroupId: groupId,
+    }),
+  closeDeleteDialog: () =>
+    set({
+      deleteDialogOpen: false,
+      selectedGroupId: null,
+    }),
+
+  reset: () => set(initialState),
 }));

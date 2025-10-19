@@ -5,12 +5,12 @@
  * @returns {string} - 'empty', 'short', or 'valid' based on the password length.
  */
 export const isPasswordValid = (password: string): string => {
-    if (password.length === 0) {
-        return "empty";
-    } else if (password.length < 8) {
-        return "short";
-    }
-    return "valid";
+  if (password.length === 0) {
+    return "empty";
+  } else if (password.length < 8) {
+    return "short";
+  }
+  return "valid";
 };
 
 // Function to validate confirm password
@@ -21,15 +21,15 @@ export const isPasswordValid = (password: string): string => {
  * @returns {string} - 'empty', 'short', 'mismatch', or 'valid' based on the validation.
  */
 export const isValidConfirmPassword = (
-    confirmPassword: string,
-    password: string,
+  confirmPassword: string,
+  password: string
 ): string => {
-    if (confirmPassword.length === 0) {
-        return "empty";
-    } else if (confirmPassword.length < 8) {
-        return "short";
-    } else if (confirmPassword !== password) {
-        return "mismatch";
-    }
-    return "valid";
+  if (confirmPassword.length === 0) {
+    return "empty";
+  } else if (confirmPassword.length < 8) {
+    return "short";
+  } else if (confirmPassword !== password) {
+    return "mismatch";
+  }
+  return "valid";
 };

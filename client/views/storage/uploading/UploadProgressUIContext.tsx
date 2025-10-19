@@ -62,7 +62,7 @@ export const useUploadProgressUI = () => {
   const context = useContext(UploadProgressUIContext);
   if (!context) {
     throw new Error(
-      "useUploadProgressUI must be used within an UploadProgressUIProvider",
+      "useUploadProgressUI must be used within an UploadProgressUIProvider"
     );
   }
   return context;
@@ -151,13 +151,13 @@ export const UploadProgressUIProvider: React.FC<{
         progress: fileState.progress,
         status: fileState.status,
         error: fileState.error,
-      }),
+      })
     );
   }, [storageUpload.uploadBatch?.files]);
 
   // UI action handlers
   const onToggleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
+    setIsCollapsed(prev => !prev);
   }, []);
 
   const onClose = useCallback(() => {
@@ -171,7 +171,7 @@ export const UploadProgressUIProvider: React.FC<{
 
   const onCancelFile = useCallback(
     (fileKey: string) => {
-      const file = files.find((f) => f.fileKey === fileKey);
+      const file = files.find(f => f.fileKey === fileKey);
       if (file) {
         setCancelTarget({
           type: "file",
@@ -181,7 +181,7 @@ export const UploadProgressUIProvider: React.FC<{
         setShowCancelDialog(true);
       }
     },
-    [files],
+    [files]
   );
 
   const onConfirmCancel = useCallback(() => {
@@ -236,7 +236,7 @@ export const UploadProgressUIProvider: React.FC<{
       onCancelFile,
       onConfirmCancel,
       onDismissDialog,
-    ],
+    ]
   );
 
   return (

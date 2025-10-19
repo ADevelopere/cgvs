@@ -34,12 +34,12 @@ const NavItem: React.FC<{
           ? item.segment
           : `/${item.segment}`
         : "#"),
-    [item],
+    [item]
   );
 
   const itemIsActive = React.useMemo(
     () => isPathActive(item, currentPathname),
-    [item, currentPathname],
+    [item, currentPathname]
   );
 
   return (

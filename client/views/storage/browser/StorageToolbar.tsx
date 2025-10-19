@@ -10,49 +10,49 @@ import StorageSelectionActions from "./StorageSelectionActions";
  * Provides smooth transitions between the two states.
  */
 const StorageToolbar: React.FC = () => {
-    const { selectedItems } = useStorageUIStore();
+  const { selectedItems } = useStorageUIStore();
 
-    const hasSelection = selectedItems.length > 0;
+  const hasSelection = selectedItems.length > 0;
 
-    return (
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        minHeight: 64, // Ensure consistent height to prevent layout shift
+        overflow: "hidden",
+      }}
+    >
+      {/* Filters Component - Visible when no items are selected */}
+      <Fade in={!hasSelection} timeout={200}>
         <Box
-            sx={{
-                position: "relative",
-                minHeight: 64, // Ensure consistent height to prevent layout shift
-                overflow: "hidden",
-            }}
+          sx={{
+            position: hasSelection ? "absolute" : "relative",
+            top: 0,
+            left: 0,
+            right: 0,
+            visibility: hasSelection ? "hidden" : "visible",
+          }}
         >
-            {/* Filters Component - Visible when no items are selected */}
-            <Fade in={!hasSelection} timeout={200}>
-                <Box
-                    sx={{
-                        position: hasSelection ? "absolute" : "relative",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        visibility: hasSelection ? "hidden" : "visible",
-                    }}
-                >
-                    <StorageFilters />
-                </Box>
-            </Fade>
-
-            {/* Selection Actions Component - Visible when items are selected */}
-            <Fade in={hasSelection} timeout={200}>
-                <Box
-                    sx={{
-                        position: !hasSelection ? "absolute" : "relative",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        visibility: !hasSelection ? "hidden" : "visible",
-                    }}
-                >
-                    <StorageSelectionActions />
-                </Box>
-            </Fade>
+          <StorageFilters />
         </Box>
-    );
+      </Fade>
+
+      {/* Selection Actions Component - Visible when items are selected */}
+      <Fade in={hasSelection} timeout={200}>
+        <Box
+          sx={{
+            position: !hasSelection ? "absolute" : "relative",
+            top: 0,
+            left: 0,
+            right: 0,
+            visibility: !hasSelection ? "hidden" : "visible",
+          }}
+        >
+          <StorageSelectionActions />
+        </Box>
+      </Fade>
+    </Box>
+  );
 };
 
 export default StorageToolbar;

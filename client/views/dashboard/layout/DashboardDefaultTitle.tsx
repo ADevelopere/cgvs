@@ -22,7 +22,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
         iconColor,
       },
     },
-    ref,
+    ref
   ) => {
     if (!titleVisible) return null;
 
@@ -103,7 +103,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
         <TitleContent />
       </Box>
     );
-  },
+  }
 );
 
 DefaultTitle.displayName = "DefaultTitle";

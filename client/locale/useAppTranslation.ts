@@ -5,15 +5,15 @@ import { useMemo } from "react";
 
 // const someTranslation = useAppTranslation("key");
 export const useAppTranslation = <T extends keyof Translations>(
-    namespace: T,
+  namespace: T
 ) => {
-    const { language } = useAppTheme();
-    const ts = useMemo(() => {
-        if (Object.values(AppLanguage).includes(language)) {
-            return translations[language];
-        }
-        return translations[AppLanguage.default];
-    }, [language]);
+  const { language } = useAppTheme();
+  const ts = useMemo(() => {
+    if (Object.values(AppLanguage).includes(language)) {
+      return translations[language];
+    }
+    return translations[AppLanguage.default];
+  }, [language]);
 
-    return ts[namespace];
+  return ts[namespace];
 };

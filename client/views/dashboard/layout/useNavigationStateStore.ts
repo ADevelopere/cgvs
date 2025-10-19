@@ -48,7 +48,7 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
          * @param params - URLSearchParams as string (e.g., 'tab=editor&filter=active')
          */
         savePageState: (pathname: string, params: string) => {
-          set((state) => ({
+          set(state => ({
             pageStates: {
               ...state.pageStates,
               [pathname]: {
@@ -66,7 +66,7 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
          * @param childPath - Last visited child path (e.g., '/admin/templates/15/manage?tab=editor')
          */
         saveLastVisitedChild: (parentPath: string, childPath: string) => {
-          set((state) => {
+          set(state => {
             const newState = {
               lastVisitedChildren: {
                 ...state.lastVisitedChildren,
@@ -108,7 +108,7 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
          * @param pathname - The page path to clear
          */
         clearPageState: (pathname: string) => {
-          set((state) => {
+          set(state => {
             const newPageStates = { ...state.pageStates };
             delete newPageStates[pathname];
             return { pageStates: newPageStates };
@@ -120,7 +120,7 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
          * @param parentPath - Parent path to clear
          */
         clearLastVisitedChild: (parentPath: string) => {
-          set((state) => {
+          set(state => {
             const newLastVisitedChildren = { ...state.lastVisitedChildren };
             delete newLastVisitedChildren[parentPath];
 
@@ -144,10 +144,10 @@ export const useNavigationStateStore = create<NavigationStateStore>()(
       name: "navigation-state-store",
       storage: createJSONStorage(() => sessionStorage),
       // Only persist the actual state data
-      partialize: (state) => ({
+      partialize: state => ({
         pageStates: state.pageStates,
         lastVisitedChildren: state.lastVisitedChildren,
       }),
-    },
-  ),
+    }
+  )
 );

@@ -19,14 +19,17 @@ interface DeleteConfirmationDialogProps {
   groups: TemplateRecipientGroup[];
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ groups }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
+  groups,
+}) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } = useRecipientGroupDialogs();
+  const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } =
+    useRecipientGroupDialogs();
   const { deleteGroup } = useRecipientGroupOperations();
 
   const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
     if (!selectedGroupId) return null;
-    return groups.find((g) => g.id === selectedGroupId) || null;
+    return groups.find(g => g.id === selectedGroupId) || null;
   }, [selectedGroupId, groups]);
 
   const handleDelete = useCallback(async () => {
@@ -89,11 +92,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ gro
         {(!selectedGroup ||
           !selectedGroup.studentCount ||
           selectedGroup.studentCount === 0) && (
-          <Button
-            onClick={handleDelete}
-            variant="contained"
-            color="error"
-          >
+          <Button onClick={handleDelete} variant="contained" color="error">
             {strings.delete}
           </Button>
         )}

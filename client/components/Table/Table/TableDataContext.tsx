@@ -42,7 +42,7 @@ export type TableDataContextType = {
 
   filter: (
     filterClause: FilterClause<unknown, unknown> | null,
-    columnId: string,
+    columnId: string
   ) => void;
 
   tempFilterValues: Record<string, string>;
@@ -53,24 +53,24 @@ export type TableDataContextType = {
   applyFilter: (columnId: string) => void;
 
   applyTextFilter: (
-    filterClause: FilterClause<string, TextFilterOperation>,
+    filterClause: FilterClause<string, TextFilterOperation>
   ) => void;
   getActiveTextFilter: (
-    columnId: string,
+    columnId: string
   ) => FilterClause<string, TextFilterOperation> | null;
 
   applyNumberFilter: (
-    filterClause: FilterClause<number, NumberFilterOperation>,
+    filterClause: FilterClause<number, NumberFilterOperation>
   ) => void;
   getActiveNumberFilter: (
-    columnId: string,
+    columnId: string
   ) => FilterClause<number, NumberFilterOperation> | null;
 
   applyDateFilter: (
-    filterClause: FilterClause<DateFilterValue, DateFilterOperation>,
+    filterClause: FilterClause<DateFilterValue, DateFilterOperation>
   ) => void;
   getActiveDateFilter: (
-    columnId: string,
+    columnId: string
   ) => FilterClause<DateFilterValue, DateFilterOperation> | null;
 
   clearFilter: (columnId: string) => void;
@@ -78,12 +78,12 @@ export type TableDataContextType = {
   // Cell Editing
   getEditingState: (
     rowId: string | number,
-    columnId: string,
+    columnId: string
   ) => TableCellEditingState | null;
   setEditingState: (
     rowId: string | number,
     columnId: string,
-    state: TableCellEditingState | null,
+    state: TableCellEditingState | null
   ) => void;
 };
 
@@ -92,7 +92,7 @@ const TableDataContext = createContext<TableDataContextType | null>(null);
 export type TableDataProviderProps = {
   onFilterChange?: (
     filterClause: FilterClause<unknown, unknown> | null,
-    columnId: string,
+    columnId: string
   ) => void;
   onSort?: (orderByClause: OrderByClause[]) => void;
   children: React.ReactNode;
@@ -109,7 +109,8 @@ export const TableDataProvider = ({
 }: TableDataProviderProps) => {
   const { columns } = useTableContext();
 
-  const [orderByClause, setOrderByClause] = useState<OrderByClause[]>(initialOrderBy);
+  const [orderByClause, setOrderByClause] =
+    useState<OrderByClause[]>(initialOrderBy);
   const [tempFilterValues, setTempFilterValues] = useState<
     Record<string, string>
   >({});
@@ -136,22 +137,22 @@ export const TableDataProvider = ({
   const getEditingState = useCallback(
     (
       rowId: string | number,
-      columnId: string,
+      columnId: string
     ): TableCellEditingState | null => {
       const cellKey = `${rowId}:${columnId}`;
       return editingCells[cellKey] ?? null;
     },
-    [editingCells],
+    [editingCells]
   );
 
   const setEditingState = useCallback(
     (
       rowId: string | number,
       columnId: string,
-      state: TableCellEditingState | null,
+      state: TableCellEditingState | null
     ) => {
       const cellKey = `${rowId}:${columnId}`;
-      setEditingCells((prev) => {
+      setEditingCells(prev => {
         if (state === null) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [cellKey]: removed, ...rest } = prev;
@@ -160,7 +161,7 @@ export const TableDataProvider = ({
         return { ...prev, [cellKey]: state };
       });
     },
-    [],
+    []
   );
 
   // Filter handling
@@ -168,13 +169,13 @@ export const TableDataProvider = ({
     (filterClause: FilterClause | null, columnId: string) => {
       onFilterChange?.(filterClause, columnId);
     },
-    [onFilterChange],
+    [onFilterChange]
   );
 
   const applyFilter = useCallback(
     (columnId: string) => {
       const value = tempFilterValues[columnId];
-      const column = columns.find((col) => col.id === columnId);
+      const column = columns.find(col => col.id === columnId);
       if (!column) return;
 
       // Handle client-side filtering
@@ -196,7 +197,7 @@ export const TableDataProvider = ({
         : null;
       onFilterChange?.(filterClause, columnId);
     },
-    [columns, tempFilterValues, onFilterChange],
+    [columns, tempFilterValues, onFilterChange]
   );
 
   // Helper to get the active text filter for a column
@@ -222,7 +223,7 @@ export const TableDataProvider = ({
 
       return null;
     },
-    [filters],
+    [filters]
   );
   // Helper to get the active number filter for a column
   const getActiveNumberFilter = useCallback(
@@ -238,13 +239,13 @@ export const TableDataProvider = ({
 
       return null;
     },
-    [filters],
+    [filters]
   );
 
   // Helper to get the active date filter for a column
   const getActiveDateFilter = useCallback(
     (
-      columnId: string,
+      columnId: string
     ): FilterClause<DateFilterValue, DateFilterOperation> | null => {
       // Then check client filters
       const filter = filters?.[columnId];
@@ -257,28 +258,28 @@ export const TableDataProvider = ({
 
       return null;
     },
-    [filters],
+    [filters]
   );
 
   const applyTextFilter = useCallback(
     (filterClause: FilterClause<string, TextFilterOperation>) => {
       onFilterChange?.(filterClause, filterClause.columnId);
     },
-    [onFilterChange],
+    [onFilterChange]
   );
 
   const applyNumberFilter = useCallback(
     (filterClause: FilterClause<number, NumberFilterOperation>) => {
       onFilterChange?.(filterClause, filterClause.columnId);
     },
-    [onFilterChange],
+    [onFilterChange]
   );
 
   const applyDateFilter = useCallback(
     (filterClause: FilterClause<DateFilterValue, DateFilterOperation>) => {
       onFilterChange?.(filterClause, filterClause.columnId);
     },
-    [onFilterChange],
+    [onFilterChange]
   );
 
   // Clear filter for a specific column
@@ -286,14 +287,14 @@ export const TableDataProvider = ({
     (columnId: string) => {
       onFilterChange?.(null, columnId);
     },
-    [onFilterChange],
+    [onFilterChange]
   );
 
   // Sort handling
   const sort = useCallback((columnId: string) => {
-    setOrderByClause((prevOrderByClause) => {
+    setOrderByClause(prevOrderByClause => {
       const columnIndex = prevOrderByClause.findIndex(
-        (clause) => clause.column === columnId,
+        clause => clause.column === columnId
       );
 
       let newOrderByClause = [...prevOrderByClause];
@@ -313,7 +314,7 @@ export const TableDataProvider = ({
       } else {
         // Remove sort
         newOrderByClause = newOrderByClause.filter(
-          (_, index) => index !== columnIndex,
+          (_, index) => index !== columnIndex
         );
       }
       return newOrderByClause;
@@ -323,11 +324,11 @@ export const TableDataProvider = ({
   const getSortDirection = useCallback(
     (columnId: string): OrderSortDirection | null => {
       const clause = orderByClause.find(
-        (sortClause) => sortClause.column === columnId,
+        sortClause => sortClause.column === columnId
       );
       return clause?.order ?? null;
     },
-    [orderByClause],
+    [orderByClause]
   );
 
   const value: TableDataContextType = useMemo(
@@ -368,7 +369,7 @@ export const TableDataProvider = ({
       getActiveDateFilter,
       getEditingState,
       setEditingState,
-    ],
+    ]
   );
 
   return (

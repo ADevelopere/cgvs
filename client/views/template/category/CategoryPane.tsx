@@ -54,21 +54,21 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
       if (name.length > 255) return strings.nameTooLong;
       return "";
     },
-    [strings.nameTooLong, strings.nameTooShort],
+    [strings.nameTooLong, strings.nameTooShort]
   );
 
   const handleCategoryClick = React.useCallback(
     (category: TemplateCategoryWithParentTree) => {
       selectCategory(category);
     },
-    [selectCategory],
+    [selectCategory]
   );
 
   const handleCategoryUpdate = React.useCallback(
     (category: TemplateCategoryWithParentTree) => {
       updateSelectedCategory(category);
     },
-    [updateSelectedCategory],
+    [updateSelectedCategory]
   );
 
   const handleAddNewCategory = React.useCallback(() => {
@@ -97,7 +97,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         return (error as Error).message || strings.categoryAddFailed;
       }
     },
-    [createCategory, strings.categoryAddFailed, validateCategoryName],
+    [createCategory, strings.categoryAddFailed, validateCategoryName]
   );
 
   const handleUpdateCategory = React.useCallback(
@@ -121,7 +121,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         setCategoryToEdit(null);
       }
     },
-    [categoryToEdit, updateCategory],
+    [categoryToEdit, updateCategory]
   );
 
   const handleOpenEditDialog = (category: TemplateCategoryWithParentTree) => {
@@ -136,7 +136,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
 
   const handleCategoryNameEdit = async (
     category: TemplateCategoryWithParentTree,
-    newName: string,
+    newName: string
   ) => {
     const input: TemplateCategoryUpdateInput = {
       id: category.id,
@@ -151,36 +151,36 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     (nodeId: string | number) => {
       toggleExpanded(Number(nodeId));
     },
-    [toggleExpanded],
+    [toggleExpanded]
   );
 
   const handleIsFetched = React.useCallback(
     (nodeId: string | number) => {
       return isFetched(Number(nodeId));
     },
-    [isFetched],
+    [isFetched]
   );
 
   const handleMarkAsFetched = React.useCallback(
     (nodeId: string | number) => {
       markAsFetched(Number(nodeId));
     },
-    [markAsFetched],
+    [markAsFetched]
   );
 
   const getItems = React.useCallback(
     (data: CategoryChildrenQuery, parent?: TemplateCategoryWithParentTree) =>
-      data.categoryChildren.map((category) => ({
+      data.categoryChildren.map(category => ({
         ...category,
         __typename: undefined,
         parentTree: [...(parent ? [parent.id, ...parent.parentTree] : [])],
       })) || [],
-    [],
+    []
   );
 
   const getNodeLabel = React.useCallback(
     (node: TemplateCategoryWithParentTree) => node.name || String(node.id),
-    [],
+    []
   );
 
   return (
@@ -206,7 +206,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
           CategoryChildrenQuery,
           CategoryChildrenQueryVariables
         >
-          resolver={(parent) => ({
+          resolver={parent => ({
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: parent ? { parentCategoryId: parent.id } : undefined,
             fetchPolicy: "cache-first",
@@ -225,7 +225,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
               deleteCategory={deleteCategory}
               validateCategoryName={validateCategoryName}
               handleCategoryNameEdit={handleCategoryNameEdit}
-              createCategory={(input) => createCategory(input, node)}
+              createCategory={input => createCategory(input, node)}
             />
           )}
           // Selection

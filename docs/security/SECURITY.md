@@ -80,10 +80,10 @@ Please include the following information in your report:
 
 We provide security updates for the following versions:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| latest  | ✅ Yes             |
-| < 1.0   | ❌ No              |
+| Version | Supported |
+| ------- | --------- |
+| latest  | ✅ Yes    |
+| < 1.0   | ❌ No     |
 
 ---
 

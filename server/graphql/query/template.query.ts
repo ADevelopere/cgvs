@@ -11,7 +11,7 @@ import {
 } from "@/server/graphql/pothos";
 import { TemplateRepository } from "@/server/db/repo";
 
-gqlSchemaBuilder.queryFields((t) => ({
+gqlSchemaBuilder.queryFields(t => ({
   template: t.field({
     type: TemplatePothosObject,
     nullable: true,
@@ -30,7 +30,7 @@ gqlSchemaBuilder.queryFields((t) => ({
     },
     resolve: async (_, args) =>
       await TemplateRepository.findAllPaginated(
-        new PaginationArgs({ ...args.pagination }),
+        new PaginationArgs({ ...args.pagination })
       ),
   }),
 
@@ -56,7 +56,7 @@ gqlSchemaBuilder.queryFields((t) => ({
         args.categoryId,
         new PaginationArgs({ ...args.paginationArgs }),
         args.filterArgs,
-        args.orderBy,
+        args.orderBy
       ),
   }),
 

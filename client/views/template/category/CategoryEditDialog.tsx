@@ -36,10 +36,10 @@ const CategoryEditDialog: React.FC<Props> = ({
   const strings = useAppTranslation("templateCategoryTranslations");
   const [name, setName] = useState(categoryToEdit?.name ?? "");
   const [description, setDescription] = useState(
-    categoryToEdit?.description ?? "",
+    categoryToEdit?.description ?? ""
   );
   const [parentId, setParentId] = useState<number | null>(
-    categoryToEdit?.parentTree[0] ?? null,
+    categoryToEdit?.parentTree[0] ?? null
   );
   const [error, setError] = useState("");
 
@@ -54,12 +54,12 @@ const CategoryEditDialog: React.FC<Props> = ({
   const categoryOptions = React.useMemo(() => {
     const options = searchCategoriesData?.searchTemplateCategories ?? [];
     // Filter out current category and its subcategories to prevent circular references
-    return options.filter((c) => c.id !== categoryToEdit?.id);
+    return options.filter(c => c.id !== categoryToEdit?.id);
   }, [searchCategoriesData?.searchTemplateCategories, categoryToEdit?.id]);
 
   const selectedParentCategory = React.useMemo(
-    () => categoryOptions.find((c) => c.id === parentId) ?? null,
-    [categoryOptions, parentId],
+    () => categoryOptions.find(c => c.id === parentId) ?? null,
+    [categoryOptions, parentId]
   );
 
   // Debounced search handler
@@ -82,7 +82,7 @@ const CategoryEditDialog: React.FC<Props> = ({
         }, 300);
       }
     },
-    [searchCategories],
+    [searchCategories]
   );
 
   // Cleanup timeout on unmount
@@ -150,7 +150,7 @@ const CategoryEditDialog: React.FC<Props> = ({
             label={strings.name}
             fullWidth
             value={name}
-            onChange={(e) => {
+            onChange={e => {
               setName(e.target.value);
               setError("");
             }}
@@ -164,7 +164,7 @@ const CategoryEditDialog: React.FC<Props> = ({
             multiline
             rows={3}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
           />
 
           {!categoryToEdit?.specialType && (
@@ -178,11 +178,11 @@ const CategoryEditDialog: React.FC<Props> = ({
                 handleCategorySearch(newInputValue);
               }}
               options={categoryOptions}
-              getOptionLabel={(option) => option.name ?? strings.unnamed}
+              getOptionLabel={option => option.name ?? strings.unnamed}
               loading={searchLoading}
               loadingText={strings.loading}
               noOptionsText={strings.noCategories}
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   label={strings.parentCategory}

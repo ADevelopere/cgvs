@@ -10,22 +10,41 @@ import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
  */
 export const useTemplateVariableSelection = (variables: TemplateVariable[]) => {
   // Extract stable action references from stores
-  const toggleSelectAction = useTemplateVariableUIStore((state) => state.toggleSelect);
-  const selectAllAction = useTemplateVariableUIStore((state) => state.selectAll);
-  const clearSelectionAction = useTemplateVariableUIStore((state) => state.clearSelection);
-  const selectRangeAction = useTemplateVariableUIStore((state) => state.selectRange);
-  const setFocusedVariableAction = useTemplateVariableUIStore((state) => state.setFocusedVariable);
+  const toggleSelectAction = useTemplateVariableUIStore(
+    state => state.toggleSelect
+  );
+  const selectAllAction = useTemplateVariableUIStore(state => state.selectAll);
+  const clearSelectionAction = useTemplateVariableUIStore(
+    state => state.clearSelection
+  );
+  const selectRangeAction = useTemplateVariableUIStore(
+    state => state.selectRange
+  );
+  const setFocusedVariableAction = useTemplateVariableUIStore(
+    state => state.setFocusedVariable
+  );
 
-  const selectedVariables = useTemplateVariableUIStore((state) => state.selectedVariables);
-  const lastSelectedVariable = useTemplateVariableUIStore((state) => state.lastSelectedVariable);
-  const focusedVariable = useTemplateVariableUIStore((state) => state.focusedVariable);
+  const selectedVariables = useTemplateVariableUIStore(
+    state => state.selectedVariables
+  );
+  const lastSelectedVariable = useTemplateVariableUIStore(
+    state => state.lastSelectedVariable
+  );
+  const focusedVariable = useTemplateVariableUIStore(
+    state => state.focusedVariable
+  );
 
-  const toggleSelect = useCallback((id: number) => {
-    toggleSelectAction(id);
-  }, [toggleSelectAction]);
+  const toggleSelect = useCallback(
+    (id: number) => {
+      toggleSelectAction(id);
+    },
+    [toggleSelectAction]
+  );
 
   const selectAll = useCallback(() => {
-    const allIds = variables.map((variable) => variable.id).filter((id): id is number => id !== null);
+    const allIds = variables
+      .map(variable => variable.id)
+      .filter((id): id is number => id !== null);
     selectAllAction(allIds);
   }, [variables, selectAllAction]);
 
@@ -33,14 +52,22 @@ export const useTemplateVariableSelection = (variables: TemplateVariable[]) => {
     clearSelectionAction();
   }, [clearSelectionAction]);
 
-  const selectRange = useCallback((startId: number, endId: number) => {
-    const allIds = variables.map((variable) => variable.id).filter((id): id is number => id !== null);
-    selectRangeAction(startId, endId, allIds);
-  }, [variables, selectRangeAction]);
+  const selectRange = useCallback(
+    (startId: number, endId: number) => {
+      const allIds = variables
+        .map(variable => variable.id)
+        .filter((id): id is number => id !== null);
+      selectRangeAction(startId, endId, allIds);
+    },
+    [variables, selectRangeAction]
+  );
 
-  const setFocusedVariable = useCallback((id: number | null) => {
-    setFocusedVariableAction(id);
-  }, [setFocusedVariableAction]);
+  const setFocusedVariable = useCallback(
+    (id: number | null) => {
+      setFocusedVariableAction(id);
+    },
+    [setFocusedVariableAction]
+  );
 
   return {
     // Selection state

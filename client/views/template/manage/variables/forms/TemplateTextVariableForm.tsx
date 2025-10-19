@@ -22,7 +22,9 @@ type TemplateTextVariableFormProps = {
   templateId: number;
   variables: TemplateVariable[];
   onCreate: (data: TemplateTextVariableCreateInput) => Promise<void>;
-  onUpdate: (data: TemplateTextVariableCreateInput & { id: number }) => Promise<void>;
+  onUpdate: (
+    data: TemplateTextVariableCreateInput & { id: number }
+  ) => Promise<void>;
 };
 
 const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
@@ -32,12 +34,11 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
   onCreate,
   onUpdate,
 }) => {
-
   const editingVariable: TemplateTextVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
     return (
       (variables.find(
-        (v) => v.id === editingVariableID,
+        v => v.id === editingVariableID
       ) as TemplateTextVariable) || null
     );
   }, [editingVariableID, variables]);
@@ -63,7 +64,7 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
             ? event.target.checked
             : event.target.value;
 
-        setState((prevState) => {
+        setState(prevState => {
           if (field === "minLength" || field === "maxLength") {
             return {
               ...prevState,
@@ -85,7 +86,7 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
           };
         });
       },
-    [],
+    []
   );
 
   const handleSave = useCallback(async () => {

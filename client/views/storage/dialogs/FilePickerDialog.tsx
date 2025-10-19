@@ -49,7 +49,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
   // Filter items to show only folders and allowed files
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    return items.filter(item => {
       // Always show folders (DirectoryInfo)
       if (item.__typename === "DirectoryInfo") {
         return true;
@@ -63,7 +63,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         }
 
         // Check if file matches allowed types
-        return allowedFileTypes.some((allowedType) => {
+        return allowedFileTypes.some(allowedType => {
           if (allowedType.endsWith("/*")) {
             const baseType = allowedType.slice(0, -2);
             return item.contentType?.startsWith(baseType);
@@ -78,13 +78,13 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
   // Separate folders and files for better organization
   const folders = useMemo(
-    () => filteredItems.filter((item) => item.__typename === "DirectoryInfo"),
-    [filteredItems],
+    () => filteredItems.filter(item => item.__typename === "DirectoryInfo"),
+    [filteredItems]
   );
 
   const files = useMemo(
-    () => filteredItems.filter((item) => item.__typename === "FileInfo"),
-    [filteredItems],
+    () => filteredItems.filter(item => item.__typename === "FileInfo"),
+    [filteredItems]
   );
 
   // Load items for the current path
@@ -105,14 +105,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           setItems(result.items);
         } else {
           setError(
-            translations.filePickerDialogFailedToLoad || "Failed to load files",
+            translations.filePickerDialogFailedToLoad || "Failed to load files"
           );
           setItems([]);
         }
       } catch {
         setError(
           translations.filePickerDialogUnexpectedError ||
-            "An unexpected error occurred",
+            "An unexpected error occurred"
         );
         setItems([]);
       } finally {
@@ -123,7 +123,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       fetchList,
       translations.filePickerDialogFailedToLoad,
       translations.filePickerDialogUnexpectedError,
-    ],
+    ]
   );
 
   // Reset state when dialog opens/closes
@@ -146,7 +146,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       setCurrentPath(path);
       loadItems(path);
     },
-    [loadItems],
+    [loadItems]
   );
 
   // Get breadcrumb segments
@@ -179,13 +179,13 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       } catch {
         setError(
           translations.filePickerDialogUnexpectedError ||
-            "An unexpected error occurred",
+            "An unexpected error occurred"
         );
       } finally {
         setIsSelecting(false);
       }
     },
-    [onFileSelect, onClose, translations.filePickerDialogUnexpectedError],
+    [onFileSelect, onClose, translations.filePickerDialogUnexpectedError]
   );
 
   // Handle dialog close
@@ -203,7 +203,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         handleClose();
       }
     },
-    [handleClose, isLoading, isSelecting],
+    [handleClose, isLoading, isSelecting]
   );
 
   // Navigate up one level
@@ -371,7 +371,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                   </MUI.Typography>
                   <MUI.Table size="small">
                     <MUI.TableBody>
-                      {folders.map((folder) => (
+                      {folders.map(folder => (
                         <MUI.TableRow
                           key={folder.path}
                           hover
@@ -439,7 +439,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                       p: 2,
                     }}
                   >
-                    {files.map((file) => {
+                    {files.map(file => {
                       // Since we filtered by __typename === "FileInfo", this is guaranteed to be FileInfo
                       if (file.__typename !== "FileInfo") return null;
 
@@ -592,7 +592,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   );
 };
 
-const FilePickerDialog: React.FC<FilePickerDialogProps> = (props) => {
+const FilePickerDialog: React.FC<FilePickerDialogProps> = props => {
   return <FilePickerDialogContent {...props} />;
 };
 

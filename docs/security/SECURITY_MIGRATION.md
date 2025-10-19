@@ -82,10 +82,10 @@ Content-Security-Policy:
 
 ```typescript
 export function middleware(request: NextRequest) {
-    const start = Date.now();
-    logger.log(`[REQUEST] ${method} ${pathname}`);
-    // ... processing
-    logger.log(`[RESPONSE] - ${response.status} (${Date.now() - start}ms)`);
+  const start = Date.now();
+  logger.log(`[REQUEST] ${method} ${pathname}`);
+  // ... processing
+  logger.log(`[RESPONSE] - ${response.status} (${Date.now() - start}ms)`);
 }
 ```
 
@@ -121,14 +121,14 @@ export function middleware(request: NextRequest) {
 ```typescript
 // GraphQL (100/min)
 export const graphqlRateLimiter = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(100, "1 m"),
+  redis,
+  limiter: Ratelimit.slidingWindow(100, "1 m"),
 });
 
 // Auth (10/15min) - prevents brute force
 export const authRateLimiter = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(10, "15 m"),
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "15 m"),
 });
 ```
 
@@ -201,8 +201,8 @@ install(Authentication) {
 
 ```typescript
 export function validateEnvironment(): EnvironmentConfig {
-    // Validates all critical env vars
-    // Exits in production if invalid
+  // Validates all critical env vars
+  // Exits in production if invalid
 }
 ```
 
@@ -350,18 +350,18 @@ X-RateLimit-Remaining: 99
 
 ## 📊 Comparison Table
 
-| Feature | Ktor | Next.js | Status |
-|---------|------|---------|--------|
-| CORS | ✅ install(CORS) | ✅ next.config.ts + OPTIONS | ✅ Migrated |
-| Security Headers | ⚠️ Partial (Sessions) | ✅ Comprehensive | ✅ Enhanced |
-| Request Logging | ✅ CallLogging | ✅ middleware.ts | ✅ Migrated |
-| Compression | ✅ gzip/deflate | ✅ Auto (Next.js) | ✅ Migrated |
-| JWT Auth | ✅ install(Authentication) | ✅ gqlContextFactory | ✅ Migrated |
-| Sessions | ✅ Cookie-based | ✅ Cookie-based | ✅ Migrated |
-| Rate Limiting | ❌ Not implemented | ✅ Redis-based | ✅ **NEW!** |
-| Env Validation | ⚠️ Basic | ✅ Comprehensive | ✅ **Enhanced!** |
-| CSP Headers | ❌ Not implemented | ✅ Implemented | ✅ **NEW!** |
-| Health Checks | ⚠️ Basic | ✅ HEAD + OPTIONS | ✅ Enhanced |
+| Feature          | Ktor                       | Next.js                     | Status           |
+| ---------------- | -------------------------- | --------------------------- | ---------------- |
+| CORS             | ✅ install(CORS)           | ✅ next.config.ts + OPTIONS | ✅ Migrated      |
+| Security Headers | ⚠️ Partial (Sessions)      | ✅ Comprehensive            | ✅ Enhanced      |
+| Request Logging  | ✅ CallLogging             | ✅ middleware.ts            | ✅ Migrated      |
+| Compression      | ✅ gzip/deflate            | ✅ Auto (Next.js)           | ✅ Migrated      |
+| JWT Auth         | ✅ install(Authentication) | ✅ gqlContextFactory        | ✅ Migrated      |
+| Sessions         | ✅ Cookie-based            | ✅ Cookie-based             | ✅ Migrated      |
+| Rate Limiting    | ❌ Not implemented         | ✅ Redis-based              | ✅ **NEW!**      |
+| Env Validation   | ⚠️ Basic                   | ✅ Comprehensive            | ✅ **Enhanced!** |
+| CSP Headers      | ❌ Not implemented         | ✅ Implemented              | ✅ **NEW!**      |
+| Health Checks    | ⚠️ Basic                   | ✅ HEAD + OPTIONS           | ✅ Enhanced      |
 
 ---
 

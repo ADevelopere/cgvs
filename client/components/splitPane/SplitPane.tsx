@@ -144,7 +144,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
     }
 
     const stored = loadFromLocalStorage<StoredPaneState>(
-      getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey),
+      getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey)
     );
 
     return stored?.ratios ?? defaultRatios;
@@ -171,10 +171,10 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
       debouncedSaveToLocalStorage(
         getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey),
-        state,
+        state
       );
     },
-    [storageKey, firstPane.visible, secondPane.visible],
+    [storageKey, firstPane.visible, secondPane.visible]
   );
 
   // Update ratios when visibility changes
@@ -182,7 +182,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
     (
       firstVisible: boolean,
       secondVisible: boolean,
-      currentRatios = lastActiveRatios,
+      currentRatios = lastActiveRatios
     ) => {
       if (!firstVisible && secondVisible) {
         setPaneRatios({ first: 0, second: 1 });
@@ -193,7 +193,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
         setPaneRatios(currentRatios);
       }
     },
-    [lastActiveRatios],
+    [lastActiveRatios]
   );
 
   // Handler for visibility changes
@@ -206,7 +206,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
         savePaneState(lastActiveRatios);
       }
     },
-    [updateRatios, savePaneState, lastActiveRatios],
+    [updateRatios, savePaneState, lastActiveRatios]
   );
 
   // Initialize visibility based on props
@@ -249,7 +249,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
     setPane1Size(Math.max(firstMinSize, Math.min(firstMaxSize, newPane1Size)));
     setPane2Size(
-      Math.max(secondMinSize, Math.min(secondMaxSize, newPane2Size)),
+      Math.max(secondMinSize, Math.min(secondMaxSize, newPane2Size))
     );
   }, [
     containerWidth,
@@ -364,7 +364,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
       containerHeight,
       firstPane,
       secondPane,
-    ],
+    ]
   );
 
   const onMouseMove = useCallback(
@@ -375,7 +375,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
       };
       onTouchMove(eventWithTouches as unknown as TouchEvent<Document>);
     },
-    [onTouchMove],
+    [onTouchMove]
   );
 
   const onMouseUp = useCallback(() => {
@@ -519,7 +519,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
   const pane1Classes = ["Pane1", paneClassName, firstPane?.className].join(" ");
   const pane2Classes = ["Pane2", paneClassName, secondPane?.className].join(
-    " ",
+    " "
   );
   const resizerClassNames = resizerProps?.className
     ? `${resizerProps?.className} resizer`

@@ -27,7 +27,7 @@ export type TemplateVariableUpdateInputUnion =
 export const useTemplateVariableOperations = () => {
   const apollo = useTemplateVariableApolloMutations();
   const setOperationError = useTemplateVariableUIStore(
-    (state) => state.setOperationError,
+    state => state.setOperationError
   );
   const notifications = useNotifications();
   const strings = useAppTranslation("templateVariableTranslations");
@@ -36,7 +36,7 @@ export const useTemplateVariableOperations = () => {
   const createVariable = useCallback(
     async (
       type: Graphql.TemplateVariableType,
-      input: TemplateVariableCreateInputUnion,
+      input: TemplateVariableCreateInputUnion
     ): Promise<void> => {
       try {
         setOperationError("create", null);
@@ -83,7 +83,7 @@ export const useTemplateVariableOperations = () => {
         } else {
           logger.error(
             `Error creating ${type.toLowerCase()} variable:`,
-            result.error,
+            result.error
           );
           notifications.show(strings.variableAddFailed, {
             severity: "error",
@@ -108,14 +108,14 @@ export const useTemplateVariableOperations = () => {
         });
       }
     },
-    [apollo, notifications, strings, setOperationError],
+    [apollo, notifications, strings, setOperationError]
   );
 
   // Update variable helper
   const updateVariable = useCallback(
     async (
       type: Graphql.TemplateVariableType,
-      input: TemplateVariableUpdateInputUnion,
+      input: TemplateVariableUpdateInputUnion
     ): Promise<void> => {
       try {
         setOperationError("update", null);
@@ -162,7 +162,7 @@ export const useTemplateVariableOperations = () => {
         } else {
           logger.error(
             `Error updating ${type.toLowerCase()} variable:`,
-            result.error,
+            result.error
           );
           notifications.show(strings.variableUpdateFailed, {
             severity: "error",
@@ -187,7 +187,7 @@ export const useTemplateVariableOperations = () => {
         });
       }
     },
-    [apollo, notifications, strings, setOperationError],
+    [apollo, notifications, strings, setOperationError]
   );
 
   // Delete variable helper
@@ -230,7 +230,7 @@ export const useTemplateVariableOperations = () => {
         });
       }
     },
-    [apollo, notifications, strings, setOperationError],
+    [apollo, notifications, strings, setOperationError]
   );
 
   return useMemo(
@@ -239,6 +239,6 @@ export const useTemplateVariableOperations = () => {
       updateVariable,
       deleteVariable,
     }),
-    [createVariable, updateVariable, deleteVariable],
+    [createVariable, updateVariable, deleteVariable]
   );
 };

@@ -62,12 +62,12 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
         }
       }}
       onBlur={onBlur}
-      getOptionLabel={(option) => countryNameByCode(strings, option.code)}
+      getOptionLabel={option => countryNameByCode(strings, option.code)}
       renderOption={(
         props: React.HTMLAttributes<HTMLLIElement> & {
           key: string | number;
         },
-        option: CountryType,
+        option: CountryType
       ) => {
         // key is extracted from props to prevent it from being passed to the DOM
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -91,7 +91,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
           </Box>
         );
       }}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           label={label ?? strings.selectCountry}

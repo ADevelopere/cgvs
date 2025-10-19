@@ -30,7 +30,7 @@ const eslintConfig = [
       "client/graphql/generated/**",
     ],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
   {
     files: ["**/*.graphql"],
     languageOptions: {

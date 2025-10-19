@@ -134,7 +134,7 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
               onClick={() => onCancel(fileKey)}
               aria-label={translations.cancelUploadOf.replace(
                 "%{fileName}",
-                fileName,
+                fileName
               )}
               sx={{
                 padding: 0,
@@ -168,7 +168,7 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
     ) {
       const truncated = nameWithoutExtension.substring(
         0,
-        maxLength - extension.length - 4,
+        maxLength - extension.length - 4
       );
       return `${truncated}...${extension}`;
     }

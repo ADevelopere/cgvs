@@ -11,20 +11,20 @@ import { useState, useEffect } from "react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 
 type AppRouterCacheProviderProps = {
-    options?: {
-        key?: string;
-        enableCssLayer?: boolean;
-        nonce?: string;
-        stylisPlugins?: StylisPlugin[] | undefined;
-    };
-    CacheProvider?: typeof DefaultCacheProvider;
-    children: React.ReactNode;
-    initialLanguage?: string;
+  options?: {
+    key?: string;
+    enableCssLayer?: boolean;
+    nonce?: string;
+    stylisPlugins?: StylisPlugin[] | undefined;
+  };
+  CacheProvider?: typeof DefaultCacheProvider;
+  children: React.ReactNode;
+  initialLanguage?: string;
 };
 
 const rtlCache = createCache({
-    key: "rtl-mui",
-    stylisPlugins: [prefixer, rtlPlugin],
+  key: "rtl-mui",
+  stylisPlugins: [prefixer, rtlPlugin],
 });
 const ltrCache = createCache({ key: "mui", stylisPlugins: [prefixer] });
 
@@ -34,95 +34,95 @@ const ltrCache = createCache({ key: "mui", stylisPlugins: [prefixer] });
  * See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153 for why it's a problem.
  */
 export default function AppRouterCacheProvider(
-    props: AppRouterCacheProviderProps,
+  props: AppRouterCacheProviderProps
 ) {
-    const { options, CacheProvider = DefaultCacheProvider, children } = props;
-    const { isRtl } = useAppTheme();
-    const [cache, setCache] = useState(() => (isRtl ? rtlCache : ltrCache));
-    useEffect(() => {
-        setCache(isRtl ? rtlCache : ltrCache);
-    }, [isRtl]);
+  const { options, CacheProvider = DefaultCacheProvider, children } = props;
+  const { isRtl } = useAppTheme();
+  const [cache, setCache] = useState(() => (isRtl ? rtlCache : ltrCache));
+  useEffect(() => {
+    setCache(isRtl ? rtlCache : ltrCache);
+  }, [isRtl]);
 
-    const [registry] = useState(() => {
-        const prevInsert = cache.insert;
-        let inserted: { name: string; isGlobal: boolean }[] = [];
+  const [registry] = useState(() => {
+    const prevInsert = cache.insert;
+    let inserted: { name: string; isGlobal: boolean }[] = [];
 
-        cache.insert = (...args) => {
-            if (options?.enableCssLayer) {
-                args[1].styles = `@layer mui {${args[1].styles}}`;
-            }
-            const [selector, serialized] = args;
-            if (cache.inserted[serialized.name] === undefined) {
-                inserted.push({
-                    name: serialized.name,
-                    isGlobal: !selector,
-                });
-            }
-            return prevInsert(...args);
-        };
+    cache.insert = (...args) => {
+      if (options?.enableCssLayer) {
+        args[1].styles = `@layer mui {${args[1].styles}}`;
+      }
+      const [selector, serialized] = args;
+      if (cache.inserted[serialized.name] === undefined) {
+        inserted.push({
+          name: serialized.name,
+          isGlobal: !selector,
+        });
+      }
+      return prevInsert(...args);
+    };
 
-        const flush = () => {
-            const prevInserted = inserted;
-            inserted = [];
-            return prevInserted;
-        };
+    const flush = () => {
+      const prevInserted = inserted;
+      inserted = [];
+      return prevInserted;
+    };
 
-        return {
-            cache,
-            flush,
-        };
-    });
+    return {
+      cache,
+      flush,
+    };
+  });
 
-    useServerInsertedHTML(() => {
-        const inserted = registry.flush();
-        if (inserted.length === 0) {
-            return null;
+  useServerInsertedHTML(() => {
+    const inserted = registry.flush();
+    if (inserted.length === 0) {
+      return null;
+    }
+    let styles = "";
+    let dataEmotionAttribute = registry.cache.key;
+    const globals: { name: string; style: string }[] = [];
+    inserted.forEach(({ name, isGlobal }) => {
+      const style = registry.cache.inserted[name];
+      if (typeof style === "string") {
+        if (isGlobal) {
+          globals.push({
+            name,
+            style,
+          });
+        } else {
+          styles += style;
+          dataEmotionAttribute += ` ${name}`;
         }
-        let styles = "";
-        let dataEmotionAttribute = registry.cache.key;
-        const globals: { name: string; style: string }[] = [];
-        inserted.forEach(({ name, isGlobal }) => {
-            const style = registry.cache.inserted[name];
-            if (typeof style === "string") {
-                if (isGlobal) {
-                    globals.push({
-                        name,
-                        style,
-                    });
-                } else {
-                    styles += style;
-                    dataEmotionAttribute += ` ${name}`;
-                }
-            }
-        });
-        return /*#__PURE__*/ _jsxs(React.Fragment, {
-            children: [
-                globals.map(({ name, style }) =>
-                    /*#__PURE__*/ _jsx(
-                        "style",
-                        {
-                            nonce: options?.nonce,
-                            "data-emotion": `${registry.cache.key}-global ${name}`,
-                            dangerouslySetInnerHTML: {
-                                __html: style,
-                            },
-                        },
-                        name,
-                    ),
-                ),
-                styles &&
-                    /*#__PURE__*/ _jsx("style", {
-                        nonce: options?.nonce,
-                        "data-emotion": dataEmotionAttribute,
-                        dangerouslySetInnerHTML: {
-                            __html: styles,
-                        },
-                    }),
-            ],
-        });
+      }
     });
-    return /*#__PURE__*/ _jsx(CacheProvider, {
-        value: cache, // Use cache directly instead of registry.cache
-        children: children,
+    return /*#__PURE__*/ _jsxs(React.Fragment, {
+      children: [
+        globals.map(({ name, style }) =>
+          /*#__PURE__*/ _jsx(
+            "style",
+            {
+              nonce: options?.nonce,
+              "data-emotion": `${registry.cache.key}-global ${name}`,
+              dangerouslySetInnerHTML: {
+                __html: style,
+              },
+            },
+            name
+          )
+        ),
+        styles &&
+          /*#__PURE__*/ _jsx("style", {
+            nonce: options?.nonce,
+            "data-emotion": dataEmotionAttribute,
+            dangerouslySetInnerHTML: {
+              __html: styles,
+            },
+          }),
+      ],
     });
+  });
+  return /*#__PURE__*/ _jsx(CacheProvider, {
+    value: cache, // Use cache directly instead of registry.cache
+    children: children,
+  });
 }

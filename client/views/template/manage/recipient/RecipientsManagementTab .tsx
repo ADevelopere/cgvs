@@ -26,7 +26,7 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
 
   const handleTabChange = (
     _: React.SyntheticEvent,
-    newValue: "manage" | "add",
+    newValue: "manage" | "add"
   ) => {
     setActiveSubTab(newValue);
   };

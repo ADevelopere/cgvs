@@ -37,7 +37,7 @@ export const useTemplateCategoryOperations = () => {
   const createCategory = useCallback(
     async (
       input: Graphql.TemplateCategoryCreateInput,
-      parent: Graphql.TemplateCategoryWithParentTree | null,
+      parent: Graphql.TemplateCategoryWithParentTree | null
     ): Promise<void> => {
       try {
         const result = await categoryApollo.createTemplateCategoryMutation({
@@ -64,7 +64,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryAddFailed, { severity: "error" });
       }
     },
-    [categoryApollo, notifications, strings, selectCategory],
+    [categoryApollo, notifications, strings, selectCategory]
   );
 
   /**
@@ -93,7 +93,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryUpdateFailed, { severity: "error" });
       }
     },
-    [categoryApollo, notifications, strings],
+    [categoryApollo, notifications, strings]
   );
 
   /**
@@ -126,7 +126,7 @@ export const useTemplateCategoryOperations = () => {
         notifications.show(strings.categoryDeleteFailed, { severity: "error" });
       }
     },
-    [categoryApollo, notifications, strings, currentCategory, selectCategory],
+    [categoryApollo, notifications, strings, currentCategory, selectCategory]
   );
 
   /**
@@ -135,7 +135,7 @@ export const useTemplateCategoryOperations = () => {
    */
   const createTemplate = useCallback(
     async (
-      input: Graphql.CreateTemplateMutationVariables["input"],
+      input: Graphql.CreateTemplateMutationVariables["input"]
     ): Promise<void> => {
       try {
         const result = await templateApollo.createTemplateMutation({
@@ -172,7 +172,7 @@ export const useTemplateCategoryOperations = () => {
       strings.templateAddedSuccessfully,
       strings.templateAddFailed,
       setCurrentTemplateId,
-    ],
+    ]
   );
 
   /**
@@ -181,14 +181,14 @@ export const useTemplateCategoryOperations = () => {
    */
   const updateTemplate = useCallback(
     async (
-      input: Graphql.UpdateTemplateMutationVariables["input"],
+      input: Graphql.UpdateTemplateMutationVariables["input"]
     ): Promise<void> => {
       const updatedTemplate = await templateOperations.updateTemplate(input);
       if (updatedTemplate) {
         setCurrentTemplateId(updatedTemplate.id);
       }
     },
-    [templateOperations, setCurrentTemplateId],
+    [templateOperations, setCurrentTemplateId]
   );
 
   /**
@@ -206,7 +206,7 @@ export const useTemplateCategoryOperations = () => {
           notifications.show(
             strings.templateDeletedSuccessfully ||
               "Template deleted successfully",
-            { severity: "success" },
+            { severity: "success" }
           );
           // If the deleted template was the active one, clear it from the store
           if (currentTemplateId === id) {
@@ -216,14 +216,14 @@ export const useTemplateCategoryOperations = () => {
           logger.error("Error deleting template:", result.error);
           notifications.show(
             strings.templateDeleteFailed || "Failed to delete template",
-            { severity: "error" },
+            { severity: "error" }
           );
         }
       } catch (error) {
         logger.error("Error deleting template:", error);
         notifications.show(
           strings.templateDeleteFailed || "Failed to delete template",
-          { severity: "error" },
+          { severity: "error" }
         );
       }
     },
@@ -234,7 +234,7 @@ export const useTemplateCategoryOperations = () => {
       strings.templateDeleteFailed,
       currentTemplateId,
       setCurrentTemplateId,
-    ],
+    ]
   );
 
   /**
@@ -283,7 +283,7 @@ export const useTemplateCategoryOperations = () => {
       strings.templateMoveToDeletionFailed,
       currentTemplateId,
       setCurrentTemplateId,
-    ],
+    ]
   );
 
   /**
@@ -329,7 +329,7 @@ export const useTemplateCategoryOperations = () => {
       strings.templateRestoredSuccessfully,
       strings.templateRestoreFailed,
       setCurrentTemplateId,
-    ],
+    ]
   );
 
   const router = useRouter();
@@ -339,7 +339,7 @@ export const useTemplateCategoryOperations = () => {
       // Navigate to template management page
       router.push(`/admin/templates/${templateId}/manage`);
     },
-    [router],
+    [router]
   );
 
   return useMemo(
@@ -364,6 +364,6 @@ export const useTemplateCategoryOperations = () => {
       suspendTemplate,
       unsuspendTemplate,
       manageTemplate,
-    ],
+    ]
   );
 };

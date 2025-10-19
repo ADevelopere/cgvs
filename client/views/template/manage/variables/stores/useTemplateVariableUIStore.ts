@@ -30,16 +30,16 @@ const initialState: TemplateVariableUIState = {
 
 export const useTemplateVariableUIStore = create<
   TemplateVariableUIState & TemplateVariableUIActions
->((set) => ({
+>(set => ({
   ...initialState,
 
-  toggleSelect: (id) =>
-    set((state) => {
+  toggleSelect: id =>
+    set(state => {
       const isSelected = state.selectedVariables.includes(id);
       if (isSelected) {
         return {
           selectedVariables: state.selectedVariables.filter(
-            (variableId) => variableId !== id,
+            variableId => variableId !== id
           ),
           lastSelectedVariable:
             state.lastSelectedVariable === id
@@ -54,7 +54,7 @@ export const useTemplateVariableUIStore = create<
       }
     }),
 
-  selectAll: (ids) =>
+  selectAll: ids =>
     set({
       selectedVariables: ids,
       lastSelectedVariable: ids.length > 0 ? ids[ids.length - 1] : null,
@@ -67,7 +67,7 @@ export const useTemplateVariableUIStore = create<
     }),
 
   selectRange: (startId, endId, allIds) =>
-    set((state) => {
+    set(state => {
       const startIndex = allIds.indexOf(startId);
       const endIndex = allIds.indexOf(endId);
 
@@ -84,18 +84,18 @@ export const useTemplateVariableUIStore = create<
       };
     }),
 
-  setFocusedVariable: (id) => set({ focusedVariable: id }),
+  setFocusedVariable: id => set({ focusedVariable: id }),
 
   setOperationError: (operation, error) =>
-    set((state) => ({
+    set(state => ({
       operationErrors: {
         ...state.operationErrors,
         [operation]: error || "",
       },
     })),
 
-  clearOperationError: (operation) =>
-    set((state) => {
+  clearOperationError: operation =>
+    set(state => {
       const newErrors = { ...state.operationErrors };
       delete newErrors[operation];
       return { operationErrors: newErrors };

@@ -34,7 +34,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
 
   const groups: readonly TemplateRecipientGroup[] = React.useMemo(
     () => data?.templateRecipientGroupsByTemplateId ?? [],
-    [data],
+    [data]
   );
 
   // Show error state if there's an error
@@ -65,10 +65,10 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
       options={groups}
       loading={apolloLoading}
       openOnFocus
-      getOptionLabel={(option) => option.name || ""}
+      getOptionLabel={option => option.name || ""}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       noOptionsText={strings.noOptionsAvailable}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           label={strings.selectGroup}

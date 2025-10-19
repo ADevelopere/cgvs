@@ -62,7 +62,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
 
       return null;
     },
-    [translations],
+    [translations]
   );
 
   // Handle rename submission
@@ -136,7 +136,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
         handleClose();
       }
     },
-    [handleRename, handleClose, isLoading],
+    [handleRename, handleClose, isLoading]
   );
 
   // Handle text field changes
@@ -150,7 +150,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
         setError(null);
       }
     },
-    [error],
+    [error]
   );
 
   if (!item) {
@@ -206,7 +206,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
                 },
               },
             }}
-            onFocus={(event) => {
+            onFocus={event => {
               // Select all text when field is focused
               event.target.select();
             }}

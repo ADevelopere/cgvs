@@ -27,7 +27,7 @@ export const useRecipientGroupApolloMutations = () => {
             query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateRecipientGroupsByTemplateId) return existing;
             return {
               templateRecipientGroupsByTemplateId: [
@@ -35,10 +35,10 @@ export const useRecipientGroupApolloMutations = () => {
                 newGroup,
               ],
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Update recipient group mutation
@@ -58,11 +58,11 @@ export const useRecipientGroupApolloMutations = () => {
             query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateRecipientGroupsByTemplateId) return existing;
             const existingIndex =
               existing.templateRecipientGroupsByTemplateId.findIndex(
-                (g) => g.id === updated.id,
+                g => g.id === updated.id
               );
             if (existingIndex > -1) {
               const newGroups = [
@@ -75,10 +75,10 @@ export const useRecipientGroupApolloMutations = () => {
               return { templateRecipientGroupsByTemplateId: newGroups };
             }
             return existing;
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // Delete recipient group mutation
@@ -98,18 +98,18 @@ export const useRecipientGroupApolloMutations = () => {
             query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
             variables: { templateId },
           },
-          (existing) => {
+          existing => {
             if (!existing?.templateRecipientGroupsByTemplateId) return existing;
             return {
               templateRecipientGroupsByTemplateId:
                 existing.templateRecipientGroupsByTemplateId.filter(
-                  (g) => g.id !== deleted.id,
+                  g => g.id !== deleted.id
                 ),
             };
-          },
+          }
         );
       },
-    },
+    }
   );
 
   // useMemo ensures the hook returns a stable object, preventing unnecessary re-renders
@@ -135,6 +135,6 @@ export const useRecipientGroupApolloMutations = () => {
       createTemplateRecipientGroupMutation,
       updateTemplateRecipientGroupMutation,
       deleteTemplateRecipientGroupMutation,
-    ],
+    ]
   );
 };

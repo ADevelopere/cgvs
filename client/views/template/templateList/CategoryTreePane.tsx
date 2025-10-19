@@ -36,7 +36,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
 
   const categoryOptions = React.useMemo(
     () => searchCategoriesData?.searchTemplateCategories ?? [],
-    [searchCategoriesData?.searchTemplateCategories],
+    [searchCategoriesData?.searchTemplateCategories]
   );
 
   // Debounced search handler
@@ -59,7 +59,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
         }, 300);
       }
     },
-    [searchCategories],
+    [searchCategories]
   );
 
   // Handle input change for autocomplete
@@ -67,7 +67,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
     (_event: React.SyntheticEvent, newInputValue: string) => {
       handleCategorySearch(newInputValue);
     },
-    [handleCategorySearch],
+    [handleCategorySearch]
   );
 
   // Cleanup timeout on unmount
@@ -84,28 +84,28 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
     (nodeId: number) => {
       toggleExpanded(nodeId);
     },
-    [toggleExpanded],
+    [toggleExpanded]
   );
 
   const handleIsFetched = React.useCallback(
     (nodeId: number) => {
       return isFetched(nodeId);
     },
-    [isFetched],
+    [isFetched]
   );
 
   const handleMarkAsFetched = React.useCallback(
     (nodeId: number) => {
       markAsFetched(nodeId);
     },
-    [markAsFetched],
+    [markAsFetched]
   );
 
   const handleCategorySelect = React.useCallback(
     (category: TemplateCategoryWithParentTree) => {
       selectCategory(category);
     },
-    [selectCategory],
+    [selectCategory]
   );
 
   const handleClearCategory = React.useCallback(() => {
@@ -115,26 +115,26 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
   const handleAutocompleteChange = React.useCallback(
     (
       _: React.SyntheticEvent,
-      newValue: TemplateCategoryWithParentTree | null,
+      newValue: TemplateCategoryWithParentTree | null
     ) => {
       selectCategory(newValue);
     },
-    [selectCategory],
+    [selectCategory]
   );
 
   const getItems = React.useCallback(
     (data: CategoryChildrenQuery, parent?: TemplateCategoryWithParentTree) =>
-      data.categoryChildren.map((category) => ({
+      data.categoryChildren.map(category => ({
         ...category,
         __typename: undefined,
         parentTree: [...(parent ? [parent.id, ...parent.parentTree] : [])],
       })) || [],
-    [],
+    []
   );
 
   const getNodeLabel = React.useCallback(
     (node: TemplateCategoryWithParentTree) => node.name || String(node.id),
-    [],
+    []
   );
 
   return (
@@ -145,7 +145,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
         height: "100%",
         pt: disableTopPadding ? 14 : 8,
       }}
-      onClick={(e) => {
+      onClick={e => {
         // Click on empty area clears category selection
         if (e.target === e.currentTarget) {
           handleClearCategory();
@@ -167,7 +167,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
           inputValue={categorySearchTerm}
           onInputChange={handleInputChange}
           options={categoryOptions}
-          getOptionLabel={(option) => option.name ?? strings.unnamed}
+          getOptionLabel={option => option.name ?? strings.unnamed}
           loading={searchLoading}
           loadingText={strings.loading}
           noOptionsText={
@@ -176,7 +176,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
               : strings.selectCategory
           }
           sx={{ width: "100%", backgroundColor: "background.paper" }}
-          renderInput={(params) => (
+          renderInput={params => (
             <TextField
               {...params}
               label={strings.searchCategories}
@@ -203,7 +203,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
           CategoryChildrenQuery,
           CategoryChildrenQueryVariables
         >
-          resolver={(parent) => ({
+          resolver={parent => ({
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: parent ? { parentCategoryId: parent.id } : undefined,
             fetchPolicy: "cache-first",

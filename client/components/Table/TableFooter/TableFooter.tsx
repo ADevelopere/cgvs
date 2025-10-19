@@ -35,7 +35,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
         onPageChange(newPage + 1);
       }
     },
-    [onPageChange],
+    [onPageChange]
   );
 
   // Handle rows per page change
@@ -45,7 +45,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
         onRowsPerPageChange(Number.parseInt(event.target.value, 10));
       }
     },
-    [onRowsPerPageChange],
+    [onRowsPerPageChange]
   );
 
   const tfStyle = useMemo(
@@ -56,7 +56,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
       color: theme.palette.text.primary,
       backgroundColor: theme.palette.background.paper,
     }),
-    [theme],
+    [theme]
   );
 
   const labelDisplayedRows = useCallback(
@@ -64,9 +64,9 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
       strings.pagination.displayedRows(
         from,
         to,
-        typeof count === "number" ? count : to,
+        typeof count === "number" ? count : to
       ),
-    [strings],
+    [strings]
   );
 
   const getItemAriaLabel = useCallback(
@@ -84,7 +84,7 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
           return "";
       }
     },
-    [strings],
+    [strings]
   );
 
   return (
