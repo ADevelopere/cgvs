@@ -75,6 +75,7 @@
         "@eslint/eslintrc": "^3.3.1",
         "@faker-js/faker": "^10.0.0",
         "@graphql-eslint/eslint-plugin": "^4.4.0",
+        "@graphql-eslint/parser": "^0.1.0",
         "@parcel/watcher": "^2.5.1",
         "@types/bcryptjs": "^3.0.0",
         "@types/crypto-js": "^4.2.2",
@@ -324,6 +325,8 @@
     "@graphql-codegen/visitor-plugin-common": ["@graphql-codegen/visitor-plugin-common@6.0.1", "", { "dependencies": { "@graphql-codegen/plugin-helpers": "^6.0.0", "@graphql-tools/optimize": "^2.0.0", "@graphql-tools/relay-operation-optimizer": "^7.0.0", "@graphql-tools/utils": "^10.0.0", "auto-bind": "~4.0.0", "change-case-all": "1.0.15", "dependency-graph": "^1.0.0", "graphql-tag": "^2.11.0", "parse-filepath": "^1.0.2", "tslib": "~2.6.0" }, "peerDependencies": { "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-3gopoUYXn26PSj2UdCWmYj0QiRVD5qR3eDiXx72OQcN1Vb8qj6VfOWB+NDuD1Q1sgVYbCQVKgj92ERsSW1xH9Q=="],
 
     "@graphql-eslint/eslint-plugin": ["@graphql-eslint/eslint-plugin@4.4.0", "", { "dependencies": { "@graphql-tools/code-file-loader": "^8.0.0", "@graphql-tools/graphql-tag-pluck": "^8.3.4", "@graphql-tools/utils": "^10.0.0", "debug": "^4.3.4", "fast-glob": "^3.2.12", "graphql-config": "^5.1.3", "graphql-depth-limit": "^1.1.0", "lodash.lowercase": "^4.3.0" }, "peerDependencies": { "@apollo/subgraph": "^2", "eslint": ">=8.44.0", "graphql": "^16", "json-schema-to-ts": "^3" }, "optionalPeers": ["@apollo/subgraph", "json-schema-to-ts"] }, "sha512-dhW6fpk3Souuaphhc38uMAGCcgKMgtCJWFygIKODw/Kns43wiQqRPVay0aNFY1JBx3aevn4KPT/BCOdm6HNncA=="],
+
+    "@graphql-eslint/parser": ["@graphql-eslint/parser@0.1.0", "", { "dependencies": { "graphql": "^15.0.0" }, "peerDependencies": { "eslint": "^7.1.0" } }, "sha512-0E1YqsokbvVPKWYLpMWOVXYBFNj4cf/Lqp4NUk7TzYE5Xq3UzgRaprytD6O5dWyzcebLD4L755OxbOwx61l6CA=="],
 
     "@graphql-hive/signal": ["@graphql-hive/signal@1.0.0", "", {}, "sha512-RiwLMc89lTjvyLEivZ/qxAC5nBHoS2CtsWFSOsN35sxG9zoo5Z+JsFHM8MlvmO9yt+MJNIyC5MLE1rsbOphlag=="],
 
@@ -2034,6 +2037,8 @@
     "@graphql-codegen/typescript-operations/tslib": ["tslib@2.6.3", "", {}, "sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ=="],
 
     "@graphql-codegen/visitor-plugin-common/tslib": ["tslib@2.6.3", "", {}, "sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ=="],
+
+    "@graphql-eslint/parser/graphql": ["graphql@15.10.1", "", {}, "sha512-BL/Xd/T9baO6NFzoMpiMD7YUZ62R6viR5tp/MULVEnbYJXZA//kRNW7J0j1w/wXArgL0sCxhDfK5dczSKn3+cg=="],
 
     "@graphql-tools/batch-execute/@graphql-tools/utils": ["@graphql-tools/utils@10.8.6", "", { "dependencies": { "@graphql-typed-document-node/core": "^3.1.1", "@whatwg-node/promise-helpers": "^1.0.0", "cross-inspect": "1.0.1", "dset": "^3.1.4", "tslib": "^2.4.0" }, "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0" } }, "sha512-Alc9Vyg0oOsGhRapfL3xvqh1zV8nKoFUdtLhXX7Ki4nClaIJXckrA86j+uxEuG3ic6j4jlM1nvcWXRn/71AVLQ=="],
 

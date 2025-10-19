@@ -84,6 +84,7 @@
         "@eslint/eslintrc": "^3.3.1",
         "@faker-js/faker": "^10.0.0",
         "@graphql-eslint/eslint-plugin": "^4.4.0",
+        "@graphql-eslint/parser": "^0.1.0",
         "@parcel/watcher": "^2.5.1",
         "@types/bcryptjs": "^3.0.0",
         "@types/crypto-js": "^4.2.2",

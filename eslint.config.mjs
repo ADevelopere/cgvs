@@ -5,6 +5,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 import graphqlPlugin from "@graphql-eslint/eslint-plugin";
+import graphqlParser from "@graphql-eslint/parser";
 
 const tsEslintModule = await import("@typescript-eslint/eslint-plugin");
 const tsEslintPlugin = tsEslintModule.default;
@@ -26,20 +27,22 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "client/graphql/generated/**",
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     files: ["**/*.graphql"],
     languageOptions: {
-      parser: graphqlPlugin.parser,
+      parser: graphqlParser,
     },
     plugins: {
       "@graphql-eslint": graphqlPlugin,
     },
     rules: {
       "@graphql-eslint/known-type-names": "error",
-      // ... other GraphQL-ESLint rules
+      "@graphql-eslint/no-unused-fragments": "error",
+      "@graphql-eslint/no-unused-variables": "error",
     },
   },
   {
