@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # 1. Run the official installer
 echo "📦 Starting Bun installation..."
