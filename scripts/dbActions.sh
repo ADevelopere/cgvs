@@ -3,7 +3,17 @@
 
 set -e
 
-# List of actions and their corresponding bun commands
+# List of actions in order and their corresponding bun commands
+declare -a action_names=(
+  "Reset Database"
+  "Seed Database"
+  "Generate Drizzle Schema"
+  "Drop Drizzle Schema"
+  "Run Migrations"
+  "Push Schema to DB"
+  "Open Drizzle Studio"
+)
+
 declare -A actions
 actions=(
   ["Reset Database"]="bun run server/db/scripts/resetDb.ts"
@@ -15,12 +25,6 @@ actions=(
   ["Open Drizzle Studio"]="bun drizzle-kit studio"
 )
 
-# Get action names into an array (bash syntax)
-action_names=()
-for key in "${!actions[@]}"; do
-  action_names+=("$key")
-done
-
 # Use fzf for interactive selection (install if missing)
 if ! command -v fzf &> /dev/null; then
   echo "fzf is required for interactive selection. Install it with:"
@@ -28,33 +32,38 @@ if ! command -v fzf &> /dev/null; then
   exit 1
 fi
 
-selected=$(printf "%s\n" "${action_names[@]}" | fzf --prompt="Select DB action: " --height=10 --border)
+while true; do
+  selected=$(printf "%s\n" "${action_names[@]}" | fzf --prompt="Select DB action: " --height=10 --border)
 
-if [[ -z "$selected" ]]; then
-  echo "No action selected. Exiting."
-  exit 0
-fi
+  if [[ -z "$selected" ]]; then
+    echo "No action selected. Exiting."
+    exit 0
+  fi
 
-cmd="${actions[$selected]}"
+  cmd="${actions[$selected]}"
 
-if [[ -z "$cmd" ]]; then
-  echo "Error: No command found for selected action."
-  exit 1
-fi
+  if [[ -z "$cmd" ]]; then
+    echo "Error: No command found for selected action."
+    continue
+  fi
 
-echo "Running: $cmd"
-echo ""
+  echo "Running: $cmd"
+  echo ""
 
-# Run the selected command
-set +e  # Disable exit on error for the actual command
-bash -c "$cmd"
-exit_code=$?
-set -e  # Re-enable exit on error
+  # Run the selected command
+  set +e  # Disable exit on error for the actual command
+  bash -c "$cmd"
+  exit_code=$?
+  set -e  # Re-enable exit on error
 
-echo ""
-if [[ "$exit_code" -eq 0 ]]; then
-  echo "✓ Command completed successfully"
-else
-  echo "✗ Command failed with exit code: $exit_code"
-  exit "$exit_code"
-fi
+  echo ""
+  if [[ "$exit_code" -eq 0 ]]; then
+    echo "✓ Command completed successfully"
+  else
+    echo "✗ Command failed with exit code: $exit_code"
+  fi
+
+  echo ""
+  echo "Press Enter to continue or Ctrl+C to exit..."
+  read -r
+done

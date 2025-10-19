@@ -1,21 +1,19 @@
-/* eslint-disable no-console */
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { LogEntry, LogLevel, LoggerConfig } from "./types";
 
-type LogLevel = "log" | "info" | "warn" | "error" | "debug";
-
-class ServerLogger {
-  private enabled: boolean;
+class ClientLogger {
+  private config: LoggerConfig;
   private sessionId: string;
-  private logsDir: string;
 
   constructor() {
     // Only enable in development
-    this.enabled =
-      process.env.NODE_ENV === "development" ||
-      process.env.NODE_ENV === undefined;
+    const enabled = process.env.NODE_ENV === "development";
+
     this.sessionId = this.generateSessionId();
-    this.logsDir = join(process.cwd(), "logs");
+    this.config = {
+      enabled,
+      apiEndpoint: "/api/logs",
+      sessionId: this.sessionId,
+    };
   }
 
   private generateSessionId(): string {
@@ -62,6 +60,17 @@ class ServerLogger {
     }
   }
 
+  private getColorCode(level: LogLevel): string {
+    const colors = {
+      log: "#888",
+      info: "#2196F3",
+      warn: "#FF9800",
+      error: "#F44336",
+      debug: "#9C27B0",
+    };
+    return colors[level] || "#888";
+  }
+
   private formatTimestamp(): string {
     const now = new Date();
     const year = now.getFullYear();
@@ -75,33 +84,32 @@ class ServerLogger {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
   }
 
-  private async writeToFile(level: LogLevel, message: string): Promise<void> {
-    if (!this.enabled) return;
+  private async sendToAPI(level: LogLevel, message: string): Promise<void> {
+    if (!this.config.enabled) return;
 
     try {
-      // Create logs directory if it doesn't exist
-      try {
-        await mkdir(this.logsDir, { recursive: true });
-      } catch {
-        // Directory might already exist, ignore error
-      }
+      const logEntry: LogEntry = {
+        sessionId: this.sessionId,
+        level,
+        message,
+        timestamp: this.formatTimestamp(),
+        caller: this.getCallerInfo(),
+      };
 
-      const timestamp = this.formatTimestamp();
-      const caller = this.getCallerInfo();
-      const logLine = `[${timestamp}] [${level.toUpperCase()}] [${caller}] ${message}\n`;
-
-      // Write to session-based log file with server prefix
-      const logFileName = `server_${this.sessionId}.log`;
-      const logFilePath = join(this.logsDir, logFileName);
-
-      await writeFile(logFilePath, logLine, { flag: "a" });
+      await fetch(this.config.apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logEntry),
+      });
     } catch {
-      // Silently fail to avoid infinite loops
+      // Silently fail - don't log errors to avoid infinite loops
     }
   }
 
   private logToConsole(level: LogLevel, ...args: unknown[]): void {
-    if (!this.enabled) return;
+    if (!this.config.enabled) return;
 
     const message = args
       .map(arg =>
@@ -111,38 +119,40 @@ class ServerLogger {
 
     const caller = this.getCallerInfo();
     const timestamp = this.formatTimestamp();
+    const color = this.getColorCode(level);
 
-    // Console output with timestamp and caller info
+    // Console output with colors
     const consoleArgs = [
-      `[${timestamp}] [${level.toUpperCase()}] [${caller}]`,
+      `%c[${timestamp}] [${level.toUpperCase()}] [${caller}]`,
+      `color: ${color}; font-weight: bold;`,
       ...args,
     ];
 
     switch (level) {
       case "log":
-         
+        // eslint-disable-next-line no-console
         console.log(...consoleArgs);
         break;
       case "info":
-         
+        // eslint-disable-next-line no-console
         console.info(...consoleArgs);
         break;
       case "warn":
-         
+        // eslint-disable-next-line no-console
         console.warn(...consoleArgs);
         break;
       case "error":
-         
+        // eslint-disable-next-line no-console
         console.error(...consoleArgs);
         break;
       case "debug":
-         
+        // eslint-disable-next-line no-console
         console.debug(...consoleArgs);
         break;
     }
 
-    // Write to file
-    this.writeToFile(level, message);
+    // Send to API
+    this.sendToAPI(level, message);
   }
 
   public log(...args: unknown[]): void {
@@ -167,6 +177,6 @@ class ServerLogger {
 }
 
 // Create singleton instance
-const logger = new ServerLogger();
+const logger = new ClientLogger();
 
 export default logger;
