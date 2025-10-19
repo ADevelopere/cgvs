@@ -3,7 +3,6 @@
 import { useCallback } from "react";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
-import { StorageItem } from "./storage.type";
 
 export const useStorageSelection = () => {
   const {
@@ -19,9 +18,12 @@ export const useStorageSelection = () => {
   } = useStorageUIStore();
   const { items } = useStorageDataStore();
 
-  const toggleSelect = useCallback((path: string) => {
-    toggleSelectAction(path);
-  }, [toggleSelectAction]);
+  const toggleSelect = useCallback(
+    (path: string) => {
+      toggleSelectAction(path);
+    },
+    [toggleSelectAction],
+  );
 
   const selectAll = useCallback(() => {
     selectAllAction(items);
@@ -31,9 +33,12 @@ export const useStorageSelection = () => {
     clearSelectionAction();
   }, [clearSelectionAction]);
 
-  const selectRange = useCallback((fromPath: string, toPath: string) => {
-    selectRangeAction(fromPath, toPath, items);
-  }, [selectRangeAction, items]);
+  const selectRange = useCallback(
+    (fromPath: string, toPath: string) => {
+      selectRangeAction(fromPath, toPath, items);
+    },
+    [selectRangeAction, items],
+  );
 
   return {
     selectedItems,

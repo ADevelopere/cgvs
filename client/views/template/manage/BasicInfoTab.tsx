@@ -4,7 +4,6 @@ import React from "react";
 import Image from "next/image";
 import * as Mui from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
-import { useQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
 // import FilePickerDialog from "@/storage/dialogs/FilePickerDialog";
@@ -12,27 +11,17 @@ import {
   FileInfo,
   TemplateUpdateInput,
   Template,
-  TemplatesConfigs,
 } from "@/client/graphql/generated/gql/graphql";
-import {
-  useTemplateOperations,
-  TemplateDocuments,
-} from "../hooks";
+import { useTemplateOperations } from "../hooks";
 import { TemplateUtils } from "../utils";
 import { useTemplateUIStore } from "./useTemplateManagementStore";
+import FilePickerDialog from "../../storage/dialogs/FilePickerDialog";
 
 type FormDataType = {
   name: string;
   description?: string | null;
   imageUrl?: string | null;
   imagePath?: string | null;
-};
-
-const defaultConfig: TemplatesConfigs = {
-  configs: [
-    { key: "MAX_BACKGROUND_SIZE", value: "5125048" },
-    { key: "ALLOWED_FILE_TYPES", value: '["image/jpeg", "image/png"]' },
-  ],
 };
 
 interface BasicInfoTabProps {
@@ -46,18 +35,6 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
 
   const { unsavedChanges, setUnsavedChanges } = useTemplateUIStore();
   const templateOperations = useTemplateOperations();
-
-  // Fetch template config using useQuery with cache-first
-  const { data: configData } = useQuery(
-    TemplateDocuments.templatesConfigsQueryDocument,
-    {
-      fetchPolicy: "cache-first",
-    },
-  );
-
-  const config = React.useMemo(() => {
-    return configData?.templatesConfigs ?? defaultConfig;
-  }, [configData?.templatesConfigs]);
 
   // Create a ref to store the setUnsavedChanges function to prevent infinite re-renders
   const setUnsavedChangesRef = React.useRef(setUnsavedChanges);
@@ -350,13 +327,13 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       </Mui.Box>
 
       {/* File Picker Dialog */}
-      {/* <FilePickerDialog
+      <FilePickerDialog
         open={filePickerOpen}
         onClose={() => setFilePickerOpen(false)}
         onFileSelect={handleFileSelect}
         allowedFileTypes={["image/*"]} // Only allow image files for template covers
         title={storageStrings.ui.filePickerDialogSelectFile}
-      /> */}
+      />
     </Mui.Box>
   );
 };

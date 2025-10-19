@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback } from "react";
-import { useStorageApolloQueries, useStorageApolloMutations } from "./storage.operations";
+import {
+  useStorageApolloQueries,
+  useStorageApolloMutations,
+} from "./storage.operations";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
-import { useStorageUIStore } from "../stores/useStorageUIStore";
-import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { DirectoryTreeNode, StorageItem } from "./storage.type";
+import { DirectoryTreeNode } from "./storage.type";
 
 export const useStorageDataOperations = () => {
   const queries = useStorageApolloQueries();
@@ -17,9 +18,7 @@ export const useStorageDataOperations = () => {
   const { management: translations } = useAppTranslation("storageTranslations");
 
   // Store actions
-  const { setItems, setPagination, setStats } = useStorageDataStore();
-  const { updateLoading, updateError } = useStorageUIStore();
-  const { setDirectoryTree, addChildToNode } = useStorageTreeStore();
+  const { setStats } = useStorageDataStore();
 
   // Helper function to transform GraphQL DirectoryInfo to DirectoryTreeNode
   const transformDirectoryToTreeNode = useCallback(
@@ -79,15 +78,17 @@ export const useStorageDataOperations = () => {
           perPage: result.data?.listFiles.limit,
           firstItem: result.data?.listFiles.offset,
           currentPage:
-            Math.floor(result.data?.listFiles.totalCount / result.data?.listFiles.limit) +
-            1,
+            Math.floor(
+              result.data?.listFiles.totalCount / result.data?.listFiles.limit,
+            ) + 1,
           lastPage: Math.ceil(
             result.data?.listFiles.totalCount / result.data?.listFiles.limit,
           ),
         };
 
         // Transform StorageEntity[] to StorageItem[]
-        const items: Graphql.StorageObject[] = result.data?.listFiles.items as Graphql.StorageObject[];
+        const items: Graphql.StorageObject[] = result.data?.listFiles
+          .items as Graphql.StorageObject[];
 
         return { items, pagination };
       } catch {
@@ -133,7 +134,12 @@ export const useStorageDataOperations = () => {
         return null;
       }
     },
-    [queries, setStats, showNotification, translations.failedToFetchStorageStatistics],
+    [
+      queries,
+      setStats,
+      showNotification,
+      translations.failedToFetchStorageStatistics,
+    ],
   );
 
   // File Operations
@@ -165,7 +171,12 @@ export const useStorageDataOperations = () => {
         return false;
       }
     },
-    [mutations, showNotification, translations.successfullyRenamedTo, translations.failedToRenameFile],
+    [
+      mutations,
+      showNotification,
+      translations.successfullyRenamedTo,
+      translations.failedToRenameFile,
+    ],
   );
 
   const remove = useCallback(
@@ -363,7 +374,8 @@ export const useStorageDataOperations = () => {
           return true;
         } else {
           showNotification(
-            result.data?.createFolder?.message || translations.failedToCreateFolder,
+            result.data?.createFolder?.message ||
+              translations.failedToCreateFolder,
             "error",
           );
           return false;
@@ -402,7 +414,8 @@ export const useStorageDataOperations = () => {
         }
 
         // Transform search results to StorageItem[]
-        const items: Graphql.StorageObject[] = result.data?.searchFiles.items as Graphql.StorageObject[];
+        const items: Graphql.StorageObject[] = result.data?.searchFiles
+          .items as Graphql.StorageObject[];
 
         return {
           items,

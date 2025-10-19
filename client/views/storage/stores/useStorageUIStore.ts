@@ -2,7 +2,13 @@
 
 import { create } from "zustand";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { StorageItem, ViewMode, Clipboard, LoadingStates, OperationErrors } from "../hooks/storage.type";
+import {
+  StorageItem,
+  ViewMode,
+  Clipboard,
+  LoadingStates,
+  OperationErrors,
+} from "../hooks/storage.type";
 
 interface StorageUIState {
   // Selection state
@@ -47,7 +53,10 @@ interface StorageUIActions {
   setSortDirection: (direction: Graphql.OrderSortDirection) => void;
 
   // Loading and error actions
-  updateLoading: (key: keyof LoadingStates, value: boolean | string | null) => void;
+  updateLoading: (
+    key: keyof LoadingStates,
+    value: boolean | string | null,
+  ) => void;
   updateError: (key: keyof OperationErrors, error?: string) => void;
   clearErrors: () => void;
 
@@ -81,76 +90,82 @@ const initialState: StorageUIState = {
   operationErrors: {},
 };
 
-export const useStorageUIStore = create<StorageUIState & StorageUIActions>((set, get) => ({
-  ...initialState,
+export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
+  (set) => ({
+    ...initialState,
 
-  // Selection actions
-  toggleSelect: (path) => set((state) => {
-    const isSelected = state.selectedItems.includes(path);
-    const newSelection = isSelected
-      ? state.selectedItems.filter((p) => p !== path)
-      : [...state.selectedItems, path];
-    
-    return {
-      selectedItems: newSelection,
-      lastSelectedItem: path,
-    };
+    // Selection actions
+    toggleSelect: (path) =>
+      set((state) => {
+        const isSelected = state.selectedItems.includes(path);
+        const newSelection = isSelected
+          ? state.selectedItems.filter((p) => p !== path)
+          : [...state.selectedItems, path];
+
+        return {
+          selectedItems: newSelection,
+          lastSelectedItem: path,
+        };
+      }),
+
+    selectAll: (items) =>
+      set({
+        selectedItems: items.map((item) => item.path),
+      }),
+
+    clearSelection: () =>
+      set({
+        selectedItems: [],
+        lastSelectedItem: null,
+      }),
+
+    selectRange: (fromPath, toPath, items) =>
+      set((state) => {
+        const fromIndex = items.findIndex((item) => item.path === fromPath);
+        const toIndex = items.findIndex((item) => item.path === toPath);
+
+        if (fromIndex === -1 || toIndex === -1) return state;
+
+        const start = Math.min(fromIndex, toIndex);
+        const end = Math.max(fromIndex, toIndex);
+        const rangePaths = items.slice(start, end + 1).map((item) => item.path);
+
+        const newSelection = new Set([...state.selectedItems, ...rangePaths]);
+        return {
+          selectedItems: Array.from(newSelection),
+        };
+      }),
+
+    setLastSelectedItem: (path) => set({ lastSelectedItem: path }),
+    setFocusedItem: (path) => set({ focusedItem: path }),
+
+    // UI interaction actions
+    setViewMode: (mode) => set({ viewMode: mode }),
+    setSearchMode: (mode) => set({ searchMode: mode }),
+    setSearchResults: (results) => set({ searchResults: results }),
+
+    copyItems: (items) => set({ clipboard: { operation: "copy", items } }),
+    cutItems: (items) => set({ clipboard: { operation: "cut", items } }),
+    clearClipboard: () => set({ clipboard: null }),
+
+    // Sorting actions
+    setSortBy: (field) => set({ sortBy: field }),
+    setSortDirection: (direction) => set({ sortDirection: direction }),
+
+    // Loading and error actions
+    updateLoading: (key, value) =>
+      set((state) => ({
+        loading: { ...state.loading, [key]: value },
+      })),
+
+    updateError: (key, error) =>
+      set((state) => ({
+        operationErrors: { ...state.operationErrors, [key]: error },
+      })),
+
+    clearErrors: () => set({ operationErrors: {} }),
+
+    // Utility actions
+    reset: () => set(initialState),
   }),
-
-  selectAll: (items) => set({
-    selectedItems: items.map((item) => item.path),
-  }),
-
-  clearSelection: () => set({
-    selectedItems: [],
-    lastSelectedItem: null,
-  }),
-
-  selectRange: (fromPath, toPath, items) => set((state) => {
-    const fromIndex = items.findIndex((item) => item.path === fromPath);
-    const toIndex = items.findIndex((item) => item.path === toPath);
-
-    if (fromIndex === -1 || toIndex === -1) return state;
-
-    const start = Math.min(fromIndex, toIndex);
-    const end = Math.max(fromIndex, toIndex);
-    const rangePaths = items
-      .slice(start, end + 1)
-      .map((item) => item.path);
-
-    const newSelection = new Set([...state.selectedItems, ...rangePaths]);
-    return {
-      selectedItems: Array.from(newSelection),
-    };
-  }),
-
-  setLastSelectedItem: (path) => set({ lastSelectedItem: path }),
-  setFocusedItem: (path) => set({ focusedItem: path }),
-
-  // UI interaction actions
-  setViewMode: (mode) => set({ viewMode: mode }),
-  setSearchMode: (mode) => set({ searchMode: mode }),
-  setSearchResults: (results) => set({ searchResults: results }),
-
-  copyItems: (items) => set({ clipboard: { operation: "copy", items } }),
-  cutItems: (items) => set({ clipboard: { operation: "cut", items } }),
-  clearClipboard: () => set({ clipboard: null }),
-
-  // Sorting actions
-  setSortBy: (field) => set({ sortBy: field }),
-  setSortDirection: (direction) => set({ sortDirection: direction }),
-
-  // Loading and error actions
-  updateLoading: (key, value) => set((state) => ({
-    loading: { ...state.loading, [key]: value },
-  })),
-
-  updateError: (key, error) => set((state) => ({
-    operationErrors: { ...state.operationErrors, [key]: error },
-  })),
-
-  clearErrors: () => set({ operationErrors: {} }),
-
-  // Utility actions
-  reset: () => set(initialState),
-}));
+);

@@ -140,5 +140,6 @@ export const useStorageInitialization = () => {
     updateLoading,
     updateError,
     translations.failedToNavigateToDirectory,
+    focusedItem,
   ]);
 };
