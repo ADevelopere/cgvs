@@ -8,9 +8,14 @@ import { useStorageDataOperations } from "./useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 
 export const useStorageInitialization = () => {
-  const { params, setItems, setPagination, setFocusedItem } = useStorageDataStore();
+  const { params, setItems, setPagination } = useStorageDataStore();
   const { setDirectoryTree } = useStorageTreeStore();
-  const { updateLoading, updateError, setFocusedItem: setUIFocusedItem } = useStorageUIStore();
+  const {
+    updateLoading,
+    updateError,
+    setFocusedItem: setUIFocusedItem,
+    focusedItem,
+  } = useStorageUIStore();
   const { fetchDirectoryChildren, fetchList } = useStorageDataOperations();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
@@ -56,7 +61,7 @@ export const useStorageInitialization = () => {
               setItems(rootItems.items);
               setPagination(rootItems.pagination);
               // Set focus to first item if no focused item
-              if (rootItems.items.length > 0 && !setFocusedItem) {
+              if (rootItems.items.length > 0 && !focusedItem) {
                 setUIFocusedItem(rootItems.items[0].path);
               }
             }
@@ -82,9 +87,7 @@ export const useStorageInitialization = () => {
               // Only set focus to first item if no item is currently focused
               // or if the currently focused item no longer exists
               if (result.items.length > 0) {
-                if (
-                  !result.items.some((item) => item.path === params.path)
-                ) {
+                if (!result.items.some((item) => item.path === params.path)) {
                   setUIFocusedItem(result.items[0].path);
                 }
               } else {

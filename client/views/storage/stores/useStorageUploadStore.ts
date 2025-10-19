@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { UploadBatchState, UploadFileState } from "../hooks/StorageUploadContext";
+import { UploadBatchState, UploadFileState } from "../hooks/storage-upload.types";
 
 interface StorageUploadState {
   uploadBatch: UploadBatchState | undefined;

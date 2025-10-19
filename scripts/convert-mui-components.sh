@@ -75,7 +75,7 @@ get_file_path() {
         # Interactive mode
         while true; do
             echo -e "${YELLOW}Enter the file path to convert:${NC}"
-            read -p "> " file_path
+            read file_path
 
             # Handle empty input
             if [[ -z "$file_path" ]]; then

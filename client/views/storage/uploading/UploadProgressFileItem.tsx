@@ -29,7 +29,7 @@ export interface UploadProgressFileItemProps {
     fileName: string;
     fileType: string;
     progress: number;
-    status: "pending" | "uploading" | "success" | "error";
+    status: "pending" | "uploading" | "completed" | "success" | "error" | "cancelled";
     error?: string;
     onCancel: (fileKey: string) => void;
 }

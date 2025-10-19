@@ -8,11 +8,17 @@ import { useAppTranslation } from "@/client/locale";
 import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { UploadFileState, UploadBatchState } from "./StorageUploadContext";
+import { UploadFileState, UploadBatchState } from "./storage-upload.types";
 import logger from "@/lib/logger";
 
 export const useStorageUploadOperations = () => {
-  const { uploadBatch, setUploadBatch, updateFileState, updateBatchProgress, clearUploadBatch } = useStorageUploadStore();
+  const {
+    uploadBatch,
+    setUploadBatch,
+    updateFileState,
+    updateBatchProgress,
+    clearUploadBatch,
+  } = useStorageUploadStore();
   const { generateUploadSignedUrl } = useStorageApolloMutations();
   const notifications = useNotifications();
   const { uploading: translations } = useAppTranslation("storageTranslations");
@@ -60,7 +66,7 @@ export const useStorageUploadOperations = () => {
           },
         });
 
-        const signedUrl = signedUrlRes.generateUploadSignedUrl;
+        const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
         if (!signedUrl) {
           throw new Error(translations.failedGenerateSignedUrl);
         }
@@ -79,9 +85,7 @@ export const useStorageUploadOperations = () => {
 
         currentXhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
-            const progress = Math.round(
-              (event.loaded / event.total) * 100,
-            );
+            const progress = Math.round((event.loaded / event.total) * 100);
 
             // Calculate bytes uploaded for this file
             const bytesUploaded = (progress / 100) * file.size;
@@ -124,27 +128,21 @@ export const useStorageUploadOperations = () => {
               reject(new Error(translations.uploadCancelled));
               return;
             }
-            if (
-              currentXhr.status >= 200 &&
-              currentXhr.status < 300
-            ) {
+            if (currentXhr.status >= 200 && currentXhr.status < 300) {
               handleSuccess();
               resolve();
             } else {
-              const errorMsg =
-                translations.uploadFailedWithStatus.replace(
-                  "%{status}",
-                  String(currentXhr.status),
-                );
+              const errorMsg = translations.uploadFailedWithStatus.replace(
+                "%{status}",
+                String(currentXhr.status),
+              );
               handleError(errorMsg);
               uploadXhrsRef.current.delete(fileKey);
               reject(new Error(errorMsg));
             }
           };
-          errorListener = () =>
-            handleError(translations.uploadFailed);
-          abortListener = () =>
-            handleError(translations.uploadCancelled);
+          errorListener = () => handleError(translations.uploadFailed);
+          abortListener = () => handleError(translations.uploadCancelled);
 
           currentXhr.addEventListener("load", loadListener);
           currentXhr.addEventListener("error", errorListener);
@@ -155,9 +153,7 @@ export const useStorageUploadOperations = () => {
         updateFileState(fileKey, {
           status: "error",
           error:
-            error instanceof Error
-              ? error.message
-              : translations.uploadFailed,
+            error instanceof Error ? error.message : translations.uploadFailed,
           xhr: undefined,
         });
       } finally {
@@ -174,7 +170,12 @@ export const useStorageUploadOperations = () => {
         uploadXhrsRef.current.delete(fileKey);
       }
     },
-    [generateUploadSignedUrl, updateFileState, updateBatchProgress, translations],
+    [
+      generateUploadSignedUrl,
+      updateFileState,
+      updateBatchProgress,
+      translations,
+    ],
   );
 
   const startUpload = useCallback(
@@ -244,29 +245,23 @@ export const useStorageUploadOperations = () => {
 
       try {
         const chunks: File[][] = [];
-        for (
-          let i = 0;
-          i < validFiles.length;
-          i += maxConcurrentUploads
-        ) {
+        for (let i = 0; i < validFiles.length; i += maxConcurrentUploads) {
           chunks.push(validFiles.slice(i, i + maxConcurrentUploads));
         }
 
         for (const chunk of chunks) {
           await Promise.all(
-            chunk.map((file) =>
-              uploadSingleFile(file, location, targetPath),
-            ),
+            chunk.map((file) => uploadSingleFile(file, location, targetPath)),
           );
         }
 
         // Update completion status
         if (uploadBatch) {
           const successCount = Array.from(uploadBatch.files.values()).filter(
-            (f) => f.status === "success",
+            (f: UploadFileState) => f.status === "success",
           ).length;
           const errorCount = Array.from(uploadBatch.files.values()).filter(
-            (f) => f.status === "error",
+            (f: UploadFileState) => f.status === "error",
           ).length;
 
           setTimeout(() => {
@@ -299,9 +294,9 @@ export const useStorageUploadOperations = () => {
           autoHideDuration: 3000,
         });
       } finally {
-        setUploadBatch((prev) =>
-          prev ? { ...prev, isUploading: false } : undefined,
-        );
+        if (uploadBatch) {
+          setUploadBatch({ ...uploadBatch, isUploading: false });
+        }
       }
     },
     [
@@ -348,7 +343,7 @@ export const useStorageUploadOperations = () => {
       // Update all pending/uploading files to cancelled
       if (uploadBatch) {
         const updatedFiles = new Map(uploadBatch.files);
-        updatedFiles.forEach((f, key) => {
+        updatedFiles.forEach((f: UploadFileState, key: string) => {
           if (f.status === "pending" || f.status === "uploading") {
             updatedFiles.set(key, {
               ...f,
@@ -367,7 +362,12 @@ export const useStorageUploadOperations = () => {
         });
       }
     },
-    [updateFileState, setUploadBatch, uploadBatch, translations.uploadCancelled],
+    [
+      updateFileState,
+      setUploadBatch,
+      uploadBatch,
+      translations.uploadCancelled,
+    ],
   );
 
   const retryFile = useCallback(
@@ -400,7 +400,7 @@ export const useStorageUploadOperations = () => {
     if (!uploadBatch) return;
 
     const failedFiles: File[] = [];
-    uploadBatch.files.forEach((f) => {
+    uploadBatch.files.forEach((f: UploadFileState) => {
       if (f.status === "error") {
         failedFiles.push(f.file);
       }
