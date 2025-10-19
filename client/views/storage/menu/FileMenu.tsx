@@ -23,7 +23,9 @@ import {
     Info as InfoIcon,
     Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
+import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
+import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
+import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
@@ -46,8 +48,9 @@ const FileMenu: React.FC<FileMenuProps> = ({
 }) => {
     const theme = useTheme();
     const { ui: translations } = useAppTranslation("storageTranslations");
-    const { copyItems, cutItems, renameItem, deleteItems, refresh } =
-        useStorageManagementUI();
+    const { copyItems, cutItems } = useStorageClipboard();
+    const { renameItem, deleteItems } = useStorageFileOperations();
+    const { refresh } = useStorageNavigation();
 
     // State for confirmation dialogs
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
