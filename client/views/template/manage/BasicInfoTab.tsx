@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import * as Mui from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
@@ -16,6 +16,7 @@ import { useTemplateOperations } from "../hooks";
 import { TemplateUtils } from "../utils";
 import { useTemplateUIStore } from "./useTemplateManagementStore";
 import FilePickerDialog from "../../storage/dialogs/FilePickerDialog";
+import logger from "@/client/lib/logger";
 
 type FormDataType = {
   name: string;
@@ -53,6 +54,9 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   const [saving, setSaving] = React.useState(false);
 
   const [filePickerOpen, setFilePickerOpen] = React.useState(false);
+
+  // Memoize allowedFileTypes to prevent recreation on every render
+  const allowedFileTypes = useMemo(() => ["image/*"], []);
 
   React.useEffect(() => {
     if (template) {
@@ -96,22 +100,45 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
     []
   );
 
-  const handleFileSelect = React.useCallback((file: FileInfo) => {
-    setFormData(prev => ({
-      ...prev,
-      imageUrl: file.url,
-      imagePath: file.path,
-    }));
-    setFilePickerOpen(false);
-  }, []);
+  const handleFileSelect = React.useCallback(
+    (file: FileInfo) => {
+      logger.info("File selected in BasicInfoTab", {
+        fileName: file.name,
+        filePath: file.path,
+        fileUrl: file.url,
+        fileSize: file.size,
+        templateId: template?.id,
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: file.url,
+        imagePath: file.path,
+      }));
+      setFilePickerOpen(false);
+
+      logger.info("File picker dialog closed after file selection");
+    },
+    [template?.id]
+  );
 
   const handleRemoveImage = React.useCallback((): void => {
+    logger.info("Remove image button clicked in BasicInfoTab", {
+      templateId: template?.id,
+      currentImageUrl: formData.imageUrl,
+      currentImagePath: formData.imagePath,
+    });
+
     setFormData(prev => ({
       ...prev,
       imageUrl: undefined,
       imagePath: undefined,
     }));
-  }, []);
+
+    logger.info("Image removed from template", {
+      templateId: template?.id,
+    });
+  }, [template?.id, formData.imageUrl, formData.imagePath]);
 
   const handleSave = React.useCallback(async () => {
     if (!template?.id || !template.category?.id) {
@@ -265,7 +292,15 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
                 <Mui.Button
                   variant="contained"
                   startIcon={<ImageIcon />}
-                  onClick={() => setFilePickerOpen(true)}
+                  onClick={() => {
+                    logger.info("File picker button clicked in BasicInfoTab", {
+                      templateId: template?.id,
+                      currentImageUrl: formData.imageUrl,
+                      currentImagePath: formData.imagePath,
+                    });
+                    setFilePickerOpen(true);
+                    logger.info("File picker dialog opened");
+                  }}
                   color="primary"
                 >
                   {storageStrings.ui.filePickerDialogSelectFile}
@@ -329,9 +364,14 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       {/* File Picker Dialog */}
       <FilePickerDialog
         open={filePickerOpen}
-        onClose={() => setFilePickerOpen(false)}
+        onClose={() => {
+          logger.info("File picker dialog closed without file selection", {
+            templateId: template?.id,
+          });
+          setFilePickerOpen(false);
+        }}
         onFileSelect={handleFileSelect}
-        allowedFileTypes={["image/*"]} // Only allow image files for template covers
+        allowedFileTypes={allowedFileTypes} // Only allow image files for template covers
         title={storageStrings.ui.filePickerDialogSelectFile}
       />
     </Mui.Box>
