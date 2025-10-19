@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import Table from "@/client/components/Table/Table/Table";
-import RecipientTableWithSelection from "./components/RecipientTableWithSelection";
+import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import { useRecipientOperations } from "./hooks/useRecipientOperations";
 import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
@@ -28,13 +28,7 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
 }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
-  const { syncFiltersToQueryParams } = operations;
-  const syncFiltersToQueryParamsRef = useRef(syncFiltersToQueryParams);
   const strings = useAppTranslation("recipientGroupTranslations");
-
-  useEffect(() => {
-    syncFiltersToQueryParamsRef.current = syncFiltersToQueryParams;
-  }, [syncFiltersToQueryParams]);
 
   // Get query variables from store
   const { studentsNotInGroupQueryParams, selectedGroup, filtersNotInGroup } =
@@ -52,6 +46,25 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
 
   const students = data?.studentsNotInRecipientGroup?.data ?? [];
   const pageInfo = data?.studentsNotInRecipientGroup?.pageInfo;
+
+  // Convert GraphQL orderBy to table format
+  const initialOrderBy = Array.isArray(studentsNotInGroupQueryParams.orderBy)
+    ? studentsNotInGroupQueryParams.orderBy
+        .filter((order) => order.order) // Filter out null/undefined orders
+        .map((order) => ({
+          column: order.column.toLowerCase(), // Convert GraphQL enum to lowercase
+          order: order.order as "ASC" | "DESC",
+        }))
+    : studentsNotInGroupQueryParams.orderBy?.order
+      ? [
+          {
+            column: studentsNotInGroupQueryParams.orderBy.column.toLowerCase(),
+            order: studentsNotInGroupQueryParams.orderBy.order as
+              | "ASC"
+              | "DESC",
+          },
+        ]
+      : [];
 
   const [activeFilters, setActiveFilters] =
     useState<Record<string, FilterClause | null>>(filtersNotInGroup);
@@ -98,12 +111,6 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
     [operations],
   );
 
-  // Convert active filters to StudentFilterArgs
-  useEffect(() => {
-    if (!selectedGroup) return;
-    syncFiltersToQueryParamsRef.current(activeFilters, recipientBaseColumns);
-  }, [activeFilters, selectedGroup]);
-
   // Handle sort changes
   const handleSort = useCallback(
     (
@@ -136,8 +143,7 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
   );
 
   return (
-    <RecipientTableWithSelection
-      tabType="add"
+    <TableProvider
       data={students}
       isLoading={loading}
       columns={recipientBaseColumns}
@@ -158,10 +164,10 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
       onPageChange={operations.onPageChange}
       onRowsPerPageChange={operations.onRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+      initialOrderBy={initialOrderBy}
       footerStartContent={<RecipientTableFooterStart tabType="add" />}
       footerEndContent={
         <RecipientTableFooterEnd
-          templateId={templateId}
           mode="add"
           onAction={operations.addStudentsToGroup}
           actionButtonLabel={strings.addToGroup}
@@ -170,6 +176,10 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
           queryDocument={studentsNotInRecipientGroupQueryDocument}
           queryVariables={studentsNotInGroupQueryParams}
         />
+      }
+      selectedRowIds={store.selectedStudentIdsNotInGroup}
+      onSelectionChange={(selectedIds) =>
+        store.setSelectedStudentIdsNotInGroup(selectedIds.map(Number))
       }
     >
       <Box
@@ -202,7 +212,7 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
             )}
         </Box>
       </Box>
-    </RecipientTableWithSelection>
+    </TableProvider>
   );
 };
 

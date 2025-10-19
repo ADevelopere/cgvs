@@ -12,7 +12,7 @@ import {
   TextFilterOperation,
   DateFilterOperation,
 } from "@/client/types/filters";
-import { BaseColumn } from "@/client/types/table.type";
+import { recipientBaseColumns } from "../columns";
 
 export const useRecipientOperations = (templateId?: number) => {
   const apollo = useRecipientApolloMutations(templateId);
@@ -194,32 +194,18 @@ export const useRecipientOperations = (templateId?: number) => {
   // Filter operations for students NOT in group
   const setColumnFilter = useCallback(
     (columnId: string, filterClause: FilterClause | null) => {
+      // Update filter in store
       store.setFilterNotInGroup(columnId, filterClause);
-    },
-    [store],
-  );
 
-  // Filter operations for students IN group
-  const setColumnFilterInGroup = useCallback(
-    (columnId: string, filterClause: FilterClause | null) => {
-      store.setFilterInGroup(columnId, filterClause);
-    },
-    [store],
-  );
-
-  // Sync filters to GraphQL query params for students NOT in group
-  const syncFiltersToQueryParams = useCallback(
-    (
-      activeFilters: Record<string, FilterClause | null>,
-      baseColumns: BaseColumn[],
-    ) => {
+      // Update query params directly - no sync needed!
+      const newFilters = { ...store.filtersNotInGroup, [columnId]: filterClause };
       const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
-      Object.values(activeFilters).forEach((filterClause) => {
+      Object.values(newFilters).forEach((filterClause) => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const column = baseColumns.find((col) => col.id === columnId);
+        const column = recipientBaseColumns.find((col) => col.id === columnId);
         if (!column) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
@@ -240,29 +226,32 @@ export const useRecipientOperations = (templateId?: number) => {
       });
 
       store.setStudentsNotInGroupQueryParams({
-        filterArgs:
-          Object.keys(newFilterArgs).length > 0
-            ? (newFilterArgs as Graphql.StudentFilterArgs)
-            : null,
-        paginationArgs: { page: 1, first: 50 },
+        filterArgs: Object.keys(newFilterArgs).length > 0
+          ? (newFilterArgs as Graphql.StudentFilterArgs)
+          : null,
+        // Preserve existing pagination and orderBy
+        paginationArgs: store.studentsNotInGroupQueryParams.paginationArgs,
+        orderBy: store.studentsNotInGroupQueryParams.orderBy,
       });
     },
     [store],
   );
 
-  // Sync filters to GraphQL query params for students IN group
-  const syncFiltersToQueryParamsInGroup = useCallback(
-    (
-      activeFilters: Record<string, FilterClause | null>,
-      baseColumns: BaseColumn[],
-    ) => {
+  // Filter operations for students IN group
+  const setColumnFilterInGroup = useCallback(
+    (columnId: string, filterClause: FilterClause | null) => {
+      // Update filter in store
+      store.setFilterInGroup(columnId, filterClause);
+
+      // Update query params directly - no sync needed!
+      const newFilters = { ...store.filtersInGroup, [columnId]: filterClause };
       const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
-      Object.values(activeFilters).forEach((filterClause) => {
+      Object.values(newFilters).forEach((filterClause) => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const column = baseColumns.find((col) => col.id === columnId);
+        const column = recipientBaseColumns.find((col) => col.id === columnId);
         if (!column) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
@@ -283,15 +272,17 @@ export const useRecipientOperations = (templateId?: number) => {
       });
 
       store.setStudentsInGroupQueryParams({
-        filterArgs:
-          Object.keys(newFilterArgs).length > 0
-            ? (newFilterArgs as Graphql.StudentFilterArgs)
-            : null,
-        paginationArgs: { page: 1, first: 50 },
+        filterArgs: Object.keys(newFilterArgs).length > 0
+          ? (newFilterArgs as Graphql.StudentFilterArgs)
+          : null,
+        // Preserve existing pagination and orderBy
+        paginationArgs: store.studentsInGroupQueryParams.paginationArgs,
+        orderBy: store.studentsInGroupQueryParams.orderBy,
       });
     },
     [store],
   );
+
 
   // Sort operations for students NOT in group
   const setSort = useCallback(
@@ -322,8 +313,6 @@ export const useRecipientOperations = (templateId?: number) => {
       onRowsPerPageChangeInGroup,
       setColumnFilter,
       setColumnFilterInGroup,
-      syncFiltersToQueryParams,
-      syncFiltersToQueryParamsInGroup,
       setSort,
       setSortInGroup,
     }),
@@ -338,8 +327,6 @@ export const useRecipientOperations = (templateId?: number) => {
       onRowsPerPageChangeInGroup,
       setColumnFilter,
       setColumnFilterInGroup,
-      syncFiltersToQueryParams,
-      syncFiltersToQueryParamsInGroup,
       setSort,
       setSortInGroup,
     ],

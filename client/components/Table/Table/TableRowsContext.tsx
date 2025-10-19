@@ -62,6 +62,10 @@ export type TableRowsProviderProps = {
 
   rowSelectionEnabled?: boolean;
   enableRowResizing?: boolean;
+
+  // External selection state management
+  selectedRowIds?: (string | number)[];
+  onSelectionChange?: (selectedIds: (string | number)[]) => void;
 };
 
 export const TableRowsProvider = ({
@@ -77,6 +81,10 @@ export const TableRowsProvider = ({
   onRowResize,
   rowSelectionEnabled = false,
   enableRowResizing = true,
+
+  // External selection state
+  selectedRowIds: externalSelectedRowIds,
+  onSelectionChange,
 }: TableRowsProviderProps) => {
   const { data, isLoading } = useTableContext();
   const [rowHeights, setRowHeights] = useState<Record<string | number, number>>(
@@ -84,7 +92,9 @@ export const TableRowsProvider = ({
   );
   const loadingMoreRef = useRef(false);
 
-  const [selectedRowIds, setSelectedRowIds] = useState<(string | number)[]>([]);
+  // Use external selection state if provided, otherwise use internal state
+  const [internalSelectedRowIds, setInternalSelectedRowIds] = useState<(string | number)[]>([]);
+  const selectedRowIds = externalSelectedRowIds ?? internalSelectedRowIds;
 
   // Use pageInfo.total if available, otherwise use provided totalRows or data.length
   const effectiveTotalRows = useMemo(() => {
@@ -210,41 +220,52 @@ export const TableRowsProvider = ({
 
       if (event.target.checked) {
         // Select all rows in the current page, preserving selections from other pages
-        setSelectedRowIds((prevSelected) => {
-          const newSelections = [...prevSelected];
-          currentPageIds.forEach((id) => {
-            if (!newSelections.includes(id)) {
-              newSelections.push(id);
-            }
-          });
-          return newSelections;
+        const newSelections = [...selectedRowIds];
+        currentPageIds.forEach((id) => {
+          if (!newSelections.includes(id)) {
+            newSelections.push(id);
+          }
         });
+
+        if (onSelectionChange) {
+          onSelectionChange(newSelections);
+        } else {
+          setInternalSelectedRowIds(newSelections);
+        }
       } else {
         // Deselect only rows in the current page, keeping selections from other pages
-        setSelectedRowIds((prevSelected) =>
-          prevSelected.filter((id) => !currentPageIds.includes(id)),
-        );
+        const newSelections = selectedRowIds.filter((id) => !currentPageIds.includes(id));
+
+        if (onSelectionChange) {
+          onSelectionChange(newSelections);
+        } else {
+          setInternalSelectedRowIds(newSelections);
+        }
       }
     },
-    [data, rowIdKey],
+    [data, rowIdKey, selectedRowIds, onSelectionChange],
   );
 
   const toggleRowSelection = useCallback((rowId: string | number) => {
-    setSelectedRowIds((prevSelectedRowIds) => {
-      if (prevSelectedRowIds.includes(rowId)) {
-        // Deselect the row
-        return prevSelectedRowIds.filter((id) => id !== rowId);
-      } else {
-        // Select the row
-        return [...prevSelectedRowIds, rowId];
-      }
-    });
-  }, []);
+    const newSelections = selectedRowIds.includes(rowId)
+      ? selectedRowIds.filter((id) => id !== rowId)
+      : [...selectedRowIds, rowId];
+
+    if (onSelectionChange) {
+      onSelectionChange(newSelections);
+    } else {
+      setInternalSelectedRowIds(newSelections);
+    }
+  }, [selectedRowIds, onSelectionChange]);
 
   // Clear all selections
   const clearAllSelections = useCallback(() => {
-    setSelectedRowIds([]);
-  }, []);
+    if (onSelectionChange) {
+      onSelectionChange([]);
+    } else {
+      setInternalSelectedRowIds([]);
+    }
+  }, [onSelectionChange]);
 
   const isAllRowsSelected = useMemo(() => {
     return getSelectAllCheckboxState(data, selectedRowIds, rowIdKey) || false;

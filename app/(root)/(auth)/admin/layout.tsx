@@ -13,6 +13,7 @@ import DashboardLayout from "@/client/views/dashboard/layout/DashboardLayout";
 import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndActions";
 import { DashboardLayoutProvider } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { Navigation, Title } from "@/client/views/dashboard/layout/types";
+import { TableLocaleProvider } from "@/client/locale/table/TableLocaleContext";
 
 const NAVIGATION: Navigation = [
   {
@@ -82,7 +83,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
         endActions: <DashboardEndActions />,
       }}
     >
-      <AdminLayoutContent>{children}</AdminLayoutContent>
+      <AdminLayoutContent>
+        <TableLocaleProvider>{children}</TableLocaleProvider>
+      </AdminLayoutContent>
     </DashboardLayoutProvider>
   );
 };

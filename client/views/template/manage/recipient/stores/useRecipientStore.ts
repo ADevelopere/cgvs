@@ -120,12 +120,16 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
           studentsNotInGroupQueryParams: {
             ...state.studentsNotInGroupQueryParams,
             recipientGroupId: group?.id || 0,
-            paginationArgs: { page: 1, first: 50 },
+            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+            // Preserve existing orderBy
+            orderBy: state.studentsNotInGroupQueryParams.orderBy,
           },
           studentsInGroupQueryParams: {
             ...state.studentsInGroupQueryParams,
             recipientGroupId: group?.id || 0,
-            paginationArgs: { page: 1, first: 50 },
+            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+            // Preserve existing orderBy
+            orderBy: state.studentsInGroupQueryParams.orderBy,
           },
         };
       }),
@@ -138,12 +142,16 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
           studentsNotInGroupQueryParams: {
             ...state.studentsNotInGroupQueryParams,
             recipientGroupId: groupId || 0,
-            paginationArgs: { page: 1, first: 50 },
+            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+            // Preserve existing orderBy
+            orderBy: state.studentsNotInGroupQueryParams.orderBy,
           },
           studentsInGroupQueryParams: {
             ...state.studentsInGroupQueryParams,
             recipientGroupId: groupId || 0,
-            paginationArgs: { page: 1, first: 50 },
+            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+            // Preserve existing orderBy
+            orderBy: state.studentsInGroupQueryParams.orderBy,
           },
         };
       }),

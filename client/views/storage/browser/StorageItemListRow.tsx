@@ -6,7 +6,7 @@ import { StorageItem } from "@/client/views/storage/hooks/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStorageManagementUI } from "@/client/contexts/storage/StorageManagementUIContext";
+import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 
 interface StorageItemListRowProps {
     item: StorageItem;
@@ -51,7 +51,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
         undefined | { top: number; left: number }
     >(undefined);
     const [contextMenuOpen, setContextMenuOpen] = useState(false);
-    const { focusedItem } = useStorageManagementUI();
+    const { focusedItem } = useStorageSelection();
 
     const isFocused = React.useMemo(
         () => focusedItem === item.path,

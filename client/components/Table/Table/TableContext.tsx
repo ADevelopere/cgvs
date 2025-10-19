@@ -40,7 +40,7 @@ type TableProviderProps = {
         "children" | "data" | "isLoading" | "columns"
     >;
     columnProps: Omit<TableColumnsProviderProps, "children" | "data">;
-    rowsProps: Omit<TableRowsProviderProps, "children" | "data" | "isLoading">;
+    rowsProps: Omit<TableRowsProviderProps, "children" | "data" | "isLoading" | "selectedRowIds" | "onSelectionChange">;
 
     // Pagination
     pageInfo?: PageInfo | null;
@@ -56,6 +56,10 @@ type TableProviderProps = {
     // Custom footer content
     footerStartContent?: ReactNode;
     footerEndContent?: ReactNode;
+
+    // Selection state management
+    selectedRowIds?: (string | number)[];
+    onSelectionChange?: (selectedIds: (string | number)[]) => void;
 };
 
 export const TableProvider = ({
@@ -74,6 +78,8 @@ export const TableProvider = ({
     initialOrderBy,
     footerStartContent,
     footerEndContent,
+    selectedRowIds,
+    onSelectionChange,
 }: TableProviderProps) => {
     const [pageSize, setPageSize] = useState<number>(initialPageSize);
     const value = useMemo(() => {
@@ -105,7 +111,11 @@ export const TableProvider = ({
     ]);
     return (
         <TableContext.Provider value={value}>
-            <TableRowsProvider {...rowsProps}>
+            <TableRowsProvider
+                {...rowsProps}
+                selectedRowIds={selectedRowIds}
+                onSelectionChange={onSelectionChange}
+            >
                 <TableColumnsProvider {...columnProps}>
                     <TableDataProvider {...dataProps} initialOrderBy={initialOrderBy}>
                         {children}
