@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { useTheme } from "@mui/material";
 import * as MUI from "@mui/material";
 import {
@@ -15,6 +21,7 @@ import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
 import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
+import logger from "@/client/lib/logger";
 
 export interface FilePickerDialogProps {
   open: boolean;
@@ -46,6 +53,12 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   const [isSelecting, setIsSelecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);
+
+  // Use refs to access latest values without causing re-renders
+  const allowedFileTypesRef = useRef(allowedFileTypes);
+  useEffect(() => {
+    allowedFileTypesRef.current = allowedFileTypes;
+  }, [allowedFileTypes]);
 
   // Filter items to show only folders and allowed files
   const filteredItems = useMemo(() => {
@@ -90,6 +103,11 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Load items for the current path
   const loadItems = useCallback(
     async (path: string) => {
+      logger.info("Loading items for path", {
+        path,
+        allowedFileTypes: allowedFileTypesRef.current,
+      });
+
       setIsLoading(true);
       setError(null);
       setSelectedFile(null);
@@ -102,21 +120,42 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         });
 
         if (result) {
+          logger.info("Items loaded successfully", {
+            path,
+            itemCount: result.items.length,
+            totalCount: result.pagination.total,
+            folders: result.items.filter(
+              item => item.__typename === "DirectoryInfo"
+            ).length,
+            files: result.items.filter(item => item.__typename === "FileInfo")
+              .length,
+          });
           setItems(result.items);
         } else {
-          setError(
-            translations.filePickerDialogFailedToLoad || "Failed to load files"
-          );
+          logger.error("Failed to load items - no result", { path });
+          const errorMessage =
+            translations.filePickerDialogFailedToLoad || "Failed to load files";
+          logger.error("Setting error state", { path, errorMessage });
+          setError(errorMessage);
           setItems([]);
         }
-      } catch {
-        setError(
+      } catch (error) {
+        logger.error("Error loading items", {
+          path,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+        const errorMessage =
           translations.filePickerDialogUnexpectedError ||
-            "An unexpected error occurred"
-        );
+          "An unexpected error occurred";
+        logger.error("Setting error state due to exception", {
+          path,
+          errorMessage,
+        });
+        setError(errorMessage);
         setItems([]);
       } finally {
         setIsLoading(false);
+        logger.info("Items loading completed", { path });
       }
     },
     [
@@ -126,9 +165,19 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     ]
   );
 
+  // Use ref for loadItems to avoid dependency issues
+  const loadItemsRef = useRef(loadItems);
+  useEffect(() => {
+    loadItemsRef.current = loadItems;
+  }, [loadItems]);
+
   // Reset state when dialog opens/closes
   useEffect(() => {
     if (open) {
+      logger.info("FilePickerDialog opened", {
+        allowedFileTypes,
+        title,
+      });
       setCurrentPath("");
       setItems([]);
       setError(null);
@@ -136,17 +185,23 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       setIsSelecting(false);
       setSelectedFile(null);
       // Load root directory
-      loadItems("");
+      loadItemsRef.current("");
+    } else {
+      logger.info("FilePickerDialog closed");
     }
-  }, [open, loadItems]);
+  }, [open, allowedFileTypes, title]);
 
   // Navigate to a directory
   const navigateToDirectory = useCallback(
     (path: string) => {
+      logger.info("Navigating to directory", {
+        fromPath: currentPath,
+        toPath: path,
+      });
       setCurrentPath(path);
-      loadItems(path);
+      loadItemsRef.current(path);
     },
-    [loadItems]
+    [currentPath]
   );
 
   // Get breadcrumb segments
@@ -170,30 +225,69 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Handle file selection
   const handleFileSelect = useCallback(
     async (file: FileInfo) => {
+      logger.info("File selection initiated", {
+        fileName: file.name,
+        filePath: file.path,
+        fileSize: file.size,
+        contentType: file.contentType,
+        currentPath,
+      });
+
       setIsSelecting(true);
       setError(null);
 
       try {
+        logger.info("Calling onFileSelect callback", { fileName: file.name });
         onFileSelect(file);
+        logger.info("Calling onClose callback after file selection");
         onClose();
-      } catch {
-        setError(
+        logger.info("File selection completed successfully", {
+          fileName: file.name,
+        });
+      } catch (error) {
+        logger.error("Error during file selection", {
+          fileName: file.name,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+        const errorMessage =
           translations.filePickerDialogUnexpectedError ||
-            "An unexpected error occurred"
-        );
+          "An unexpected error occurred";
+        logger.error("Setting error state during file selection", {
+          fileName: file.name,
+          errorMessage,
+        });
+        setError(errorMessage);
       } finally {
         setIsSelecting(false);
+        logger.info("File selection process finished", { fileName: file.name });
       }
     },
-    [onFileSelect, onClose, translations.filePickerDialogUnexpectedError]
+    [
+      onFileSelect,
+      onClose,
+      translations.filePickerDialogUnexpectedError,
+      currentPath,
+    ]
   );
 
   // Handle dialog close
   const handleClose = useCallback(() => {
+    logger.info("FilePickerDialog close requested", {
+      isLoading,
+      isSelecting,
+      currentPath,
+      selectedFile: selectedFile?.name,
+    });
+
     if (!isLoading && !isSelecting) {
+      logger.info("FilePickerDialog closing");
       onClose();
+    } else {
+      logger.warn("FilePickerDialog close blocked", {
+        reason: isLoading ? "loading" : "selecting",
+      });
     }
-  }, [isLoading, isSelecting, onClose]);
+  }, [isLoading, isSelecting, onClose, currentPath, selectedFile?.name]);
 
   // Handle keyboard events
   const handleKeyDown = useCallback(
@@ -210,14 +304,21 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   const navigateUp = useCallback(() => {
     if (currentPath) {
       const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+      logger.info("Navigating up one level", {
+        fromPath: currentPath,
+        toPath: parentPath,
+      });
       navigateToDirectory(parentPath);
+    } else {
+      logger.warn("Cannot navigate up - already at root", { currentPath });
     }
   }, [currentPath, navigateToDirectory]);
 
   // Refresh current directory
   const refreshDirectory = useCallback(() => {
-    loadItems(currentPath);
-  }, [loadItems, currentPath]);
+    logger.info("Refreshing current directory", { currentPath });
+    loadItemsRef.current(currentPath);
+  }, [currentPath]);
 
   const dialogTitle =
     title || translations.filePickerDialogTitle || "Select a file";
@@ -308,7 +409,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                 key={segment.path}
                 component="button"
                 variant="body2"
-                onClick={() => navigateToDirectory(segment.path)}
+                onClick={() => {
+                  logger.info("Breadcrumb clicked for navigation", {
+                    segmentName: segment.name,
+                    segmentPath: segment.path,
+                    currentPath,
+                  });
+                  navigateToDirectory(segment.path);
+                }}
                 sx={{
                   color:
                     index === breadcrumbSegments.length - 1
@@ -375,7 +483,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                         <MUI.TableRow
                           key={folder.path}
                           hover
-                          onClick={() => navigateToDirectory(folder.path)}
+                          onClick={() => {
+                            logger.info("Folder clicked for navigation", {
+                              folderName: folder.name,
+                              folderPath: folder.path,
+                              currentPath,
+                            });
+                            navigateToDirectory(folder.path);
+                          }}
                           sx={{
                             cursor: "pointer",
                             "&:hover": {
@@ -448,8 +563,23 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                       return (
                         <MUI.Box
                           key={file.path}
-                          onClick={() => setSelectedFile(file)}
+                          onClick={() => {
+                            logger.info("File clicked for selection", {
+                              fileName: file.name,
+                              filePath: file.path,
+                              currentPath,
+                            });
+                            setSelectedFile(file);
+                          }}
                           onDoubleClick={() => {
+                            logger.info(
+                              "File double-clicked for immediate selection",
+                              {
+                                fileName: file.name,
+                                filePath: file.path,
+                                currentPath,
+                              }
+                            );
                             setSelectedFile(file);
                             handleFileSelect(file);
                           }}
@@ -570,7 +700,18 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           {translations.filePickerDialogCancel || "Cancel"}
         </MUI.Button>
         <MUI.Button
-          onClick={() => selectedFile && handleFileSelect(selectedFile)}
+          onClick={() => {
+            if (selectedFile) {
+              logger.info("Select button clicked", {
+                fileName: selectedFile.name,
+                filePath: selectedFile.path,
+                currentPath,
+              });
+              handleFileSelect(selectedFile);
+            } else {
+              logger.warn("Select button clicked but no file selected");
+            }
+          }}
           disabled={!canSelect}
           variant="contained"
           sx={{

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   useStorageApolloQueries,
   useStorageApolloMutations,
@@ -9,7 +9,8 @@ import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { DirectoryTreeNode } from "./storage.type";
+import { DirectoryTreeNode, StorageItem } from "./storage.type";
+import logger from "@/client/lib/logger";
 
 export const useStorageDataOperations = () => {
   const queries = useStorageApolloQueries();
@@ -53,9 +54,17 @@ export const useStorageDataOperations = () => {
     async (
       params: Graphql.FilesListInput
     ): Promise<{
-      items: Graphql.StorageObject[];
+      items: StorageItem[];
       pagination: Graphql.PageInfo;
     } | null> => {
+      logger.info("Starting fetchList operation", {
+        path: params.path,
+        limit: params.limit,
+        offset: params.offset,
+        searchTerm: params.searchTerm,
+        fileType: params.fileType,
+      });
+
       try {
         const input: Graphql.FilesListInput = {
           path: params.path,
@@ -65,9 +74,19 @@ export const useStorageDataOperations = () => {
           fileType: params.fileType?.toString(),
         };
 
+        logger.info("Calling GraphQL listFiles query", { input });
         const result = await queries.listFiles({ input });
+        logger.info("GraphQL listFiles query completed", {
+          hasData: !!result.data?.listFiles,
+          hasErrors: !!result.error,
+          errorCount: result.error ? 1 : 0,
+        });
 
         if (!result.data?.listFiles) {
+          logger.warn("No data returned from listFiles query", {
+            path: params.path,
+            error: result.error,
+          });
           return null;
         }
 
@@ -87,11 +106,26 @@ export const useStorageDataOperations = () => {
         };
 
         // Transform StorageEntity[] to StorageItem[]
-        const items: Graphql.StorageObject[] = result.data?.listFiles
-          .items as Graphql.StorageObject[];
+        const items: StorageItem[] = result.data?.listFiles
+          .items as StorageItem[];
+
+        logger.info("fetchList operation completed successfully", {
+          path: params.path,
+          itemCount: items.length,
+          totalCount: pagination.total,
+          hasMorePages: pagination.hasMorePages,
+          folders: items.filter(item => item.__typename === "DirectoryInfo")
+            .length,
+          files: items.filter(item => item.__typename === "FileInfo").length,
+        });
 
         return { items, pagination };
-      } catch {
+      } catch (error) {
+        logger.error("Error in fetchList operation", {
+          path: params.path,
+          error: error instanceof Error ? error.message : "Unknown error",
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         return null;
       }
     },
@@ -399,7 +433,7 @@ export const useStorageDataOperations = () => {
       query: string,
       path?: string
     ): Promise<{
-      items: Graphql.StorageObject[];
+      items: StorageItem[];
       totalCount: number;
     } | null> => {
       try {
@@ -414,8 +448,8 @@ export const useStorageDataOperations = () => {
         }
 
         // Transform search results to StorageItem[]
-        const items: Graphql.StorageObject[] = result.data?.searchFiles
-          .items as Graphql.StorageObject[];
+        const items: StorageItem[] = result.data?.searchFiles
+          .items as StorageItem[];
 
         return {
           items,
@@ -429,20 +463,33 @@ export const useStorageDataOperations = () => {
     [queries, showNotification, translations.failedToSearchFiles]
   );
 
-  return {
-    // Data Fetching
-    fetchList,
-    fetchDirectoryChildren,
-    fetchStats,
+  return useMemo(
+    () => ({
+      // Data Fetching
+      fetchList,
+      fetchDirectoryChildren,
+      fetchStats,
 
-    // File Operations
-    rename,
-    remove,
-    move,
-    copy,
-    createFolder,
+      // File Operations
+      rename,
+      remove,
+      move,
+      copy,
+      createFolder,
 
-    // Search
-    search,
-  };
+      // Search
+      search,
+    }),
+    [
+      fetchList,
+      fetchDirectoryChildren,
+      fetchStats,
+      rename,
+      remove,
+      move,
+      copy,
+      createFolder,
+      search,
+    ]
+  );
 };

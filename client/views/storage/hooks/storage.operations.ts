@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useLazyQuery } from "@apollo/client/react";
+import { useMemo } from "react";
 import * as Document from "./storage.documents";
 import { useQueryWrapper, useMutationWrapper } from "@/client/graphql/utils";
 
@@ -47,15 +48,26 @@ export const useStorageApolloQueries = () => {
     })
   );
 
-  return {
-    checkFileUsage,
-    fetchDirectoryChildren,
-    getFileInfo,
-    getFolderInfo,
-    getStorageStats,
-    listFiles,
-    searchFiles,
-  };
+  return useMemo(
+    () => ({
+      checkFileUsage,
+      fetchDirectoryChildren,
+      getFileInfo,
+      getFolderInfo,
+      getStorageStats,
+      listFiles,
+      searchFiles,
+    }),
+    [
+      checkFileUsage,
+      fetchDirectoryChildren,
+      getFileInfo,
+      getFolderInfo,
+      getStorageStats,
+      listFiles,
+      searchFiles,
+    ]
+  );
 };
 
 export const useStorageApolloMutations = () => {
