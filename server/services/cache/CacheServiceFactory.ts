@@ -1,4 +1,4 @@
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { ICacheService, CacheProvider } from "./ICacheService";
 import { PostgresCacheAdapter } from "./PostgresCacheAdapter";
 

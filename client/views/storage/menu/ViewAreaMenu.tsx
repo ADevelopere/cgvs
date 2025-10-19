@@ -23,7 +23,7 @@ import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNav
 import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 
 export interface ViewAreaMenuProps {
   anchorEl: HTMLElement | null;

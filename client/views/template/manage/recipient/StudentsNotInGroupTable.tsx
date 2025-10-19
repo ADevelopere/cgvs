@@ -11,7 +11,7 @@ import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.docu
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 import { mapColumnIdToGraphQLColumn, recipientBaseColumns } from "./columns";
 import {
   RecipientTableFooterEnd,

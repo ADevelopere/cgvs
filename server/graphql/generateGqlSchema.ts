@@ -4,7 +4,7 @@ import path from "path";
 import { printSchema } from "graphql";
 import { spawn } from "child_process";
 import { graphQLSchema } from "./gqlSchema";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 // Use the standard printSchema function
 const schemaAsString = printSchema(graphQLSchema);

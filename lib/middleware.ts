@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 /**
  * Middleware for request logging and monitoring

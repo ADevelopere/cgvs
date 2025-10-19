@@ -19,7 +19,7 @@ import {
   TemplateCategoryWithParentTree,
 } from "@/server/types";
 import { TemplateCategoryUtils } from "@/server/utils";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 export namespace TemplateCategoryRepository {
   export const findById = async (

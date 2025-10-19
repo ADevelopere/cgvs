@@ -8,7 +8,7 @@ import DrizzlePlugin from "@pothos/plugin-drizzle";
 import { type DrizzleRelations, db, relations } from "@/server/db/drizzleDb";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { getTableConfig } from "drizzle-orm/pg-core";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { AuthContexts, BaseContext } from "./gqlContext";
 import { PhoneNumber, Email } from "../lib";
 import TracingPlugin, {

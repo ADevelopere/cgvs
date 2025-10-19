@@ -1,7 +1,7 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import { JWT } from "google-auth-library";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import * as Types from "@/server/types";
 import {
   StorageService,

@@ -16,7 +16,7 @@ import {
   mapDateFilter,
   mapTextFilter,
 } from "./hook/utils/filter";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 import { useStudentApolloMutations } from "./useStudentApolloMutations";
 import { useStudentStore } from "./stores/useStudentStore";
 

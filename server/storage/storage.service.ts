@@ -1,6 +1,6 @@
 import { StorageService } from "./disk/storage.service.interface";
 import { createGcpAdapter } from "./disk/gcp";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 /**
  * Supported storage providers

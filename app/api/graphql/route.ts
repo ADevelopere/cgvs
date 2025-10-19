@@ -8,7 +8,7 @@ import {
   getClientIdentifier,
   graphqlRateLimiter,
 } from "@/server/lib/ratelimit";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 // import { ApolloServerPluginUsageReporting } from "@apollo/server/plugin/usageReporting";
 

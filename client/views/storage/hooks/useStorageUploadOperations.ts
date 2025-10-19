@@ -9,7 +9,7 @@ import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
 import { getUploadLocationForPath, getStoragePath } from "./storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { UploadFileState } from "./storage-upload.types";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 
 export const useStorageUploadOperations = () => {
   const {

@@ -7,7 +7,7 @@
  * It processes TypeScript/TSX files and replaces component tags with their MUI.Component equivalents.
  */
 
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { resolve, extname } from "path";
 

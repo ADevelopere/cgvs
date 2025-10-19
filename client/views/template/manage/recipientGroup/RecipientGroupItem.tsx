@@ -11,7 +11,7 @@ import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import logger from "@/lib/logger";
+import logger from "@/client/lib/logger";
 
 interface RecipientGroupItemProps {
   group: Graphql.TemplateRecipientGroup;

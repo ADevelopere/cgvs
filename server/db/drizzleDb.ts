@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { resolve } from "path";
 
 config({ path: resolve(__dirname, "../../.env") });
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {

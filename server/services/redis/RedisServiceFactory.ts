@@ -1,4 +1,4 @@
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 import { IRedisService, RedisProvider } from "./IRedisService";
 import { LocalRedisAdapter } from "./LocalRedisAdapter";
 import { UpstashRedisAdapter } from "./UpstashRedisAdapter";

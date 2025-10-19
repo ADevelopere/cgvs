@@ -1,7 +1,7 @@
 import { db } from "@/server/db/drizzleDb";
 import { cache } from "@/server/db/schema/cache";
 import { eq, lt } from "drizzle-orm";
-import logger from "@/lib/logger";
+import logger from "@/server/lib/logger";
 
 export namespace CacheDbRepository {
   /**
