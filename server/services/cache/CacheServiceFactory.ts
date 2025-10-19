@@ -106,3 +106,52 @@ export class CacheServiceFactory {
  * Export singleton instance getter
  */
 export const getCacheService = () => CacheServiceFactory.getInstance();
+
+/**
+ * Export singleton cache service instance
+ * This provides a direct instance for synchronous usage
+ */
+export const cacheService = {
+  get: async (key: string) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.get(key);
+  },
+  set: async (
+    key: string,
+    value: string,
+    options?: { ex?: number; px?: number }
+  ) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.set(key, value, options);
+  },
+  del: async (key: string) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.del(key);
+  },
+  expire: async (key: string, seconds: number) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.expire(key, seconds);
+  },
+  ttl: async (key: string) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.ttl(key);
+  },
+  incr: async (key: string) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.incr(key);
+  },
+  pipeline: async (
+    commands: Array<{ command: string; args: (string | number)[] }>
+  ) => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.pipeline(commands);
+  },
+  ping: async () => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.ping();
+  },
+  disconnect: async () => {
+    const service = await CacheServiceFactory.getInstance();
+    return service.disconnect();
+  },
+};
