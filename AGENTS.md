@@ -1,6 +1,7 @@
 # Cursor IDE Rules for Bun Package Manager
 
 ## Package Manager Configuration
+
 - Always use Bun as the package manager instead of npm, yarn, or pnpm
 - Use the specific Bun binary path: ~/.bun/bin/bun
 - When installing packages, use: ~/.bun/bin/bun install
@@ -10,17 +11,37 @@
 - When executing files directly, use: ~/.bun/bin/bun <file-path>
 
 ## Scripts and Commands
+
 - Prefer Bun's built-in commands over npm equivalents
 - Use `~/.bun/bin/bun create` for scaffolding new projects
 - Use `~/.bun/bin/bun test` for running tests
 - Use `~/.bun/bin/bun build` for building projects
 
 ## File Operations
+
 - When creating package.json files, ensure they're compatible with Bun
 - When suggesting package installations, always use Bun syntax
 - When providing terminal commands, use the full path to Bun binary
 
 ## Development Workflow
+
 - Always assume Bun is the preferred runtime and package manager
 - Suggest Bun-specific optimizations and features when relevant
 - Use Bun's faster installation and execution capabilities
+
+## Code Quality Checks
+
+- After making any code modifications, ALWAYS run `~/.bun/bin/bun lint` to check for linting issues
+- After making any code modifications, ALWAYS run `~/.bun/bin/bun tsc` to check for TypeScript compilation errors
+- Fix any linting or TypeScript errors before considering the task complete
+- If linting or TypeScript errors are found, address them immediately and re-run the checks
+- These checks should be run automatically after any file modifications or code changes
+
+## Logging Rules
+
+- NEVER use console.log, console.error, console.warn, or any console.\* methods
+- For files in the `client/` directory: ONLY use `client/lib/logger` for all logging
+- For files in any other directory: ONLY use `server/lib/logger.ts` for all logging
+- When suggesting code changes, always replace console.\* calls with the appropriate logger
+- When creating new files, import and use the correct logger based on directory location
+- Ensure all logging follows the established logger interface and methods
