@@ -27,15 +27,12 @@ import {
  ArrowUpward as ArrowUpwardIcon,
  Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import {
- StorageManagementCoreProvider,
- useStorageManagementCore,
-} from "@/client/views/storage/hooks/StorageManagementCoreContext";
+import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
 import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
-import { StorageGraphQLProvider } from "@/client/views/storage/hooks/storage.apollo";
+import { useStorageApolloQueries, useStorageApolloMutations } from "@/client/views/storage/hooks/storage.operations";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
 
 export interface FilePickerDialogProps {
@@ -59,7 +56,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 }) => {
  const theme = useTheme();
  const { ui: translations } = useAppTranslation("storageTranslations");
- const { fetchList } = useStorageManagementCore();
+ const { fetchList } = useStorageDataOperations();
 
  // State
  const [currentPath, setCurrentPath] = useState<string>("");

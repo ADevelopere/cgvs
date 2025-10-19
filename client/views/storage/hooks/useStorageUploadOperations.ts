@@ -82,7 +82,7 @@ export const useStorageUploadOperations = () => {
             const progress = Math.round(
               (event.loaded / event.total) * 100,
             );
-            
+
             // Calculate bytes uploaded for this file
             const bytesUploaded = (progress / 100) * file.size;
             updateBatchProgress(fileKey, progress, bytesUploaded);
