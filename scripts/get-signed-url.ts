@@ -12,19 +12,14 @@
 
 import { readFileSync } from "fs";
 import { spawn } from "child_process";
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import { gql } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { HttpLink } from "@apollo/client/link/http";
 import logger from "@/lib/logger";
-
-// GraphQL mutation for generating signed URL
-const GENERATE_UPLOAD_SIGNED_URL = gql`
-  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {
-    generateUploadSignedUrl(input: $input)
-  }
-`;
+import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/hooks/storage.documents";
+import type { ContentType } from "@/client/graphql/generated/gql/graphql";
 
 // GraphQL client setup
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: process.env.GRAPHQL_ENDPOINT || "http://localhost:3000/api/graphql",
   credentials: "include",
 });
@@ -81,9 +76,54 @@ function getFileSize(filePath: string): number {
 }
 
 /**
- * Map MIME type to ContentType enum
+ * Get content type enum from file extension (matching server logic)
  */
-function mapContentType(mimeType: string): string {
+function getContentTypeFromFileName(fileName: string): ContentType {
+  const extension = fileName
+    .substring(fileName.lastIndexOf(".") + 1)
+    .toLowerCase();
+
+  switch (extension) {
+    case "jpg":
+    case "jpeg":
+      return "JPEG";
+    case "png":
+      return "PNG";
+    case "gif":
+      return "GIF";
+    case "webp":
+      return "WEBP";
+    case "pdf":
+      return "PDF";
+    case "doc":
+      return "DOC";
+    case "docx":
+      return "DOCX";
+    case "xls":
+      return "XLS";
+    case "xlsx":
+      return "XLSX";
+    case "txt":
+      return "TXT";
+    case "zip":
+      return "ZIP";
+    case "rar":
+      return "RAR";
+    case "mp4":
+      return "MP4";
+    case "mp3":
+      return "MP3";
+    case "wav":
+      return "WAV";
+    default:
+      return "JPEG"; // Default fallback
+  }
+}
+
+/**
+ * Map MIME type to ContentType enum (for backward compatibility)
+ */
+function mapContentType(mimeType: string): ContentType {
   switch (mimeType.toLowerCase()) {
     case "image/jpeg":
     case "image/jpg":
@@ -92,23 +132,45 @@ function mapContentType(mimeType: string): string {
       return "PNG";
     case "image/gif":
       return "GIF";
+    case "image/webp":
+      return "WEBP";
     case "application/pdf":
       return "PDF";
+    case "application/msword":
+      return "DOC";
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return "DOCX";
+    case "application/vnd.ms-excel":
+      return "XLS";
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return "XLSX";
     case "text/plain":
       return "TXT";
-    case "application/json":
-      return "JSON";
+    case "application/zip":
+      return "ZIP";
+    case "application/vnd.rar":
+      return "RAR";
+    case "video/mp4":
+      return "MP4";
+    case "audio/mpeg":
+      return "MP3";
+    case "audio/wav":
+      return "WAV";
     default:
-      return "PNG"; // Default fallback
+      return "JPEG"; // Default fallback
   }
 }
 
 /**
- * Generate signed URL
+ * Convert hex MD5 to base64 format for Content-MD5 header
  */
+function hexToBase64(hex: string): string {
+  const buffer = Buffer.from(hex, "hex");
+  return buffer.toString("base64");
+}
 async function generateSignedUrl(
   filePath: string,
-  contentType: string = "image/jpeg"
+  contentType?: string
 ): Promise<string> {
   try {
     // Get file info
@@ -117,36 +179,43 @@ async function generateSignedUrl(
     const fileName = filePath.split("/").pop() || "unknown";
     const uploadPath = `public/templateCover/${fileName}`;
 
-    // Map MIME type to enum
-    const contentTypeEnum = mapContentType(contentType);
+    // Determine content type from file extension (matching server logic)
+    const contentTypeEnum = contentType
+      ? mapContentType(contentType)
+      : getContentTypeFromFileName(fileName);
+
+    // Convert MD5 to base64 format for Google Cloud Storage
+    const contentMd5Base64 = hexToBase64(contentMd5);
 
     logger.info("File details", {
       filePath,
       fileName,
       fileSize,
-      contentMd5,
+      contentMd5Hex: contentMd5,
+      contentMd5Base64,
       uploadPath,
       contentType: contentTypeEnum,
+      autoDetected: !contentType,
     });
 
     // Send GraphQL request
     logger.info("Sending GraphQL request to generate signed URL...");
 
-    const { data, errors } = await client.mutate({
-      mutation: GENERATE_UPLOAD_SIGNED_URL,
+    const { data, error } = await client.mutate({
+      mutation: generateUploadSignedUrlMutationDocument,
       variables: {
         input: {
           path: uploadPath,
           contentType: contentTypeEnum,
           fileSize,
-          contentMd5,
+          contentMd5: contentMd5Base64,
         },
       },
     });
 
-    if (errors) {
-      logger.error("GraphQL errors", { errors });
-      throw new Error(`GraphQL errors: ${JSON.stringify(errors)}`);
+    if (error) {
+      logger.error("GraphQL errors", { error });
+      throw new Error(`GraphQL errors: ${JSON.stringify(error)}`);
     }
 
     const signedUrl = data?.generateUploadSignedUrl;
@@ -157,7 +226,7 @@ async function generateSignedUrl(
     logger.info("Signed URL generated successfully");
     return signedUrl;
   } catch (error) {
-    logger.error("Failed to generate signed URL", { error: error.message });
+    logger.error("Failed to generate signed URL", { error: error });
     throw error;
   }
 }
@@ -171,30 +240,54 @@ async function main() {
   if (args.length === 0) {
     logger.error("Usage: node get-signed-url.ts <file-path> [content-type]");
     logger.error(
-      "Example: node get-signed-url.ts public/templateCover/demo1.jpg image/jpeg"
+      "Example: node get-signed-url.ts public/templateCover/demo1.jpg"
+    );
+    logger.error(
+      "Note: Content type is automatically detected from file extension if not provided"
     );
     process.exit(1);
   }
 
   const filePath = args[0];
-  const contentType = args[1] || "image/jpeg";
+  const contentType = args[1]; // Optional - will auto-detect if not provided
 
   try {
     const signedUrl = await generateSignedUrl(filePath, contentType);
+
+    // Get file info for display
+    const fileSize = getFileSize(filePath);
+    const contentMd5 = await generateMD5Hash(filePath);
+    const fileName = filePath.split("/").pop() || "unknown";
+    const contentTypeEnum = contentType
+      ? mapContentType(contentType)
+      : getContentTypeFromFileName(fileName);
+    const md5Base64 = hexToBase64(contentMd5);
 
     logger.log("\n" + "=".repeat(80));
     logger.log("SIGNED URL GENERATED SUCCESSFULLY");
     logger.log("=".repeat(80));
     logger.log(signedUrl);
     logger.log("=".repeat(80));
-    logger.log("\nYou can now use this URL to upload your file via:");
+    logger.log("");
+    logger.log("File Details:");
+    logger.log(`- File: ${filePath}`);
+    logger.log(`- Size: ${fileSize} bytes`);
+    logger.log(`- MD5 (hex): ${contentMd5}`);
+    logger.log(`- MD5 (base64): ${md5Base64}`);
+    logger.log(`- Content-Type: ${contentTypeEnum}`);
+    logger.log("");
+    logger.log("You can now use this URL to upload your file via:");
     logger.log("1. Postman (PUT request with binary body)");
     logger.log(
-      "2. curl: curl -X PUT -H 'Content-Type: image/jpeg' --data-binary @file.jpg <signed-url>"
+      `2. curl: curl -X PUT -H 'Content-Type: image/jpeg' -H 'Content-MD5: ${md5Base64}' --data-binary @file.jpg <signed-url>`
+    );
+    logger.log("");
+    logger.log(
+      "Make sure to set the correct Content-Type and Content-MD5 headers!"
     );
     logger.log("3. Any HTTP client");
   } catch (error) {
-    logger.error("Error:", error.message);
+    logger.error("Error:", error);
     process.exit(1);
   }
 }
