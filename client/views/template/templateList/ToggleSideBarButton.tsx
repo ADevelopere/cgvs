@@ -25,12 +25,12 @@ const ToggleSideBarButton: React.FC<{
   return (
     <Box
       sx={{
-        width: { xs: 48, sm: 72 },
+        position: "absolute",
+        top: 16,
+        left: 16,
+        zIndex: zIndex,
         display: "flex",
         justifyContent: "center",
-        position: "fixed",
-        zIndex: zIndex,
-        minHeight: 48,
         alignItems: "center",
       }}
     >
@@ -41,8 +41,17 @@ const ToggleSideBarButton: React.FC<{
           color="inherit"
           aria-label="toggle sidebar"
           sx={{
-            transition: "transform 0.3s ease-in-out",
+            backgroundColor: "background.paper",
+            boxShadow: 2,
+            border: "1px solid",
+            borderColor: "divider",
+            transition:
+              "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            "&:hover": {
+              boxShadow: 4,
+              backgroundColor: "background.paper",
+            },
           }}
         >
           {open ? <CloseIcon /> : <MenuIcon />}
