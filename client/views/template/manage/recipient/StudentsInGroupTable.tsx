@@ -7,7 +7,7 @@ import Table from "@/client/components/Table/Table/Table";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import { useRecipientOperations } from "./hooks/useRecipientOperations";
-import { studentsInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
+import { recipientsByGroupIdFilteredQueryDocument } from "./hooks/recipient.documents";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
@@ -33,20 +33,26 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
   const strings = useAppTranslation("recipientTranslations");
 
   // Get query variables from store
-  const { studentsInGroupQueryParams, selectedGroup, filtersInGroup } = store;
+  const {
+    recipientsByGroupIdFilteredQuery: studentsInGroupQueryParams,
+    selectedGroup,
+    filtersInGroup,
+  } = store;
 
   // Fetch students directly with useQuery - Apollo handles refetch automatically
-  const { data, loading } = useQuery(studentsInRecipientGroupQueryDocument, {
+  const { data, loading } = useQuery(recipientsByGroupIdFilteredQueryDocument, {
     variables: {
-      ...studentsInGroupQueryParams,
       recipientGroupId: studentsInGroupQueryParams.recipientGroupId,
+      paginationArgs: studentsInGroupQueryParams.paginationArgs,
+      orderBy: studentsInGroupQueryParams.orderBy,
+      filterArgs: studentsInGroupQueryParams.filterArgs,
     },
-    skip: !selectedGroup, // Don't query if no group selected
+    skip: !selectedGroup,
     fetchPolicy: "cache-first",
   });
 
-  const students = data?.studentsInRecipientGroup?.data ?? [];
-  const pageInfo = data?.studentsInRecipientGroup?.pageInfo;
+  const recipients = data?.recipientsByGroupIdFiltered?.data ?? [];
+  const pageInfo = data?.recipientsByGroupIdFiltered?.pageInfo;
 
   // Convert GraphQL orderBy to table format
   const initialOrderBy = Array.isArray(studentsInGroupQueryParams.orderBy)
@@ -145,7 +151,16 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
 
   return (
     <TableProvider
-      data={students}
+      data={recipients.map(r => ({
+        // expose student fields at top-level for columns
+        ...(r.student || {}),
+        // ensure row id is recipient id for selection/mutations
+        id: r.id,
+        // keep references if needed elsewhere
+        recipientId: r.id,
+        studentId: r.studentId,
+        recipientGroupId: r.recipientGroupId,
+      }))}
       isLoading={loading}
       columns={recipientBaseColumns}
       dataProps={{
@@ -184,9 +199,9 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
           isMobile={isMobile}
         />
       }
-      selectedRowIds={store.selectedStudentIdsInGroup}
+      selectedRowIds={store.selectedRecipientIdsInGroup}
       onSelectionChange={selectedIds =>
-        store.setSelectedStudentIdsInGroup(selectedIds.map(Number))
+        store.setSelectedRecipientIdsInGroup(selectedIds.map(Number))
       }
       hideRowsPerPage={isMobile}
       compact={isMobile}

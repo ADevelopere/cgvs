@@ -533,6 +533,7 @@ type Query {
   me: User
   recipient(id: Int!): TemplateRecipient
   recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]!
+  recipientsByGroupIdFiltered(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): RecipientsWithFiltersResponse!
   recipientsByStudentId(studentId: Int!): [TemplateRecipient!]!
   searchFiles(
     """File type filter (optional)"""
@@ -572,6 +573,11 @@ type Query {
   templatesConfigs: TemplatesConfigs
   user(id: Int!): User
   users: [User!]
+}
+
+type RecipientsWithFiltersResponse {
+  data: [TemplateRecipient!]
+  pageInfo: PageInfo!
 }
 
 type RefreshTokenResponse {

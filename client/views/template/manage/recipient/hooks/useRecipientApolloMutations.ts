@@ -8,7 +8,7 @@ import { ApolloCache } from "@apollo/client";
 import { useRecipientStore } from "../stores/useRecipientStore";
 
 export const useRecipientApolloMutations = (templateId?: number) => {
-  const { studentsNotInGroupQueryParams, studentsInGroupQueryParams } =
+  const { studentsNotInGroupQueryParams, recipientsByGroupIdFilteredQuery } =
     useRecipientStore();
 
   // Utility function to evict cache
@@ -18,9 +18,10 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         fieldName: "studentsNotInRecipientGroup",
         args: studentsNotInGroupQueryParams,
       });
+
       cache.evict({
-        fieldName: "studentsInRecipientGroup",
-        args: studentsInGroupQueryParams,
+        fieldName: "recipientsByGroupIdFiltered",
+        args: recipientsByGroupIdFilteredQuery,
       });
       cache.gc(); // Garbage collect to clean up evicted data
     } catch {

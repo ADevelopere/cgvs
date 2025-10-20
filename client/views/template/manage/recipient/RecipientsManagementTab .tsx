@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, useTheme, useMediaQuery, CircularProgress } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import {
   useRecipientStore,
@@ -82,12 +82,11 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "background.default",
+            height: "100%",
+            padding: 8,
           }}
         >
-          <Typography variant="h6" color="text.secondary">
-            Loading...
-          </Typography>
+          <CircularProgress />
         </Box>
       ) : selectedGroup ? (
         <Box

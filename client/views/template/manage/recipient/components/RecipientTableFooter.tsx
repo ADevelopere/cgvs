@@ -42,11 +42,11 @@ export const RecipientTableFooterStart: React.FC<{
     () =>
       tabType === "add"
         ? store.selectedStudentIdsNotInGroup
-        : store.selectedStudentIdsInGroup,
+        : store.selectedRecipientIdsInGroup,
     [
       tabType,
       store.selectedStudentIdsNotInGroup,
-      store.selectedStudentIdsInGroup,
+      store.selectedRecipientIdsInGroup,
     ]
   );
 
@@ -59,7 +59,7 @@ export const RecipientTableFooterStart: React.FC<{
     if (tabType === "add") {
       store.clearSelectedStudentIdsNotInGroup();
     } else if (tabType === "manage") {
-      store.clearSelectedStudentIdsInGroup();
+      store.clearSelectedRecipientIdsInGroup();
     }
     setOpenClearDialog(false);
   }, [tabType, store]);
@@ -177,8 +177,12 @@ export const RecipientTableFooterEnd: React.FC<
     () =>
       mode === "add"
         ? store.selectedStudentIdsNotInGroup
-        : store.selectedStudentIdsInGroup,
-    [mode, store.selectedStudentIdsNotInGroup, store.selectedStudentIdsInGroup]
+        : store.selectedRecipientIdsInGroup,
+    [
+      mode,
+      store.selectedStudentIdsNotInGroup,
+      store.selectedRecipientIdsInGroup,
+    ]
   );
 
   // Memoize the converted selected row IDs
@@ -199,7 +203,7 @@ export const RecipientTableFooterEnd: React.FC<
       if (mode === "add") {
         store.clearSelectedStudentIdsNotInGroup();
       } else {
-        store.clearSelectedStudentIdsInGroup();
+        store.clearSelectedRecipientIdsInGroup();
       }
     }
   }, [onAction, convertedSelectedRowIds, mode, store]);

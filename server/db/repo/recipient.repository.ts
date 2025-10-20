@@ -8,7 +8,9 @@ import {
   students,
 } from "../schema";
 import logger from "@/server/lib/logger";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
+import { StudentFilterUtils, PaginationUtils } from "@/server/utils";
+import { queryWithPagination } from "@/server/db/query.extentions";
 
 export namespace RecipientRepository {
   export const existsById = async (id: number): Promise<boolean> => {
@@ -204,6 +206,56 @@ export namespace RecipientRepository {
     return await db.query.templateRecipientGroupItems.findMany({
       where: { recipientGroupId },
     });
+  };
+
+  export const searchRecipientsInGroup = async (
+    recipientGroupId: number,
+    paginationArgs?: Types.PaginationArgs | null,
+    orderBy?: Types.StudentsOrderByClause[] | null,
+    filters?: Types.StudentFilterArgs | null
+  ): Promise<{ data: Types.RecipientEntity[]; pageInfo: Types.PageInfo }> => {
+    await RecipientGroupRepository.existsById(recipientGroupId).then(exists => {
+      if (!exists) {
+        throw new Error(
+          `Recipient group with ID ${recipientGroupId} does not exist.`
+        );
+      }
+    });
+
+    // Base query joins recipients with students so we can filter/order by student fields
+    let baseQuery = db
+      .select({
+        recipient: templateRecipientGroupItems,
+        student: students,
+        total: sql<number>`cast(count(*) over() as int)`,
+      })
+      .from(templateRecipientGroupItems)
+      .innerJoin(
+        students,
+        eq(students.id, templateRecipientGroupItems.studentId)
+      )
+      .where(eq(templateRecipientGroupItems.recipientGroupId, recipientGroupId))
+      .$dynamic();
+
+    // Apply student filters and ordering, then pagination
+    baseQuery = StudentFilterUtils.applyFilters(baseQuery, filters);
+    baseQuery = StudentFilterUtils.applyOrdering(baseQuery, orderBy);
+    baseQuery = queryWithPagination(baseQuery, paginationArgs);
+
+    const results = await baseQuery;
+
+    const total = (results[0] as { total: number })?.total ?? 0;
+    const items: Types.RecipientEntity[] = results
+      .map(r => (r as { recipient: Types.RecipientEntity }).recipient)
+      .filter(Boolean);
+
+    const pageInfo = PaginationUtils.buildPageInfoFromArgs(
+      paginationArgs,
+      items.length,
+      total
+    );
+
+    return { data: items, pageInfo };
   };
 
   export const findByStudentId = async (

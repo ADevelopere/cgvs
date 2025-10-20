@@ -23,7 +23,7 @@ import { ConnectivityTranslations } from "@/client/locale/components/Connectivit
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
 import { isNetworkError } from "@/client/utils/errorUtils";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 // import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
 
 // Loading UI shown during initial connectivity check
@@ -39,7 +39,6 @@ const InitializingUI: React.FC = () => (
     }}
   >
     <CircularProgress size={48} />
-    <Typography>Initializing...</Typography>
   </Box>
 );
 
