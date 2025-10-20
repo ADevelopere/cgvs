@@ -62,17 +62,44 @@ get_content_type() {
         gif)
             echo "image/gif"
             ;;
+        webp)
+            echo "image/webp"
+            ;;
         pdf)
             echo "application/pdf"
+            ;;
+        doc)
+            echo "application/msword"
+            ;;
+        docx)
+            echo "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ;;
+        xls)
+            echo "application/vnd.ms-excel"
+            ;;
+        xlsx)
+            echo "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             ;;
         txt)
             echo "text/plain"
             ;;
-        json)
-            echo "application/json"
+        zip)
+            echo "application/zip"
+            ;;
+        rar)
+            echo "application/vnd.rar"
+            ;;
+        mp4)
+            echo "video/mp4"
+            ;;
+        mp3)
+            echo "audio/mpeg"
+            ;;
+        wav)
+            echo "audio/wav"
             ;;
         *)
-            echo "application/octet-stream"
+            echo "image/jpeg"  # Default fallback
             ;;
     esac
 }
@@ -147,13 +174,13 @@ main() {
     print_info "Generating signed URL..."
     echo
 
-    # Use Bun to run the TypeScript script
+    # Use Bun to run the TypeScript script (content type will be auto-detected)
     if command -v bun >/dev/null 2>&1; then
-        bun run "$script_path" "$file_path" "$content_type"
+        bun run "$script_path" "$file_path"
     elif command -v node >/dev/null 2>&1; then
         # If Bun is not available, try to compile and run with Node
         print_warning "Bun not found, trying with Node.js..."
-        npx tsx "$script_path" "$file_path" "$content_type"
+        npx tsx "$script_path" "$file_path"
     else
         print_error "Neither Bun nor Node.js found. Please install one of them."
         exit 1

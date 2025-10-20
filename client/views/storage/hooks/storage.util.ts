@@ -3,7 +3,15 @@ import CryptoJS from "crypto-js";
 import { extToContentType, mimeToContentType } from "./storage.constant";
 
 /**
- * Generate MD5 hash from file content
+ * Generate MD5 hash from file content in base64 format
+ *
+ * IMPORTANT: This function returns the MD5 hash in base64 format because:
+ * 1. Google Cloud Storage signed URLs expect base64-encoded MD5 for the contentMd5 parameter
+ * 2. The Content-MD5 header in HTTP requests must also be base64-encoded to match the signature
+ * 3. Using hex format would cause "SignatureDoesNotMatch" errors when uploading files
+ *
+ * @param file - The file to generate MD5 hash for
+ * @returns Promise<string> - Base64-encoded MD5 hash
  */
 export const generateFileMD5 = async (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -12,7 +20,8 @@ export const generateFileMD5 = async (file: File): Promise<string> => {
       try {
         const arrayBuffer = event.target?.result as ArrayBuffer;
         const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-        const hash = CryptoJS.MD5(wordArray).toString();
+        // Generate MD5 hash and convert to base64 format for GCP compatibility
+        const hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Base64);
         resolve(hash);
       } catch (error) {
         reject(

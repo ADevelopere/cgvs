@@ -11,21 +11,127 @@
  */
 
 import { readFileSync, writeFileSync } from "fs";
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import { gql } from "@apollo/client";
+import { spawn, ChildProcess } from "child_process";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { HttpLink } from "@apollo/client/link/http";
 import logger from "@/lib/logger";
 import { generateFileMD5Browser } from "./browser-md5";
+import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/hooks/storage.documents";
 
-// GraphQL client setup
-const httpLink = createHttpLink({
-  uri: process.env.GRAPHQL_ENDPOINT || "http://localhost:3000/api/graphql",
-  credentials: "include",
-});
+// Global variables for dev server
+let devServer: ChildProcess | null = null;
+let serverPort: number = 0;
+let client: ApolloClient;
 
-const client = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache(),
-});
+/**
+ * Start the development server on a non-popular port
+ */
+async function startDevServer(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    logger.info("Starting development server...");
+
+    // Use a non-popular port range (8000-8999)
+    const port = Math.floor(Math.random() * 1000) + 8000;
+
+    devServer = spawn(
+      "/home/vscode/.bun/bin/bun",
+      ["dev", "--port", port.toString()],
+      {
+        stdio: ["pipe", "pipe", "pipe"],
+        cwd: process.cwd(),
+        env: { ...process.env, PORT: port.toString() },
+      }
+    );
+
+    let serverStarted = false;
+    let output = "";
+    let errorOutput = "";
+
+    devServer.stdout?.on("data", data => {
+      output += data.toString();
+      logger.info("Dev server output:", data.toString());
+
+      // Look for server start confirmation
+      if (
+        output.includes("Ready in") ||
+        output.includes("ready") ||
+        output.includes("listening") ||
+        output.includes("started")
+      ) {
+        if (!serverStarted) {
+          serverStarted = true;
+          serverPort = port;
+
+          // Wait a bit for server to fully start
+          setTimeout(() => {
+            logger.info(`Development server started on port ${serverPort}`);
+            resolve(serverPort);
+          }, 3000);
+        }
+      }
+    });
+
+    devServer.stderr?.on("data", data => {
+      errorOutput += data.toString();
+      logger.error("Dev server error:", data.toString());
+
+      if (
+        !serverStarted &&
+        errorOutput.includes("Error") &&
+        !errorOutput.includes("Warning")
+      ) {
+        reject(new Error(`Failed to start dev server: ${errorOutput}`));
+      }
+    });
+
+    devServer.on("error", error => {
+      logger.error("Failed to spawn dev server:", error);
+      reject(error);
+    });
+
+    devServer.on("exit", code => {
+      if (code !== 0 && !serverStarted) {
+        reject(new Error(`Dev server exited with code ${code}`));
+      }
+    });
+
+    // Fallback timeout
+    setTimeout(() => {
+      if (!serverStarted) {
+        logger.warn(`Server start timeout, assuming port ${port} is ready`);
+        serverPort = port;
+        resolve(serverPort);
+      }
+    }, 15000);
+  });
+}
+
+/**
+ * Stop the development server
+ */
+async function stopDevServer(): Promise<void> {
+  if (devServer) {
+    logger.info("Stopping development server...");
+
+    return new Promise(resolve => {
+      const timeout = setTimeout(() => {
+        if (devServer) {
+          logger.warn("Force killing dev server...");
+          devServer.kill("SIGKILL");
+        }
+      }, 5000);
+
+      devServer?.on("exit", () => {
+        clearTimeout(timeout);
+        logger.info("Development server stopped");
+        devServer = null;
+        resolve();
+      });
+
+      devServer?.kill("SIGTERM");
+    });
+  }
+}
 
 // Test file path
 const testImagePath = "public/templateCover/demo1.jpg";
@@ -36,44 +142,71 @@ const generateFileMD5Node = async (filePath: string): Promise<string> => {
   return await generateFileMD5Browser(filePath);
 };
 
-// GraphQL mutation for generating signed URL
-const GENERATE_UPLOAD_SIGNED_URL = gql`
-  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {
-    generateUploadSignedUrl(input: $input)
-  }
-`;
-
 describe("Upload Integration Test", () => {
   beforeAll(async () => {
-    // Create test file if it doesn't exist
     try {
-      readFileSync(testImagePath);
-    } catch {
-      logger.info("Creating test file...");
-      // Create a simple test image (1x1 pixel JPEG)
-      const testImageBuffer = Buffer.from([
-        0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
-        0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, 0xff, 0xdb, 0x00, 0x43,
-        0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08, 0x07, 0x07, 0x07, 0x09,
-        0x09, 0x08, 0x0a, 0x0c, 0x14, 0x0d, 0x0c, 0x0b, 0x0b, 0x0c, 0x19, 0x12,
-        0x13, 0x0f, 0x14, 0x1d, 0x1a, 0x1f, 0x1e, 0x1d, 0x1a, 0x1c, 0x1c, 0x20,
-        0x24, 0x2e, 0x27, 0x20, 0x22, 0x2c, 0x23, 0x1c, 0x1c, 0x28, 0x37, 0x29,
-        0x2c, 0x30, 0x31, 0x34, 0x34, 0x34, 0x1f, 0x27, 0x39, 0x3d, 0x38, 0x32,
-        0x3c, 0x2e, 0x33, 0x34, 0x32, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x01,
-        0x00, 0x01, 0x01, 0x01, 0x11, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01,
-        0xff, 0xc4, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xff, 0xc4,
-        0x00, 0x14, 0x10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xda, 0x00, 0x0c,
-        0x03, 0x01, 0x00, 0x02, 0x11, 0x03, 0x11, 0x00, 0x3f, 0x00, 0x8a, 0xff,
-        0xd9,
-      ]);
-      writeFileSync(testImagePath, testImageBuffer);
+      // Start the development server
+      const port = await startDevServer();
+
+      // Create GraphQL client with dynamic port
+      const httpLink = new HttpLink({
+        uri: `http://localhost:${port}/api/graphql`,
+        credentials: "include",
+      });
+
+      client = new ApolloClient({
+        link: httpLink,
+        cache: new InMemoryCache(),
+      });
+
+      // Create test file if it doesn't exist
+      try {
+        readFileSync(testImagePath);
+      } catch {
+        logger.info("Creating test file...");
+        // Create a simple test image (1x1 pixel JPEG)
+        const testImageBuffer = Buffer.from([
+          0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00,
+          0x01, 0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, 0xff, 0xdb,
+          0x00, 0x43, 0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08, 0x07,
+          0x07, 0x07, 0x09, 0x09, 0x08, 0x0a, 0x0c, 0x14, 0x0d, 0x0c, 0x0b,
+          0x0b, 0x0c, 0x19, 0x12, 0x13, 0x0f, 0x14, 0x1d, 0x1a, 0x1f, 0x1e,
+          0x1d, 0x1a, 0x1c, 0x1c, 0x20, 0x24, 0x2e, 0x27, 0x20, 0x22, 0x2c,
+          0x23, 0x1c, 0x1c, 0x28, 0x37, 0x29, 0x2c, 0x30, 0x31, 0x34, 0x34,
+          0x34, 0x1f, 0x27, 0x39, 0x3d, 0x38, 0x32, 0x3c, 0x2e, 0x33, 0x34,
+          0x32, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01,
+          0x01, 0x11, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01, 0xff, 0xc4,
+          0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xff, 0xc4,
+          0x00, 0x14, 0x10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xda,
+          0x00, 0x0c, 0x03, 0x01, 0x00, 0x02, 0x11, 0x03, 0x11, 0x00, 0x3f,
+          0x00, 0x8a, 0xff, 0xd9,
+        ]);
+        writeFileSync(testImagePath, testImageBuffer);
+      }
+
+      logger.info(`Test setup complete. Server running on port ${port}`);
+    } catch (error) {
+      logger.error("Failed to setup test environment:", error);
+      throw error;
+    }
+  });
+
+  afterAll(async () => {
+    try {
+      await stopDevServer();
+    } catch (error) {
+      logger.error("Failed to stop dev server:", error);
     }
   });
 
   test("should generate signed URL and upload file successfully", async () => {
     // Step 1: Generate MD5 hash for the test file
+    // IMPORTANT: The MD5 hash is generated in base64 format because:
+    // 1. Google Cloud Storage signed URLs expect base64-encoded MD5 for the contentMd5 parameter
+    // 2. The Content-MD5 header in HTTP requests must also be base64-encoded to match the signature
+    // 3. Using hex format would cause "SignatureDoesNotMatch" errors when uploading files
     const contentMd5 = await generateFileMD5Node(testImagePath);
     const fileSize = readFileSync(testImagePath).length;
     const fileName = "demo1.jpg";
@@ -90,24 +223,24 @@ describe("Upload Integration Test", () => {
     // Step 2: Send GraphQL request to generate signed URL
     logger.info("Sending GraphQL request to generate signed URL...");
 
-    const { data, errors } = await client.mutate({
-      mutation: GENERATE_UPLOAD_SIGNED_URL,
+    const result = await client.mutate({
+      mutation: generateUploadSignedUrlMutationDocument,
       variables: {
         input: {
           path: fullPath,
-          contentType: "PNG", // Using PNG as it's a JPEG but we'll map it
+          contentType: "JPEG", // Correct content type for .jpg files
           fileSize,
-          contentMd5,
+          contentMd5, // Base64-encoded MD5 hash for GCP compatibility
         },
       },
     });
 
-    if (errors) {
-      logger.error("GraphQL errors", { errors });
-      throw new Error(`GraphQL errors: ${JSON.stringify(errors)}`);
+    if (result.error) {
+      logger.error("GraphQL errors", { error: result.error });
+      throw new Error(`GraphQL errors: ${JSON.stringify(result.error)}`);
     }
 
-    const signedUrl = data?.generateUploadSignedUrl;
+    const signedUrl = result.data?.generateUploadSignedUrl;
     if (!signedUrl) {
       throw new Error("No signed URL returned from GraphQL mutation");
     }
@@ -128,9 +261,9 @@ describe("Upload Integration Test", () => {
         "-X",
         "PUT",
         "-H",
-        "Content-Type: image/jpeg",
+        "Content-Type: image/jpeg", // Correct MIME type for JPEG files
         "-H",
-        `Content-MD5: ${contentMd5}`,
+        `Content-MD5: ${contentMd5}`, // Base64-encoded MD5 hash for GCP compatibility
         "--data-binary",
         `@${testImagePath}`,
         "-v", // Verbose output for debugging
@@ -202,6 +335,7 @@ describe("Upload Integration Test", () => {
     const fileSize = readFileSync(testImagePath).length;
     const fileName = "demo1.jpg";
     const fullPath = `${uploadPath}/${fileName}`;
+    // Invalid base64 MD5 hash (should be base64-encoded for GCP compatibility)
     const invalidMd5 = "invalidmd5hash123456789012345678901234";
 
     logger.info("Testing with invalid MD5 hash", {
@@ -210,25 +344,27 @@ describe("Upload Integration Test", () => {
     });
 
     // Send GraphQL request with invalid MD5
-    const { data, errors } = await client.mutate({
-      mutation: GENERATE_UPLOAD_SIGNED_URL,
+    const result = await client.mutate({
+      mutation: generateUploadSignedUrlMutationDocument,
       variables: {
         input: {
           path: fullPath,
-          contentType: "PNG",
+          contentType: "JPEG", // Correct content type for .jpg files
           fileSize,
-          contentMd5: invalidMd5,
+          contentMd5: invalidMd5, // Invalid base64 MD5 hash
         },
       },
     });
 
-    if (errors) {
-      logger.info("Expected GraphQL errors with invalid MD5", { errors });
-      expect(errors).toBeDefined();
+    if (result.error) {
+      logger.info("Expected GraphQL errors with invalid MD5", {
+        error: result.error,
+      });
+      expect(result.error).toBeDefined();
       return;
     }
 
-    const signedUrl = data?.generateUploadSignedUrl;
+    const signedUrl = result.data?.generateUploadSignedUrl;
     if (!signedUrl) {
       logger.info("No signed URL returned (expected with invalid MD5)");
       return;
@@ -242,9 +378,9 @@ describe("Upload Integration Test", () => {
         "-X",
         "PUT",
         "-H",
-        "Content-Type: image/jpeg",
+        "Content-Type: image/jpeg", // Correct MIME type for JPEG files
         "-H",
-        `Content-MD5: ${invalidMd5}`,
+        `Content-MD5: ${invalidMd5}`, // Invalid base64 MD5 hash for testing
         "--data-binary",
         `@${testImagePath}`,
         "-v",
