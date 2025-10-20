@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { Box, useTheme, useMediaQuery, CircularProgress } from "@mui/material";
+import {
+  Box,
+  useTheme,
+  useMediaQuery,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import {
   useRecipientStore,
@@ -13,6 +19,10 @@ import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
 import StudentsInGroupTable from "./StudentsInGroupTable";
 import { RecipientSubTabList } from "./components/RecipientSubTabList";
 import { Template } from "@/client/graphql/generated/gql/graphql";
+import { useQuery } from "@apollo/client/react";
+import { templateRecipientGroupsByTemplateIdQueryDocument } from "../recipientGroup/hooks/recipientGroup.documents";
+import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
+import { useAppTranslation } from "@/client/locale";
 
 interface RecipientsManagementTabProps {
   template: Template;
@@ -21,10 +31,11 @@ interface RecipientsManagementTabProps {
 const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   template,
 }) => {
-  const { selectedGroup, activeSubTab, setActiveSubTab } = useRecipientStore();
-  const { loading: initializing } = useRecipientStoreInitializer();
+  const { selectedGroup, setSelectedGroup, activeSubTab, setActiveSubTab } =
+    useRecipientStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const strings = useAppTranslation("recipientGroupTranslations");
 
   const handleTabChange = (
     _: React.SyntheticEvent,
@@ -32,6 +43,50 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   ) => {
     setActiveSubTab(newValue);
   };
+
+  const { loading: storeInitializing } = useRecipientStoreInitializer();
+  const firstInitializingRef = React.useRef(true);
+
+  const {
+    data,
+    loading: groupsLoading,
+    error: groupsError,
+  } = useQuery(templateRecipientGroupsByTemplateIdQueryDocument, {
+    variables: { templateId: template.id },
+    fetchPolicy: "cache-and-network",
+  });
+
+  const selectefGroupRef = React.useRef<TemplateRecipientGroup | null>(
+    selectedGroup
+  );
+  selectefGroupRef.current = selectedGroup;
+
+  const groups: readonly TemplateRecipientGroup[] = React.useMemo(() => {
+    const fetchedGroups: TemplateRecipientGroup[] =
+      data?.templateRecipientGroupsByTemplateId ?? [];
+    //  setSelectedGroup to the first group if it is not in the fetched groups
+    if (!fetchedGroups.some(g => g.id === selectefGroupRef.current?.id)) {
+      setSelectedGroup(fetchedGroups[0] ?? null);
+    }
+    firstInitializingRef.current = false;
+    return fetchedGroups;
+  }, [data?.templateRecipientGroupsByTemplateId, setSelectedGroup]);
+
+  // Show error state if there's an error
+  if (groupsError) {
+    return (
+      <Alert
+        severity="error"
+        sx={{
+          minWidth: { xs: 200, sm: 250, md: 300 },
+          width: "100%",
+          maxWidth: "100%",
+        }}
+      >
+        {strings.errorFetchingGroups}
+      </Alert>
+    );
+  }
 
   return (
     <Box
@@ -70,12 +125,12 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
             minWidth: 0,
           }}
         >
-          <RecipientGroupSelector template={template} />
+          <RecipientGroupSelector groups={groups} loading={groupsLoading} />
         </Box>
       </Box>
 
       {/* Content Area */}
-      {initializing ? (
+      {storeInitializing || firstInitializingRef.current ? (
         <Box
           sx={{
             flex: 1,
