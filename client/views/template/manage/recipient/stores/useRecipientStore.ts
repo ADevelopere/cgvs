@@ -17,8 +17,10 @@ interface RecipientState {
   // Query variables for students NOT in group
   studentsNotInGroupQueryParams: Graphql.StudentsNotInRecipientGroupQueryVariables;
 
-  // Query variables for students IN group
-  studentsInGroupQueryParams: Graphql.StudentsInRecipientGroupQueryVariables;
+  // Query variables for recipients by group id filtered
+  recipientsByGroupIdFilteredQuery:
+    | Graphql.StudentsInRecipientGroupQueryVariables
+    | Graphql.RecipientsByGroupIdFilteredQueryVariables;
 
   // Filter state for UI - separate for each tab
   filtersNotInGroup: Record<string, FilterClause | null>;
@@ -26,7 +28,8 @@ interface RecipientState {
 
   // Selected student IDs - separate for each tab (not persisted)
   selectedStudentIdsNotInGroup: number[];
-  selectedStudentIdsInGroup: number[];
+  // Selected recipient IDs in group (new)
+  selectedRecipientIdsInGroup: number[];
 
   // Sub-tab state
   activeSubTab: "manage" | "add";
@@ -39,7 +42,9 @@ interface RecipientActions {
     params: Partial<Graphql.StudentsNotInRecipientGroupQueryVariables>
   ) => void;
   setStudentsInGroupQueryParams: (
-    params: Partial<Graphql.StudentsInRecipientGroupQueryVariables>
+    params:
+      | Partial<Graphql.StudentsInRecipientGroupQueryVariables>
+      | Partial<Graphql.RecipientsByGroupIdFilteredQueryVariables>
   ) => void;
   setFiltersNotInGroup: (filters: Record<string, FilterClause | null>) => void;
   setFiltersInGroup: (filters: Record<string, FilterClause | null>) => void;
@@ -50,9 +55,9 @@ interface RecipientActions {
   clearAllFiltersNotInGroup: () => void;
   clearAllFiltersInGroup: () => void;
   setSelectedStudentIdsNotInGroup: (ids: number[]) => void;
-  setSelectedStudentIdsInGroup: (ids: number[]) => void;
   clearSelectedStudentIdsNotInGroup: () => void;
-  clearSelectedStudentIdsInGroup: () => void;
+  setSelectedRecipientIdsInGroup: (ids: number[]) => void;
+  clearSelectedRecipientIdsInGroup: () => void;
   setActiveSubTab: (tab: "manage" | "add") => void;
   reset: () => void;
 }
@@ -95,14 +100,14 @@ const initialState: RecipientState = {
     recipientGroupId: 0, // Will be set when a group is selected
     paginationArgs: { page: 1, first: 50 },
   },
-  studentsInGroupQueryParams: {
+  recipientsByGroupIdFilteredQuery: {
     recipientGroupId: 0, // Will be set when a group is selected
     paginationArgs: { page: 1, first: 50 },
   },
   filtersNotInGroup: {},
   filtersInGroup: {},
   selectedStudentIdsNotInGroup: [],
-  selectedStudentIdsInGroup: [],
+  selectedRecipientIdsInGroup: [],
   activeSubTab: getPersistedActiveSubTab(),
 };
 
@@ -124,12 +129,12 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
             // Preserve existing orderBy
             orderBy: state.studentsNotInGroupQueryParams.orderBy,
           },
-          studentsInGroupQueryParams: {
-            ...state.studentsInGroupQueryParams,
+          recipientsByGroupIdFilteredQuery: {
+            ...state.recipientsByGroupIdFilteredQuery,
             recipientGroupId: group?.id || 0,
             paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
             // Preserve existing orderBy
-            orderBy: state.studentsInGroupQueryParams.orderBy,
+            orderBy: state.recipientsByGroupIdFilteredQuery.orderBy,
           },
         };
       }),
@@ -146,12 +151,12 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
             // Preserve existing orderBy
             orderBy: state.studentsNotInGroupQueryParams.orderBy,
           },
-          studentsInGroupQueryParams: {
-            ...state.studentsInGroupQueryParams,
+          recipientsByGroupIdFilteredQuery: {
+            ...state.recipientsByGroupIdFilteredQuery,
             recipientGroupId: groupId || 0,
             paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
             // Preserve existing orderBy
-            orderBy: state.studentsInGroupQueryParams.orderBy,
+            orderBy: state.recipientsByGroupIdFilteredQuery.orderBy,
           },
         };
       }),
@@ -166,8 +171,8 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
 
     setStudentsInGroupQueryParams: params =>
       set(state => ({
-        studentsInGroupQueryParams: {
-          ...state.studentsInGroupQueryParams,
+        recipientsByGroupIdFilteredQuery: {
+          ...state.recipientsByGroupIdFilteredQuery,
           ...params,
         },
       })),
@@ -207,14 +212,14 @@ export const useRecipientStore = create<RecipientState & RecipientActions>(
     setSelectedStudentIdsNotInGroup: ids =>
       set({ selectedStudentIdsNotInGroup: ids }),
 
-    setSelectedStudentIdsInGroup: ids =>
-      set({ selectedStudentIdsInGroup: ids }),
+    setSelectedRecipientIdsInGroup: ids =>
+      set({ selectedRecipientIdsInGroup: ids }),
 
     clearSelectedStudentIdsNotInGroup: () =>
       set({ selectedStudentIdsNotInGroup: [] }),
 
-    clearSelectedStudentIdsInGroup: () =>
-      set({ selectedStudentIdsInGroup: [] }),
+    clearSelectedRecipientIdsInGroup: () =>
+      set({ selectedRecipientIdsInGroup: [] }),
 
     setActiveSubTab: tab => {
       setPersistedActiveSubTab(tab);

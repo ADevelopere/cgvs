@@ -77,6 +77,54 @@ export const recipientsByStudentIdQueryDocument: TypedDocumentNode<
   }
 `;
 
+export const recipientsByGroupIdFilteredQueryDocument: TypedDocumentNode<
+  Graphql.RecipientsByGroupIdFilteredQuery,
+  Graphql.RecipientsByGroupIdFilteredQueryVariables
+> = gql`
+  query recipientsByGroupIdFiltered(
+    $recipientGroupId: Int!
+    $paginationArgs: PaginationArgs
+    $orderBy: [StudentsOrderByClause!]
+    $filterArgs: StudentFilterArgs
+  ) {
+    recipientsByGroupIdFiltered(
+      recipientGroupId: $recipientGroupId
+      paginationArgs: $paginationArgs
+      orderBy: $orderBy
+      filterArgs: $filterArgs
+    ) {
+      data {
+        id
+        studentId
+        recipientGroupId
+        createdAt
+        updatedAt
+        student {
+          id
+          name
+          email
+          phoneNumber
+          dateOfBirth
+          nationality
+          gender
+          createdAt
+          updatedAt
+        }
+      }
+      pageInfo {
+        count
+        currentPage
+        firstItem
+        hasMorePages
+        lastItem
+        lastPage
+        perPage
+        total
+      }
+    }
+  }
+`;
+
 export const createRecipientMutationDocument: TypedDocumentNode<
   Graphql.CreateRecipientMutation,
   Graphql.CreateRecipientMutationVariables

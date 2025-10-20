@@ -3,6 +3,7 @@ import * as Types from "@/server/types";
 import { RecipientGroupRepository, StudentRepository } from "@/server/db/repo";
 import { TemplateRecipientGroupPothosObject } from "./recipientGroup.pothos";
 import { StudentPothosObject } from "./student.pothos";
+import { PageInfoObject } from "./pagination.objects";
 
 export const TemplateRecipientPothosObject = gqlSchemaBuilder
   .objectRef<Types.RecipientEntity>("TemplateRecipient")
@@ -50,5 +51,20 @@ export const TemplateRecipientCreateListInputPothosObject = gqlSchemaBuilder
     fields: t => ({
       recipientGroupId: t.int({ required: true }),
       studentIds: t.intList({ required: true }),
+    }),
+  });
+
+export const RecipientsWithFiltersPothosObject = gqlSchemaBuilder
+  .objectRef<{
+    data: Types.RecipientEntity[];
+    pageInfo: Types.PageInfo;
+  }>("RecipientsWithFiltersResponse")
+  .implement({
+    fields: t => ({
+      data: t.field({
+        type: [TemplateRecipientPothosObject],
+        resolve: r => r.data,
+      }),
+      pageInfo: t.expose("pageInfo", { type: PageInfoObject, nullable: false }),
     }),
   });

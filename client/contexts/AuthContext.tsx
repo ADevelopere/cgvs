@@ -49,7 +49,6 @@ const LoadingUI: React.FC<{
     ) : (
       <>
         <CircularProgress size={48} />
-        <Typography>{strings.checkingAuthentication}</Typography>
       </>
     )}
   </Box>

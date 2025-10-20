@@ -174,7 +174,7 @@ export const useRecipientOperations = (templateId?: number) => {
     (page: number) => {
       store.setStudentsInGroupQueryParams({
         paginationArgs: {
-          ...store.studentsInGroupQueryParams.paginationArgs,
+          ...store.recipientsByGroupIdFilteredQuery.paginationArgs,
           page,
         },
       });
@@ -281,8 +281,8 @@ export const useRecipientOperations = (templateId?: number) => {
             ? (newFilterArgs as Graphql.StudentFilterArgs)
             : null,
         // Preserve existing pagination and orderBy
-        paginationArgs: store.studentsInGroupQueryParams.paginationArgs,
-        orderBy: store.studentsInGroupQueryParams.orderBy,
+        paginationArgs: store.recipientsByGroupIdFilteredQuery.paginationArgs,
+        orderBy: store.recipientsByGroupIdFilteredQuery.orderBy,
       });
     },
     [store]
