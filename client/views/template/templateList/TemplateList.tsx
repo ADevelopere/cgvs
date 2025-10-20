@@ -38,7 +38,14 @@ const TemplateList: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        height: "100%",
+        position: "relative",
+      }}
+    >
       <ToggleSideBarButton
         open={open}
         toggleSidebar={toggleSidebar}
@@ -78,10 +85,11 @@ const TemplateList: React.FC = () => {
           </Paper>
           <TemplateListContent
             style={{
-              paddingInlineStart: open ? 2 : 8,
+              paddingInlineStart: open ? 1 : 8,
               paddingInlineEnd: 2,
               paddingTop: 2,
               paddingBottom: 4,
+              width: "100%",
             }}
           />
         </SplitPane>
