@@ -45,3 +45,10 @@
 - When suggesting code changes, always replace console.\* calls with the appropriate logger
 - When creating new files, import and use the correct logger based on directory location
 - Ensure all logging follows the established logger interface and methods
+
+## Commit Message Rules
+
+- Write concise, descriptive commit messages that clearly explain what was changed
+- Focus on the actual changes made, not on compliance statements
+- NEVER include repetitive endings like "- Ensured all changes comply with Bun package manager rules and maintain code quality standards."
+- Use imperative mood (e.g., "Add feature" not "Added feature" or "Adding feature")

@@ -64,6 +64,17 @@ bun run dev
 
 Visit `http://localhost:3000` to see the application.
 
+### Configure GCP Bucket CORS (Optional)
+
+If you're using Google Cloud Storage for file uploads, configure CORS for browser uploads:
+
+```bash
+# Configure CORS for your GCP bucket
+./scripts/configure-gcp-cors.sh
+```
+
+This script will read your production domain and bucket name from `.env` and configure CORS automatically.
+
 ---
 
 ## ☁️ Google Cloud Platform (GCP) Setup
@@ -276,14 +287,40 @@ The issue occurs because:
 
 Your Google Cloud Storage bucket needs CORS configuration to allow browser uploads with the `Content-MD5` header.
 
-#### 1. Check Current CORS Configuration
+#### Automated CORS Configuration (Recommended)
+
+Use the provided script to automatically configure CORS for your bucket:
+
+```bash
+# Run the automated CORS configuration script
+./scripts/configure-gcp-cors.sh
+```
+
+This script will:
+
+- Read your production domain and bucket name from `.env` file
+- Prompt for any missing values
+- Validate the inputs
+- Create and apply the CORS configuration
+- Clean up temporary files automatically
+
+**Prerequisites:**
+
+- Google Cloud CLI installed and authenticated (run `./scripts/setup-gcloud.sh` if needed)
+- `.env` file with `PRODUCTION_DOMAIN` and `GCP_BUCKET_NAME` variables (or the script will prompt for them)
+
+#### Manual CORS Configuration
+
+If you prefer to configure CORS manually:
+
+##### 1. Check Current CORS Configuration
 
 ```bash
 # Check if CORS is already configured
 gsutil cors get gs://YOUR_BUCKET_NAME
 ```
 
-#### 2. Create CORS Configuration File
+##### 2. Create CORS Configuration File
 
 Create a file named `cors-config.json` with the following content:
 
@@ -309,7 +346,7 @@ Create a file named `cors-config.json` with the following content:
 - Add `http://localhost:3001` if you use a different development port
 - The `Content-MD5` header is required for signed URL validation
 
-#### 3. Apply CORS Configuration
+##### 3. Apply CORS Configuration
 
 ```bash
 # Apply the CORS configuration to your bucket
@@ -319,7 +356,7 @@ gsutil cors set cors-config.json gs://YOUR_BUCKET_NAME
 gsutil cors get gs://YOUR_BUCKET_NAME
 ```
 
-#### 4. Clean Up
+##### 4. Clean Up
 
 ```bash
 # Remove the temporary configuration file
