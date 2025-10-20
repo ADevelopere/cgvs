@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "tsc": "tsc --noEmit",
-    "generate:gqlSchema": "tsx server/graphql/generateGqlSchema.ts",
+    "generate:gqlSchema": "bun run server/graphql/generateGqlSchema.ts",
     "prepare": "husky"
   },
   "dependencies": {

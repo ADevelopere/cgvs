@@ -966,6 +966,7 @@ input TemplateUpdateInput {
   categoryId: Int!
   description: String
   id: Int!
+  imagePath: String
   name: String!
 }
 
