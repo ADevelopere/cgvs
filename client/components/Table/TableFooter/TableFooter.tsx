@@ -9,9 +9,15 @@ import { useTableRowsContext } from "../Table/TableRowsContext";
 
 interface TableFooterProps {
   loadedRows?: number;
+  hideRowsPerPage?: boolean;
+  compact?: boolean;
 }
 
-const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
+const PaginationFooter: React.FC<TableFooterProps> = ({
+  loadedRows = 0,
+  hideRowsPerPage = false,
+  compact = false,
+}) => {
   const theme = useTheme();
   const { strings } = useTableLocale();
 
@@ -60,13 +66,15 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
   );
 
   const labelDisplayedRows = useCallback(
-    ({ from, to, count }: { from: number; to: number; count: number }) =>
-      strings.pagination.displayedRows(
+    ({ from, to, count }: { from: number; to: number; count: number }) => {
+      if (compact) return "";
+      return strings.pagination.displayedRows(
         from,
         to,
         typeof count === "number" ? count : to
-      ),
-    [strings]
+      );
+    },
+    [strings, compact]
   );
 
   const getItemAriaLabel = useCallback(
@@ -86,6 +94,25 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
     },
     [strings]
   );
+
+  // When in compact mode and loading, render only a centered spinner to avoid layout shifts
+  if (compact && isLoading) {
+    return (
+      <div style={tfStyle}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: theme.spacing(1),
+            minHeight: 36,
+          }}
+        >
+          <CircularProgress size={16} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={tfStyle}>
@@ -117,12 +144,35 @@ const PaginationFooter: React.FC<TableFooterProps> = ({ loadedRows = 0 }) => {
               count={pageInfo.total}
               page={pageInfo.currentPage - 1} // Convert 1-indexed to 0-indexed
               rowsPerPage={pageInfo.perPage}
-              rowsPerPageOptions={rowsPerPageOptions}
+              rowsPerPageOptions={hideRowsPerPage ? [] : rowsPerPageOptions}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              labelRowsPerPage={strings.pagination.rowsPerPage}
+              labelRowsPerPage={
+                hideRowsPerPage ? "" : strings.pagination.rowsPerPage
+              }
               labelDisplayedRows={labelDisplayedRows}
               getItemAriaLabel={getItemAriaLabel}
+              sx={
+                compact
+                  ? {
+                      "& .MuiTablePagination-toolbar": {
+                        minHeight: 36,
+                        gap: 0.5,
+                        paddingLeft: 0,
+                        paddingRight: 0,
+                      },
+                      "& .MuiInputBase-root": {
+                        fontSize: 12,
+                      },
+                      "& .MuiTablePagination-actions": {
+                        marginLeft: 0,
+                      },
+                      "& .MuiTablePagination-displayedRows": {
+                        display: "none",
+                      },
+                    }
+                  : undefined
+              }
             />
           ) : (
             // Render standard footer when not using pagination

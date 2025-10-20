@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import {
   useRecipientStore,
@@ -23,6 +23,8 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
 }) => {
   const { selectedGroup, activeSubTab, setActiveSubTab } = useRecipientStore();
   const { loading: initializing } = useRecipientStoreInitializer();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleTabChange = (
     _: React.SyntheticEvent,
@@ -66,7 +68,6 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
           sx={{
             flex: 1,
             minWidth: 0,
-            overflow: "hidden",
           }}
         >
           <RecipientGroupSelector template={template} />
@@ -100,12 +101,18 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
           <TabContext value={activeSubTab}>
             <TabPanel value="manage" sx={{ flex: 1, p: 0, overflow: "hidden" }}>
               <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
-                <StudentsInGroupTable templateId={template.id} />
+                <StudentsInGroupTable
+                  templateId={template.id}
+                  isMobile={isMobile}
+                />
               </Box>
             </TabPanel>
             <TabPanel value="add" sx={{ flex: 1, p: 0, overflow: "hidden" }}>
               <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
-                <StudentsNotInGroupTable templateId={template.id} />
+                <StudentsNotInGroupTable
+                  templateId={template.id}
+                  isMobile={isMobile}
+                />
               </Box>
             </TabPanel>
           </TabContext>

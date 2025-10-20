@@ -20,11 +20,13 @@ import {
 import { useAppTranslation } from "@/client/locale";
 
 interface StudentsInGroupTableProps {
-  templateId?: number;
+  templateId: number;
+  isMobile: boolean;
 }
 
 const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
   templateId,
+  isMobile,
 }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
@@ -164,7 +166,13 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
       onRowsPerPageChange={operations.onRowsPerPageChangeInGroup}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
       initialOrderBy={initialOrderBy}
-      footerStartContent={<RecipientTableFooterStart tabType="manage" />}
+      footerStartContent={
+        <RecipientTableFooterStart
+          tabType="manage"
+          isMobile={isMobile}
+          isLoading={loading}
+        />
+      }
       footerEndContent={
         <RecipientTableFooterEnd
           mode="remove"
@@ -172,14 +180,16 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
           actionButtonLabel={strings.removeFromGroup}
           confirmDialogTitle={strings.confirmRemoveStudents}
           confirmDialogMessage={strings.confirmRemoveStudentsMessage}
-          queryDocument={studentsInRecipientGroupQueryDocument}
-          queryVariables={studentsInGroupQueryParams}
+          isLoading={loading}
+          isMobile={isMobile}
         />
       }
       selectedRowIds={store.selectedStudentIdsInGroup}
       onSelectionChange={selectedIds =>
         store.setSelectedStudentIdsInGroup(selectedIds.map(Number))
       }
+      hideRowsPerPage={isMobile}
+      compact={isMobile}
     >
       <Box
         sx={{

@@ -20,7 +20,8 @@ const Table: React.FC<{
   creationRow?: React.ReactNode;
 }> = ({ style, creationRow }) => {
   const { strings } = useTableLocale();
-  const { pageInfo, data, isLoading } = useTableContext();
+  const { pageInfo, data, isLoading, hideRowsPerPage, compact } =
+    useTableContext();
   const { visibleColumns, columnWidths } = useTableColumnContext();
   const { rowSelectionEnabled } = useTableRowsContext();
 
@@ -250,7 +251,11 @@ const Table: React.FC<{
           maxWidth: "100%",
         }}
       >
-        <PaginationFooter loadedRows={data.length} />
+        <PaginationFooter
+          loadedRows={data.length}
+          hideRowsPerPage={hideRowsPerPage}
+          compact={compact}
+        />
       </div>
 
       {/* Column Visibility Panel */}
