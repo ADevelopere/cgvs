@@ -104,6 +104,7 @@ export const TemplateUpdateInputPothosObject = gqlSchemaBuilder
       name: t.string({ required: true }),
       categoryId: t.int({ required: true }),
       description: t.string({ required: false }),
+      imagePath: t.string({ required: false }),
     }),
   });
 

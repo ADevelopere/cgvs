@@ -32,7 +32,7 @@ export type TemplateUpdateInput = {
   name: string;
   categoryId: number;
   description?: string | null;
-  imagePath?: bigint | null;
+  imagePath?: string | null;
 };
 
 export type PaginatedTemplatesEntityResponse = {

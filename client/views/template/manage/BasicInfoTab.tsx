@@ -154,8 +154,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       name: formData.name,
       description: formData.description,
       categoryId: template.category.id,
-      // todo
-      // imagePath: formData.imagePath,
+      imagePath: formData.imagePath,
     };
 
     const updatedTemplate = await templateOperations.updateTemplate(input);
@@ -167,7 +166,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
     setSaving(false);
   }, [
     formData.description,
-    // formData.imagePath,
+    formData.imagePath,
     formData.name,
     template?.category?.id,
     template?.id,

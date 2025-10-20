@@ -25,6 +25,7 @@ import {
 } from "@/server/utils";
 import { TemplateCategoryRepository } from "./templateCategory.repository";
 import { getStorageService } from "@/server/storage/storage.service";
+import { StorageDbRepository } from "@/server/db/repo";
 import * as Types from "@/server/types";
 import { queryWithPagination } from "@/server/db/query.extentions";
 
@@ -285,8 +286,14 @@ export namespace TemplateRepository {
       name,
       categoryId: newCategoryId,
       description,
-      //  _imagePath
+      imagePath,
     } = input;
+
+    // Log function entry
+    logger.info(
+      `Updating template ${id}, imagePath provided: ${imagePath !== undefined ? "yes" : "no"}`
+    );
+
     // Find existing template
     const existingTemplate = await findByIdOrThrow(id);
     TemplateUtils.validateName(existingTemplate.name);
@@ -307,15 +314,103 @@ export namespace TemplateRepository {
       }
     }
 
-    // TODO: Add image file handling
-    // This would require implementing storage service
+    // Get storage service instance
+    const storageService = await getStorageService();
+
+    // Get old image path if exists
+    let oldImagePath: string | null = null;
+    if (existingTemplate.imageFileId) {
+      const oldFileInfo = await storageService.fileInfoByDbFileId(
+        existingTemplate.imageFileId
+      );
+      oldImagePath = oldFileInfo?.path || null;
+      if (oldImagePath) {
+        logger.info(`Template ${id} has existing image: ${oldImagePath}`);
+      } else {
+        logger.info(
+          `Template ${id} has imageFileId but file not found in storage`
+        );
+      }
+    } else {
+      logger.info(`Template ${id} has no existing image`);
+    }
+
+    // Handle new image path if provided
+    let newImageFileId: bigint | null = null;
+    if (imagePath !== undefined) {
+      if (imagePath === null) {
+        // Explicitly setting image to null
+        logger.info(`Removing image from template ${id}`);
+        newImageFileId = null;
+      } else {
+        // Validate new image exists in storage
+        logger.info(`Validating new image path: ${imagePath}`);
+        const newFileInfo = await storageService.fileInfoByPath(imagePath);
+        if (!newFileInfo) {
+          throw new Error(`Image file not found at path: ${imagePath}`);
+        }
+        logger.info(`✓ Image file exists in storage: ${imagePath}`);
+
+        // Check if file exists in DB, create if not
+        let fileEntity = await StorageDbRepository.fileByPath(imagePath);
+        if (!fileEntity) {
+          fileEntity = await StorageDbRepository.createFile(imagePath, false);
+          logger.info(
+            `📁 Created file record in DB for template image: ${imagePath}`
+          );
+        } else {
+          logger.info(`File record already exists in DB: ${imagePath}`);
+        }
+
+        newImageFileId = fileEntity.id;
+
+        // Register new file usage
+        logger.info(`Registering file usage for template ${id}: ${imagePath}`);
+        const usageResult = await StorageDbRepository.registerFileUsage({
+          filePath: imagePath,
+          usageType: "template_cover",
+          referenceId: BigInt(id),
+          referenceTable: "template",
+        });
+
+        if (!usageResult.success) {
+          logger.warn(
+            `Failed to register file usage for template ${id}: ${usageResult.message}`
+          );
+        } else {
+          logger.info(
+            `✓ File usage registered successfully for template ${id}`
+          );
+        }
+      }
+
+      // Unregister old file usage if image changed
+      if (oldImagePath && oldImagePath !== imagePath) {
+        logger.info(
+          `Unregistering old file usage for template ${id}: ${oldImagePath}`
+        );
+        const unregisterResult = await StorageDbRepository.unregisterFileUsage(
+          oldImagePath,
+          "template_cover",
+          BigInt(id)
+        );
+
+        if (!unregisterResult) {
+          logger.warn(
+            `Failed to unregister old file usage for template ${id}: ${oldImagePath}`
+          );
+        } else {
+          logger.info(`✓ Old file usage unregistered for template ${id}`);
+        }
+      }
+    }
 
     const updateData: Partial<TemplateEntityInput> = {
       name: name,
       categoryId: newCategoryId,
       updatedAt: new Date(),
       description: description,
-      // TODO: Handle imagePath -> imageFileId conversion
+      imageFileId: newImageFileId,
     };
 
     const [updatedTemplate] = await db
@@ -324,6 +419,7 @@ export namespace TemplateRepository {
       .where(eq(templates.id, id))
       .returning();
 
+    logger.info(`✓ Template ${id} updated successfully`);
     return updatedTemplate;
   };
 
