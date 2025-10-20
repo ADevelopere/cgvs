@@ -8,5 +8,16 @@
     // Apollo DevTools configuration
     "apollo.devTools.enabled": true,
     "apollo.devTools.port": 7095,
-    "apollo.devTools.targetUri": "ws://localhost:7095"
+    "apollo.devTools.targetUri": "ws://localhost:7095",
+
+    // Jest configuration to use Bun
+    "jestrunner.jestCommand": "~/.bun/bin/bun test",
+    "jestrunner.runOptions": ["--verbose"],
+    "jestrunner.debugOptions": ["--inspect-brk"],
+    "jestrunner.changeDirectoryToWorkspaceRoot": true,
+
+    // Jest extension settings
+    "jest.jestCommandLine": "~/.bun/bin/bun test",
+    "jest.autoRun": "off",
+    "jest.showCoverageOnLoad": "off"
 }

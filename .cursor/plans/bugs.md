@@ -1,8 +1,3 @@
-student table:
-
-- after creating a student, filter args are not reset after succefully creating the student,
-- when reseting filter args (from table header filter popup), the store state is not cleared (store.queryParams.filters)
-
 storage gcp (firstly add logs to server sign url query/mutation):
 
 - when uploading a file to allowed location, server responded with "Signer is not available for the file."

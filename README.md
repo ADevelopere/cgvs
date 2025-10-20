@@ -29,6 +29,7 @@ CGSV is a comprehensive platform for generating, managing, and distributing cert
 - **Node.js** >= 18.17.0
 - **PostgreSQL** >= 14
 - **Redis** >= 6.0
+- **Google Cloud Platform** account and project (for file storage)
 
 ### Installation
 
@@ -47,6 +48,7 @@ cp .env.example .env
 # - DATABASE_URL
 # - JWT_SECRET
 # - REDIS_URL or UPSTASH credentials
+# - GCP_PROJECT_ID, GCP_BUCKET_NAME, GCP_SECRET_ID (see GCP Setup section)
 # - Other required variables
 
 # Run database migrations
@@ -61,6 +63,192 @@ bun run dev
 ```
 
 Visit `http://localhost:3000` to see the application.
+
+---
+
+## ☁️ Google Cloud Platform (GCP) Setup
+
+This application uses Google Cloud Storage for file storage and Secret Manager for secure credential management. Follow these steps to set up your GCP environment.
+
+### Prerequisites
+
+- Google Cloud Platform account
+- Active GCP project
+- Google Cloud CLI installed (see [Troubleshooting section](#troubleshooting-local-development))
+
+### 1. Enable Required APIs
+
+Enable the necessary Google Cloud APIs for your project:
+
+```bash
+# Set your project ID
+gcloud config set project YOUR_PROJECT_ID
+
+# Enable required APIs
+gcloud services enable storage.googleapis.com
+gcloud services enable secretmanager.googleapis.com
+gcloud services enable iam.googleapis.com
+```
+
+### 2. Create a Service Account
+
+Create a service account with the necessary permissions for Cloud Storage operations:
+
+```bash
+# Create service account
+gcloud iam service-accounts create cgsv-storage-service \
+    --display-name="CGSV Storage Service Account" \
+    --description="Service account for CGSV file storage operations"
+
+# Get the service account email
+SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list \
+    --filter="displayName:CGSV Storage Service Account" \
+    --format="value(email)")
+
+echo "Service Account Email: $SERVICE_ACCOUNT_EMAIL"
+```
+
+### 3. Assign Required IAM Roles
+
+Assign the necessary roles to your service account:
+
+```bash
+# Assign Storage Object Admin role (includes signing permissions)
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/storage.objectAdmin"
+
+# Assign Secret Manager Secret Accessor role
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/secretmanager.secretAccessor"
+```
+
+**Alternative Roles (if you prefer granular permissions):**
+
+```bash
+# For more granular control, you can use these roles instead:
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/storage.objectCreator"
+
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/storage.objectViewer"
+
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/secretmanager.secretAccessor"
+```
+
+### 4. Create and Download Service Account Key
+
+Generate a service account key and download it:
+
+```bash
+# Create and download the service account key
+gcloud iam service-accounts keys create ./service-account-key.json \
+    --iam-account=$SERVICE_ACCOUNT_EMAIL
+
+# Verify the key was created
+ls -la ./service-account-key.json
+```
+
+### 5. Create Cloud Storage Bucket
+
+Create a Cloud Storage bucket for file storage:
+
+```bash
+# Create bucket (replace with your preferred bucket name)
+BUCKET_NAME="cgsv-storage-$(date +%s)"
+gsutil mb gs://$BUCKET_NAME
+
+# Set bucket permissions (optional - for public access to certain folders)
+gsutil iam ch allUsers:objectViewer gs://$BUCKET_NAME/public/
+
+echo "Bucket created: $BUCKET_NAME"
+```
+
+### 6. Store Service Account Credentials in Secret Manager
+
+Store the service account credentials securely in Secret Manager:
+
+```bash
+# Create secret in Secret Manager
+SECRET_ID="cgsv-service-account-key"
+gcloud secrets create $SECRET_ID \
+    --data-file=./service-account-key.json \
+    --replication-policy="automatic"
+
+# Verify secret was created
+gcloud secrets list --filter="name:$SECRET_ID"
+
+# Clean up local key file for security
+rm ./service-account-key.json
+```
+
+### 7. Configure Environment Variables
+
+Add the following environment variables to your `.env` file:
+
+```bash
+# GCP Configuration
+GCP_PROJECT_ID=your-project-id
+GCP_BUCKET_NAME=your-bucket-name
+GCP_SECRET_ID=cgsv-service-account-key
+GCP_SECRET_VERSION=latest
+```
+
+### 8. Verify Setup
+
+Test your GCP configuration:
+
+```bash
+# Test Secret Manager access
+gcloud secrets versions access latest --secret=$SECRET_ID
+
+# Test Storage bucket access
+gsutil ls gs://$BUCKET_NAME
+
+# Test service account permissions
+gcloud auth activate-service-account --key-file=<(gcloud secrets versions access latest --secret=$SECRET_ID)
+gsutil ls gs://$BUCKET_NAME
+```
+
+### Security Best Practices
+
+1. **Never commit service account keys** to version control
+2. **Use Secret Manager** for credential storage in production
+3. **Rotate service account keys** regularly
+4. **Follow principle of least privilege** when assigning roles
+5. **Monitor service account usage** through Cloud Audit Logs
+
+### Troubleshooting GCP Setup
+
+**Common Issues:**
+
+- **Permission Denied**: Ensure the service account has the correct IAM roles
+- **Bucket Not Found**: Verify the bucket name and your project has access
+- **Secret Access Denied**: Check Secret Manager permissions
+- **Invalid Credentials**: Verify the service account key is valid and not expired
+
+**Useful Commands:**
+
+```bash
+# Check current project
+gcloud config get-value project
+
+# List service accounts
+gcloud iam service-accounts list
+
+# Check IAM roles for service account
+gcloud projects get-iam-policy YOUR_PROJECT_ID \
+    --flatten="bindings[].members" \
+    --filter="bindings.members:$SERVICE_ACCOUNT_EMAIL"
+
+# Test authentication
+gcloud auth list
+```
 
 ---
 

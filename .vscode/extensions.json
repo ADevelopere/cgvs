@@ -26,6 +26,9 @@
     // Shell
     "timonwong.shellcheck",
     // DB
-    "cweijan.vscode-mysql-client2"
+    "cweijan.vscode-mysql-client2",
+    // Testing
+    "jestrunner.jestrunner",
+    "orta.vscode-jest"
   ]
 }

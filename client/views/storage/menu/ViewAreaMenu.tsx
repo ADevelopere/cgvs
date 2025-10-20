@@ -81,12 +81,21 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
             `Starting upload of ${files.length} files to ${params.path}`
           );
 
+          logger.info("About to call startUpload from context menu", {
+            fileCount: files.length,
+            uploadPath: params.path,
+            fileNames: Array.from(files).map(f => f.name),
+            fileSizes: Array.from(files).map(f => f.size),
+          });
+
           await startUpload(Array.from(files), params.path, {
             onComplete: () => {
               logger.info("Upload completed successfully");
               refresh(); // Refresh the file list after upload
             },
           });
+
+          logger.info("startUpload call completed from context menu");
         } catch (error) {
           logger.error("Upload failed:", error);
         }
