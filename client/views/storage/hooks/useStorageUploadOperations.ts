@@ -80,9 +80,6 @@ export const useStorageUploadOperations = () => {
           fileKey,
           fileName: file.name,
           fileSize: file.size,
-          contentType: file.type,
-          signedUrlLength: signedUrl.length,
-          signedUrlPrefix: signedUrl.substring(0, 100) + "...",
         });
 
         updateFileState(fileKey, { signedUrl });
@@ -135,16 +132,6 @@ export const useStorageUploadOperations = () => {
           });
         };
 
-        logger.info("Configuring XMLHttpRequest", {
-          fileKey,
-          fileName: file.name,
-          method: "PUT",
-          contentType: file.type || "application/octet-stream",
-          contentMd5,
-          signedUrlLength: signedUrl.length,
-          signedUrlPrefix: signedUrl.substring(0, 200) + "...",
-        });
-
         currentXhr.open("PUT", signedUrl);
         currentXhr.setRequestHeader(
           "Content-Type",
@@ -155,36 +142,10 @@ export const useStorageUploadOperations = () => {
         // Set timeout for the request (5 minutes)
         currentXhr.timeout = 5 * 60 * 1000;
 
-        logger.info("Headers set on XMLHttpRequest", {
-          fileKey,
-          fileName: file.name,
-          contentType: file.type || "application/octet-stream",
-          contentMd5,
-          allHeaders: {
-            "Content-Type": file.type || "application/octet-stream",
-            "Content-MD5": contentMd5,
-          },
-        });
-
-        logger.info("Sending file upload request", {
-          fileKey,
-          fileName: file.name,
-          fileSize: file.size,
-        });
-
         currentXhr.send(file);
 
         await new Promise<void>((resolve, reject) => {
           loadListener = () => {
-            logger.info("XMLHttpRequest load event received", {
-              fileKey,
-              fileName: file.name,
-              readyState: currentXhr?.readyState,
-              status: currentXhr?.status,
-              statusText: currentXhr?.statusText,
-              responseText: currentXhr?.responseText?.substring(0, 200),
-            });
-
             if (
               !currentXhr ||
               currentXhr.readyState !== XMLHttpRequest.DONE ||
@@ -346,17 +307,10 @@ export const useStorageUploadOperations = () => {
       maxConcurrentUploads: number = 5,
       maxAllowedFileSize: number = 10 * 1024 * 1024
     ) => {
-      logger.log("🚀 startUpload function called!", {
-        files: files.length,
-        targetPath,
-      });
-      logger.info("startUpload called", {
+      logger.info("Starting upload batch", {
         fileCount: files.length,
         targetPath,
         maxConcurrentUploads,
-        maxAllowedFileSize,
-        fileNames: files.map(f => f.name),
-        fileSizes: files.map(f => f.size),
       });
 
       const validFiles: File[] = [];
@@ -373,8 +327,6 @@ export const useStorageUploadOperations = () => {
       logger.info("File validation completed", {
         validFilesCount: validFiles.length,
         oversizedFilesCount: oversizedFiles.length,
-        validFileNames: validFiles.map(f => f.name),
-        oversizedFileNames: oversizedFiles.map(f => f.name),
       });
 
       if (oversizedFiles.length > 0) {
@@ -399,11 +351,6 @@ export const useStorageUploadOperations = () => {
       }
 
       const location = getUploadLocationForPath(targetPath);
-      logger.info("Upload location determined", {
-        targetPath,
-        location: location,
-        hasLocation: !!location,
-      });
 
       if (!location) {
         logger.error("Upload not allowed - no valid location", {
@@ -443,44 +390,19 @@ export const useStorageUploadOperations = () => {
       });
 
       try {
-        logger.info("Starting file upload processing", {
-          validFilesCount: validFiles.length,
-          maxConcurrentUploads,
-        });
-
         const chunks: File[][] = [];
         for (let i = 0; i < validFiles.length; i += maxConcurrentUploads) {
           chunks.push(validFiles.slice(i, i + maxConcurrentUploads));
         }
 
-        logger.info("File chunks created", {
-          chunkCount: chunks.length,
-          chunkSizes: chunks.map(chunk => chunk.length),
-        });
-
         for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
           const chunk = chunks[chunkIndex];
-          logger.info("Processing chunk", {
-            chunkIndex,
-            chunkSize: chunk.length,
-            fileNames: chunk.map(f => f.name),
-          });
 
           await Promise.all(
             chunk.map(file => {
-              logger.info("Starting uploadSingleFile", {
-                fileName: file.name,
-                fileSize: file.size,
-                targetPath,
-              });
               return uploadSingleFile(file, location, targetPath);
             })
           );
-
-          logger.info("Chunk completed", {
-            chunkIndex,
-            chunkSize: chunk.length,
-          });
         }
 
         // Update completion status

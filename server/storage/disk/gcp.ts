@@ -52,21 +52,6 @@ const getStorageFromSecretManager = async (): Promise<Storage> => {
 
     const credentials = JSON.parse(payload.toString());
 
-    // Debug logging to verify credentials structure
-    logger.info("Credentials loaded from Secret Manager", {
-      hasClientEmail: !!credentials.client_email,
-      hasPrivateKey: !!credentials.private_key,
-      hasType: !!credentials.type,
-      hasProjectId: !!credentials.project_id,
-      type: credentials.type,
-      clientEmail: credentials.client_email,
-      privateKeyLength: credentials.private_key
-        ? credentials.private_key.length
-        : 0,
-    });
-
-    logger.debug("Credentials", { credentials });
-
     // Validate required fields
     if (!credentials.client_email) {
       throw new Error("Service account credentials missing client_email field");
@@ -113,13 +98,6 @@ export async function createGcpStorage(): Promise<Storage> {
 
   const storage = await getStorageFromSecretManager();
 
-  // Debug logging to inspect Storage object
-  logger.info("Storage object created", {
-    projectId: storage.projectId,
-    hasAuthClient: !!storage.authClient,
-    authClientType: storage.authClient?.constructor?.name,
-  });
-
   return storage;
 }
 
@@ -133,12 +111,6 @@ class GcpAdapter implements StorageService {
     }
     this.storage = storage;
     this.bucket = storage.bucket(bucketName);
-
-    // Log bucket initialization
-    logger.info("GCP Storage bucket initialized", {
-      bucketName: this.bucket.name,
-      projectId: projectId,
-    });
   }
 
   async fileExists(path: string): Promise<boolean> {
@@ -156,11 +128,9 @@ class GcpAdapter implements StorageService {
     input: Types.UploadSignedUrlGenerateInput
   ): Promise<string> {
     try {
-      logger.info("generateUploadSignedUrl called", {
+      logger.info("Generating signed URL", {
         path: input.path,
         fileSize: input.fileSize,
-        contentType: input.contentType,
-        contentMd5: input.contentMd5,
       });
 
       StorageUtils.validateUpload(input.path, input.fileSize).then(err => {
@@ -169,26 +139,12 @@ class GcpAdapter implements StorageService {
 
       const file = this.bucket.file(input.path);
 
-      logger.info("File object created", {
-        path: input.path,
-        bucketName: this.bucket.name,
-      });
-
       const result = await file.getSignedUrl({
         version: "v4",
         expires: Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000,
         contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
         action: "write",
         contentMd5: input.contentMd5,
-      });
-
-      logger.debug("Signed URL generated", {
-        url: result[0],
-      });
-
-      logger.info("Signed URL generated successfully", {
-        path: input.path,
-        expiresIn: STORAGE_CONFIG.SIGNED_URL_DURATION,
       });
 
       return result[0];

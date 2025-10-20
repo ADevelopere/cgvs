@@ -231,6 +231,7 @@ gsutil ls gs://$BUCKET_NAME
 - **Bucket Not Found**: Verify the bucket name and your project has access
 - **Secret Access Denied**: Check Secret Manager permissions
 - **Invalid Credentials**: Verify the service account key is valid and not expired
+- **Browser Upload CORS Errors**: See [CORS Configuration](#cors-configuration-for-browser-uploads) section below
 
 **Useful Commands:**
 
@@ -249,6 +250,102 @@ gcloud projects get-iam-policy YOUR_PROJECT_ID \
 # Test authentication
 gcloud auth list
 ```
+
+---
+
+## CORS Configuration for Browser Uploads
+
+### Issue: Browser Upload Failures with CORS Errors
+
+When uploading files from the browser to Google Cloud Storage using signed URLs, you may encounter CORS errors like:
+
+```
+XMLHttpRequest error with status 0
+Network error or CORS issue - check browser console for details
+```
+
+### Root Cause
+
+The issue occurs because:
+
+1. **Browser CORS Policy**: Browsers enforce Cross-Origin Resource Sharing (CORS) policies for security
+2. **Preflight Requests**: When using custom headers like `Content-MD5`, browsers send a preflight OPTIONS request
+3. **Missing CORS Configuration**: The GCS bucket must be configured to allow these preflight requests
+
+### Solution: Configure Bucket CORS
+
+Your Google Cloud Storage bucket needs CORS configuration to allow browser uploads with the `Content-MD5` header.
+
+#### 1. Check Current CORS Configuration
+
+```bash
+# Check if CORS is already configured
+gsutil cors get gs://YOUR_BUCKET_NAME
+```
+
+#### 2. Create CORS Configuration File
+
+Create a file named `cors-config.json` with the following content:
+
+```json
+[
+  {
+    "maxAgeSeconds": 3600,
+    "method": ["PUT", "GET", "OPTIONS"],
+    "origin": ["http://localhost:3000", "https://your-production-domain.com"],
+    "responseHeader": [
+      "Content-Type",
+      "Content-MD5",
+      "x-goog-resumable",
+      "Access-Control-Allow-Origin"
+    ]
+  }
+]
+```
+
+**Important Notes:**
+
+- Replace `https://your-production-domain.com` with your actual production domain
+- Add `http://localhost:3001` if you use a different development port
+- The `Content-MD5` header is required for signed URL validation
+
+#### 3. Apply CORS Configuration
+
+```bash
+# Apply the CORS configuration to your bucket
+gsutil cors set cors-config.json gs://YOUR_BUCKET_NAME
+
+# Verify the configuration was applied
+gsutil cors get gs://YOUR_BUCKET_NAME
+```
+
+#### 4. Clean Up
+
+```bash
+# Remove the temporary configuration file
+rm cors-config.json
+```
+
+### Verification
+
+After applying the CORS configuration:
+
+1. **Restart your development server** to ensure changes take effect
+2. **Test file upload** in the browser - it should now work without CORS errors
+3. **Check browser console** - there should be no CORS-related errors
+
+### Why This Fix Works
+
+- **Preflight Requests**: The `OPTIONS` method allows browsers to send preflight requests
+- **Response Headers**: `Content-MD5` in `responseHeader` allows the browser to send this header
+- **Origins**: Specified origins ensure only your domains can upload files
+- **Caching**: `maxAgeSeconds` reduces the number of preflight requests
+
+### Security Considerations
+
+- **Restrict Origins**: Only include the domains that need upload access
+- **Production Domains**: Always include your production domain in the CORS configuration
+- **Development**: Include `localhost` origins for development environments
 
 ---
 
