@@ -23,11 +23,16 @@ import { ConnectivityTranslations } from "@/client/locale/components/Connectivit
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
 import { isNetworkError } from "@/client/utils/errorUtils";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Button, Typography } from "@mui/material";
+import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 // import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
 
 // Loading UI shown during initial connectivity check
-const InitializingUI: React.FC = () => (
+const InitializingUI: React.FC<{
+  error?: boolean;
+  onRetry?: () => void;
+  strings?: ConnectivityTranslations;
+}> = ({ error, onRetry, strings }) => (
   <Box
     sx={{
       display: "flex",
@@ -38,7 +43,17 @@ const InitializingUI: React.FC = () => (
       gap: 2,
     }}
   >
-    <CircularProgress size={48} />
+    {error && strings ? (
+      <>
+        <ErrorIcon color="error" sx={{ fontSize: 48 }} />
+        <Typography color="error">{strings.serverConnectionLost}</Typography>
+        <Button onClick={onRetry} variant="contained">
+          {strings.retry}
+        </Button>
+      </>
+    ) : (
+      <CircularProgress size={48} />
+    )}
   </Box>
 );
 
@@ -92,13 +107,13 @@ export const AppApolloProvider: React.FC<{
     "connectivityTranslations"
   );
 
-  const [isConnected, setIsConnected] = useState(true); // Start optimistically
+  const [isConnected, setIsConnected] = useState(false); // Start conservative, wait for actual check
   const [isChecking, setIsChecking] = useState(false);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null); // Always start with no token
 
   // Use refs to track status to avoid dependency issues
-  const isConnectedRef = useRef(true);
+  const isConnectedRef = useRef(false); // Start conservative, wait for actual check
   const isCheckingRef = useRef(false);
   const authTokenRef = useRef<string | null>(null); // Always start with no token
   const initialCheckDoneRef = useRef(false);
@@ -230,9 +245,12 @@ export const AppApolloProvider: React.FC<{
         function proceedWithRequest() {
           const subscription = forward(operation).subscribe({
             next: result => {
-              // Successful response means we're still connected
-              setIsConnected(true);
-              isConnectedRef.current = true;
+              // Successful response means we're connected
+              // Only update if we haven't confirmed connectivity yet
+              if (!isConnectedRef.current) {
+                setIsConnected(true);
+                isConnectedRef.current = true;
+              }
               observer.next(result);
             },
             error: error => {
@@ -396,9 +414,17 @@ export const AppApolloProvider: React.FC<{
     ]
   );
 
-  // Show loading UI until initial connectivity check is complete
-  if (!initialCheckDoneRef.current) {
-    return <InitializingUI />;
+  // Block rendering until BOTH check is done AND server is connected
+  if (!initialCheckDoneRef.current || !isConnectedRef.current) {
+    // Only show error if we've actually checked and confirmed server is down
+    const hasError = initialCheckDoneRef.current && !isConnectedRef.current;
+    return (
+      <InitializingUI
+        error={hasError}
+        onRetry={checkConnectivity}
+        strings={hasError ? strings : undefined}
+      />
+    );
   }
 
   return (

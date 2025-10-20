@@ -36,6 +36,7 @@ export const useStorageUploadOperations = () => {
       let loadListener: ((ev: Event) => void) | null = null;
       let errorListener: ((ev: Event) => void) | null = null;
       let abortListener: ((ev: Event) => void) | null = null;
+      let timeoutListener: ((ev: Event) => void) | null = null;
       let xhr: XMLHttpRequest | undefined = undefined;
 
       try {
@@ -151,6 +152,9 @@ export const useStorageUploadOperations = () => {
         );
         currentXhr.setRequestHeader("Content-MD5", contentMd5);
 
+        // Set timeout for the request (5 minutes)
+        currentXhr.timeout = 5 * 60 * 1000;
+
         logger.info("Headers set on XMLHttpRequest", {
           fileKey,
           fileName: file.name,
@@ -242,13 +246,34 @@ export const useStorageUploadOperations = () => {
               statusText: currentXhr?.statusText,
               responseText: currentXhr?.responseText,
               responseHeaders: currentXhr?.getAllResponseHeaders(),
+              signedUrl: signedUrl.substring(0, 200) + "...",
+              contentMd5,
+              contentType: file.type,
+              errorType: e.type,
+              errorTarget: e.target,
             });
             logger.error("XMLHttpRequest error event", {
               error: e,
             });
-            handleError(translations.uploadFailed);
+
+            // Provide more specific error message based on status
+            let errorMessage = translations.uploadFailed;
+            if (currentXhr?.status === 0) {
+              errorMessage =
+                "Network error or CORS issue - check browser console for details";
+              logger.error(
+                "Upload failed with status 0 - likely CORS or network issue",
+                {
+                  fileKey,
+                  fileName: file.name,
+                  signedUrl: signedUrl.substring(0, 200) + "...",
+                }
+              );
+            }
+
+            handleError(errorMessage);
             uploadXhrsRef.current.delete(fileKey);
-            reject(new Error(translations.uploadFailed));
+            reject(new Error(errorMessage));
           };
           abortListener = () => {
             logger.warn("XMLHttpRequest abort event", {
@@ -260,9 +285,21 @@ export const useStorageUploadOperations = () => {
             reject(new Error(translations.uploadCancelled));
           };
 
+          timeoutListener = () => {
+            logger.error("XMLHttpRequest timeout event", {
+              fileKey,
+              fileName: file.name,
+              timeout: currentXhr?.timeout,
+            });
+            handleError("Upload timeout - please try again");
+            uploadXhrsRef.current.delete(fileKey);
+            reject(new Error("Upload timeout - please try again"));
+          };
+
           currentXhr.addEventListener("load", loadListener);
           currentXhr.addEventListener("error", errorListener);
           currentXhr.addEventListener("abort", abortListener);
+          currentXhr.addEventListener("timeout", timeoutListener);
         });
       } catch (error) {
         logger.error("Upload failed with exception", {
@@ -285,6 +322,8 @@ export const useStorageUploadOperations = () => {
             xhr.removeEventListener("error", errorListener);
           if (xhr && abortListener)
             xhr.removeEventListener("abort", abortListener);
+          if (xhr && timeoutListener)
+            xhr.removeEventListener("timeout", timeoutListener);
         } catch {
           /* ignore */
         }

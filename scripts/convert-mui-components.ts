@@ -43,6 +43,7 @@ const MUI_COMPONENTS = [
   "TextField",
   "Input",
   "InputLabel",
+  "InputAdornment",
   "FormControl",
   "Select",
   "Checkbox",
