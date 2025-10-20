@@ -8,20 +8,26 @@ import { ApolloCache } from "@apollo/client";
 import { useRecipientStore } from "../stores/useRecipientStore";
 
 export const useRecipientApolloMutations = (templateId?: number) => {
-  const { studentsNotInGroupQueryParams } = useRecipientStore();
+  const { studentsNotInGroupQueryParams, studentsInGroupQueryParams } =
+    useRecipientStore();
 
-  // Utility function to evict studentsNotInRecipientGroupQueryDocument cache
-  const evictStudentsNotInGroupQuery = (cache: ApolloCache) => {
+  // Utility function to evict cache
+  const evictStudents = (cache: ApolloCache) => {
     try {
       cache.evict({
         fieldName: "studentsNotInRecipientGroup",
         args: studentsNotInGroupQueryParams,
+      });
+      cache.evict({
+        fieldName: "studentsInRecipientGroup",
+        args: studentsInGroupQueryParams,
       });
       cache.gc(); // Garbage collect to clean up evicted data
     } catch {
       // Cache doesn't exist yet, will be populated on next query
     }
   };
+
   const [createMutation] = useMutation(
     Document.createRecipientMutationDocument,
     {
@@ -31,29 +37,6 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         const recipientGroupId = newRecipient.recipientGroupId;
 
         if (!recipientGroupId) return;
-
-        // Update recipientsByGroupId query cache
-        try {
-          const existingData = cache.readQuery({
-            query: Document.recipientsByGroupIdQueryDocument,
-            variables: { recipientGroupId },
-          });
-
-          if (existingData?.recipientsByGroupId) {
-            cache.writeQuery({
-              query: Document.recipientsByGroupIdQueryDocument,
-              variables: { recipientGroupId },
-              data: {
-                recipientsByGroupId: [
-                  ...existingData.recipientsByGroupId,
-                  newRecipient,
-                ],
-              },
-            });
-          }
-        } catch {
-          // Cache doesn't exist yet, will be populated on next query
-        }
 
         // Update templateRecipientGroupsByTemplateId query cache - increment studentCount
         if (templateId) {
@@ -87,9 +70,8 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             // Cache doesn't exist yet, will be populated on next query
           }
         }
-
-        // Evict studentsNotInRecipientGroup query to force refetch
-        evictStudentsNotInGroupQuery(cache);
+        // Ensure related queries will refetch
+        evictStudents(cache);
       },
     }
   );
@@ -104,29 +86,6 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         const recipientGroupId = newRecipients[0]?.recipientGroupId;
 
         if (!recipientGroupId) return;
-
-        // Update recipientsByGroupId query cache
-        try {
-          const existingData = cache.readQuery({
-            query: Document.recipientsByGroupIdQueryDocument,
-            variables: { recipientGroupId },
-          });
-
-          if (existingData?.recipientsByGroupId) {
-            cache.writeQuery({
-              query: Document.recipientsByGroupIdQueryDocument,
-              variables: { recipientGroupId },
-              data: {
-                recipientsByGroupId: [
-                  ...existingData.recipientsByGroupId,
-                  ...newRecipients,
-                ],
-              },
-            });
-          }
-        } catch {
-          // Cache doesn't exist yet
-        }
 
         // Update templateRecipientGroupsByTemplateId query cache - increment studentCount
         if (templateId) {
@@ -161,9 +120,8 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             // Cache doesn't exist yet, will be populated on next query
           }
         }
-
-        // Evict studentsNotInRecipientGroup query to force refetch
-        evictStudentsNotInGroupQuery(cache);
+        // Ensure related queries will refetch
+        evictStudents(cache);
       },
     }
   );
@@ -177,28 +135,6 @@ export const useRecipientApolloMutations = (templateId?: number) => {
         const recipientGroupId = deletedRecipient.recipientGroupId;
 
         if (!recipientGroupId) return;
-
-        // Update recipientsByGroupId query cache
-        try {
-          const existingData = cache.readQuery({
-            query: Document.recipientsByGroupIdQueryDocument,
-            variables: { recipientGroupId },
-          });
-
-          if (existingData?.recipientsByGroupId) {
-            cache.writeQuery({
-              query: Document.recipientsByGroupIdQueryDocument,
-              variables: { recipientGroupId },
-              data: {
-                recipientsByGroupId: existingData.recipientsByGroupId.filter(
-                  r => r.id !== deletedRecipient.id
-                ),
-              },
-            });
-          }
-        } catch {
-          // Cache doesn't exist yet
-        }
 
         // Update templateRecipientGroupsByTemplateId query cache - decrement studentCount
         if (templateId) {
@@ -235,9 +171,8 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             // Cache doesn't exist yet, will be populated on next query
           }
         }
-
-        // Evict studentsNotInRecipientGroup query to force refetch since we don't have student data
-        evictStudentsNotInGroupQuery(cache);
+        // Ensure related queries will refetch
+        evictStudents(cache);
       },
     }
   );
@@ -250,31 +185,8 @@ export const useRecipientApolloMutations = (templateId?: number) => {
           return;
         const deletedRecipients = data.deleteRecipients;
         const recipientGroupId = deletedRecipients[0]?.recipientGroupId;
-        const deletedIds = deletedRecipients.map(r => r.id);
 
         if (!recipientGroupId) return;
-
-        // Update recipientsByGroupId query cache
-        try {
-          const existingData = cache.readQuery({
-            query: Document.recipientsByGroupIdQueryDocument,
-            variables: { recipientGroupId },
-          });
-
-          if (existingData?.recipientsByGroupId) {
-            cache.writeQuery({
-              query: Document.recipientsByGroupIdQueryDocument,
-              variables: { recipientGroupId },
-              data: {
-                recipientsByGroupId: existingData.recipientsByGroupId.filter(
-                  r => !deletedIds.includes(r.id)
-                ),
-              },
-            });
-          }
-        } catch {
-          // Cache doesn't exist yet
-        }
 
         // Update templateRecipientGroupsByTemplateId query cache - decrement studentCount
         if (templateId) {
@@ -312,9 +224,8 @@ export const useRecipientApolloMutations = (templateId?: number) => {
             // Cache doesn't exist yet, will be populated on next query
           }
         }
-
-        // Evict studentsNotInRecipientGroup query to force refetch since we don't have student data
-        evictStudentsNotInGroupQuery(cache);
+        // Ensure related queries will refetch
+        evictStudents(cache);
       },
     }
   );

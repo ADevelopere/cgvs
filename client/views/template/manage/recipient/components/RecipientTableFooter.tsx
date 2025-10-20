@@ -10,13 +10,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Tooltip,
 } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
+import { OpenInNew, Add, Remove } from "@mui/icons-material";
 import Link from "next/link";
-import { useQuery } from "@apollo/client/react";
 import { useRecipientStore } from "../stores/useRecipientStore";
 import { useAppTranslation } from "@/client/locale";
-import { DocumentNode } from "graphql";
 
 interface RecipientTableFooterEndProps {
   mode: "add" | "remove";
@@ -24,14 +23,16 @@ interface RecipientTableFooterEndProps {
   actionButtonLabel: string;
   confirmDialogTitle: string;
   confirmDialogMessage: string;
-  queryDocument: DocumentNode; // The GraphQL query document to use for loading state
-  queryVariables: Record<string, unknown>; // The variables for the query
+  isLoading: boolean; // Use parent table loading state for consistent UX
+  isMobile: boolean; // Required: parent determines layout
 }
 
 // Footer start content component - shows selection count and clear button
 export const RecipientTableFooterStart: React.FC<{
-  tabType?: "add" | "manage";
-}> = ({ tabType }) => {
+  tabType: "add" | "manage";
+  isMobile: boolean;
+  isLoading: boolean;
+}> = ({ tabType, isMobile, isLoading }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const store = useRecipientStore();
   const [openClearDialog, setOpenClearDialog] = useState(false);
@@ -67,6 +68,42 @@ export const RecipientTableFooterStart: React.FC<{
     setOpenClearDialog(false);
   }, []);
 
+  // Mobile layout: just show count with tooltip
+  if (isMobile) {
+    return (
+      <>
+        <Tooltip title={`${strings.selectedStudents} ${selectedRowIds.length}`}>
+          <Typography variant="body2" color="primary" fontWeight={600}>
+            {selectedRowIds.length}
+          </Typography>
+        </Tooltip>
+
+        <Dialog open={openClearDialog} onClose={handleClearCancel}>
+          <DialogTitle>{strings.confirmClearSelection}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {strings.confirmClearSelectionMessage}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClearCancel} color="primary">
+              {strings.cancel}
+            </Button>
+            <Button
+              onClick={handleClearConfirm}
+              color="error"
+              variant="contained"
+              disabled={Boolean(isLoading)}
+            >
+              {strings.clearAllSelection}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  }
+
+  // Desktop layout: show full text and clear button
   return (
     <>
       <Box
@@ -87,6 +124,7 @@ export const RecipientTableFooterStart: React.FC<{
             color="error"
             onClick={handleClearClick}
             sx={{ minWidth: "auto" }}
+            disabled={Boolean(isLoading)}
           >
             {strings.clearAllSelection}
           </Button>
@@ -108,6 +146,7 @@ export const RecipientTableFooterStart: React.FC<{
             onClick={handleClearConfirm}
             color="error"
             variant="contained"
+            disabled={Boolean(isLoading)}
           >
             {strings.clearAllSelection}
           </Button>
@@ -126,8 +165,8 @@ export const RecipientTableFooterEnd: React.FC<
   actionButtonLabel,
   confirmDialogTitle,
   confirmDialogMessage,
-  queryDocument,
-  queryVariables,
+  isLoading,
+  isMobile,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const store = useRecipientStore();
@@ -141,19 +180,6 @@ export const RecipientTableFooterEnd: React.FC<
         : store.selectedStudentIdsInGroup,
     [mode, store.selectedStudentIdsNotInGroup, store.selectedStudentIdsInGroup]
   );
-
-  // Memoize the query variables to prevent unnecessary re-renders
-  const memoizedQueryVariables = useMemo(
-    () => queryVariables,
-    [queryVariables]
-  );
-
-  // Get loading state from the query
-  const { loading } = useQuery(queryDocument, {
-    variables: memoizedQueryVariables,
-    skip: !memoizedQueryVariables.recipientGroupId,
-    fetchPolicy: "cache-first",
-  });
 
   // Memoize the converted selected row IDs
   const convertedSelectedRowIds = useMemo(
@@ -184,10 +210,57 @@ export const RecipientTableFooterEnd: React.FC<
 
   // Memoize the disabled state for the action button
   const isActionButtonDisabled = useMemo(
-    () => selectedRowIds.length === 0 || loading,
-    [selectedRowIds.length, loading]
+    () => selectedRowIds.length === 0 || Boolean(isLoading),
+    [selectedRowIds.length, isLoading]
   );
 
+  // Mobile layout: icon-only action button with tooltip
+  if (isMobile) {
+    return (
+      <>
+        <Tooltip title={actionButtonLabel}>
+          <span>
+            <Button
+              variant="contained"
+              size="small"
+              disabled={isActionButtonDisabled}
+              onClick={handleActionClick}
+              color={mode === "remove" ? "error" : "primary"}
+              sx={{ minWidth: 36, p: 0.5 }}
+            >
+              {mode === "add" ? (
+                <Add fontSize="small" />
+              ) : (
+                <Remove fontSize="small" />
+              )}
+            </Button>
+          </span>
+        </Tooltip>
+
+        <Dialog open={openActionDialog} onClose={handleActionCancel}>
+          <DialogTitle>{confirmDialogTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{confirmDialogMessage}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleActionCancel} color="primary">
+              {strings.cancel}
+            </Button>
+            <Button
+              onClick={handleActionConfirm}
+              color={mode === "remove" ? "error" : "primary"}
+              variant="contained"
+              disabled={Boolean(isLoading)}
+            >
+              {actionButtonLabel}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  }
+
+  // Desktop layout: show full buttons
   return (
     <>
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
@@ -216,6 +289,7 @@ export const RecipientTableFooterEnd: React.FC<
           size="small"
           disabled={isActionButtonDisabled}
           onClick={handleActionClick}
+          color={mode === "remove" ? "error" : "primary"}
         >
           {actionButtonLabel}
         </Button>
@@ -232,9 +306,9 @@ export const RecipientTableFooterEnd: React.FC<
           </Button>
           <Button
             onClick={handleActionConfirm}
-            color="primary"
+            color={mode === "remove" ? "error" : "primary"}
             variant="contained"
-            disabled={loading}
+            disabled={Boolean(isLoading)}
           >
             {actionButtonLabel}
           </Button>

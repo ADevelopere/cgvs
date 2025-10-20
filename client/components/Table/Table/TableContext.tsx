@@ -23,6 +23,8 @@ export type TableContextType = {
 
   footerStartContent?: ReactNode;
   footerEndContent?: ReactNode;
+  hideRowsPerPage?: boolean;
+  compact?: boolean;
 };
 
 const TableContext = createContext<TableContextType | null>(null);
@@ -59,6 +61,8 @@ type TableProviderProps = {
   // Custom footer content
   footerStartContent?: ReactNode;
   footerEndContent?: ReactNode;
+  hideRowsPerPage?: boolean;
+  compact?: boolean;
 
   // Selection state management
   selectedRowIds?: (string | number)[];
@@ -81,6 +85,8 @@ export const TableProvider = ({
   initialOrderBy,
   footerStartContent,
   footerEndContent,
+  hideRowsPerPage = false,
+  compact = false,
   selectedRowIds,
   onSelectionChange,
 }: TableProviderProps) => {
@@ -98,6 +104,8 @@ export const TableProvider = ({
       onRowsPerPageChange,
       footerStartContent,
       footerEndContent,
+      hideRowsPerPage,
+      compact,
     };
   }, [
     data,
@@ -111,6 +119,8 @@ export const TableProvider = ({
     onRowsPerPageChange,
     footerStartContent,
     footerEndContent,
+    hideRowsPerPage,
+    compact,
   ]);
   return (
     <TableContext.Provider value={value}>

@@ -20,11 +20,13 @@ import {
 import { useAppTranslation } from "@/client/locale";
 
 interface StudentsNotInGroupTableProps {
-  templateId?: number;
+  templateId: number;
+  isMobile: boolean;
 }
 
 const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
   templateId,
+  isMobile,
 }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
@@ -165,7 +167,13 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
       onRowsPerPageChange={operations.onRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
       initialOrderBy={initialOrderBy}
-      footerStartContent={<RecipientTableFooterStart tabType="add" />}
+      footerStartContent={
+        <RecipientTableFooterStart
+          tabType="add"
+          isMobile={isMobile}
+          isLoading={loading}
+        />
+      }
       footerEndContent={
         <RecipientTableFooterEnd
           mode="add"
@@ -173,14 +181,16 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
           actionButtonLabel={strings.addToGroup}
           confirmDialogTitle={strings.confirmAddStudents}
           confirmDialogMessage={strings.confirmAddStudentsMessage}
-          queryDocument={studentsNotInRecipientGroupQueryDocument}
-          queryVariables={studentsNotInGroupQueryParams}
+          isLoading={loading}
+          isMobile={isMobile}
         />
       }
       selectedRowIds={store.selectedStudentIdsNotInGroup}
       onSelectionChange={selectedIds =>
         store.setSelectedStudentIdsNotInGroup(selectedIds.map(Number))
       }
+      hideRowsPerPage={isMobile}
+      compact={isMobile}
     >
       <Box
         sx={{
