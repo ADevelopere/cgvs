@@ -38,6 +38,7 @@ import {
 } from "./components/CreateStudentRow.styles";
 import { HammerIcon } from "lucide-react";
 import { StudentCreateInput } from "@/client/graphql/generated/gql/graphql";
+import logger from "@/client/lib/logger";
 
 const MemoizedTextField = React.memo(TextFieldComponent);
 const MemoizedDateField = React.memo(DateFieldComponent);
@@ -108,6 +109,10 @@ const CreateStudentRow = () => {
 
   const handleNameChange = useCallback(
     (value: string | undefined, errorMessage: string | null) => {
+      logger.info("🔍 CreateStudentRow: handleNameChange called", {
+        value,
+        errorMessage,
+      });
       setNewStudent(prev => ({ ...prev, name: value ?? "" }));
       setIsDirty(true);
       setFieldValidity(prev => ({ ...prev, name: errorMessage }));
@@ -118,13 +123,20 @@ const CreateStudentRow = () => {
 
       debounceTimer.current = setTimeout(() => {
         if (value === lastFilteredValue.current) {
+          logger.info("🔍 CreateStudentRow: debounce skipped - same value", {
+            value,
+          });
           return;
         }
         lastFilteredValue.current = value;
 
         if (!value || value.trim() === "") {
+          logger.info("🔍 CreateStudentRow: debounce - clearing name filter");
           setSearchFilter(null);
         } else {
+          logger.info("🔍 CreateStudentRow: debounce - setting name filter", {
+            value,
+          });
           setSearchFilter({
             columnId: "name",
             operation: TextFilterOperation.startsWith,
@@ -180,26 +192,37 @@ const CreateStudentRow = () => {
   const handleCreate = useCallback(async () => {
     if (!isFormValid) return;
 
+    logger.info(
+      "🔍 CreateStudentRow: handleCreate called - clearing filters before mutation"
+    );
+
+    // Clear debounce timer BEFORE mutation to prevent race condition
+    if (debounceTimer.current) {
+      logger.info("🔍 CreateStudentRow: clearing debounce timer");
+      clearTimeout(debounceTimer.current);
+    }
+    lastFilteredValue.current = undefined;
+    logger.info("🔍 CreateStudentRow: calling setSearchFilter(null)");
+    setSearchFilter(null);
+
     setIsLoading(true);
     setShowError(false);
     setErrorMessage("");
 
     try {
+      logger.info("🔍 CreateStudentRow: calling createStudent mutation");
       await createStudent({
         input: newStudent,
       });
 
+      logger.info("🔍 CreateStudentRow: createStudent mutation successful");
       // Reset form on success
       setNewStudent(initialStudentState);
       setFieldValidity({});
       setIsDirty(false);
       setShowSuccess(true);
-      setSearchFilter(null);
-      lastFilteredValue.current = undefined;
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
     } catch (error) {
+      logger.error("🔍 CreateStudentRow: createStudent mutation failed", error);
       setErrorMessage(
         error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب"
       );
