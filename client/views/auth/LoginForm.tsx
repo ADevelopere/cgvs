@@ -2,32 +2,21 @@
 
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Alert,
-  CircularProgress,
-  Paper,
-  InputAdornment,
-  Link,
-  Divider,
-  IconButton,
-} from "@mui/material";
+import * as MUI from "@mui/material";
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
 import isValidEmail from "@/client/utils/email";
 import { useAppTranslation } from "@/client/locale";
 import { AuthTranslations } from "@/client/locale/components";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const LoginForm: React.FC = () => {
   const strings: AuthTranslations = useAppTranslation("authTranslations");
   const [showPassword, setShowPassword] = useState(false);
 
   const searchParams = useSearchParams();
-  const { login, error, isLoading } = useAuth();
+  const router = useRouter();
+  const { login, error, isLoading, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
@@ -59,6 +48,15 @@ const LoginForm: React.FC = () => {
     }
   }, [email, password, strings]);
 
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirectUrl = searchParams.get("redirect");
+      const targetUrl = redirectUrl || "/admin/dashboard";
+      router.replace(targetUrl);
+    }
+  }, [isAuthenticated, router, searchParams]);
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
@@ -84,7 +82,7 @@ const LoginForm: React.FC = () => {
     // so we don't need to call router.push() here anymore
   };
   return (
-    <Paper
+    <MUI.Paper
       elevation={3}
       sx={{
         width: "100%",
@@ -92,7 +90,7 @@ const LoginForm: React.FC = () => {
         borderRadius: 2,
       }}
     >
-      <Box
+      <MUI.Box
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -101,7 +99,7 @@ const LoginForm: React.FC = () => {
         }}
       >
         {/* Logo placeholder */}
-        <Box
+        <MUI.Box
           sx={{
             width: 80,
             height: 80,
@@ -113,32 +111,32 @@ const LoginForm: React.FC = () => {
             mb: 2,
           }}
         >
-          <Typography variant="h4" color="white">
+          <MUI.Typography variant="h4" color="white">
             {strings.siteTitle[0].toUpperCase()}
-          </Typography>
-        </Box>
+          </MUI.Typography>
+        </MUI.Box>
 
-        <Typography
+        <MUI.Typography
           variant="h4"
           component="h1"
           fontWeight="bold"
           color="primary.main"
         >
           {strings.signin}
-        </Typography>
+        </MUI.Typography>
 
-        <Typography
+        <MUI.Typography
           variant="body2"
           color="text.secondary"
           align="center"
           sx={{ mt: 1 }}
         >
           {strings.signinDescription}
-        </Typography>
-      </Box>
+        </MUI.Typography>
+      </MUI.Box>
 
       {error && (
-        <Alert
+        <MUI.Alert
           severity="error"
           sx={{
             mb: 3,
@@ -147,11 +145,16 @@ const LoginForm: React.FC = () => {
           }}
         >
           {error}
-        </Alert>
+        </MUI.Alert>
       )}
 
-      <Box component="form" onSubmit={handleSubmit} noValidate method="POST">
-        <TextField
+      <MUI.Box
+        component="form"
+        onSubmit={handleSubmit}
+        noValidate
+        method="POST"
+      >
+        <MUI.TextField
           margin="normal"
           required
           fullWidth
@@ -169,16 +172,16 @@ const LoginForm: React.FC = () => {
           slotProps={{
             input: {
               startAdornment: (
-                <InputAdornment position="start">
+                <MUI.InputAdornment position="start">
                   <Email sx={{ fontSize: 20 }} />
-                </InputAdornment>
+                </MUI.InputAdornment>
               ),
             },
           }}
           sx={{ mb: 2 }}
         />
 
-        <TextField
+        <MUI.TextField
           margin="normal"
           required
           fullWidth
@@ -194,40 +197,40 @@ const LoginForm: React.FC = () => {
           slotProps={{
             input: {
               startAdornment: (
-                <InputAdornment position="start">
+                <MUI.InputAdornment position="start">
                   <Lock sx={{ fontSize: 20 }} />
-                </InputAdornment>
+                </MUI.InputAdornment>
               ),
               endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
+                <MUI.InputAdornment position="end">
+                  <MUI.IconButton
                     aria-label="toggle password visibility"
                     onClick={() => setShowPassword(!showPassword)}
                     onMouseDown={e => e.preventDefault()}
                     edge="end"
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
+                  </MUI.IconButton>
+                </MUI.InputAdornment>
               ),
             },
           }}
           sx={{ mb: 1 }}
         />
 
-        <Box
+        <MUI.Box
           sx={{
             display: "flex",
             justifyContent: "flex-end",
             mb: 2,
           }}
         >
-          <Link href="#" variant="body2" underline="hover">
+          <MUI.Link href="#" variant="body2" underline="hover">
             {strings.forgotPassword}
-          </Link>
-        </Box>
+          </MUI.Link>
+        </MUI.Box>
 
-        <Button
+        <MUI.Button
           type="submit"
           fullWidth
           variant="contained"
@@ -242,22 +245,22 @@ const LoginForm: React.FC = () => {
           disabled={isLoading || !email || !password}
         >
           {isLoading ? (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+            <MUI.Box sx={{ display: "flex", alignItems: "center" }}>
+              <MUI.CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
               {strings.checking}
-            </Box>
+            </MUI.Box>
           ) : (
             strings.signin
           )}
-        </Button>
+        </MUI.Button>
 
-        <Divider sx={{ my: 2 }}>
-          <Typography variant="body2" color="text.secondary">
+        <MUI.Divider sx={{ my: 2 }}>
+          <MUI.Typography variant="body2" color="text.secondary">
             {strings.orText}
-          </Typography>
-        </Divider>
+          </MUI.Typography>
+        </MUI.Divider>
 
-        <Box
+        <MUI.Box
           sx={{
             textAlign: "center",
             mt: 2,
@@ -267,15 +270,20 @@ const LoginForm: React.FC = () => {
             gap: 1,
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <MUI.Typography variant="body2" color="text.secondary">
             {strings.dontHaveAccountQuestion}
-          </Typography>
-          <Link href="#" variant="body2" underline="hover" fontWeight="bold">
+          </MUI.Typography>
+          <MUI.Link
+            href="#"
+            variant="body2"
+            underline="hover"
+            fontWeight="bold"
+          >
             {strings.createAccount}
-          </Link>
-        </Box>
-      </Box>
-    </Paper>
+          </MUI.Link>
+        </MUI.Box>
+      </MUI.Box>
+    </MUI.Paper>
   );
 };
 

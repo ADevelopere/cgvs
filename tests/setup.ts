@@ -9,6 +9,8 @@ try {
 }
 
 // Set test environment variables
-process.env.NODE_ENV = "test";
-process.env.GRAPHQL_ENDPOINT =
-  process.env.GRAPHQL_ENDPOINT || "http://localhost:3000/api/graphql";
+Object.assign(process.env, {
+  NODE_ENV: "test",
+  GRAPHQL_ENDPOINT:
+    process.env.GRAPHQL_ENDPOINT || "http://localhost:3000/api/graphql",
+});

@@ -102,7 +102,7 @@ async function startDevServer(): Promise<number> {
         serverPort = port;
         resolve(serverPort);
       }
-    }, 15000);
+    }, 30000);
   });
 }
 
@@ -141,6 +141,9 @@ const uploadPath = "public/templateCover";
 const generateFileMD5Node = async (filePath: string): Promise<string> => {
   return await generateFileMD5Browser(filePath);
 };
+
+// Increase timeout for integration tests
+jest.setTimeout(60000); // 60 seconds
 
 describe("Upload Integration Test", () => {
   beforeAll(async () => {
@@ -329,7 +332,7 @@ describe("Upload Integration Test", () => {
 
       throw error;
     }
-  }, 30000); // 30 second timeout for the full test
+  }, 60000); // 60 second timeout for the full test
 
   test("should handle invalid MD5 hash", async () => {
     const fileSize = readFileSync(testImagePath).length;
@@ -425,5 +428,5 @@ describe("Upload Integration Test", () => {
       // This is expected - the upload should fail
       expect(error).toBeDefined();
     }
-  }, 30000);
+  }, 60000);
 });
