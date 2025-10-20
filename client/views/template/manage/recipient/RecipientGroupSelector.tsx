@@ -1,57 +1,22 @@
 "use client";
 
 import React from "react";
-import { Autocomplete, TextField, Chip, Box, Alert } from "@mui/material";
+import { Autocomplete, TextField, Chip, Box } from "@mui/material";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import { useAppTranslation } from "@/client/locale";
-import {
-  Template,
-  TemplateRecipientGroup,
-} from "@/client/graphql/generated/gql/graphql";
-import { templateRecipientGroupsByTemplateIdQueryDocument } from "../recipientGroup/hooks/recipientGroup.documents";
-import { useQuery } from "@apollo/client/react";
+import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
 type RecipientGroupSelectorProps = {
-  template: Template;
+  groups: readonly TemplateRecipientGroup[];
+  loading?: boolean;
 };
 
 const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
-  template,
+  groups,
+  loading = false,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
   const { selectedGroup, setSelectedGroup } = useRecipientStore();
-
-  const {
-    data,
-    loading: apolloLoading,
-    error,
-  } = useQuery(templateRecipientGroupsByTemplateIdQueryDocument, {
-    variables: {
-      templateId: template.id,
-    },
-    fetchPolicy: "cache-and-network", // Ensure we have the latest data
-  });
-
-  const groups: readonly TemplateRecipientGroup[] = React.useMemo(
-    () => data?.templateRecipientGroupsByTemplateId ?? [],
-    [data]
-  );
-
-  // Show error state if there's an error
-  if (error) {
-    return (
-      <Alert
-        severity="error"
-        sx={{
-          minWidth: { xs: 200, sm: 250, md: 300 },
-          width: "100%",
-          maxWidth: "100%",
-        }}
-      >
-        {strings.errorFetchingGroups}
-      </Alert>
-    );
-  }
 
   return (
     <Autocomplete
@@ -63,7 +28,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
         }
       }}
       options={groups}
-      loading={apolloLoading}
+      loading={loading}
       openOnFocus
       getOptionLabel={option => option.name || ""}
       isOptionEqualToValue={(option, value) => option.id === value.id}
