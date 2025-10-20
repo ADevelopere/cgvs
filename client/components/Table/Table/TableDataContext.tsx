@@ -19,6 +19,7 @@ import {
 } from "@/client/types/filters";
 import { useTableContext } from "./TableContext";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
+import logger from "@/client/lib/logger";
 
 export type TableCellEditingState = {
   isEditing: boolean;
@@ -285,6 +286,10 @@ export const TableDataProvider = ({
   // Clear filter for a specific column
   const clearFilter = useCallback(
     (columnId: string) => {
+      logger.info(
+        "🔍 TableDataContext: clearFilter called for columnId:",
+        columnId
+      );
       onFilterChange?.(null, columnId);
     },
     [onFilterChange]

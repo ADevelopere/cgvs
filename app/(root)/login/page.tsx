@@ -1,7 +1,7 @@
 "use client";
 
 import LoginForm from "@/client/views/auth/LoginForm";
-import { Container } from "@mui/material";
+import { CircularProgress, Container } from "@mui/material";
 import { Suspense } from "react";
 import type React from "react";
 
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
         height: "100vh",
       }}
     >
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<CircularProgress />}>
         <LoginForm />
       </Suspense>
     </Container>

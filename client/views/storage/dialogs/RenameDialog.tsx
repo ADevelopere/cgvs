@@ -263,9 +263,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
             borderRadius: 1,
           }}
         >
-          {isLoading
-            ? translations.loading || "Loading..."
-            : translations.renameDialogOk}
+          {isLoading ? translations.loading : translations.renameDialogOk}
         </MUI.Button>
       </MUI.DialogActions>
     </MUI.Dialog>

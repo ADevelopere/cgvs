@@ -52,12 +52,27 @@ export const useStudentStore = create<StudentStoreState>()(
       ...initialState,
 
       setQueryParams: params =>
-        set(state => ({
-          queryParams: {
+        set(state => {
+          logger.info(
+            "🔍 useStudentStore: setQueryParams called with:",
+            params
+          );
+          logger.info(
+            "🔍 useStudentStore: current queryParams before:",
+            state.queryParams
+          );
+
+          const newQueryParams = {
             ...state.queryParams,
             ...params,
-          },
-        })),
+          };
+
+          logger.info(
+            "🔍 useStudentStore: new queryParams after setQueryParams:",
+            newQueryParams
+          );
+          return { queryParams: newQueryParams };
+        }),
 
       toggleStudentSelect: id =>
         set(state => {
@@ -85,19 +100,63 @@ export const useStudentStore = create<StudentStoreState>()(
 
       setColumnFilter: (clause, columnId) =>
         set(state => {
+          logger.info("🔍 useStudentStore: setColumnFilter called with:", {
+            clause,
+            columnId,
+          });
+          logger.info(
+            "🔍 useStudentStore: current filters before:",
+            state.filters
+          );
+          logger.info(
+            "🔍 useStudentStore: current queryParams.filterArgs before:",
+            state.queryParams.filterArgs
+          );
+
           const newFilters = { ...state.filters };
           if (clause) {
             newFilters[columnId] = clause;
+            logger.info(
+              "🔍 useStudentStore: setting filter for column:",
+              columnId
+            );
           } else {
             delete newFilters[columnId];
+            logger.info(
+              "🔍 useStudentStore: removing filter for column:",
+              columnId
+            );
           }
+
+          logger.info(
+            "🔍 useStudentStore: new filters after setColumnFilter:",
+            newFilters
+          );
           return { filters: newFilters };
         }),
 
       clearFilter: columnId =>
         set(state => {
+          logger.info(
+            "🔍 useStudentStore: clearFilter called with columnId:",
+            columnId
+          );
+          logger.info(
+            "🔍 useStudentStore: current filters before:",
+            state.filters
+          );
+          logger.info(
+            "🔍 useStudentStore: current queryParams.filterArgs before:",
+            state.queryParams.filterArgs
+          );
+
           const newFilters = { ...state.filters };
           delete newFilters[columnId];
+
+          logger.info(
+            "🔍 useStudentStore: new filters after clearFilter:",
+            newFilters
+          );
           return { filters: newFilters };
         }),
 

@@ -18,6 +18,7 @@ import { EditableColumn, PinPosition } from "@/client/types/table.type";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
+import logger from "@/client/lib/logger";
 
 export interface ColumnHeaderProps {
   column: EditableColumn;
@@ -274,6 +275,10 @@ const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
     // Handle clear filter
     const handleClearFilter = useCallback(
       (columnId: string) => {
+        logger.info(
+          "🔍 ColumnHeaderCell: handleClearFilter called for columnId:",
+          columnId
+        );
         filter(null, columnId);
         tempFilterValueRef.current = "";
       },

@@ -20,6 +20,7 @@ import {
 import { Check, Clear } from "@mui/icons-material";
 import { useTableDataContext } from "../Table/TableDataContext";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
+import logger from "@/client/lib/logger";
 
 interface TextFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -98,6 +99,10 @@ const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
   }, [applyTextFilter, columnId, onClose, operation, value, valueRequired]);
 
   const handleClear = useCallback(() => {
+    logger.info(
+      "🔍 TextFilterPopover: handleClear called for columnId:",
+      columnId
+    );
     clearFilter(columnId);
     onClose();
   }, [clearFilter, columnId, onClose]);
