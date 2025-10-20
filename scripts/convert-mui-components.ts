@@ -55,6 +55,8 @@ const MUI_COMPONENTS = [
   "Autocomplete",
   "Chip",
   "Badge",
+  "ToggleButton",
+  "ToggleButtonGroup",
 
   // Data display components
   "Table",
@@ -64,6 +66,7 @@ const MUI_COMPONENTS = [
   "TableHead",
   "TableRow",
   "TablePagination",
+  "TableSortLabel",
   "Avatar",
   "AvatarGroup",
   "List",

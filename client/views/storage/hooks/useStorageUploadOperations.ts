@@ -67,8 +67,22 @@ export const useStorageUploadOperations = () => {
 
         const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
         if (!signedUrl) {
+          logger.error("Failed to get signed URL from response", {
+            fileKey,
+            fileName: file.name,
+            response: signedUrlRes.data,
+          });
           throw new Error(translations.failedGenerateSignedUrl);
         }
+
+        logger.info("Signed URL received, starting upload", {
+          fileKey,
+          fileName: file.name,
+          fileSize: file.size,
+          contentType: file.type,
+          signedUrlLength: signedUrl.length,
+          signedUrlPrefix: signedUrl.substring(0, 100) + "...",
+        });
 
         updateFileState(fileKey, { signedUrl });
 
@@ -89,6 +103,18 @@ export const useStorageUploadOperations = () => {
             // Calculate bytes uploaded for this file
             const bytesUploaded = (progress / 100) * file.size;
             updateBatchProgress(fileKey, progress, bytesUploaded);
+
+            // Log progress every 25% to avoid spam
+            if (progress % 25 === 0 && progress > 0) {
+              logger.debug("Upload progress", {
+                fileKey,
+                fileName: file.name,
+                progress,
+                loaded: event.loaded,
+                total: event.total,
+                bytesUploaded,
+              });
+            }
           }
         };
 
@@ -108,29 +134,96 @@ export const useStorageUploadOperations = () => {
           });
         };
 
+        logger.info("Configuring XMLHttpRequest", {
+          fileKey,
+          fileName: file.name,
+          method: "PUT",
+          contentType: file.type || "application/octet-stream",
+          contentMd5,
+          signedUrlLength: signedUrl.length,
+          signedUrlPrefix: signedUrl.substring(0, 200) + "...",
+        });
+
         currentXhr.open("PUT", signedUrl);
         currentXhr.setRequestHeader(
           "Content-Type",
           file.type || "application/octet-stream"
         );
+        currentXhr.setRequestHeader("Content-MD5", contentMd5);
+
+        logger.info("Headers set on XMLHttpRequest", {
+          fileKey,
+          fileName: file.name,
+          contentType: file.type || "application/octet-stream",
+          contentMd5,
+          allHeaders: {
+            "Content-Type": file.type || "application/octet-stream",
+            "Content-MD5": contentMd5,
+          },
+        });
+
+        logger.info("Sending file upload request", {
+          fileKey,
+          fileName: file.name,
+          fileSize: file.size,
+        });
+
         currentXhr.send(file);
 
         await new Promise<void>((resolve, reject) => {
           loadListener = () => {
+            logger.info("XMLHttpRequest load event received", {
+              fileKey,
+              fileName: file.name,
+              readyState: currentXhr?.readyState,
+              status: currentXhr?.status,
+              statusText: currentXhr?.statusText,
+              responseText: currentXhr?.responseText?.substring(0, 200),
+            });
+
             if (
               !currentXhr ||
               currentXhr.readyState !== XMLHttpRequest.DONE ||
               currentXhr.status === 0
             ) {
+              logger.warn("Upload cancelled or incomplete", {
+                fileKey,
+                fileName: file.name,
+                readyState: currentXhr?.readyState,
+                status: currentXhr?.status,
+                statusText: currentXhr?.statusText,
+                responseText: currentXhr?.responseText,
+                responseHeaders: currentXhr?.getAllResponseHeaders(),
+                signedUrl: signedUrl.substring(0, 200) + "...",
+                contentMd5,
+                contentType: file.type,
+              });
               handleError(translations.uploadCancelled);
               uploadXhrsRef.current.delete(fileKey);
               reject(new Error(translations.uploadCancelled));
               return;
             }
             if (currentXhr.status >= 200 && currentXhr.status < 300) {
+              logger.info("Upload successful", {
+                fileKey,
+                fileName: file.name,
+                status: currentXhr.status,
+                statusText: currentXhr.statusText,
+              });
               handleSuccess();
               resolve();
             } else {
+              logger.error("Upload failed with HTTP error", {
+                fileKey,
+                fileName: file.name,
+                status: currentXhr.status,
+                statusText: currentXhr.statusText,
+                responseText: currentXhr.responseText,
+                responseHeaders: currentXhr.getAllResponseHeaders(),
+                signedUrl: signedUrl.substring(0, 200) + "...", // Log partial signed URL for debugging
+                contentMd5,
+                contentType: file.type,
+              });
               const errorMsg = translations.uploadFailedWithStatus.replace(
                 "%{status}",
                 String(currentXhr.status)
@@ -140,15 +233,44 @@ export const useStorageUploadOperations = () => {
               reject(new Error(errorMsg));
             }
           };
-          errorListener = () => handleError(translations.uploadFailed);
-          abortListener = () => handleError(translations.uploadCancelled);
+          errorListener = e => {
+            logger.error("XMLHttpRequest error event", {
+              fileKey,
+              fileName: file.name,
+              readyState: currentXhr?.readyState,
+              status: currentXhr?.status,
+              statusText: currentXhr?.statusText,
+              responseText: currentXhr?.responseText,
+              responseHeaders: currentXhr?.getAllResponseHeaders(),
+            });
+            logger.error("XMLHttpRequest error event", {
+              error: e,
+            });
+            handleError(translations.uploadFailed);
+            uploadXhrsRef.current.delete(fileKey);
+            reject(new Error(translations.uploadFailed));
+          };
+          abortListener = () => {
+            logger.warn("XMLHttpRequest abort event", {
+              fileKey,
+              fileName: file.name,
+            });
+            handleError(translations.uploadCancelled);
+            uploadXhrsRef.current.delete(fileKey);
+            reject(new Error(translations.uploadCancelled));
+          };
 
           currentXhr.addEventListener("load", loadListener);
           currentXhr.addEventListener("error", errorListener);
           currentXhr.addEventListener("abort", abortListener);
         });
       } catch (error) {
-        logger.warn(`Upload failed for ${file.name}:`, error);
+        logger.error("Upload failed with exception", {
+          fileKey,
+          fileName: file.name,
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         updateFileState(fileKey, {
           status: "error",
           error:
@@ -185,6 +307,19 @@ export const useStorageUploadOperations = () => {
       maxConcurrentUploads: number = 5,
       maxAllowedFileSize: number = 10 * 1024 * 1024
     ) => {
+      logger.log("🚀 startUpload function called!", {
+        files: files.length,
+        targetPath,
+      });
+      logger.info("startUpload called", {
+        fileCount: files.length,
+        targetPath,
+        maxConcurrentUploads,
+        maxAllowedFileSize,
+        fileNames: files.map(f => f.name),
+        fileSizes: files.map(f => f.size),
+      });
+
       const validFiles: File[] = [];
       const oversizedFiles: File[] = [];
 
@@ -196,19 +331,45 @@ export const useStorageUploadOperations = () => {
         }
       });
 
+      logger.info("File validation completed", {
+        validFilesCount: validFiles.length,
+        oversizedFilesCount: oversizedFiles.length,
+        validFileNames: validFiles.map(f => f.name),
+        oversizedFileNames: oversizedFiles.map(f => f.name),
+      });
+
       if (oversizedFiles.length > 0) {
         const maxMb = (maxAllowedFileSize / 1024 / 1024).toFixed(2);
         const message = `${oversizedFiles.length} file(s) exceed the size limit of ${maxMb}MB and will not be uploaded.`;
+        logger.warn("Files exceed size limit", {
+          oversizedFiles: oversizedFiles.map(f => ({
+            name: f.name,
+            size: f.size,
+          })),
+          maxAllowedFileSize,
+        });
         notifications.show(message, {
           severity: "warning",
           autoHideDuration: 5000,
         });
       }
 
-      if (validFiles.length === 0) return;
+      if (validFiles.length === 0) {
+        logger.warn("No valid files to upload");
+        return;
+      }
 
       const location = getUploadLocationForPath(targetPath);
+      logger.info("Upload location determined", {
+        targetPath,
+        location: location,
+        hasLocation: !!location,
+      });
+
       if (!location) {
+        logger.error("Upload not allowed - no valid location", {
+          targetPath,
+        });
         notifications.show(translations.uploadNotAllowed, {
           severity: "error",
           autoHideDuration: 5000,
@@ -243,15 +404,44 @@ export const useStorageUploadOperations = () => {
       });
 
       try {
+        logger.info("Starting file upload processing", {
+          validFilesCount: validFiles.length,
+          maxConcurrentUploads,
+        });
+
         const chunks: File[][] = [];
         for (let i = 0; i < validFiles.length; i += maxConcurrentUploads) {
           chunks.push(validFiles.slice(i, i + maxConcurrentUploads));
         }
 
-        for (const chunk of chunks) {
+        logger.info("File chunks created", {
+          chunkCount: chunks.length,
+          chunkSizes: chunks.map(chunk => chunk.length),
+        });
+
+        for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+          const chunk = chunks[chunkIndex];
+          logger.info("Processing chunk", {
+            chunkIndex,
+            chunkSize: chunk.length,
+            fileNames: chunk.map(f => f.name),
+          });
+
           await Promise.all(
-            chunk.map(file => uploadSingleFile(file, location, targetPath))
+            chunk.map(file => {
+              logger.info("Starting uploadSingleFile", {
+                fileName: file.name,
+                fileSize: file.size,
+                targetPath,
+              });
+              return uploadSingleFile(file, location, targetPath);
+            })
           );
+
+          logger.info("Chunk completed", {
+            chunkIndex,
+            chunkSize: chunk.length,
+          });
         }
 
         // Update completion status

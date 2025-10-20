@@ -1,6 +1,5 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import CryptoJS from "crypto-js";
-
 import { extToContentType, mimeToContentType } from "./storage.constant";
 
 /**

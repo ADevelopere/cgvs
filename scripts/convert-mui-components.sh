@@ -15,6 +15,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Global variable to store file path
+SELECTED_FILE_PATH=""
+
 echo -e "${BLUE}MUI Component Converter${NC}"
 echo -e "${BLUE}======================${NC}"
 echo ""
@@ -56,7 +59,7 @@ get_file_path() {
         file_path=$(eval echo "$file_path")
 
         if validate_file "$file_path"; then
-            echo "$file_path"
+            SELECTED_FILE_PATH="$file_path"
             return 0
         else
             echo -e "${RED}Invalid file path provided: $1${NC}"
@@ -66,34 +69,35 @@ get_file_path() {
 
     # Check if we have piped input
     if [[ ! -t 0 ]]; then
-        read file_path
+        read -r file_path
         if [[ -z "$file_path" ]]; then
             echo -e "${RED}No file path provided in input.${NC}"
             exit 1
         fi
+        SELECTED_FILE_PATH="$file_path"
     else
-        # Interactive mode
+        # Interactive mode - prompt for file path
         while true; do
-            echo -e "${YELLOW}Enter the file path to convert:${NC}"
-            read file_path
+            echo -e "${YELLOW}Please enter file path:${NC}"
+            read -r file_path
 
             # Handle empty input
             if [[ -z "$file_path" ]]; then
                 echo -e "${RED}Please enter a valid file path.${NC}"
                 continue
             fi
+            SELECTED_FILE_PATH="$file_path"
             break
         done
     fi
 
     # Expand tilde and resolve relative paths
-    file_path=$(eval echo "$file_path")
+    SELECTED_FILE_PATH=$(eval echo "$SELECTED_FILE_PATH")
 
-    if validate_file "$file_path"; then
-        echo "$file_path"
+    if validate_file "$SELECTED_FILE_PATH"; then
         return 0
     else
-        echo -e "${RED}Invalid file path: $file_path${NC}"
+        echo -e "${RED}Invalid file path: $SELECTED_FILE_PATH${NC}"
         exit 1
     fi
 }
@@ -101,17 +105,18 @@ get_file_path() {
 # Main execution
 main() {
     # Check if bun is installed
-    if ! command -v bun &> /dev/null; then
-        echo -e "${RED}Error: bun is not installed or not in PATH.${NC}"
+    BUN_PATH="$HOME/.bun/bin/bun"
+    if [[ ! -f "$BUN_PATH" ]]; then
+        echo -e "${RED}Error: bun is not installed at $BUN_PATH${NC}"
         echo -e "${YELLOW}Please install bun first: https://bun.sh/docs/installation${NC}"
         exit 1
     fi
 
     # Get file path from user
-    file_path=$(get_file_path "$@")
+    get_file_path "$@"
 
     echo ""
-    echo -e "${BLUE}Converting MUI components in:${NC} $file_path"
+    echo -e "${BLUE}Converting MUI components in:${NC} $SELECTED_FILE_PATH"
     echo ""
 
     # Get the directory of this script
@@ -127,7 +132,7 @@ main() {
     # Run the TypeScript script with bun
     echo -e "${YELLOW}Running conversion script...${NC}"
 
-    if bun run "$typescript_script" "$file_path"; then
+    if "$BUN_PATH" run "$typescript_script" "$SELECTED_FILE_PATH"; then
         echo ""
         echo -e "${GREEN}✅ Conversion completed successfully!${NC}"
         echo -e "${GREEN}MUI components have been converted to MUI.Component format.${NC}"

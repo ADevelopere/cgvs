@@ -2,6 +2,7 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as StoragePothos from "../pothos";
 import { getStorageService } from "@/server/storage/storage.service";
 import { StorageDbRepository } from "@/server/db/repo";
+import logger from "@/server/lib/logger";
 
 gqlSchemaBuilder.mutationFields(t => ({
   renameFile: t.field({
@@ -38,8 +39,11 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_parent, { input }) => {
+      logger.info("GraphQL mutation: generateUploadSignedUrl", { input });
       const storageService = await getStorageService();
-      return await storageService.generateUploadSignedUrl(input);
+      const result = await storageService.generateUploadSignedUrl(input);
+      logger.info("GraphQL mutation: generateUploadSignedUrl completed");
+      return result;
     },
   }),
 

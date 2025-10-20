@@ -1,6 +1,6 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-import { JWT } from "google-auth-library";
+import { GoogleAuth } from "google-auth-library";
 import logger from "@/server/lib/logger";
 import * as Types from "@/server/types";
 import {
@@ -38,7 +38,7 @@ function cleanGcsPath(path: string, addTrailingSlash = false): string {
   return addTrailingSlash && cleaned.length > 0 ? `${cleaned}/` : cleaned;
 }
 
-const getStorageFromSecretManager = async (): Promise<Storage | null> => {
+const getStorageFromSecretManager = async (): Promise<Storage> => {
   try {
     const client = new SecretManagerServiceClient();
     const name = `projects/${projectId}/secrets/${secretId}/versions/${secretVersion}`;
@@ -52,39 +52,75 @@ const getStorageFromSecretManager = async (): Promise<Storage | null> => {
 
     const credentials = JSON.parse(payload.toString());
 
+    // Debug logging to verify credentials structure
+    logger.info("Credentials loaded from Secret Manager", {
+      hasClientEmail: !!credentials.client_email,
+      hasPrivateKey: !!credentials.private_key,
+      hasType: !!credentials.type,
+      hasProjectId: !!credentials.project_id,
+      type: credentials.type,
+      clientEmail: credentials.client_email,
+      privateKeyLength: credentials.private_key
+        ? credentials.private_key.length
+        : 0,
+    });
+
+    logger.debug("Credentials", { credentials });
+
+    // Validate required fields
+    if (!credentials.client_email) {
+      throw new Error("Service account credentials missing client_email field");
+    }
+    if (!credentials.private_key) {
+      throw new Error("Service account credentials missing private_key field");
+    }
+    if (!credentials.type || credentials.type !== "service_account") {
+      throw new Error("Invalid service account type in credentials");
+    }
+
     // Create JWT client with the credentials to avoid deprecated methods
-    const jwtClient = new JWT({
-      email: credentials.client_email,
-      key: credentials.private_key,
+    // const jwtClient = new JWT({
+    //   email: credentials.client_email,
+    //   key: credentials.private_key,
+    //   scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+    // });
+
+    // Create GoogleAuth instance with the credentials
+    const auth = new GoogleAuth({
+      credentials: credentials,
       scopes: ["https://www.googleapis.com/auth/cloud-platform"],
     });
 
     return new Storage({
       projectId,
-      authClient: jwtClient,
+      authClient: auth, // Use GoogleAuth client for proper signing support
     });
   } catch (error) {
     logger.error(
       `Failed to access secret version: ${secretId} in project: ${projectId}`,
       error
     );
-    return null;
+    throw error;
   }
 };
 
 export async function createGcpStorage(): Promise<Storage> {
-  if (projectId && secretId) {
-    const storageFromSecret = await getStorageFromSecretManager();
-    if (storageFromSecret) {
-      return storageFromSecret;
-    }
+  if (!projectId || !secretId) {
+    throw new Error(
+      "GCP_PROJECT_ID and GCP_SECRET_ID environment variables are required"
+    );
   }
 
-  // Fallback to Application Default Credentials (ADC)
-  // This uses the default authentication flow and doesn't trigger deprecation warnings
-  return new Storage({
-    projectId,
+  const storage = await getStorageFromSecretManager();
+
+  // Debug logging to inspect Storage object
+  logger.info("Storage object created", {
+    projectId: storage.projectId,
+    hasAuthClient: !!storage.authClient,
+    authClientType: storage.authClient?.constructor?.name,
   });
+
+  return storage;
 }
 
 class GcpAdapter implements StorageService {
@@ -97,6 +133,12 @@ class GcpAdapter implements StorageService {
     }
     this.storage = storage;
     this.bucket = storage.bucket(bucketName);
+
+    // Log bucket initialization
+    logger.info("GCP Storage bucket initialized", {
+      bucketName: this.bucket.name,
+      projectId: projectId,
+    });
   }
 
   async fileExists(path: string): Promise<boolean> {
@@ -113,25 +155,51 @@ class GcpAdapter implements StorageService {
   async generateUploadSignedUrl(
     input: Types.UploadSignedUrlGenerateInput
   ): Promise<string> {
-    StorageUtils.validateUpload(input.path, input.fileSize).then(err => {
-      if (err) throw new StorageValidationError(err);
-    });
+    try {
+      logger.info("generateUploadSignedUrl called", {
+        path: input.path,
+        fileSize: input.fileSize,
+        contentType: input.contentType,
+        contentMd5: input.contentMd5,
+      });
 
-    const file = this.bucket.file(input.path);
+      StorageUtils.validateUpload(input.path, input.fileSize).then(err => {
+        if (err) throw new StorageValidationError(err);
+      });
 
-    if (!file.signer) {
-      throw new Error("Signer is not available for the file.");
+      const file = this.bucket.file(input.path);
+
+      logger.info("File object created", {
+        path: input.path,
+        bucketName: this.bucket.name,
+      });
+
+      const result = await file.getSignedUrl({
+        version: "v4",
+        expires: Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000,
+        contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
+        action: "write",
+        contentMd5: input.contentMd5,
+      });
+
+      logger.debug("Signed URL generated", {
+        url: result[0],
+      });
+
+      logger.info("Signed URL generated successfully", {
+        path: input.path,
+        expiresIn: STORAGE_CONFIG.SIGNED_URL_DURATION,
+      });
+
+      return result[0];
+    } catch (error) {
+      logger.error("Failed to generate upload signed URL", {
+        path: input.path,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      throw error;
     }
-
-    const [url] = await file.signer.getSignedUrl({
-      version: "v4",
-      expires: Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000,
-      contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
-      method: "PUT",
-      contentMd5: input.contentMd5,
-    });
-
-    return url;
   }
 
   async uploadFile(

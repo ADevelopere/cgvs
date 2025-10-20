@@ -1,29 +1,5 @@
 import React from "react";
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  SelectChangeEvent,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  ToggleButton,
-  ToggleButtonGroup,
-  Toolbar,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import * as MUI from "@mui/material";
 import {
   GridView as GridViewIcon,
   Sort as SortIcon,
@@ -84,7 +60,7 @@ const StorageToolbar: React.FC<{
 
   // Handle sort field change (for grid view)
   const handleSortFieldChange = React.useCallback(
-    (event: SelectChangeEvent<string>) => {
+    (event: MUI.SelectChangeEvent<string>) => {
       setSortBy(event.target.value);
     },
     [setSortBy]
@@ -114,7 +90,7 @@ const StorageToolbar: React.FC<{
   );
 
   return (
-    <Paper
+    <MUI.Paper
       elevation={0}
       sx={{
         borderBottom: 1,
@@ -122,84 +98,90 @@ const StorageToolbar: React.FC<{
         borderRadius: 0,
       }}
     >
-      <Toolbar
+      <MUI.Toolbar
         variant="dense"
         sx={{ justifyContent: "space-between", minHeight: 48 }}
       >
         {/* Left side - Results info */}
-        <Box>
+        <MUI.Box>
           {searchMode && (
-            <Typography variant="body2" color="text.secondary">
+            <MUI.Typography variant="body2" color="text.secondary">
               {translations.searchResults.replace(
                 "%{count}",
                 currentItems.length.toString()
               )}
               {params.searchTerm && ` for "${params.searchTerm}"`}
-            </Typography>
+            </MUI.Typography>
           )}
           {!searchMode && (
-            <Typography variant="body2" color="text.secondary">
+            <MUI.Typography variant="body2" color="text.secondary">
               {currentItems.length}{" "}
               {currentItems.length === 1
                 ? translations.item
                 : translations.items}
-            </Typography>
+            </MUI.Typography>
           )}
-        </Box>
+        </MUI.Box>
 
         {/* Right side - View and sort controls */}
-        <Stack direction="row" spacing={2} alignItems="center">
+        <MUI.Stack direction="row" spacing={2} alignItems="center">
           {/* Sort controls for grid view */}
           {viewMode === "grid" && (
             <>
-              <FormControl size="small" sx={{ minWidth: 120 }}>
-                <InputLabel>{translations.sortBy}</InputLabel>
-                <Select
+              <MUI.FormControl size="small" sx={{ minWidth: 120 }}>
+                <MUI.InputLabel>{translations.sortBy}</MUI.InputLabel>
+                <MUI.Select
                   value={sortBy}
                   label={translations.sortBy}
                   onChange={handleSortFieldChange}
                 >
                   {sortFieldOptions.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
+                    <MUI.MenuItem key={option.value} value={option.value}>
                       {option.label}
-                    </MenuItem>
+                    </MUI.MenuItem>
                   ))}
-                </Select>
-              </FormControl>
+                </MUI.Select>
+              </MUI.FormControl>
 
-              <ToggleButtonGroup
+              <MUI.ToggleButtonGroup
                 value={sortDirection}
                 exclusive
                 onChange={handleSortDirectionChange}
                 size="small"
               >
-                <ToggleButton value="ASC" aria-label={translations.ascending}>
+                <MUI.ToggleButton
+                  value="ASC"
+                  aria-label={translations.ascending}
+                >
                   <SortIcon sx={{ transform: "rotate(0deg)" }} />
-                </ToggleButton>
-                <ToggleButton value="DESC" aria-label={translations.descending}>
+                </MUI.ToggleButton>
+                <MUI.ToggleButton
+                  value="DESC"
+                  aria-label={translations.descending}
+                >
                   <SortIcon sx={{ transform: "rotate(180deg)" }} />
-                </ToggleButton>
-              </ToggleButtonGroup>
+                </MUI.ToggleButton>
+              </MUI.ToggleButtonGroup>
             </>
           )}
 
           {/* View mode toggle */}
-          <ToggleButtonGroup
+          <MUI.ToggleButtonGroup
             value={viewMode}
             exclusive
             onChange={handleViewModeChange}
             size="small"
           >
-            <ToggleButton value="grid" aria-label={translations.gridView}>
+            <MUI.ToggleButton value="grid" aria-label={translations.gridView}>
               <GridViewIcon />
-            </ToggleButton>
-            <ToggleButton value="list" aria-label={translations.listView}>
+            </MUI.ToggleButton>
+            <MUI.ToggleButton value="list" aria-label={translations.listView}>
               <ListViewIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Stack>
-      </Toolbar>
-    </Paper>
+            </MUI.ToggleButton>
+          </MUI.ToggleButtonGroup>
+        </MUI.Stack>
+      </MUI.Toolbar>
+    </MUI.Paper>
   );
 };
 
@@ -239,7 +221,7 @@ const ListView: React.FC<{
   );
 
   return (
-    <Box
+    <MUI.Box
       sx={{
         height: "100%",
         width: "100%",
@@ -249,11 +231,11 @@ const ListView: React.FC<{
       onContextMenu={onContextMenu}
       onClick={onClick}
     >
-      <Table stickyHeader>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ width: "40%" }}>
-              <TableSortLabel
+      <MUI.Table stickyHeader>
+        <MUI.TableHead>
+          <MUI.TableRow>
+            <MUI.TableCell sx={{ width: "40%" }}>
+              <MUI.TableSortLabel
                 active={sortBy === "name"}
                 direction={
                   sortBy === "name"
@@ -265,10 +247,10 @@ const ListView: React.FC<{
                 onClick={() => handleTableSort("name")}
               >
                 {translations.name}
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ width: "15%" }}>
-              <TableSortLabel
+              </MUI.TableSortLabel>
+            </MUI.TableCell>
+            <MUI.TableCell sx={{ width: "15%" }}>
+              <MUI.TableSortLabel
                 active={sortBy === "size"}
                 direction={
                   sortBy === "size"
@@ -280,10 +262,10 @@ const ListView: React.FC<{
                 onClick={() => handleTableSort("size")}
               >
                 {translations.size}
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ width: "20%" }}>
-              <TableSortLabel
+              </MUI.TableSortLabel>
+            </MUI.TableCell>
+            <MUI.TableCell sx={{ width: "20%" }}>
+              <MUI.TableSortLabel
                 active={sortBy === "lastModified"}
                 direction={
                   sortBy === "lastModified"
@@ -295,10 +277,10 @@ const ListView: React.FC<{
                 onClick={() => handleTableSort("lastModified")}
               >
                 {translations.lastModified}
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ width: "20%" }}>
-              <TableSortLabel
+              </MUI.TableSortLabel>
+            </MUI.TableCell>
+            <MUI.TableCell sx={{ width: "20%" }}>
+              <MUI.TableSortLabel
                 active={sortBy === "created"}
                 direction={
                   sortBy === "created"
@@ -310,20 +292,20 @@ const ListView: React.FC<{
                 onClick={() => handleTableSort("created")}
               >
                 {translations.createdAt}
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ width: "5%" }}>
+              </MUI.TableSortLabel>
+            </MUI.TableCell>
+            <MUI.TableCell sx={{ width: "5%" }}>
               {/* Actions column - no sorting */}
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+            </MUI.TableCell>
+          </MUI.TableRow>
+        </MUI.TableHead>
+        <MUI.TableBody>
           {currentItems.map(item => (
             <StorageItem key={item.path} item={item} />
           ))}
-        </TableBody>
-      </Table>
-    </Box>
+        </MUI.TableBody>
+      </MUI.Table>
+    </MUI.Box>
   );
 };
 
@@ -332,7 +314,7 @@ const ErrorState: React.FC<{
   translations: StorageManagementUITranslations;
 }> = ({ hasError, translations }) => {
   return (
-    <Alert
+    <MUI.Alert
       severity="error"
       sx={{ m: 2 }}
       action={
@@ -342,7 +324,7 @@ const ErrorState: React.FC<{
       }
     >
       {hasError}
-    </Alert>
+    </MUI.Alert>
   );
 };
 
@@ -351,7 +333,7 @@ const LoadingStates: React.FC<{
   translations: StorageManagementUITranslations;
 }> = ({ searchMode, translations }) => {
   return (
-    <Box
+    <MUI.Box
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -361,11 +343,11 @@ const LoadingStates: React.FC<{
         gap: 2,
       }}
     >
-      <CircularProgress />
-      <Typography variant="body2" color="text.secondary">
+      <MUI.CircularProgress />
+      <MUI.Typography variant="body2" color="text.secondary">
         {searchMode ? translations.searching : translations.loading}
-      </Typography>
-    </Box>
+      </MUI.Typography>
+    </MUI.Box>
   );
 };
 
@@ -374,7 +356,7 @@ const EmptyState: React.FC<{
   searchMode: boolean;
 }> = ({ translations, searchMode }) => {
   return (
-    <Box
+    <MUI.Box
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -385,15 +367,15 @@ const EmptyState: React.FC<{
         color: "text.secondary",
       }}
     >
-      <Typography variant="h6" gutterBottom>
+      <MUI.Typography variant="h6" gutterBottom>
         {searchMode ? translations.noSearchResults : translations.emptyFolder}
-      </Typography>
-      <Typography variant="body2">
+      </MUI.Typography>
+      <MUI.Typography variant="body2">
         {searchMode
           ? translations.tryDifferentSearch
           : translations.uploadOrCreate}
-      </Typography>
-    </Box>
+      </MUI.Typography>
+    </MUI.Box>
   );
 };
 
@@ -403,7 +385,7 @@ const GridView: React.FC<{
   onClick: (event: React.MouseEvent) => void;
 }> = ({ currentItems, onContextMenu, onClick }) => {
   return (
-    <Box
+    <MUI.Box
       sx={{
         height: "100%",
         width: "100%",
@@ -413,7 +395,7 @@ const GridView: React.FC<{
       onContextMenu={onContextMenu}
       onClick={onClick}
     >
-      <Grid
+      <MUI.Grid
         container
         spacing={2}
         sx={{
@@ -421,12 +403,15 @@ const GridView: React.FC<{
         }}
       >
         {currentItems.map(item => (
-          <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }} key={item.path}>
+          <MUI.Grid
+            size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
+            key={item.path}
+          >
             <StorageItem item={item} />
-          </Grid>
+          </MUI.Grid>
         ))}
-      </Grid>
-    </Box>
+      </MUI.Grid>
+    </MUI.Box>
   );
 };
 
@@ -453,7 +438,7 @@ const StorageItemsView: React.FC = () => {
     useStorageSorting();
   const { navigateTo, refresh } = useStorageNavigation();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const theme = useTheme();
+  const theme = MUI.useTheme();
 
   // Context menu state
   const [viewAreaMenuAnchor, setViewAreaMenuAnchor] =
@@ -670,7 +655,7 @@ const StorageItemsView: React.FC = () => {
   );
 
   return (
-    <Box
+    <MUI.Box
       sx={{
         flex: 1,
         display: "flex",
@@ -694,7 +679,7 @@ const StorageItemsView: React.FC = () => {
       />
 
       {/* Content Area */}
-      <Box
+      <MUI.Box
         {...getRootProps()}
         sx={{
           flex: 1,
@@ -704,7 +689,7 @@ const StorageItemsView: React.FC = () => {
             ? `2px dashed ${theme.palette.primary.main}`
             : "2px solid transparent",
           backgroundColor: isDragActive
-            ? alpha(theme.palette.primary.main, 0.05)
+            ? MUI.alpha(theme.palette.primary.main, 0.05)
             : "transparent",
           transition: "border-color 0.2s ease, background-color 0.2s ease",
         }}
@@ -744,7 +729,7 @@ const StorageItemsView: React.FC = () => {
             )}
           </>
         )}
-      </Box>
+      </MUI.Box>
 
       {/* View Area Context Menu */}
       <ViewAreaMenu
@@ -754,7 +739,7 @@ const StorageItemsView: React.FC = () => {
         onClose={handleCloseViewAreaMenu}
         onContextMenu={handleViewAreaContextMenu}
       />
-    </Box>
+    </MUI.Box>
   );
 };
 

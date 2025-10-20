@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, readdir, unlink } from "fs/promises";
 import { join } from "path";
 
 interface LogEntry {
@@ -8,6 +8,42 @@ interface LogEntry {
   message: string;
   timestamp: string;
   caller: string;
+}
+
+// Track if we've already cleaned up old logs for this session
+const cleanedSessions = new Set<string>();
+
+async function cleanupOldClientLogs(
+  logsDir: string,
+  sessionId: string
+): Promise<void> {
+  // Only cleanup once per session
+  if (cleanedSessions.has(sessionId)) return;
+
+  try {
+    // Ensure logs directory exists
+    await mkdir(logsDir, { recursive: true });
+
+    // Read all files in the logs directory
+    const files = await readdir(logsDir);
+
+    // Find all client log files (files starting with 'client_')
+    const clientLogFiles = files.filter(file => file.startsWith("client_"));
+
+    // Delete all previous client log files
+    const deletePromises = clientLogFiles.map(file =>
+      unlink(join(logsDir, file)).catch(() => {
+        // Silently ignore deletion errors
+      })
+    );
+
+    await Promise.all(deletePromises);
+
+    // Mark this session as cleaned up
+    cleanedSessions.add(sessionId);
+  } catch {
+    // Silently fail to avoid infinite loops
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -34,6 +70,9 @@ export async function POST(request: NextRequest) {
     } catch {
       // Directory might already exist, ignore error
     }
+
+    // Clean up old client log files for this session
+    await cleanupOldClientLogs(logsDir, logEntry.sessionId);
 
     // Format log entry for file storage
     const logLine = `[${logEntry.timestamp}] [${logEntry.level.toUpperCase()}] [${logEntry.caller}] ${logEntry.message}\n`;
