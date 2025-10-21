@@ -1,11 +1,12 @@
 import { StorageService } from "./disk/storage.service.interface";
 import { createGcpAdapter } from "./disk/gcp";
+import { createLocalAdapter } from "./disk/local";
 import logger from "@/server/lib/logger";
 
 /**
  * Supported storage providers
  */
-type StorageProvider = "gcp" | "vercel" | "s3" | "r2";
+type StorageProvider = "gcp" | "local" | "vercel" | "s3" | "r2";
 
 /**
  * Storage Service Factory
@@ -58,11 +59,17 @@ class StorageServiceFactory {
 
     if (!provider) {
       throw new Error(
-        "STORAGE_PROVIDER environment variable is required. Options: 'gcp', 'vercel', 's3', 'r2'"
+        "STORAGE_PROVIDER environment variable is required. Options: 'gcp', 'local', 'vercel', 's3', 'r2'"
       );
     }
 
-    const validProviders: StorageProvider[] = ["gcp", "vercel", "s3", "r2"];
+    const validProviders: StorageProvider[] = [
+      "gcp",
+      "local",
+      "vercel",
+      "s3",
+      "r2",
+    ];
     if (!validProviders.includes(provider)) {
       throw new Error(
         `Invalid STORAGE_PROVIDER: ${provider}. Options: ${validProviders.join(", ")}`
@@ -81,6 +88,9 @@ class StorageServiceFactory {
     switch (provider) {
       case "gcp":
         return await createGcpAdapter();
+
+      case "local":
+        return await createLocalAdapter();
 
       case "vercel":
         throw new Error("Vercel storage adapter not implemented yet");
