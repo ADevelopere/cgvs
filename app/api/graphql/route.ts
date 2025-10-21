@@ -19,8 +19,6 @@ import { ApolloServerPluginLandingPageDisabled } from "@apollo/server/plugin/dis
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const maxRecursiveSelections = isProduction ? 5 : undefined;
-
 const cache = new ApolloCacheAdapter();
 const server = new ApolloServer({
   schema: graphQLSchema,
@@ -30,7 +28,6 @@ const server = new ApolloServer({
       ? ApolloServerPluginLandingPageDisabled()
       : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
   ],
-  maxRecursiveSelections: maxRecursiveSelections,
   hideSchemaDetailsFromClientErrors: isProduction,
   includeStacktraceInErrorResponses: !isProduction,
   logger: logger,
@@ -46,7 +43,7 @@ const server = new ApolloServer({
     cache: cache,
     ttl: null, // Store indefinitely
   },
-  cache: cache,
+  cache: new ApolloCacheAdapter(),
 });
 
 const handler = startServerAndCreateNextHandler(server, {
