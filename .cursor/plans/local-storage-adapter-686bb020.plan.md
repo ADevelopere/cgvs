@@ -1419,33 +1419,33 @@ collectCoverageFrom: [
 
 **Schema & Repository (Foundation):**
 
-- [ ] Add signed_url table to storage schema
-- [ ] Create signedUrl.repository.ts with CRUD operations
-  - [ ] createSignedUrl
-  - [ ] getSignedUrlById
-  - [ ] claimSignedUrl (atomic with row-level locking)
-  - [ ] deleteExpired
+- [x] Add signed_url table to storage schema
+- [x] Create signedUrl.repository.ts with CRUD operations
+  - [x] createSignedUrl
+  - [x] getSignedUrlById
+  - [x] claimSignedUrl (atomic with row-level locking)
+  - [x] deleteExpired
 
 **Local Adapter Implementation (Incremental):**
 
-- [ ] Create local.ts file with class skeleton, imports, and stub methods
-- [ ] Implement factory function with serverless kill switch
-- [ ] Implement helper functions (getAbsolutePath, fileStatsToMetadata, ensureDirectory, calculateMd5, streamToFile)
-- [ ] Phase 1: Core file operations (validate after each)
-  - [ ] fileExists() → lint → tsc → compare with GCP → fix
-  - [ ] uploadFile() → lint → tsc → compare with GCP → fix
-  - [ ] deleteFile() → lint → tsc → compare with GCP → fix
-  - [ ] renameFile() → lint → tsc → compare with GCP → fix
-- [ ] Phase 2: Metadata & info operations (validate after each)
-  - [ ] fileInfoByPath() → lint → tsc → compare with GCP → fix
-  - [ ] fileInfoByDbFileId() → lint → tsc → compare with GCP → fix
-  - [ ] directoryInfoByPath() → lint → tsc → compare with GCP → fix
-- [ ] Phase 3: Directory operations (validate after each)
-  - [ ] createFolder() → lint → tsc → compare with GCP → fix
-  - [ ] listFiles() → lint → tsc → compare with GCP → fix
-  - [ ] fetchDirectoryChildren() → lint → tsc → compare with GCP → fix
-- [ ] Phase 4: Signed URLs (validate after each)
-  - [ ] generateUploadSignedUrl() → lint → tsc → compare with GCP → fix
+- [x] Create local.ts file with class skeleton, imports, and stub methods
+- [x] Implement factory function with serverless kill switch
+- [x] Implement helper functions (getAbsolutePath, fileStatsToMetadata, ensureDirectory, calculateMd5, streamToFile)
+- [x] Phase 1: Core file operations (validate after each)
+  - [x] fileExists() → lint → tsc → compare with GCP → fix
+  - [x] uploadFile() → lint → tsc → compare with GCP → fix
+  - [x] deleteFile() → lint → tsc → compare with GCP → fix
+  - [x] renameFile() → lint → tsc → compare with GCP → fix
+- [x] Phase 2: Metadata & info operations (validate after each)
+  - [x] fileInfoByPath() → lint → tsc → compare with GCP → fix
+  - [x] fileInfoByDbFileId() → lint → tsc → compare with GCP → fix
+  - [x] directoryInfoByPath() → lint → tsc → compare with GCP → fix
+- [x] Phase 3: Directory operations (validate after each)
+  - [x] createFolder() → lint → tsc → compare with GCP → fix
+  - [x] listFiles() → lint → tsc → compare with GCP → fix
+  - [x] fetchDirectoryChildren() → lint → tsc → compare with GCP → fix
+- [x] Phase 4: Signed URLs (validate after each)
+  - [x] generateUploadSignedUrl() → lint → tsc → compare with GCP → fix
 - [ ] Phase 5: Bulk operations (validate after each)
   - [ ] moveItems() → lint → tsc → compare with GCP → fix
   - [ ] copyItems() → lint → tsc → compare with GCP → fix
@@ -1470,7 +1470,7 @@ collectCoverageFrom: [
 
 **Testing:**
 
-- [ ] Setup default storage path (create directories, set permissions, update .env, add to .gitignore)
+- [x] Setup default storage path (create directories, set permissions, update .env, add to .gitignore)
 - [ ] Write comprehensive Jest test suite for local adapter
 - [ ] Write Jest tests for signed URL repository
 - [ ] Add test coverage for API routes
@@ -1482,3 +1482,24 @@ collectCoverageFrom: [
 - [ ] Document cleanup strategies and configuration
 - [ ] Document serverless restrictions
 - [ ] Document backup and migration strategies
+
+---
+
+## Progress Summary (as of current session)
+
+**Completed:**
+- ✅ Database schema with signed_url table and indexes
+- ✅ Drizzle migration generated and applied
+- ✅ SignedUrlRepository with atomic operations
+- ✅ LocalAdapter helper functions (5/5)
+- ✅ Core file operations (4/4: fileExists, uploadFile, deleteFile, renameFile)
+- ✅ Metadata operations (3/3: directoryInfoByPath, fileInfoByPath, fileInfoByDbFileId)
+- ✅ Directory operations (3/3: createFolder, listFiles, fetchDirectoryChildren)
+- ✅ Signed URL generation with lazy cleanup support
+
+**Next Steps:**
+- Implement bulk operations (moveItems, copyItems, deleteItems)
+- Implement storageStatistics
+- Create Next.js API routes for upload/download/cleanup
+- Update storage service factory and environment configuration
+- Write comprehensive test suite
