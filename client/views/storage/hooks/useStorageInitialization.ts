@@ -6,6 +6,7 @@ import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataOperations } from "./useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
+import logger from "@/client/lib/logger";
 
 export const useStorageInitialization = () => {
   const { params, setItems, setPagination } = useStorageDataStore();
@@ -19,102 +20,119 @@ export const useStorageInitialization = () => {
   const { fetchDirectoryChildren, fetchList } = useStorageDataOperations();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
-  // Track if this is the initial mount or subsequent navigation
+  // Track if this is the initial mount
   const isInitialMount = useRef(true);
-  const lastNavigationRequest = useRef<string | null>(null);
-  const prevQueryParams = useRef(params);
 
-  // Initialize directory tree and root items on mount with proper hydration handling
+  // Initialize directory tree and root items on mount only
   useEffect(() => {
-    if (
-      !isInitialMount.current &&
-      JSON.stringify(prevQueryParams.current) === JSON.stringify(params)
-    ) {
+    logger.info("useStorageInitialization effect triggered", {
+      isInitialMount: isInitialMount.current,
+      currentPath: params.path,
+    });
+
+    // Only run on initial mount
+    if (!isInitialMount.current) {
+      logger.info("Skipping initialization - not initial mount");
       return;
     }
+
     let isMounted = true;
 
     const initializeStorageData = async () => {
+      logger.info("Starting storage initialization", {
+        path: params.path,
+        limit: params.limit,
+        offset: params.offset,
+      });
+
       // Wait for hydration to complete
       await new Promise(resolve => setTimeout(resolve, 0));
 
       // Check if the component is still mounted
-      if (!isMounted) return;
+      if (!isMounted) {
+        logger.warn("Component unmounted before initialization started");
+        return;
+      }
 
       try {
-        if (isInitialMount.current) {
-          // Initial mount: Initialize both directory tree and root items
-          updateLoading("prefetchingNode", "");
-          updateLoading("fetchList", true);
+        // Initial mount: Initialize both directory tree and root items
+        logger.info("Setting loading states for initialization");
+        updateLoading("prefetchingNode", "");
+        updateLoading("fetchList", true);
 
-          const [rootDirectories, rootItems] = await Promise.all([
-            fetchDirectoryChildren(),
-            fetchList(params),
-          ]);
+        logger.info(
+          "Fetching root directory tree and initial items in parallel"
+        );
+        const [rootDirectories, rootItems] = await Promise.all([
+          fetchDirectoryChildren(),
+          fetchList(params),
+        ]);
 
-          // Check again if component is still mounted before updating the state
-          if (isMounted) {
-            if (rootDirectories) {
-              setDirectoryTree(rootDirectories);
-            }
-            if (rootItems) {
-              setItems(rootItems.items);
-              setPagination(rootItems.pagination);
-              // Set focus to first item if no focused item
-              if (rootItems.items.length > 0 && !focusedItem) {
-                setUIFocusedItem(rootItems.items[0].path);
-              }
-            }
+        logger.info("Parallel fetch completed", {
+          hasDirectories: !!rootDirectories,
+          hasItems: !!rootItems,
+          directoryCount: rootDirectories?.length || 0,
+          itemCount: rootItems?.items.length || 0,
+        });
+
+        // Check again if component is still mounted before updating the state
+        if (isMounted) {
+          if (rootDirectories) {
+            logger.info("Setting directory tree", {
+              count: rootDirectories.length,
+            });
+            setDirectoryTree(rootDirectories);
+          } else {
+            logger.warn("No root directories returned");
           }
 
-          // Mark that initial mount is complete
-          isInitialMount.current = false;
-        } else {
-          // Navigation change: Only fetch items for the new path, keep directory tree intact
-          const currentPath = params.path;
-          lastNavigationRequest.current = currentPath;
+          if (rootItems) {
+            logger.info("Setting items and pagination", {
+              itemCount: rootItems.items.length,
+              totalCount: rootItems.pagination.total,
+              hasMorePages: rootItems.pagination.hasMorePages,
+            });
+            setItems(rootItems.items);
+            setPagination(rootItems.pagination);
 
-          updateLoading("fetchList", true);
-          updateError("fetchList"); // Clear any previous errors
-
-          const result = await fetchList(params);
-
-          // Check if this is still the most recent navigation request
-          if (isMounted && lastNavigationRequest.current === currentPath) {
-            if (result) {
-              setItems(result.items);
-              setPagination(result.pagination);
-              // Only set focus to first item if no item is currently focused
-              // or if the currently focused item no longer exists
-              if (result.items.length > 0) {
-                if (!result.items.some(item => item.path === params.path)) {
-                  setUIFocusedItem(result.items[0].path);
-                }
-              } else {
-                setUIFocusedItem(null);
-              }
+            // Set focus to first item if no focused item
+            if (rootItems.items.length > 0 && !focusedItem) {
+              logger.info("Setting focus to first item", {
+                itemPath: rootItems.items[0].path,
+              });
+              setUIFocusedItem(rootItems.items[0].path);
+            } else if (rootItems.items.length === 0) {
+              logger.info("No items to focus - directory is empty");
             } else {
-              // Handle null result - this shouldn't happen but prevents empty state
-              updateError(
-                "fetchList",
-                translations.failedToNavigateToDirectory
-              );
+              logger.info("Focus already set", { focusedItem });
             }
+          } else {
+            logger.warn("No root items returned");
           }
+        } else {
+          logger.warn("Component unmounted before state update");
         }
-      } catch {
+
+        // Mark that initial mount is complete
+        logger.info("Initial mount completed successfully");
+        isInitialMount.current = false;
+      } catch (error) {
         // Only log if not an abort error during unmount
         if (isMounted) {
+          logger.error("Error during storage initialization", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            path: params.path,
+          });
           updateError("fetchList", translations.failedToNavigateToDirectory);
-
-          // If this was a navigation error (not initial mount), try to recover
-          if (!isInitialMount.current) {
-            // Don't change items/pagination on navigation errors to avoid empty state
-            // User can retry or navigate manually
-          }
+        } else {
+          logger.info("Error during initialization but component unmounted", {
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
         }
       } finally {
         if (isMounted) {
+          logger.info("Clearing loading states");
           updateLoading("prefetchingNode", null);
           updateLoading("fetchList", false);
         }
@@ -122,24 +140,17 @@ export const useStorageInitialization = () => {
     };
 
     // Use setTimeout to ensure this runs after hydration
+    logger.info("Scheduling initialization with 100ms delay for hydration");
     const timeoutId = setTimeout(initializeStorageData, 100);
-    prevQueryParams.current = params;
 
     return () => {
+      logger.info("useStorageInitialization cleanup", {
+        isMounted,
+        isInitialMount: isInitialMount.current,
+      });
       isMounted = false;
       clearTimeout(timeoutId);
     };
-  }, [
-    params,
-    fetchDirectoryChildren,
-    fetchList,
-    setDirectoryTree,
-    setItems,
-    setPagination,
-    setUIFocusedItem,
-    updateLoading,
-    updateError,
-    translations.failedToNavigateToDirectory,
-    focusedItem,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount
 };
