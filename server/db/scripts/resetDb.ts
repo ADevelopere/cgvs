@@ -1,10 +1,6 @@
-import { config } from "dotenv";
-import { resolve } from "path";
 import { Pool } from "pg";
 import logger from "@/server/lib/logger";
 import { runMigrations } from "./migrate";
-
-config({ path: resolve(__dirname, "../../.env") });
 
 function parseDatabaseUrl(url: string) {
   // Example: postgres://user:password@host:port/dbname or postgresql://user:password@host:port/dbname
