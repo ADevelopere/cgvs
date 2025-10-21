@@ -18,10 +18,13 @@ Follow this workflow for EVERY step:
    - Write ONE complete test function
    - Run `~/.bun/bin/bun lint tests/storage/api-routes.integration.test.ts`
    - Run `~/.bun/bin/bun tsc --noEmit`
-   - Run `~/.bun/bin/bun test tests/storage/api-routes.integration.test.ts`
+   - Run `~/.bun/bin/bun test --timeout=60000 tests/storage/api-routes.integration.test.ts --testNamePattern="<test name>"`
    - Verify the single test passes
    - Fix any errors before moving to next test
    - Move to next test function
+
+**IMPORTANT: Always use `--timeout=60000` flag when running Bun tests!**
+Default Bun timeout is 5 seconds which is not enough for integration tests that start a dev server.
 
 3. **Quality Checklist per Test**:
    - ✅ Lint passes
