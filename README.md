@@ -200,7 +200,60 @@ rm ./service-account-key.json
 
 ### 7. Configure Environment Variables
 
-Add the following environment variables to your `.env` file:
+You have two options for configuring GCP authentication:
+
+#### Option A: Using GCP_CREDENTIALS_JSON (Recommended for Serverless)
+
+This method is ideal for serverless environments like Vercel, where you cannot rely on machine-level credentials.
+
+**Using gcloud CLI:**
+
+```bash
+# 1. List your service accounts to find the one you want to use
+gcloud iam service-accounts list
+
+# 2. Create a new key for your service account (or use existing from step 4)
+gcloud iam service-accounts keys create ~/gcp-key.json \
+  --iam-account=$SERVICE_ACCOUNT_EMAIL
+
+# 3. Convert the JSON file to a single-line string for .env
+cat ~/gcp-key.json | jq -c
+
+# 4. Add to your .env file (the command below does it automatically)
+echo 'GCP_CREDENTIALS_JSON='"$(cat ~/gcp-key.json | jq -c)" >> .env
+
+# 5. Clean up the downloaded key file (for security)
+rm ~/gcp-key.json
+```
+
+**Using GCP Console:**
+
+1. Navigate to [Google Cloud Console](https://console.cloud.google.com/)
+2. Go to **IAM & Admin** → **Service Accounts**
+3. Click on your service account email
+4. Go to the **"KEYS"** tab
+5. Click **"ADD KEY"** → **"Create new key"**
+6. Choose **JSON** format and click **"CREATE"**
+7. Open the downloaded JSON file and convert it to a single line (remove all newlines and extra spaces)
+8. Add to your `.env` file:
+
+```bash
+# In your .env file:
+GCP_CREDENTIALS_JSON={"type":"service_account","project_id":"your-project-id","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"...@....iam.gserviceaccount.com","client_id":"...","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_x509_cert_url":"..."}
+GCP_BUCKET_NAME=your-bucket-name
+```
+
+**For Vercel/Serverless Deployment:**
+
+- Go to your Vercel project settings → **Environment Variables**
+- Add `GCP_CREDENTIALS_JSON` as the key
+- Paste the entire JSON object (single line) as the value
+- Add `GCP_BUCKET_NAME` with your bucket name
+- Select which environments it applies to (Production, Preview, Development)
+
+#### Option B: Using Secret Manager (Traditional Method)
+
+This method uses GCP Secret Manager to store credentials and is suitable for environments with Application Default Credentials.
 
 ```bash
 # GCP Configuration
@@ -209,6 +262,12 @@ GCP_BUCKET_NAME=your-bucket-name
 GCP_SECRET_ID=cgsv-service-account-key
 GCP_SECRET_VERSION=latest
 ```
+
+**How It Works:**
+
+- The application will first check for `GCP_CREDENTIALS_JSON` environment variable
+- If not found, it will fall back to fetching credentials from GCP Secret Manager
+- This provides flexibility for different deployment environments
 
 ### 8. Verify Setup
 
@@ -229,10 +288,12 @@ gsutil ls gs://$BUCKET_NAME
 ### Security Best Practices
 
 1. **Never commit service account keys** to version control
-2. **Use Secret Manager** for credential storage in production
+2. **Use Secret Manager** for credential storage in production (or `GCP_CREDENTIALS_JSON` for serverless)
 3. **Rotate service account keys** regularly
 4. **Follow principle of least privilege** when assigning roles
 5. **Monitor service account usage** through Cloud Audit Logs
+6. **Single-line JSON format**: When using `GCP_CREDENTIALS_JSON`, ensure the JSON is formatted as a single line with no extra spaces or newlines
+7. **Secure storage**: In serverless platforms, use their built-in secret management features to store `GCP_CREDENTIALS_JSON`
 
 ### Troubleshooting GCP Setup
 
