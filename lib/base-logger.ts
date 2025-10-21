@@ -12,9 +12,7 @@ export abstract class BaseLogger {
 
   constructor(prefix: string) {
     // Only enable in development
-    this.enabled =
-      process.env.NODE_ENV === "development" ||
-      process.env.NODE_ENV === undefined;
+    this.enabled = process.env.NODE_ENV !== "production";
     this.sessionId = this.generateSessionId();
     this.logsDir = join(process.cwd(), "logs");
     this.prefix = prefix;

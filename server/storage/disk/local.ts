@@ -252,28 +252,8 @@ class LocalAdapter implements StorageService {
             data: null,
           };
         }
-      } else {
-        // Directory not in DB, check if it exists in filesystem
-        if (directoryPath.length > 0) {
-          try {
-            const absoluteDirPath = this.getAbsolutePath(directoryPath);
-            const dirStats = await fs.stat(absoluteDirPath);
-            if (!dirStats.isDirectory()) {
-              return {
-                success: false,
-                message: "Directory does not exist",
-                data: null,
-              };
-            }
-          } catch {
-            return {
-              success: false,
-              message: "Directory does not exist",
-              data: null,
-            };
-          }
-        }
       }
+      // If directory not in DB, allow upload (will be created automatically)
 
       // Write file to disk
       const absolutePath = this.getAbsolutePath(filePath);
@@ -281,7 +261,13 @@ class LocalAdapter implements StorageService {
       await fs.writeFile(absolutePath, buffer);
 
       // Create file entity in database
+      logger.info("💾 uploadFile: Creating file entity in database", {
+        filePath,
+      });
       const fileEntity = await StorageDbRepository.createFile(filePath, false);
+      logger.info("💾 uploadFile: File entity created successfully", {
+        fileEntity,
+      });
 
       // Get file stats and create metadata
       const stats = await fs.stat(absolutePath);
@@ -633,6 +619,10 @@ class LocalAdapter implements StorageService {
       // Rename file in filesystem
       const currentAbsolutePath = this.getAbsolutePath(input.currentPath);
       const newAbsolutePath = this.getAbsolutePath(newPath);
+
+      // Ensure target directory exists
+      await this.ensureDirectory(path.dirname(newAbsolutePath));
+
       await fs.rename(currentAbsolutePath, newAbsolutePath);
 
       // Update database
@@ -1206,6 +1196,11 @@ class LocalAdapter implements StorageService {
       ),
     ];
 
+    logger.info("💾 moveItems: About to batch load DB entities", {
+      validSourcesCount: validSources.length,
+      sourceDirectoriesCount: sourceDirectories.length,
+    });
+
     const [dbFiles, dbDirectories, dbSourceDirs, dbDestDir] = await Promise.all(
       [
         StorageDbRepository.filesByPaths(validSources),
@@ -1214,6 +1209,13 @@ class LocalAdapter implements StorageService {
         StorageDbRepository.directoryByPath(input.destinationPath),
       ]
     );
+
+    logger.info("💾 moveItems: DB entities loaded", {
+      dbFilesCount: dbFiles.length,
+      dbDirectoriesCount: dbDirectories.length,
+      dbSourceDirsCount: dbSourceDirs.length,
+      hasDbDestDir: !!dbDestDir,
+    });
 
     // Create lookup maps for O(1) access
     const dbFileMap = new Map();
