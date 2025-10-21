@@ -1514,10 +1514,20 @@ collectCoverageFrom: [
 - [x] Create separate test environment configuration (.env.test)
 - [x] Configure test setup to use .env.test
 - [x] Fix LocalAdapter to read env vars in constructor (not at module scope)
-- [x] Write initial Jest test suite for local adapter:
+- [x] Write comprehensive integration test suite for local adapter (21 tests passing):
   - [x] Serverless environment detection (3 tests)
   - [x] Path traversal protection (4 tests)
-- [ ] Write comprehensive Jest test suite for local adapter (incremental: lint → tsc → test after each describe block)
+  - [x] File upload operations (3 tests)
+  - [x] File deletion operations (2 tests)
+  - [x] File rename operations (2 tests)
+  - [x] Directory operations (3 tests)
+  - [x] Bulk operations (3 tests)
+  - [x] Storage statistics (1 test)
+- [x] Fix BigInt serialization in logger for database entities
+- [x] Align test expectations with GCP adapter behavior:
+  - [x] renameFile: newName is filename only, not nested path
+  - [x] fetchDirectoryChildren: returns only directories, not files
+  - [x] fs.access(): proper promise handling in tests
 - [ ] Write Jest tests for signed URL repository (incremental: lint → tsc → test after each describe block)
 - [ ] Add test coverage for API routes (incremental: lint → tsc → test after each describe block)
 - [ ] Configure Jest coverage reporting for storage module
@@ -1560,14 +1570,25 @@ collectCoverageFrom: [
   - ✅ Fixed `LocalAdapter` to read env vars in constructor (for testability)
   - ✅ Updated `.gitignore` to exclude `.env.test` and test fixtures
   - ✅ Updated `jest.config.js` with storage module coverage
-- ✅ Initial test suite (7 tests passing):
+- ✅ Comprehensive integration test suite (21 tests passing):
   - ✅ Serverless environment detection (3 tests)
   - ✅ Path traversal protection (4 tests)
+  - ✅ File upload operations (3 tests)
+  - ✅ File deletion operations (2 tests)
+  - ✅ File rename operations (2 tests)
+  - ✅ Directory operations (3 tests)
+  - ✅ Bulk operations (3 tests)
+  - ✅ Storage statistics (1 test)
+- ✅ Fixed BigInt serialization in logger (added replacer function for JSON.stringify)
+- ✅ Aligned all test expectations with GCP adapter behavior:
+  - ✅ `renameFile`: newName parameter is filename only, not nested path
+  - ✅ `fetchDirectoryChildren`: returns only directories, not files
+  - ✅ `fs.access()`: proper promise handling in test assertions
 
 **Next Steps:**
 
-- Continue writing comprehensive Jest test suite for local adapter (following incremental approach)
-- Write Jest tests for signed URL repository
+- Write Jest tests for signed URL repository (atomic claim operations, expiration, cleanup)
+- Add test coverage for API routes (upload, download, cleanup endpoints)
 - Add test coverage for API routes
 - Document the local storage provider and operational caveats
 - Document cleanup strategies and configuration
@@ -1688,6 +1709,46 @@ beforeEach(async () => {
 ```
 
 **Takeaway:** Be careful with test setup/teardown lifecycle. Ensure resources needed by the test subject are available throughout the test suite.
+
+### Issue 6: Test Expectations vs GCP Adapter Behavior
+
+**Problem:** Initial tests were written based on assumptions about how the local adapter should work, not how the GCP adapter actually works:
+
+1. **renameFile test** expected `newName` to support nested paths like `"nested/new/path/file.txt"`, but GCP adapter only supports simple filename changes in the same directory
+2. **fetchDirectoryChildren test** expected it to return both files and directories, but GCP adapter only returns directories
+3. **fs.access() assertions** used `.resolves.toBe(undefined)` which failed because the actual resolved value is `null`
+
+**Solution:** Compared local adapter behavior with GCP adapter and aligned tests:
+
+1. **renameFile**: Changed test to use simple filename `"renamed.txt"` instead of nested path
+2. **fetchDirectoryChildren**: Updated expectations to only check for directories, not files
+3. **fs.access()**: Changed to direct `await fs.access(path)` calls which throw on failure
+
+**Takeaway:** Always verify expected behavior against the reference implementation (GCP adapter) before writing tests. The local adapter must match GCP adapter behavior exactly for compatibility.
+
+### Issue 7: BigInt Serialization in Logger
+
+**Problem:** When logging database entities that contain BigInt fields (like `id: 55n`), the logger's `JSON.stringify()` call failed with:
+
+```
+TypeError: JSON.stringify cannot serialize BigInt.
+```
+
+This caused all file upload operations to fail because the logger tried to serialize the file entity after database creation.
+
+**Solution:** Updated the `logToConsole` method in `lib/base-logger.ts` to include a replacer function:
+
+```typescript
+JSON.stringify(
+  arg,
+  (_, value) => (typeof value === "bigint" ? value.toString() : value),
+  2
+);
+```
+
+This converts BigInt values to strings during serialization, allowing successful logging of database entities.
+
+**Takeaway:** When working with databases that use BigInt for IDs (like PostgreSQL), ensure all serialization code handles BigInt values properly. This applies to logging, JSON responses, and any other serialization operations.
 
 ### Best Practices for Future Tests
 
