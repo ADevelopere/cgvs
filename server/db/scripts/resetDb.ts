@@ -58,7 +58,7 @@ async function resetDatabase() {
 
   // Run migrations
   try {
-    await runMigrations();
+    await runMigrations(true);
     logger.log("Migration after reset completed successfully!");
   } catch (err) {
     logger.error("Migration after reset failed:", err);
