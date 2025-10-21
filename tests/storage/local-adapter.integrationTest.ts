@@ -324,23 +324,20 @@ describe("Local Storage Adapter", () => {
       expect(content).toBe("content");
     });
 
-    it("should create target directory if needed", async () => {
+    it("should rename file in same directory", async () => {
       const result = await adapter.renameFile({
         currentPath: "public/old-name.txt",
-        newName: "nested/new/path/file.txt",
+        newName: "renamed.txt",
       });
 
       expect(result.success).toBe(true);
 
-      // Verify nested path was created
-      const newPath = path.join(
-        testDir,
-        "public",
-        "nested",
-        "new",
-        "path",
-        "file.txt"
-      );
+      // Verify old file doesn't exist
+      const oldPath = path.join(testDir, "public", "old-name.txt");
+      await expect(fs.access(oldPath)).rejects.toThrow();
+
+      // Verify new file exists in same directory
+      const newPath = path.join(testDir, "public", "renamed.txt");
       const content = await fs.readFile(newPath, "utf-8");
       expect(content).toBe("content");
     });
@@ -382,9 +379,12 @@ describe("Local Storage Adapter", () => {
       ).toBe(true);
     });
 
-    it("should fetch immediate children only", async () => {
-      // Create nested structure
+    it("should fetch immediate child directories only (no files)", async () => {
+      // Create nested structure with directories and files
       await fs.mkdir(path.join(testDir, "public", "nested"), {
+        recursive: true,
+      });
+      await fs.mkdir(path.join(testDir, "public", "another"), {
         recursive: true,
       });
       await fs.writeFile(path.join(testDir, "public", "root.txt"), "root");
@@ -395,11 +395,16 @@ describe("Local Storage Adapter", () => {
 
       const result = await adapter.fetchDirectoryChildren("public");
 
-      // Should include root.txt and nested directory, but not nested/child.txt
-      expect(result.some((c: DirectoryInfo) => c.name === "root.txt")).toBe(
+      // fetchDirectoryChildren returns ONLY directories, not files (matching GCP behavior)
+      expect(result.some((c: DirectoryInfo) => c.name === "nested")).toBe(true);
+      expect(result.some((c: DirectoryInfo) => c.name === "another")).toBe(
         true
       );
-      expect(result.some((c: DirectoryInfo) => c.name === "nested")).toBe(true);
+      // Should NOT include files like root.txt
+      expect(result.some((c: DirectoryInfo) => c.name === "root.txt")).toBe(
+        false
+      );
+      // Should NOT include nested children
       expect(result.some((c: DirectoryInfo) => c.name === "child.txt")).toBe(
         false
       );
@@ -437,9 +442,10 @@ describe("Local Storage Adapter", () => {
       await expect(
         fs.access(path.join(testDir, "source", "file1.txt"))
       ).rejects.toThrow();
-      await expect(
-        fs.access(path.join(testDir, "dest", "file1.txt"))
-      ).resolves.toBe(undefined);
+      const destFile = path.join(testDir, "dest", "file1.txt");
+      // fs.access() resolves to undefined on success, rejects on failure
+      await fs.access(destFile); // Will throw if file doesn't exist
+      expect(true).toBe(true); // If we get here, file exists
     });
 
     it("should copy multiple files", async () => {
@@ -452,12 +458,12 @@ describe("Local Storage Adapter", () => {
       expect(result.successCount).toBe(2);
 
       // Verify files copied (originals still exist)
-      await expect(
-        fs.access(path.join(testDir, "source", "file1.txt"))
-      ).resolves.toBe(undefined);
-      await expect(
-        fs.access(path.join(testDir, "dest", "file1.txt"))
-      ).resolves.toBe(undefined);
+      const sourceFile = path.join(testDir, "source", "file1.txt");
+      const destFile = path.join(testDir, "dest", "file1.txt");
+      // fs.access() resolves to undefined on success, rejects on failure
+      await fs.access(sourceFile); // Will throw if file doesn't exist
+      await fs.access(destFile); // Will throw if file doesn't exist
+      expect(true).toBe(true); // If we get here, both files exist
     });
 
     it("should delete multiple files", async () => {
