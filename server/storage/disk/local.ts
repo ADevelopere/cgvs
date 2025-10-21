@@ -13,17 +13,18 @@ import { StorageDbRepository, SignedUrlRepository } from "@/server/db/repo";
 import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
 
-const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
 /**
  * Local filesystem storage adapter
  * Stores files in a configurable directory with signed URL support via API routes
  */
 class LocalAdapter implements StorageService {
   private readonly basePath: string;
+  private readonly baseUrl: string;
 
   constructor() {
+    // Read environment variables in constructor for testability
+    const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
+    this.baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     this.basePath = path.resolve(process.cwd(), storagePath);
     logger.info(`Local storage initialized at: ${this.basePath}`);
   }
@@ -197,7 +198,7 @@ class LocalAdapter implements StorageService {
       });
 
       // Return API route URL
-      const signedUrl = `${baseUrl}/api/storage/upload/${tokenId}`;
+      const signedUrl = `${this.baseUrl}/api/storage/upload/${tokenId}`;
 
       logger.info("Generated signed URL successfully", {
         tokenId,
@@ -294,7 +295,7 @@ class LocalAdapter implements StorageService {
         md5Hash,
         createdAt: stats.birthtime,
         lastModified: stats.mtime,
-        url: `${baseUrl}/api/storage/files/${filePath}`,
+        url: `${this.baseUrl}/api/storage/files/${filePath}`,
         mediaLink: undefined,
         fileType: StorageUtils.getFileTypeFromContentType(
           StorageUtils.contentTypeEnumToMimeType(contentType)
@@ -421,7 +422,7 @@ class LocalAdapter implements StorageService {
             md5Hash,
             createdAt: stats.birthtime,
             lastModified: stats.mtime,
-            url: `${baseUrl}/api/storage/files/${filePath}`,
+            url: `${this.baseUrl}/api/storage/files/${filePath}`,
             mediaLink: undefined,
             fileType: StorageUtils.getFileTypeFromContentType(contentType),
             isPublic: filePath.startsWith("public"),
@@ -685,7 +686,7 @@ class LocalAdapter implements StorageService {
         md5Hash,
         createdAt: stats.birthtime,
         lastModified: stats.mtime,
-        url: `${baseUrl}/api/storage/files/${newPath}`,
+        url: `${this.baseUrl}/api/storage/files/${newPath}`,
         mediaLink: undefined,
         fileType: StorageUtils.getFileTypeFromContentType(contentType),
         isPublic: newPath.startsWith("public"),
@@ -861,7 +862,7 @@ class LocalAdapter implements StorageService {
         md5Hash,
         createdAt: stats.birthtime,
         lastModified: stats.mtime,
-        url: `${baseUrl}/api/storage/files/${filePath}`,
+        url: `${this.baseUrl}/api/storage/files/${filePath}`,
         mediaLink: undefined,
         fileType: StorageUtils.getFileTypeFromContentType(contentType),
         isPublic: filePath.startsWith("public"),
@@ -932,7 +933,7 @@ class LocalAdapter implements StorageService {
         md5Hash,
         createdAt: stats.birthtime,
         lastModified: stats.mtime,
-        url: `${baseUrl}/api/storage/files/${dbFile.path}`,
+        url: `${this.baseUrl}/api/storage/files/${dbFile.path}`,
         mediaLink: undefined,
         fileType: StorageUtils.getFileTypeFromContentType(contentType),
         isPublic: dbFile.path.startsWith("public"),
@@ -1687,6 +1688,7 @@ export async function createLocalAdapter(): Promise<StorageService> {
   }
 
   // Ensure storage directory exists
+  const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
   const fullPath = path.resolve(process.cwd(), storagePath);
   await fs.mkdir(fullPath, { recursive: true, mode: 0o755 });
 

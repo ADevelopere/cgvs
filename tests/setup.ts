@@ -1,9 +1,14 @@
 // Test setup file
+import { config } from "dotenv";
 import { execSync } from "child_process";
+import path from "path";
+
+// Load test environment variables from .env.test
+config({ path: path.resolve(process.cwd(), ".env.test") });
 
 // Ensure test directory exists
 try {
-  execSync("mkdir -p tests", { stdio: "ignore" });
+  execSync("mkdir -p tests/fixtures/storage-test", { stdio: "ignore" });
 } catch {
   // Ignore if directory already exists
 }

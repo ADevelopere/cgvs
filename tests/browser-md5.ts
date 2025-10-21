@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import { readFileSync } from "fs";
-import logger from "@/lib/logger";
+import { testLogger } from "@/lib/testlogger";
 
 /**
  * Generate MD5 hash using the actual generateFileMD5 function from storage.util.ts
@@ -79,7 +79,7 @@ export const generateFileMD5Browser = async (
       return await generateFileMD5(file);
     }, dataUrl);
 
-    logger.info(
+    testLogger.info(
       "Browser MD5 generation completed using storage.util.ts logic",
       { result }
     );

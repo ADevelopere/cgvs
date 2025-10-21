@@ -14,9 +14,9 @@ import { readFileSync, writeFileSync } from "fs";
 import { spawn, ChildProcess } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
-import logger from "@/lib/logger";
 import { generateFileMD5Browser } from "./browser-md5";
 import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/hooks/storage.documents";
+import { testLogger } from "@/lib/testlogger";
 
 // Global variables for dev server
 let devServer: ChildProcess | null = null;
@@ -28,7 +28,7 @@ let client: ApolloClient;
  */
 async function startDevServer(): Promise<number> {
   return new Promise((resolve, reject) => {
-    logger.info("Starting development server...");
+    testLogger.info("Starting development server...");
 
     // Use a non-popular port range (8000-8999)
     const port = Math.floor(Math.random() * 1000) + 8000;
@@ -49,7 +49,7 @@ async function startDevServer(): Promise<number> {
 
     devServer.stdout?.on("data", data => {
       output += data.toString();
-      logger.info("Dev server output:", data.toString());
+      testLogger.info("Dev server output:", data.toString());
 
       // Look for server start confirmation
       if (
@@ -64,7 +64,7 @@ async function startDevServer(): Promise<number> {
 
           // Wait a bit for server to fully start
           setTimeout(() => {
-            logger.info(`Development server started on port ${serverPort}`);
+            testLogger.info(`Development server started on port ${serverPort}`);
             resolve(serverPort);
           }, 3000);
         }
@@ -73,7 +73,7 @@ async function startDevServer(): Promise<number> {
 
     devServer.stderr?.on("data", data => {
       errorOutput += data.toString();
-      logger.error("Dev server error:", data.toString());
+      testLogger.error("Dev server error:", data.toString());
 
       if (
         !serverStarted &&
@@ -85,7 +85,7 @@ async function startDevServer(): Promise<number> {
     });
 
     devServer.on("error", error => {
-      logger.error("Failed to spawn dev server:", error);
+      testLogger.error("Failed to spawn dev server:", error);
       reject(error);
     });
 
@@ -98,7 +98,7 @@ async function startDevServer(): Promise<number> {
     // Fallback timeout
     setTimeout(() => {
       if (!serverStarted) {
-        logger.warn(`Server start timeout, assuming port ${port} is ready`);
+        testLogger.warn(`Server start timeout, assuming port ${port} is ready`);
         serverPort = port;
         resolve(serverPort);
       }
@@ -111,19 +111,19 @@ async function startDevServer(): Promise<number> {
  */
 async function stopDevServer(): Promise<void> {
   if (devServer) {
-    logger.info("Stopping development server...");
+    testLogger.info("Stopping development server...");
 
     return new Promise(resolve => {
       const timeout = setTimeout(() => {
         if (devServer) {
-          logger.warn("Force killing dev server...");
+          testLogger.warn("Force killing dev server...");
           devServer.kill("SIGKILL");
         }
       }, 5000);
 
       devServer?.on("exit", () => {
         clearTimeout(timeout);
-        logger.info("Development server stopped");
+        testLogger.info("Development server stopped");
         devServer = null;
         resolve();
       });
@@ -166,7 +166,7 @@ describe("Upload Integration Test", () => {
       try {
         readFileSync(testImagePath);
       } catch {
-        logger.info("Creating test file...");
+        testLogger.info("Creating test file...");
         // Create a simple test image (1x1 pixel JPEG)
         const testImageBuffer = Buffer.from([
           0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00,
@@ -189,9 +189,9 @@ describe("Upload Integration Test", () => {
         writeFileSync(testImagePath, testImageBuffer);
       }
 
-      logger.info(`Test setup complete. Server running on port ${port}`);
+      testLogger.info(`Test setup complete. Server running on port ${port}`);
     } catch (error) {
-      logger.error("Failed to setup test environment:", error);
+      testLogger.error("Failed to setup test environment:", error);
       throw error;
     }
   });
@@ -200,7 +200,7 @@ describe("Upload Integration Test", () => {
     try {
       await stopDevServer();
     } catch (error) {
-      logger.error("Failed to stop dev server:", error);
+      testLogger.error("Failed to stop dev server:", error);
     }
   });
 
@@ -215,7 +215,7 @@ describe("Upload Integration Test", () => {
     const fileName = "demo1.jpg";
     const fullPath = `${uploadPath}/${fileName}`;
 
-    logger.info("Test file details", {
+    testLogger.info("Test file details", {
       filePath: testImagePath,
       fileName,
       fileSize,
@@ -224,7 +224,7 @@ describe("Upload Integration Test", () => {
     });
 
     // Step 2: Send GraphQL request to generate signed URL
-    logger.info("Sending GraphQL request to generate signed URL...");
+    testLogger.info("Sending GraphQL request to generate signed URL...");
 
     const result = await client.mutate({
       mutation: generateUploadSignedUrlMutationDocument,
@@ -239,7 +239,7 @@ describe("Upload Integration Test", () => {
     });
 
     if (result.error) {
-      logger.error("GraphQL errors", { error: result.error });
+      testLogger.error("GraphQL errors", { error: result.error });
       throw new Error(`GraphQL errors: ${JSON.stringify(result.error)}`);
     }
 
@@ -248,13 +248,13 @@ describe("Upload Integration Test", () => {
       throw new Error("No signed URL returned from GraphQL mutation");
     }
 
-    logger.info("Signed URL generated successfully", {
+    testLogger.info("Signed URL generated successfully", {
       signedUrlLength: signedUrl.length,
       signedUrlPrefix: signedUrl.substring(0, 100) + "...",
     });
 
     // Step 3: Use curl to upload the file
-    logger.info("Uploading file using curl...");
+    testLogger.info("Uploading file using curl...");
 
     try {
       // Use spawn instead of execSync to avoid shell escaping issues
@@ -273,7 +273,7 @@ describe("Upload Integration Test", () => {
         signedUrl,
       ];
 
-      logger.info("Executing curl command", {
+      testLogger.info("Executing curl command", {
         command: `curl ${curlArgs.join(" ")}`,
       });
 
@@ -304,7 +304,7 @@ describe("Upload Integration Test", () => {
 
       const curlOutput = stdout;
 
-      logger.info("Curl upload completed successfully", {
+      testLogger.info("Curl upload completed successfully", {
         output: curlOutput,
       });
 
@@ -316,7 +316,7 @@ describe("Upload Integration Test", () => {
         stderr?: string;
         stdout?: string;
       };
-      logger.error("Curl upload failed", {
+      testLogger.error("Curl upload failed", {
         error: errorObj.message,
         stderr: errorObj.stderr,
         stdout: errorObj.stdout,
@@ -324,10 +324,10 @@ describe("Upload Integration Test", () => {
 
       // Log the actual error details
       if (errorObj.stderr) {
-        logger.error("Curl stderr", { stderr: errorObj.stderr });
+        testLogger.error("Curl stderr", { stderr: errorObj.stderr });
       }
       if (errorObj.stdout) {
-        logger.error("Curl stdout", { stdout: errorObj.stdout });
+        testLogger.error("Curl stdout", { stdout: errorObj.stdout });
       }
 
       throw error;
@@ -341,7 +341,7 @@ describe("Upload Integration Test", () => {
     // Invalid base64 MD5 hash (should be base64-encoded for GCP compatibility)
     const invalidMd5 = "invalidmd5hash123456789012345678901234";
 
-    logger.info("Testing with invalid MD5 hash", {
+    testLogger.info("Testing with invalid MD5 hash", {
       invalidMd5,
       fullPath,
     });
@@ -360,7 +360,7 @@ describe("Upload Integration Test", () => {
     });
 
     if (result.error) {
-      logger.info("Expected GraphQL errors with invalid MD5", {
+      testLogger.info("Expected GraphQL errors with invalid MD5", {
         error: result.error,
       });
       expect(result.error).toBeDefined();
@@ -369,7 +369,7 @@ describe("Upload Integration Test", () => {
 
     const signedUrl = result.data?.generateUploadSignedUrl;
     if (!signedUrl) {
-      logger.info("No signed URL returned (expected with invalid MD5)");
+      testLogger.info("No signed URL returned (expected with invalid MD5)");
       return;
     }
 
@@ -410,7 +410,7 @@ describe("Upload Integration Test", () => {
         // If we get here, the upload succeeded unexpectedly
         fail("Upload should have failed with invalid MD5 hash");
       } else {
-        logger.info("Expected upload failure with invalid MD5", {
+        testLogger.info("Expected upload failure with invalid MD5", {
           exitCode,
           stderr,
         });
@@ -420,7 +420,7 @@ describe("Upload Integration Test", () => {
       }
     } catch (error: unknown) {
       const errorObj = error as { message?: string; stderr?: string };
-      logger.info("Expected upload failure with invalid MD5", {
+      testLogger.info("Expected upload failure with invalid MD5", {
         error: errorObj.message,
         stderr: errorObj.stderr,
       });
