@@ -563,7 +563,37 @@ fi
 
 ### 12. Jest Test Suite
 
-Create comprehensive test coverage for the local storage adapter.
+Create comprehensive test coverage for the local storage adapter using an **incremental, test-by-test approach** with continuous validation.
+
+**Implementation Strategy:**
+
+For each test suite or describe block, follow this workflow:
+
+1. **Write ONE describe block or test group completely**
+2. **Run validation:**
+   ```bash
+   ~/.bun/bin/bun lint
+   ~/.bun/bin/bun tsc --noEmit
+   ```
+3. **Run the specific test:**
+   ```bash
+   ~/.bun/bin/bun test tests/storage/local-adapter.test.ts
+   ```
+4. **Fix any errors found:**
+   - Address lint errors
+   - Fix TypeScript compilation errors
+   - Fix test failures
+   - Ensure proper assertions and edge cases
+5. **Move to next describe block/test group**
+
+**Quality Checklist (per test group):**
+
+- ✅ Lint passes for the test file
+- ✅ TypeScript compilation succeeds
+- ✅ All tests in the group pass
+- ✅ Proper setup/teardown implemented
+- ✅ Edge cases covered
+- ✅ Assertions are meaningful and complete
 
 **File:** `tests/storage/local-adapter.test.ts`
 
@@ -1192,6 +1222,14 @@ async function uploadViaSignedUrl(
 
 **File:** `tests/storage/signed-url-repository.test.ts`
 
+Create tests for the signed URL repository with the same incremental validation approach:
+
+1. **Write ONE describe block completely**
+2. **Run validation:** `~/.bun/bin/bun lint && ~/.bun/bin/bun tsc --noEmit`
+3. **Run the test:** `~/.bun/bin/bun test tests/storage/signed-url-repository.test.ts`
+4. **Fix any errors**
+5. **Move to next describe block**
+
 ```typescript
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { signedUrlRepository } from "@/server/db/repo";
@@ -1457,25 +1495,25 @@ collectCoverageFrom: [
 
 **API Routes:**
 
-- [ ] Create Next.js API route for signed URL uploads (/api/storage/upload/[id])
-- [ ] Create Next.js API route for file serving/download (/api/storage/files/[[...path]])
-- [ ] Create Next.js API route for cron cleanup (/api/cron/cleanup-signed-urls)
-- [ ] Create Next.js API route for manual cleanup (/api/storage/cleanup)
+- [x] Create Next.js API route for signed URL uploads (/api/storage/upload/[id])
+- [x] Create Next.js API route for file serving/download (/api/storage/files/[[...path]])
+- [x] Create Next.js API route for cron cleanup (/api/cron/cleanup-signed-urls)
+- [x] Create Next.js API route for manual cleanup (/api/storage/cleanup)
 
 **Integration:**
 
-- [ ] Update storage service factory to support local provider
-- [ ] Update environment variables (.env.example)
-- [ ] Update Next.js config (image domains)
-- [ ] Update environment type definitions (server/types/environment.d.ts)
-- [ ] Implement configurable cleanup strategies (lazy/cron/both/disabled)
+- [x] Update storage service factory to support local provider
+- [x] Update environment variables (.env.example)
+- [x] Update Next.js config (image domains)
+- [x] Create environment type definitions (server/types/environment.d.ts)
+- [x] Implement configurable cleanup strategies (lazy/cron/both/disabled)
 
 **Testing:**
 
 - [x] Setup default storage path (create directories, set permissions, update .env, add to .gitignore)
-- [ ] Write comprehensive Jest test suite for local adapter
-- [ ] Write Jest tests for signed URL repository
-- [ ] Add test coverage for API routes
+- [ ] Write comprehensive Jest test suite for local adapter (incremental: lint → tsc → test after each describe block)
+- [ ] Write Jest tests for signed URL repository (incremental: lint → tsc → test after each describe block)
+- [ ] Add test coverage for API routes (incremental: lint → tsc → test after each describe block)
 - [ ] Configure Jest coverage reporting for storage module
 
 **Documentation:**
@@ -1499,11 +1537,25 @@ collectCoverageFrom: [
 - ✅ Metadata operations (3/3: directoryInfoByPath, fileInfoByPath, fileInfoByDbFileId)
 - ✅ Directory operations (3/3: createFolder, listFiles, fetchDirectoryChildren)
 - ✅ Signed URL generation with lazy cleanup support
+- ✅ Bulk operations (3/3: moveItems, copyItems, deleteItems)
+- ✅ Storage statistics implementation
+- ✅ All API routes created and validated:
+  - ✅ Upload route with signed URL validation
+  - ✅ File serving/download route with range request support
+  - ✅ Manual cleanup route with authentication
+  - ✅ Cron cleanup route with bearer token authentication
+- ✅ Storage service factory updated for local provider
+- ✅ Environment configuration complete (.env.example, environment.d.ts)
+- ✅ Next.js config updated (image domains)
+- ✅ All code passes lint and TypeScript compilation
 
 **Next Steps:**
 
-- Implement bulk operations (moveItems, copyItems, deleteItems)
-- Implement storageStatistics
-- Create Next.js API routes for upload/download/cleanup
-- Update storage service factory and environment configuration
-- Write comprehensive test suite
+- Write comprehensive Jest test suite for local adapter
+- Write Jest tests for signed URL repository
+- Add test coverage for API routes
+- Configure Jest coverage reporting for storage module
+- Document the local storage provider and operational caveats
+- Document cleanup strategies and configuration
+- Document serverless restrictions
+- Document backup and migration strategies
