@@ -28,38 +28,6 @@ class ClientLogger {
     return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
   }
 
-  private getCallerInfo(): string {
-    try {
-      const stack = new Error().stack;
-      if (!stack) return "unknown";
-
-      const lines = stack.split("\n");
-      // Find the first line that's not from this logger file
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (
-          line &&
-          !line.includes("logger") &&
-          !line.includes("node_modules")
-        ) {
-          // Extract filename and line number
-          const match =
-            line.match(/\(([^)]+):(\d+):\d+\)/) ||
-            line.match(/at ([^:]+):(\d+):\d+/);
-          if (match) {
-            const filePath = match[1];
-            const lineNumber = match[2];
-            const fileName = filePath.split("/").pop() || filePath;
-            return `${fileName}:${lineNumber}`;
-          }
-        }
-      }
-      return "unknown";
-    } catch {
-      return "unknown";
-    }
-  }
-
   private getColorCode(level: LogLevel): string {
     const colors = {
       log: "#888",
@@ -93,7 +61,6 @@ class ClientLogger {
         level,
         message,
         timestamp: this.formatTimestamp(),
-        caller: this.getCallerInfo(),
       };
 
       await fetch(this.config.apiEndpoint, {
@@ -117,13 +84,12 @@ class ClientLogger {
       )
       .join(" ");
 
-    const caller = this.getCallerInfo();
     const timestamp = this.formatTimestamp();
     const color = this.getColorCode(level);
 
     // Console output with colors
     const consoleArgs = [
-      `%c[${timestamp}] [${level.toUpperCase()}] [${caller}]`,
+      `%c[${timestamp}] [${level.toUpperCase()}]`,
       `color: ${color}; font-weight: bold;`,
       ...args,
     ];

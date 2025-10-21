@@ -18,3 +18,4 @@ export type { ICacheService, CacheProvider } from "./ICacheService";
 export { PostgresCacheAdapter } from "./PostgresCacheAdapter";
 export { RedisCacheAdapter } from "./RedisCacheAdapter";
 export { CacheServiceFactory, cacheService } from "./CacheServiceFactory";
+export { ApolloCacheAdapter } from "./ApolloCacheAdapter";
