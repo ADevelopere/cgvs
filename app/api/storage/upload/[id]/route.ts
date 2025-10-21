@@ -95,16 +95,32 @@ export async function PUT(
       );
     }
 
+    logger.info("🔍 [API DEBUG] Claimed signed URL", {
+      tokenId,
+      expectedContentType: signedUrl.contentType,
+      expectedFileSize: signedUrl.fileSize.toString(),
+      expectedContentMd5: signedUrl.contentMd5,
+      filePath: signedUrl.filePath,
+    });
+
     // Step 2: Validate metadata headers
     const contentType = request.headers.get("content-type");
     const contentLength = request.headers.get("content-length");
     const contentMd5 = request.headers.get("content-md5");
 
+    logger.info("🔍 [API DEBUG] Received upload request headers", {
+      tokenId,
+      receivedContentType: contentType,
+      receivedContentLength: contentLength,
+      receivedContentMd5: contentMd5,
+    });
+
     if (contentType !== signedUrl.contentType) {
-      logger.warn("Content-Type mismatch", {
+      logger.warn("🔍 [API DEBUG] Content-Type mismatch", {
         tokenId,
         expected: signedUrl.contentType,
         received: contentType,
+        match: contentType === signedUrl.contentType,
       });
       return NextResponse.json(
         {
@@ -205,10 +221,12 @@ export async function PUT(
       const baseUrl =
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-      logger.info("File uploaded successfully via signed URL", {
+      logger.info("🔍 [API DEBUG] File uploaded successfully via signed URL", {
         tokenId,
         path: signedUrl.filePath,
+        absolutePath,
         size: stats.size,
+        fileExistsOnDisk: true,
       });
 
       return NextResponse.json(

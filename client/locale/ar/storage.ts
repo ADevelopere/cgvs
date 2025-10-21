@@ -189,6 +189,19 @@ export const storage: StorageTranslations = {
     deleteDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
     // Delete dialog end
 
+    // Create folder dialog
+    createFolderDialogTitle: "إنشاء مجلد جديد",
+    createFolderDialogLabel: "اسم المجلد",
+    createFolderDialogOk: "إنشاء",
+    createFolderDialogCancel: "إلغاء",
+    createFolderDialogEmpty: "اسم المجلد لا يمكن أن يكون فارغاً",
+    createFolderDialogInvalid: "اسم المجلد يحتوي على أحرف أو أنماط غير صالحة",
+    createFolderDialogFailedToCreate:
+      "فشل في إنشاء المجلد. يرجى المحاولة مرة أخرى.",
+    createFolderDialogUnexpectedError:
+      "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    // Create folder dialog end
+
     // Move to dialog
     moveDialogTitle: "نقل العناصر",
     moveDialogSelectDestination: "اختر مجلد الوجهة",

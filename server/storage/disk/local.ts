@@ -149,9 +149,16 @@ class LocalAdapter implements StorageService {
     input: Types.UploadSignedUrlGenerateInput
   ): Promise<string> {
     try {
-      logger.info("Generating signed URL", {
+      const mimeType = StorageUtils.contentTypeEnumToMimeType(
+        input.contentType
+      );
+
+      logger.info("🔍 [SERVER DEBUG] Generating signed URL", {
         path: input.path,
         fileSize: input.fileSize,
+        inputContentTypeEnum: input.contentType,
+        convertedMimeType: mimeType,
+        contentMd5: input.contentMd5,
       });
 
       // Validate upload
@@ -189,12 +196,21 @@ class LocalAdapter implements StorageService {
       await SignedUrlRepository.createSignedUrl({
         id: tokenId,
         filePath: input.path,
-        contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
+        contentType: mimeType,
         fileSize: BigInt(input.fileSize),
         contentMd5: input.contentMd5,
         expiresAt,
         createdAt: new Date(),
         used: false,
+      });
+
+      logger.info("🔍 [SERVER DEBUG] Stored signed URL in database", {
+        tokenId,
+        filePath: input.path,
+        storedContentType: mimeType,
+        storedFileSize: input.fileSize,
+        storedContentMd5: input.contentMd5,
+        expiresAt,
       });
 
       // Return API route URL
