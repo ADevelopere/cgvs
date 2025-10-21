@@ -70,37 +70,89 @@ export type SignedUrlEntityInput = typeof signedUrls.$inferInsert;
 
 ## Local Storage Adapter
 
-### 3. Implement Local Adapter
+### 3. Implement Local Adapter (Incremental Approach)
 
 **File:** `server/storage/disk/local.ts` (new file)
 
-Create `LocalAdapter` class implementing `StorageService` interface:
+Create `LocalAdapter` class implementing `StorageService` interface using an **incremental, function-by-function approach** with continuous validation.
+
+**Implementation Strategy:**
+
+1. **Initial Setup:**
+   - Create the file with imports, class skeleton, and factory function
+   - Implement serverless detection kill switch
+   - Implement all helper functions first (they don't require interface compliance)
+   - Add stub implementations for all `StorageService` interface methods that throw `new Error("Not implemented yet")`
+   - Run `~/.bun/bin/bun lint` and `~/.bun/bin/bun tsc` to verify structure
+
+2. **Incremental Function Implementation:**
+   For each function below, follow this workflow:
+
+   **a. Implement ONE function completely**
+
+   **b. Run validation:**
+
+   ```bash
+   ~/.bun/bin/bun lint
+   ~/.bun/bin/bun tsc
+   ```
+
+   Ignore "Not implemented yet" errors for other functions - only focus on the current function's errors.
+
+   **c. Compare with GCP adapter:**
+   - Open `server/storage/gcp/gcp-storage.ts` (or equivalent GCP adapter file)
+   - Compare the implemented function's logic with the GCP version
+   - Ensure consistency in:
+     - Return types and structures
+     - Error handling patterns
+     - Permission checking logic
+     - DB integration patterns
+     - Logging approach
+     - Edge case handling
+
+   **d. Fix any errors found:**
+   - Address lint errors
+   - Fix TypeScript compilation errors
+   - Adjust logic to match GCP adapter patterns
+   - Ensure proper error propagation
+
+   **e. Move to next function**
 
 **Key Features:**
 
 - Confirm the full method surface and return types against the existing `StorageService` interface (and reuse any shared utilities) to remain compatible with the current GCP adapter expectations.
-
 - Use Node.js `fs/promises` for file operations.
 - Store files in `LOCAL_STORAGE_PATH` directory (configurable via env var, default: `./cgsv/data/files/`).
 - **Base URL**: The public-facing URL for accessing files will be configured via `NEXT_PUBLIC_BASE_URL` environment variable (e.g., `http://localhost:3000` in dev, `https://example.com` in prod). Upload and download URLs will resolve to `${NEXT_PUBLIC_BASE_URL}/api/storage/upload/[id]` and `${NEXT_PUBLIC_BASE_URL}/api/storage/files/[...path]` respectively.
-- Implement all methods from `StorageService` interface:
-  - `fileExists()` - Check file with `fs.access()`
-  - `generateUploadSignedUrl()` - Create DB entry with UUID token, return an API URL constructed from the base URL.
-  - `uploadFile(path, contentType, buffer)` - Validates permissions (checks `directory.allowUploads`), writes buffer to disk using the internal write helper, creates file entity in DB, returns `FileUploadResult`.
-  - `listFiles()` - Use `fs.readdir()` with recursive option, apply filters/pagination
-  - `createFolder()` - Use `fs.mkdir()` with recursive option
-  - `renameFile()` - Use `fs.rename()`
-  - `deleteFile()` - Use `fs.unlink()`
-  - `directoryInfoByPath()` - Stat directory and combine with DB data
-  - `fileInfoByPath()` - Stat file and combine with DB data
-  - `fileInfoByDbFileId()` - Query DB then stat file
-  - `storageStatistics()` - Walk directory tree, calculate sizes and counts
-  - `fetchDirectoryChildren()` - List immediate subdirectories
-  - `moveItems()` - Batch move with `fs.rename()`
-  - `copyItems()` - Batch copy with `fs.copyFile()`
-  - `deleteItems()` - Batch delete with permission checks
 
-**Helper Functions:**
+**Implementation Order (one at a time):**
+
+**Phase 1: Helper Functions (implement all, then validate)**
+
+- `getAbsolutePath(relativePath)` - Path traversal protection
+- `fileStatsToMetadata(stats, path)` - Convert fs.Stats to BlobMetadata
+- `ensureDirectory(path)` - Recursive directory creation
+- `calculateMd5(filePath)` - MD5 hash calculation
+- `streamToFile(stream, filePath, expectedMd5?)` - Stream with validation
+
+**Phase 2: Core File Operations (implement one by one)**
+
+1. `fileExists()` - Check file with `fs.access()` → **validate** → **compare with GCP** → **fix**
+2. `uploadFile(path, contentType, buffer)` - Write to disk + DB → **validate** → **compare with GCP** → **fix**
+3. `deleteFile()` - Remove with `fs.unlink()` → **validate** → **compare with GCP** → **fix**
+4. `renameFile()` - Rename with `fs.rename()` → **validate** → **compare with GCP** → **fix**
+
+**Phase 3: Metadata & Info Operations (implement one by one)** 5. `fileInfoByPath()` - Stat file + DB data → **validate** → **compare with GCP** → **fix** 6. `fileInfoByDbFileId()` - Query DB then stat → **validate** → **compare with GCP** → **fix** 7. `directoryInfoByPath()` - Stat directory + DB → **validate** → **compare with GCP** → **fix**
+
+**Phase 4: Directory Operations (implement one by one)** 8. `createFolder()` - Recursive mkdir → **validate** → **compare with GCP** → **fix** 9. `listFiles()` - Recursive readdir + filters → **validate** → **compare with GCP** → **fix** 10. `fetchDirectoryChildren()` - Immediate children only → **validate** → **compare with GCP** → **fix**
+
+**Phase 5: Signed URLs (implement one by one)** 11. `generateUploadSignedUrl()` - Create DB entry + return API URL (with optional lazy cleanup) → **validate** → **compare with GCP** → **fix**
+
+**Phase 6: Bulk Operations (implement one by one)** 12. `moveItems()` - Batch move with atomicity → **validate** → **compare with GCP** → **fix** 13. `copyItems()` - Batch copy → **validate** → **compare with GCP** → **fix** 14. `deleteItems()` - Batch delete with permissions → **validate** → **compare with GCP** → **fix**
+
+**Phase 7: Statistics (implement last)** 15. `storageStatistics()` - Walk tree, calculate totals → **validate** → **compare with GCP** → **fix**
+
+**Helper Functions Details:**
 
 - `getAbsolutePath(relativePath)` - Converts a relative user-provided path to a secure, absolute filesystem path, preventing path traversal attacks.
   1. Resolve the absolute path of the configured `LOCAL_STORAGE_PATH`.
@@ -120,9 +172,11 @@ Create `LocalAdapter` class implementing `StorageService` interface:
 
 > Consider placing reusable helpers (e.g., `ensureDirectory`, `fileStatsToMetadata`, path sanitizers) alongside the adapter or in a shared `server/storage/disk` utility module so other adapters can leverage them.
 
+**Factory Function with Serverless Kill Switch:**
+
 Export factory function: `createLocalAdapter(): Promise<StorageService>`
 
-Before any other logic, this function must include a "kill switch" to prevent the application from starting if the `local` provider is selected in a serverless environment where the filesystem is ephemeral.
+Before any other logic, this function must include a "kill switch":
 
 ```typescript
 // Add this check at the very beginning of createLocalAdapter()
@@ -160,6 +214,17 @@ if (isServerless) {
 
 // ... rest of the factory function
 ```
+
+**Quality Checklist (per function):**
+
+- ✅ Lint passes for the implemented function
+- ✅ TypeScript compilation succeeds for the implemented function
+- ✅ Logic matches GCP adapter patterns
+- ✅ Return types match interface exactly
+- ✅ Error handling follows project conventions
+- ✅ Logging uses `server/lib/logger` (never console.\*)
+- ✅ Permission checks align with GCP adapter
+- ✅ DB integration patterns match GCP adapter
 
 ## Next.js API Routes
 
@@ -297,6 +362,11 @@ LOCAL_STORAGE_PATH=./cgsv/data/files/
 # Public base URL of the application (no trailing slash)
 # Used for generating signed upload/download URLs
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Signed URL Cleanup Configuration
+SIGNED_URL_CLEANUP_STRATEGY=lazy  # Options: 'lazy', 'cron', 'both', 'disabled'
+SIGNED_URL_CLEANUP_CRON_SCHEDULE=0 * * * *  # Cron expression (default: every hour)
+CRON_SECRET=your-secret-key-here  # Secret for authenticating cron requests
 ```
 
 **File:** `server/types/environment.d.ts` (create if doesn't exist)
@@ -346,15 +416,65 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-**Cleanup Strategy:**
+**Cleanup Strategy (Configurable):**
 
-- **Development:** Run cleanup on app startup in `createLocalAdapter()`
-- **Production:**
-  - Option 1: Use a cron job service (e.g., GitHub Actions, cron-job.org) to call `/api/storage/cleanup` hourly
-  - Option 2: Add a scheduled task using Vercel Cron (if migrating away from local storage later)
-  - Option 3: Run cleanup lazily before each `generateUploadSignedUrl()` call (delete expired before creating new)
+Add environment variables to control cleanup behavior:
 
-**Recommended approach:** Use lazy cleanup (Option 3) for simplicity, with optional scheduled cleanup for optimization.
+```bash
+# Signed URL Cleanup Configuration
+SIGNED_URL_CLEANUP_STRATEGY=lazy  # Options: 'lazy', 'cron', 'both', 'disabled'
+SIGNED_URL_CLEANUP_CRON_SCHEDULE=0 * * * *  # Cron expression (default: every hour)
+```
+
+**Implementation:**
+
+1. **Lazy Cleanup (`lazy` or `both`):**
+   - In `LocalAdapter.generateUploadSignedUrl()`, before creating a new signed URL:
+     ```typescript
+     if (
+       process.env.SIGNED_URL_CLEANUP_STRATEGY === "lazy" ||
+       process.env.SIGNED_URL_CLEANUP_STRATEGY === "both"
+     ) {
+       await this.signedUrlRepository.deleteExpired();
+     }
+     ```
+   - This runs cleanup on-demand, ensuring expired tokens are removed when new ones are generated.
+
+2. **Cron Cleanup (`cron` or `both`):**
+   - Create a scheduled API route using Next.js cron configuration
+   - **File:** `app/api/cron/cleanup-signed-urls/route.ts`
+
+     ```typescript
+     export async function GET(request: NextRequest) {
+       // Verify cron secret to prevent unauthorized access
+       const authHeader = request.headers.get("authorization");
+       if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+         return new Response("Unauthorized", { status: 401 });
+       }
+
+       const count = await signedUrlRepository.deleteExpired();
+       logger.info(`Cron cleanup: deleted ${count} expired signed URLs`);
+       return Response.json({ deleted: count });
+     }
+     ```
+
+   - Add to `vercel.json` (if using Vercel):
+     ```json
+     {
+       "crons": [
+         {
+           "path": "/api/cron/cleanup-signed-urls",
+           "schedule": "0 * * * *"
+         }
+       ]
+     }
+     ```
+   - For non-Vercel deployments, use external cron services (GitHub Actions, cron-job.org, etc.) to call the endpoint
+
+3. **Disabled (`disabled`):**
+   - No automatic cleanup; must be triggered manually via `/api/storage/cleanup`
+
+**Default:** `lazy` for simplicity and reliability without external dependencies.
 
 ### 10. Documentation & Operations
 
@@ -368,49 +488,892 @@ export async function POST(request: NextRequest) {
 
 ## Testing & Validation
 
-### Key Testing Points:
+### 11. Setup Default Storage Path (Pre-requisite)
 
-1.  **Race Condition:** Actively test that a single signed URL cannot be used to upload multiple files simultaneously. Use concurrent requests (Promise.all with same token) and verify only one succeeds with `201`, others get `403`.
-2.  **Path Traversal:** Craft malicious inputs (`../../etc/passwd`, `..\..\windows\system32`, `/etc/passwd`, `public/../private/secret.txt`) to ensure the `getAbsolutePath` helper correctly rejects them with `400 Bad Request`.
-3.  **Serverless Check:** Actively test that the application fails to start (throws a fatal error) if `STORAGE_PROVIDER=local` is set while a serverless environment variable (e.g., `VERCEL=1`) is also present.
-4.  **MD5 Validation:** Test upload with mismatched MD5 hash in header vs actual file content, verify file is deleted and `400` is returned.
-5.  **File Size Validation:** Test upload exceeding the declared `fileSize` in signed URL, verify rejection with `413 Payload Too Large`.
-6.  **Signed URL Expiration:** Test upload with expired token, verify `403 Forbidden`.
-7.  **Signed URL Reuse:** Test upload with already-used token, verify `403 Forbidden`.
-8.  **File Upload via Signed URL:** Test successful upload flow with correct headers and valid token.
-9.  **File Download Permissions:** Test public file download (no auth), protected file download (requires auth), and unauthorized access (returns `403`).
-10. **Range Requests:** Test partial content requests with valid/invalid ranges, verify `206` or `416` responses.
-11. **Directory Operations:** Test create, list, delete operations with various permission configurations.
-12. **Bulk Operations:** Test move, copy, delete with multiple files, verify atomicity and proper error handling.
-13. **DB-Filesystem Sync:** Test that failed DB operations clean up filesystem changes and vice versa.
-14. **Cleanup Operation:** Test that `deleteExpired()` removes only expired URLs and leaves valid ones intact.
+Before running any tests, set up the local storage directory structure:
 
-### Integration Test Example:
+**Terminal Commands:**
+
+```bash
+# Create the default storage directory structure
+mkdir -p ./cgvs/data/files/public
+mkdir -p ./cgvs/data/files/private
+mkdir -p ./cgvs/data/files/temp
+
+# Ensure proper permissions (read/write for owner, read for group)
+chmod -R 755 ./cgvs/data/files
+
+# Verify directory was created
+ls -la ./cgvs/data/
+
+# Add to .env file if not already present
+if ! grep -q "LOCAL_STORAGE_PATH" .env; then
+  echo "" >> .env
+  echo "# Local Storage Configuration" >> .env
+  echo "LOCAL_STORAGE_PATH=./cgvs/data/files/" >> .env
+  echo "LOCAL_STORAGE_PATH added to .env"
+else
+  echo "LOCAL_STORAGE_PATH already exists in .env"
+fi
+
+# Verify .env configuration
+grep "LOCAL_STORAGE_PATH" .env
+```
+
+**Directory Structure:**
+
+```
+./cgvs/data/files/
+├── public/          # Public files (no auth required)
+├── private/         # Protected files (auth required)
+└── temp/            # Temporary uploads
+```
+
+**Permissions:**
+
+- Owner: read, write, execute (7)
+- Group: read, execute (5)
+- Others: read, execute (5)
+
+**Validation:**
+
+```bash
+# Verify permissions
+ls -ld ./cgvs/data/files
+# Should show: drwxr-xr-x
+
+# Test write access
+touch ./cgvs/data/files/test-write.txt && rm ./cgvs/data/files/test-write.txt
+echo "Write access verified"
+```
+
+**Add to .gitignore:**
+
+Ensure the storage directory is excluded from version control:
+
+```bash
+# Add to .gitignore if not already present
+if ! grep -q "cgvs/data/files" .gitignore; then
+  echo "" >> .gitignore
+  echo "# Local storage files" >> .gitignore
+  echo "cgvs/data/files/" >> .gitignore
+  echo "Added storage directory to .gitignore"
+fi
+```
+
+### 12. Jest Test Suite
+
+Create comprehensive test coverage for the local storage adapter.
+
+**File:** `tests/storage/local-adapter.test.ts`
 
 ```typescript
-// tests/storage/local-adapter.test.ts
-describe('Local Storage Adapter - Race Conditions', () => {
-  it('should prevent concurrent uploads with same signed URL', async () => {
-    const signedUrl = await generateUploadSignedUrl({...});
-    const token = extractTokenFromUrl(signedUrl);
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from "@jest/globals";
+import fs from "fs/promises";
+import path from "path";
+import crypto from "crypto";
+import { createLocalAdapter } from "@/server/storage/disk/local";
+import { signedUrlRepository } from "@/server/db/repo";
+import type { StorageService } from "@/server/storage/storage.service";
 
-    // Attempt 3 concurrent uploads with same token
-    const results = await Promise.allSettled([
-      uploadFile(token, fileBuffer),
-      uploadFile(token, fileBuffer),
-      uploadFile(token, fileBuffer),
-    ]);
+describe("Local Storage Adapter", () => {
+  let adapter: StorageService;
+  let testDir: string;
 
-    // Only one should succeed
-    const successful = results.filter(r => r.status === 'fulfilled' && r.value.status === 201);
-    expect(successful).toHaveLength(1);
+  beforeAll(async () => {
+    // Set up test environment (use separate test directory)
+    testDir = path.join(process.cwd(), "tests", "fixtures", "storage-test");
+    process.env.LOCAL_STORAGE_PATH = testDir;
+    process.env.NEXT_PUBLIC_BASE_URL = "http://localhost:3000";
 
-    // Others should get 403
-    const forbidden = results.filter(r => r.status === 'fulfilled' && r.value.status === 403);
-    expect(forbidden).toHaveLength(2);
+    // Create test directory with proper permissions
+    await fs.mkdir(testDir, { recursive: true, mode: 0o755 });
+    await fs.mkdir(path.join(testDir, "public"), {
+      recursive: true,
+      mode: 0o755,
+    });
+    await fs.mkdir(path.join(testDir, "private"), {
+      recursive: true,
+      mode: 0o755,
+    });
+
+    adapter = await createLocalAdapter();
+  });
+
+  afterAll(async () => {
+    // Clean up test directory
+    await fs.rm(testDir, { recursive: true, force: true });
+  });
+
+  beforeEach(async () => {
+    // Reset test directory before each test
+    await fs.rm(testDir, { recursive: true, force: true });
+    await fs.mkdir(testDir, { recursive: true, mode: 0o755 });
+    await fs.mkdir(path.join(testDir, "public"), {
+      recursive: true,
+      mode: 0o755,
+    });
+    await fs.mkdir(path.join(testDir, "private"), {
+      recursive: true,
+      mode: 0o755,
+    });
+  });
+
+  describe("Serverless Environment Detection", () => {
+    it("should throw fatal error when VERCEL environment variable is set", async () => {
+      process.env.VERCEL = "1";
+      await expect(createLocalAdapter()).rejects.toThrow(
+        /FATAL.*local.*storage provider.*serverless/i
+      );
+      delete process.env.VERCEL;
+    });
+
+    it("should throw fatal error when AWS_LAMBDA_FUNCTION_NAME is set", async () => {
+      process.env.AWS_LAMBDA_FUNCTION_NAME = "test-function";
+      await expect(createLocalAdapter()).rejects.toThrow(
+        /FATAL.*local.*storage provider.*serverless/i
+      );
+      delete process.env.AWS_LAMBDA_FUNCTION_NAME;
+    });
+  });
+
+  describe("Path Traversal Protection", () => {
+    it("should reject path traversal with ../", async () => {
+      await expect(adapter.fileInfoByPath("../../etc/passwd")).rejects.toThrow(
+        /path traversal/i
+      );
+    });
+
+    it("should reject absolute paths", async () => {
+      await expect(adapter.fileInfoByPath("/etc/passwd")).rejects.toThrow(
+        /path traversal/i
+      );
+    });
+
+    it("should reject complex traversal patterns", async () => {
+      await expect(
+        adapter.fileInfoByPath("public/../private/secret.txt")
+      ).rejects.toThrow(/path traversal/i);
+    });
+
+    it("should accept valid relative paths", async () => {
+      const result = await adapter.fileInfoByPath("public/test.txt");
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe("File Upload Operations", () => {
+    it("should upload file successfully with valid buffer", async () => {
+      const buffer = Buffer.from("test content");
+      const result = await adapter.uploadFile(
+        "public/test.txt",
+        "text/plain",
+        buffer
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.file?.path).toBe("public/test.txt");
+
+      // Verify file exists on disk
+      const filePath = path.join(testDir, "public", "test.txt");
+      const content = await fs.readFile(filePath, "utf-8");
+      expect(content).toBe("test content");
+    });
+
+    it("should calculate correct MD5 hash", async () => {
+      const content = "test content for md5";
+      const buffer = Buffer.from(content);
+      const expectedMd5 = crypto
+        .createHash("md5")
+        .update(content)
+        .digest("base64");
+
+      const result = await adapter.uploadFile(
+        "public/hash-test.txt",
+        "text/plain",
+        buffer
+      );
+
+      expect(result.file?.metadata.md5Hash).toBe(expectedMd5);
+    });
+
+    it("should reject upload to protected directory without permission", async () => {
+      const buffer = Buffer.from("unauthorized content");
+      const result = await adapter.uploadFile(
+        "private/restricted.txt",
+        "text/plain",
+        buffer
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe("PERMISSION_DENIED");
+    });
+  });
+
+  describe("Signed URL Operations", () => {
+    it("should generate valid signed upload URL", async () => {
+      const url = await adapter.generateUploadSignedUrl({
+        path: "public/upload-test.txt",
+        contentType: "text/plain",
+        size: 1024,
+        expiresIn: 3600,
+      });
+
+      expect(url).toContain("/api/storage/upload/");
+      expect(url).toContain("http://localhost:3000");
+    });
+
+    it("should prevent race condition with concurrent uploads", async () => {
+      const signedUrl = await adapter.generateUploadSignedUrl({
+        path: "public/race-test.txt",
+        contentType: "text/plain",
+        size: 100,
+        expiresIn: 3600,
+      });
+
+      const token = signedUrl.split("/").pop()!;
+      const buffer = Buffer.from("test");
+
+      // Simulate 3 concurrent upload attempts
+      const results = await Promise.allSettled([
+        uploadViaSignedUrl(token, buffer, "text/plain"),
+        uploadViaSignedUrl(token, buffer, "text/plain"),
+        uploadViaSignedUrl(token, buffer, "text/plain"),
+      ]);
+
+      const successful = results.filter(
+        r => r.status === "fulfilled" && r.value === 201
+      );
+      const forbidden = results.filter(
+        r => r.status === "fulfilled" && r.value === 403
+      );
+
+      expect(successful).toHaveLength(1);
+      expect(forbidden).toHaveLength(2);
+    });
+
+    it("should reject expired signed URL", async () => {
+      const signedUrl = await adapter.generateUploadSignedUrl({
+        path: "public/expired-test.txt",
+        contentType: "text/plain",
+        size: 100,
+        expiresIn: -1, // Already expired
+      });
+
+      const token = signedUrl.split("/").pop()!;
+      const buffer = Buffer.from("test");
+
+      const status = await uploadViaSignedUrl(token, buffer, "text/plain");
+      expect(status).toBe(403);
+    });
+
+    it("should reject reused signed URL", async () => {
+      const signedUrl = await adapter.generateUploadSignedUrl({
+        path: "public/reuse-test.txt",
+        contentType: "text/plain",
+        size: 100,
+        expiresIn: 3600,
+      });
+
+      const token = signedUrl.split("/").pop()!;
+      const buffer = Buffer.from("test");
+
+      // First upload should succeed
+      const status1 = await uploadViaSignedUrl(token, buffer, "text/plain");
+      expect(status1).toBe(201);
+
+      // Second upload with same token should fail
+      const status2 = await uploadViaSignedUrl(token, buffer, "text/plain");
+      expect(status2).toBe(403);
+    });
+
+    it("should validate Content-Type matches signed URL", async () => {
+      const signedUrl = await adapter.generateUploadSignedUrl({
+        path: "public/type-test.txt",
+        contentType: "text/plain",
+        size: 100,
+        expiresIn: 3600,
+      });
+
+      const token = signedUrl.split("/").pop()!;
+      const buffer = Buffer.from("test");
+
+      // Upload with wrong content type
+      const status = await uploadViaSignedUrl(token, buffer, "image/png");
+      expect(status).toBe(400);
+    });
+
+    it("should validate Content-Length does not exceed limit", async () => {
+      const signedUrl = await adapter.generateUploadSignedUrl({
+        path: "public/size-test.txt",
+        contentType: "text/plain",
+        size: 10, // Very small limit
+        expiresIn: 3600,
+      });
+
+      const token = signedUrl.split("/").pop()!;
+      const buffer = Buffer.from("this content is too large for the limit");
+
+      const status = await uploadViaSignedUrl(token, buffer, "text/plain");
+      expect(status).toBe(413);
+    });
+
+    it("should validate MD5 hash matches", async () => {
+      const content = "test content";
+      const buffer = Buffer.from(content);
+      const correctMd5 = crypto
+        .createHash("md5")
+        .update(content)
+        .digest("base64");
+      const wrongMd5 = crypto
+        .createHash("md5")
+        .update("different content")
+        .digest("base64");
+
+      const signedUrl = await adapter.generateUploadSignedUrl({
+        path: "public/md5-test.txt",
+        contentType: "text/plain",
+        size: buffer.length,
+        expiresIn: 3600,
+        md5Hash: correctMd5,
+      });
+
+      const token = signedUrl.split("/").pop()!;
+
+      // Upload with wrong MD5
+      const status = await uploadViaSignedUrl(
+        token,
+        buffer,
+        "text/plain",
+        wrongMd5
+      );
+      expect(status).toBe(400);
+
+      // Verify file was not created
+      const filePath = path.join(testDir, "public", "md5-test.txt");
+      await expect(fs.access(filePath)).rejects.toThrow();
+    });
+  });
+
+  describe("File Download Operations", () => {
+    beforeEach(async () => {
+      // Create test files
+      await fs.mkdir(path.join(testDir, "public"), { recursive: true });
+      await fs.mkdir(path.join(testDir, "private"), { recursive: true });
+      await fs.writeFile(
+        path.join(testDir, "public", "test.txt"),
+        "public content"
+      );
+      await fs.writeFile(
+        path.join(testDir, "private", "secret.txt"),
+        "private content"
+      );
+    });
+
+    it("should serve public file without authentication", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/storage/files/public/test.txt"
+      );
+      expect(response.status).toBe(200);
+      const content = await response.text();
+      expect(content).toBe("public content");
+    });
+
+    it("should reject protected file without authentication", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/storage/files/private/secret.txt"
+      );
+      expect(response.status).toBe(403);
+    });
+
+    it("should serve protected file with valid authentication", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/storage/files/private/secret.txt",
+        {
+          headers: {
+            Authorization: "Bearer valid-token",
+          },
+        }
+      );
+      expect(response.status).toBe(200);
+      const content = await response.text();
+      expect(content).toBe("private content");
+    });
+
+    it("should return 404 for non-existent file", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/storage/files/public/missing.txt"
+      );
+      expect(response.status).toBe(404);
+    });
+
+    it("should support range requests for partial content", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/storage/files/public/test.txt",
+        {
+          headers: {
+            Range: "bytes=0-5",
+          },
+        }
+      );
+      expect(response.status).toBe(206);
+      expect(response.headers.get("Content-Range")).toBe("bytes 0-5/14");
+      const content = await response.text();
+      expect(content).toBe("public");
+    });
+
+    it("should reject invalid range requests", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/storage/files/public/test.txt",
+        {
+          headers: {
+            Range: "bytes=100-200",
+          },
+        }
+      );
+      expect(response.status).toBe(416);
+    });
+  });
+
+  describe("Directory Operations", () => {
+    it("should create nested directories", async () => {
+      const result = await adapter.createFolder("public/nested/deep/folder");
+      expect(result.success).toBe(true);
+
+      const dirPath = path.join(testDir, "public", "nested", "deep", "folder");
+      const stats = await fs.stat(dirPath);
+      expect(stats.isDirectory()).toBe(true);
+    });
+
+    it("should list directory contents with pagination", async () => {
+      // Create test structure
+      await fs.mkdir(path.join(testDir, "public"), { recursive: true });
+      for (let i = 0; i < 25; i++) {
+        await fs.writeFile(
+          path.join(testDir, "public", `file${i}.txt`),
+          `content ${i}`
+        );
+      }
+
+      const result = await adapter.listFiles("public", {
+        limit: 10,
+        offset: 0,
+      });
+
+      expect(result.files).toHaveLength(10);
+      expect(result.totalCount).toBe(25);
+    });
+
+    it("should filter files by type", async () => {
+      await fs.mkdir(path.join(testDir, "public"), { recursive: true });
+      await fs.writeFile(path.join(testDir, "public", "doc.txt"), "text");
+      await fs.writeFile(path.join(testDir, "public", "image.png"), "binary");
+      await fs.writeFile(path.join(testDir, "public", "doc2.txt"), "text2");
+
+      const result = await adapter.listFiles("public", {
+        fileType: "text/plain",
+      });
+
+      expect(result.files).toHaveLength(2);
+      expect(result.files.every(f => f.path.endsWith(".txt"))).toBe(true);
+    });
+  });
+
+  describe("Bulk Operations", () => {
+    beforeEach(async () => {
+      await fs.mkdir(path.join(testDir, "source"), { recursive: true });
+      await fs.mkdir(path.join(testDir, "dest"), { recursive: true });
+      await fs.writeFile(path.join(testDir, "source", "file1.txt"), "one");
+      await fs.writeFile(path.join(testDir, "source", "file2.txt"), "two");
+      await fs.writeFile(path.join(testDir, "source", "file3.txt"), "three");
+    });
+
+    it("should move multiple files atomically", async () => {
+      const result = await adapter.moveItems([
+        { from: "source/file1.txt", to: "dest/file1.txt" },
+        { from: "source/file2.txt", to: "dest/file2.txt" },
+      ]);
+
+      expect(result.success).toBe(true);
+      expect(result.successfulOperations).toBe(2);
+
+      // Verify files moved
+      await expect(
+        fs.access(path.join(testDir, "source", "file1.txt"))
+      ).rejects.toThrow();
+      await expect(
+        fs.access(path.join(testDir, "dest", "file1.txt"))
+      ).resolves.toBeUndefined();
+    });
+
+    it("should copy multiple files", async () => {
+      const result = await adapter.copyItems([
+        { from: "source/file1.txt", to: "dest/file1.txt" },
+        { from: "source/file2.txt", to: "dest/file2.txt" },
+      ]);
+
+      expect(result.success).toBe(true);
+      expect(result.successfulOperations).toBe(2);
+
+      // Verify files copied (originals still exist)
+      await expect(
+        fs.access(path.join(testDir, "source", "file1.txt"))
+      ).resolves.toBeUndefined();
+      await expect(
+        fs.access(path.join(testDir, "dest", "file1.txt"))
+      ).resolves.toBeUndefined();
+    });
+
+    it("should delete multiple files with permission checks", async () => {
+      const result = await adapter.deleteItems([
+        "source/file1.txt",
+        "source/file2.txt",
+      ]);
+
+      expect(result.success).toBe(true);
+      expect(result.successfulOperations).toBe(2);
+
+      // Verify files deleted
+      await expect(
+        fs.access(path.join(testDir, "source", "file1.txt"))
+      ).rejects.toThrow();
+    });
+
+    it("should rollback on partial failure", async () => {
+      const result = await adapter.moveItems([
+        { from: "source/file1.txt", to: "dest/file1.txt" },
+        { from: "source/nonexistent.txt", to: "dest/nonexistent.txt" },
+      ]);
+
+      expect(result.success).toBe(false);
+      // Verify rollback: file1 should still be in source
+      await expect(
+        fs.access(path.join(testDir, "source", "file1.txt"))
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  describe("Cleanup Operations", () => {
+    it("should delete expired signed URLs", async () => {
+      // Create expired signed URL
+      await signedUrlRepository.createSignedUrl({
+        id: "expired-token",
+        filePath: "test.txt",
+        contentType: "text/plain",
+        fileSize: 100,
+        contentMd5: "abc123",
+        expiresAt: new Date(Date.now() - 3600000), // 1 hour ago
+        createdAt: new Date(),
+        used: false,
+      });
+
+      // Create valid signed URL
+      await signedUrlRepository.createSignedUrl({
+        id: "valid-token",
+        filePath: "test2.txt",
+        contentType: "text/plain",
+        fileSize: 100,
+        contentMd5: "def456",
+        expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
+        createdAt: new Date(),
+        used: false,
+      });
+
+      const deletedCount = await signedUrlRepository.deleteExpired();
+      expect(deletedCount).toBe(1);
+
+      // Verify expired token deleted
+      const expired =
+        await signedUrlRepository.getSignedUrlById("expired-token");
+      expect(expired).toBeNull();
+
+      // Verify valid token still exists
+      const valid = await signedUrlRepository.getSignedUrlById("valid-token");
+      expect(valid).not.toBeNull();
+    });
+
+    it("should perform lazy cleanup when configured", async () => {
+      process.env.SIGNED_URL_CLEANUP_STRATEGY = "lazy";
+
+      // Create expired token
+      await signedUrlRepository.createSignedUrl({
+        id: "lazy-expired",
+        filePath: "test.txt",
+        contentType: "text/plain",
+        fileSize: 100,
+        contentMd5: "abc123",
+        expiresAt: new Date(Date.now() - 3600000),
+        createdAt: new Date(),
+        used: false,
+      });
+
+      // Generate new signed URL (should trigger cleanup)
+      await adapter.generateUploadSignedUrl({
+        path: "public/new-file.txt",
+        contentType: "text/plain",
+        size: 100,
+        expiresIn: 3600,
+      });
+
+      // Verify expired token was cleaned up
+      const expired =
+        await signedUrlRepository.getSignedUrlById("lazy-expired");
+      expect(expired).toBeNull();
+    });
+  });
+
+  describe("Storage Statistics", () => {
+    beforeEach(async () => {
+      await fs.mkdir(path.join(testDir, "public"), { recursive: true });
+      await fs.writeFile(path.join(testDir, "public", "small.txt"), "hi");
+      await fs.writeFile(
+        path.join(testDir, "public", "large.txt"),
+        "x".repeat(10000)
+      );
+    });
+
+    it("should calculate storage statistics", async () => {
+      const stats = await adapter.storageStatistics();
+
+      expect(stats.totalFiles).toBe(2);
+      expect(stats.totalSize).toBeGreaterThan(10000);
+      expect(stats.publicFiles).toBe(2);
+    });
+  });
+
+  describe("Database-Filesystem Synchronization", () => {
+    it("should clean up filesystem if database insert fails", async () => {
+      // Mock DB failure
+      jest
+        .spyOn(adapter as any, "createFileRecord")
+        .mockRejectedValueOnce(new Error("DB failure"));
+
+      const buffer = Buffer.from("test");
+      await expect(
+        adapter.uploadFile("public/fail-test.txt", "text/plain", buffer)
+      ).rejects.toThrow("DB failure");
+
+      // Verify file was cleaned up from filesystem
+      const filePath = path.join(testDir, "public", "fail-test.txt");
+      await expect(fs.access(filePath)).rejects.toThrow();
+    });
+  });
+});
+
+// Helper function for testing signed URL uploads
+async function uploadViaSignedUrl(
+  token: string,
+  buffer: Buffer,
+  contentType: string,
+  md5Hash?: string
+): Promise<number> {
+  const response = await fetch(
+    `http://localhost:3000/api/storage/upload/${token}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": contentType,
+        "Content-Length": buffer.length.toString(),
+        ...(md5Hash && { "Content-MD5": md5Hash }),
+      },
+      body: buffer,
+    }
+  );
+  return response.status;
+}
+```
+
+**File:** `tests/storage/signed-url-repository.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach } from "@jest/globals";
+import { signedUrlRepository } from "@/server/db/repo";
+import { db } from "@/server/db";
+
+describe("Signed URL Repository", () => {
+  beforeEach(async () => {
+    // Clean up signed_url table before each test
+    await db.delete(signedUrls);
+  });
+
+  describe("createSignedUrl", () => {
+    it("should create signed URL entry", async () => {
+      const data = {
+        id: "test-token-123",
+        filePath: "public/test.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(1024),
+        contentMd5: "abc123def456",
+        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: new Date(),
+        used: false,
+      };
+
+      const result = await signedUrlRepository.createSignedUrl(data);
+      expect(result.id).toBe("test-token-123");
+      expect(result.filePath).toBe("public/test.txt");
+    });
+  });
+
+  describe("claimSignedUrl", () => {
+    it("should atomically claim unused, non-expired token", async () => {
+      const token = await signedUrlRepository.createSignedUrl({
+        id: "claim-test",
+        filePath: "test.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(100),
+        contentMd5: "hash",
+        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: new Date(),
+        used: false,
+      });
+
+      const claimed = await signedUrlRepository.claimSignedUrl("claim-test");
+      expect(claimed).not.toBeNull();
+      expect(claimed!.used).toBe(true);
+    });
+
+    it("should return null for already-used token", async () => {
+      await signedUrlRepository.createSignedUrl({
+        id: "used-test",
+        filePath: "test.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(100),
+        contentMd5: "hash",
+        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: new Date(),
+        used: true,
+      });
+
+      const claimed = await signedUrlRepository.claimSignedUrl("used-test");
+      expect(claimed).toBeNull();
+    });
+
+    it("should return null for expired token", async () => {
+      await signedUrlRepository.createSignedUrl({
+        id: "expired-test",
+        filePath: "test.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(100),
+        contentMd5: "hash",
+        expiresAt: new Date(Date.now() - 3600000), // Expired
+        createdAt: new Date(),
+        used: false,
+      });
+
+      const claimed = await signedUrlRepository.claimSignedUrl("expired-test");
+      expect(claimed).toBeNull();
+    });
+
+    it("should prevent race conditions with concurrent claims", async () => {
+      await signedUrlRepository.createSignedUrl({
+        id: "race-test",
+        filePath: "test.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(100),
+        contentMd5: "hash",
+        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: new Date(),
+        used: false,
+      });
+
+      // Attempt 5 concurrent claims
+      const claims = await Promise.allSettled([
+        signedUrlRepository.claimSignedUrl("race-test"),
+        signedUrlRepository.claimSignedUrl("race-test"),
+        signedUrlRepository.claimSignedUrl("race-test"),
+        signedUrlRepository.claimSignedUrl("race-test"),
+        signedUrlRepository.claimSignedUrl("race-test"),
+      ]);
+
+      // Only one should succeed
+      const successful = claims.filter(
+        c => c.status === "fulfilled" && c.value !== null
+      );
+      expect(successful).toHaveLength(1);
+    });
+  });
+
+  describe("deleteExpired", () => {
+    it("should delete only expired tokens", async () => {
+      // Create expired token
+      await signedUrlRepository.createSignedUrl({
+        id: "expired-1",
+        filePath: "test1.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(100),
+        contentMd5: "hash1",
+        expiresAt: new Date(Date.now() - 3600000),
+        createdAt: new Date(),
+        used: false,
+      });
+
+      // Create valid token
+      await signedUrlRepository.createSignedUrl({
+        id: "valid-1",
+        filePath: "test2.txt",
+        contentType: "text/plain",
+        fileSize: BigInt(100),
+        contentMd5: "hash2",
+        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: new Date(),
+        used: false,
+      });
+
+      const deleted = await signedUrlRepository.deleteExpired();
+      expect(deleted).toBe(1);
+
+      // Verify correct tokens deleted
+      const expired = await signedUrlRepository.getSignedUrlById("expired-1");
+      const valid = await signedUrlRepository.getSignedUrlById("valid-1");
+
+      expect(expired).toBeNull();
+      expect(valid).not.toBeNull();
+    });
   });
 });
 ```
+
+**File:** `jest.config.js` (update)
+
+Add test coverage configuration:
+
+```javascript
+collectCoverageFrom: [
+  "server/storage/**/*.ts",
+  "server/db/repo/signedUrl.repository.ts",
+  "app/api/storage/**/*.ts",
+  "!**/*.d.ts",
+  "!**/node_modules/**",
+],
+```
+
+### Key Testing Points:
+
+1.  ✅ **Race Condition:** Concurrent uploads with same signed URL token
+2.  ✅ **Path Traversal:** Malicious path inputs with various traversal patterns
+3.  ✅ **Serverless Check:** Fatal error detection with multiple cloud provider env vars
+4.  ✅ **MD5 Validation:** Mismatched hash detection and file cleanup
+5.  ✅ **File Size Validation:** Upload size exceeding declared limit
+6.  ✅ **Signed URL Expiration:** Expired token rejection
+7.  ✅ **Signed URL Reuse:** Already-used token rejection
+8.  ✅ **File Upload via Signed URL:** Successful upload flow
+9.  ✅ **File Download Permissions:** Public/protected access control
+10. ✅ **Range Requests:** Partial content streaming
+11. ✅ **Directory Operations:** Create, list, delete with permissions
+12. ✅ **Bulk Operations:** Move, copy, delete with atomicity
+13. ✅ **DB-Filesystem Sync:** Cleanup on transaction failures
+14. ✅ **Cleanup Operations:** Lazy and scheduled cleanup strategies
+15. ✅ **Atomic Token Claiming:** Row-level locking for concurrent claim prevention
+16. ✅ **Storage Statistics:** Size and count calculations
+17. ✅ **Filtering and Pagination:** List operations with limits and offsets
 
 ## Implementation Notes
 
@@ -454,15 +1417,68 @@ describe('Local Storage Adapter - Race Conditions', () => {
 
 ### To-dos
 
+**Schema & Repository (Foundation):**
+
 - [ ] Add signed_url table to storage schema
 - [ ] Create signedUrl.repository.ts with CRUD operations
-- [ ] Create local.ts adapter with basic file operations (exists, upload, delete)
-- [ ] Implement listFiles with filtering, sorting, and pagination
-- [ ] Implement bulk operations (move, copy, delete)
-- [ ] Implement storage statistics and directory operations
-- [ ] Create Next.js API route for signed URL uploads
-- [ ] Create Next.js API route for file serving/download
+  - [ ] createSignedUrl
+  - [ ] getSignedUrlById
+  - [ ] claimSignedUrl (atomic with row-level locking)
+  - [ ] deleteExpired
+
+**Local Adapter Implementation (Incremental):**
+
+- [ ] Create local.ts file with class skeleton, imports, and stub methods
+- [ ] Implement factory function with serverless kill switch
+- [ ] Implement helper functions (getAbsolutePath, fileStatsToMetadata, ensureDirectory, calculateMd5, streamToFile)
+- [ ] Phase 1: Core file operations (validate after each)
+  - [ ] fileExists() → lint → tsc → compare with GCP → fix
+  - [ ] uploadFile() → lint → tsc → compare with GCP → fix
+  - [ ] deleteFile() → lint → tsc → compare with GCP → fix
+  - [ ] renameFile() → lint → tsc → compare with GCP → fix
+- [ ] Phase 2: Metadata & info operations (validate after each)
+  - [ ] fileInfoByPath() → lint → tsc → compare with GCP → fix
+  - [ ] fileInfoByDbFileId() → lint → tsc → compare with GCP → fix
+  - [ ] directoryInfoByPath() → lint → tsc → compare with GCP → fix
+- [ ] Phase 3: Directory operations (validate after each)
+  - [ ] createFolder() → lint → tsc → compare with GCP → fix
+  - [ ] listFiles() → lint → tsc → compare with GCP → fix
+  - [ ] fetchDirectoryChildren() → lint → tsc → compare with GCP → fix
+- [ ] Phase 4: Signed URLs (validate after each)
+  - [ ] generateUploadSignedUrl() → lint → tsc → compare with GCP → fix
+- [ ] Phase 5: Bulk operations (validate after each)
+  - [ ] moveItems() → lint → tsc → compare with GCP → fix
+  - [ ] copyItems() → lint → tsc → compare with GCP → fix
+  - [ ] deleteItems() → lint → tsc → compare with GCP → fix
+- [ ] Phase 6: Statistics
+  - [ ] storageStatistics() → lint → tsc → compare with GCP → fix
+
+**API Routes:**
+
+- [ ] Create Next.js API route for signed URL uploads (/api/storage/upload/[id])
+- [ ] Create Next.js API route for file serving/download (/api/storage/files/[[...path]])
+- [ ] Create Next.js API route for cron cleanup (/api/cron/cleanup-signed-urls)
+- [ ] Create Next.js API route for manual cleanup (/api/storage/cleanup)
+
+**Integration:**
+
 - [ ] Update storage service factory to support local provider
-- [ ] Update environment variables and Next.js config
+- [ ] Update environment variables (.env.example)
+- [ ] Update Next.js config (image domains)
+- [ ] Update environment type definitions (server/types/environment.d.ts)
+- [ ] Implement configurable cleanup strategies (lazy/cron/both/disabled)
+
+**Testing:**
+
+- [ ] Setup default storage path (create directories, set permissions, update .env, add to .gitignore)
+- [ ] Write comprehensive Jest test suite for local adapter
+- [ ] Write Jest tests for signed URL repository
+- [ ] Add test coverage for API routes
+- [ ] Configure Jest coverage reporting for storage module
+
+**Documentation:**
+
 - [ ] Document the local storage provider and operational caveats
-- [ ] Establish a signed URL cleanup workflow (cron/scheduled/on-demand)
+- [ ] Document cleanup strategies and configuration
+- [ ] Document serverless restrictions
+- [ ] Document backup and migration strategies
