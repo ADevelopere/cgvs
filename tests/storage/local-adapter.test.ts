@@ -16,25 +16,13 @@ import type { StorageService } from "@/server/storage/disk/storage.service.inter
 describe("Local Storage Adapter", () => {
   let adapter: StorageService;
   let testDir: string;
-  const originalEnv = process.env;
 
   beforeAll(async () => {
-    // Get test directory from environment (set in .env.test)
+    // Get test directory from environment (set in .env.test and created in setup.ts)
     testDir = path.resolve(
       process.cwd(),
       process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test"
     );
-
-    // Create test directory with proper permissions
-    await fs.mkdir(testDir, { recursive: true, mode: 0o755 });
-    await fs.mkdir(path.join(testDir, "public"), {
-      recursive: true,
-      mode: 0o755,
-    });
-    await fs.mkdir(path.join(testDir, "private"), {
-      recursive: true,
-      mode: 0o755,
-    });
 
     // Create the adapter (env vars from .env.test are already loaded)
     adapter = await createLocalAdapter();
@@ -47,9 +35,6 @@ describe("Local Storage Adapter", () => {
     } catch {
       // Ignore cleanup errors
     }
-
-    // Restore original environment
-    process.env = originalEnv;
   });
 
   beforeEach(async () => {
