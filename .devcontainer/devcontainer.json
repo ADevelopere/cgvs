@@ -15,6 +15,9 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker": {
       "moby": false
+    },
+    "ghcr.io/devcontainers/features/sshd:1": {
+      "version": "latest"
     }
   }
 }

@@ -1,6 +1,4 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
-import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-import { GoogleAuth } from "google-auth-library";
 import logger from "@/server/lib/logger";
 import * as Types from "@/server/types";
 import {
@@ -11,15 +9,13 @@ import {
 import { StorageDbRepository } from "@/server/db/repo";
 import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
+import { getGcpStorageClient } from "./gcp-auth";
 
 type GcsApiResponse = {
   prefixes?: string[];
 };
 
 const bucketName = process.env.GCP_BUCKET_NAME;
-const projectId = process.env.GCP_PROJECT_ID;
-const secretId = process.env.GCP_SECRET_ID;
-const secretVersion = process.env.GCP_SECRET_VERSION || "latest";
 
 export const gcpBaseUrl = `https://storage.googleapis.com/${bucketName}/`;
 
@@ -38,66 +34,8 @@ function cleanGcsPath(path: string, addTrailingSlash = false): string {
   return addTrailingSlash && cleaned.length > 0 ? `${cleaned}/` : cleaned;
 }
 
-const getStorageFromSecretManager = async (): Promise<Storage> => {
-  try {
-    const client = new SecretManagerServiceClient();
-    const name = `projects/${projectId}/secrets/${secretId}/versions/${secretVersion}`;
-
-    const [version] = await client.accessSecretVersion({ name });
-    const payload = version.payload?.data;
-
-    if (!payload) {
-      throw new Error("No payload found in secret version");
-    }
-
-    const credentials = JSON.parse(payload.toString());
-
-    // Validate required fields
-    if (!credentials.client_email) {
-      throw new Error("Service account credentials missing client_email field");
-    }
-    if (!credentials.private_key) {
-      throw new Error("Service account credentials missing private_key field");
-    }
-    if (!credentials.type || credentials.type !== "service_account") {
-      throw new Error("Invalid service account type in credentials");
-    }
-
-    // Create JWT client with the credentials to avoid deprecated methods
-    // const jwtClient = new JWT({
-    //   email: credentials.client_email,
-    //   key: credentials.private_key,
-    //   scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-    // });
-
-    // Create GoogleAuth instance with the credentials
-    const auth = new GoogleAuth({
-      credentials: credentials,
-      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-    });
-
-    return new Storage({
-      projectId,
-      authClient: auth, // Use GoogleAuth client for proper signing support
-    });
-  } catch (error) {
-    logger.error(
-      `Failed to access secret version: ${secretId} in project: ${projectId}`,
-      error
-    );
-    throw error;
-  }
-};
-
 export async function createGcpStorage(): Promise<Storage> {
-  if (!projectId || !secretId) {
-    throw new Error(
-      "GCP_PROJECT_ID and GCP_SECRET_ID environment variables are required"
-    );
-  }
-
-  const storage = await getStorageFromSecretManager();
-
+  const storage = await getGcpStorageClient();
   return storage;
 }
 
