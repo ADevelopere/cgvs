@@ -29,7 +29,9 @@ CGSV is a comprehensive platform for generating, managing, and distributing cert
 - **Node.js** >= 18.17.0
 - **PostgreSQL** >= 14
 - **Redis** >= 6.0
-- **Google Cloud Platform** account and project (for file storage)
+- **Storage Provider** (choose one):
+  - **Google Cloud Platform** account and project (for cloud storage) - recommended for production
+  - **Local filesystem storage** (for development/single-server deployments) - see [Local Storage Provider Documentation](docs/storage/local-storage-provider.md)
 
 ### Installation
 
@@ -48,7 +50,9 @@ cp .env.example .env
 # - DATABASE_URL
 # - JWT_SECRET
 # - REDIS_URL or UPSTASH credentials
-# - GCP_PROJECT_ID, GCP_BUCKET_NAME, GCP_SECRET_ID (see GCP Setup section)
+# - Storage configuration (choose one):
+#   * For GCP: GCP_PROJECT_ID, GCP_BUCKET_NAME, GCP_SECRET_ID (see GCP Setup section)
+#   * For Local: STORAGE_PROVIDER=local, LOCAL_STORAGE_PATH (see Local Storage docs)
 # - Other required variables
 
 # Run database migrations
@@ -74,6 +78,42 @@ If you're using Google Cloud Storage for file uploads, configure CORS for browse
 ```
 
 This script will read your production domain and bucket name from `.env` and configure CORS automatically.
+
+---
+
+## 📁 Storage Configuration
+
+This application supports two storage providers:
+
+### 1. Local Filesystem Storage (Development/Single-Server)
+
+Store files directly on the server's local disk. Ideal for development, testing, or single-server deployments.
+
+**Quick Setup:**
+
+```bash
+# Create storage directory
+mkdir -p ./cgvs/data/files/{public,private,temp}
+
+# Configure environment
+echo "STORAGE_PROVIDER=local" >> .env
+echo "LOCAL_STORAGE_PATH=./cgvs/data/files/" >> .env
+echo "NEXT_PUBLIC_BASE_URL=http://localhost:3000" >> .env
+```
+
+**📚 [Complete Local Storage Documentation →](docs/storage/local-storage-provider.md)**
+
+**⚠️ Important Limitations:**
+
+- Not suitable for serverless deployments (Vercel, Lambda, etc.)
+- Not suitable for horizontally scaled applications
+- Requires persistent filesystem and regular backups
+
+### 2. Google Cloud Storage (Production/Cloud)
+
+Cloud-based storage with automatic scaling, high availability, and CDN integration. Recommended for production deployments.
+
+**📚 See [GCP Setup Section](#️-google-cloud-platform-gcp-setup) below for configuration.**
 
 ---
 
@@ -465,6 +505,7 @@ After applying the CORS configuration:
 - **ORM:** Drizzle ORM
 - **Cache/Session:** Redis (Local or Upstash)
 - **Authentication:** JWT
+- **Storage:** GCP Cloud Storage or Local Filesystem ([docs](docs/storage/local-storage-provider.md))
 
 ### DevOps & Tools
 
