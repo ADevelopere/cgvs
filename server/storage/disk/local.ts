@@ -147,7 +147,73 @@ class LocalAdapter implements StorageService {
   async generateUploadSignedUrl(
     input: Types.UploadSignedUrlGenerateInput
   ): Promise<string> {
-    throw new Error("Not implemented yet");
+    try {
+      logger.info("Generating signed URL", {
+        path: input.path,
+        fileSize: input.fileSize,
+      });
+
+      // Validate upload
+      const validationError = await StorageUtils.validateUpload(
+        input.path,
+        input.fileSize
+      );
+      if (validationError) {
+        throw new StorageValidationError(validationError);
+      }
+
+      // Optional lazy cleanup: clean up expired tokens before creating new one
+      const cleanupStrategy = process.env.SIGNED_URL_CLEANUP_STRATEGY || "lazy";
+      if (cleanupStrategy === "lazy" || cleanupStrategy === "both") {
+        try {
+          await SignedUrlRepository.deleteExpired();
+        } catch (error) {
+          // Non-fatal: log but don't block URL generation
+          logger.error(
+            "Lazy cleanup failed during signed URL generation",
+            error
+          );
+        }
+      }
+
+      // Generate unique token ID
+      const tokenId = crypto.randomUUID();
+
+      // Calculate expiration time
+      const expiresAt = new Date(
+        Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000
+      );
+
+      // Create signed URL entry in database
+      await SignedUrlRepository.createSignedUrl({
+        id: tokenId,
+        filePath: input.path,
+        contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
+        fileSize: BigInt(input.fileSize),
+        contentMd5: input.contentMd5,
+        expiresAt,
+        createdAt: new Date(),
+        used: false,
+      });
+
+      // Return API route URL
+      const signedUrl = `${baseUrl}/api/storage/upload/${tokenId}`;
+
+      logger.info("Generated signed URL successfully", {
+        tokenId,
+        path: input.path,
+        expiresAt,
+      });
+
+      return signedUrl;
+    } catch (error) {
+      logger.error("Failed to generate upload signed URL", {
+        path: input.path,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      throw error;
+    }
   }
 
   async uploadFile(
@@ -879,8 +945,156 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async storageStatistics(path?: string | null): Promise<Types.StorageStats> {
-    throw new Error("Not implemented yet");
+  async storageStatistics(
+    searchPath?: string | null
+  ): Promise<Types.StorageStats> {
+    try {
+      const targetPath = searchPath || "";
+      const absolutePath = this.getAbsolutePath(targetPath);
+
+      let totalSize = BigInt(0);
+      const fileTypeMap = new Map<
+        Types.FileTypes,
+        { count: number; size: bigint }
+      >();
+      const directories = new Set<string>();
+
+      // Recursively walk through directory
+      const walkDirectory = async (dirPath: string, relativePath: string) => {
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
+
+        for (const entry of entries) {
+          const entryAbsolutePath = path.join(dirPath, entry.name);
+          const entryRelativePath = relativePath
+            ? `${relativePath}/${entry.name}`
+            : entry.name;
+
+          if (entry.isDirectory()) {
+            directories.add(entryRelativePath);
+            await walkDirectory(entryAbsolutePath, entryRelativePath);
+          } else if (entry.isFile()) {
+            const stats = await fs.stat(entryAbsolutePath);
+            const size = BigInt(stats.size);
+            totalSize += size;
+
+            // Detect content type from file extension
+            const ext = path.extname(entry.name).toLowerCase();
+            const contentTypeMap: Record<string, string> = {
+              ".jpg": "image/jpeg",
+              ".jpeg": "image/jpeg",
+              ".png": "image/png",
+              ".gif": "image/gif",
+              ".webp": "image/webp",
+              ".pdf": "application/pdf",
+              ".doc": "application/msword",
+              ".docx":
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              ".xls": "application/vnd.ms-excel",
+              ".xlsx":
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              ".txt": "text/plain",
+              ".zip": "application/zip",
+              ".rar": "application/vnd.rar",
+              ".mp4": "video/mp4",
+              ".mp3": "audio/mpeg",
+              ".wav": "audio/wav",
+            };
+            const contentType =
+              contentTypeMap[ext] || "application/octet-stream";
+
+            const fileType =
+              StorageUtils.getFileTypeFromContentType(contentType);
+            const current = fileTypeMap.get(fileType) || {
+              count: 0,
+              size: BigInt(0),
+            };
+            fileTypeMap.set(fileType, {
+              count: current.count + 1,
+              size: current.size + size,
+            });
+          }
+        }
+      };
+
+      // Check if path exists
+      try {
+        await fs.access(absolutePath);
+        const stats = await fs.stat(absolutePath);
+
+        if (stats.isDirectory()) {
+          await walkDirectory(absolutePath, "");
+        } else if (stats.isFile()) {
+          // Single file stats
+          const size = BigInt(stats.size);
+          totalSize = size;
+
+          const ext = path.extname(targetPath).toLowerCase();
+          const contentTypeMap: Record<string, string> = {
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".gif": "image/gif",
+            ".webp": "image/webp",
+            ".pdf": "application/pdf",
+            ".doc": "application/msword",
+            ".docx":
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".xls": "application/vnd.ms-excel",
+            ".xlsx":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".txt": "text/plain",
+            ".zip": "application/zip",
+            ".rar": "application/vnd.rar",
+            ".mp4": "video/mp4",
+            ".mp3": "audio/mpeg",
+            ".wav": "audio/wav",
+          };
+          const contentType = contentTypeMap[ext] || "application/octet-stream";
+
+          const fileType = StorageUtils.getFileTypeFromContentType(contentType);
+          fileTypeMap.set(fileType, {
+            count: 1,
+            size,
+          });
+        }
+      } catch {
+        // Path doesn't exist, return empty stats
+        return {
+          totalFiles: 0,
+          totalSize: BigInt(0),
+          fileTypeBreakdown: [],
+          directoryCount: 0,
+        };
+      }
+
+      const fileTypeBreakdown = Array.from(fileTypeMap.entries()).map(
+        ([type, data]) => ({
+          type,
+          count: data.count,
+          size: data.size,
+        })
+      );
+
+      const totalFiles = Array.from(fileTypeMap.values()).reduce(
+        (sum, data) => sum + data.count,
+        0
+      );
+
+      return {
+        totalFiles,
+        totalSize,
+        fileTypeBreakdown,
+        directoryCount: directories.size,
+      };
+    } catch (error) {
+      logger.error("Failed to get storage statistics", error);
+      return {
+        totalFiles: 0,
+        totalSize: BigInt(0),
+        fileTypeBreakdown: [],
+        directoryCount: 0,
+      };
+    }
   }
 
   async fetchDirectoryChildren(
@@ -940,19 +1154,497 @@ class LocalAdapter implements StorageService {
   async moveItems(
     input: Types.StorageItemsMoveInput
   ): Promise<Types.BulkOperationResult> {
-    throw new Error("Not implemented yet");
+    let successCount = 0;
+    let failureCount = 0;
+    const failures: Array<{ path: string; error: string }> = [];
+    const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
+
+    // Batch check if all source files exist in filesystem
+    const sourceExistenceChecks = await Promise.all(
+      input.sourcePaths.map(async sourcePath => {
+        try {
+          const absolutePath = this.getAbsolutePath(sourcePath);
+          await fs.access(absolutePath);
+          return { path: sourcePath, exists: true };
+        } catch {
+          return { path: sourcePath, exists: false };
+        }
+      })
+    );
+
+    // Filter out non-existent sources
+    const validSources = sourceExistenceChecks
+      .filter(check => {
+        if (!check.exists) {
+          failureCount++;
+          failures.push({
+            path: check.path,
+            error: "Source path not found",
+          });
+          return false;
+        }
+        return true;
+      })
+      .map(check => check.path);
+
+    if (validSources.length === 0) {
+      return {
+        success: failureCount === 0,
+        message: "No valid source files to move",
+        successCount,
+        failureCount,
+        failures,
+        successfulItems,
+      };
+    }
+
+    // Batch load DB entities for source paths and directories
+    const sourceDirectories = [
+      ...new Set(
+        validSources.map(path => path.substring(0, path.lastIndexOf("/")))
+      ),
+    ];
+
+    const [dbFiles, dbDirectories, dbSourceDirs, dbDestDir] = await Promise.all(
+      [
+        StorageDbRepository.filesByPaths(validSources),
+        StorageDbRepository.directoriesByPaths(validSources),
+        StorageDbRepository.directoriesByPaths(sourceDirectories),
+        StorageDbRepository.directoryByPath(input.destinationPath),
+      ]
+    );
+
+    // Create lookup maps for O(1) access
+    const dbFileMap = new Map();
+    dbFiles.forEach(file => {
+      if (file) {
+        dbFileMap.set(file.path, file);
+      }
+    });
+
+    const dbDirectoryMap = new Map();
+    dbDirectories.forEach(dir => {
+      if (dir) {
+        dbDirectoryMap.set(dir.path, dir);
+      }
+    });
+
+    const dbSourceDirMap = new Map();
+    dbSourceDirs.forEach(dir => {
+      if (dir) {
+        dbSourceDirMap.set(dir.path, dir);
+      }
+    });
+
+    // Check destination directory permissions once
+    if (dbDestDir && !dbDestDir.allowUploads) {
+      return {
+        success: false,
+        message: "Uploads not allowed to destination directory",
+        successCount: 0,
+        failureCount: validSources.length,
+        failures: validSources.map(path => ({
+          path,
+          error: "Uploads not allowed to destination directory",
+        })),
+        successfulItems,
+      };
+    }
+
+    // Process each valid source
+    for (const sourcePath of validSources) {
+      try {
+        // Check permissions for source directory
+        const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf("/"));
+        const dbSourceDir = dbSourceDirMap.get(sourceDir);
+        if (dbSourceDir && !dbSourceDir.allowMove) {
+          failureCount++;
+          failures.push({
+            path: sourcePath,
+            error: `Move not allowed from directory: ${sourceDir}`,
+          });
+          continue;
+        }
+
+        // Perform the move in filesystem
+        const fileName = StorageUtils.extractFileName(sourcePath);
+        const newPath = `${input.destinationPath.replace(/\/$/, "")}/${fileName}`;
+
+        const sourceAbsolutePath = this.getAbsolutePath(sourcePath);
+        const destAbsolutePath = this.getAbsolutePath(newPath);
+
+        // Ensure destination directory exists
+        await this.ensureDirectory(path.dirname(destAbsolutePath));
+
+        // Move the file/directory
+        await fs.rename(sourceAbsolutePath, destAbsolutePath);
+
+        // Update DB records - check if it's a file or directory and update accordingly
+        const dbFile = dbFileMap.get(sourcePath);
+        const dbDirectory = dbDirectoryMap.get(sourcePath);
+
+        if (dbFile) {
+          // Update file entity path
+          await StorageDbRepository.updateFile({
+            id: dbFile.id,
+            path: newPath,
+            isProtected: dbFile.isProtected,
+          });
+
+          // Get the updated file info for successful items
+          const fileInfo = await this.fileInfoByPath(newPath);
+          if (fileInfo) {
+            successfulItems.push(fileInfo);
+          }
+        } else if (dbDirectory) {
+          // Update directory entity path
+          await StorageDbRepository.updateDirectory({
+            ...dbDirectory,
+            path: newPath,
+          });
+
+          // Get the updated directory info for successful items
+          const dirInfo = await this.directoryInfoByPath(newPath);
+          if (dirInfo) {
+            successfulItems.push(dirInfo);
+          }
+        } else {
+          // No DB entity, get info from filesystem
+          const fileInfo = await this.fileInfoByPath(newPath);
+          if (fileInfo) {
+            successfulItems.push(fileInfo);
+          }
+        }
+
+        successCount++;
+      } catch (error) {
+        failureCount++;
+        failures.push({
+          path: sourcePath,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      success: failureCount === 0,
+      message:
+        failureCount === 0
+          ? "All items moved successfully"
+          : `${successCount} items moved, ${failureCount} failed`,
+      successCount,
+      failureCount,
+      failures,
+      successfulItems,
+    };
   }
 
   async copyItems(
     input: Types.StorageItemsCopyInput
   ): Promise<Types.BulkOperationResult> {
-    throw new Error("Not implemented yet");
+    let successCount = 0;
+    let failureCount = 0;
+    const failures: Array<{ path: string; error: string }> = [];
+    const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
+
+    // Batch check if all source files exist in filesystem
+    const sourceExistenceChecks = await Promise.all(
+      input.sourcePaths.map(async sourcePath => {
+        try {
+          const absolutePath = this.getAbsolutePath(sourcePath);
+          await fs.access(absolutePath);
+          return { path: sourcePath, exists: true };
+        } catch {
+          return { path: sourcePath, exists: false };
+        }
+      })
+    );
+
+    // Filter out non-existent sources
+    const validSources = sourceExistenceChecks
+      .filter(check => {
+        if (!check.exists) {
+          failureCount++;
+          failures.push({
+            path: check.path,
+            error: "Source path not found",
+          });
+          return false;
+        }
+        return true;
+      })
+      .map(check => check.path);
+
+    if (validSources.length === 0) {
+      return {
+        success: failureCount === 0,
+        message: "No valid source files to copy",
+        successCount,
+        failureCount,
+        failures,
+        successfulItems,
+      };
+    }
+
+    // Check destination directory permissions once
+    const dbDestDir = await StorageDbRepository.directoryByPath(
+      input.destinationPath
+    );
+    if (dbDestDir && !dbDestDir.allowUploads) {
+      return {
+        success: false,
+        message: "Uploads not allowed to destination directory",
+        successCount: 0,
+        failureCount: validSources.length,
+        failures: validSources.map(path => ({
+          path,
+          error: "Uploads not allowed to destination directory",
+        })),
+        successfulItems,
+      };
+    }
+
+    // Process each valid source
+    for (const sourcePath of validSources) {
+      try {
+        const fileName = StorageUtils.extractFileName(sourcePath);
+        const destPath = `${input.destinationPath.replace(/\/$/, "")}/${fileName}`;
+
+        const sourceAbsolutePath = this.getAbsolutePath(sourcePath);
+        const destAbsolutePath = this.getAbsolutePath(destPath);
+
+        // Ensure destination directory exists
+        await this.ensureDirectory(path.dirname(destAbsolutePath));
+
+        // Check if source is a file or directory
+        const stats = await fs.stat(sourceAbsolutePath);
+
+        if (stats.isDirectory()) {
+          // Recursively copy directory
+          await this.copyDirectory(sourceAbsolutePath, destAbsolutePath);
+        } else {
+          // Copy file
+          await fs.copyFile(sourceAbsolutePath, destAbsolutePath);
+        }
+
+        // Don't create DB entities as requested - just get file info from filesystem
+        const fileInfo = await this.fileInfoByPath(destPath);
+        if (fileInfo) {
+          successfulItems.push(fileInfo);
+        }
+
+        successCount++;
+      } catch (error) {
+        failureCount++;
+        failures.push({
+          path: sourcePath,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      success: failureCount === 0,
+      message:
+        failureCount === 0
+          ? "All items copied successfully"
+          : `${successCount} items copied, ${failureCount} failed`,
+      successCount,
+      failureCount,
+      failures,
+      successfulItems,
+    };
+  }
+
+  /**
+   * Helper method to recursively copy a directory
+   */
+  private async copyDirectory(src: string, dest: string): Promise<void> {
+    await fs.mkdir(dest, { recursive: true, mode: 0o755 });
+    const entries = await fs.readdir(src, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const srcPath = path.join(src, entry.name);
+      const destPath = path.join(dest, entry.name);
+
+      if (entry.isDirectory()) {
+        await this.copyDirectory(srcPath, destPath);
+      } else {
+        await fs.copyFile(srcPath, destPath);
+      }
+    }
   }
 
   async deleteItems(
     input: Types.StorageItemsDeleteInput
   ): Promise<Types.BulkOperationResult> {
-    throw new Error("Not implemented yet");
+    let successCount = 0;
+    let failureCount = 0;
+    const failures: Array<{ path: string; error: string }> = [];
+    const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
+
+    // Batch load DB entities for all paths and their parent directories
+    const parentDirectories = [
+      ...new Set(
+        input.paths.map(path => path.substring(0, path.lastIndexOf("/")))
+      ),
+    ];
+
+    const [dbFiles, dbDirectories, dbParentDirs, usageChecks] =
+      await Promise.all([
+        StorageDbRepository.filesByPaths(input.paths),
+        StorageDbRepository.directoriesByPaths(input.paths),
+        StorageDbRepository.directoriesByPaths(parentDirectories),
+        // Batch check file usage if not force delete
+        input.force
+          ? Promise.resolve([])
+          : Promise.all(
+              input.paths.map(filePath =>
+                StorageDbRepository.checkFileUsage({
+                  path: filePath,
+                })
+                  .then(result => ({ path: filePath, ...result }))
+                  .catch(() => ({
+                    path: filePath,
+                    isInUse: false,
+                    deleteBlockReason: null,
+                  }))
+              )
+            ),
+      ]);
+
+    // Create lookup maps for O(1) access
+    const dbFileMap = new Map();
+    dbFiles.forEach(file => {
+      if (file) {
+        dbFileMap.set(file.path, file);
+      }
+    });
+
+    const dbDirectoryMap = new Map();
+    dbDirectories.forEach(dir => {
+      if (dir) {
+        dbDirectoryMap.set(dir.path, dir);
+      }
+    });
+
+    const dbParentDirMap = new Map();
+    dbParentDirs.forEach(dir => {
+      if (dir) {
+        dbParentDirMap.set(dir.path, dir);
+      }
+    });
+
+    const usageCheckMap = new Map();
+    usageChecks.forEach(check => {
+      usageCheckMap.set(check.path, check);
+    });
+
+    // Process each path
+    for (const itemPath of input.paths) {
+      try {
+        // Check if file is in use (unless force delete)
+        if (!input.force) {
+          const usageCheck = usageCheckMap.get(itemPath);
+          if (usageCheck?.isInUse) {
+            failureCount++;
+            failures.push({
+              path: itemPath,
+              error: usageCheck.deleteBlockReason || "File is currently in use",
+            });
+            continue;
+          }
+        }
+
+        // Check if file/directory is protected
+        const dbFile = dbFileMap.get(itemPath);
+        const dbDirectory = dbDirectoryMap.get(itemPath);
+
+        if (dbFile?.isProtected === true || dbDirectory?.isProtected === true) {
+          failureCount++;
+          failures.push({
+            path: itemPath,
+            error: "Item is protected from deletion",
+          });
+          continue;
+        }
+
+        // Check parent directory permissions
+        const parentPath = itemPath.substring(0, itemPath.lastIndexOf("/"));
+        const parentDir = dbParentDirMap.get(parentPath);
+        if (parentDir) {
+          const isFile = dbFile != null;
+          const canDelete = isFile
+            ? parentDir.allowDeleteFiles
+            : parentDir.allowDelete;
+          if (!canDelete) {
+            failureCount++;
+            failures.push({
+              path: itemPath,
+              error: "Deletion not allowed in parent directory",
+            });
+            continue;
+          }
+        }
+
+        // Get entity before deleting for the result
+        const fileEntity = await this.fileInfoByPath(itemPath);
+        const folderEntity = fileEntity
+          ? null
+          : await this.directoryInfoByPath(itemPath);
+
+        // Delete from filesystem
+        const absolutePath = this.getAbsolutePath(itemPath);
+        const stats = await fs.stat(absolutePath);
+
+        if (stats.isDirectory()) {
+          // Recursively delete directory
+          await fs.rm(absolutePath, { recursive: true, force: true });
+        } else {
+          // Delete file
+          await fs.unlink(absolutePath);
+        }
+
+        // Delete from database
+        if (dbFile) {
+          await StorageDbRepository.deleteFile(itemPath);
+          if (fileEntity) {
+            successfulItems.push(fileEntity);
+          }
+        } else if (dbDirectory) {
+          await StorageDbRepository.deleteDirectory(itemPath);
+          if (folderEntity) {
+            successfulItems.push(folderEntity);
+          }
+        } else if (fileEntity) {
+          // No DB entity, just add file to successful items
+          successfulItems.push(fileEntity);
+        } else if (folderEntity) {
+          // No DB entity, just add folder to successful items
+          successfulItems.push(folderEntity);
+        }
+
+        successCount++;
+      } catch (error) {
+        failureCount++;
+        failures.push({
+          path: itemPath,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return {
+      success: failureCount === 0,
+      message:
+        failureCount === 0
+          ? "All items deleted successfully"
+          : `${successCount} items deleted, ${failureCount} failed`,
+      successCount,
+      failureCount,
+      failures,
+      successfulItems,
+    };
   }
 }
 

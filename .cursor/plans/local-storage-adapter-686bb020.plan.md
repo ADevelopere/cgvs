@@ -1446,12 +1446,14 @@ collectCoverageFrom: [
   - [x] fetchDirectoryChildren() → lint → tsc → compare with GCP → fix
 - [x] Phase 4: Signed URLs (validate after each)
   - [x] generateUploadSignedUrl() → lint → tsc → compare with GCP → fix
-- [ ] Phase 5: Bulk operations (validate after each)
-  - [ ] moveItems() → lint → tsc → compare with GCP → fix
-  - [ ] copyItems() → lint → tsc → compare with GCP → fix
-  - [ ] deleteItems() → lint → tsc → compare with GCP → fix
-- [ ] Phase 6: Statistics
-  - [ ] storageStatistics() → lint → tsc → compare with GCP → fix
+- [x] Phase 5: Bulk operations (validate after each)
+  - [x] moveItems() → lint → tsc → compare with GCP → fix
+  - [x] copyItems() → lint → tsc → compare with GCP → fix
+  - [x] deleteItems() → lint → tsc → compare with GCP → fix
+- [x] Phase 6: Statistics (implement last)
+  - [x] storageStatistics() → lint → tsc → compare with GCP → fix
+- [x] Phase 6: Statistics
+  - [x] storageStatistics() → lint → tsc → compare with GCP → fix
 
 **API Routes:**
 
@@ -1488,6 +1490,7 @@ collectCoverageFrom: [
 ## Progress Summary (as of current session)
 
 **Completed:**
+
 - ✅ Database schema with signed_url table and indexes
 - ✅ Drizzle migration generated and applied
 - ✅ SignedUrlRepository with atomic operations
@@ -1498,6 +1501,7 @@ collectCoverageFrom: [
 - ✅ Signed URL generation with lazy cleanup support
 
 **Next Steps:**
+
 - Implement bulk operations (moveItems, copyItems, deleteItems)
 - Implement storageStatistics
 - Create Next.js API routes for upload/download/cleanup
