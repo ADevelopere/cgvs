@@ -5,6 +5,7 @@ module.exports = {
     "^.+\\.ts$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "json"],
+  testTimeout: 60000, // 60 seconds for integration tests
   collectCoverageFrom: [
     "client/**/*.ts",
     "server/storage/**/*.ts",

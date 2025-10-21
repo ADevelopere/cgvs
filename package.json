@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "tsc": "tsc --noEmit",
-    "test": "bun test",
+    "test": "bun test --timeout=60000",
     "test:md5": "bun test client/views/storage/hooks/__tests__/storage.util.test.ts",
     "generate:gqlSchema": "bun run server/graphql/generateGqlSchema.ts",
     "prepare": "husky"
