@@ -83,11 +83,14 @@ function parseRange(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path?: string[] } }
+  { params }: { params: Promise<{ path?: string[] }> }
 ) {
   try {
-    // Step 1: Reconstruct relative file path
-    const relativePath = params.path ? params.path.join("/") : "";
+    // Step 1: Await params and reconstruct relative file path
+    const resolvedParams = await params;
+    const relativePath = resolvedParams.path
+      ? resolvedParams.path.join("/")
+      : "";
 
     if (!relativePath) {
       return NextResponse.json(
