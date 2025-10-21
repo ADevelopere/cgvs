@@ -813,6 +813,67 @@ describe("Storage API Routes Integration Tests", () => {
       const token = await SignedUrlRepository.getSignedUrlById(tokenId);
       expect(token?.used).toBe(true);
     });
+
+    it("should upload file and verify file exists on disk after successful upload", async () => {
+      // Create test file content (binary data)
+      const fileContent = Buffer.from(
+        "This is a test file for disk verification"
+      );
+      const contentMd5 = calculateMd5(fileContent);
+      const filePath = "private/disk-verify-test.dat";
+      const tokenId = crypto.randomUUID();
+
+      // Create signed URL token in database
+      await createSignedUrlToken({
+        id: tokenId,
+        filePath,
+        contentType: "application/octet-stream",
+        fileSize: BigInt(fileContent.length),
+        contentMd5,
+        expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
+        used: false,
+      });
+
+      // Upload file via API
+      const response = await makeApiRequest(`/api/storage/upload/${tokenId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "Content-MD5": contentMd5,
+          "Content-Length": fileContent.length.toString(),
+        },
+        body: fileContent,
+      });
+
+      // Verify upload was successful
+      expect(response.status).toBe(201);
+      const responseData = await response.json();
+      expect(responseData.path).toBe(filePath);
+
+      // Verify file exists on disk at the expected location
+      const absolutePath = path.join(testStorageDir, filePath);
+
+      // Check file exists
+      let fileExists = false;
+      try {
+        await fs.access(absolutePath);
+        fileExists = true;
+      } catch {
+        fileExists = false;
+      }
+      expect(fileExists).toBe(true);
+
+      // Verify file content matches what was uploaded
+      const diskContent = await fs.readFile(absolutePath);
+      expect(Buffer.compare(diskContent, fileContent)).toBe(0);
+
+      // Verify file size on disk
+      const stats = await fs.stat(absolutePath);
+      expect(stats.size).toBe(fileContent.length);
+
+      // Verify file permissions (should be readable)
+      expect(stats.mode & 0o400).toBeGreaterThan(0); // Owner read permission
+    });
   });
 
   describe("Download API (/api/storage/files/[[...path]])", () => {
