@@ -3,7 +3,6 @@ export interface LogEntry {
   level: string;
   message: string;
   timestamp: string;
-  caller: string;
 }
 
 export type LogLevel = "log" | "info" | "warn" | "error" | "debug";

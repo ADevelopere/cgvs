@@ -9,18 +9,44 @@ import {
   graphqlRateLimiter,
 } from "@/server/lib/ratelimit";
 import logger from "@/server/lib/logger";
-
+import { ApolloCacheAdapter } from "@/server/services/cache";
 // import { ApolloServerPluginUsageReporting } from "@apollo/server/plugin/usageReporting";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  // ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
+import { ApolloServerPluginLandingPageDisabled } from "@apollo/server/plugin/disabled";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const maxRecursiveSelections = isProduction ? 5 : undefined;
+
+const cache = new ApolloCacheAdapter();
 const server = new ApolloServer({
   schema: graphQLSchema,
-  // plugins: [
-  //     ApolloServerPluginUsageReporting({
-  //         // Optionally configure the plugin here
-  //         sendHeaders: { all: true },
-  //         // You can customize reporting, but basic inclusion is enough for tracing
-  //     }),
-  // ],
+  plugins: [
+    // Install a landing page plugin based on NODE_ENV
+    process.env.NODE_ENV === "production"
+      ? ApolloServerPluginLandingPageDisabled()
+      : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+  ],
+  maxRecursiveSelections: maxRecursiveSelections,
+  hideSchemaDetailsFromClientErrors: isProduction,
+  includeStacktraceInErrorResponses: !isProduction,
+  logger: logger,
+  csrfPrevention: {
+    requestHeaders: [
+      "x-apollo-operation-name",
+      "apollo-require-preflight",
+      "x-csrf-token",
+    ],
+  },
+  introspection: !isProduction,
+  persistedQueries: {
+    cache: cache,
+    ttl: null, // Store indefinitely
+  },
+  cache: cache,
 });
 
 const handler = startServerAndCreateNextHandler(server, {
@@ -41,7 +67,7 @@ export async function OPTIONS() {
           : "http://localhost:3000",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS, HEAD",
       "Access-Control-Allow-Headers":
-        "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token",
+        "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token, X-Apollo-Operation-Name, Apollo-Require-Preflight, X-CSRF-Token",
       "Access-Control-Allow-Credentials": "true",
       "Access-Control-Max-Age": "86400",
     },

@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
           {
             key: "Access-Control-Allow-Headers",
             value:
-              "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token, Content-MD5",
+              "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token, Content-MD5, X-Apollo-Operation-Name, Apollo-Require-Preflight, X-CSRF-Token",
           },
           {
             key: "Access-Control-Max-Age",

@@ -26,6 +26,8 @@ import { isNetworkError } from "@/client/utils/errorUtils";
 import { Box, CircularProgress, Button, Typography } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 // import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
+import { PersistedQueryLink } from "@apollo/client/link/persisted-queries";
+import { sha256 } from "crypto-hash"; // Or your preferred SHA256 implementation
 
 // Loading UI shown during initial connectivity check
 const InitializingUI: React.FC<{
@@ -145,6 +147,7 @@ export const AppApolloProvider: React.FC<{
         credentials: "include",
         headers: {
           "X-Requested-With": "XMLHttpRequest",
+          "apollo-require-preflight": "true",
         },
         signal: controller.signal,
       }).catch(() => {
@@ -222,13 +225,17 @@ export const AppApolloProvider: React.FC<{
       credentials: "include",
     });
 
-    // Auth link to add token to requests
+    // Auth link to add token and CSRF prevention headers to requests
     const authLink = new ApolloLink((operation, forward) => {
       // Get access token from ref to access current value
       // Note: refreshToken and sessionId are handled via httpOnly cookies
       const token = authTokenRef.current;
 
-      const headers: Record<string, string> = {};
+      const headers: Record<string, string> = {
+        // CSRF prevention headers - required by Apollo Server CSRF protection
+        "apollo-require-preflight": "true",
+        "x-apollo-operation-name": operation.operationName || "",
+      };
 
       if (token) {
         headers.authorization = `Bearer ${token}`;
@@ -319,12 +326,15 @@ export const AppApolloProvider: React.FC<{
       }
     });
 
+    const persistedQueryLink = new PersistedQueryLink({ sha256 });
+
     // Simple client with connectivity check
     const client = new ApolloClient({
       link: ApolloLink.from([
         errorLink,
         connectivityCheckLink,
         authLink,
+        persistedQueryLink,
         httpLink,
       ]),
       cache: new InMemoryCache(),

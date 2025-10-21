@@ -32,38 +32,6 @@ export abstract class BaseLogger {
     return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
   }
 
-  protected getCallerInfo(): string {
-    try {
-      const stack = new Error().stack;
-      if (!stack) return "unknown";
-
-      const lines = stack.split("\n");
-      // Find the first line that's not from this logger file
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (
-          line &&
-          !line.includes("logger") &&
-          !line.includes("node_modules")
-        ) {
-          // Extract filename and line number
-          const match =
-            line.match(/\(([^)]+):(\d+):\d+\)/) ||
-            line.match(/at ([^:]+):(\d+):\d+/);
-          if (match) {
-            const filePath = match[1];
-            const lineNumber = match[2];
-            const fileName = filePath.split("/").pop() || filePath;
-            return `${fileName}:${lineNumber}`;
-          }
-        }
-      }
-      return "unknown";
-    } catch {
-      return "unknown";
-    }
-  }
-
   private formatTimestamp(): string {
     const now = new Date();
     const year = now.getFullYear();
@@ -89,8 +57,7 @@ export abstract class BaseLogger {
       }
 
       const timestamp = this.formatTimestamp();
-      const caller = this.getCallerInfo();
-      const logLine = `[${timestamp}] [${level.toUpperCase()}] [${caller}] ${message}\n`;
+      const logLine = `[${timestamp}] [${level.toUpperCase()}] ${message}\n`;
 
       // Write to session-based log file with prefix
       const logFileName = `${this.prefix}_${this.sessionId}.log`;
@@ -111,14 +78,10 @@ export abstract class BaseLogger {
       )
       .join(" ");
 
-    const caller = this.getCallerInfo();
     const timestamp = this.formatTimestamp();
 
-    // Console output with timestamp and caller info
-    const consoleArgs = [
-      `[${timestamp}] [${level.toUpperCase()}] [${caller}]`,
-      ...args,
-    ];
+    // Console output with timestamp
+    const consoleArgs = [`[${timestamp}] [${level.toUpperCase()}]`, ...args];
 
     switch (level) {
       case "log":
