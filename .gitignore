@@ -74,3 +74,6 @@ tsconfig.tsbuildinfo
 
 # Logs directory
 /logs/
+
+# Local storage files
+cgvs/data/files/

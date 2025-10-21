@@ -6,6 +6,7 @@ import {
   boolean,
   varchar,
   timestamp,
+  index,
 } from "drizzle-orm/pg-core";
 
 export const storageFiles = pgTable("storage_file", {
@@ -35,3 +36,21 @@ export const storageDirectories = pgTable("storage_directory", {
   isProtected: boolean("is_protected").notNull().default(false),
   protectChildren: boolean("protect_children").notNull().default(false),
 });
+
+export const signedUrls = pgTable(
+  "signed_url",
+  {
+    id: varchar("id", { length: 64 }).primaryKey(), // UUID token
+    filePath: varchar("file_path", { length: 1024 }).notNull(),
+    contentType: varchar("content_type", { length: 255 }).notNull(),
+    fileSize: bigint("file_size", { mode: "bigint" }).notNull(), // File size in bytes
+    contentMd5: varchar("content_md5", { length: 44 }).notNull(), // base64-encoded MD5 hash (24 chars + padding)
+    expiresAt: timestamp("expires_at", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull(),
+    used: boolean("used").notNull().default(false),
+  },
+  table => [
+    index("signed_url_expires_at_idx").on(table.expiresAt),
+    index("signed_url_used_expires_idx").on(table.used, table.expiresAt),
+  ]
+);
