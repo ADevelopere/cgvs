@@ -58,7 +58,7 @@ type TreeState = {
 // CONTEXT VALUE INTERFACE
 // ============================================================================
 
-type StorageStateContextValue = {
+export type StorageStateContextValueState = {
   // Data state
   items: StorageItem[];
   pagination: Graphql.PageInfo | null;
@@ -83,7 +83,9 @@ type StorageStateContextValue = {
   expandedNodes: Set<string>;
   prefetchedNodes: Set<string>;
   queueStates: QueueStates;
+};
 
+export type StorageStateContextValueActions = {
   // Data actions
   setItems: (items: StorageItem[]) => void;
   setPagination: (pagination: Graphql.PageInfo | null) => void;
@@ -152,6 +154,11 @@ type StorageStateContextValue = {
   resetUI: () => void;
   resetTree: () => void;
   resetAll: () => void;
+};
+
+type StorageStateContextValue = {
+  state: StorageStateContextValueState;
+  actions: StorageStateContextValueActions;
 };
 
 // ============================================================================
@@ -642,33 +649,9 @@ export const StorageStateProvider: React.FC<{ children: ReactNode }> = ({
   // CONTEXT VALUE
   // ============================================================================
 
-  const value = useMemo<StorageStateContextValue>(
+  // Memoize actions separately - these are stable and won't change
+  const actions = useMemo<StorageStateContextValueActions>(
     () => ({
-      // Data state
-      items,
-      pagination,
-      params,
-      stats,
-
-      // UI state
-      selectedItems,
-      lastSelectedItem,
-      focusedItem,
-      viewMode,
-      searchMode,
-      searchResults,
-      clipboard,
-      sortBy,
-      sortDirection,
-      loading,
-      operationErrors,
-
-      // Tree state
-      directoryTree,
-      expandedNodes,
-      prefetchedNodes,
-      queueStates,
-
       // Data actions
       setItems,
       setPagination,
@@ -729,29 +712,6 @@ export const StorageStateProvider: React.FC<{ children: ReactNode }> = ({
       resetAll,
     }),
     [
-      // Data state
-      items,
-      pagination,
-      params,
-      stats,
-      // UI state
-      selectedItems,
-      lastSelectedItem,
-      focusedItem,
-      viewMode,
-      searchMode,
-      searchResults,
-      clipboard,
-      sortBy,
-      sortDirection,
-      loading,
-      operationErrors,
-      // Tree state
-      directoryTree,
-      expandedNodes,
-      prefetchedNodes,
-      queueStates,
-      // Actions
       updateParams,
       navigateToDirectory,
       toggleSelect,
@@ -784,6 +744,63 @@ export const StorageStateProvider: React.FC<{ children: ReactNode }> = ({
     ]
   );
 
+  // Memoize states separately - these change frequently
+  const state = useMemo<StorageStateContextValueState>(
+    () => ({
+      // Data state
+      items,
+      pagination,
+      params,
+      stats,
+
+      // UI state
+      selectedItems,
+      lastSelectedItem,
+      focusedItem,
+      viewMode,
+      searchMode,
+      searchResults,
+      clipboard,
+      sortBy,
+      sortDirection,
+      loading,
+      operationErrors,
+
+      // Tree state
+      directoryTree,
+      expandedNodes,
+      prefetchedNodes,
+      queueStates,
+    }),
+    [
+      items,
+      pagination,
+      params,
+      stats,
+      selectedItems,
+      lastSelectedItem,
+      focusedItem,
+      viewMode,
+      searchMode,
+      searchResults,
+      clipboard,
+      sortBy,
+      sortDirection,
+      loading,
+      operationErrors,
+      directoryTree,
+      expandedNodes,
+      prefetchedNodes,
+      queueStates,
+    ]
+  );
+
+  // Combine states and actions for the full context value
+  const value = useMemo<StorageStateContextValue>(
+    () => ({ state: state, actions: actions }),
+    [state, actions]
+  );
+
   return (
     <StorageStateContext.Provider value={value}>
       {children}
@@ -792,15 +809,46 @@ export const StorageStateProvider: React.FC<{ children: ReactNode }> = ({
 };
 
 // ============================================================================
-// HOOK TO USE THE CONTEXT
+// HOOKS TO USE THE CONTEXT
 // ============================================================================
 
-export const useStorageState = (): StorageStateContextValue => {
+/**
+ * Hook to access only the storage state values (without actions).
+ * Use this when you only need to read state values and don't need actions.
+ * This will cause re-renders whenever any state value changes.
+ */
+export const useStorageState = (): StorageStateContextValueState => {
   const context = useContext(StorageStateContext);
   if (!context) {
     throw new Error(
-      "useStorageState must be used within a StorageStateProvider"
+      "useStorageStateValues must be used within a StorageStateProvider"
     );
   }
-  return context;
+
+  // Extract only the state values from the context
+  return useMemo<StorageStateContextValueState>(
+    () => context.state,
+    [context.state]
+  );
+};
+
+/**
+ * Hook to access only the storage state actions (setters).
+ * Use this when you only need to call actions and don't need to read state values.
+ * This will NOT cause re-renders when state values change, only when actions change
+ * (which should be stable/never).
+ */
+export const useStorageStateActions = (): StorageStateContextValueActions => {
+  const context = useContext(StorageStateContext);
+  if (!context) {
+    throw new Error(
+      "useStorageStateActions must be used within a StorageStateProvider"
+    );
+  }
+
+  // Extract only the actions from the context
+  return useMemo<StorageStateContextValueActions>(
+    () => context.actions,
+    [context.actions]
+  );
 };
