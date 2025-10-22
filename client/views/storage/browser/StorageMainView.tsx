@@ -7,7 +7,7 @@ import {
   useStorageState,
   useStorageStateActions,
 } from "@/client/views/storage/contexts/StorageStateContext";
-import { useStorageOperations } from "@/client/views/storage/contexts/StorageOperationsContext";
+import { useStorageOperations } from "@/client/views/storage/contexts/useStorageOperations";
 
 /**
  * Main content pane for the storage browser.

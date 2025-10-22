@@ -1,14 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useCallback,
-  useMemo,
-  useRef,
-  useEffect,
-  ReactNode,
-} from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -18,10 +10,10 @@ import { useStorageApollo } from "./StorageApolloContext";
 import { useStorageState, useStorageStateActions } from "./StorageStateContext";
 
 // ============================================================================
-// CONTEXT VALUE INTERFACE
+// Operations Value Type
 // ============================================================================
 
-interface StorageOperationsContextValue {
+type StorageOperations = {
   // Data Fetching Operations
   fetchList: (params: Graphql.FilesListInput) => Promise<{
     items: StorageItem[];
@@ -71,22 +63,9 @@ interface StorageOperationsContextValue {
 
   // Clipboard Operations
   pasteItems: () => Promise<boolean>;
-}
+};
 
-// ============================================================================
-// CONTEXT
-// ============================================================================
-
-const StorageOperationsContext =
-  createContext<StorageOperationsContextValue | null>(null);
-
-// ============================================================================
-// PROVIDER COMPONENT
-// ============================================================================
-
-export const StorageOperationsProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const useStorageOperations = (): StorageOperations => {
   // Get Apollo operations
   const apollo = useStorageApollo();
   const apolloRef = useRef(apollo);
@@ -930,10 +909,10 @@ export const StorageOperationsProvider: React.FC<{ children: ReactNode }> = ({
   }, [state.clipboard, state.params.path, copy, refresh, move]);
 
   // ============================================================================
-  // CONTEXT VALUE
+  // RETURN VALUE
   // ============================================================================
 
-  const value = useMemo<StorageOperationsContextValue>(
+  return useMemo<StorageOperations>(
     () => ({
       // Data Fetching
       fetchList,
@@ -992,24 +971,4 @@ export const StorageOperationsProvider: React.FC<{ children: ReactNode }> = ({
       pasteItems,
     ]
   );
-
-  return (
-    <StorageOperationsContext.Provider value={value}>
-      {children}
-    </StorageOperationsContext.Provider>
-  );
-};
-
-// ============================================================================
-// HOOK TO USE THE CONTEXT
-// ============================================================================
-
-export const useStorageOperations = (): StorageOperationsContextValue => {
-  const context = useContext(StorageOperationsContext);
-  if (!context) {
-    throw new Error(
-      "useStorageOperations must be used within a StorageOperationsProvider"
-    );
-  }
-  return context;
 };
