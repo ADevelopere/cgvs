@@ -19,7 +19,6 @@ import {
   ContentPaste as PasteIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { useStorageStateActions } from "@/client/views/storage/contexts/StorageStateContext";
 import { useAppTranslation } from "@/client/locale";
 import {
   StorageItemUnion,
@@ -45,6 +44,7 @@ interface StorageSelectionActionsProps {
   onDeleteItems: (paths: string[]) => Promise<boolean>;
   onMove: (paths: string[], destination: string) => Promise<boolean>;
   onFetchDirectoryChildren: (path?: string) => Promise<DirectoryTreeNode[] | null>;
+  clearSelection: () => void;
 }
 
 /**
@@ -66,8 +66,8 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   onDeleteItems,
   onMove,
   onFetchDirectoryChildren,
+  clearSelection,
 }) => {
-  const { clearSelection } = useStorageStateActions();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   // Dialog state

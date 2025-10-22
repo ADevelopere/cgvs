@@ -26,6 +26,7 @@ interface StorageToolbarProps {
   onDeleteItems: (paths: string[]) => Promise<boolean>;
   onMove: (paths: string[], destination: string) => Promise<boolean>;
   onFetchDirectoryChildren: (path?: string) => Promise<DirectoryTreeNode[] | null>;
+  clearSelection: () => void;
 }
 
 /**
@@ -49,6 +50,7 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
   onDeleteItems,
   onMove,
   onFetchDirectoryChildren,
+  clearSelection,
 }) => {
   const hasSelection = selectedItems.length > 0;
 
@@ -100,6 +102,7 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
             onDeleteItems={onDeleteItems}
             onMove={onMove}
             onFetchDirectoryChildren={onFetchDirectoryChildren}
+            clearSelection={clearSelection}
           />
         </Box>
       </Fade>
