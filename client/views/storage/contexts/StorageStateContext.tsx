@@ -100,7 +100,7 @@ export type StorageStateContextValueActions = {
 
   // Selection actions
   toggleSelect: (path: string) => void;
-  selectAll: (items: StorageItem[]) => void;
+  selectAll: () => void;
   clearSelection: () => void;
   selectRange: (fromPath: string, toPath: string, items: StorageItem[]) => void;
   setLastSelectedItem: (path: string | null) => void;
@@ -329,9 +329,9 @@ export const StorageStateProvider: React.FC<{ children: ReactNode }> = ({
     setLastSelectedItem(path);
   }, []);
 
-  const selectAll = useCallback((itemsList: StorageItem[]) => {
-    setSelectedItems(itemsList.map(item => item.path));
-  }, []);
+  const selectAll = useCallback(() => {
+    setSelectedItems(items.map(item => item.path));
+  }, [items]);
 
   const clearSelection = useCallback(() => {
     setSelectedItems([]);
