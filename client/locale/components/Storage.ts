@@ -215,6 +215,8 @@ export type StorageManagementUITranslations = {
   filePickerDialogFailedToLoad: string;
   filePickerDialogUnexpectedError: string;
   selecting: string;
+  folder: string;
+  files: string;
   // File picker dialog end
 
   contentType: string;
