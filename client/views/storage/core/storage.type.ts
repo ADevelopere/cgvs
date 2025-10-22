@@ -2,16 +2,9 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 export type StorageItemUnion = Graphql.DirectoryInfo | Graphql.FileInfo;
 
-// Directory tree node for lazy loading
-export type DirectoryTreeNode = {
-  id: string;
-  name: string;
-  path: string;
-  children?: DirectoryTreeNode[]; // undefined = not loaded, [] = loaded but empty, [...] = loaded with content
-  hasChildren: boolean; // server indicates if this node has subdirectories
-  isExpanded: boolean; // client-side expansion state
-  isLoading: boolean; // loading state for this specific node
-  isPrefetched: boolean; // whether children have been pre-fetched
+// Storage directory node compatible with ReactiveTreeNode
+export type StorageDirectoryNode = Graphql.DirectoryInfo & {
+  id: string; // Same as path for ReactiveTreeNode compatibility
 };
 
 // UI context types for the StorageManagementUIContext
@@ -31,14 +24,6 @@ export type LoadingStates = {
   copy: boolean;
   createFolder: boolean;
   search: boolean;
-  expandingNode: string | null;
-  prefetchingNode: string | null;
-};
-
-export type QueueStates = {
-  fetchQueue: Set<string>;
-  expansionQueue: Set<string>;
-  currentlyFetching: Set<string>;
 };
 
 export type OperationErrors = {
@@ -95,30 +80,8 @@ export type StorageActions = {
   clearErrors: () => void;
   clearNavigationState: () => void;
 
-  // Tree management actions
-  setDirectoryTree: (tree: DirectoryTreeNode[]) => void;
-  updateTreeNode: (
-    path: string,
-    updater: (node: DirectoryTreeNode) => DirectoryTreeNode
-  ) => void;
-  addChildToNode: (parentPath: string, children: DirectoryTreeNode[]) => void;
-
-  // Node state actions
-  expandNode: (path: string) => void;
-  collapseNode: (path: string) => void;
-  setPrefetchedNode: (path: string, isPrefetched: boolean) => void;
-
-  // Queue management actions
-  addToFetchQueue: (path: string) => void;
-  removeFromFetchQueue: (path: string) => void;
-  addToExpansionQueue: (path: string) => void;
-  removeFromExpansionQueue: (path: string) => void;
-  setCurrentlyFetching: (path: string, isFetching: boolean) => void;
-  clearQueues: () => void;
-
   // Reset actions
   resetData: () => void;
   resetUI: () => void;
-  resetTree: () => void;
   resetAll: () => void;
 };

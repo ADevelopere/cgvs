@@ -57,8 +57,6 @@ const initialLoadingState: LoadingStates = {
   copy: false,
   createFolder: false,
   search: false,
-  expandingNode: null,
-  prefetchingNode: null,
 };
 
 const initialState: StorageUIState = {

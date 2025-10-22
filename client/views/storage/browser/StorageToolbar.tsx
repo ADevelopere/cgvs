@@ -5,7 +5,6 @@ import StorageSelectionActions from "./StorageSelectionActions";
 import {
   StorageItemUnion,
   StorageClipboardState,
-  DirectoryTreeNode,
 } from "@/client/views/storage/core/storage.type";
 import { LoadingStates } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -25,7 +24,7 @@ interface StorageToolbarProps {
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;
   onMove: (paths: string[], destination: string) => Promise<boolean>;
-  onFetchDirectoryChildren: (path?: string) => Promise<DirectoryTreeNode[] | null>;
+  onFetchDirectoryChildren: (path?: string) => Promise<Graphql.DirectoryInfo[] | null>;
   clearSelection: () => void;
 }
 
