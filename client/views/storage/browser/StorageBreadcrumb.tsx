@@ -12,7 +12,7 @@ import {
   ChevronRight as ChevronRightIcon,
   MoreHoriz as MoreHorizIcon,
 } from "@mui/icons-material";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useAppTranslation } from "@/client/locale";
 interface StorageBreadcrumbProps {
@@ -35,7 +35,7 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
   path: customPath,
   onNavigateToPath,
 }) => {
-  const { params } = useStorageDataStore();
+  const { params } = useStorageState();
   const { navigateTo } = useStorageNavigation();
   const { ui: translations } = useAppTranslation("storageTranslations");
 

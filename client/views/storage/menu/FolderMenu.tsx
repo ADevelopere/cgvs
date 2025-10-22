@@ -24,7 +24,7 @@ import {
   Delete as DeleteIcon,
   Info as InfoIcon,
 } from "@mui/icons-material";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
@@ -49,7 +49,7 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   folder,
 }) => {
   const theme = useTheme();
-  const { params } = useStorageDataStore();
+  const { params } = useStorageState();
   const { ui: translations } = useAppTranslation("storageTranslations");
   const { navigateTo, refresh } = useStorageNavigation();
   const { copyItems, cutItems, pasteItems, clipboard } = useStorageClipboard();

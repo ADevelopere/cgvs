@@ -5,9 +5,7 @@ import {
   BaseTreeItem,
   TreeViewItemRenderer,
 } from "@/client/components/treeView/TreeView";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
-import { useStorageTreeStore } from "@/client/views/storage/stores/useStorageTreeStore";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageTreeOperations } from "@/client/views/storage/hooks/useStorageTreeOperations";
 import { DirectoryTreeNode } from "@/client/views/storage/core/storage.type";
@@ -26,15 +24,14 @@ type DirectoryTreeItemRendererProps = Pick<
 >;
 
 const StorageDirectoryTree: React.FC = () => {
-  const { params } = useStorageDataStore();
-  const { directoryTree, expandedNodes, queueStates } = useStorageTreeStore();
+  const { params, directoryTree, expandedNodes, queueStates, loading } =
+    useStorageState();
   const { navigateTo } = useStorageNavigation();
   const {
     expandDirectoryNode,
     collapseDirectoryNode,
     prefetchDirectoryChildren,
   } = useStorageTreeOperations();
-  const { loading } = useStorageUIStore();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   const handleRetryFetchTree = useCallback(() => {

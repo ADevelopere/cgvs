@@ -1,8 +1,7 @@
 import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
@@ -19,8 +18,7 @@ interface StorageItemProps {
  * Manages drag-and-drop functionality and context menus.
  */
 const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
-  const { viewMode } = useStorageUIStore();
-  const { params } = useStorageDataStore();
+  const { viewMode, params } = useStorageState();
   const {
     selectedItems,
     lastSelectedItem,

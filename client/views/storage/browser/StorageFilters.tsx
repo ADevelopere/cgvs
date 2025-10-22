@@ -18,7 +18,7 @@ import {
   CalendarToday as CalendarIcon,
   Category as CategoryIcon,
 } from "@mui/icons-material";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
@@ -38,7 +38,7 @@ const FILE_TYPE: Record<Graphql.FileType, Graphql.FileType> = {
  * Updates URL query parameters to trigger data re-fetch.
  */
 const StorageFilters: React.FC = () => {
-  const { params, updateParams } = useStorageDataStore();
+  const { params, updateParams } = useStorageState();
 
   const setFilterType = React.useCallback(
     (type?: Graphql.FileType) => {

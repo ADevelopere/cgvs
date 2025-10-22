@@ -5,8 +5,7 @@ import {
   Sort as SortIcon,
   ViewList as ListViewIcon,
 } from "@mui/icons-material";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageSorting } from "@/client/views/storage/hooks/useStorageSorting";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
@@ -421,9 +420,8 @@ const GridView: React.FC<{
  * Supports both grid and list views with client-side sorting.
  */
 const StorageItemsView: React.FC = () => {
-  const { searchMode, viewMode, setViewMode, loading, operationErrors } =
-    useStorageUIStore();
-  const { params } = useStorageDataStore();
+  const { searchMode, viewMode, setViewMode, loading, operationErrors, params } =
+    useStorageState();
   const {
     selectedItems,
     focusedItem,
