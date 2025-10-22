@@ -5,8 +5,6 @@ import {
   BaseTreeItem,
   TreeViewItemRenderer,
 } from "@/client/components/treeView/TreeView";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { useStorageTreeOperations } from "@/client/views/storage/hooks/useStorageTreeOperations";
 import {
   DirectoryTreeNode,
   LoadingStates,
@@ -33,6 +31,10 @@ interface StorageDirectoryTreeProps {
   expandedNodes: Set<string>;
   queueStates: QueueStates;
   loading: LoadingStates;
+  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
+  onExpandNode: (path: string) => void;
+  onCollapseNode: (path: string) => void;
+  onPrefetchChildren: (path: string, refresh?: boolean) => Promise<void>;
 }
 
 const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
@@ -41,49 +43,47 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
   expandedNodes,
   queueStates,
   loading,
+  onNavigate,
+  onExpandNode,
+  onCollapseNode,
+  onPrefetchChildren,
 }) => {
-  const { navigateTo } = useStorageNavigation();
-  const {
-    expandDirectoryNode,
-    collapseDirectoryNode,
-    prefetchDirectoryChildren,
-  } = useStorageTreeOperations();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   const handleRetryFetchTree = useCallback(() => {
     // Use prefetchDirectoryChildren with empty path to refetch root directories
     // The refresh=true parameter forces a refetch even if already cached
-    prefetchDirectoryChildren("", true);
-  }, [prefetchDirectoryChildren]);
+    onPrefetchChildren("", true);
+  }, [onPrefetchChildren]);
 
   const handleSelectItem = useCallback(
     (item: BaseTreeItem) => {
       const node = item as DirectoryTreeNode;
-      navigateTo(node.path, params);
+      onNavigate(node.path, params);
     },
-    [navigateTo, params]
+    [onNavigate, params]
   );
 
   const handleExpandItem = useCallback(
     (item: BaseTreeItem) => {
       const node = item as DirectoryTreeNode;
       if (!expandedNodes.has(node.path)) {
-        expandDirectoryNode(node.path);
+        onExpandNode(node.path);
       }
     },
-    [expandedNodes, expandDirectoryNode]
+    [expandedNodes, onExpandNode]
   );
 
   const handleCollapseItem = useCallback(
     (item: BaseTreeItem) => {
       const node = item as DirectoryTreeNode;
-      collapseDirectoryNode(node.path);
+      onCollapseNode(node.path);
     },
-    [collapseDirectoryNode]
+    [onCollapseNode]
   );
 
   const debouncedPrefetch = useDebouncedCallback((path: string) => {
-    prefetchDirectoryChildren(path);
+    onPrefetchChildren(path);
   }, 300);
 
   const handleHoverItem = useCallback(

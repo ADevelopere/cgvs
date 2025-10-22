@@ -7,6 +7,7 @@ import {
   useStorageState,
   useStorageStateActions,
 } from "@/client/views/storage/contexts/StorageStateContext";
+import { useStorageOperations } from "@/client/views/storage/contexts/StorageOperationsContext";
 
 /**
  * Main content pane for the storage browser.
@@ -23,9 +24,14 @@ const StorageMainView: React.FC = () => {
     items,
     viewMode,
     operationErrors,
+    clipboard,
   } = useStorageState();
 
-  const { setViewMode, updateParams } = useStorageStateActions();
+  const { setViewMode, updateParams, copyItems, cutItems } =
+    useStorageStateActions();
+
+  // Get operations from context
+  const { navigateTo, refresh, pasteItems } = useStorageOperations();
 
   return (
     <Box
@@ -38,7 +44,7 @@ const StorageMainView: React.FC = () => {
       }}
     >
       {/* Breadcrumb Navigation */}
-      <StorageBreadcrumb params={params} />
+      <StorageBreadcrumb params={params} onNavigate={navigateTo} />
 
       {/* Conditional Toolbar (Filters or Selection Actions) */}
       <StorageToolbar
@@ -49,6 +55,10 @@ const StorageMainView: React.FC = () => {
         items={items}
         params={params}
         updateParams={updateParams}
+        clipboard={clipboard}
+        onCopyItems={copyItems}
+        onCutItems={cutItems}
+        onPasteItems={pasteItems}
       />
 
       {/* Main Items Display Area */}
@@ -60,6 +70,10 @@ const StorageMainView: React.FC = () => {
           loading={loading}
           operationErrors={operationErrors}
           params={params}
+          onNavigate={navigateTo}
+          onRefresh={refresh}
+          clipboard={clipboard}
+          onPasteItems={pasteItems}
         />
       </Box>
     </Box>

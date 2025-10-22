@@ -7,7 +7,6 @@ import {
 } from "@mui/icons-material";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageSorting } from "@/client/views/storage/hooks/useStorageSorting";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
@@ -17,9 +16,10 @@ import {
   StorageItem as StorageItemType,
   ViewMode,
   OperationErrors,
+  StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
 import type { LoadingStates } from "@/client/views/storage/core/storage.type";
-import { FilesListInput } from "@/client/graphql/generated/gql/graphql";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
 const StorageToolbar: React.FC<{
@@ -29,7 +29,7 @@ const StorageToolbar: React.FC<{
   sortBy: string;
   sortDirection: "ASC" | "DESC";
   translations: StorageManagementUITranslations;
-  params: FilesListInput;
+  params: Graphql.FilesListInput;
   setViewMode: (mode: ViewMode) => void;
   setSortBy: (field: string) => void;
   setSortDirection: (direction: "ASC" | "DESC") => void;
@@ -196,7 +196,12 @@ const ListView: React.FC<{
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
   viewMode: ViewMode;
-  params: FilesListInput;
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
 }> = ({
   sortBy,
   sortDirection,
@@ -208,6 +213,8 @@ const ListView: React.FC<{
   onClick,
   viewMode,
   params,
+  clipboard,
+  onNavigate,
 }) => {
   // Handle table header click (for list view)
   const handleTableSort = React.useCallback(
@@ -305,7 +312,14 @@ const ListView: React.FC<{
         </MUI.TableHead>
         <MUI.TableBody>
           {currentItems.map(item => (
-            <StorageItem key={item.path} item={item} viewMode={viewMode} params={params} />
+            <StorageItem
+              key={item.path}
+              item={item}
+              viewMode={viewMode}
+              params={params}
+              onNavigate={onNavigate}
+              clipboard={clipboard}
+            />
           ))}
         </MUI.TableBody>
       </MUI.Table>
@@ -388,8 +402,21 @@ const GridView: React.FC<{
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
   viewMode: ViewMode;
-  params: FilesListInput;
-}> = ({ currentItems, onContextMenu, onClick, viewMode, params }) => {
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+}> = ({
+  currentItems,
+  onContextMenu,
+  onClick,
+  viewMode,
+  params,
+  clipboard,
+  onNavigate,
+}) => {
   return (
     <MUI.Box
       sx={{
@@ -413,7 +440,13 @@ const GridView: React.FC<{
             size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
             key={item.path}
           >
-            <StorageItem item={item} viewMode={viewMode} params={params} />
+            <StorageItem
+              item={item}
+              viewMode={viewMode}
+              params={params}
+              onNavigate={onNavigate}
+              clipboard={clipboard}
+            />
           </MUI.Grid>
         ))}
       </MUI.Grid>
@@ -427,7 +460,14 @@ interface StorageItemsViewProps {
   setViewMode: (mode: ViewMode) => void;
   loading: LoadingStates;
   operationErrors: OperationErrors;
-  params: FilesListInput;
+  params: Graphql.FilesListInput;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onPasteItems: () => Promise<boolean>;
+  clipboard: StorageClipboardState | null;
 }
 
 /**
@@ -442,6 +482,10 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   loading,
   operationErrors,
   params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onPasteItems,
 }) => {
   const {
     selectedItems,
@@ -455,7 +499,6 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   } = useStorageSelection();
   const { getSortedItems, sortBy, sortDirection, setSortBy, setSortDirection } =
     useStorageSorting();
-  const { navigateTo, refresh } = useStorageNavigation();
   const { ui: translations } = useAppTranslation("storageTranslations");
   const theme = MUI.useTheme();
 
@@ -504,7 +547,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
     uploadPath: params.path,
     disabled: isLoading,
     onUploadComplete: () => {
-      refresh();
+      onRefresh();
     },
   });
 
@@ -569,7 +612,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (focusedItem) {
             const item = currentItems.find(item => item.path === focusedItem);
             if (item && item.__typename === "DirectoryInfo") {
-              navigateTo(item.path, params);
+              onNavigate(item.path, params);
             }
           }
           break;
@@ -609,7 +652,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
       lastSelectedItem,
       selectedItems.length,
       selectRange,
-      navigateTo,
+      onNavigate,
       params,
       toggleSelect,
       clearSelection,
@@ -735,6 +778,8 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
                 onClick={handleViewAreaClick}
                 viewMode={viewMode}
                 params={params}
+                clipboard={clipboard}
+                onNavigate={onNavigate}
               />
             )}
             {viewMode === "list" && (
@@ -749,6 +794,8 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
                 onClick={handleViewAreaClick}
                 viewMode={viewMode}
                 params={params}
+                clipboard={clipboard}
+                onNavigate={onNavigate}
               />
             )}
           </>
@@ -763,6 +810,9 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
         onClose={handleCloseViewAreaMenu}
         onContextMenu={handleViewAreaContextMenu}
         params={params}
+        clipboard={clipboard}
+        onPasteItems={onPasteItems}
+        onRefresh={onRefresh}
       />
     </MUI.Box>
   );

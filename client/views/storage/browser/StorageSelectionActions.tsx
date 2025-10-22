@@ -20,9 +20,11 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import {
+  StorageItem,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
 import RenameDialog from "../dialogs/RenameDialog";
@@ -34,6 +36,10 @@ interface StorageSelectionActionsProps {
   searchResults: StorageItem[];
   loading: LoadingStates;
   items: StorageItem[];
+  clipboard: StorageClipboardState | null;
+  onCopyItems: (items: StorageItem[]) => void;
+  onCutItems: (items: StorageItem[]) => void;
+  onPasteItems: () => Promise<boolean>;
 }
 
 /**
@@ -47,9 +53,12 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   searchResults,
   loading,
   items,
+  clipboard,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
 }) => {
   const { clearSelection } = useStorageSelection();
-  const { clipboard, copyItems, cutItems, pasteItems } = useStorageClipboard();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   // Dialog state
@@ -123,17 +132,17 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
 
   // Handle copy action
   const handleCopy = () => {
-    copyItems(selectedItemObjects);
+    onCopyItems(selectedItemObjects);
   };
 
   // Handle cut action
   const handleCut = () => {
-    cutItems(selectedItemObjects);
+    onCutItems(selectedItemObjects);
   };
 
   // Handle paste action
   const handlePaste = async () => {
-    await pasteItems();
+    await onPasteItems();
   };
 
   // Check if download is available for selected items
