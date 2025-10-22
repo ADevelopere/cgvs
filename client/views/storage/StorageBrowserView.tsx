@@ -6,13 +6,13 @@ import StorageMainView from "./browser/StorageMainView";
 import StorageSearch from "./browser/StorageSearch";
 import { SplitPane } from "@/client/components";
 import UploadProgress from "./uploading/UploadProgress";
-import { useStorageOperations } from "./contexts/useStorageOperations";
+import { useStorageOperations } from "./hooks/useStorageOperations";
 import { useStorageActions } from "./hooks/useStorageActions";
 import { useStorageUIStore } from "./stores/useStorageUIStore";
 import { useStorageTreeStore } from "./stores/useStorageTreeStore";
 import { useStorageDataStore } from "./stores/useStorageDataStore";
 
-const StorageBrowserView: React.FC = () => {
+export const StorageBrowserView: React.FC = () => {
   // Initialize storage data on mount
   // useStorageInitialization();
 
@@ -96,5 +96,3 @@ const StorageBrowserView: React.FC = () => {
     </>
   );
 };
-
-export default StorageBrowserView;

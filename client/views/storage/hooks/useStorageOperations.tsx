@@ -6,11 +6,11 @@ import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { DirectoryTreeNode, StorageItemUnion } from "../core/storage.type";
 import logger from "@/client/lib/logger";
-import { useStorageApollo } from "./StorageApolloContext";
-import { useStorageActions } from "../hooks/useStorageActions";
+import { useStorageActions } from "./useStorageActions";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageTreeStore } from "../stores/useStorageTreeStore";
+import { useStorageApollo } from "../contexts/StorageApolloContext";
 
 // ============================================================================
 // Operations Value Type
