@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataOperations } from "./useStorageDataOperations";
@@ -197,9 +197,12 @@ export const useStorageNavigation = () => {
     translations.failedToRefreshDirectory,
   ]);
 
-  return {
-    navigateTo,
-    goUp,
-    refresh,
-  };
+  return useMemo(
+    () => ({
+      navigateTo,
+      goUp,
+      refresh,
+    }),
+    [navigateTo, goUp, refresh]
+  );
 };

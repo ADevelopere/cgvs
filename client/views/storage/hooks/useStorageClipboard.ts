@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataOperations } from "./useStorageDataOperations";
 import { useStorageNavigation } from "./useStorageNavigation";
@@ -15,6 +15,9 @@ export const useStorageClipboard = () => {
   } = useStorageUIStore();
   const { copy, move } = useStorageDataOperations();
   const { refresh } = useStorageNavigation();
+
+  // Stabilize clipboard reference with useMemo
+  const stableClipboard = useMemo(() => clipboard, [clipboard]);
 
   const copyItems = useCallback(
     (items: StorageItem[]) => {
@@ -31,18 +34,18 @@ export const useStorageClipboard = () => {
   );
 
   const pasteItems = useCallback(async (): Promise<boolean> => {
-    if (!clipboard) return false;
+    if (!stableClipboard) return false;
 
-    const sourcePaths = clipboard.items.map(item => item.path);
+    const sourcePaths = stableClipboard.items.map(item => item.path);
     const destinationPath = ""; // This should come from current path in data store
 
-    if (clipboard.operation === "copy") {
+    if (stableClipboard.operation === "copy") {
       const success = await copy(sourcePaths, destinationPath);
       if (success) {
         await refresh();
       }
       return success;
-    } else if (clipboard.operation === "cut") {
+    } else if (stableClipboard.operation === "cut") {
       const success = await move(sourcePaths, destinationPath);
       if (success) {
         clearClipboard(); // Clear clipboard after successful cut/paste
@@ -52,13 +55,16 @@ export const useStorageClipboard = () => {
     }
 
     return false;
-  }, [clipboard, copy, move, refresh, clearClipboard]);
+  }, [stableClipboard, copy, move, refresh, clearClipboard]);
 
-  return {
-    clipboard,
-    copyItems,
-    cutItems,
-    pasteItems,
-    clearClipboard,
-  };
+  return useMemo(
+    () => ({
+      clipboard: stableClipboard,
+      copyItems,
+      cutItems,
+      pasteItems,
+      clearClipboard,
+    }),
+    [stableClipboard, copyItems, cutItems, pasteItems, clearClipboard]
+  );
 };

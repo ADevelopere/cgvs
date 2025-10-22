@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useStorageUploadStore } from "../stores/useStorageUploadStore";
 import { useStorageApolloMutations } from "./storage.operations";
 import { useNotifications } from "@toolpad/core/useNotifications";
@@ -612,12 +612,22 @@ export const useStorageUploadOperations = () => {
     uploadSingleFile,
   ]);
 
-  return {
-    uploadBatch,
-    startUpload,
-    cancelUpload,
-    retryFailedUploads,
-    retryFile,
-    clearUploadBatch,
-  };
+  return useMemo(
+    () => ({
+      uploadBatch,
+      startUpload,
+      cancelUpload,
+      retryFailedUploads,
+      retryFile,
+      clearUploadBatch,
+    }),
+    [
+      uploadBatch,
+      startUpload,
+      cancelUpload,
+      retryFailedUploads,
+      retryFile,
+      clearUploadBatch,
+    ]
+  );
 };

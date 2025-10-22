@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 
@@ -17,6 +17,14 @@ export const useStorageSelection = () => {
     setFocusedItem,
   } = useStorageUIStore();
   const { items } = useStorageDataStore();
+
+  // Stabilize primitive values with useMemo
+  const stableSelectedItems = useMemo(() => selectedItems, [selectedItems]);
+  const stableLastSelectedItem = useMemo(
+    () => lastSelectedItem,
+    [lastSelectedItem]
+  );
+  const stableFocusedItem = useMemo(() => focusedItem, [focusedItem]);
 
   const toggleSelect = useCallback(
     (path: string) => {
@@ -40,15 +48,28 @@ export const useStorageSelection = () => {
     [selectRangeAction, items]
   );
 
-  return {
-    selectedItems,
-    lastSelectedItem,
-    focusedItem,
-    toggleSelect,
-    selectAll,
-    clearSelection,
-    selectRange,
-    setLastSelectedItem,
-    setFocusedItem,
-  };
+  return useMemo(
+    () => ({
+      selectedItems: stableSelectedItems,
+      lastSelectedItem: stableLastSelectedItem,
+      focusedItem: stableFocusedItem,
+      toggleSelect,
+      selectAll,
+      clearSelection,
+      selectRange,
+      setLastSelectedItem,
+      setFocusedItem,
+    }),
+    [
+      stableSelectedItems,
+      stableLastSelectedItem,
+      stableFocusedItem,
+      toggleSelect,
+      selectAll,
+      clearSelection,
+      selectRange,
+      setLastSelectedItem,
+      setFocusedItem,
+    ]
+  );
 };
