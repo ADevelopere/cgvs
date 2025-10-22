@@ -3,7 +3,7 @@
 import React from "react";
 import { Box, Collapse, useTheme } from "@mui/material";
 import UploadProgressFileItem from "./UploadProgressFileItem";
-import { UploadFileDisplayInfo } from "../hooks/storage-upload.types";
+import { UploadFileDisplayInfo } from "../core/storage-upload.types";
 
 export interface UploadProgressFileListProps {
   files: UploadFileDisplayInfo[];

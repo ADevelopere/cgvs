@@ -5,8 +5,10 @@ import {
   Sort as SortIcon,
   ViewList as ListViewIcon,
 } from "@mui/icons-material";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageSorting } from "@/client/views/storage/hooks/useStorageSorting";
+import {
+  useStorageState,
+  useStorageStateActions,
+} from "@/client/views/storage/contexts/StorageStateContext";
 import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
@@ -329,6 +331,7 @@ const ListView: React.FC<{
               item={item}
               viewMode={viewMode}
               params={params}
+              currentItems={currentItems}
               onNavigate={onNavigate}
               clipboard={clipboard}
               onRefresh={onRefresh}
@@ -474,6 +477,7 @@ const GridView: React.FC<{
               item={item}
               viewMode={viewMode}
               params={params}
+              currentItems={currentItems}
               onNavigate={onNavigate}
               clipboard={clipboard}
               onRefresh={onRefresh}
@@ -533,18 +537,27 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   onDeleteItems,
   onCreateFolder,
 }) => {
+  // Get state from React Context
   const {
     selectedItems,
     focusedItem,
+    lastSelectedItem,
+    sortBy,
+    sortDirection,
+  } = useStorageState();
+
+  // Get actions from React Context
+  const {
     setFocusedItem,
     toggleSelect,
     selectRange,
     clearSelection,
     selectAll,
-    lastSelectedItem,
-  } = useStorageSelection();
-  const { getSortedItems, sortBy, sortDirection, setSortBy, setSortDirection } =
-    useStorageSorting();
+    setSortBy,
+    setSortDirection,
+    getSortedItems,
+  } = useStorageStateActions();
+
   const { ui: translations } = useAppTranslation("storageTranslations");
   const theme = MUI.useTheme();
 
@@ -616,7 +629,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (nextIndex !== currentFocusedIndex) {
             setFocusedItem(currentItems[nextIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(lastSelectedItem, currentItems[nextIndex].path);
+              selectRange(lastSelectedItem, currentItems[nextIndex].path, currentItems);
             }
           }
           break;
@@ -628,7 +641,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (prevIndex !== currentFocusedIndex) {
             setFocusedItem(currentItems[prevIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(lastSelectedItem, currentItems[prevIndex].path);
+              selectRange(lastSelectedItem, currentItems[prevIndex].path, currentItems);
             }
           }
           break;
@@ -638,7 +651,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           event.preventDefault();
           setFocusedItem(currentItems[0].path);
           if (event.shiftKey && lastSelectedItem) {
-            selectRange(lastSelectedItem, currentItems[0].path);
+            selectRange(lastSelectedItem, currentItems[0].path, currentItems);
           }
           break;
 
@@ -648,7 +661,8 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (event.shiftKey && lastSelectedItem) {
             selectRange(
               lastSelectedItem,
-              currentItems[currentItems.length - 1].path
+              currentItems[currentItems.length - 1].path,
+              currentItems
             );
           }
           break;
@@ -678,7 +692,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
         case "a":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            selectAll();
+            selectAll(currentItems);
           }
           break;
 
