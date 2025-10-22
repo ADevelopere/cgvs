@@ -52,7 +52,6 @@ const StorageMainView: React.FC = () => {
     renameItem,
     deleteItems,
     move,
-    fetchDirectoryChildren,
     createFolder,
   } = useStorageOperations();
 
@@ -85,7 +84,6 @@ const StorageMainView: React.FC = () => {
         onRenameItem={renameItem}
         onDeleteItems={deleteItems}
         onMove={move}
-        onFetchDirectoryChildren={fetchDirectoryChildren}
         clearSelection={clearSelection}
       />
 
