@@ -27,7 +27,7 @@ const StorageMainView: React.FC = () => {
     clipboard,
   } = useStorageState();
 
-  const { setViewMode, updateParams, copyItems, cutItems } =
+  const { setViewMode, updateParams, copyItems, cutItems, selectAll } =
     useStorageStateActions();
 
   // Get operations from context
@@ -92,6 +92,7 @@ const StorageMainView: React.FC = () => {
           onRenameItem={renameItem}
           onDeleteItems={deleteItems}
           onCreateFolder={createFolder}
+          selectAll={selectAll}
         />
       </Box>
     </Box>

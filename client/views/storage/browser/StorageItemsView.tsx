@@ -513,6 +513,7 @@ interface StorageItemsViewProps {
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;
   onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
+  selectAll: () => void;
 }
 
 /**
@@ -629,7 +630,11 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (nextIndex !== currentFocusedIndex) {
             setFocusedItem(currentItems[nextIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(lastSelectedItem, currentItems[nextIndex].path, currentItems);
+              selectRange(
+                lastSelectedItem,
+                currentItems[nextIndex].path,
+                currentItems
+              );
             }
           }
           break;
@@ -641,7 +646,11 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (prevIndex !== currentFocusedIndex) {
             setFocusedItem(currentItems[prevIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(lastSelectedItem, currentItems[prevIndex].path, currentItems);
+              selectRange(
+                lastSelectedItem,
+                currentItems[prevIndex].path,
+                currentItems
+              );
             }
           }
           break;
@@ -692,7 +701,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
         case "a":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            selectAll(currentItems);
+            selectAll();
           }
           break;
 
@@ -886,6 +895,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
         onPasteItems={onPasteItems}
         onRefresh={onRefresh}
         onCreateFolder={onCreateFolder}
+        selectAll={selectAll}
       />
     </MUI.Box>
   );
