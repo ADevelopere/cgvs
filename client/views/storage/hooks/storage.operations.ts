@@ -3,51 +3,44 @@
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import * as Document from "./storage.documents";
-import { useQueryWrapper, useMutationWrapper } from "@/client/graphql/utils";
+import { useMutationWrapper } from "@/client/graphql/utils";
 
 export const useStorageApolloQueries = () => {
-  const checkFileUsage = useQueryWrapper(
-    useLazyQuery(Document.fileUsageQueryDocument, {
+  // Create lazy query hooks - extract just the query function (first element)
+  // The query function from useLazyQuery is stable and doesn't recreate
+  const [checkFileUsage] = useLazyQuery(Document.fileUsageQueryDocument, {
+    fetchPolicy: "network-only",
+  });
+
+  const [fetchDirectoryChildren] = useLazyQuery(
+    Document.directoryChildrenQueryDocument,
+    {
       fetchPolicy: "network-only",
-    })
+    }
   );
 
-  const fetchDirectoryChildren = useQueryWrapper(
-    useLazyQuery(Document.directoryChildrenQueryDocument, {
-      fetchPolicy: "network-only",
-    })
-  );
+  const [getFileInfo] = useLazyQuery(Document.fileInfoQueryDocument, {
+    fetchPolicy: "network-only",
+  });
 
-  const getFileInfo = useQueryWrapper(
-    useLazyQuery(Document.fileInfoQueryDocument, {
-      fetchPolicy: "network-only",
-    })
-  );
+  const [getFolderInfo] = useLazyQuery(Document.folderInfoQueryDocument, {
+    fetchPolicy: "network-only",
+  });
 
-  const getFolderInfo = useQueryWrapper(
-    useLazyQuery(Document.folderInfoQueryDocument, {
-      fetchPolicy: "network-only",
-    })
-  );
+  const [getStorageStats] = useLazyQuery(Document.storageStatsQueryDocument, {
+    fetchPolicy: "network-only",
+  });
 
-  const getStorageStats = useQueryWrapper(
-    useLazyQuery(Document.storageStatsQueryDocument, {
-      fetchPolicy: "network-only",
-    })
-  );
+  const [listFiles] = useLazyQuery(Document.listFilesQueryDocument, {
+    fetchPolicy: "network-only",
+  });
 
-  const listFiles = useQueryWrapper(
-    useLazyQuery(Document.listFilesQueryDocument, {
-      fetchPolicy: "network-only",
-    })
-  );
+  const [searchFiles] = useLazyQuery(Document.searchFilesQueryDocument, {
+    fetchPolicy: "network-only",
+  });
 
-  const searchFiles = useQueryWrapper(
-    useLazyQuery(Document.searchFilesQueryDocument, {
-      fetchPolicy: "network-only",
-    })
-  );
-
+  // Return stable object with raw Apollo query functions
+  // No wrapper needed - Apollo functions are already stable
   return useMemo(
     () => ({
       checkFileUsage,

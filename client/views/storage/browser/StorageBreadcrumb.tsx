@@ -41,7 +41,18 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
 
   // Use custom path if provided, otherwise use current path from context
   const currentPath = customPath || params.path;
-  const handleNavigate = onNavigateToPath || navigateTo;
+
+  // Create navigation handler that passes params when using default navigateTo
+  const handleNavigate = React.useCallback(
+    (path: string) => {
+      if (onNavigateToPath) {
+        onNavigateToPath(path);
+      } else {
+        navigateTo(path, params);
+      }
+    },
+    [onNavigateToPath, navigateTo, params]
+  );
 
   // Split path into segments, filtering out empty strings
   const pathSegments = currentPath.split("/").filter(Boolean);

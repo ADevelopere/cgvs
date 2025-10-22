@@ -550,7 +550,7 @@ const StorageItemsView: React.FC = () => {
           if (focusedItem) {
             const item = currentItems.find(item => item.path === focusedItem);
             if (item && item.__typename === "DirectoryInfo") {
-              navigateTo(item.path);
+              navigateTo(item.path, params);
             }
           }
           break;
@@ -588,12 +588,13 @@ const StorageItemsView: React.FC = () => {
       focusedItem,
       setFocusedItem,
       lastSelectedItem,
+      selectedItems.length,
       selectRange,
       navigateTo,
+      params,
       toggleSelect,
       clearSelection,
       selectAll,
-      selectedItems.length,
     ]
   );
 

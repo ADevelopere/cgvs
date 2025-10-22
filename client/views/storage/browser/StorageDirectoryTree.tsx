@@ -46,9 +46,9 @@ const StorageDirectoryTree: React.FC = () => {
   const handleSelectItem = useCallback(
     (item: BaseTreeItem) => {
       const node = item as DirectoryTreeNode;
-      navigateTo(node.path);
+      navigateTo(node.path, params);
     },
-    [navigateTo]
+    [navigateTo, params]
   );
 
   const handleExpandItem = useCallback(
