@@ -5,10 +5,13 @@ import {
   BaseTreeItem,
   TreeViewItemRenderer,
 } from "@/client/components/treeView/TreeView";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageTreeOperations } from "@/client/views/storage/hooks/useStorageTreeOperations";
-import { DirectoryTreeNode } from "@/client/views/storage/core/storage.type";
+import {
+  DirectoryTreeNode,
+  LoadingStates,
+  QueueStates,
+} from "@/client/views/storage/core/storage.type";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -17,15 +20,28 @@ import { useDebouncedCallback } from "use-debounce";
 import { useAppTranslation } from "@/client/locale";
 import Button from "@mui/material/Button";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 type DirectoryTreeItemRendererProps = Pick<
   Parameters<TreeViewItemRenderer<DirectoryTreeNode>>[0],
   "item" | "isSelected"
 >;
 
-const StorageDirectoryTree: React.FC = () => {
-  const { params, directoryTree, expandedNodes, queueStates, loading } =
-    useStorageState();
+interface StorageDirectoryTreeProps {
+  params: Graphql.FilesListInput;
+  directoryTree: DirectoryTreeNode[];
+  expandedNodes: Set<string>;
+  queueStates: QueueStates;
+  loading: LoadingStates;
+}
+
+const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
+  params,
+  directoryTree,
+  expandedNodes,
+  queueStates,
+  loading,
+}) => {
   const { navigateTo } = useStorageNavigation();
   const {
     expandDirectoryNode,

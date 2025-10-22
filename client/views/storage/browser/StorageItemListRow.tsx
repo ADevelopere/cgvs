@@ -15,6 +15,7 @@ interface StorageItemListRowProps {
   onClick?: (event: React.MouseEvent) => void;
   onDoubleClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
+  params: Graphql.FilesListInput;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -46,6 +47,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
   onClick,
   onDoubleClick,
   onContextMenu,
+  params,
 }) => {
   const [contextMenuAnchor, setContextMenuAnchor] = useState<
     undefined | { top: number; left: number }
@@ -185,6 +187,7 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           folder={item}
+          params={params}
         />
       ) : (
         <FileMenu

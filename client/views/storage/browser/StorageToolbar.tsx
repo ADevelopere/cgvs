@@ -1,16 +1,35 @@
 import React from "react";
 import { Box, Fade } from "@mui/material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import StorageFilters from "./StorageFilters";
 import StorageSelectionActions from "./StorageSelectionActions";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { LoadingStates } from "@/client/views/storage/core/storage.type";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
+interface StorageToolbarProps {
+  selectedItems: string[];
+  searchMode: boolean;
+  searchResults: StorageItem[];
+  loading: LoadingStates;
+  items: StorageItem[];
+  params: Graphql.FilesListInput;
+  updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
+}
 
 /**
  * Conditional toolbar container for the storage browser.
  * Switches between StorageFilters and StorageSelectionActions based on selection state.
  * Provides smooth transitions between the two states.
  */
-const StorageToolbar: React.FC = () => {
-  const { selectedItems } = useStorageState();
+const StorageToolbar: React.FC<StorageToolbarProps> = ({
+  selectedItems,
+  searchMode,
+  searchResults,
+  loading,
+  items,
+  params,
+  updateParams,
+}) => {
 
   const hasSelection = selectedItems.length > 0;
 
@@ -33,7 +52,7 @@ const StorageToolbar: React.FC = () => {
             visibility: hasSelection ? "hidden" : "visible",
           }}
         >
-          <StorageFilters />
+          <StorageFilters params={params} updateParams={updateParams} />
         </Box>
       </Fade>
 
@@ -48,7 +67,13 @@ const StorageToolbar: React.FC = () => {
             visibility: !hasSelection ? "hidden" : "visible",
           }}
         >
-          <StorageSelectionActions />
+          <StorageSelectionActions
+            selectedItems={selectedItems}
+            searchMode={searchMode}
+            searchResults={searchResults}
+            loading={loading}
+            items={items}
+          />
         </Box>
       </Fade>
     </Box>

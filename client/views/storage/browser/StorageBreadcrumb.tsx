@@ -12,18 +12,23 @@ import {
   ChevronRight as ChevronRightIcon,
   MoreHoriz as MoreHorizIcon,
 } from "@mui/icons-material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useAppTranslation } from "@/client/locale";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
 interface StorageBreadcrumbProps {
   /**
-   * Optional custom path override. If not provided, uses current path from context.
+   * Current path to display in breadcrumb.
    */
   path?: string;
   /**
    * Optional custom navigation handler. If not provided, uses navigateTo from context.
    */
   onNavigateToPath?: (path: string) => void;
+  /**
+   * Navigation params to pass when navigating.
+   */
+  params: Graphql.FilesListInput;
 }
 
 /**
@@ -34,12 +39,12 @@ interface StorageBreadcrumbProps {
 const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
   path: customPath,
   onNavigateToPath,
+  params,
 }) => {
-  const { params } = useStorageState();
   const { navigateTo } = useStorageNavigation();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
-  // Use custom path if provided, otherwise use current path from context
+  // Use custom path if provided, otherwise use current path from params
   const currentPath = customPath || params.path;
 
   // Create navigation handler that passes params when using default navigateTo

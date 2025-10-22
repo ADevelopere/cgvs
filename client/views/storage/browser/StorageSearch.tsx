@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 import TextField from "@mui/material/TextField";
@@ -12,17 +11,25 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import HistoryIcon from "@mui/icons-material/History";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 
 const STORAGE_SEARCH_HISTORY_KEY = "storage-search-history";
 
-const StorageSearch: React.FC = () => {
-  const {
-    searchMode,
-    setSearchMode,
-    setSearchResults,
-    clearSelection,
-    setLastSelectedItem,
-  } = useStorageState();
+interface StorageSearchProps {
+  searchMode: boolean;
+  setSearchMode: (mode: boolean) => void;
+  setSearchResults: (results: StorageItem[]) => void;
+  clearSelection: () => void;
+  setLastSelectedItem: (item: string | null) => void;
+}
+
+const StorageSearch: React.FC<StorageSearchProps> = ({
+  searchMode,
+  setSearchMode,
+  setSearchResults,
+  clearSelection,
+  setLastSelectedItem,
+}) => {
   const { search: searchOperation } = useStorageDataOperations();
 
   const search = React.useCallback(

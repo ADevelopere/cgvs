@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import StorageBreadcrumb from "./StorageBreadcrumb";
 import StorageToolbar from "./StorageToolbar";
 import StorageItemsView from "./StorageItemsView";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 
 /**
  * Main content pane for the storage browser.
@@ -10,6 +11,19 @@ import StorageItemsView from "./StorageItemsView";
  * This component represents the right pane in the split-pane layout.
  */
 const StorageMainView: React.FC = () => {
+  const {
+    params,
+    updateParams,
+    selectedItems,
+    searchMode,
+    searchResults,
+    loading,
+    items,
+    viewMode,
+    setViewMode,
+    operationErrors,
+  } = useStorageState();
+
   return (
     <Box
       sx={{
@@ -21,14 +35,29 @@ const StorageMainView: React.FC = () => {
       }}
     >
       {/* Breadcrumb Navigation */}
-      <StorageBreadcrumb />
+      <StorageBreadcrumb params={params} />
 
       {/* Conditional Toolbar (Filters or Selection Actions) */}
-      <StorageToolbar />
+      <StorageToolbar
+        selectedItems={selectedItems}
+        searchMode={searchMode}
+        searchResults={searchResults}
+        loading={loading}
+        items={items}
+        params={params}
+        updateParams={updateParams}
+      />
 
       {/* Main Items Display Area */}
       <Box sx={{ flex: 1, overflow: "hidden" }}>
-        <StorageItemsView />
+        <StorageItemsView
+          searchMode={searchMode}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          loading={loading}
+          operationErrors={operationErrors}
+          params={params}
+        />
       </Box>
     </Box>
   );

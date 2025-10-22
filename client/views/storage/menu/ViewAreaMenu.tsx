@@ -16,7 +16,6 @@ import {
   Refresh as RefreshIcon,
   SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
@@ -24,6 +23,7 @@ import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStor
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
 import CreateFolderDialog from "@/client/views/storage/dialogs/CreateFolderDialog";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 export interface ViewAreaMenuProps {
   anchorEl: HTMLElement | null;
@@ -34,6 +34,7 @@ export interface ViewAreaMenuProps {
     left: number;
   };
   onContextMenu?: (event: React.MouseEvent) => void;
+  params: Graphql.FilesListInput;
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
@@ -42,10 +43,10 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   onClose,
   anchorPosition,
   onContextMenu,
+  params,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { params } = useStorageState();
   const { selectAll } = useStorageSelection();
   const { clipboard, pasteItems } = useStorageClipboard();
   const { refresh } = useStorageNavigation();

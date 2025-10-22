@@ -19,7 +19,6 @@ import {
   ContentPaste as PasteIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useAppTranslation } from "@/client/locale";
@@ -27,15 +26,28 @@ import { StorageItem } from "@/client/views/storage/core/storage.type";
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
 import RenameDialog from "../dialogs/RenameDialog";
+import { LoadingStates } from "@/client/views/storage/core/storage.type";
+
+interface StorageSelectionActionsProps {
+  selectedItems: string[];
+  searchMode: boolean;
+  searchResults: StorageItem[];
+  loading: LoadingStates;
+  items: StorageItem[];
+}
 
 /**
  * Selection action toolbar component for the storage browser.
  * Displays action buttons when one or more items are selected.
  * Provides download, move, delete, rename, copy, cut, and paste operations.
  */
-const StorageSelectionActions: React.FC = () => {
-  const { selectedItems, searchMode, searchResults, loading, items } =
-    useStorageState();
+const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
+  selectedItems,
+  searchMode,
+  searchResults,
+  loading,
+  items,
+}) => {
   const { clearSelection } = useStorageSelection();
   const { clipboard, copyItems, cutItems, pasteItems } = useStorageClipboard();
   const { ui: translations } = useAppTranslation("storageTranslations");

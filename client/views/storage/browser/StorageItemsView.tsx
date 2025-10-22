@@ -5,7 +5,6 @@ import {
   Sort as SortIcon,
   ViewList as ListViewIcon,
 } from "@mui/icons-material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageSorting } from "@/client/views/storage/hooks/useStorageSorting";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
@@ -17,7 +16,9 @@ import { StorageManagementUITranslations } from "@/client/locale/components/Stor
 import {
   StorageItem as StorageItemType,
   ViewMode,
+  OperationErrors,
 } from "@/client/views/storage/core/storage.type";
+import type { LoadingStates } from "@/client/views/storage/core/storage.type";
 import { FilesListInput } from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
@@ -194,6 +195,8 @@ const ListView: React.FC<{
   setSortDirection: (direction: "ASC" | "DESC") => void;
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
+  viewMode: ViewMode;
+  params: FilesListInput;
 }> = ({
   sortBy,
   sortDirection,
@@ -203,6 +206,8 @@ const ListView: React.FC<{
   setSortDirection,
   onContextMenu,
   onClick,
+  viewMode,
+  params,
 }) => {
   // Handle table header click (for list view)
   const handleTableSort = React.useCallback(
@@ -300,7 +305,7 @@ const ListView: React.FC<{
         </MUI.TableHead>
         <MUI.TableBody>
           {currentItems.map(item => (
-            <StorageItem key={item.path} item={item} />
+            <StorageItem key={item.path} item={item} viewMode={viewMode} params={params} />
           ))}
         </MUI.TableBody>
       </MUI.Table>
@@ -382,7 +387,9 @@ const GridView: React.FC<{
   currentItems: StorageItemType[];
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
-}> = ({ currentItems, onContextMenu, onClick }) => {
+  viewMode: ViewMode;
+  params: FilesListInput;
+}> = ({ currentItems, onContextMenu, onClick, viewMode, params }) => {
   return (
     <MUI.Box
       sx={{
@@ -406,7 +413,7 @@ const GridView: React.FC<{
             size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
             key={item.path}
           >
-            <StorageItem item={item} />
+            <StorageItem item={item} viewMode={viewMode} params={params} />
           </MUI.Grid>
         ))}
       </MUI.Grid>
@@ -414,14 +421,28 @@ const GridView: React.FC<{
   );
 };
 
+interface StorageItemsViewProps {
+  searchMode: boolean;
+  viewMode: ViewMode;
+  setViewMode: (mode: ViewMode) => void;
+  loading: LoadingStates;
+  operationErrors: OperationErrors;
+  params: FilesListInput;
+}
+
 /**
  * Main items display area for the storage browser.
  * Handles view mode switching, local sorting, and rendering of items.
  * Supports both grid and list views with client-side sorting.
  */
-const StorageItemsView: React.FC = () => {
-  const { searchMode, viewMode, setViewMode, loading, operationErrors, params } =
-    useStorageState();
+const StorageItemsView: React.FC<StorageItemsViewProps> = ({
+  searchMode,
+  viewMode,
+  setViewMode,
+  loading,
+  operationErrors,
+  params,
+}) => {
   const {
     selectedItems,
     focusedItem,
@@ -712,6 +733,8 @@ const StorageItemsView: React.FC = () => {
                 currentItems={currentItems}
                 onContextMenu={handleViewAreaContextMenu}
                 onClick={handleViewAreaClick}
+                viewMode={viewMode}
+                params={params}
               />
             )}
             {viewMode === "list" && (
@@ -724,6 +747,8 @@ const StorageItemsView: React.FC = () => {
                 setSortDirection={setSortDirection}
                 onContextMenu={handleViewAreaContextMenu}
                 onClick={handleViewAreaClick}
+                viewMode={viewMode}
+                params={params}
               />
             )}
           </>
@@ -737,6 +762,7 @@ const StorageItemsView: React.FC = () => {
         anchorPosition={viewAreaMenuPosition}
         onClose={handleCloseViewAreaMenu}
         onContextMenu={handleViewAreaContextMenu}
+        params={params}
       />
     </MUI.Box>
   );
