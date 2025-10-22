@@ -19,7 +19,7 @@ import { useLazyQuery } from "@apollo/client/react";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem as StorageItemType } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion as StorageItemType } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 import { listFilesQueryDocument } from "../core/storage.documents";

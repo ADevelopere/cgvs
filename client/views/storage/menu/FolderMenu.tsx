@@ -25,7 +25,7 @@ import {
   Info as InfoIcon,
 } from "@mui/icons-material";
 import {
-  StorageItem,
+  StorageItemUnion,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -45,8 +45,8 @@ export interface FolderMenuProps {
     currentParams: Graphql.FilesListInput
   ) => Promise<void>;
   onRefresh: () => Promise<void>;
-  onCopyItems: (items: StorageItem[]) => void;
-  onCutItems: (items: StorageItem[]) => void;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
   onPasteItems: () => Promise<boolean>;
   clipboard: StorageClipboardState | null;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
@@ -84,12 +84,12 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   }, [folder.path, onClose, onNavigate, params]);
 
   const handleCopy = React.useCallback(() => {
-    onCopyItems([folder as StorageItem]);
+    onCopyItems([folder as StorageItemUnion]);
     onClose();
   }, [folder, onClose, onCopyItems]);
 
   const handleCut = React.useCallback(() => {
-    onCutItems([folder as StorageItem]);
+    onCutItems([folder as StorageItemUnion]);
     onClose();
   }, [folder, onClose, onCutItems]);
 

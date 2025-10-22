@@ -2,13 +2,13 @@
 
 import React, { useState, useCallback } from "react";
 import * as MUI from "@mui/material";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
 export interface DeleteConfirmationDialogProps {
   open: boolean;
   onClose: () => void;
-  items: StorageItem[];
+  items: StorageItemUnion[];
   onDelete: (paths: string[]) => Promise<boolean>;
 }
 

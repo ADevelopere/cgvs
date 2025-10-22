@@ -9,9 +9,9 @@ import {
 } from "@mui/icons-material";
 import { SvgIconProps } from "@mui/material/SvgIcon";
 import { mimeToContentType } from "@/client/views/storage/core/storage.constant";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 interface FileTypeIconProps extends Omit<SvgIconProps, "component"> {
-  item: StorageItem;
+  item: StorageItemUnion;
 }
 
 /**

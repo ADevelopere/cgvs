@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { DirectoryTreeNode, StorageItem } from "../core/storage.type";
+import { DirectoryTreeNode, StorageItemUnion } from "../core/storage.type";
 import logger from "@/client/lib/logger";
 import { useStorageApollo } from "./StorageApolloContext";
 import { useStorageState, useStorageStateActions } from "./StorageStateContext";
@@ -16,7 +16,7 @@ import { useStorageState, useStorageStateActions } from "./StorageStateContext";
 type StorageOperations = {
   // Data Fetching Operations
   fetchList: (params: Graphql.FilesListInput) => Promise<{
-    items: StorageItem[];
+    items: StorageItemUnion[];
     pagination: Graphql.PageInfo;
   } | null>;
   fetchDirectoryChildren: (
@@ -33,7 +33,7 @@ type StorageOperations = {
   search: (
     query: string,
     path?: string
-  ) => Promise<{ items: StorageItem[]; totalCount: number } | null>;
+  ) => Promise<{ items: StorageItemUnion[]; totalCount: number } | null>;
 
   // File Operations (with loading states + refresh)
   renameItem: (path: string, newName: string) => Promise<boolean>;
@@ -125,7 +125,7 @@ export const useStorageOperations = (): StorageOperations => {
     async (
       params: Graphql.FilesListInput
     ): Promise<{
-      items: StorageItem[];
+      items: StorageItemUnion[];
       pagination: Graphql.PageInfo;
     } | null> => {
       logger.info("Starting fetchList operation", {
@@ -177,8 +177,8 @@ export const useStorageOperations = (): StorageOperations => {
         };
 
         // Transform StorageEntity[] to StorageItem[]
-        const items: StorageItem[] = result.data?.listFiles
-          .items as StorageItem[];
+        const items: StorageItemUnion[] = result.data?.listFiles
+          .items as StorageItemUnion[];
 
         logger.info("fetchList operation completed successfully", {
           path: params.path,
@@ -522,7 +522,7 @@ export const useStorageOperations = (): StorageOperations => {
       query: string,
       path?: string
     ): Promise<{
-      items: StorageItem[];
+      items: StorageItemUnion[];
       totalCount: number;
     } | null> => {
       try {
@@ -537,8 +537,8 @@ export const useStorageOperations = (): StorageOperations => {
         }
 
         // Transform search results to StorageItem[]
-        const items: StorageItem[] = result.data?.searchFiles
-          .items as StorageItem[];
+        const items: StorageItemUnion[] = result.data?.searchFiles
+          .items as StorageItemUnion[];
 
         return {
           items,

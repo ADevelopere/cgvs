@@ -7,7 +7,7 @@ import {
 } from "@/client/views/storage/contexts/StorageStateContext";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
 import {
-  StorageItem as StorageItemType,
+  StorageItemUnion as StorageItemType,
   ViewMode,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";

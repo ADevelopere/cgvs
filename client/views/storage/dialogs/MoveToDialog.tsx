@@ -11,13 +11,13 @@ import {
 } from "@mui/icons-material";
 import {
   DirectoryTreeNode,
-  StorageItem,
+  StorageItemUnion,
 } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 export interface MoveToDialogProps {
   open: boolean;
   onClose: () => void;
-  items: StorageItem[];
+  items: StorageItemUnion[];
   onFetchDirectoryChildren: (
     path?: string
   ) => Promise<DirectoryTreeNode[] | null>;

@@ -6,12 +6,12 @@ import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import {
-  StorageItem,
+  StorageItemUnion,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
 
 interface StorageItemGridProps {
-  item: StorageItem;
+  item: StorageItemUnion;
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
@@ -24,14 +24,14 @@ interface StorageItemGridProps {
     currentParams: Graphql.FilesListInput
   ) => Promise<void>;
   onRefresh: () => Promise<void>;
-  onCopyItems: (items: StorageItem[]) => void;
-  onCutItems: (items: StorageItem[]) => void;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
   onPasteItems: () => Promise<boolean>;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
-function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
+function isDirectoryItem(item: StorageItemUnion): item is Graphql.DirectoryInfo {
   return item.__typename === "DirectoryInfo";
 }
 
