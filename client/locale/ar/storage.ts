@@ -229,6 +229,8 @@ export const storage: StorageTranslations = {
     filePickerDialogFailedToLoad: "فشل في تحميل الملفات",
     filePickerDialogUnexpectedError: "حدث خطأ غير متوقع",
     selecting: "جاري الاختيار...",
+    folder: "مجلد",
+    files: "ملفات",
     // File picker dialog end
 
     contentType: "نوع المحتوى",
