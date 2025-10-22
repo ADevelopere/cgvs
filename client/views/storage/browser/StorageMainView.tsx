@@ -31,7 +31,16 @@ const StorageMainView: React.FC = () => {
     useStorageStateActions();
 
   // Get operations from context
-  const { navigateTo, refresh, pasteItems } = useStorageOperations();
+  const {
+    navigateTo,
+    refresh,
+    pasteItems,
+    renameItem,
+    deleteItems,
+    move,
+    fetchDirectoryChildren,
+    createFolder,
+  } = useStorageOperations();
 
   return (
     <Box
@@ -59,6 +68,10 @@ const StorageMainView: React.FC = () => {
         onCopyItems={copyItems}
         onCutItems={cutItems}
         onPasteItems={pasteItems}
+        onRenameItem={renameItem}
+        onDeleteItems={deleteItems}
+        onMove={move}
+        onFetchDirectoryChildren={fetchDirectoryChildren}
       />
 
       {/* Main Items Display Area */}
@@ -74,6 +87,11 @@ const StorageMainView: React.FC = () => {
           onRefresh={refresh}
           clipboard={clipboard}
           onPasteItems={pasteItems}
+          onCopyItems={copyItems}
+          onCutItems={cutItems}
+          onRenameItem={renameItem}
+          onDeleteItems={deleteItems}
+          onCreateFolder={createFolder}
         />
       </Box>
     </Box>

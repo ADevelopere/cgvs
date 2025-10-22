@@ -202,6 +202,12 @@ const ListView: React.FC<{
     path: string,
     currentParams: Graphql.FilesListInput
   ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }> = ({
   sortBy,
   sortDirection,
@@ -215,6 +221,12 @@ const ListView: React.FC<{
   params,
   clipboard,
   onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   // Handle table header click (for list view)
   const handleTableSort = React.useCallback(
@@ -319,6 +331,12 @@ const ListView: React.FC<{
               params={params}
               onNavigate={onNavigate}
               clipboard={clipboard}
+              onRefresh={onRefresh}
+              onCopyItems={onCopyItems}
+              onCutItems={onCutItems}
+              onPasteItems={onPasteItems}
+              onRenameItem={onRenameItem}
+              onDeleteItems={onDeleteItems}
             />
           ))}
         </MUI.TableBody>
@@ -408,6 +426,12 @@ const GridView: React.FC<{
     path: string,
     currentParams: Graphql.FilesListInput
   ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }> = ({
   currentItems,
   onContextMenu,
@@ -416,6 +440,12 @@ const GridView: React.FC<{
   params,
   clipboard,
   onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   return (
     <MUI.Box
@@ -446,6 +476,12 @@ const GridView: React.FC<{
               params={params}
               onNavigate={onNavigate}
               clipboard={clipboard}
+              onRefresh={onRefresh}
+              onCopyItems={onCopyItems}
+              onCutItems={onCutItems}
+              onPasteItems={onPasteItems}
+              onRenameItem={onRenameItem}
+              onDeleteItems={onDeleteItems}
             />
           </MUI.Grid>
         ))}
@@ -468,6 +504,11 @@ interface StorageItemsViewProps {
   onRefresh: () => Promise<void>;
   onPasteItems: () => Promise<boolean>;
   clipboard: StorageClipboardState | null;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
 }
 
 /**
@@ -486,6 +527,11 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   onNavigate,
   onRefresh,
   onPasteItems,
+  onCopyItems,
+  onCutItems,
+  onRenameItem,
+  onDeleteItems,
+  onCreateFolder,
 }) => {
   const {
     selectedItems,
@@ -780,6 +826,12 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
                 params={params}
                 clipboard={clipboard}
                 onNavigate={onNavigate}
+                onRefresh={onRefresh}
+                onCopyItems={onCopyItems}
+                onCutItems={onCutItems}
+                onPasteItems={onPasteItems}
+                onRenameItem={onRenameItem}
+                onDeleteItems={onDeleteItems}
               />
             )}
             {viewMode === "list" && (
@@ -796,6 +848,12 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
                 params={params}
                 clipboard={clipboard}
                 onNavigate={onNavigate}
+                onRefresh={onRefresh}
+                onCopyItems={onCopyItems}
+                onCutItems={onCutItems}
+                onPasteItems={onPasteItems}
+                onRenameItem={onRenameItem}
+                onDeleteItems={onDeleteItems}
               />
             )}
           </>
@@ -813,6 +871,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
         clipboard={clipboard}
         onPasteItems={onPasteItems}
         onRefresh={onRefresh}
+        onCreateFolder={onCreateFolder}
       />
     </MUI.Box>
   );

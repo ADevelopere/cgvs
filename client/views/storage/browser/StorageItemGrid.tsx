@@ -5,7 +5,10 @@ import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import {
+  StorageItem,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 
 interface StorageItemGridProps {
   item: StorageItem;
@@ -15,6 +18,17 @@ interface StorageItemGridProps {
   onDoubleClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
   params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItem[]) => void;
+  onCutItems: (items: StorageItem[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
 function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
@@ -33,6 +47,14 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
   onDoubleClick,
   onContextMenu,
   params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   const isDirectory = React.useMemo(() => isDirectoryItem(item), [item]);
 
@@ -170,6 +192,14 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
           onClose={handleCloseContextMenu}
           folder={item as Graphql.DirectoryInfo}
           params={params}
+          onNavigate={onNavigate}
+          onRefresh={onRefresh}
+          onCopyItems={onCopyItems}
+          onCutItems={onCutItems}
+          onPasteItems={onPasteItems}
+          clipboard={clipboard}
+          onRenameItem={onRenameItem}
+          onDeleteItems={onDeleteItems}
         />
       ) : (
         <FileMenu
@@ -177,6 +207,11 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           file={item as Graphql.FileInfo}
+          onCopyItems={onCopyItems}
+          onCutItems={onCutItems}
+          onRenameItem={onRenameItem}
+          onDeleteItems={onDeleteItems}
+          onRefresh={onRefresh}
         />
       )}
     </>

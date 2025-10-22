@@ -24,6 +24,7 @@ import { useAppTranslation } from "@/client/locale";
 import {
   StorageItem,
   StorageClipboardState,
+  DirectoryTreeNode,
 } from "@/client/views/storage/core/storage.type";
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
@@ -40,6 +41,10 @@ interface StorageSelectionActionsProps {
   onCopyItems: (items: StorageItem[]) => void;
   onCutItems: (items: StorageItem[]) => void;
   onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onMove: (paths: string[], destination: string) => Promise<boolean>;
+  onFetchDirectoryChildren: (path?: string) => Promise<DirectoryTreeNode[] | null>;
 }
 
 /**
@@ -57,6 +62,10 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   onCopyItems,
   onCutItems,
   onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  onMove,
+  onFetchDirectoryChildren,
 }) => {
   const { clearSelection } = useStorageSelection();
   const { ui: translations } = useAppTranslation("storageTranslations");
@@ -313,6 +322,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           open={deleteDialogOpen}
           onClose={handleCloseDeleteDialog}
           items={selectedItemObjects}
+          onDelete={onDeleteItems}
         />
 
         {/* Move To Dialog */}
@@ -320,6 +330,8 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           open={moveDialogOpen}
           onClose={handleCloseMoveDialog}
           items={selectedItemObjects}
+          onFetchDirectoryChildren={onFetchDirectoryChildren}
+          onMove={onMove}
         />
 
         {/* Rename Dialog */}
@@ -327,6 +339,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           open={renameDialogOpen}
           onClose={handleCloseRenameDialog}
           item={isSingleSelection ? selectedItemObjects[0] : null}
+          onRename={onRenameItem}
         />
       </>
     </Box>

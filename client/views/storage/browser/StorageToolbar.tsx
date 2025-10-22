@@ -5,6 +5,7 @@ import StorageSelectionActions from "./StorageSelectionActions";
 import {
   StorageItem,
   StorageClipboardState,
+  DirectoryTreeNode,
 } from "@/client/views/storage/core/storage.type";
 import { LoadingStates } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -21,6 +22,10 @@ interface StorageToolbarProps {
   onCopyItems: (items: StorageItem[]) => void;
   onCutItems: (items: StorageItem[]) => void;
   onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onMove: (paths: string[], destination: string) => Promise<boolean>;
+  onFetchDirectoryChildren: (path?: string) => Promise<DirectoryTreeNode[] | null>;
 }
 
 /**
@@ -40,6 +45,10 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
   onCopyItems,
   onCutItems,
   onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  onMove,
+  onFetchDirectoryChildren,
 }) => {
   const hasSelection = selectedItems.length > 0;
 
@@ -87,6 +96,10 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
             onCopyItems={onCopyItems}
             onCutItems={onCutItems}
             onPasteItems={onPasteItems}
+            onRenameItem={onRenameItem}
+            onDeleteItems={onDeleteItems}
+            onMove={onMove}
+            onFetchDirectoryChildren={onFetchDirectoryChildren}
           />
         </Box>
       </Fade>
