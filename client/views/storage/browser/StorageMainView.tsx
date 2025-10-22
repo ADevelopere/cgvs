@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import StorageBreadcrumb from "./StorageBreadcrumb";
 import StorageToolbar from "./StorageToolbar";
 import StorageItemsView from "./StorageItemsView";
-import { useStorageOperations } from "@/client/views/storage/contexts/useStorageOperations";
+import { useStorageOperations } from "@/client/views/storage/hooks/useStorageOperations";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageActions } from "../hooks/useStorageActions";
