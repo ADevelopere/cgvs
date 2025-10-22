@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import * as MUI from "@mui/material";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 
 export interface CreateFolderDialogProps {
@@ -10,6 +9,7 @@ export interface CreateFolderDialogProps {
   onClose: () => void;
   currentPath: string;
   onSuccess: () => void;
+  onCreateFolder: (path: string, name: string) => Promise<boolean>;
 }
 
 const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
@@ -17,10 +17,10 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
   onClose,
   currentPath,
   onSuccess,
+  onCreateFolder,
 }) => {
   const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { createFolder } = useStorageDataOperations();
 
   // State
   const [folderName, setFolderName] = useState("");
@@ -100,7 +100,7 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
     setError(null);
 
     try {
-      const success = await createFolder(currentPath, folderName.trim());
+      const success = await onCreateFolder(currentPath, folderName.trim());
 
       if (success) {
         onSuccess();
@@ -116,7 +116,7 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
   }, [
     folderName,
     validateName,
-    createFolder,
+    onCreateFolder,
     currentPath,
     onSuccess,
     onClose,
@@ -159,7 +159,9 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
     [error]
   );
 
-  const isFormValid = folderName.trim() && !validateName(folderName);
+  const isFormValid = useMemo(() => {
+    return folderName.trim() && !validateName(folderName);
+  }, [folderName, validateName]);
 
   return (
     <MUI.Dialog

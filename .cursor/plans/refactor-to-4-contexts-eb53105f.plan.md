@@ -1,5 +1,4 @@
 <!-- eb53105f-bfb9-46f3-8abe-d89ec2e1a633 868cfcaf-a086-4a78-8e1d-5d7015b7fc58 -->
-
 # Refactor Storage Hooks to 4 Contexts
 
 ## CRITICAL CONSTRAINTS
@@ -8,7 +7,7 @@
 
 - **NEVER** import ANY `useStorage*` or `use*Operations` hooks
 - Copy ALL logic directly into contexts - no imports from hooks
-- Import Apollo hooks directly from `@apollo/client/react`
+- Import Apollo hooks directly from `@apollo/client/react` 
 - Import notifications from `@toolpad/core/useNotifications`
 
 ### ✅ Validation Process Per Context
@@ -111,7 +110,9 @@
 <StorageApolloProvider>
   <StorageStateProvider>
     <StorageOperationsProvider>
-      <StorageUploadProvider>{children}</StorageUploadProvider>
+      <StorageUploadProvider>
+        {children}
+      </StorageUploadProvider>
     </StorageOperationsProvider>
   </StorageStateProvider>
 </StorageApolloProvider>

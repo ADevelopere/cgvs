@@ -15,23 +15,26 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
 import { StorageItem as StorageItemType } from "@/client/views/storage/core/storage.type";
-import { FileInfo } from "@/client/graphql/generated/gql/graphql";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 
 export interface FilePickerDialogProps {
   open: boolean;
   onClose: () => void;
-  onFileSelect: (file: FileInfo) => void;
+  onFileSelect: (file: Graphql.FileInfo) => void;
   allowedFileTypes?: string[]; // Optional array of allowed content types (e.g., ['image/*', 'application/pdf'])
   title?: string; // Optional custom title
+  onFetchList: (params: Graphql.FilesListInput) => Promise<{
+    items: StorageItemType[];
+    pagination: Graphql.PageInfo;
+  } | null>;
 }
 
-function isFile(item: StorageItemType): item is FileInfo {
+function isFile(item: StorageItemType): item is Graphql.FileInfo {
   return item.__typename === "FileInfo";
 }
 
@@ -41,10 +44,10 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   onFileSelect,
   allowedFileTypes,
   title,
+  onFetchList,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { fetchList } = useStorageDataOperations();
 
   // State
   const [currentPath, setCurrentPath] = useState<string>("");
@@ -52,7 +55,9 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);
+  const [selectedFile, setSelectedFile] = useState<Graphql.FileInfo | null>(
+    null
+  );
 
   // Use refs to access latest values without causing re-renders
   const allowedFileTypesRef = useRef(allowedFileTypes);
@@ -113,7 +118,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       setSelectedFile(null);
 
       try {
-        const result = await fetchList({
+        const result = await onFetchList({
           path: path,
           limit: 1000,
           offset: 0,
@@ -159,7 +164,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       }
     },
     [
-      fetchList,
+      onFetchList,
       translations.filePickerDialogFailedToLoad,
       translations.filePickerDialogUnexpectedError,
     ]
@@ -224,7 +229,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
   // Handle file selection
   const handleFileSelect = useCallback(
-    async (file: FileInfo) => {
+    async (file: Graphql.FileInfo) => {
       logger.info("File selection initiated", {
         fileName: file.name,
         filePath: file.path,

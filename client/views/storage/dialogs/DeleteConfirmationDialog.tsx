@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from "react";
 import * as MUI from "@mui/material";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { StorageItem } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
@@ -10,16 +9,17 @@ export interface DeleteConfirmationDialogProps {
   open: boolean;
   onClose: () => void;
   items: StorageItem[];
+  onDelete: (paths: string[]) => Promise<boolean>;
 }
 
 const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   open,
   onClose,
   items,
+  onDelete,
 }) => {
   const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { remove } = useStorageDataOperations();
 
   // State
   const [isDeleting, setIsDeleting] = useState(false);
@@ -34,7 +34,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
 
     try {
       const itemPaths = items.map(item => item.path);
-      const success = await remove(itemPaths);
+      const success = await onDelete(itemPaths);
 
       if (success) {
         onClose();
@@ -52,7 +52,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
     } finally {
       setIsDeleting(false);
     }
-  }, [items, remove, onClose, translations]);
+  }, [items, onDelete, onClose, translations]);
 
   // Handle dialog close
   const handleClose = useCallback(() => {
