@@ -16,7 +16,6 @@ import {
   Refresh as RefreshIcon,
   SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
@@ -38,6 +37,7 @@ export interface ViewAreaMenuProps {
   onPasteItems: () => Promise<boolean>;
   onRefresh: () => Promise<void>;
   onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
+  selectAll: () => void
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
@@ -51,10 +51,10 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   onPasteItems,
   onRefresh,
   onCreateFolder,
+  selectAll,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { selectAll } = useStorageSelection();
   const { startUpload } = useStorageUploadOperations();
 
   const [isPasting, setIsPasting] = useState(false);

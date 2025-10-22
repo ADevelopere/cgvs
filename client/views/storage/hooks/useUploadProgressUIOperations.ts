@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useStorageUploadOperations } from "./useStorageUploadOperations";
 import { useUploadProgressUIStore } from "../stores/useUploadProgressUIStore";
-import { UploadFileState, UploadFileDisplayInfo } from "./storage-upload.types";
+import { UploadFileState, UploadFileDisplayInfo } from "../core/storage-upload.types";
 
 // Helper function to determine file type from file name
 const getFileTypeFromName = (fileName: string): string => {

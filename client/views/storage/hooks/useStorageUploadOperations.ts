@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useRef } from "react";
 import { useStorageUploadStore } from "../stores/useStorageUploadStore";
-import { useStorageApolloMutations } from "./storage.operations";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import {
@@ -15,8 +14,11 @@ import {
   getStoragePath,
 } from "../core/storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { UploadFileState } from "./storage-upload.types";
 import logger from "@/client/lib/logger";
+import { UploadFileState } from "../core/storage-upload.types";
+import { useMutation } from "@apollo/client/react";
+import { useMutationWrapper } from "@/client/graphql/utils";
+import { generateUploadSignedUrlMutationDocument } from "../core/storage.documents";
 
 export const useStorageUploadOperations = () => {
   const {
@@ -26,7 +28,9 @@ export const useStorageUploadOperations = () => {
     updateBatchProgress,
     clearUploadBatch,
   } = useStorageUploadStore();
-  const { generateUploadSignedUrl } = useStorageApolloMutations();
+  const generateUploadSignedUrl = useMutationWrapper(
+    useMutation(generateUploadSignedUrlMutationDocument)
+  );
   const notifications = useNotifications();
   const { uploading: translations } = useAppTranslation("storageTranslations");
   const uploadXhrsRef = useRef<Map<string, XMLHttpRequest>>(new Map());
