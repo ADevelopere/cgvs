@@ -20,6 +20,12 @@ interface StorageItemProps {
     currentParams: Graphql.FilesListInput
   ) => Promise<void>;
   clipboard: StorageClipboardState | null;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
 /**
@@ -33,6 +39,12 @@ const StorageItem: React.FC<StorageItemProps> = ({
   params,
   onNavigate,
   clipboard,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   const {
     selectedItems,
@@ -163,9 +175,25 @@ const StorageItem: React.FC<StorageItemProps> = ({
       onDoubleClick: handleDoubleClick,
       onContextMenu: handleContextMenu,
       params,
+      clipboard,
+      onNavigate,
+      onRefresh,
+      onCopyItems,
+      onCutItems,
+      onPasteItems,
+      onRenameItem,
+      onDeleteItems,
     }),
     [
       handleClick,
+      clipboard,
+      onNavigate,
+      onRefresh,
+      onCopyItems,
+      onCutItems,
+      onPasteItems,
+      onRenameItem,
+      onDeleteItems,
       handleContextMenu,
       handleDoubleClick,
       item,

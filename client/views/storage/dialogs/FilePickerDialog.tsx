@@ -15,12 +15,15 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
+import { useLazyQuery } from "@apollo/client/react";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
 import { StorageItem as StorageItemType } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
+import { listFilesQueryDocument } from "../core/storage.documents";
+import { useLazyQueryWrapper } from "@/client/graphql/utils";
 
 export interface FilePickerDialogProps {
   open: boolean;
@@ -28,10 +31,6 @@ export interface FilePickerDialogProps {
   onFileSelect: (file: Graphql.FileInfo) => void;
   allowedFileTypes?: string[]; // Optional array of allowed content types (e.g., ['image/*', 'application/pdf'])
   title?: string; // Optional custom title
-  onFetchList: (params: Graphql.FilesListInput) => Promise<{
-    items: StorageItemType[];
-    pagination: Graphql.PageInfo;
-  } | null>;
 }
 
 function isFile(item: StorageItemType): item is Graphql.FileInfo {
@@ -44,10 +43,12 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   onFileSelect,
   allowedFileTypes,
   title,
-  onFetchList,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
+
+  // Use Apollo Client hook to fetch files list
+  const listFiles = useLazyQueryWrapper(useLazyQuery(listFilesQueryDocument));
 
   // State
   const [currentPath, setCurrentPath] = useState<string>("");
@@ -118,24 +119,34 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       setSelectedFile(null);
 
       try {
-        const result = await onFetchList({
+        const input: Graphql.FilesListInput = {
           path: path,
           limit: 1000,
           offset: 0,
+        };
+
+        logger.info("Calling GraphQL listFiles query", { input });
+        const result = await listFiles({ input });
+        logger.info("GraphQL listFiles query completed", {
+          hasData: !!result.data?.listFiles,
+          hasErrors: !!result.error,
         });
 
-        if (result) {
+        if (result.data?.listFiles) {
+          // Transform StorageEntity[] to StorageItem[]
+          const items: StorageItemType[] = result.data.listFiles
+            .items as StorageItemType[];
+
           logger.info("Items loaded successfully", {
             path,
-            itemCount: result.items.length,
-            totalCount: result.pagination.total,
-            folders: result.items.filter(
+            itemCount: items.length,
+            totalCount: result.data.listFiles.totalCount,
+            folders: items.filter(
               item => item.__typename === "DirectoryInfo"
             ).length,
-            files: result.items.filter(item => item.__typename === "FileInfo")
-              .length,
+            files: items.filter(item => item.__typename === "FileInfo").length,
           });
-          setItems(result.items);
+          setItems(items);
         } else {
           logger.error("Failed to load items - no result", { path });
           const errorMessage =
@@ -164,7 +175,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       }
     },
     [
-      onFetchList,
+      listFiles,
       translations.filePickerDialogFailedToLoad,
       translations.filePickerDialogUnexpectedError,
     ]

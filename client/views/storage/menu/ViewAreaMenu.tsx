@@ -37,6 +37,7 @@ export interface ViewAreaMenuProps {
   clipboard: StorageClipboardState | null;
   onPasteItems: () => Promise<boolean>;
   onRefresh: () => Promise<void>;
+  onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
@@ -49,6 +50,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   clipboard,
   onPasteItems,
   onRefresh,
+  onCreateFolder,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
@@ -218,6 +220,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
         onClose={() => setCreateFolderDialogOpen(false)}
         currentPath={params.path}
         onSuccess={handleCreateFolderSuccess}
+        onCreateFolder={onCreateFolder}
       />
     </>
   );
