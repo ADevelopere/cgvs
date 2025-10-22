@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
   StorageItemUnion,
@@ -437,64 +437,109 @@ export const useStorageActions = (): StorageActions => {
   // RETURN ACTIONS
   // ============================================================================
 
-  return {
-    // Data actions
-    setItems,
-    setPagination,
-    setParams,
-    updateParams,
-    setStats,
-    navigateToDirectory,
+  return useMemo(
+    () => ({
+      // Data actions
+      setItems,
+      setPagination,
+      setParams,
+      updateParams,
+      setStats,
+      navigateToDirectory,
 
-    // Selection actions
-    toggleSelect,
-    selectAll,
-    clearSelection,
-    selectRange,
-    setLastSelectedItem,
-    setFocusedItem,
+      // Selection actions
+      toggleSelect,
+      selectAll,
+      clearSelection,
+      selectRange,
+      setLastSelectedItem,
+      setFocusedItem,
 
-    // UI interaction actions
-    setViewMode,
-    setSearchMode,
-    setSearchResults,
-    copyItems,
-    cutItems,
-    clearClipboard,
+      // UI interaction actions
+      setViewMode,
+      setSearchMode,
+      setSearchResults,
+      copyItems,
+      cutItems,
+      clearClipboard,
 
-    // Sorting actions
-    setSortBy,
-    setSortDirection,
-    getSortedItems,
+      // Sorting actions
+      setSortBy,
+      setSortDirection,
+      getSortedItems,
 
-    // Loading and error actions
-    updateLoading,
-    updateError,
-    clearErrors,
-    clearNavigationState,
+      // Loading and error actions
+      updateLoading,
+      updateError,
+      clearErrors,
+      clearNavigationState,
 
-    // Tree management actions
-    setDirectoryTree,
-    updateTreeNode,
-    addChildToNode,
+      // Tree management actions
+      setDirectoryTree,
+      updateTreeNode,
+      addChildToNode,
 
-    // Node state actions
-    expandNode,
-    collapseNode,
-    setPrefetchedNode,
+      // Node state actions
+      expandNode,
+      collapseNode,
+      setPrefetchedNode,
 
-    // Queue management actions
-    addToFetchQueue,
-    removeFromFetchQueue,
-    addToExpansionQueue,
-    removeFromExpansionQueue,
-    setCurrentlyFetching,
-    clearQueues,
+      // Queue management actions
+      addToFetchQueue,
+      removeFromFetchQueue,
+      addToExpansionQueue,
+      removeFromExpansionQueue,
+      setCurrentlyFetching,
+      clearQueues,
 
-    // Reset actions
-    resetData,
-    resetUI,
-    resetTree,
-    resetAll,
-  };
+      // Reset actions
+      resetData,
+      resetUI,
+      resetTree,
+      resetAll,
+    }),
+    [
+      addChildToNode,
+      addToExpansionQueue,
+      addToFetchQueue,
+      clearClipboard,
+      clearErrors,
+      clearNavigationState,
+      clearQueues,
+      clearSelection,
+      collapseNode,
+      copyItems,
+      cutItems,
+      expandNode,
+      getSortedItems,
+      navigateToDirectory,
+      removeFromExpansionQueue,
+      removeFromFetchQueue,
+      resetAll,
+      resetData,
+      resetTree,
+      resetUI,
+      selectAll,
+      selectRange,
+      setCurrentlyFetching,
+      setDirectoryTree,
+      setFocusedItem,
+      setItems,
+      setLastSelectedItem,
+      setPagination,
+      setParams,
+      setPrefetchedNode,
+      setSearchMode,
+      setSearchResults,
+      setSortBy,
+      setSortDirection,
+      setStats,
+      setViewMode,
+      toggleSelect,
+      updateError,
+      updateLoading,
+      updateParams,
+      updateTreeNode,
+    ]
+  );
 };

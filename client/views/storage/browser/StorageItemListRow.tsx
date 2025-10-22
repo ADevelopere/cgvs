@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { TableRow, TableCell, Typography, Box } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import FileTypeIcon from "./FileTypeIcon";
-import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
+import {
+  StorageItemUnion,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 
 interface StorageItemListRowProps {
   item: StorageItemUnion;
+  focusedItem: string | null;
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
@@ -17,7 +20,10 @@ interface StorageItemListRowProps {
   onContextMenu?: (event: React.MouseEvent) => void;
   params: Graphql.FilesListInput;
   clipboard: StorageClipboardState | null;
-  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
   onRefresh: () => Promise<void>;
   onCopyItems: (items: StorageItemUnion[]) => void;
   onCutItems: (items: StorageItemUnion[]) => void;
@@ -50,6 +56,7 @@ const formatDate = (dateString: string): string => {
  */
 const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
   item,
+  focusedItem,
   isSelected,
   isCut,
   onClick,
@@ -69,7 +76,6 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
     undefined | { top: number; left: number }
   >(undefined);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const { focusedItem } = useStorageState();
 
   const isFocused = React.useMemo(
     () => focusedItem === item.path,

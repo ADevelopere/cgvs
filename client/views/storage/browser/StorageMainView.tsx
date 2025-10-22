@@ -3,12 +3,10 @@ import { Box } from "@mui/material";
 import StorageBreadcrumb from "./StorageBreadcrumb";
 import StorageToolbar from "./StorageToolbar";
 import StorageItemsView from "./StorageItemsView";
-import {
-  useStorageState,
-  useStorageStateActions,
-} from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageOperations } from "@/client/views/storage/contexts/useStorageOperations";
-
+import { useStorageUIStore } from "../stores/useStorageUIStore";
+import { useStorageDataStore } from "../stores/useStorageDataStore";
+import { useStorageActions } from "../hooks/useStorageActions";
 /**
  * Main content pane for the storage browser.
  * Assembles the breadcrumb navigation, toolbar, and items view into a cohesive layout.
@@ -16,19 +14,35 @@ import { useStorageOperations } from "@/client/views/storage/contexts/useStorage
  */
 const StorageMainView: React.FC = () => {
   const {
-    params,
-    selectedItems,
     searchMode,
-    searchResults,
     loading,
-    items,
+    selectedItems,
+    lastSelectedItem,
+    focusedItem,
+    sortBy,
+    sortDirection,
+    searchResults,
     viewMode,
     operationErrors,
     clipboard,
-  } = useStorageState();
+  } = useStorageUIStore();
 
-  const { setViewMode, updateParams, copyItems, cutItems, selectAll } =
-    useStorageStateActions();
+  const { params, items } = useStorageDataStore();
+
+  const {
+    setViewMode,
+    updateParams,
+    copyItems,
+    cutItems,
+    selectAll,
+    toggleSelect,
+    clearSelection,
+    selectRange,
+    setFocusedItem,
+    setSortBy,
+    setSortDirection,
+    getSortedItems,
+  } = useStorageActions();
 
   // Get operations from context
   const {
@@ -72,6 +86,7 @@ const StorageMainView: React.FC = () => {
         onDeleteItems={deleteItems}
         onMove={move}
         onFetchDirectoryChildren={fetchDirectoryChildren}
+        clearSelection={clearSelection}
       />
 
       {/* Main Items Display Area */}
@@ -79,6 +94,11 @@ const StorageMainView: React.FC = () => {
         <StorageItemsView
           searchMode={searchMode}
           viewMode={viewMode}
+          selectedItems={selectedItems}
+          lastSelectedItem={lastSelectedItem}
+          focusedItem={focusedItem}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
           setViewMode={setViewMode}
           loading={loading}
           operationErrors={operationErrors}
@@ -92,7 +112,14 @@ const StorageMainView: React.FC = () => {
           onRenameItem={renameItem}
           onDeleteItems={deleteItems}
           onCreateFolder={createFolder}
+          toggleSelect={toggleSelect}
           selectAll={selectAll}
+          clearSelection={clearSelection}
+          selectRange={selectRange}
+          setFocusedItem={setFocusedItem}
+          setSortBy={setSortBy}
+          setSortDirection={setSortDirection}
+          getSortedItems={getSortedItems}
         />
       </Box>
     </Box>

@@ -1,10 +1,6 @@
 import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
-import {
-  useStorageState,
-  useStorageStateActions,
-} from "@/client/views/storage/contexts/StorageStateContext";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
 import {
   StorageItemUnion as StorageItemType,
@@ -16,9 +12,12 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 interface StorageItemProps {
   item: StorageItemType;
+  focusedItem: string | null;
   viewMode: ViewMode;
   params: Graphql.FilesListInput;
-  currentItems: StorageItemType[];
+  sortedItems: StorageItemType[];
+  selectedItems: string[];
+  lastSelectedItem: string | null;
   onNavigate: (
     path: string,
     currentParams: Graphql.FilesListInput
@@ -30,6 +29,15 @@ interface StorageItemProps {
   onPasteItems: () => Promise<boolean>;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;
+  toggleSelect: (path: string) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
+  selectRange: (
+    fromPath: string,
+    toPath: string,
+    items: StorageItemType[]
+  ) => void;
+  setFocusedItem: (path: string | null) => void;
 }
 
 /**
@@ -39,9 +47,12 @@ interface StorageItemProps {
  */
 const StorageItem: React.FC<StorageItemProps> = ({
   item,
+  focusedItem,
   viewMode,
   params,
-  currentItems,
+  sortedItems: currentItems,
+  selectedItems,
+  lastSelectedItem,
   onNavigate,
   clipboard,
   onRefresh,
@@ -50,11 +61,11 @@ const StorageItem: React.FC<StorageItemProps> = ({
   onPasteItems,
   onRenameItem,
   onDeleteItems,
+  toggleSelect,
+  selectRange,
+  clearSelection,
+  setFocusedItem,
 }) => {
-  const { selectedItems, lastSelectedItem } = useStorageState();
-  const { toggleSelect, selectRange, clearSelection, setFocusedItem } =
-    useStorageStateActions();
-
   const isCut = React.useMemo(
     () =>
       clipboard?.operation === "cut" &&
@@ -171,6 +182,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
   const commonProps = React.useMemo(
     () => ({
       item,
+      focusedItem,
       isSelected: selectedItems.includes(item.path),
       onClick: handleClick,
       onDoubleClick: handleDoubleClick,
@@ -198,6 +210,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
       handleContextMenu,
       handleDoubleClick,
       item,
+      focusedItem,
       selectedItems,
       params,
     ]

@@ -4,7 +4,6 @@ import FilePreview from "./FilePreview";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import {
   StorageItemUnion,
   StorageClipboardState,
@@ -12,6 +11,7 @@ import {
 
 interface StorageItemGridProps {
   item: StorageItemUnion;
+  focusedItem: string | null
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
@@ -41,6 +41,7 @@ function isDirectoryItem(item: StorageItemUnion): item is Graphql.DirectoryInfo 
  */
 const StorageItemGrid: React.FC<StorageItemGridProps> = ({
   item,
+  focusedItem,
   isSelected,
   isCut,
   onClick,
@@ -66,7 +67,6 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     | undefined
   >(undefined);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const { focusedItem } = useStorageState();
 
   const isFocused = focusedItem === item.path;
 

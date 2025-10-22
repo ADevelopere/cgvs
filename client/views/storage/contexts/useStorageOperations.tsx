@@ -7,7 +7,10 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { DirectoryTreeNode, StorageItemUnion } from "../core/storage.type";
 import logger from "@/client/lib/logger";
 import { useStorageApollo } from "./StorageApolloContext";
-import { useStorageState, useStorageStateActions } from "./StorageStateContext";
+import { useStorageActions } from "../hooks/useStorageActions";
+import { useStorageUIStore } from "../stores/useStorageUIStore";
+import { useStorageDataStore } from "../stores/useStorageDataStore";
+import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 
 // ============================================================================
 // Operations Value Type
@@ -72,13 +75,21 @@ export const useStorageOperations = (): StorageOperations => {
   apolloRef.current = apollo;
 
   // Get state and state actionsRef.current
-  const actions = useStorageStateActions();
+  const actions = useStorageActions();
   const actionsRef = useRef(actions);
   actionsRef.current = actions;
 
-  const state = useStorageState();
-  const stateRef = useRef(state);
-  stateRef.current = state;
+  const uiStore = useStorageUIStore();
+  const uiStoreRef = useRef(uiStore);
+  uiStoreRef.current = uiStore;
+
+  const dataStore = useStorageDataStore();
+  const dataStoreRef = useRef(dataStore);
+  dataStoreRef.current = dataStore;
+
+  const treeStore = useStorageTreeStore();
+  const treeStoreRef = useRef(treeStore);
+  treeStoreRef.current = treeStore;
 
   // Get notifications and translations
   const notifications = useNotifications();
@@ -625,12 +636,12 @@ export const useStorageOperations = (): StorageOperations => {
   // ============================================================================
 
   // Use refs to avoid dependencies and prevent re-creation of functions
-  const paramsRef = useRef(state.params);
+  const paramsRef = useRef(dataStore.params);
 
   // Update refs when values/functions change
   useEffect(() => {
-    paramsRef.current = state.params;
-  }, [state.params]);
+    paramsRef.current = dataStore.params;
+  }, [dataStore.params]);
 
   const navigateTo = useCallback(
     async (path: string, currentParams: Graphql.FilesListInput) => {
@@ -750,7 +761,7 @@ export const useStorageOperations = (): StorageOperations => {
   // Function to process expansion queue
   const processExpansionQueue = useCallback(
     (path: string) => {
-      if (state.queueStates.expansionQueue.has(path)) {
+      if (treeStore.queueStates.expansionQueue.has(path)) {
         // Check if children are available in the tree
         const hasChildrenInTree = (
           nodes: DirectoryTreeNode[],
@@ -767,22 +778,22 @@ export const useStorageOperations = (): StorageOperations => {
           return false;
         };
 
-        if (hasChildrenInTree(state.directoryTree, path)) {
+        if (hasChildrenInTree(treeStore.directoryTree, path)) {
           // Children are available, expand immediately
           actionsRef.current.expandNode(path);
           actionsRef.current.removeFromExpansionQueue(path);
         }
       }
     },
-    [state.directoryTree, state.queueStates.expansionQueue]
+    [treeStore.directoryTree, treeStore.queueStates.expansionQueue]
   );
 
   const prefetchDirectoryChildren = useCallback(
     async (path: string, refreshParam?: boolean) => {
       if (
-        (!refreshParam && state.prefetchedNodes.has(path)) ||
-        state.expandedNodes.has(path) ||
-        state.queueStates.currentlyFetching.has(path)
+        (!refreshParam && treeStoreRef.current.prefetchedNodes.has(path)) ||
+        treeStoreRef.current.expandedNodes.has(path) ||
+        treeStoreRef.current.queueStates.currentlyFetching.has(path)
       )
         return;
 
@@ -795,7 +806,7 @@ export const useStorageOperations = (): StorageOperations => {
         const children = await fetchDirectoryChildren(path);
         if (children) {
           // Cache the children for instant expansion later
-          if (state.directoryTree.length === 0 && path === "") {
+          if (treeStoreRef.current.directoryTree.length === 0 && path === "") {
             // If nodes array is empty and this is the root path, return the children directly
             actionsRef.current.setDirectoryTree(
               children.map(child => ({
@@ -816,19 +827,12 @@ export const useStorageOperations = (): StorageOperations => {
         actionsRef.current.setCurrentlyFetching(path, false);
       }
     },
-    [
-      state.prefetchedNodes,
-      state.expandedNodes,
-      state.queueStates.currentlyFetching,
-      state.directoryTree.length,
-      fetchDirectoryChildren,
-      processExpansionQueue,
-    ]
+    [fetchDirectoryChildren, processExpansionQueue]
   );
 
   const expandDirectoryNode = useCallback(
     (path: string) => {
-      if (state.expandedNodes.has(path)) return; // Already expanded
+      if (treeStoreRef.current.expandedNodes.has(path)) return; // Already expanded
 
       // Check if children are already available in the tree
       const findNodeInTree = (
@@ -847,7 +851,10 @@ export const useStorageOperations = (): StorageOperations => {
         return null;
       };
 
-      const targetNode = findNodeInTree(state.directoryTree, path);
+      const targetNode = findNodeInTree(
+        treeStoreRef.current.directoryTree,
+        path
+      );
 
       if (targetNode?.children !== undefined) {
         // Children are already available, expand immediately
@@ -858,8 +865,8 @@ export const useStorageOperations = (): StorageOperations => {
         actionsRef.current.addToExpansionQueue(path);
 
         if (
-          !state.queueStates.currentlyFetching.has(path) &&
-          !state.queueStates.fetchQueue.has(path)
+          !treeStoreRef.current.queueStates.currentlyFetching.has(path) &&
+          !treeStoreRef.current.queueStates.fetchQueue.has(path)
         ) {
           // Not currently fetching and not in fetch queue, trigger prefetch
           prefetchDirectoryChildren(path);
@@ -867,13 +874,7 @@ export const useStorageOperations = (): StorageOperations => {
       }
       // If node doesn't have children, do nothing
     },
-    [
-      state.expandedNodes,
-      state.directoryTree,
-      state.queueStates.currentlyFetching,
-      state.queueStates.fetchQueue,
-      prefetchDirectoryChildren,
-    ]
+    [prefetchDirectoryChildren]
   );
 
   const collapseDirectoryNode = useCallback((path: string) => {
@@ -885,18 +886,19 @@ export const useStorageOperations = (): StorageOperations => {
   // ============================================================================
 
   const pasteItems = useCallback(async (): Promise<boolean> => {
-    if (!state.clipboard) return false;
+    if (!uiStoreRef.current?.clipboard) return false;
 
-    const sourcePaths = state.clipboard.items.map(item => item.path);
-    const destinationPath = state.params.path || "";
+    const sourcePaths =
+      uiStoreRef.current.clipboard.items.map(item => item.path) || [];
+    const destinationPath = dataStoreRef.current.params.path || "";
 
-    if (state.clipboard.operation === "copy") {
+    if (uiStoreRef.current.clipboard.operation === "copy") {
       const success = await copy(sourcePaths, destinationPath);
       if (success) {
         await refresh();
       }
       return success;
-    } else if (state.clipboard.operation === "cut") {
+    } else if (uiStoreRef.current.clipboard.operation === "cut") {
       const success = await move(sourcePaths, destinationPath);
       if (success) {
         actionsRef.current.clearClipboard(); // Clear clipboard after successful cut/paste
@@ -906,7 +908,7 @@ export const useStorageOperations = (): StorageOperations => {
     }
 
     return false;
-  }, [state.clipboard, state.params.path, copy, refresh, move]);
+  }, [copy, refresh, move]);
 
   // ============================================================================
   // RETURN VALUE
