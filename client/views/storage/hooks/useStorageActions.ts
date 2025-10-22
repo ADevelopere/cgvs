@@ -5,12 +5,10 @@ import {
   ViewMode,
   LoadingStates,
   OperationErrors,
-  DirectoryTreeNode,
   StorageActions,
 } from "../core/storage.type";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
-import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 
 // ============================================================================
 // ACTIONS HOOK
@@ -253,163 +251,6 @@ export const useStorageActions = (): StorageActions => {
     uiStore.setSearchResults([]);
   }, []);
 
-  // ============================================================================
-  // TREE MANAGEMENT ACTIONS
-  // ============================================================================
-
-  const setDirectoryTree = useCallback((tree: DirectoryTreeNode[]) => {
-    useStorageTreeStore.getState().setDirectoryTree(tree);
-  }, []);
-
-  const updateTreeNode = useCallback(
-    (path: string, updater: (node: DirectoryTreeNode) => DirectoryTreeNode) => {
-      const { directoryTree, setDirectoryTree } =
-        useStorageTreeStore.getState();
-
-      const updateNode = (nodes: DirectoryTreeNode[]): DirectoryTreeNode[] => {
-        return nodes.map(node => {
-          if (node.path === path) {
-            return updater(node);
-          }
-          if (node.children) {
-            return {
-              ...node,
-              children: updateNode(node.children),
-            };
-          }
-          return node;
-        });
-      };
-
-      setDirectoryTree(updateNode(directoryTree));
-    },
-    []
-  );
-
-  const addChildToNode = useCallback(
-    (parentPath: string, children: DirectoryTreeNode[]) => {
-      const { directoryTree, setDirectoryTree } =
-        useStorageTreeStore.getState();
-
-      const updateNode = (nodes: DirectoryTreeNode[]): DirectoryTreeNode[] => {
-        return nodes.map(node => {
-          if (node.path === parentPath) {
-            return {
-              ...node,
-              children,
-              isPrefetched: true,
-            };
-          }
-          if (node.children) {
-            return {
-              ...node,
-              children: updateNode(node.children),
-            };
-          }
-          return node;
-        });
-      };
-
-      setDirectoryTree(updateNode(directoryTree));
-    },
-    []
-  );
-
-  // ============================================================================
-  // NODE STATE ACTIONS
-  // ============================================================================
-
-  const expandNode = useCallback((path: string) => {
-    const { expandedNodes, setExpandedNodes } = useStorageTreeStore.getState();
-    setExpandedNodes(new Set([...expandedNodes, path]));
-  }, []);
-
-  const collapseNode = useCallback((path: string) => {
-    const { expandedNodes, setExpandedNodes } = useStorageTreeStore.getState();
-    const newSet = new Set(expandedNodes);
-    newSet.delete(path);
-    setExpandedNodes(newSet);
-  }, []);
-
-  const setPrefetchedNode = useCallback(
-    (path: string, isPrefetched: boolean) => {
-      const { prefetchedNodes, setPrefetchedNodes } =
-        useStorageTreeStore.getState();
-      const newSet = new Set(prefetchedNodes);
-      if (isPrefetched) {
-        newSet.add(path);
-      } else {
-        newSet.delete(path);
-      }
-      setPrefetchedNodes(newSet);
-    },
-    []
-  );
-
-  // ============================================================================
-  // QUEUE MANAGEMENT ACTIONS
-  // ============================================================================
-
-  const addToFetchQueue = useCallback((path: string) => {
-    const { queueStates, setQueueStates } = useStorageTreeStore.getState();
-    setQueueStates({
-      ...queueStates,
-      fetchQueue: new Set([...queueStates.fetchQueue, path]),
-    });
-  }, []);
-
-  const removeFromFetchQueue = useCallback((path: string) => {
-    const { queueStates, setQueueStates } = useStorageTreeStore.getState();
-    setQueueStates({
-      ...queueStates,
-      fetchQueue: new Set([...queueStates.fetchQueue].filter(p => p !== path)),
-    });
-  }, []);
-
-  const addToExpansionQueue = useCallback((path: string) => {
-    const { queueStates, setQueueStates } = useStorageTreeStore.getState();
-    setQueueStates({
-      ...queueStates,
-      expansionQueue: new Set([...queueStates.expansionQueue, path]),
-    });
-  }, []);
-
-  const removeFromExpansionQueue = useCallback((path: string) => {
-    const { queueStates, setQueueStates } = useStorageTreeStore.getState();
-    setQueueStates({
-      ...queueStates,
-      expansionQueue: new Set(
-        [...queueStates.expansionQueue].filter(p => p !== path)
-      ),
-    });
-  }, []);
-
-  const setCurrentlyFetching = useCallback(
-    (path: string, isFetching: boolean) => {
-      const { queueStates, setQueueStates } = useStorageTreeStore.getState();
-      const newSet = new Set(queueStates.currentlyFetching);
-      if (isFetching) {
-        newSet.add(path);
-      } else {
-        newSet.delete(path);
-      }
-      setQueueStates({
-        ...queueStates,
-        currentlyFetching: newSet,
-      });
-    },
-    []
-  );
-
-  const clearQueues = useCallback(() => {
-    const { queueStates, setQueueStates } = useStorageTreeStore.getState();
-    setQueueStates({
-      ...queueStates,
-      fetchQueue: new Set(),
-      expansionQueue: new Set(),
-      currentlyFetching: new Set(),
-    });
-  }, []);
 
   // ============================================================================
   // RESET ACTIONS
@@ -423,15 +264,10 @@ export const useStorageActions = (): StorageActions => {
     useStorageUIStore.getState().reset();
   }, []);
 
-  const resetTree = useCallback(() => {
-    useStorageTreeStore.getState().reset();
-  }, []);
-
   const resetAll = useCallback(() => {
     resetData();
     resetUI();
-    resetTree();
-  }, [resetData, resetUI, resetTree]);
+  }, [resetData, resetUI]);
 
   // ============================================================================
   // RETURN ACTIONS
@@ -474,61 +310,30 @@ export const useStorageActions = (): StorageActions => {
       clearErrors,
       clearNavigationState,
 
-      // Tree management actions
-      setDirectoryTree,
-      updateTreeNode,
-      addChildToNode,
-
-      // Node state actions
-      expandNode,
-      collapseNode,
-      setPrefetchedNode,
-
-      // Queue management actions
-      addToFetchQueue,
-      removeFromFetchQueue,
-      addToExpansionQueue,
-      removeFromExpansionQueue,
-      setCurrentlyFetching,
-      clearQueues,
-
       // Reset actions
       resetData,
       resetUI,
-      resetTree,
       resetAll,
     }),
     [
-      addChildToNode,
-      addToExpansionQueue,
-      addToFetchQueue,
       clearClipboard,
       clearErrors,
       clearNavigationState,
-      clearQueues,
       clearSelection,
-      collapseNode,
       copyItems,
       cutItems,
-      expandNode,
       getSortedItems,
       navigateToDirectory,
-      removeFromExpansionQueue,
-      removeFromFetchQueue,
       resetAll,
       resetData,
-      resetTree,
       resetUI,
       selectAll,
       selectRange,
-      setCurrentlyFetching,
-      setDirectoryTree,
       setFocusedItem,
       setItems,
       setLastSelectedItem,
       setPagination,
       setParams,
-      setPrefetchedNode,
       setSearchMode,
       setSearchResults,
       setSortBy,
@@ -539,7 +344,6 @@ export const useStorageActions = (): StorageActions => {
       updateError,
       updateLoading,
       updateParams,
-      updateTreeNode,
     ]
   );
 };

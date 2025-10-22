@@ -9,16 +9,13 @@ import UploadProgress from "./uploading/UploadProgress";
 import { useStorageOperations } from "./hooks/useStorageOperations";
 import { useStorageActions } from "./hooks/useStorageActions";
 import { useStorageUIStore } from "./stores/useStorageUIStore";
-import { useStorageTreeStore } from "./stores/useStorageTreeStore";
 import { useStorageDataStore } from "./stores/useStorageDataStore";
 
 export const StorageBrowserView: React.FC = () => {
   // Initialize storage data on mount
   // useStorageInitialization();
 
-  const { searchMode, loading } = useStorageUIStore();
-
-  const { directoryTree, expandedNodes, queueStates } = useStorageTreeStore();
+  const { searchMode } = useStorageUIStore();
   const { params } = useStorageDataStore();
 
   const {
@@ -29,13 +26,7 @@ export const StorageBrowserView: React.FC = () => {
   } = useStorageActions();
 
   // Get operations from context
-  const {
-    search,
-    navigateTo,
-    expandDirectoryNode,
-    collapseDirectoryNode,
-    prefetchDirectoryChildren,
-  } = useStorageOperations();
+  const { search, navigateTo } = useStorageOperations();
 
   return (
     <>
@@ -78,14 +69,7 @@ export const StorageBrowserView: React.FC = () => {
         >
           <StorageDirectoryTree
             params={params}
-            directoryTree={directoryTree}
-            expandedNodes={expandedNodes}
-            queueStates={queueStates}
-            loading={loading}
             onNavigate={navigateTo}
-            onExpandNode={expandDirectoryNode}
-            onCollapseNode={collapseDirectoryNode}
-            onPrefetchChildren={prefetchDirectoryChildren}
           />
           <StorageMainView />
         </SplitPane>

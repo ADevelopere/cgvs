@@ -4,12 +4,11 @@ import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { DirectoryTreeNode, StorageItemUnion } from "../core/storage.type";
+import { StorageItemUnion } from "../core/storage.type";
 import logger from "@/client/lib/logger";
 import { useStorageActions } from "./useStorageActions";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
-import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 import { useStorageApollo } from "../contexts/StorageApolloContext";
 
 // ============================================================================
@@ -24,7 +23,7 @@ type StorageOperations = {
   } | null>;
   fetchDirectoryChildren: (
     path?: string
-  ) => Promise<DirectoryTreeNode[] | null>;
+  ) => Promise<Graphql.DirectoryInfo[] | null>;
   fetchStats: (path?: string) => Promise<Graphql.StorageStats | null>;
 
   // Basic File Operations (without loading states)
@@ -58,12 +57,6 @@ type StorageOperations = {
   goUp: () => Promise<void>;
   refresh: () => Promise<void>;
 
-  // Tree Operations
-  prefetchDirectoryChildren: (path: string, refresh?: boolean) => Promise<void>;
-  expandDirectoryNode: (path: string) => void;
-  collapseDirectoryNode: (path: string) => void;
-  processExpansionQueue: (path: string) => void;
-
   // Clipboard Operations
   pasteItems: () => Promise<boolean>;
 };
@@ -87,10 +80,6 @@ export const useStorageOperations = (): StorageOperations => {
   const dataStoreRef = useRef(dataStore);
   dataStoreRef.current = dataStore;
 
-  const treeStore = useStorageTreeStore();
-  const treeStoreRef = useRef(treeStore);
-  treeStoreRef.current = treeStore;
-
   // Get notifications and translations
   const notifications = useNotifications();
   const { management: managementTranslations, ui: uiTranslations } =
@@ -99,23 +88,6 @@ export const useStorageOperations = (): StorageOperations => {
   // ============================================================================
   // HELPER FUNCTIONS
   // ============================================================================
-
-  // Helper function to transform GraphQL DirectoryInfo to DirectoryTreeNode
-  const transformDirectoryToTreeNode = useCallback(
-    (directory: Graphql.DirectoryInfo): DirectoryTreeNode => {
-      return {
-        id: directory.path,
-        name: directory.name,
-        path: directory.path,
-        children: undefined, // Not loaded initially
-        hasChildren: true, // Assume directories have children until proven otherwise
-        isExpanded: false,
-        isLoading: false,
-        isPrefetched: false,
-      };
-    },
-    []
-  );
 
   // Helper function to show notifications
   const showNotification = useCallback(
@@ -215,7 +187,7 @@ export const useStorageOperations = (): StorageOperations => {
   );
 
   const fetchDirectoryChildren = useCallback(
-    async (path?: string): Promise<DirectoryTreeNode[] | null> => {
+    async (path?: string): Promise<Graphql.DirectoryInfo[] | null> => {
       try {
         const result = await apolloRef.current.fetchDirectoryChildren({
           path: path || "",
@@ -225,12 +197,12 @@ export const useStorageOperations = (): StorageOperations => {
           return [];
         }
 
-        return result.data?.directoryChildren.map(transformDirectoryToTreeNode);
+        return result.data?.directoryChildren;
       } catch {
         return null;
       }
     },
-    [transformDirectoryToTreeNode]
+    []
   );
 
   const fetchStats = useCallback(
@@ -754,132 +726,6 @@ export const useStorageOperations = (): StorageOperations => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // NO DEPENDENCIES - completely stable
 
-  // ============================================================================
-  // TREE OPERATIONS (from useStorageTreeOperations)
-  // ============================================================================
-
-  // Function to process expansion queue
-  const processExpansionQueue = useCallback(
-    (path: string) => {
-      if (treeStore.queueStates.expansionQueue.has(path)) {
-        // Check if children are available in the tree
-        const hasChildrenInTree = (
-          nodes: DirectoryTreeNode[],
-          targetPath: string
-        ): boolean => {
-          for (const node of nodes) {
-            if (node.path === targetPath && node.children !== undefined) {
-              return true;
-            }
-            if (node.children && hasChildrenInTree(node.children, targetPath)) {
-              return true;
-            }
-          }
-          return false;
-        };
-
-        if (hasChildrenInTree(treeStore.directoryTree, path)) {
-          // Children are available, expand immediately
-          actionsRef.current.expandNode(path);
-          actionsRef.current.removeFromExpansionQueue(path);
-        }
-      }
-    },
-    [treeStore.directoryTree, treeStore.queueStates.expansionQueue]
-  );
-
-  const prefetchDirectoryChildren = useCallback(
-    async (path: string, refreshParam?: boolean) => {
-      if (
-        (!refreshParam && treeStoreRef.current.prefetchedNodes.has(path)) ||
-        treeStoreRef.current.expandedNodes.has(path) ||
-        treeStoreRef.current.queueStates.currentlyFetching.has(path)
-      )
-        return;
-
-      // Add to fetch queue and mark as currently fetching
-      actionsRef.current.addToFetchQueue(path);
-      actionsRef.current.setCurrentlyFetching(path, true);
-      actionsRef.current.setPrefetchedNode(path, true);
-
-      try {
-        const children = await fetchDirectoryChildren(path);
-        if (children) {
-          // Cache the children for instant expansion later
-          if (treeStoreRef.current.directoryTree.length === 0 && path === "") {
-            // If nodes array is empty and this is the root path, return the children directly
-            actionsRef.current.setDirectoryTree(
-              children.map(child => ({
-                ...child,
-                isPrefetched: true,
-              }))
-            );
-          } else {
-            actionsRef.current.addChildToNode(path, children);
-          }
-
-          // Process expansion queue for this path after successful fetch
-          processExpansionQueue(path);
-        }
-      } finally {
-        // Remove from queues and update loading state
-        actionsRef.current.removeFromFetchQueue(path);
-        actionsRef.current.setCurrentlyFetching(path, false);
-      }
-    },
-    [fetchDirectoryChildren, processExpansionQueue]
-  );
-
-  const expandDirectoryNode = useCallback(
-    (path: string) => {
-      if (treeStoreRef.current.expandedNodes.has(path)) return; // Already expanded
-
-      // Check if children are already available in the tree
-      const findNodeInTree = (
-        nodes: DirectoryTreeNode[],
-        targetPath: string
-      ): DirectoryTreeNode | null => {
-        for (const node of nodes) {
-          if (node.path === targetPath) {
-            return node;
-          }
-          if (node.children) {
-            const found = findNodeInTree(node.children, targetPath);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-
-      const targetNode = findNodeInTree(
-        treeStoreRef.current.directoryTree,
-        path
-      );
-
-      if (targetNode?.children !== undefined) {
-        // Children are already available, expand immediately
-        actionsRef.current.expandNode(path);
-      } else if (targetNode?.hasChildren) {
-        // Children are not available but node has children
-        // Add to expansion queue and trigger fetch if not already fetching
-        actionsRef.current.addToExpansionQueue(path);
-
-        if (
-          !treeStoreRef.current.queueStates.currentlyFetching.has(path) &&
-          !treeStoreRef.current.queueStates.fetchQueue.has(path)
-        ) {
-          // Not currently fetching and not in fetch queue, trigger prefetch
-          prefetchDirectoryChildren(path);
-        }
-      }
-      // If node doesn't have children, do nothing
-    },
-    [prefetchDirectoryChildren]
-  );
-
-  const collapseDirectoryNode = useCallback((path: string) => {
-    actionsRef.current.collapseNode(path);
-  }, []);
 
   // ============================================================================
   // CLIPBOARD OPERATIONS (from useStorageClipboard)
@@ -940,12 +786,6 @@ export const useStorageOperations = (): StorageOperations => {
       goUp,
       refresh,
 
-      // Tree Operations
-      prefetchDirectoryChildren,
-      expandDirectoryNode,
-      collapseDirectoryNode,
-      processExpansionQueue,
-
       // Clipboard
       pasteItems,
     }),
@@ -966,10 +806,6 @@ export const useStorageOperations = (): StorageOperations => {
       navigateTo,
       goUp,
       refresh,
-      prefetchDirectoryChildren,
-      expandDirectoryNode,
-      collapseDirectoryNode,
-      processExpansionQueue,
       pasteItems,
     ]
   );

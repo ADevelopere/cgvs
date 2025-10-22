@@ -10,17 +10,18 @@ import {
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import {
-  DirectoryTreeNode,
   StorageItemUnion,
 } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
 export interface MoveToDialogProps {
   open: boolean;
   onClose: () => void;
   items: StorageItemUnion[];
   onFetchDirectoryChildren: (
     path?: string
-  ) => Promise<DirectoryTreeNode[] | null>;
+  ) => Promise<Graphql.DirectoryInfo[] | null>;
   onMove: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
 }
 
@@ -36,7 +37,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
 
   // State
   const [currentPath, setCurrentPath] = useState<string>("");
-  const [directories, setDirectories] = useState<DirectoryTreeNode[]>([]);
+  const [directories, setDirectories] = useState<Graphql.DirectoryInfo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
