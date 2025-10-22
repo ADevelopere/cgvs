@@ -3,7 +3,10 @@ import { Box } from "@mui/material";
 import StorageBreadcrumb from "./StorageBreadcrumb";
 import StorageToolbar from "./StorageToolbar";
 import StorageItemsView from "./StorageItemsView";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
+import {
+  useStorageState,
+  useStorageStateActions,
+} from "@/client/views/storage/contexts/StorageStateContext";
 
 /**
  * Main content pane for the storage browser.
@@ -13,16 +16,16 @@ import { useStorageState } from "@/client/views/storage/contexts/StorageStateCon
 const StorageMainView: React.FC = () => {
   const {
     params,
-    updateParams,
     selectedItems,
     searchMode,
     searchResults,
     loading,
     items,
     viewMode,
-    setViewMode,
     operationErrors,
   } = useStorageState();
+
+  const { setViewMode, updateParams } = useStorageStateActions();
 
   return (
     <Box

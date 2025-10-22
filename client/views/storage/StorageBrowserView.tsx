@@ -7,7 +7,10 @@ import StorageSearch from "./browser/StorageSearch";
 import { SplitPane } from "@/client/components";
 import UploadProgress from "./uploading/UploadProgress";
 import { useStorageInitialization } from "./hooks/useStorageInitialization";
-import { useStorageState } from "./contexts/StorageStateContext";
+import {
+  useStorageState,
+  useStorageStateActions,
+} from "./contexts/StorageStateContext";
 
 const StorageBrowserView: React.FC = () => {
   // Initialize storage data on mount
@@ -15,16 +18,20 @@ const StorageBrowserView: React.FC = () => {
 
   const {
     searchMode,
-    setSearchMode,
-    setSearchResults,
-    clearSelection,
-    setLastSelectedItem,
+
     params,
     directoryTree,
     expandedNodes,
     queueStates,
     loading,
   } = useStorageState();
+
+  const {
+    setSearchMode,
+    setSearchResults,
+    clearSelection,
+    setLastSelectedItem,
+  } = useStorageStateActions();
 
   return (
     <>
