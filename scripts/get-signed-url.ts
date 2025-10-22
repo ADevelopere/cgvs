@@ -14,7 +14,7 @@ import { readFileSync } from "fs";
 import { spawn } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
-import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/hooks/storage.documents";
+import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
 import type { ContentType } from "@/client/graphql/generated/gql/graphql";
 import { testLogger } from "@/lib/testlogger";
 

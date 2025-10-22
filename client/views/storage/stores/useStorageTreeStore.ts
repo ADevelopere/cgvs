@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { DirectoryTreeNode, QueueStates } from "../hooks/storage.type";
+import { DirectoryTreeNode, QueueStates } from "../core/storage.type";
 
 interface StorageTreeState {
   directoryTree: DirectoryTreeNode[];

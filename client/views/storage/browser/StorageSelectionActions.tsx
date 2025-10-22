@@ -24,7 +24,7 @@ import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDat
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
 import RenameDialog from "../dialogs/RenameDialog";

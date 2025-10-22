@@ -15,7 +15,7 @@ import { spawn, ChildProcess } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
 import { generateFileMD5Browser } from "./browser-md5";
-import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/hooks/storage.documents";
+import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
 import { testLogger } from "@/lib/testlogger";
 
 // Global variables for dev server

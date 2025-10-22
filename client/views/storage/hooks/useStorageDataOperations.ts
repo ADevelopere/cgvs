@@ -9,7 +9,7 @@ import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { DirectoryTreeNode, StorageItem } from "./storage.type";
+import { DirectoryTreeNode, StorageItem } from "../core/storage.type";
 import logger from "@/client/lib/logger";
 
 export const useStorageDataOperations = () => {

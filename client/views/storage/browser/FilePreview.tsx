@@ -17,11 +17,11 @@ import {
   Close,
 } from "@mui/icons-material";
 import FileTypeIcon from "./FileTypeIcon";
-import { mimeToContentType } from "@/client/views/storage/hooks/storage.constant";
+import { mimeToContentType } from "@/client/views/storage/core/storage.constant";
 import Image from "next/image";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 interface FilePreviewProps {
   item: StorageItem;
   loading?: boolean;

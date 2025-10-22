@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TableRow, TableCell, Typography, Box } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import FileTypeIcon from "./FileTypeIcon";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";

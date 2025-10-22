@@ -28,7 +28,7 @@ import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDat
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 

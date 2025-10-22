@@ -10,7 +10,7 @@ import { useStorageTreeStore } from "@/client/views/storage/stores/useStorageTre
 import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageTreeOperations } from "@/client/views/storage/hooks/useStorageTreeOperations";
-import { DirectoryTreeNode } from "@/client/views/storage/hooks/storage.type";
+import { DirectoryTreeNode } from "@/client/views/storage/core/storage.type";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import FolderIcon from "@mui/icons-material/Folder";

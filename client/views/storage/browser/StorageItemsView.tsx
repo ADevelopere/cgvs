@@ -18,7 +18,7 @@ import { StorageManagementUITranslations } from "@/client/locale/components/Stor
 import {
   StorageItem as StorageItemType,
   ViewMode,
-} from "@/client/views/storage/hooks/storage.type";
+} from "@/client/views/storage/core/storage.type";
 import { FilesListInput } from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting

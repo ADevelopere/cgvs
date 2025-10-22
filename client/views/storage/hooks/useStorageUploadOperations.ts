@@ -5,8 +5,15 @@ import { useStorageUploadStore } from "../stores/useStorageUploadStore";
 import { useStorageApolloMutations } from "./storage.operations";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
-import { getUploadLocationForPath, getStoragePath } from "./storage.location";
+import {
+  inferContentType,
+  getFileKey,
+  generateFileMD5,
+} from "../core/storage.util";
+import {
+  getUploadLocationForPath,
+  getStoragePath,
+} from "../core/storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { UploadFileState } from "./storage-upload.types";
 import logger from "@/client/lib/logger";

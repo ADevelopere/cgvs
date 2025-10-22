@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataOperations } from "./useStorageDataOperations";
 import { useStorageNavigation } from "./useStorageNavigation";
-import { StorageItem } from "./storage.type";
+import { StorageItem } from "../core/storage.type";
 
 export const useStorageClipboard = () => {
   const {

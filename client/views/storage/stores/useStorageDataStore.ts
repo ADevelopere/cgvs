@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { StorageItem } from "../hooks/storage.type";
+import { StorageItem } from "../core/storage.type";
 
 interface StorageDataState {
   // Data state
