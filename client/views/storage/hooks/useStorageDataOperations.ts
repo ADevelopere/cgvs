@@ -75,7 +75,7 @@ export const useStorageDataOperations = () => {
         };
 
         logger.info("Calling GraphQL listFiles query", { input });
-        const result = await queries.listFiles({ input });
+        const result = await queries.listFiles({ variables: { input } });
         logger.info("GraphQL listFiles query completed", {
           hasData: !!result.data?.listFiles,
           hasErrors: !!result.error,
@@ -136,7 +136,7 @@ export const useStorageDataOperations = () => {
     async (path?: string): Promise<DirectoryTreeNode[] | null> => {
       try {
         const result = await queries.fetchDirectoryChildren({
-          path: path || "",
+          variables: { path: path || "" },
         });
 
         if (!result.data?.directoryChildren) {
@@ -154,7 +154,7 @@ export const useStorageDataOperations = () => {
   const fetchStats = useCallback(
     async (path?: string): Promise<Graphql.StorageStats | null> => {
       try {
-        const result = await queries.getStorageStats({ path });
+        const result = await queries.getStorageStats({ variables: { path } });
 
         if (!result.data?.storageStats) {
           return null;
@@ -438,9 +438,11 @@ export const useStorageDataOperations = () => {
     } | null> => {
       try {
         const result = await queries.searchFiles({
-          searchTerm: query,
-          folder: path,
-          limit: 100, // Default search limit
+          variables: {
+            searchTerm: query,
+            folder: path,
+            limit: 100, // Default search limit
+          },
         });
 
         if (!result.data?.searchFiles) {

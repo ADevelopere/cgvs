@@ -19,6 +19,14 @@ interface StorageDataActions {
   setParams: (params: Graphql.FilesListInput) => void;
   updateParams: (partial: Partial<Graphql.FilesListInput>) => void;
   setStats: (stats: Graphql.StorageStats | null) => void;
+
+  // Atomic navigation action
+  navigateToDirectory: (data: {
+    params: Graphql.FilesListInput;
+    items: StorageItem[];
+    pagination: Graphql.PageInfo;
+  }) => void;
+
   reset: () => void;
 }
 
@@ -50,6 +58,14 @@ export const useStorageDataStore = create<
     })),
 
   setStats: stats => set({ stats }),
+
+  // Atomic navigation action - updates all navigation state in one call
+  navigateToDirectory: data =>
+    set({
+      params: data.params,
+      items: data.items,
+      pagination: data.pagination,
+    }),
 
   reset: () => set(initialState),
 }));

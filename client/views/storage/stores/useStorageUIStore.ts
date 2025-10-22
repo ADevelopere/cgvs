@@ -60,6 +60,9 @@ interface StorageUIActions {
   updateError: (key: keyof OperationErrors, error?: string) => void;
   clearErrors: () => void;
 
+  // Atomic navigation state clearing
+  clearNavigationState: () => void;
+
   // Utility actions
   reset: () => void;
 }
@@ -164,6 +167,15 @@ export const useStorageUIStore = create<StorageUIState & StorageUIActions>(
       })),
 
     clearErrors: () => set({ operationErrors: {} }),
+
+    // Atomic navigation state clearing - clears all navigation-related UI state
+    clearNavigationState: () =>
+      set({
+        selectedItems: [],
+        lastSelectedItem: null,
+        searchMode: false,
+        searchResults: [],
+      }),
 
     // Utility actions
     reset: () => set(initialState),
