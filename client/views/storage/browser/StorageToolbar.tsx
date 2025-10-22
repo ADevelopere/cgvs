@@ -3,7 +3,7 @@ import { Box, Fade } from "@mui/material";
 import StorageFilters from "./StorageFilters";
 import StorageSelectionActions from "./StorageSelectionActions";
 import {
-  StorageItem,
+  StorageItemUnion,
   StorageClipboardState,
   DirectoryTreeNode,
 } from "@/client/views/storage/core/storage.type";
@@ -13,14 +13,14 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 interface StorageToolbarProps {
   selectedItems: string[];
   searchMode: boolean;
-  searchResults: StorageItem[];
+  searchResults: StorageItemUnion[];
   loading: LoadingStates;
-  items: StorageItem[];
+  items: StorageItemUnion[];
   params: Graphql.FilesListInput;
   updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
   clipboard: StorageClipboardState | null;
-  onCopyItems: (items: StorageItem[]) => void;
-  onCutItems: (items: StorageItem[]) => void;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
   onPasteItems: () => Promise<boolean>;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;

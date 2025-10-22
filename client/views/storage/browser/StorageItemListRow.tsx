@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { TableRow, TableCell, Typography, Box } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import FileTypeIcon from "./FileTypeIcon";
-import { StorageItem, StorageClipboardState } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 
 interface StorageItemListRowProps {
-  item: StorageItem;
+  item: StorageItemUnion;
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
@@ -19,8 +19,8 @@ interface StorageItemListRowProps {
   clipboard: StorageClipboardState | null;
   onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
   onRefresh: () => Promise<void>;
-  onCopyItems: (items: StorageItem[]) => void;
-  onCutItems: (items: StorageItem[]) => void;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
   onPasteItems: () => Promise<boolean>;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;

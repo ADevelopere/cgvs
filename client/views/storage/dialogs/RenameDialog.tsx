@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import * as MUI from "@mui/material";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
 export interface RenameDialogProps {
   open: boolean;
   onClose: () => void;
-  item: StorageItem | null;
+  item: StorageItemUnion | null;
   onRename: (path: string, newName: string) => Promise<boolean>;
 }
 

@@ -22,7 +22,7 @@ import {
 import { useStorageStateActions } from "@/client/views/storage/contexts/StorageStateContext";
 import { useAppTranslation } from "@/client/locale";
 import {
-  StorageItem,
+  StorageItemUnion,
   StorageClipboardState,
   DirectoryTreeNode,
 } from "@/client/views/storage/core/storage.type";
@@ -34,12 +34,12 @@ import { LoadingStates } from "@/client/views/storage/core/storage.type";
 interface StorageSelectionActionsProps {
   selectedItems: string[];
   searchMode: boolean;
-  searchResults: StorageItem[];
+  searchResults: StorageItemUnion[];
   loading: LoadingStates;
-  items: StorageItem[];
+  items: StorageItemUnion[];
   clipboard: StorageClipboardState | null;
-  onCopyItems: (items: StorageItem[]) => void;
-  onCutItems: (items: StorageItem[]) => void;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
   onPasteItems: () => Promise<boolean>;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;
@@ -79,7 +79,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   const currentItems = searchMode ? searchResults : items;
 
   // Get selected item objects
-  const selectedItemObjects: StorageItem[] = currentItems.filter(item =>
+  const selectedItemObjects: StorageItemUnion[] = currentItems.filter(item =>
     selectedItems.includes(item.path)
   );
 

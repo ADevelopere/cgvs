@@ -21,9 +21,9 @@ import { mimeToContentType } from "@/client/views/storage/core/storage.constant"
 import Image from "next/image";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 interface FilePreviewProps {
-  item: StorageItem;
+  item: StorageItemUnion;
   loading?: boolean;
   height?: number | string;
 }

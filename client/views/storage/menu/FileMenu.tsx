@@ -23,7 +23,7 @@ import {
   Info as InfoIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 
@@ -35,8 +35,8 @@ export interface FileMenuProps {
   open: boolean;
   onClose: () => void;
   file: Graphql.FileInfo;
-  onCopyItems: (items: StorageItem[]) => void;
-  onCutItems: (items: StorageItem[]) => void;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
   onRenameItem: (path: string, newName: string) => Promise<boolean>;
   onDeleteItems: (paths: string[]) => Promise<boolean>;
   onRefresh: () => Promise<void>;
@@ -63,12 +63,12 @@ const FileMenu: React.FC<FileMenuProps> = ({
 
   // Handle menu actions
   const handleCopy = () => {
-    onCopyItems([file as StorageItem]);
+    onCopyItems([file as StorageItemUnion]);
     onClose();
   };
 
   const handleCut = () => {
-    onCutItems([file as StorageItem]);
+    onCutItems([file as StorageItemUnion]);
     onClose();
   };
 

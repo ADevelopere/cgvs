@@ -10,20 +10,20 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import HistoryIcon from "@mui/icons-material/History";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 
 const STORAGE_SEARCH_HISTORY_KEY = "storage-search-history";
 
 interface StorageSearchProps {
   searchMode: boolean;
   setSearchMode: (mode: boolean) => void;
-  setSearchResults: (results: StorageItem[]) => void;
+  setSearchResults: (results: StorageItemUnion[]) => void;
   clearSelection: () => void;
   setLastSelectedItem: (item: string | null) => void;
   onSearch: (
     query: string,
     path?: string
-  ) => Promise<{ items: StorageItem[]; totalCount: number } | null>;
+  ) => Promise<{ items: StorageItemUnion[]; totalCount: number } | null>;
 }
 
 const StorageSearch: React.FC<StorageSearchProps> = ({

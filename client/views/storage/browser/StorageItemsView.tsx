@@ -5,23 +5,21 @@ import {
   Sort as SortIcon,
   ViewList as ListViewIcon,
 } from "@mui/icons-material";
-import {
-  useStorageState,
-  useStorageStateActions,
-} from "@/client/views/storage/contexts/StorageStateContext";
 import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
 import { useUploadDropzone } from "@/client/views/storage/dropzone/useUploadDropzone";
 import { StorageManagementUITranslations } from "@/client/locale/components/Storage";
 import {
-  StorageItem as StorageItemType,
+  StorageItemUnion as StorageItemType,
   ViewMode,
   OperationErrors,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
 import type { LoadingStates } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { useStorageActions } from "../hooks/useStorageActions";
+import { useStorageUIStore } from "../stores/useStorageUIStore";
 
 // Render toolbar with view controls and sorting
 const StorageToolbar: React.FC<{
@@ -545,7 +543,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
     lastSelectedItem,
     sortBy,
     sortDirection,
-  } = useStorageState();
+  } = useStorageUIStore();
 
   // Get actions from React Context
   const {
@@ -557,7 +555,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
     setSortBy,
     setSortDirection,
     getSortedItems,
-  } = useStorageStateActions();
+  } = useStorageActions();
 
   const { ui: translations } = useAppTranslation("storageTranslations");
   const theme = MUI.useTheme();

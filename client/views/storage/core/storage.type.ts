@@ -1,6 +1,6 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export type StorageItem = Graphql.DirectoryInfo | Graphql.FileInfo;
+export type StorageItemUnion = Graphql.DirectoryInfo | Graphql.FileInfo;
 
 // Directory tree node for lazy loading
 export type DirectoryTreeNode = {
@@ -14,42 +14,13 @@ export type DirectoryTreeNode = {
   isPrefetched: boolean; // whether children have been pre-fetched
 };
 
-// Core context type for the StorageManagementCoreContext
-export type StorageManagementCoreContextType = {
-  // State
-  stats: Graphql.StorageStats | null;
-
-  // Data Fetching
-  fetchList: (params: Graphql.FilesListInput) => Promise<{
-    items: StorageItem[];
-    pagination: Graphql.PageInfo;
-  } | null>;
-  fetchDirectoryChildren: (
-    path?: string
-  ) => Promise<DirectoryTreeNode[] | null>;
-  fetchStats: (path?: string) => Promise<Graphql.StorageStats | null>;
-
-  // File Operations
-  rename: (path: string, newName: string) => Promise<boolean>;
-  remove: (paths: string[]) => Promise<boolean>;
-  move: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
-  copy: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
-  createFolder: (path: string, name: string) => Promise<boolean>;
-
-  // Search
-  search: (
-    query: string,
-    path?: string
-  ) => Promise<{ items: StorageItem[]; totalCount: number } | null>;
-};
-
 // UI context types for the StorageManagementUIContext
 export type ViewMode = "grid" | "list";
 export type StorageClipboardOperation = "copy" | "cut";
 
 export type StorageClipboardState = {
   operation: StorageClipboardOperation;
-  items: StorageItem[];
+  items: StorageItemUnion[];
 };
 
 export type LoadingStates = {
@@ -80,83 +51,74 @@ export type OperationErrors = {
   search?: string;
 };
 
-export type StorageManagementUIContextType = {
-  // Data State
-  items: StorageItem[];
-  pagination: Graphql.PageInfo | null;
-  directoryTree: DirectoryTreeNode[];
-  expandedNodes: Set<string>;
-  prefetchedNodes: Set<string>;
 
-  // Query Parameters
-  params: Graphql.FilesListInput;
+export type StorageActions = {
+  // Data actions
+  setItems: (items: StorageItemUnion[]) => void;
+  setPagination: (pagination: Graphql.PageInfo | null) => void;
+  setParams: (params: Graphql.FilesListInput) => void;
+  updateParams: (partial: Partial<Graphql.FilesListInput>) => void;
+  setStats: (stats: Graphql.StorageStats | null) => void;
+  navigateToDirectory: (data: {
+    params: Graphql.FilesListInput;
+    items: StorageItemUnion[];
+    pagination: Graphql.PageInfo;
+  }) => void;
 
-  // Selection State
-  selectedItems: string[];
-  lastSelectedItem: string | null;
-  focusedItem: string | null;
-
-  // UI Interaction State
-  viewMode: ViewMode;
-  searchMode: boolean;
-  searchResults: StorageItem[];
-  clipboard: StorageClipboardState | null;
-
-  // Local UI State
-  sortBy: string;
-  sortDirection: Graphql.OrderSortDirection;
-
-  // Operation States
-  loading: LoadingStates;
-  operationErrors: OperationErrors;
-  queueStates: QueueStates;
-
-  // Navigation Functions
-  navigateTo: (path: string) => Promise<void>;
-  goUp: () => Promise<void>;
-  refresh: () => Promise<void>;
-  expandDirectoryNode: (path: string) => void;
-  collapseDirectoryNode: (path: string) => void;
-  prefetchDirectoryChildren: (path: string, refresh?: boolean) => Promise<void>;
-
-  // Selection Management
+  // Selection actions
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  selectRange: (fromPath: string, toPath: string) => void;
+  selectRange: (fromPath: string, toPath: string, items: StorageItemUnion[]) => void;
+  setLastSelectedItem: (path: string | null) => void;
+  setFocusedItem: (path: string | null) => void;
 
-  // Parameter Management
-  setParams: (partial: Partial<Graphql.FilesListInput>) => void;
-  search: (term: string) => Promise<void>;
-  setFilterType: (type?: Graphql.FileType) => void;
-  setSortField: (field?: Graphql.FileSortField) => void;
-  setPage: (page: number) => void;
-  setLimit: (limit: number) => void;
+  // UI interaction actions
+  setViewMode: (mode: ViewMode) => void;
+  setSearchMode: (mode: boolean) => void;
+  setSearchResults: (results: StorageItemUnion[]) => void;
+  copyItems: (items: StorageItemUnion[]) => void;
+  cutItems: (items: StorageItemUnion[]) => void;
+  clearClipboard: () => void;
 
-  // Local Sorting
+  // Sorting actions
   setSortBy: (field: string) => void;
   setSortDirection: (direction: Graphql.OrderSortDirection) => void;
-  getSortedItems: () => StorageItem[];
+  getSortedItems: () => StorageItemUnion[];
 
-  // Clipboard Operations
-  copyItems: (items: StorageItem[]) => void;
-  cutItems: (items: StorageItem[]) => void;
-  pasteItems: () => Promise<boolean>;
+  // Loading and error actions
+  updateLoading: (
+    key: keyof LoadingStates,
+    value: boolean | string | null
+  ) => void;
+  updateError: (key: keyof OperationErrors, error?: string) => void;
+  clearErrors: () => void;
+  clearNavigationState: () => void;
 
-  // File Operations (UI Layer)
-  renameItem: (path: string, newName: string) => Promise<boolean>;
-  deleteItems: (paths: string[]) => Promise<boolean>;
-  moveItems: (
-    sourcePaths: string[],
-    destinationPath: string
-  ) => Promise<boolean>;
-  copyItemsTo: (
-    sourcePaths: string[],
-    destinationPath: string
-  ) => Promise<boolean>;
+  // Tree management actions
+  setDirectoryTree: (tree: DirectoryTreeNode[]) => void;
+  updateTreeNode: (
+    path: string,
+    updater: (node: DirectoryTreeNode) => DirectoryTreeNode
+  ) => void;
+  addChildToNode: (parentPath: string, children: DirectoryTreeNode[]) => void;
 
-  // Utility Functions
-  setViewMode: (mode: ViewMode) => void;
-  setFocusedItem: (path: string | null) => void;
-  exitSearchMode: () => void;
+  // Node state actions
+  expandNode: (path: string) => void;
+  collapseNode: (path: string) => void;
+  setPrefetchedNode: (path: string, isPrefetched: boolean) => void;
+
+  // Queue management actions
+  addToFetchQueue: (path: string) => void;
+  removeFromFetchQueue: (path: string) => void;
+  addToExpansionQueue: (path: string) => void;
+  removeFromExpansionQueue: (path: string) => void;
+  setCurrentlyFetching: (path: string, isFetching: boolean) => void;
+  clearQueues: () => void;
+
+  // Reset actions
+  resetData: () => void;
+  resetUI: () => void;
+  resetTree: () => void;
+  resetAll: () => void;
 };
