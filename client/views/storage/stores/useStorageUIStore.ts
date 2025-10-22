@@ -5,7 +5,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
   StorageItem,
   ViewMode,
-  Clipboard,
+  StorageClipboardState,
   LoadingStates,
   OperationErrors,
 } from "../core/storage.type";
@@ -20,7 +20,7 @@ interface StorageUIState {
   viewMode: ViewMode;
   searchMode: boolean;
   searchResults: StorageItem[];
-  clipboard: Clipboard | null;
+  clipboard: StorageClipboardState | null;
 
   // Local UI state
   sortBy: string;

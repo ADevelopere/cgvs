@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -21,6 +20,10 @@ interface StorageSearchProps {
   setSearchResults: (results: StorageItem[]) => void;
   clearSelection: () => void;
   setLastSelectedItem: (item: string | null) => void;
+  onSearch: (
+    query: string,
+    path?: string
+  ) => Promise<{ items: StorageItem[]; totalCount: number } | null>;
 }
 
 const StorageSearch: React.FC<StorageSearchProps> = ({
@@ -29,12 +32,11 @@ const StorageSearch: React.FC<StorageSearchProps> = ({
   setSearchResults,
   clearSelection,
   setLastSelectedItem,
+  onSearch,
 }) => {
-  const { search: searchOperation } = useStorageDataOperations();
-
   const search = React.useCallback(
     async (term: string) => {
-      const result = await searchOperation(term, "");
+      const result = await onSearch(term, "");
       if (result) {
         setSearchResults(result.items);
         setSearchMode(true);
@@ -42,13 +44,7 @@ const StorageSearch: React.FC<StorageSearchProps> = ({
         setLastSelectedItem(null);
       }
     },
-    [
-      clearSelection,
-      searchOperation,
-      setLastSelectedItem,
-      setSearchMode,
-      setSearchResults,
-    ]
+    [clearSelection, onSearch, setLastSelectedItem, setSearchMode, setSearchResults]
   );
 
   const exitSearchMode = React.useCallback(() => {

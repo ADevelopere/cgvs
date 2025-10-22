@@ -2,7 +2,10 @@ import React from "react";
 import { Box, Fade } from "@mui/material";
 import StorageFilters from "./StorageFilters";
 import StorageSelectionActions from "./StorageSelectionActions";
-import { StorageItem } from "@/client/views/storage/core/storage.type";
+import {
+  StorageItem,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 import { LoadingStates } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
@@ -14,6 +17,10 @@ interface StorageToolbarProps {
   items: StorageItem[];
   params: Graphql.FilesListInput;
   updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
+  clipboard: StorageClipboardState | null;
+  onCopyItems: (items: StorageItem[]) => void;
+  onCutItems: (items: StorageItem[]) => void;
+  onPasteItems: () => Promise<boolean>;
 }
 
 /**
@@ -29,8 +36,11 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
   items,
   params,
   updateParams,
+  clipboard,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
 }) => {
-
   const hasSelection = selectedItems.length > 0;
 
   return (
@@ -73,6 +83,10 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
             searchResults={searchResults}
             loading={loading}
             items={items}
+            clipboard={clipboard}
+            onCopyItems={onCopyItems}
+            onCutItems={onCutItems}
+            onPasteItems={onPasteItems}
           />
         </Box>
       </Fade>

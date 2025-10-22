@@ -17,13 +17,12 @@ import {
   SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
 import CreateFolderDialog from "@/client/views/storage/dialogs/CreateFolderDialog";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { StorageClipboardState } from "@/client/views/storage/core/storage.type";
 
 export interface ViewAreaMenuProps {
   anchorEl: HTMLElement | null;
@@ -35,6 +34,9 @@ export interface ViewAreaMenuProps {
   };
   onContextMenu?: (event: React.MouseEvent) => void;
   params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onPasteItems: () => Promise<boolean>;
+  onRefresh: () => Promise<void>;
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
@@ -44,12 +46,13 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   anchorPosition,
   onContextMenu,
   params,
+  clipboard,
+  onPasteItems,
+  onRefresh,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
   const { selectAll } = useStorageSelection();
-  const { clipboard, pasteItems } = useStorageClipboard();
-  const { refresh } = useStorageNavigation();
   const { startUpload } = useStorageUploadOperations();
 
   const [isPasting, setIsPasting] = useState(false);
@@ -58,13 +61,13 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   // Handle menu actions
   const handlePaste = React.useCallback(async () => {
     setIsPasting(true);
-    const success = await pasteItems();
+    const success = await onPasteItems();
     setIsPasting(false);
     if (success) {
-      refresh();
+      onRefresh();
     }
     onClose();
-  }, [onClose, pasteItems, refresh]);
+  }, [onClose, onPasteItems, onRefresh]);
 
   const handleUploadFiles = React.useCallback(() => {
     // Create a file input element to trigger file selection
@@ -91,7 +94,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
           await startUpload(Array.from(files), params.path, {
             onComplete: () => {
               logger.info("Upload completed successfully");
-              refresh(); // Refresh the file list after upload
+              onRefresh(); // Refresh the file list after upload
             },
           });
 
@@ -106,7 +109,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
     input.click();
     document.body.removeChild(input);
     onClose();
-  }, [onClose, params.path, startUpload, refresh]);
+  }, [onClose, params.path, startUpload, onRefresh]);
 
   const handleNewFolder = React.useCallback(() => {
     setCreateFolderDialogOpen(true);
@@ -114,13 +117,13 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   }, [onClose]);
 
   const handleCreateFolderSuccess = React.useCallback(() => {
-    refresh();
-  }, [refresh]);
+    onRefresh();
+  }, [onRefresh]);
 
   const handleRefresh = React.useCallback(() => {
-    refresh();
+    onRefresh();
     onClose();
-  }, [onClose, refresh]);
+  }, [onClose, onRefresh]);
 
   const handleSelectAll = React.useCallback(() => {
     selectAll();

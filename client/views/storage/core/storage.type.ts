@@ -45,10 +45,10 @@ export type StorageManagementCoreContextType = {
 
 // UI context types for the StorageManagementUIContext
 export type ViewMode = "grid" | "list";
-export type ClipboardOperation = "copy" | "cut";
+export type StorageClipboardOperation = "copy" | "cut";
 
-export type Clipboard = {
-  operation: ClipboardOperation;
+export type StorageClipboardState = {
+  operation: StorageClipboardOperation;
   items: StorageItem[];
 };
 
@@ -100,7 +100,7 @@ export type StorageManagementUIContextType = {
   viewMode: ViewMode;
   searchMode: boolean;
   searchResults: StorageItem[];
-  clipboard: Clipboard | null;
+  clipboard: StorageClipboardState | null;
 
   // Local UI State
   sortBy: string;

@@ -23,9 +23,6 @@ import {
   Info as InfoIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
-import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { StorageItem } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
@@ -38,6 +35,11 @@ export interface FileMenuProps {
   open: boolean;
   onClose: () => void;
   file: Graphql.FileInfo;
+  onCopyItems: (items: StorageItem[]) => void;
+  onCutItems: (items: StorageItem[]) => void;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onRefresh: () => Promise<void>;
 }
 
 const FileMenu: React.FC<FileMenuProps> = ({
@@ -45,12 +47,14 @@ const FileMenu: React.FC<FileMenuProps> = ({
   open,
   onClose,
   file,
+  onCopyItems,
+  onCutItems,
+  onRenameItem,
+  onDeleteItems,
+  onRefresh,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { copyItems, cutItems } = useStorageClipboard();
-  const { renameItem, deleteItems } = useStorageFileOperations();
-  const { refresh } = useStorageNavigation();
 
   // State for confirmation dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -59,12 +63,12 @@ const FileMenu: React.FC<FileMenuProps> = ({
 
   // Handle menu actions
   const handleCopy = () => {
-    copyItems([file as StorageItem]);
+    onCopyItems([file as StorageItem]);
     onClose();
   };
 
   const handleCut = () => {
-    cutItems([file as StorageItem]);
+    onCutItems([file as StorageItem]);
     onClose();
   };
 
@@ -90,7 +94,7 @@ const FileMenu: React.FC<FileMenuProps> = ({
     const fileName = file.name;
     const newName = prompt("Enter new name:", fileName);
     if (newName && newName !== fileName) {
-      renameItem(file.path, newName);
+      onRenameItem(file.path, newName);
     }
     onClose();
   };
@@ -102,11 +106,11 @@ const FileMenu: React.FC<FileMenuProps> = ({
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
-    const success = await deleteItems([file.path]);
+    const success = await onDeleteItems([file.path]);
     setIsDeleting(false);
     setDeleteDialogOpen(false);
     if (success) {
-      refresh();
+      onRefresh();
     }
   };
 

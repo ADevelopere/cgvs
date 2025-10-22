@@ -12,7 +12,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
   StorageItem,
   ViewMode,
-  Clipboard,
+  StorageClipboardState,
   LoadingStates,
   OperationErrors,
   DirectoryTreeNode,
@@ -39,7 +39,7 @@ type UIState = {
   viewMode: ViewMode;
   searchMode: boolean;
   searchResults: StorageItem[];
-  clipboard: Clipboard | null;
+  clipboard: StorageClipboardState | null;
   sortBy: string;
   sortDirection: Graphql.OrderSortDirection;
   loading: LoadingStates;
@@ -72,7 +72,7 @@ export type StorageStateContextValueState = {
   viewMode: ViewMode;
   searchMode: boolean;
   searchResults: StorageItem[];
-  clipboard: Clipboard | null;
+  clipboard: StorageClipboardState | null;
   sortBy: string;
   sortDirection: Graphql.OrderSortDirection;
   loading: LoadingStates;
@@ -263,7 +263,7 @@ export const StorageStateProvider: React.FC<{ children: ReactNode }> = ({
   const [searchResults, setSearchResults] = useState<StorageItem[]>(
     initialUIState.searchResults
   );
-  const [clipboard, setClipboard] = useState<Clipboard | null>(
+  const [clipboard, setClipboard] = useState<StorageClipboardState | null>(
     initialUIState.clipboard
   );
   const [sortBy, setSortBy] = useState<string>(initialUIState.sortBy);

@@ -11,6 +11,7 @@ import {
   useStorageState,
   useStorageStateActions,
 } from "./contexts/StorageStateContext";
+import { useStorageOperations } from "./contexts/StorageOperationsContext";
 
 const StorageBrowserView: React.FC = () => {
   // Initialize storage data on mount
@@ -33,6 +34,15 @@ const StorageBrowserView: React.FC = () => {
     setLastSelectedItem,
   } = useStorageStateActions();
 
+  // Get operations from context
+  const {
+    search,
+    navigateTo,
+    expandDirectoryNode,
+    collapseDirectoryNode,
+    prefetchDirectoryChildren,
+  } = useStorageOperations();
+
   return (
     <>
       <Box
@@ -49,6 +59,7 @@ const StorageBrowserView: React.FC = () => {
           setSearchResults={setSearchResults}
           clearSelection={clearSelection}
           setLastSelectedItem={setLastSelectedItem}
+          onSearch={search}
         />
         <SplitPane
           orientation="vertical"
@@ -77,6 +88,10 @@ const StorageBrowserView: React.FC = () => {
             expandedNodes={expandedNodes}
             queueStates={queueStates}
             loading={loading}
+            onNavigate={navigateTo}
+            onExpandNode={expandDirectoryNode}
+            onCollapseNode={collapseDirectoryNode}
+            onPrefetchChildren={prefetchDirectoryChildren}
           />
           <StorageMainView />
         </SplitPane>

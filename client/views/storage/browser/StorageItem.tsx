@@ -2,12 +2,11 @@ import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
 import {
   StorageItem as StorageItemType,
   ViewMode,
+  StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
 import logger from "@/client/lib/logger";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -16,6 +15,11 @@ interface StorageItemProps {
   item: StorageItemType;
   viewMode: ViewMode;
   params: Graphql.FilesListInput;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  clipboard: StorageClipboardState | null;
 }
 
 /**
@@ -27,6 +31,8 @@ const StorageItem: React.FC<StorageItemProps> = ({
   item,
   viewMode,
   params,
+  onNavigate,
+  clipboard,
 }) => {
   const {
     selectedItems,
@@ -36,8 +42,6 @@ const StorageItem: React.FC<StorageItemProps> = ({
     clearSelection,
     setFocusedItem,
   } = useStorageSelection();
-  const { navigateTo } = useStorageNavigation();
-  const { clipboard } = useStorageClipboard();
 
   const isCut = React.useMemo(
     () =>
@@ -118,7 +122,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
 
       if (isDirectory) {
         logger.info("Navigating via double-click", { path: item.path });
-        navigateTo(item.path, params);
+        onNavigate(item.path, params);
       } else {
         logger.info("File double-clicked - no action", { path: item.path });
         // For files, we could trigger preview or download
@@ -130,7 +134,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
         isDoubleClickingRef.current = false;
       }, 300);
     },
-    [isDirectory, item.path, navigateTo, params]
+    [isDirectory, item.path, onNavigate, params]
   );
 
   // Handle context menu (right-click)

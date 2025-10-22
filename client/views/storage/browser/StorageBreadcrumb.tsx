@@ -12,7 +12,6 @@ import {
   ChevronRight as ChevronRightIcon,
   MoreHoriz as MoreHorizIcon,
 } from "@mui/icons-material";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
@@ -29,6 +28,10 @@ interface StorageBreadcrumbProps {
    * Navigation params to pass when navigating.
    */
   params: Graphql.FilesListInput;
+  /**
+   * Navigation handler from parent
+   */
+  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
 }
 
 /**
@@ -40,8 +43,8 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
   path: customPath,
   onNavigateToPath,
   params,
+  onNavigate,
 }) => {
-  const { navigateTo } = useStorageNavigation();
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   // Use custom path if provided, otherwise use current path from params
@@ -53,10 +56,10 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
       if (onNavigateToPath) {
         onNavigateToPath(path);
       } else {
-        navigateTo(path, params);
+        onNavigate(path, params);
       }
     },
-    [onNavigateToPath, navigateTo, params]
+    [onNavigateToPath, onNavigate, params]
   );
 
   // Split path into segments, filtering out empty strings
