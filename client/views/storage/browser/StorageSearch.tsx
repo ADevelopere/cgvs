@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 import TextField from "@mui/material/TextField";
@@ -22,7 +22,7 @@ const StorageSearch: React.FC = () => {
     setSearchResults,
     clearSelection,
     setLastSelectedItem,
-  } = useStorageUIStore();
+  } = useStorageState();
   const { search: searchOperation } = useStorageDataOperations();
 
   const search = React.useCallback(

@@ -19,8 +19,7 @@ import {
   ContentPaste as PasteIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useAppTranslation } from "@/client/locale";
@@ -35,9 +34,8 @@ import RenameDialog from "../dialogs/RenameDialog";
  * Provides download, move, delete, rename, copy, cut, and paste operations.
  */
 const StorageSelectionActions: React.FC = () => {
-  const { selectedItems, searchMode, searchResults, loading } =
-    useStorageUIStore();
-  const { items } = useStorageDataStore();
+  const { selectedItems, searchMode, searchResults, loading, items } =
+    useStorageState();
   const { clearSelection } = useStorageSelection();
   const { clipboard, copyItems, cutItems, pasteItems } = useStorageClipboard();
   const { ui: translations } = useAppTranslation("storageTranslations");

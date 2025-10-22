@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Fade } from "@mui/material";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import StorageFilters from "./StorageFilters";
 import StorageSelectionActions from "./StorageSelectionActions";
 
@@ -10,7 +10,7 @@ import StorageSelectionActions from "./StorageSelectionActions";
  * Provides smooth transitions between the two states.
  */
 const StorageToolbar: React.FC = () => {
-  const { selectedItems } = useStorageUIStore();
+  const { selectedItems } = useStorageState();
 
   const hasSelection = selectedItems.length > 0;
 

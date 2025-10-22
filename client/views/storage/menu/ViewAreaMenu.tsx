@@ -16,7 +16,7 @@ import {
   Refresh as RefreshIcon,
   SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
@@ -45,7 +45,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { params } = useStorageDataStore();
+  const { params } = useStorageState();
   const { selectAll } = useStorageSelection();
   const { clipboard, pasteItems } = useStorageClipboard();
   const { refresh } = useStorageNavigation();
