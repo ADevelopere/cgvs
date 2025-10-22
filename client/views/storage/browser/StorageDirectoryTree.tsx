@@ -28,14 +28,18 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
     markAsFetched,
     isFetched,
     updateCurrentDirectory,
+    setCurrentDirectory,
   } = useStorageTreeStore();
 
   // Callback handlers following CategoryPane pattern
   const handleSelectDirectory = React.useCallback(
     (node: StorageDirectoryNode) => {
+      // Update the store to persist the selected directory
+      setCurrentDirectory(node);
+      // Navigate to the directory
       onNavigate(node.path, params);
     },
-    [onNavigate, params]
+    [setCurrentDirectory, onNavigate, params]
   );
 
   const handleUpdateDirectory = React.useCallback(

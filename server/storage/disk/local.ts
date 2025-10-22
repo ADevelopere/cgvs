@@ -1110,7 +1110,7 @@ class LocalAdapter implements StorageService {
     try {
       // Default to "public" if empty
       const targetPath =
-        !searchPath || searchPath.length === 0 ? "public" : searchPath;
+        !searchPath || searchPath.length === 0 ? "" : searchPath;
       const absolutePath = this.getAbsolutePath(targetPath);
 
       // Get directories from database
