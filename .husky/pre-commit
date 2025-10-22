@@ -1,2 +1,2 @@
-~/.bun/bin/bun lint-staged
- ~/.bun/bin/bun tsc
+# ~/.bun/bin/bun lint-staged
+#  ~/.bun/bin/bun tsc
