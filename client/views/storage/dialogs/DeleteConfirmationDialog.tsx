@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import * as MUI from "@mui/material";
 import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
 export interface DeleteConfirmationDialogProps {

@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 import { useStorageDataOperations } from "./useStorageDataOperations";
-import { DirectoryTreeNode } from "./storage.type";
+import { DirectoryTreeNode } from "../core/storage.type";
 
 export const useStorageTreeOperations = () => {
   const {

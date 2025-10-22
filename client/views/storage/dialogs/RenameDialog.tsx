@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as MUI from "@mui/material";
 import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
 export interface RenameDialogProps {

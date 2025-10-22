@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
-import { StorageItem } from "./storage.type";
+import { StorageItem } from "../core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 export const useStorageSorting = () => {

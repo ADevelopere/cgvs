@@ -7,7 +7,7 @@ import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSele
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
-import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem as StorageItemType } from "@/client/views/storage/core/storage.type";
 import logger from "@/client/lib/logger";
 interface StorageItemProps {
   item: StorageItemType;

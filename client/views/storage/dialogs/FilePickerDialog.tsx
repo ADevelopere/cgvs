@@ -19,7 +19,7 @@ import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorag
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
+import { StorageItem as StorageItemType } from "@/client/views/storage/core/storage.type";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 

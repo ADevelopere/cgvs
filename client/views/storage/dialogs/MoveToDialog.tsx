@@ -13,7 +13,7 @@ import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorag
 import {
   DirectoryTreeNode,
   StorageItem,
-} from "@/client/views/storage/hooks/storage.type";
+} from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 export interface MoveToDialogProps {
   open: boolean;

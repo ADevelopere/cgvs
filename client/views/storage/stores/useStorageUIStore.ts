@@ -8,7 +8,7 @@ import {
   Clipboard,
   LoadingStates,
   OperationErrors,
-} from "../hooks/storage.type";
+} from "../core/storage.type";
 
 interface StorageUIState {
   // Selection state

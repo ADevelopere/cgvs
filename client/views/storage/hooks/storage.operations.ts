@@ -2,7 +2,7 @@
 
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 import { useMemo } from "react";
-import * as Document from "./storage.documents";
+import * as Document from "../core/storage.documents";
 import { useMutationWrapper } from "@/client/graphql/utils";
 
 export const useStorageApolloQueries = () => {
