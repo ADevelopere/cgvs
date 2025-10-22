@@ -1,5 +1,5 @@
-import StorageBrowserView from "@/client/views/storage/StorageBrowserView";
+import StorageBrowserPage from "@/client/views/storage/StorageBrowserPage";
 
 export default function StoragePage() {
-  return <StorageBrowserView />;
+  return <StorageBrowserPage />;
 }
