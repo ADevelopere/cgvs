@@ -7,10 +7,24 @@ import StorageSearch from "./browser/StorageSearch";
 import { SplitPane } from "@/client/components";
 import UploadProgress from "./uploading/UploadProgress";
 import { useStorageInitialization } from "./hooks/useStorageInitialization";
+import { useStorageState } from "./contexts/StorageStateContext";
 
 const StorageBrowserView: React.FC = () => {
   // Initialize storage data on mount
   useStorageInitialization();
+
+  const {
+    searchMode,
+    setSearchMode,
+    setSearchResults,
+    clearSelection,
+    setLastSelectedItem,
+    params,
+    directoryTree,
+    expandedNodes,
+    queueStates,
+    loading,
+  } = useStorageState();
 
   return (
     <>
@@ -22,7 +36,13 @@ const StorageBrowserView: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        <StorageSearch />
+        <StorageSearch
+          searchMode={searchMode}
+          setSearchMode={setSearchMode}
+          setSearchResults={setSearchResults}
+          clearSelection={clearSelection}
+          setLastSelectedItem={setLastSelectedItem}
+        />
         <SplitPane
           orientation="vertical"
           firstPane={{
@@ -44,7 +64,13 @@ const StorageBrowserView: React.FC = () => {
           }}
           storageKey={"storage-browser-split-pane"}
         >
-          <StorageDirectoryTree />
+          <StorageDirectoryTree
+            params={params}
+            directoryTree={directoryTree}
+            expandedNodes={expandedNodes}
+            queueStates={queueStates}
+            loading={loading}
+          />
           <StorageMainView />
         </SplitPane>
       </Box>

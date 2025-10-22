@@ -14,6 +14,7 @@ interface StorageItemGridProps {
   onClick?: (event: React.MouseEvent) => void;
   onDoubleClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
+  params: Graphql.FilesListInput;
 }
 
 function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
@@ -31,6 +32,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
   onClick,
   onDoubleClick,
   onContextMenu,
+  params,
 }) => {
   const isDirectory = React.useMemo(() => isDirectoryItem(item), [item]);
 
@@ -167,6 +169,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           folder={item as Graphql.DirectoryInfo}
+          params={params}
         />
       ) : (
         <FileMenu

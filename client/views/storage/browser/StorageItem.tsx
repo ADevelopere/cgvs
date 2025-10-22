@@ -1,15 +1,21 @@
 import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
-import { StorageItem as StorageItemType } from "@/client/views/storage/core/storage.type";
+import {
+  StorageItem as StorageItemType,
+  ViewMode,
+} from "@/client/views/storage/core/storage.type";
 import logger from "@/client/lib/logger";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
 interface StorageItemProps {
   item: StorageItemType;
+  viewMode: ViewMode;
+  params: Graphql.FilesListInput;
 }
 
 /**
@@ -17,8 +23,11 @@ interface StorageItemProps {
  * Handles selection logic and renders either Grid or List Row component.
  * Manages drag-and-drop functionality and context menus.
  */
-const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
-  const { viewMode, params } = useStorageState();
+const StorageItem: React.FC<StorageItemProps> = ({
+  item,
+  viewMode,
+  params,
+}) => {
   const {
     selectedItems,
     lastSelectedItem,
@@ -149,8 +158,16 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
       onClick: handleClick,
       onDoubleClick: handleDoubleClick,
       onContextMenu: handleContextMenu,
+      params,
     }),
-    [handleClick, handleContextMenu, handleDoubleClick, item, selectedItems]
+    [
+      handleClick,
+      handleContextMenu,
+      handleDoubleClick,
+      item,
+      selectedItems,
+      params,
+    ]
   );
 
   // Render the appropriate component based on view mode

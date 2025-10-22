@@ -24,7 +24,6 @@ import {
   Delete as DeleteIcon,
   Info as InfoIcon,
 } from "@mui/icons-material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
 import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
@@ -40,6 +39,7 @@ export interface FolderMenuProps {
   open: boolean;
   onClose: () => void;
   folder: Graphql.DirectoryInfo;
+  params: Graphql.FilesListInput;
 }
 
 const FolderMenu: React.FC<FolderMenuProps> = ({
@@ -47,9 +47,9 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   open,
   onClose,
   folder,
+  params,
 }) => {
   const theme = useTheme();
-  const { params } = useStorageState();
   const { ui: translations } = useAppTranslation("storageTranslations");
   const { navigateTo, refresh } = useStorageNavigation();
   const { copyItems, cutItems, pasteItems, clipboard } = useStorageClipboard();

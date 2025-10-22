@@ -18,7 +18,6 @@ import {
   CalendarToday as CalendarIcon,
   Category as CategoryIcon,
 } from "@mui/icons-material";
-import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
@@ -32,13 +31,17 @@ const FILE_TYPE: Record<Graphql.FileType, Graphql.FileType> = {
   VIDEO: "VIDEO",
 };
 
+interface StorageFiltersProps {
+  params: Graphql.FilesListInput;
+  updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
+}
+
 /**
  * Filter controls component for the storage browser.
  * Displays type and date filters when no items are selected.
  * Updates URL query parameters to trigger data re-fetch.
  */
-const StorageFilters: React.FC = () => {
-  const { params, updateParams } = useStorageState();
+const StorageFilters: React.FC<StorageFiltersProps> = ({ params, updateParams }) => {
 
   const setFilterType = React.useCallback(
     (type?: Graphql.FileType) => {
