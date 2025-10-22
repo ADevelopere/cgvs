@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStorageTreeStore } from "../stores/useStorageTreeStore";
 import { useStorageDataOperations } from "./useStorageDataOperations";
 import { DirectoryTreeNode } from "./storage.type";
@@ -173,10 +173,18 @@ export const useStorageTreeOperations = () => {
     [collapseNode]
   );
 
-  return {
-    prefetchDirectoryChildren,
-    expandDirectoryNode,
-    collapseDirectoryNode,
-    processExpansionQueue,
-  };
+  return useMemo(
+    () => ({
+      prefetchDirectoryChildren,
+      expandDirectoryNode,
+      collapseDirectoryNode,
+      processExpansionQueue,
+    }),
+    [
+      prefetchDirectoryChildren,
+      expandDirectoryNode,
+      collapseDirectoryNode,
+      processExpansionQueue,
+    ]
+  );
 };

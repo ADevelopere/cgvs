@@ -138,26 +138,73 @@ export const useUploadProgressUIOperations = () => {
     clearCancelDialog();
   }, [clearCancelDialog]);
 
-  return {
-    // Upload batch information
-    totalCount: storageUpload.uploadBatch?.totalCount || 0,
-    completedCount: storageUpload.uploadBatch?.completedCount || 0,
-    totalProgress: storageUpload.uploadBatch?.totalProgress || 0,
-    timeRemaining: storageUpload.uploadBatch?.timeRemaining || null,
-    isUploading: storageUpload.uploadBatch?.isUploading || false,
-    files,
+  // Stabilize primitive values with useMemo
+  const totalCount = useMemo(
+    () => storageUpload.uploadBatch?.totalCount || 0,
+    [storageUpload.uploadBatch?.totalCount]
+  );
+  const completedCount = useMemo(
+    () => storageUpload.uploadBatch?.completedCount || 0,
+    [storageUpload.uploadBatch?.completedCount]
+  );
+  const totalProgress = useMemo(
+    () => storageUpload.uploadBatch?.totalProgress || 0,
+    [storageUpload.uploadBatch?.totalProgress]
+  );
+  const timeRemaining = useMemo(
+    () => storageUpload.uploadBatch?.timeRemaining || null,
+    [storageUpload.uploadBatch?.timeRemaining]
+  );
+  const isUploading = useMemo(
+    () => storageUpload.uploadBatch?.isUploading || false,
+    [storageUpload.uploadBatch?.isUploading]
+  );
+  const stableIsCollapsed = useMemo(() => isCollapsed, [isCollapsed]);
+  const stableShowCancelDialog = useMemo(
+    () => showCancelDialog,
+    [showCancelDialog]
+  );
+  const stableCancelTarget = useMemo(() => cancelTarget, [cancelTarget]);
 
-    // UI states
-    isCollapsed,
-    showCancelDialog,
-    cancelTarget,
+  return useMemo(
+    () => ({
+      // Upload batch information
+      totalCount,
+      completedCount,
+      totalProgress,
+      timeRemaining,
+      isUploading,
+      files,
 
-    // Action handlers
-    onToggleCollapse,
-    onClose,
-    onCancelAll,
-    onCancelFile,
-    onConfirmCancel,
-    onDismissDialog,
-  };
+      // UI states
+      isCollapsed: stableIsCollapsed,
+      showCancelDialog: stableShowCancelDialog,
+      cancelTarget: stableCancelTarget,
+
+      // Action handlers
+      onToggleCollapse,
+      onClose,
+      onCancelAll,
+      onCancelFile,
+      onConfirmCancel,
+      onDismissDialog,
+    }),
+    [
+      totalCount,
+      completedCount,
+      totalProgress,
+      timeRemaining,
+      isUploading,
+      files,
+      stableIsCollapsed,
+      stableShowCancelDialog,
+      stableCancelTarget,
+      onToggleCollapse,
+      onClose,
+      onCancelAll,
+      onCancelFile,
+      onConfirmCancel,
+      onDismissDialog,
+    ]
+  );
 };

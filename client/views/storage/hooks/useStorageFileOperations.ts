@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStorageDataOperations } from "./useStorageDataOperations";
 import { useStorageNavigation } from "./useStorageNavigation";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
@@ -74,10 +74,13 @@ export const useStorageFileOperations = () => {
     [copy, refresh, updateLoading]
   );
 
-  return {
-    renameItem,
-    deleteItems,
-    moveItems,
-    copyItemsTo,
-  };
+  return useMemo(
+    () => ({
+      renameItem,
+      deleteItems,
+      moveItems,
+      copyItemsTo,
+    }),
+    [renameItem, deleteItems, moveItems, copyItemsTo]
+  );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { StorageItem } from "./storage.type";
@@ -16,6 +16,10 @@ export const useStorageSorting = () => {
     setSortDirection: setSortDirectionAction,
   } = useStorageUIStore();
   const { items } = useStorageDataStore();
+
+  // Stabilize primitive values with useMemo
+  const stableSortBy = useMemo(() => sortBy, [sortBy]);
+  const stableSortDirection = useMemo(() => sortDirection, [sortDirection]);
 
   const setSortBy = useCallback(
     (field: string) => {
@@ -37,7 +41,7 @@ export const useStorageSorting = () => {
     return [...currentItems].sort((a, b) => {
       let aValue: string | number;
       let bValue: string | number;
-      switch (sortBy) {
+      switch (stableSortBy) {
         case "name":
           aValue = a.name;
           bValue = b.name;
@@ -75,17 +79,26 @@ export const useStorageSorting = () => {
           bValue = b.name;
       }
 
-      if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "ASC" ? 1 : -1;
+      if (aValue < bValue) return stableSortDirection === "ASC" ? -1 : 1;
+      if (aValue > bValue) return stableSortDirection === "ASC" ? 1 : -1;
       return 0;
     });
-  }, [searchMode, searchResults, items, sortBy, sortDirection]);
+  }, [searchMode, searchResults, items, stableSortBy, stableSortDirection]);
 
-  return {
-    sortBy,
-    sortDirection,
-    setSortBy,
-    setSortDirection,
-    getSortedItems,
-  };
+  return useMemo(
+    () => ({
+      sortBy: stableSortBy,
+      sortDirection: stableSortDirection,
+      setSortBy,
+      setSortDirection,
+      getSortedItems,
+    }),
+    [
+      stableSortBy,
+      stableSortDirection,
+      setSortBy,
+      setSortDirection,
+      getSortedItems,
+    ]
+  );
 };

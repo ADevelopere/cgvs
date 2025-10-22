@@ -23,11 +23,38 @@ export const useStorageInitialization = () => {
   // Track if this is the initial mount
   const isInitialMount = useRef(true);
 
+  // Use refs to store latest values for functions/values used in effect
+  // This allows the effect to access latest values without re-running
+  const paramsRef = useRef(params);
+  const updateLoadingRef = useRef(updateLoading);
+  const updateErrorRef = useRef(updateError);
+  const fetchDirectoryChildrenRef = useRef(fetchDirectoryChildren);
+  const fetchListRef = useRef(fetchList);
+  const setDirectoryTreeRef = useRef(setDirectoryTree);
+  const setItemsRef = useRef(setItems);
+  const setPaginationRef = useRef(setPagination);
+  const setUIFocusedItemRef = useRef(setUIFocusedItem);
+  const focusedItemRef = useRef(focusedItem);
+  const translationsRef = useRef(translations);
+
+  // Update refs with latest values before each render
+  paramsRef.current = params;
+  updateLoadingRef.current = updateLoading;
+  updateErrorRef.current = updateError;
+  fetchDirectoryChildrenRef.current = fetchDirectoryChildren;
+  fetchListRef.current = fetchList;
+  setDirectoryTreeRef.current = setDirectoryTree;
+  setItemsRef.current = setItems;
+  setPaginationRef.current = setPagination;
+  setUIFocusedItemRef.current = setUIFocusedItem;
+  focusedItemRef.current = focusedItem;
+  translationsRef.current = translations;
+
   // Initialize directory tree and root items on mount only
   useEffect(() => {
     logger.info("useStorageInitialization effect triggered", {
       isInitialMount: isInitialMount.current,
-      currentPath: params.path,
+      currentPath: paramsRef.current.path,
     });
 
     // Only run on initial mount
@@ -40,9 +67,9 @@ export const useStorageInitialization = () => {
 
     const initializeStorageData = async () => {
       logger.info("Starting storage initialization", {
-        path: params.path,
-        limit: params.limit,
-        offset: params.offset,
+        path: paramsRef.current.path,
+        limit: paramsRef.current.limit,
+        offset: paramsRef.current.offset,
       });
 
       // Wait for hydration to complete
@@ -57,15 +84,15 @@ export const useStorageInitialization = () => {
       try {
         // Initial mount: Initialize both directory tree and root items
         logger.info("Setting loading states for initialization");
-        updateLoading("prefetchingNode", "");
-        updateLoading("fetchList", true);
+        updateLoadingRef.current("prefetchingNode", "");
+        updateLoadingRef.current("fetchList", true);
 
         logger.info(
           "Fetching root directory tree and initial items in parallel"
         );
         const [rootDirectories, rootItems] = await Promise.all([
-          fetchDirectoryChildren(),
-          fetchList(params),
+          fetchDirectoryChildrenRef.current(),
+          fetchListRef.current(paramsRef.current),
         ]);
 
         logger.info("Parallel fetch completed", {
@@ -81,7 +108,7 @@ export const useStorageInitialization = () => {
             logger.info("Setting directory tree", {
               count: rootDirectories.length,
             });
-            setDirectoryTree(rootDirectories);
+            setDirectoryTreeRef.current(rootDirectories);
           } else {
             logger.warn("No root directories returned");
           }
@@ -92,19 +119,21 @@ export const useStorageInitialization = () => {
               totalCount: rootItems.pagination.total,
               hasMorePages: rootItems.pagination.hasMorePages,
             });
-            setItems(rootItems.items);
-            setPagination(rootItems.pagination);
+            setItemsRef.current(rootItems.items);
+            setPaginationRef.current(rootItems.pagination);
 
             // Set focus to first item if no focused item
-            if (rootItems.items.length > 0 && !focusedItem) {
+            if (rootItems.items.length > 0 && !focusedItemRef.current) {
               logger.info("Setting focus to first item", {
                 itemPath: rootItems.items[0].path,
               });
-              setUIFocusedItem(rootItems.items[0].path);
+              setUIFocusedItemRef.current(rootItems.items[0].path);
             } else if (rootItems.items.length === 0) {
               logger.info("No items to focus - directory is empty");
             } else {
-              logger.info("Focus already set", { focusedItem });
+              logger.info("Focus already set", {
+                focusedItem: focusedItemRef.current,
+              });
             }
           } else {
             logger.warn("No root items returned");
@@ -122,9 +151,12 @@ export const useStorageInitialization = () => {
           logger.error("Error during storage initialization", {
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
-            path: params.path,
+            path: paramsRef.current.path,
           });
-          updateError("fetchList", translations.failedToNavigateToDirectory);
+          updateErrorRef.current(
+            "fetchList",
+            translationsRef.current.failedToNavigateToDirectory
+          );
         } else {
           logger.info("Error during initialization but component unmounted", {
             error: error instanceof Error ? error.message : "Unknown error",
@@ -133,8 +165,8 @@ export const useStorageInitialization = () => {
       } finally {
         if (isMounted) {
           logger.info("Clearing loading states");
-          updateLoading("prefetchingNode", null);
-          updateLoading("fetchList", false);
+          updateLoadingRef.current("prefetchingNode", null);
+          updateLoadingRef.current("fetchList", false);
         }
       }
     };
@@ -151,6 +183,5 @@ export const useStorageInitialization = () => {
       isMounted = false;
       clearTimeout(timeoutId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once on mount
+  }, []); // Empty dependency array - only run once on mount, refs provide latest values
 };
