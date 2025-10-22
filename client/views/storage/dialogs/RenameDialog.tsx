@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import * as MUI from "@mui/material";
-import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
 import { StorageItem } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 
@@ -10,12 +9,17 @@ export interface RenameDialogProps {
   open: boolean;
   onClose: () => void;
   item: StorageItem | null;
+  onRename: (path: string, newName: string) => Promise<boolean>;
 }
 
-const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
+const RenameDialog: React.FC<RenameDialogProps> = ({
+  open,
+  onClose,
+  item,
+  onRename,
+}) => {
   const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { renameItem } = useStorageFileOperations();
 
   // State
   const [newName, setNewName] = useState("");
@@ -96,7 +100,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
         }
       }
 
-      const success = await renameItem(item.path, finalName);
+      const success = await onRename(item.path, finalName);
 
       if (success) {
         onClose();
@@ -112,7 +116,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
     item,
     newName,
     validateName,
-    renameItem,
+    onRename,
     onClose,
     translations.renameDialogFailedToRename,
     translations.renameDialogUnexpectedError,
@@ -153,12 +157,12 @@ const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item }) => {
     [error]
   );
 
-  if (!item) {
-    return null;
-  }
-
-  const isFormValid =
-    newName.trim() && !validateName(newName) && newName.trim() !== item.name;
+  const isFormValid = useMemo(() => {
+    if (!item) return false;
+    return (
+      newName.trim() && !validateName(newName) && newName.trim() !== item.name
+    );
+  }, [newName, validateName, item]);
 
   return (
     <MUI.Dialog

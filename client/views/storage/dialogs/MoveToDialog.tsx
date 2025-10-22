@@ -9,7 +9,6 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import {
   DirectoryTreeNode,
   StorageItem,
@@ -19,16 +18,21 @@ export interface MoveToDialogProps {
   open: boolean;
   onClose: () => void;
   items: StorageItem[];
+  onFetchDirectoryChildren: (
+    path?: string
+  ) => Promise<DirectoryTreeNode[] | null>;
+  onMove: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
 }
 
 const MoveToDialog: React.FC<MoveToDialogProps> = ({
   open,
   onClose,
   items,
+  onFetchDirectoryChildren,
+  onMove,
 }) => {
   const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { fetchDirectoryChildren, move } = useStorageDataOperations();
 
   // State
   const [currentPath, setCurrentPath] = useState<string>("");
@@ -45,7 +49,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       setError(null);
 
       try {
-        const result = await fetchDirectoryChildren(path || undefined);
+        const result = await onFetchDirectoryChildren(path || undefined);
         if (result) {
           setDirectories(result);
         } else {
@@ -65,7 +69,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       }
     },
     [
-      fetchDirectoryChildren,
+      onFetchDirectoryChildren,
       translations.moveDialogFailedToLoad,
       translations.moveDialogUnexpectedError,
     ]
@@ -156,7 +160,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
 
     try {
       const sourcePaths = items.map(item => item.path);
-      const success = await move(sourcePaths, currentPath);
+      const success = await onMove(sourcePaths, currentPath);
 
       if (success) {
         onClose();
@@ -174,7 +178,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
     items,
     currentPath,
     isPathInvalid,
-    move,
+    onMove,
     onClose,
     translations.moveDialogInvalidDestination,
     translations.moveDialogFailedToMove,
@@ -212,12 +216,17 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
     loadDirectories(currentPath);
   }, [loadDirectories, currentPath]);
 
+  const canMove = useMemo(() => {
+    return !isLoading && !isMoving && !isPathInvalid(currentPath);
+  }, [isLoading, isMoving, isPathInvalid, currentPath]);
+  
+  const isCurrentLocationInvalid = useMemo(() => {
+    return isPathInvalid(currentPath);
+  }, [isPathInvalid, currentPath]);
+
   if (!items.length) {
     return null;
   }
-
-  const canMove = !isLoading && !isMoving && !isPathInvalid(currentPath);
-  const isCurrentLocationInvalid = isPathInvalid(currentPath);
 
   return (
     <MUI.Dialog
