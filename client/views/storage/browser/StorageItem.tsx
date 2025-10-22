@@ -1,7 +1,10 @@
 import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
+import {
+  useStorageState,
+  useStorageStateActions,
+} from "@/client/views/storage/contexts/StorageStateContext";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
 import {
   StorageItem as StorageItemType,
@@ -15,6 +18,7 @@ interface StorageItemProps {
   item: StorageItemType;
   viewMode: ViewMode;
   params: Graphql.FilesListInput;
+  currentItems: StorageItemType[];
   onNavigate: (
     path: string,
     currentParams: Graphql.FilesListInput
@@ -37,6 +41,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
   item,
   viewMode,
   params,
+  currentItems,
   onNavigate,
   clipboard,
   onRefresh,
@@ -46,14 +51,9 @@ const StorageItem: React.FC<StorageItemProps> = ({
   onRenameItem,
   onDeleteItems,
 }) => {
-  const {
-    selectedItems,
-    lastSelectedItem,
-    toggleSelect,
-    selectRange,
-    clearSelection,
-    setFocusedItem,
-  } = useStorageSelection();
+  const { selectedItems, lastSelectedItem } = useStorageState();
+  const { toggleSelect, selectRange, clearSelection, setFocusedItem } =
+    useStorageStateActions();
 
   const isCut = React.useMemo(
     () =>
@@ -91,7 +91,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
         // Handle different selection behaviors based on modifier keys
         if (event.shiftKey && lastSelectedItem) {
           // Shift+click: Select range from last selected to current
-          selectRange(lastSelectedItem, item.path);
+          selectRange(lastSelectedItem, item.path, currentItems);
         } else if (event.ctrlKey || event.metaKey) {
           // Ctrl+click (or Cmd+click on Mac): Toggle selection
           toggleSelect(item.path);
@@ -109,6 +109,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
       selectRange,
       setFocusedItem,
       toggleSelect,
+      currentItems,
     ]
   );
 

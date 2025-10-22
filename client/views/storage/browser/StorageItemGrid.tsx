@@ -4,7 +4,7 @@ import FilePreview from "./FilePreview";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
+import { useStorageState } from "@/client/views/storage/contexts/StorageStateContext";
 import {
   StorageItem,
   StorageClipboardState,
@@ -66,7 +66,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     | undefined
   >(undefined);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const { focusedItem } = useStorageSelection();
+  const { focusedItem } = useStorageState();
 
   const isFocused = focusedItem === item.path;
 
