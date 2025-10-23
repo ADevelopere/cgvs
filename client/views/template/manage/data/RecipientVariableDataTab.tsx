@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import {
-  Box,
-  CircularProgress,
-  Alert,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress, Alert, Typography } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
@@ -46,7 +41,10 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
   // Auto-select first group if no group is selected
   useEffect(() => {
     if (groups.length > 0 && !store.selectedGroup) {
-      logger.info("🔍 RecipientVariableDataTab: Auto-selecting first group:", groups[0]);
+      logger.info(
+        "🔍 RecipientVariableDataTab: Auto-selecting first group:",
+        groups[0]
+      );
       operations.setSelectedGroup(groups[0]);
     }
   }, [groups, store.selectedGroup, operations]);

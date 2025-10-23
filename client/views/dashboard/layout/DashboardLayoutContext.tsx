@@ -172,7 +172,6 @@ export const DashboardLayoutProvider: React.FC<
 
       return () => {
         setSlots(prevSlots => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [slotName]: _, ...rest } = prevSlots;
           return rest;
         });
@@ -205,7 +204,6 @@ export const DashboardLayoutProvider: React.FC<
 
     return () => {
       setSlots(prevSlots => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { titleRenderer: _, ...rest } = prevSlots;
         return rest;
       });

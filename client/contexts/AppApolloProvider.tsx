@@ -27,6 +27,7 @@ import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 // import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
 import { PersistedQueryLink } from "@apollo/client/link/persisted-queries";
 import { sha256 } from "crypto-hash"; // Or your preferred SHA256 implementation
+import logger from "@/client/lib/logger";
 
 // Loading UI shown during initial connectivity check
 const InitializingUI: React.FC<{
@@ -125,6 +126,7 @@ export const AppApolloProvider: React.FC<{
   const [isChecking, setIsChecking] = useState(false);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null); // Always start with no token
+  const [initialCheckDone, setInitialCheckDone] = useState(false); // Track initial check completion
 
   // Use refs to track status to avoid dependency issues
   const isConnectedRef = useRef(false); // Start conservative, wait for actual check
@@ -196,6 +198,8 @@ export const AppApolloProvider: React.FC<{
       isCheckingRef.current = false;
       setIsChecking(false);
       initialCheckDoneRef.current = true;
+      setInitialCheckDone(true);
+      logger.debug("[Connectivity] Initial check completed");
     }
   }, []); // No dependencies needed
 
@@ -336,10 +340,15 @@ export const AppApolloProvider: React.FC<{
       if (isNetworkError(error)) {
         const wasConnected = isConnectedRef.current;
 
+        logger.warn(
+          `[Error Link] Network error detected. wasConnected=${wasConnected}`
+        );
+
         setIsConnected(false);
         isConnectedRef.current = false;
 
         if (wasConnected) {
+          logger.info("[Error Link] Connection lost (was previously connected)");
         }
 
         notifyIfDisconnected();
@@ -392,41 +401,67 @@ export const AppApolloProvider: React.FC<{
 
   // Automatic reconnection with progressive delays
   useEffect(() => {
+    logger.debug(
+      `[Reconnect Effect] Running. isConnected=${isConnected}, initialCheckDone=${initialCheckDone}`
+    );
+
     // Only attempt reconnection if we're disconnected and initial check is done
-    if (isConnected || !initialCheckDoneRef.current) {
+    if (isConnected || !initialCheckDone) {
       // Clear any pending reconnection timeout if we're connected
       if (reconnectTimeoutRef.current) {
+        logger.debug("[Reconnect Effect] Clearing timeout (connected or not initialized)");
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
       }
       return;
     }
 
-    // Get the delay for the current attempt
-    const delay = getReconnectionDelay(reconnectAttemptRef.current);
+    logger.info("[Reconnect Effect] Starting auto-reconnect sequence");
 
-    if (delay === null) {
-      return;
-    }
+    // Recursive function to schedule reconnection attempts
+    const scheduleReconnect = () => {
+      // Get the delay for the current attempt
+      const delay = getReconnectionDelay(reconnectAttemptRef.current);
 
-    // Schedule the reconnection attempt
-    reconnectTimeoutRef.current = setTimeout(() => {
-      checkConnectivity().then(connected => {
-        if (!connected) {
-          // Increment attempt counter for next retry
-          reconnectAttemptRef.current += 1;
-        }
-      });
-    }, delay);
+      logger.debug(
+        `[Reconnect] Scheduling attempt #${reconnectAttemptRef.current}, delay=${delay}ms`
+      );
+
+      if (delay === null) {
+        logger.warn("[Reconnect] Max reconnection attempts reached, stopping");
+        return;
+      }
+
+      // Schedule the reconnection attempt
+      reconnectTimeoutRef.current = setTimeout(() => {
+        logger.info(`[Reconnect] Executing attempt #${reconnectAttemptRef.current}`);
+        checkConnectivity().then(connected => {
+          logger.debug(`[Reconnect] Attempt result: connected=${connected}`);
+          if (!connected) {
+            // Increment attempt counter for next retry
+            reconnectAttemptRef.current += 1;
+            // Schedule the next attempt immediately
+            scheduleReconnect();
+          } else {
+            // Reset attempt counter on successful reconnection
+            logger.info("[Reconnect] Successfully reconnected!");
+            reconnectAttemptRef.current = 0;
+          }
+        });
+      }, delay);
+    };
+
+    scheduleReconnect();
 
     // Cleanup function
     return () => {
+      logger.debug("[Reconnect Effect] Cleanup running");
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
       }
     };
-  }, [isConnected, checkConnectivity]);
+  }, [isConnected, initialCheckDone, checkConnectivity]);
 
   // Listen for online/offline events with debouncing
   useEffect(() => {

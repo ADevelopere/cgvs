@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { Box, Paper, CircularProgress, Alert } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
@@ -33,26 +39,28 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     data: variablesData,
     loading: variablesLoading,
     error: variablesError,
-  } = useQuery(TemplateVariableDocument.templateVariablesByTemplateIdQueryDocument, {
-    variables: { templateId },
-    skip: !templateId,
-    fetchPolicy: "cache-first",
-  });
+  } = useQuery(
+    TemplateVariableDocument.templateVariablesByTemplateIdQueryDocument,
+    {
+      variables: { templateId },
+      skip: !templateId,
+      fetchPolicy: "cache-first",
+    }
+  );
 
   // Fetch recipient variable data
-  const {
-    data,
-    loading,
-    error,
-  } = useQuery(Document.recipientVariableValuesByGroupQueryDocument, {
-    variables: {
-      recipientGroupId: selectedGroupId,
-      limit: store.queryParams.limit,
-      offset: store.queryParams.offset,
-    },
-    skip: !selectedGroupId,
-    fetchPolicy: "cache-first",
-  });
+  const { data, loading, error } = useQuery(
+    Document.recipientVariableValuesByGroupQueryDocument,
+    {
+      variables: {
+        recipientGroupId: selectedGroupId,
+        limit: store.queryParams.limit,
+        offset: store.queryParams.offset,
+      },
+      skip: !selectedGroupId,
+      fetchPolicy: "cache-first",
+    }
+  );
 
   const variables = useMemo(
     () => variablesData?.templateVariablesByTemplateId || [],
@@ -66,7 +74,8 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
   // Calculate page info for pagination
   const pageInfo = useMemo(() => {
-    const currentPage = Math.floor(store.queryParams.offset / store.queryParams.limit) + 1;
+    const currentPage =
+      Math.floor(store.queryParams.offset / store.queryParams.limit) + 1;
     const totalPages = Math.ceil(total / store.queryParams.limit);
 
     return {
@@ -96,12 +105,19 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   }, [variables, strings, handleUpdateCell]);
 
   // Column width initialization
-  const [initialWidths, setInitialWidths] = useState<Record<string, number>>({});
+  const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
+    {}
+  );
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const widthsInitialized = useRef(false);
 
   useEffect(() => {
-    if (!tableContainerRef.current || widthsInitialized.current || columns.length === 0) return;
+    if (
+      !tableContainerRef.current ||
+      widthsInitialized.current ||
+      columns.length === 0
+    )
+      return;
 
     const totalWidth = tableContainerRef.current.offsetWidth - 20;
 
@@ -128,7 +144,9 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
     if (resizableColumns.length > 0) {
       const remainingWidth = Math.max(totalWidth - totalFixedWidth, 0);
-      const widthPerColumn = Math.floor(remainingWidth / resizableColumns.length);
+      const widthPerColumn = Math.floor(
+        remainingWidth / resizableColumns.length
+      );
 
       resizableColumns.forEach(column => {
         newWidths[column.id] = Math.max(widthPerColumn, 50);

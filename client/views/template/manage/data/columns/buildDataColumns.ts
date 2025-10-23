@@ -67,7 +67,9 @@ export const buildDataColumns = (
       type: columnType as ColumnTypes,
       label: variable.name || `Variable ${variable.id}`,
       accessor: (row: Graphql.RecipientWithVariableValues) =>
-        (row.variableValues as Record<string, unknown>)?.[variable.id?.toString() || ""],
+        (row.variableValues as Record<string, unknown>)?.[
+          variable.id?.toString() || ""
+        ],
       editable: true,
       resizable: true,
       required: variable.required || false,
