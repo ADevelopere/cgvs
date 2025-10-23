@@ -4,19 +4,34 @@ import FilePreview from "./FilePreview";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import {
+  StorageItemUnion,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 
 interface StorageItemGridProps {
-  item: StorageItem;
+  item: StorageItemUnion;
+  focusedItem: string | null
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
   onDoubleClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
-function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
+function isDirectoryItem(item: StorageItemUnion): item is Graphql.DirectoryInfo {
   return item.__typename === "DirectoryInfo";
 }
 
@@ -26,11 +41,21 @@ function isDirectoryItem(item: StorageItem): item is Graphql.DirectoryInfo {
  */
 const StorageItemGrid: React.FC<StorageItemGridProps> = ({
   item,
+  focusedItem,
   isSelected,
   isCut,
   onClick,
   onDoubleClick,
   onContextMenu,
+  params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   const isDirectory = React.useMemo(() => isDirectoryItem(item), [item]);
 
@@ -42,7 +67,6 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
     | undefined
   >(undefined);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const { focusedItem } = useStorageSelection();
 
   const isFocused = focusedItem === item.path;
 
@@ -167,6 +191,15 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           folder={item as Graphql.DirectoryInfo}
+          params={params}
+          onNavigate={onNavigate}
+          onRefresh={onRefresh}
+          onCopyItems={onCopyItems}
+          onCutItems={onCutItems}
+          onPasteItems={onPasteItems}
+          clipboard={clipboard}
+          onRenameItem={onRenameItem}
+          onDeleteItems={onDeleteItems}
         />
       ) : (
         <FileMenu
@@ -174,6 +207,11 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           file={item as Graphql.FileInfo}
+          onCopyItems={onCopyItems}
+          onCutItems={onCutItems}
+          onRenameItem={onRenameItem}
+          onDeleteItems={onDeleteItems}
+          onRefresh={onRefresh}
         />
       )}
     </>

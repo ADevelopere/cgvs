@@ -6,11 +6,27 @@ import StorageMainView from "./browser/StorageMainView";
 import StorageSearch from "./browser/StorageSearch";
 import { SplitPane } from "@/client/components";
 import UploadProgress from "./uploading/UploadProgress";
-import { useStorageInitialization } from "./hooks/useStorageInitialization";
+import { useStorageOperations } from "./hooks/useStorageOperations";
+import { useStorageActions } from "./hooks/useStorageActions";
+import { useStorageUIStore } from "./stores/useStorageUIStore";
+import { useStorageDataStore } from "./stores/useStorageDataStore";
 
-const StorageBrowserView: React.FC = () => {
+export const StorageBrowserView: React.FC = () => {
   // Initialize storage data on mount
-  useStorageInitialization();
+  // useStorageInitialization();
+
+  const { searchMode } = useStorageUIStore();
+  const { params } = useStorageDataStore();
+
+  const {
+    setSearchMode,
+    setSearchResults,
+    clearSelection,
+    setLastSelectedItem,
+  } = useStorageActions();
+
+  // Get operations from context
+  const { search, navigateTo } = useStorageOperations();
 
   return (
     <>
@@ -22,7 +38,14 @@ const StorageBrowserView: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        <StorageSearch />
+        <StorageSearch
+          searchMode={searchMode}
+          setSearchMode={setSearchMode}
+          setSearchResults={setSearchResults}
+          clearSelection={clearSelection}
+          setLastSelectedItem={setLastSelectedItem}
+          onSearch={search}
+        />
         <SplitPane
           orientation="vertical"
           firstPane={{
@@ -44,7 +67,10 @@ const StorageBrowserView: React.FC = () => {
           }}
           storageKey={"storage-browser-split-pane"}
         >
-          <StorageDirectoryTree />
+          <StorageDirectoryTree
+            params={params}
+            onNavigate={navigateTo}
+          />
           <StorageMainView />
         </SplitPane>
       </Box>
@@ -54,5 +80,3 @@ const StorageBrowserView: React.FC = () => {
     </>
   );
 };
-
-export default StorageBrowserView;

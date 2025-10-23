@@ -4,7 +4,7 @@ import { create } from "zustand";
 import {
   UploadBatchState,
   UploadFileState,
-} from "../hooks/storage-upload.types";
+} from "../core/storage-upload.types";
 
 interface StorageUploadState {
   uploadBatch: UploadBatchState | undefined;

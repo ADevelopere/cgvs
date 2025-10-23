@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true, // Enable gzip compression
   images: {
-    domains: ["storage.googleapis.com", "flagcdn.com"],
+    domains: ["storage.googleapis.com", "flagcdn.com", "localhost"],
     unoptimized: true, // Disable optimization for external images
   },
   async headers() {

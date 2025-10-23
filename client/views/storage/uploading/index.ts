@@ -13,7 +13,7 @@ export { default as CancelUploadDialog } from "./CancelUploadDialog";
 export type {
   UploadFileDisplayInfo,
   CancelTarget,
-} from "../hooks/storage-upload.types";
+} from "../core/storage-upload.types";
 
 export type { UploadProgressHeaderProps } from "./UploadProgressHeader";
 export type { UploadProgressSummaryProps } from "./UploadProgressSummary";

@@ -1,15 +1,24 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useStorageUploadStore } from "../stores/useStorageUploadStore";
-import { useStorageApolloMutations } from "./storage.operations";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import { inferContentType, getFileKey, generateFileMD5 } from "./storage.util";
-import { getUploadLocationForPath, getStoragePath } from "./storage.location";
+import {
+  inferContentType,
+  getFileKey,
+  generateFileMD5,
+} from "../core/storage.util";
+import {
+  getUploadLocationForPath,
+  getStoragePath,
+} from "../core/storage.location";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { UploadFileState } from "./storage-upload.types";
 import logger from "@/client/lib/logger";
+import { UploadFileState } from "../core/storage-upload.types";
+import { useMutation } from "@apollo/client/react";
+import { useMutationWrapper } from "@/client/graphql/utils";
+import { generateUploadSignedUrlMutationDocument } from "../core/storage.documents";
 
 export const useStorageUploadOperations = () => {
   const {
@@ -19,7 +28,9 @@ export const useStorageUploadOperations = () => {
     updateBatchProgress,
     clearUploadBatch,
   } = useStorageUploadStore();
-  const { generateUploadSignedUrl } = useStorageApolloMutations();
+  const generateUploadSignedUrl = useMutationWrapper(
+    useMutation(generateUploadSignedUrlMutationDocument)
+  );
   const notifications = useNotifications();
   const { uploading: translations } = useAppTranslation("storageTranslations");
   const uploadXhrsRef = useRef<Map<string, XMLHttpRequest>>(new Map());
@@ -39,23 +50,30 @@ export const useStorageUploadOperations = () => {
       let timeoutListener: ((ev: Event) => void) | null = null;
       let xhr: XMLHttpRequest | undefined = undefined;
 
+      logger.info("🔍 [UPLOAD DEBUG] Starting file upload", {
+        fileName: file.name,
+        fileSize: file.size,
+        browserFileType: file.type,
+        inferredContentType: contentType,
+        targetPath,
+      });
+
       try {
         updateFileState(fileKey, {
           status: "uploading",
           progress: 0,
         });
 
-        try {
-          // const storageTargetParent = getStoragePath(targetPath);
-          // const destinationStoragePath = storageTargetParent
-          //   ? `${storageTargetParent}/${file.name}`
-          //   : file.name;
-          // Check for conflicts (simplified - would need listFiles query)
-          // This is a placeholder for the conflict check logic
-        } catch {}
-
         // Generate MD5 hash for the file
         const contentMd5 = await generateFileMD5(file);
+
+        logger.info("🔍 [UPLOAD DEBUG] Requesting signed URL", {
+          fileName: file.name,
+          path: getStoragePath(targetPath) + "/" + file.name,
+          contentType,
+          fileSize: file.size,
+          contentMd5,
+        });
 
         const signedUrlRes = await generateUploadSignedUrl({
           input: {
@@ -132,11 +150,18 @@ export const useStorageUploadOperations = () => {
           });
         };
 
+        const uploadContentType = file.type || "application/octet-stream";
+
+        logger.info("🔍 [UPLOAD DEBUG] Sending XHR request", {
+          fileName: file.name,
+          signedUrl: signedUrl.substring(0, 100) + "...",
+          requestContentType: uploadContentType,
+          contentMd5,
+          fileSize: file.size,
+        });
+
         currentXhr.open("PUT", signedUrl);
-        currentXhr.setRequestHeader(
-          "Content-Type",
-          file.type || "application/octet-stream"
-        );
+        currentXhr.setRequestHeader("Content-Type", uploadContentType);
         currentXhr.setRequestHeader("Content-MD5", contentMd5);
 
         // Set timeout for the request (5 minutes)
@@ -169,25 +194,28 @@ export const useStorageUploadOperations = () => {
               return;
             }
             if (currentXhr.status >= 200 && currentXhr.status < 300) {
-              logger.info("Upload successful", {
+              logger.info("🔍 [UPLOAD DEBUG] Upload successful", {
                 fileKey,
                 fileName: file.name,
                 status: currentXhr.status,
                 statusText: currentXhr.statusText,
+                responseText: currentXhr.responseText,
               });
               handleSuccess();
               resolve();
             } else {
-              logger.error("Upload failed with HTTP error", {
+              logger.error("🔍 [UPLOAD DEBUG] Upload failed with HTTP error", {
                 fileKey,
                 fileName: file.name,
                 status: currentXhr.status,
                 statusText: currentXhr.statusText,
                 responseText: currentXhr.responseText,
                 responseHeaders: currentXhr.getAllResponseHeaders(),
-                signedUrl: signedUrl.substring(0, 200) + "...", // Log partial signed URL for debugging
-                contentMd5,
-                contentType: file.type,
+                signedUrl: signedUrl.substring(0, 200) + "...",
+                sentContentMd5: contentMd5,
+                sentContentType: uploadContentType,
+                browserFileType: file.type,
+                inferredContentType: contentType,
               });
               const errorMsg = translations.uploadFailedWithStatus.replace(
                 "%{status}",
@@ -595,12 +623,22 @@ export const useStorageUploadOperations = () => {
     uploadSingleFile,
   ]);
 
-  return {
-    uploadBatch,
-    startUpload,
-    cancelUpload,
-    retryFailedUploads,
-    retryFile,
-    clearUploadBatch,
-  };
+  return useMemo(
+    () => ({
+      uploadBatch,
+      startUpload,
+      cancelUpload,
+      retryFailedUploads,
+      retryFile,
+      clearUploadBatch,
+    }),
+    [
+      uploadBatch,
+      startUpload,
+      cancelUpload,
+      retryFailedUploads,
+      retryFile,
+      clearUploadBatch,
+    ]
+  );
 };

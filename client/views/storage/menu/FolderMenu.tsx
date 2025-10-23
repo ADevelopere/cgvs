@@ -24,10 +24,10 @@ import {
   Delete as DeleteIcon,
   Info as InfoIcon,
 } from "@mui/icons-material";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
-import { useStorageFileOperations } from "@/client/views/storage/hooks/useStorageFileOperations";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import {
+  StorageItemUnion,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 
@@ -39,6 +39,18 @@ export interface FolderMenuProps {
   open: boolean;
   onClose: () => void;
   folder: Graphql.DirectoryInfo;
+  params: Graphql.FilesListInput;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  clipboard: StorageClipboardState | null;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
 const FolderMenu: React.FC<FolderMenuProps> = ({
@@ -46,12 +58,18 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   open,
   onClose,
   folder,
+  params,
+  onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  clipboard,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { navigateTo, refresh } = useStorageNavigation();
-  const { copyItems, cutItems, pasteItems, clipboard } = useStorageClipboard();
-  const { renameItem, deleteItems } = useStorageFileOperations();
 
   // State for confirmation dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -60,76 +78,79 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   const [isPasting, setIsPasting] = useState(false);
 
   // Handle menu actions
-  const handleOpen = () => {
-    navigateTo(folder.path);
+  const handleOpen = React.useCallback(() => {
+    onNavigate(folder.path, params);
     onClose();
-  };
+  }, [folder.path, onClose, onNavigate, params]);
 
-  const handleCopy = () => {
-    copyItems([folder as StorageItem]);
+  const handleCopy = React.useCallback(() => {
+    onCopyItems([folder as StorageItemUnion]);
     onClose();
-  };
+  }, [folder, onClose, onCopyItems]);
 
-  const handleCut = () => {
-    cutItems([folder as StorageItem]);
+  const handleCut = React.useCallback(() => {
+    onCutItems([folder as StorageItemUnion]);
     onClose();
-  };
+  }, [folder, onClose, onCutItems]);
 
-  const handlePaste = async () => {
+  const handlePaste = React.useCallback(async () => {
     setIsPasting(true);
-    const success = await pasteItems();
+    const success = await onPasteItems();
     setIsPasting(false);
     if (success) {
-      refresh();
+      onRefresh();
     }
     onClose();
-  };
+  }, [onClose, onPasteItems, onRefresh]);
 
-  const handleRename = () => {
+  const handleRename = React.useCallback(() => {
     // Simple prompt for now - will be replaced with RenameDialog component later
     const folderName = folder.name;
     const newName = prompt("Enter new name:", folderName);
     if (newName && newName !== folderName) {
-      renameItem(folder.path, newName);
+      onRenameItem(folder.path, newName);
     }
     onClose();
-  };
+  }, [folder.name, folder.path, onClose, onRenameItem]);
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = React.useCallback(() => {
     setDeleteDialogOpen(true);
     onClose();
-  };
+  }, [onClose]);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = React.useCallback(async () => {
     setIsDeleting(true);
-    const success = await deleteItems([folder.path]);
+    const success = await onDeleteItems([folder.path]);
     setIsDeleting(false);
     setDeleteDialogOpen(false);
     if (success) {
-      refresh();
+      onRefresh();
     }
-  };
+  }, [folder.path, onDeleteItems, onRefresh]);
 
-  const handleDeleteCancel = () => {
+  const handleDeleteCancel = React.useCallback(() => {
     setDeleteDialogOpen(false);
-  };
+  }, []);
 
-  const handleGetInfo = () => {
+  const handleGetInfo = React.useCallback(() => {
     setInfoDialogOpen(true);
     onClose();
-  };
+  }, [onClose]);
 
-  const handleInfoClose = () => {
+  const handleInfoClose = React.useCallback(() => {
     setInfoDialogOpen(false);
-  };
+  }, []);
 
   // Format date for display
-  const formatDate = (dateString: string): string => {
+  const formatDate = React.useCallback((dateString: string): string => {
     return new Date(dateString).toLocaleString();
-  };
+  }, []);
 
   // Check if paste is available
-  const isPasteAvailable = clipboard && clipboard.items.length > 0;
+  const isPasteAvailable = React.useMemo(
+    () => clipboard && clipboard.items.length > 0,
+    [clipboard]
+  );
 
   return (
     <>

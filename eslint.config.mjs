@@ -51,8 +51,10 @@ const eslintConfig = [
     languageOptions: {
       parser: tsEslintParser,
       parserOptions: {
-        project: "./tsconfig.json",
-        tsconfigRootDir: __dirname,
+        // Disabled type-aware linting to prevent memory exhaustion
+        // Run `bun tsc` separately for type checking
+        // project: "./tsconfig.json",
+        // tsconfigRootDir: __dirname,
       },
     },
     plugins: {

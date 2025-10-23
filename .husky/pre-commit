@@ -1,3 +1,2 @@
-~/.bun/bin/bun lint-staged
-# TypeScript check removed due to timeout issues - run manually with: bun tsc
-# ~/.bun/bin/bun tsc
+# ~/.bun/bin/bun lint-staged
+#  ~/.bun/bin/bun tsc

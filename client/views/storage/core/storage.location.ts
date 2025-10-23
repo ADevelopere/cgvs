@@ -107,8 +107,8 @@ export const getDisplayPath = (path: string): string => {
   return path.startsWith("public/") ? path.substring(7) : path;
 };
 
-// Get the full storage path (adds 'public/' prefix if needed)
+// Get the full storage path
 export const getStoragePath = (displayPath: string): string => {
   if (displayPath === "") return "public";
-  return `public/${displayPath}`;
+  return `${displayPath}`;
 };

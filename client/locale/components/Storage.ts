@@ -177,6 +177,17 @@ export type StorageManagementUITranslations = {
   deleteDialogUnexpectedError: string;
   // Delete dialog end
 
+  // Create folder dialog
+  createFolderDialogTitle: string;
+  createFolderDialogLabel: string;
+  createFolderDialogOk: string;
+  createFolderDialogCancel: string;
+  createFolderDialogEmpty: string;
+  createFolderDialogInvalid: string;
+  createFolderDialogFailedToCreate: string;
+  createFolderDialogUnexpectedError: string;
+  // Create folder dialog end
+
   // Move to dialog
   moveDialogTitle: string;
   moveDialogSelectDestination: string;
@@ -204,6 +215,8 @@ export type StorageManagementUITranslations = {
   filePickerDialogFailedToLoad: string;
   filePickerDialogUnexpectedError: string;
   selecting: string;
+  folder: string;
+  files: string;
   // File picker dialog end
 
   contentType: string;

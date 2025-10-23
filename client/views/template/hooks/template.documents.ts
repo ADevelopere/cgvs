@@ -17,105 +17,10 @@ export const templateQueryDocument: TypedDocumentNode<
 
       category {
         id
-        name
       }
 
       preSuspensionCategory {
         id
-        name
-      }
-
-      variables {
-        id
-        name
-        description
-        order
-        required
-        previewValue
-        type
-        createdAt
-        updatedAt
-        ... on TemplateDateVariable {
-          createdAt
-          description
-          format
-          id
-          maxDate
-          minDate
-          name
-          order
-          previewValue
-          required
-          template {
-            id
-          }
-          type
-          updatedAt
-        }
-        ... on TemplateNumberVariable {
-          createdAt
-          decimalPlaces
-          description
-          id
-          maxValue
-          minValue
-          name
-          order
-          previewValue
-          required
-          template {
-            id
-          }
-          type
-          updatedAt
-        }
-        ... on TemplateSelectVariable {
-          createdAt
-          description
-          id
-          multiple
-          name
-          options
-          order
-          previewValue
-          required
-          template {
-            id
-          }
-          type
-          updatedAt
-        }
-        ... on TemplateTextVariable {
-          createdAt
-          description
-          id
-          maxLength
-          minLength
-          name
-          order
-          pattern
-          previewValue
-          required
-          template {
-            id
-          }
-          type
-          updatedAt
-        }
-      }
-
-      recipientGroups {
-        id
-        name
-        description
-        date
-        studentCount
-        createdAt
-        updatedAt
-        template {
-          id
-          name
-        }
       }
     }
   }
@@ -134,105 +39,10 @@ export const paginatedTemplatesQueryDocument: TypedDocumentNode<
         imageUrl
         category {
           id
-          name
         }
         order
         preSuspensionCategory {
           id
-          name
-        }
-
-        variables {
-          id
-          name
-          description
-          order
-          required
-          previewValue
-          type
-          createdAt
-          updatedAt
-          ... on TemplateDateVariable {
-            createdAt
-            description
-            format
-            id
-            maxDate
-            minDate
-            name
-            order
-            previewValue
-            required
-            template {
-              id
-            }
-            type
-            updatedAt
-          }
-          ... on TemplateNumberVariable {
-            createdAt
-            decimalPlaces
-            description
-            id
-            maxValue
-            minValue
-            name
-            order
-            previewValue
-            required
-            template {
-              id
-            }
-            type
-            updatedAt
-          }
-          ... on TemplateSelectVariable {
-            createdAt
-            description
-            id
-            multiple
-            name
-            options
-            order
-            previewValue
-            required
-            template {
-              id
-            }
-            type
-            updatedAt
-          }
-          ... on TemplateTextVariable {
-            createdAt
-            description
-            id
-            maxLength
-            minLength
-            name
-            order
-            pattern
-            previewValue
-            required
-            template {
-              id
-            }
-            type
-            updatedAt
-          }
-        }
-
-        recipientGroups {
-          id
-          name
-          description
-          date
-          studentCount
-          createdAt
-          updatedAt
-          template {
-            id
-            name
-          }
         }
 
         createdAt

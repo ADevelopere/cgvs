@@ -11,7 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import { CancelTarget } from "../hooks/storage-upload.types";
+import { CancelTarget } from "../core/storage-upload.types";
 
 export interface CancelUploadDialogProps {
   open: boolean;

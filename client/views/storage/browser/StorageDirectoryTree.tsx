@@ -1,102 +1,91 @@
 "use client";
-import React, { useCallback } from "react";
-import {
-  TreeView,
-  BaseTreeItem,
-  TreeViewItemRenderer,
-} from "@/client/components/treeView/TreeView";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
-import { useStorageTreeStore } from "@/client/views/storage/stores/useStorageTreeStore";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { useStorageTreeOperations } from "@/client/views/storage/hooks/useStorageTreeOperations";
-import { DirectoryTreeNode } from "@/client/views/storage/hooks/storage.type";
+import React from "react";
+import { ReactiveCategoryTree } from "@/client/components";
+import { StorageDirectoryNode } from "@/client/views/storage/core/storage.type";
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
 import FolderIcon from "@mui/icons-material/Folder";
 import Typography from "@mui/material/Typography";
-import { useDebouncedCallback } from "use-debounce";
 import { useAppTranslation } from "@/client/locale";
-import Button from "@mui/material/Button";
-import RefreshIcon from "@mui/icons-material/Refresh";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { directoryChildrenQueryDocument } from "@/client/views/storage/core/storage.documents";
+import { useStorageTreeStore } from "@/client/views/storage/stores/useStorageTreeStore";
 
-type DirectoryTreeItemRendererProps = Pick<
-  Parameters<TreeViewItemRenderer<DirectoryTreeNode>>[0],
-  "item" | "isSelected"
->;
+interface StorageDirectoryTreeProps {
+  params: Graphql.FilesListInput;
+  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
+}
 
-const StorageDirectoryTree: React.FC = () => {
-  const { params } = useStorageDataStore();
-  const { directoryTree, expandedNodes, queueStates } = useStorageTreeStore();
-  const { navigateTo } = useStorageNavigation();
-  const {
-    expandDirectoryNode,
-    collapseDirectoryNode,
-    prefetchDirectoryChildren,
-  } = useStorageTreeOperations();
-  const { loading } = useStorageUIStore();
+const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
+  params,
+  onNavigate,
+}) => {
   const { ui: translations } = useAppTranslation("storageTranslations");
 
-  const handleRetryFetchTree = useCallback(() => {
-    // Use prefetchDirectoryChildren with empty path to refetch root directories
-    // The refresh=true parameter forces a refetch even if already cached
-    prefetchDirectoryChildren("", true);
-  }, [prefetchDirectoryChildren]);
+  // Get tree store state and actions
+  const {
+    expandedNodes,
+    toggleExpanded,
+    markAsFetched,
+    isFetched,
+    updateCurrentDirectory,
+    setCurrentDirectory,
+  } = useStorageTreeStore();
 
-  const handleSelectItem = useCallback(
-    (item: BaseTreeItem) => {
-      const node = item as DirectoryTreeNode;
-      navigateTo(node.path);
+  // Callback handlers following CategoryPane pattern
+  const handleSelectDirectory = React.useCallback(
+    (node: StorageDirectoryNode) => {
+      // Update the store to persist the selected directory
+      setCurrentDirectory(node);
+      // Navigate to the directory
+      onNavigate(node.path, params);
     },
-    [navigateTo]
+    [setCurrentDirectory, onNavigate, params]
   );
 
-  const handleExpandItem = useCallback(
-    (item: BaseTreeItem) => {
-      const node = item as DirectoryTreeNode;
-      if (!expandedNodes.has(node.path)) {
-        expandDirectoryNode(node.path);
-      }
+  const handleUpdateDirectory = React.useCallback(
+    (node: StorageDirectoryNode) => {
+      updateCurrentDirectory(node);
     },
-    [expandedNodes, expandDirectoryNode]
+    [updateCurrentDirectory]
   );
 
-  const handleCollapseItem = useCallback(
-    (item: BaseTreeItem) => {
-      const node = item as DirectoryTreeNode;
-      collapseDirectoryNode(node.path);
+  const handleToggleExpanded = React.useCallback(
+    (path: string | number) => {
+      toggleExpanded(String(path));
     },
-    [collapseDirectoryNode]
+    [toggleExpanded]
   );
 
-  const debouncedPrefetch = useDebouncedCallback((path: string) => {
-    prefetchDirectoryChildren(path);
-  }, 300);
-
-  const handleHoverItem = useCallback(
-    (item: BaseTreeItem) => {
-      const node = item as DirectoryTreeNode;
-      if (node.hasChildren && !expandedNodes.has(node.path)) {
-        debouncedPrefetch(node.path);
-      }
+  const handleIsFetched = React.useCallback(
+    (path: string | number) => {
+      return isFetched(String(path));
     },
-    [expandedNodes, debouncedPrefetch]
+    [isFetched]
+  );
+
+  const handleMarkAsFetched = React.useCallback(
+    (path: string | number) => {
+      markAsFetched(String(path));
+    },
+    [markAsFetched]
+  );
+
+  const getItems = React.useCallback(
+    (data: Graphql.DirectoryChildrenQuery) =>
+      data.directoryChildren?.map(dir => ({
+        ...dir,
+        id: dir.path,
+      })) || [],
+    []
+  );
+
+  const getNodeLabel = React.useCallback(
+    (node: StorageDirectoryNode) => node.name,
+    []
   );
 
   const itemRenderer = React.useCallback(
-    ({ item, isSelected }: DirectoryTreeItemRendererProps) => {
-      const isExpandingNode = loading.expandingNode === item.path;
-      const isPrefetching = loading.prefetchingNode === item.path;
-      const isInExpansionQueue = queueStates.expansionQueue.has(item.path);
-      const isCurrentlyFetching = queueStates.currentlyFetching.has(item.path);
-
-      const showLoading =
-        isExpandingNode ||
-        isPrefetching ||
-        isInExpansionQueue ||
-        isCurrentlyFetching;
-
-      return (
+    ({ node, isSelected }: { node: StorageDirectoryNode; isSelected: boolean }) => (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <FolderIcon
             sx={{
@@ -109,53 +98,37 @@ const StorageDirectoryTree: React.FC = () => {
               fontWeight: isSelected ? "bold" : "normal",
             }}
           >
-            {item.name}
+          {node.name}
           </Typography>
-          {showLoading && <CircularProgress size={16} />}
         </Box>
-      );
-    },
-    [
-      loading.expandingNode,
-      loading.prefetchingNode,
-      queueStates.expansionQueue,
-      queueStates.currentlyFetching,
-    ]
+    ),
+    []
   );
 
   return (
-    <TreeView<DirectoryTreeNode>
-      items={directoryTree}
-      onSelectItem={handleSelectItem}
-      onExpandItem={handleExpandItem}
-      onCollapseItem={handleCollapseItem}
-      onHoverItem={handleHoverItem}
-      selectedItemId={params.path}
-      expandedItems={expandedNodes}
+    <ReactiveCategoryTree<
+      StorageDirectoryNode,
+      Graphql.DirectoryChildrenQuery,
+      Graphql.DirectoryChildrenQueryVariables
+    >
+      resolver={parent => ({
+        query: directoryChildrenQueryDocument,
+        variables: parent ? { path: parent.path } : { path: "" },
+        fetchPolicy: "cache-first",
+      })}
+      getItems={getItems}
+      getNodeLabel={getNodeLabel}
       itemRenderer={itemRenderer}
-      childrenKey="children"
-      labelKey="name"
-      noItemsMessage={
-        directoryTree.length === 0 ? (
-          <Box sx={{ textAlign: "center", p: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {translations.noFoldersFound}
-            </Typography>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<RefreshIcon />}
-              onClick={handleRetryFetchTree}
-              disabled={loading.prefetchingNode !== null}
-            >
-              {translations.retry}
-            </Button>
-          </Box>
-        ) : (
-          translations.noFoldersFound
-        )
-      }
-      searchText={translations.searchFolders}
+      selectedItemId={params.path}
+      onSelectItem={handleSelectDirectory}
+      onUpdateItem={handleUpdateDirectory}
+      expandedItemIds={expandedNodes}
+      onToggleExpand={handleToggleExpanded}
+      isFetched={handleIsFetched}
+      onMarkAsFetched={handleMarkAsFetched}
+      header={translations.folders}
+      noItemsMessage={translations.noFoldersFound}
+      itemHeight={48}
     />
   );
 };

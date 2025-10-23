@@ -6,7 +6,6 @@ import * as Mui from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
 import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
-// import FilePickerDialog from "@/storage/dialogs/FilePickerDialog";
 import {
   FileInfo,
   TemplateUpdateInput,

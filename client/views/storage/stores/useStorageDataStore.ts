@@ -1,26 +1,33 @@
-"use client";
-
 import { create } from "zustand";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { StorageItem } from "../hooks/storage.type";
+import { StorageItemUnion } from "../core/storage.type";
 
-interface StorageDataState {
-  // Data state
-  items: StorageItem[];
+// ============================================================================
+// STATE INTERFACE
+// ============================================================================
+
+export type StorageDataState = {
+  items: StorageItemUnion[];
   pagination: Graphql.PageInfo | null;
   params: Graphql.FilesListInput;
   stats: Graphql.StorageStats | null;
-}
+};
 
-interface StorageDataActions {
-  // Data actions
-  setItems: (items: StorageItem[]) => void;
+// ============================================================================
+// STORE INTERFACE
+// ============================================================================
+
+export type StorageDataStore = StorageDataState & {
+  setItems: (items: StorageItemUnion[]) => void;
   setPagination: (pagination: Graphql.PageInfo | null) => void;
   setParams: (params: Graphql.FilesListInput) => void;
-  updateParams: (partial: Partial<Graphql.FilesListInput>) => void;
   setStats: (stats: Graphql.StorageStats | null) => void;
   reset: () => void;
-}
+};
+
+// ============================================================================
+// INITIAL STATE
+// ============================================================================
 
 const initialState: StorageDataState = {
   items: [],
@@ -33,23 +40,17 @@ const initialState: StorageDataState = {
   stats: null,
 };
 
-export const useStorageDataStore = create<
-  StorageDataState & StorageDataActions
->(set => ({
+// ============================================================================
+// STORE
+// ============================================================================
+
+export const useStorageDataStore = create<StorageDataStore>((set) => ({
   ...initialState,
 
-  setItems: items => set({ items }),
-
-  setPagination: pagination => set({ pagination }),
-
-  setParams: params => set({ params }),
-
-  updateParams: partial =>
-    set(state => ({
-      params: { ...state.params, ...partial },
-    })),
-
-  setStats: stats => set({ stats }),
-
+  setItems: (items) => set({ items }),
+  setPagination: (pagination) => set({ pagination }),
+  setParams: (params) => set({ params }),
+  setStats: (stats) => set({ stats }),
   reset: () => set(initialState),
 }));
+

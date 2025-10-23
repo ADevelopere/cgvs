@@ -9,99 +9,93 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
+import { useQuery, useApolloClient } from "@apollo/client/react";
 import {
-  DirectoryTreeNode,
-  StorageItem,
-} from "@/client/views/storage/hooks/storage.type";
+  StorageItemUnion,
+} from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { directoryChildrenQueryDocument } from "../core/storage.documents";
+
 export interface MoveToDialogProps {
   open: boolean;
   onClose: () => void;
-  items: StorageItem[];
+  items: StorageItemUnion[];
+  onMove: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
 }
 
 const MoveToDialog: React.FC<MoveToDialogProps> = ({
   open,
   onClose,
   items,
+  onMove,
 }) => {
   const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { fetchDirectoryChildren, move } = useStorageDataOperations();
+  const apolloClient = useApolloClient();
 
-  // State
+  // Query variables state
+  const [queryVariables, setQueryVariables] =
+    useState<Graphql.DirectoryChildrenQueryVariables>({
+      path: undefined, // undefined for root
+    });
+
+  // Use Apollo Client hook to fetch directories
+  const {
+    data,
+    loading,
+    error: queryError,
+  } = useQuery(directoryChildrenQueryDocument, {
+    variables: queryVariables,
+    skip: !open, // Only run query when dialog is open
+  });
+
+  // UI State
   const [currentPath, setCurrentPath] = useState<string>("");
-  const [directories, setDirectories] = useState<DirectoryTreeNode[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hoveredItemPath, setHoveredItemPath] = useState<string | null>(null);
 
-  // Load directories for the current path
-  const loadDirectories = useCallback(
-    async (path: string) => {
-      setIsLoading(true);
-      setError(null);
+  // Derive directories from query
+  const directories = useMemo(() => {
+    if (!data?.directoryChildren) return [];
+    return data.directoryChildren;
+  }, [data]);
 
-      try {
-        const result = await fetchDirectoryChildren(path || undefined);
-        if (result) {
-          setDirectories(result);
-        } else {
-          setError(
-            translations.moveDialogFailedToLoad || "Failed to load directories"
-          );
-          setDirectories([]);
-        }
-      } catch {
-        setError(
-          translations.moveDialogUnexpectedError ||
-            "An unexpected error occurred"
-        );
-        setDirectories([]);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [
-      fetchDirectoryChildren,
-      translations.moveDialogFailedToLoad,
-      translations.moveDialogUnexpectedError,
-    ]
-  );
+  // Derive error from query
+  const error = useMemo(() => {
+    if (queryError) {
+      return translations.moveDialogUnexpectedError ;
+    }
+    if (data && !data.directoryChildren) {
+      return translations.moveDialogFailedToLoad ;
+    }
+    return null;
+  }, [queryError, data, translations]);
 
-  // Reset state when dialog opens/closes
+  // Reset state when dialog opens
   useEffect(() => {
     if (open) {
       setCurrentPath("");
-      setDirectories([]);
-      setError(null);
-      setIsLoading(false);
       setIsMoving(false);
       setHoveredItemPath(null);
-      // Load root directories
-      loadDirectories("");
+      setQueryVariables({ path: undefined }); // undefined for root
     }
-  }, [open, loadDirectories]);
+  }, [open]);
 
   // Navigate to a directory
-  const navigateToDirectory = useCallback(
-    (path: string) => {
-      setCurrentPath(path);
-      loadDirectories(path);
-    },
-    [loadDirectories]
-  );
+  const navigateToDirectory = useCallback((path: string) => {
+    setCurrentPath(path);
+    setQueryVariables({ path: path || undefined }); // empty string becomes undefined
+  }, []);
 
   // Get breadcrumb segments
   const breadcrumbSegments = useMemo(() => {
     if (!currentPath) {
-      return [{ name: translations.moveDialogRoot || "Root", path: "" }];
+      return [{ name: translations.moveDialogRoot, path: "" }];
     }
 
     const segments = currentPath.split("/").filter(Boolean);
-    const result = [{ name: translations.moveDialogRoot || "Root", path: "" }];
+    const result = [{ name: translations.moveDialogRoot, path: "" }];
 
     let accumulatedPath = "";
     for (const segment of segments) {
@@ -144,80 +138,76 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
 
   // Handle move operation
   const handleMove = useCallback(async () => {
-    if (isPathInvalid(currentPath)) {
-      setError(
-        translations.moveDialogInvalidDestination || "Invalid destination"
-      );
-      return;
-    }
-
     setIsMoving(true);
-    setError(null);
 
     try {
       const sourcePaths = items.map(item => item.path);
-      const success = await move(sourcePaths, currentPath);
+      const success = await onMove(sourcePaths, currentPath);
 
       if (success) {
         onClose();
-      } else {
-        setError(translations.moveDialogFailedToMove || "Failed to move items");
       }
     } catch {
-      setError(
-        translations.moveDialogUnexpectedError || "An unexpected error occurred"
-      );
+      // Error handling can be done by the parent component
     } finally {
       setIsMoving(false);
     }
   }, [
     items,
     currentPath,
-    isPathInvalid,
-    move,
+    onMove,
     onClose,
-    translations.moveDialogInvalidDestination,
-    translations.moveDialogFailedToMove,
-    translations.moveDialogUnexpectedError,
   ]);
 
   // Handle dialog close
   const handleClose = useCallback(() => {
-    if (!isLoading && !isMoving) {
+    if (!loading && !isMoving) {
       onClose();
     }
-  }, [isLoading, isMoving, onClose]);
+  }, [loading, isMoving, onClose]);
 
   // Handle keyboard events
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.key === "Escape" && !isLoading && !isMoving) {
+      if (event.key === "Escape" && !loading && !isMoving) {
         event.preventDefault();
         handleClose();
       }
     },
-    [handleClose, isLoading, isMoving]
+    [handleClose, loading, isMoving]
   );
 
   // Navigate up one level
   const navigateUp = useCallback(() => {
     if (currentPath) {
       const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-      navigateToDirectory(parentPath);
+      setCurrentPath(parentPath);
+      setQueryVariables({ path: parentPath || undefined }); // empty string becomes undefined
     }
-  }, [currentPath, navigateToDirectory]);
+  }, [currentPath]);
 
   // Refresh current directory
   const refreshDirectory = useCallback(() => {
-    loadDirectories(currentPath);
-  }, [loadDirectories, currentPath]);
+    // Evict the cache for this specific query and variables to force refetch
+    apolloClient.cache.evict({
+      id: "ROOT_QUERY",
+      fieldName: "directoryChildren",
+      args: queryVariables,
+    });
+    apolloClient.cache.gc();
+  }, [apolloClient.cache, queryVariables]);
+
+  const canMove = useMemo(() => {
+    return !loading && !isMoving && !isPathInvalid(currentPath);
+  }, [loading, isMoving, isPathInvalid, currentPath]);
+  
+  const isCurrentLocationInvalid = useMemo(() => {
+    return isPathInvalid(currentPath);
+  }, [isPathInvalid, currentPath]);
 
   if (!items.length) {
     return null;
   }
-
-  const canMove = !isLoading && !isMoving && !isPathInvalid(currentPath);
-  const isCurrentLocationInvalid = isPathInvalid(currentPath);
 
   return (
     <MUI.Dialog
@@ -274,22 +264,22 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                 "Select destination folder"}
             </MUI.Typography>
             <MUI.Box sx={{ display: "flex", gap: 1 }}>
-              <MUI.Tooltip title={translations.moveDialogGoUp || "Go up"}>
+              <MUI.Tooltip title={translations.moveDialogGoUp }>
                 <span>
                   <MUI.IconButton
                     size="small"
                     onClick={navigateUp}
-                    disabled={!currentPath || isLoading}
+                    disabled={!currentPath || loading}
                   >
                     <ArrowUpwardIcon fontSize="small" />
                   </MUI.IconButton>
                 </span>
               </MUI.Tooltip>
-              <MUI.Tooltip title={translations.moveDialogRefresh || "Refresh"}>
+              <MUI.Tooltip title={translations.moveDialogRefresh }>
                 <MUI.IconButton
                   size="small"
                   onClick={refreshDirectory}
-                  disabled={isLoading}
+                  disabled={loading}
                 >
                   <RefreshIcon fontSize="small" />
                 </MUI.IconButton>
@@ -321,7 +311,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                     textDecoration: "underline",
                   },
                 }}
-                disabled={isLoading}
+                disabled={loading}
               >
                 {index === 0 && <HomeIcon fontSize="small" />}
                 {segment.name}
@@ -332,7 +322,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
 
         {/* Directory List */}
         <MUI.Box sx={{ flex: 1, overflow: "auto" }}>
-          {isLoading ? (
+          {loading ? (
             <MUI.Box
               sx={{
                 display: "flex",
@@ -352,7 +342,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
           ) : directories.length === 0 ? (
             <MUI.Box sx={{ p: 3, textAlign: "center" }}>
               <MUI.Typography color="text.secondary">
-                {translations.moveDialogNoFolders || "No folders found"}
+                {translations.moveDialogNoFolders }
               </MUI.Typography>
             </MUI.Box>
           ) : (
@@ -370,7 +360,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                     >
                       <MUI.ListItemButton
                         onClick={() => navigateToDirectory(directory.path)}
-                        disabled={isLoading || isInvalid}
+                        disabled={loading || isInvalid}
                         sx={{
                           py: 1.5,
                           px: 3,
@@ -406,7 +396,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                             color="error"
                             sx={{ ml: 1 }}
                           >
-                            {translations.moveDialogInvalid || "Invalid"}
+                            {translations.moveDialogInvalid }
                           </MUI.Typography>
                         )}
                       </MUI.ListItemButton>
@@ -448,14 +438,14 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       >
         <MUI.Button
           onClick={handleClose}
-          disabled={isLoading || isMoving}
+          disabled={loading || isMoving}
           variant="outlined"
           sx={{
             minWidth: 80,
             borderRadius: 1,
           }}
         >
-          {translations.moveDialogCancel || "Cancel"}
+          {translations.moveDialogCancel }
         </MUI.Button>
         <MUI.Button
           onClick={handleMove}
@@ -469,10 +459,10 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
           {isMoving ? (
             <>
               <MUI.CircularProgress size={16} sx={{ mr: 1 }} />
-              {translations.moving || "Moving..."}
+              {translations.moving }
             </>
           ) : (
-            translations.moveDialogMove || "Move Here"
+            translations.moveDialogMove 
           )}
         </MUI.Button>
       </MUI.DialogActions>

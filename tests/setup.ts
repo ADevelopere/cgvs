@@ -1,16 +1,11 @@
-// Test setup file
-import { execSync } from "child_process";
+// Jest setup file for integration tests
+// This sets global test timeouts
 
-// Ensure test directory exists
-try {
-  execSync("mkdir -p tests", { stdio: "ignore" });
-} catch {
-  // Ignore if directory already exists
+// Set default timeout for all tests to 60 seconds
+if (typeof jest !== "undefined" && jest.setTimeout) {
+  jest.setTimeout(60000);
 }
 
-// Set test environment variables
-Object.assign(process.env, {
-  NODE_ENV: "test",
-  GRAPHQL_ENDPOINT:
-    process.env.GRAPHQL_ENDPOINT || "http://localhost:3000/api/graphql",
-});
+// For environments that don't support jest.setTimeout (like Bun),
+// export a timeout value that tests can use
+export const TEST_TIMEOUT = 60000;

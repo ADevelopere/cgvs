@@ -2,19 +2,34 @@ import React, { useState } from "react";
 import { TableRow, TableCell, Typography, Box } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import FileTypeIcon from "./FileTypeIcon";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import {
+  StorageItemUnion,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
 
 interface StorageItemListRowProps {
-  item: StorageItem;
+  item: StorageItemUnion;
+  focusedItem: string | null;
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
   onDoubleClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -41,17 +56,26 @@ const formatDate = (dateString: string): string => {
  */
 const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
   item,
+  focusedItem,
   isSelected,
   isCut,
   onClick,
   onDoubleClick,
   onContextMenu,
+  params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
 }) => {
   const [contextMenuAnchor, setContextMenuAnchor] = useState<
     undefined | { top: number; left: number }
   >(undefined);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const { focusedItem } = useStorageSelection();
 
   const isFocused = React.useMemo(
     () => focusedItem === item.path,
@@ -185,6 +209,15 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           folder={item}
+          params={params}
+          onNavigate={onNavigate}
+          onRefresh={onRefresh}
+          onCopyItems={onCopyItems}
+          onCutItems={onCutItems}
+          onPasteItems={onPasteItems}
+          clipboard={clipboard}
+          onRenameItem={onRenameItem}
+          onDeleteItems={onDeleteItems}
         />
       ) : (
         <FileMenu
@@ -192,6 +225,11 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
           open={contextMenuOpen}
           onClose={handleCloseContextMenu}
           file={item as Graphql.FileInfo}
+          onCopyItems={onCopyItems}
+          onCutItems={onCutItems}
+          onRenameItem={onRenameItem}
+          onDeleteItems={onDeleteItems}
+          onRefresh={onRefresh}
         />
       )}
     </>
