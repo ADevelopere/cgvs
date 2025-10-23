@@ -31,4 +31,3 @@ export type RecipientVariableValuesGroupResult = {
   data: RecipientWithVariableValues[];
   total: number;
 };
-

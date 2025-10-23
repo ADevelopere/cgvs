@@ -38,4 +38,3 @@ gqlSchemaBuilder.queryFields(t => ({
       ),
   }),
 }));
-

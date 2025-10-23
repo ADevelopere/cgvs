@@ -21,4 +21,3 @@ gqlSchemaBuilder.mutationFields(t => ({
       ),
   }),
 }));
-

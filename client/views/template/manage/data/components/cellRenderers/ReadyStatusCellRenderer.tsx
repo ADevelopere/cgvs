@@ -73,7 +73,12 @@ const getTooltipMessage = (
       }
       case "NUMBER": {
         const numberVar = variable as Graphql.TemplateNumberVariable;
-        const numValue = typeof value === "number" ? value : typeof value === "string" ? parseFloat(value) : Number(value);
+        const numValue =
+          typeof value === "number"
+            ? value
+            : typeof value === "string"
+              ? parseFloat(value)
+              : Number(value);
         if (isNaN(numValue)) {
           validationError = "Invalid number";
         } else if (
@@ -93,7 +98,8 @@ const getTooltipMessage = (
       }
       case "DATE": {
         const dateVar = variable as Graphql.TemplateDateVariable;
-        const dateValue = value instanceof Date ? value : new Date(String(value));
+        const dateValue =
+          value instanceof Date ? value : new Date(String(value));
         if (isNaN(dateValue.getTime())) {
           validationError = "Invalid date";
         } else if (dateVar.minDate && dateValue < new Date(dateVar.minDate)) {
@@ -186,7 +192,7 @@ const ReadyStatusViewRenderer: React.FC<{
 const ReadyStatusCellRenderer = React.forwardRef<
   HTMLInputElement,
   ReadyStatusCellRendererProps
->(({ column, cellValue }) => {
+>(({ column, cellValue }, _ref) => {
   // Ready status is always in view mode
   return <ReadyStatusViewRenderer column={column} cellValue={cellValue} />;
 });

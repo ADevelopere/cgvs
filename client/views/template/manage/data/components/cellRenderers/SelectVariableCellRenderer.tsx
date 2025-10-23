@@ -160,7 +160,13 @@ const SelectEditRenderer = React.forwardRef<
           ? { label: currentValue, value: currentValue }
           : null;
 
-    const handleChange = (event: React.SyntheticEvent, newValue: { label: string; value: string } | { label: string; value: string }[] | null) => {
+    const handleChange = (
+      event: React.SyntheticEvent,
+      newValue:
+        | { label: string; value: string }
+        | { label: string; value: string }[]
+        | null
+    ) => {
       // Convert Autocomplete format back to simple string/string[] format
       const convertedValue = isMultiple
         ? Array.isArray(newValue)
@@ -234,16 +240,21 @@ const SelectEditRenderer = React.forwardRef<
                 }}
               />
             )}
-            renderTags={(value: { label: string; value: string }[], getTagProps: (params: { index: number }) => object) =>
-              value.map((option: { label: string; value: string }, index: number) => (
-                <Chip
-                  {...getTagProps({ index })}
-                  key={index}
-                  label={option.label}
-                  size="small"
-                  sx={{ height: "20px", fontSize: "0.75rem" }}
-                />
-              ))
+            renderTags={(
+              value: { label: string; value: string }[],
+              getTagProps: (params: { index: number }) => object
+            ) =>
+              value.map(
+                (option: { label: string; value: string }, index: number) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={index}
+                    label={option.label}
+                    size="small"
+                    sx={{ height: "20px", fontSize: "0.75rem" }}
+                  />
+                )
+              )
             }
             sx={{
               "& .MuiAutocomplete-root": {
@@ -251,23 +262,26 @@ const SelectEditRenderer = React.forwardRef<
               },
             }}
           />
-          {value && (isMultiple ? (value as { label: string; value: string }[]).length > 0 : value) && (
-            <IconButton
-              size="small"
-              onClick={handleClear}
-              sx={{
-                position: "absolute",
-                right: "4px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                height: "20px",
-                width: "20px",
-                zIndex: 1,
-              }}
-            >
-              <Clear fontSize="small" />
-            </IconButton>
-          )}
+          {value &&
+            (isMultiple
+              ? (value as { label: string; value: string }[]).length > 0
+              : value) && (
+              <IconButton
+                size="small"
+                onClick={handleClear}
+                sx={{
+                  position: "absolute",
+                  right: "4px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  height: "20px",
+                  width: "20px",
+                  zIndex: 1,
+                }}
+              >
+                <Clear fontSize="small" />
+              </IconButton>
+            )}
         </Box>
       </Tooltip>
     );

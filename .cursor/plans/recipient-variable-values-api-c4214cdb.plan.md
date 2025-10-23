@@ -1,4 +1,5 @@
 <!-- c4214cdb-c8ee-45ef-9024-a257f714d7ef 56132763-8303-457a-89eb-aa19e9d5aa55 -->
+
 # Clean Recipient Variable Values API
 
 ## Design Philosophy
@@ -74,45 +75,53 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as Types from "@/server/types";
 
 // Recipient row for table
-const RecipientWithVariableValuesRef = gqlSchemaBuilder
-  .objectRef<Types.RecipientWithVariableValues>("RecipientWithVariableValues");
+const RecipientWithVariableValuesRef =
+  gqlSchemaBuilder.objectRef<Types.RecipientWithVariableValues>(
+    "RecipientWithVariableValues"
+  );
 
-export const RecipientWithVariableValuesPothosObject = RecipientWithVariableValuesRef.implement({
-  fields: t => ({
-    recipientGroupItemId: t.exposeInt("recipientGroupItemId"),
-    studentId: t.exposeInt("studentId"),
-    studentName: t.exposeString("studentName"),
-    variableValues: t.field({
-      type: "JSON",
-      description: "Map of variableId to value. Use template variables query to get type/constraint info. All template variables are present (null if not set).",
-      resolve: (obj) => obj.variableValues,
+export const RecipientWithVariableValuesPothosObject =
+  RecipientWithVariableValuesRef.implement({
+    fields: t => ({
+      recipientGroupItemId: t.exposeInt("recipientGroupItemId"),
+      studentId: t.exposeInt("studentId"),
+      studentName: t.exposeString("studentName"),
+      variableValues: t.field({
+        type: "JSON",
+        description:
+          "Map of variableId to value. Use template variables query to get type/constraint info. All template variables are present (null if not set).",
+        resolve: obj => obj.variableValues,
+      }),
     }),
-  }),
-});
+  });
 
 // Simple input (just string value, backend parses)
-const VariableValueInputRef = gqlSchemaBuilder
-  .inputRef<Types.VariableValueInput>("VariableValueInput");
+const VariableValueInputRef =
+  gqlSchemaBuilder.inputRef<Types.VariableValueInput>("VariableValueInput");
 
 export const VariableValueInputPothosObject = VariableValueInputRef.implement({
   fields: t => ({
     variableId: t.int({ required: true }),
     value: t.string({
       required: true,
-      description: "Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like '[\"opt1\",\"opt2\"]'",
+      description:
+        'Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like \'["opt1","opt2"]\'',
     }),
   }),
 });
 
 // Simplified result objects - no invalidData
-const RecipientVariableValuesGroupResultRef = gqlSchemaBuilder
-  .objectRef<Types.RecipientVariableValuesGroupResult>("RecipientVariableValuesGroupResult");
-export const RecipientVariableValuesGroupResultPothosObject = RecipientVariableValuesGroupResultRef.implement({
-  fields: t => ({
-    data: t.field({ type: [RecipientWithVariableValuesRef] }),
-    total: t.exposeInt("total"),
-  }),
-});
+const RecipientVariableValuesGroupResultRef =
+  gqlSchemaBuilder.objectRef<Types.RecipientVariableValuesGroupResult>(
+    "RecipientVariableValuesGroupResult"
+  );
+export const RecipientVariableValuesGroupResultPothosObject =
+  RecipientVariableValuesGroupResultRef.implement({
+    fields: t => ({
+      data: t.field({ type: [RecipientWithVariableValuesRef] }),
+      total: t.exposeInt("total"),
+    }),
+  });
 ```
 
 Export from `server/graphql/pothos/index.ts`
@@ -129,6 +138,7 @@ Create `/workspaces/workspaces/server/db/repo/recipientVariableValue.repository.
 4. **Validate types - collect invalid fields that need fixing**
 5. **Batch update DB: Set all invalid fields to null in one INSERT operation**
 6. Return clean, valid data only
+
 ```typescript
 import { db } from "@/server/db/drizzleDb";
 import * as Types from "@/server/types";
@@ -137,7 +147,6 @@ import { eq } from "drizzle-orm";
 import { TemplateVariableRepository } from "./templateVariable.repository";
 
 export namespace RecipientVariableValueRepository {
-  
   // Get values for single recipient
   export const findByRecipientGroupItemId = async (
     recipientGroupItemId: number
@@ -151,7 +160,10 @@ export namespace RecipientVariableValueRepository {
         studentName: DB.students.name,
       })
       .from(DB.templateRecipientGroupItems)
-      .leftJoin(DB.students, eq(DB.templateRecipientGroupItems.studentId, DB.students.id))
+      .leftJoin(
+        DB.students,
+        eq(DB.templateRecipientGroupItems.studentId, DB.students.id)
+      )
       .where(eq(DB.templateRecipientGroupItems.id, recipientGroupItemId))
       .limit(1);
 
@@ -169,13 +181,20 @@ export namespace RecipientVariableValueRepository {
     if (!group[0]) return null;
 
     // 3. Fetch template variables
-    const variables = await TemplateVariableRepository.findByTemplateId(group[0].templateId);
+    const variables = await TemplateVariableRepository.findByTemplateId(
+      group[0].templateId
+    );
 
     // 4. Fetch JSONB values
     const valueRow = await db
       .select()
       .from(DB.recipientGroupItemVariableValues)
-      .where(eq(DB.recipientGroupItemVariableValues.templateRecipientGroupItemId, recipientGroupItemId))
+      .where(
+        eq(
+          DB.recipientGroupItemVariableValues.templateRecipientGroupItemId,
+          recipientGroupItemId
+        )
+      )
       .limit(1);
 
     const jsonbValues = valueRow[0]?.variableValues || {};
@@ -193,7 +212,7 @@ export namespace RecipientVariableValueRepository {
       for (const fieldId of invalidFields) {
         delete fixedJsonb[fieldId]; // Remove invalid entries
       }
-      
+
       await db
         .update(DB.recipientGroupItemVariableValues)
         .set({
@@ -226,7 +245,9 @@ export namespace RecipientVariableValueRepository {
     if (!group[0]) return { data: [], total: 0 };
 
     // 2. Fetch template variables
-    const variables = await TemplateVariableRepository.findByTemplateId(group[0].templateId);
+    const variables = await TemplateVariableRepository.findByTemplateId(
+      group[0].templateId
+    );
 
     // 3. Fetch all recipients with student names (with pagination)
     let recipientsQuery = db
@@ -236,8 +257,13 @@ export namespace RecipientVariableValueRepository {
         studentName: DB.students.name,
       })
       .from(DB.templateRecipientGroupItems)
-      .leftJoin(DB.students, eq(DB.templateRecipientGroupItems.studentId, DB.students.id))
-      .where(eq(DB.templateRecipientGroupItems.recipientGroupId, recipientGroupId));
+      .leftJoin(
+        DB.students,
+        eq(DB.templateRecipientGroupItems.studentId, DB.students.id)
+      )
+      .where(
+        eq(DB.templateRecipientGroupItems.recipientGroupId, recipientGroupId)
+      );
 
     if (pagination?.limit) {
       recipientsQuery = recipientsQuery.limit(pagination.limit);
@@ -258,10 +284,18 @@ export namespace RecipientVariableValueRepository {
     const valueRows = await db
       .select()
       .from(DB.recipientGroupItemVariableValues)
-      .where(eq(DB.recipientGroupItemVariableValues.recipientGroupId, recipientGroupId));
+      .where(
+        eq(
+          DB.recipientGroupItemVariableValues.recipientGroupId,
+          recipientGroupId
+        )
+      );
 
     const valuesMap = new Map(
-      valueRows.map(row => [row.templateRecipientGroupItemId, { jsonb: row.variableValues, dbId: row.id }])
+      valueRows.map(row => [
+        row.templateRecipientGroupItemId,
+        { jsonb: row.variableValues, dbId: row.id },
+      ])
     );
 
     // 5. Transform each recipient and collect fixes
@@ -271,7 +305,7 @@ export namespace RecipientVariableValueRepository {
     for (const recipient of recipients) {
       const valueData = valuesMap.get(recipient.id);
       const jsonbValues = valueData?.jsonb || {};
-      
+
       const { values, invalidFields } = transformAndValidateJsonb(
         jsonbValues,
         variables,
@@ -297,7 +331,7 @@ export namespace RecipientVariableValueRepository {
 
     // 6. Apply all fixes in a single batch update
     if (fixesToApply.length > 0) {
-      await db.transaction(async (tx) => {
+      await db.transaction(async tx => {
         for (const fix of fixesToApply) {
           await tx
             .update(DB.recipientGroupItemVariableValues)
@@ -318,7 +352,7 @@ export namespace RecipientVariableValueRepository {
     recipientGroupItemId: number,
     values: Types.VariableValueInput[]
   ): Promise<Types.RecipientWithVariableValues> => {
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async tx => {
       // 1. Fetch recipient + template ID
       const recipientItem = await tx
         .select({
@@ -328,12 +362,17 @@ export namespace RecipientVariableValueRepository {
           studentName: DB.students.name,
         })
         .from(DB.templateRecipientGroupItems)
-        .leftJoin(DB.students, eq(DB.templateRecipientGroupItems.studentId, DB.students.id))
+        .leftJoin(
+          DB.students,
+          eq(DB.templateRecipientGroupItems.studentId, DB.students.id)
+        )
         .where(eq(DB.templateRecipientGroupItems.id, recipientGroupItemId))
         .limit(1);
 
       if (!recipientItem[0]) {
-        throw new Error(`Recipient group item ${recipientGroupItemId} not found`);
+        throw new Error(
+          `Recipient group item ${recipientGroupItemId} not found`
+        );
       }
 
       const item = recipientItem[0];
@@ -349,13 +388,17 @@ export namespace RecipientVariableValueRepository {
       }
 
       // 2. Fetch template variables
-      const variables = await TemplateVariableRepository.findByTemplateId(group[0].templateId);
+      const variables = await TemplateVariableRepository.findByTemplateId(
+        group[0].templateId
+      );
       const variablesById = new Map(variables.map(v => [v.id, v]));
 
       // 3. Validate all variable IDs belong to template
       const invalidIds = values.filter(v => !variablesById.has(v.variableId));
       if (invalidIds.length > 0) {
-        throw new Error(`Invalid variable IDs: ${invalidIds.map(v => v.variableId).join(", ")}`);
+        throw new Error(
+          `Invalid variable IDs: ${invalidIds.map(v => v.variableId).join(", ")}`
+        );
       }
 
       // 4. Parse and validate inputs - throw on first error
@@ -368,7 +411,7 @@ export namespace RecipientVariableValueRepository {
         if (parseResult.error) {
           throw new Error(`Variable ${variable.name}: ${parseResult.error}`);
         }
-        
+
         parsedValues[input.variableId] = {
           type: variable.type,
           value: parseResult.parsed,
@@ -379,7 +422,12 @@ export namespace RecipientVariableValueRepository {
       const currentRow = await tx
         .select()
         .from(DB.recipientGroupItemVariableValues)
-        .where(eq(DB.recipientGroupItemVariableValues.templateRecipientGroupItemId, recipientGroupItemId))
+        .where(
+          eq(
+            DB.recipientGroupItemVariableValues.templateRecipientGroupItemId,
+            recipientGroupItemId
+          )
+        )
         .limit(1);
 
       const currentValues = currentRow[0]?.variableValues || {};
@@ -430,7 +478,10 @@ export namespace RecipientVariableValueRepository {
 
     // Initialize all variables with null (or [] for SELECT multiple)
     for (const variable of variables) {
-      if (variable.type === Types.TemplateVariableType.SELECT && (variable as any).multiple) {
+      if (
+        variable.type === Types.TemplateVariableType.SELECT &&
+        (variable as any).multiple
+      ) {
         values[variable.id] = [];
       } else {
         values[variable.id] = null;
@@ -482,7 +533,10 @@ export namespace RecipientVariableValueRepository {
             try {
               const re = new RegExp(variable.pattern);
               if (!re.test(input.value)) {
-                return { parsed: null, error: `Does not match pattern: ${variable.pattern}` };
+                return {
+                  parsed: null,
+                  error: `Does not match pattern: ${variable.pattern}`,
+                };
               }
             } catch {
               return { parsed: null, error: "Invalid pattern configuration" };
@@ -495,17 +549,30 @@ export namespace RecipientVariableValueRepository {
           if (isNaN(num)) {
             return { parsed: null, error: "Invalid number format" };
           }
-          if (variable.decimalPlaces !== undefined && variable.decimalPlaces !== null) {
-            const decimals = (Math.abs(num).toString().split(".")[1] || "").length;
+          if (
+            variable.decimalPlaces !== undefined &&
+            variable.decimalPlaces !== null
+          ) {
+            const decimals = (Math.abs(num).toString().split(".")[1] || "")
+              .length;
             if (decimals > (variable.decimalPlaces as number)) {
-              return { parsed: null, error: `Too many decimal places (max ${variable.decimalPlaces})` };
+              return {
+                parsed: null,
+                error: `Too many decimal places (max ${variable.decimalPlaces})`,
+              };
             }
           }
           if (variable.minValue !== undefined && num < variable.minValue) {
-            return { parsed: null, error: `Value ${num} is less than minimum ${variable.minValue}` };
+            return {
+              parsed: null,
+              error: `Value ${num} is less than minimum ${variable.minValue}`,
+            };
           }
           if (variable.maxValue !== undefined && num > variable.maxValue) {
-            return { parsed: null, error: `Value ${num} exceeds maximum ${variable.maxValue}` };
+            return {
+              parsed: null,
+              error: `Value ${num} exceeds maximum ${variable.maxValue}`,
+            };
           }
           return { parsed: num, error: null };
 
@@ -517,13 +584,19 @@ export namespace RecipientVariableValueRepository {
           if (variable.minDate) {
             const minDate = new Date(variable.minDate);
             if (date < minDate) {
-              return { parsed: null, error: `Date is before minimum ${variable.minDate}` };
+              return {
+                parsed: null,
+                error: `Date is before minimum ${variable.minDate}`,
+              };
             }
           }
           if (variable.maxDate) {
             const maxDate = new Date(variable.maxDate);
             if (date > maxDate) {
-              return { parsed: null, error: `Date is after maximum ${variable.maxDate}` };
+              return {
+                parsed: null,
+                error: `Date is after maximum ${variable.maxDate}`,
+              };
             }
           }
           return { parsed: date.toISOString(), error: null };
@@ -540,22 +613,33 @@ export namespace RecipientVariableValueRepository {
 
           // Validate against options
           const validOptions = (variable as any).options || [];
-          const invalidOptions = selectedValues.filter(v => !validOptions.includes(v));
+          const invalidOptions = selectedValues.filter(
+            v => !validOptions.includes(v)
+          );
           if (invalidOptions.length > 0) {
-            return { parsed: null, error: `Invalid options: ${invalidOptions.join(", ")}` };
+            return {
+              parsed: null,
+              error: `Invalid options: ${invalidOptions.join(", ")}`,
+            };
           }
 
           if ((variable as any).multiple) {
             return { parsed: selectedValues, error: null };
           } else {
             if (selectedValues.length > 1) {
-              return { parsed: null, error: "Multiple values provided for single-select" };
+              return {
+                parsed: null,
+                error: "Multiple values provided for single-select",
+              };
             }
             return { parsed: selectedValues[0] ?? null, error: null };
           }
 
         default:
-          return { parsed: null, error: `Unknown variable type: ${variable.type}` };
+          return {
+            parsed: null,
+            error: `Unknown variable type: ${variable.type}`,
+          };
       }
     } catch (err) {
       return { parsed: null, error: `Parse error: ${err}` };
@@ -590,8 +674,12 @@ export namespace RecipientVariableValueRepository {
         if (variable.maxValue !== undefined && value > variable.maxValue) {
           return `Value ${value} exceeds maximum ${variable.maxValue}`;
         }
-        if (variable.decimalPlaces !== undefined && variable.decimalPlaces !== null) {
-          const decimals = (Math.abs(value).toString().split(".")[1] || "").length;
+        if (
+          variable.decimalPlaces !== undefined &&
+          variable.decimalPlaces !== null
+        ) {
+          const decimals = (Math.abs(value).toString().split(".")[1] || "")
+            .length;
           if (decimals > (variable.decimalPlaces as number)) {
             return `Too many decimal places (max ${variable.decimalPlaces})`;
           }
@@ -608,11 +696,11 @@ export namespace RecipientVariableValueRepository {
         } else {
           return "Expected valid date";
         }
-        
+
         if (isNaN(dateValue.getTime())) {
           return "Expected valid date";
         }
-        
+
         if (variable.minDate) {
           const minDate = new Date(variable.minDate);
           if (dateValue < minDate) {
@@ -650,7 +738,6 @@ export namespace RecipientVariableValueRepository {
   };
 }
 ```
-
 
 Export from `server/db/repo/index.ts`
 
@@ -794,14 +881,17 @@ export const JSONScalar = new GraphQLScalarType({
       case Kind.FLOAT:
         return parseFloat(ast.value);
       case Kind.OBJECT:
-        return ast.fields.reduce((acc, field) => {
-          // @ts-ignore - recursive call
-          acc[field.name.value] = JSONScalar.parseLiteral(
-            field.value as ValueNode,
-            variables
-          );
-          return acc;
-        }, {} as Record<string, any>);
+        return ast.fields.reduce(
+          (acc, field) => {
+            // @ts-ignore - recursive call
+            acc[field.name.value] = JSONScalar.parseLiteral(
+              field.value as ValueNode,
+              variables
+            );
+            return acc;
+          },
+          {} as Record<string, any>
+        );
       case Kind.LIST:
         return ast.values.map(v =>
           // @ts-ignore - recursive call
@@ -875,45 +965,52 @@ export const graphQLSchema = gqlSchemaBuilder.toSchema();
 
 ```tsx
 const { data: templateData } = useQuery(GET_TEMPLATE_VARIABLES, {
-  variables: { templateId: 123 }
+  variables: { templateId: 123 },
 });
 
 // Variables are already sorted by order field (order field cannot be null)
-const sortedVariables = [...templateData.templateVariables]
-  .sort((a, b) => a.order - b.order);
+const sortedVariables = [...templateData.templateVariables].sort(
+  (a, b) => a.order - b.order
+);
 ```
 
 ### 2. Generate Table Columns from Variables
 
 ```tsx
-const columns = useMemo(() => 
-  sortedVariables.map(variable => ({
-    id: `var_${variable.id}`,
-    type: variable.type.toLowerCase(), // "TEXT" -> "text"
-    label: variable.name,
-    accessor: (row) => row.variableValues[variable.id], // O(1) map access!
-    editable: true,
-    sortable: false,
-    filterable: false,
-    resizable: true,
-    // For select type
-    options: variable.type === "SELECT" 
-      ? variable.options.map(opt => ({ label: opt, value: opt }))
-      : undefined,
-    // Update handler
-    onUpdate: async (rowId, value) => {
-      await updateVariableValue(rowId, variable.id, value);
-    },
-    // Validator using variable constraints
-    getIsValid: (value) => {
-      if (variable.required && !value) return "Required";
-      if (variable.type === "TEXT" && variable.minLength && value.length < variable.minLength) {
-        return `Minimum ${variable.minLength} characters`;
-      }
-      // ... other validations
-      return null;
-    },
-  })),
+const columns = useMemo(
+  () =>
+    sortedVariables.map(variable => ({
+      id: `var_${variable.id}`,
+      type: variable.type.toLowerCase(), // "TEXT" -> "text"
+      label: variable.name,
+      accessor: row => row.variableValues[variable.id], // O(1) map access!
+      editable: true,
+      sortable: false,
+      filterable: false,
+      resizable: true,
+      // For select type
+      options:
+        variable.type === "SELECT"
+          ? variable.options.map(opt => ({ label: opt, value: opt }))
+          : undefined,
+      // Update handler
+      onUpdate: async (rowId, value) => {
+        await updateVariableValue(rowId, variable.id, value);
+      },
+      // Validator using variable constraints
+      getIsValid: value => {
+        if (variable.required && !value) return "Required";
+        if (
+          variable.type === "TEXT" &&
+          variable.minLength &&
+          value.length < variable.minLength
+        ) {
+          return `Minimum ${variable.minLength} characters`;
+        }
+        // ... other validations
+        return null;
+      },
+    })),
   [sortedVariables]
 );
 ```
@@ -922,11 +1019,11 @@ const columns = useMemo(() =>
 
 ```tsx
 const { data } = useQuery(GET_RECIPIENTS_WITH_VALUES, {
-  variables: { 
+  variables: {
     recipientGroupId: 456,
     limit: 50,
     offset: 0,
-  }
+  },
 });
 
 // Data is clean - invalid fields already fixed in DB
@@ -937,8 +1034,8 @@ const total = data?.recipientVariableValuesByGroup.total ?? 0;
 ### 4. Use in Table
 
 ```tsx
-<TableProvider 
-  data={recipients} 
+<TableProvider
+  data={recipients}
   columns={columns}
   isLoading={loading}
   {...otherProps}
@@ -963,7 +1060,7 @@ const total = data?.recipientVariableValuesByGroup.total ?? 0;
 ### To-dos
 
 - [ ] Create recipientVariableValue.types.ts with map-based types and simplified result types (no invalidData)
-- [ ] Create recipientVariableValue.pothos.ts with JSON-based objects, simplified wrapper result Pothos objects, and proper naming (*PothosObject suffix)
+- [ ] Create recipientVariableValue.pothos.ts with JSON-based objects, simplified wrapper result Pothos objects, and proper naming (\*PothosObject suffix)
 - [ ] Create recipientVariableValue.repository.ts with auto-fix logic (collect invalid fields, batch update DB to set to null), db.$count for totals, parse/validate implementing edge cases, and SELECT multiple default value []
 - [ ] Create recipientVariableValue.mutation.ts using gqlSchemaBuilder.mutationFields, authScopes, returning clean object (throws on validation errors)
 - [ ] Create recipientVariableValue.query.ts using gqlSchemaBuilder.queryFields, authScopes, returning simplified objects (auto-fixes invalid data), with pagination args and total
