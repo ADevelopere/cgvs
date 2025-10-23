@@ -7,6 +7,7 @@ import {
   text,
   uniqueIndex,
   index,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const templateRecipientGroups = pgTable("template_recipient_group", {
@@ -36,24 +37,51 @@ export const templateRecipientGroupItems = pgTable(
   ]
 );
 
+// Type definition for the JSONB structure
+export type TemplateVariableValuesMap = {
+  [variableId: string]: {
+    type: "TEXT" | "NUMBER" | "DATE" | "SELECT";
+    value: string | number | string[] | null;
+  };
+};
+
 export const recipientGroupItemVariableValues = pgTable(
   "recipient_group_item_variable_value",
   {
     id: serial("id").primaryKey(),
+
+    // Links to recipient
     templateRecipientGroupItemId: integer(
       "template_recipient_group_item_id"
     ).notNull(),
-    templateVariableId: integer("templateVariableId").notNull(),
-    value: text("value"),
-    valueIndexed: varchar("value_indexed", { length: 255 }),
+
+    // Denormalized for direct queries (avoid joins)
+    templateId: integer("template_id").notNull(),
+    recipientGroupId: integer("recipient_group_id").notNull(),
+    studentId: integer("student_id").notNull(),
+
+    // All variables in JSONB
+    variableValues: jsonb("variable_values")
+      .$type<TemplateVariableValuesMap>()
+      .notNull()
+      .default({}),
+
+    // Metadata
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
   },
   table => [
-    uniqueIndex("rgiv_group_item_variable_unique").on(
-      table.templateRecipientGroupItemId,
-      table.templateVariableId
+    // One row per recipient
+    uniqueIndex("rgiv_group_item_unique").on(
+      table.templateRecipientGroupItemId
     ),
-    index("rgiv_value_idx").on(table.valueIndexed),
+
+    // Fast lookups
+    index("rgiv_student_idx").on(table.studentId),
+    index("rgiv_template_idx").on(table.templateId),
+    index("rgiv_recipient_group_idx").on(table.recipientGroupId),
+
+    // Enable JSONB queries
+    index("rgiv_variable_values_gin_idx").using("gin", table.variableValues),
   ]
 );
