@@ -17,45 +17,42 @@ const STORAGE_SEARCH_HISTORY_KEY = "storage-search-history";
 interface StorageSearchProps {
   searchMode: boolean;
   setSearchMode: (mode: boolean) => void;
-  setSearchResults: (results: StorageItemUnion[]) => void;
+  searchResults: StorageItemUnion[];
+  searchLoading: boolean;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
   clearSelection: () => void;
   setLastSelectedItem: (item: string | null) => void;
-  onSearch: (
-    query: string,
-    path?: string
-  ) => Promise<{ items: StorageItemUnion[]; totalCount: number } | null>;
 }
 
 const StorageSearch: React.FC<StorageSearchProps> = ({
   searchMode,
   setSearchMode,
-  setSearchResults,
+  // searchResults, // TODO: Display search results
+  // searchLoading, // TODO: Show loading state
+  searchTerm,
+  setSearchTerm,
   clearSelection,
   setLastSelectedItem,
-  onSearch,
 }) => {
   const search = React.useCallback(
-    async (term: string) => {
-      const result = await onSearch(term, "");
-      if (result) {
-        setSearchResults(result.items);
-        setSearchMode(true);
-        clearSelection();
-        setLastSelectedItem(null);
-      }
+    (term: string) => {
+      setSearchTerm(term);
+      setSearchMode(true);
+      clearSelection();
+      setLastSelectedItem(null);
     },
-    [clearSelection, onSearch, setLastSelectedItem, setSearchMode, setSearchResults]
+    [clearSelection, setLastSelectedItem, setSearchMode, setSearchTerm]
   );
 
   const exitSearchMode = React.useCallback(() => {
     setSearchMode(false);
-    setSearchResults([]);
+    setSearchTerm("");
     clearSelection();
     setLastSelectedItem(null);
-  }, [clearSelection, setLastSelectedItem, setSearchMode, setSearchResults]);
+  }, [clearSelection, setLastSelectedItem, setSearchMode, setSearchTerm]);
 
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const [searchQuery, setSearchQuery] = useState("");
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
   useEffect(() => {
@@ -95,17 +92,17 @@ const StorageSearch: React.FC<StorageSearchProps> = ({
   );
 
   const handleClearSearch = React.useCallback(() => {
-    setSearchQuery("");
+    setSearchTerm("");
     exitSearchMode();
-  }, [exitSearchMode]);
+  }, [exitSearchMode, setSearchTerm]);
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === "Enter") {
-        handleSearch(searchQuery);
+        handleSearch(searchTerm);
       }
     },
-    [handleSearch, searchQuery]
+    [handleSearch, searchTerm]
   );
 
   return (
@@ -114,8 +111,8 @@ const StorageSearch: React.FC<StorageSearchProps> = ({
         freeSolo
         fullWidth
         options={searchHistory}
-        value={searchQuery}
-        onInputChange={(_event, newValue) => setSearchQuery(newValue)}
+        value={searchTerm}
+        onInputChange={(_event, newValue) => setSearchTerm(newValue)}
         onChange={(_event, newValue) => {
           if (newValue) {
             handleSearch(newValue);

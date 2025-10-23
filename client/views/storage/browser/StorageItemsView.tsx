@@ -13,10 +13,8 @@ import { StorageManagementUITranslations } from "@/client/locale/components/Stor
 import {
   StorageItemUnion as StorageItemType,
   ViewMode,
-  OperationErrors,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
-import type { LoadingStates } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
@@ -199,10 +197,7 @@ const ListView: React.FC<{
   viewMode: ViewMode;
   params: Graphql.FilesListInput;
   clipboard: StorageClipboardState | null;
-  onNavigate: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   onCopyItems: (items: StorageItemType[]) => void;
   onCutItems: (items: StorageItemType[]) => void;
@@ -452,10 +447,7 @@ const GridView: React.FC<{
   focusedItem: string | null;
   params: Graphql.FilesListInput;
   clipboard: StorageClipboardState | null;
-  onNavigate: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   onCopyItems: (items: StorageItemType[]) => void;
   onCutItems: (items: StorageItemType[]) => void;
@@ -547,6 +539,10 @@ const GridView: React.FC<{
 };
 
 interface StorageItemsViewProps {
+  items: StorageItemType[];
+  pagination: Graphql.PageInfo | null;
+  loading: boolean;
+  error: unknown;
   searchMode: boolean;
   viewMode: ViewMode;
   selectedItems: string[];
@@ -555,13 +551,8 @@ interface StorageItemsViewProps {
   sortBy: string;
   sortDirection: Graphql.OrderSortDirection;
   setViewMode: (mode: ViewMode) => void;
-  loading: LoadingStates;
-  operationErrors: OperationErrors;
   params: Graphql.FilesListInput;
-  onNavigate: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   onPasteItems: () => Promise<boolean>;
   clipboard: StorageClipboardState | null;
@@ -581,7 +572,7 @@ interface StorageItemsViewProps {
   setFocusedItem: (path: string | null) => void;
   setSortBy: (field: string) => void;
   setSortDirection: (direction: Graphql.OrderSortDirection) => void;
-  getSortedItems: () => StorageItemType[];
+  getSortedItems: (items: StorageItemType[]) => StorageItemType[];
 }
 
 /**
@@ -590,6 +581,10 @@ interface StorageItemsViewProps {
  * Supports both grid and list views with client-side sorting.
  */
 const StorageItemsView: React.FC<StorageItemsViewProps> = ({
+  items,
+  // pagination, // TODO: Add pagination UI
+  loading,
+  error,
   searchMode,
   viewMode,
   selectedItems,
@@ -598,8 +593,6 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   sortBy,
   sortDirection,
   setViewMode,
-  loading,
-  operationErrors,
   params,
   clipboard,
   onNavigate,
@@ -652,15 +645,11 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   }, []);
 
   // Get current items (search results or regular directory listing)
-  const sortedItems = getSortedItems();
+  const sortedItems = getSortedItems(items);
 
-  const isLoading = React.useMemo(() => {
-    return loading.fetchList || loading.search;
-  }, [loading.fetchList, loading.search]);
+  const isLoading = loading;
 
-  const hasError = React.useMemo(() => {
-    return operationErrors.fetchList || operationErrors.search;
-  }, [operationErrors.fetchList, operationErrors.search]);
+  const hasError = !!error;
 
   // Add dropzone functionality for the main view area
   const { getRootProps, getInputProps, isDragActive } = useUploadDropzone({
@@ -741,7 +730,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (focusedItem) {
             const item = sortedItems.find(item => item.path === focusedItem);
             if (item && item.__typename === "DirectoryInfo") {
-              onNavigate(item.path, params);
+              onNavigate(item.path);
             }
           }
           break;
@@ -782,7 +771,6 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
       selectedItems.length,
       selectRange,
       onNavigate,
-      params,
       toggleSelect,
       clearSelection,
       selectAll,
@@ -893,7 +881,10 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           <LoadingStates searchMode={searchMode} translations={translations} />
         )}
         {!isLoading && hasError && (
-          <ErrorState hasError={hasError} translations={translations} />
+          <ErrorState
+            hasError={error instanceof Error ? error.message : "Unknown error"}
+            translations={translations}
+          />
         )}
         {!isLoading && !hasError && sortedItems.length === 0 && (
           <EmptyState translations={translations} searchMode={searchMode} />

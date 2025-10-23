@@ -12,7 +12,7 @@ import { useStorageTreeStore } from "@/client/views/storage/stores/useStorageTre
 
 interface StorageDirectoryTreeProps {
   params: Graphql.FilesListInput;
-  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
+  onNavigate: (path: string) => void;
 }
 
 const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
@@ -37,9 +37,9 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
       // Update the store to persist the selected directory
       setCurrentDirectory(node);
       // Navigate to the directory
-      onNavigate(node.path, params);
+      onNavigate(node.path);
     },
-    [setCurrentDirectory, onNavigate, params]
+    [setCurrentDirectory, onNavigate]
   );
 
   const handleUpdateDirectory = React.useCallback(

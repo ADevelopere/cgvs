@@ -18,10 +18,7 @@ interface StorageItemProps {
   sortedItems: StorageItemType[];
   selectedItems: string[];
   lastSelectedItem: string | null;
-  onNavigate: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  onNavigate: (path: string) => Promise<void>;
   clipboard: StorageClipboardState | null;
   onRefresh: () => Promise<void>;
   onCopyItems: (items: StorageItemType[]) => void;
@@ -146,7 +143,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
 
       if (isDirectory) {
         logger.info("Navigating via double-click", { path: item.path });
-        onNavigate(item.path, params);
+        onNavigate(item.path);
       } else {
         logger.info("File double-clicked - no action", { path: item.path });
         // For files, we could trigger preview or download
@@ -158,7 +155,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
         isDoubleClickingRef.current = false;
       }, 300);
     },
-    [isDirectory, item.path, onNavigate, params]
+    [isDirectory, item.path, onNavigate]
   );
 
   // Handle context menu (right-click)

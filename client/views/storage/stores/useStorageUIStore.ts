@@ -4,8 +4,6 @@ import {
   StorageItemUnion,
   ViewMode,
   StorageClipboardState,
-  LoadingStates,
-  OperationErrors,
 } from "../core/storage.type";
 
 // ============================================================================
@@ -22,8 +20,6 @@ export type StorageUIState = {
   clipboard: StorageClipboardState | null;
   sortBy: string;
   sortDirection: Graphql.OrderSortDirection;
-  loading: LoadingStates;
-  operationErrors: OperationErrors;
 };
 
 // ============================================================================
@@ -40,24 +36,12 @@ export type StorageUIStore = StorageUIState & {
   setClipboard: (clipboard: StorageClipboardState | null) => void;
   setSortBy: (field: string) => void;
   setSortDirection: (direction: Graphql.OrderSortDirection) => void;
-  setLoading: (loading: LoadingStates) => void;
-  setOperationErrors: (errors: OperationErrors) => void;
   reset: () => void;
 };
 
 // ============================================================================
 // INITIAL STATE
 // ============================================================================
-
-const initialLoadingState: LoadingStates = {
-  fetchList: false,
-  rename: false,
-  delete: false,
-  move: false,
-  copy: false,
-  createFolder: false,
-  search: false,
-};
 
 const initialState: StorageUIState = {
   selectedItems: [],
@@ -69,8 +53,6 @@ const initialState: StorageUIState = {
   clipboard: null,
   sortBy: "name",
   sortDirection: "ASC",
-  loading: initialLoadingState,
-  operationErrors: {},
 };
 
 // ============================================================================
@@ -89,8 +71,6 @@ export const useStorageUIStore = create<StorageUIStore>((set) => ({
   setClipboard: (clipboard) => set({ clipboard }),
   setSortBy: (sortBy) => set({ sortBy }),
   setSortDirection: (sortDirection) => set({ sortDirection }),
-  setLoading: (loading) => set({ loading }),
-  setOperationErrors: (operationErrors) => set({ operationErrors }),
   reset: () => set(initialState),
 }));
 

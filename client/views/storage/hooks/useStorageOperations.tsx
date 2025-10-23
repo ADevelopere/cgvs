@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useCallback, useMemo, useRef } from "react";
+import { useApolloClient } from "@apollo/client/react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { StorageItemUnion } from "../core/storage.type";
 import logger from "@/client/lib/logger";
 import { useStorageActions } from "./useStorageActions";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
@@ -17,26 +16,12 @@ import { useStorageMutations } from "./useStorageMutations";
 // ============================================================================
 
 type StorageOperations = {
-  // Data Fetching Operations
-  fetchList: (params: Graphql.FilesListInput) => Promise<{
-    items: StorageItemUnion[];
-    pagination: Graphql.PageInfo;
-  } | null>;
-  fetchDirectoryChildren: (
-    path?: string
-  ) => Promise<Graphql.DirectoryInfo[] | null>;
-  fetchStats: (path?: string) => Promise<Graphql.StorageStats | null>;
-
   // Basic File Operations (without loading states)
   rename: (path: string, newName: string) => Promise<boolean>;
   remove: (paths: string[]) => Promise<boolean>;
   move: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
   copy: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
   createFolder: (path: string, name: string) => Promise<boolean>;
-  search: (
-    query: string,
-    path?: string
-  ) => Promise<{ items: StorageItemUnion[]; totalCount: number } | null>;
 
   // File Operations (with loading states + refresh)
   renameItem: (path: string, newName: string) => Promise<boolean>;
@@ -50,11 +35,8 @@ type StorageOperations = {
     destinationPath: string
   ) => Promise<boolean>;
 
-  // Navigation Operations
-  navigateTo: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  // Navigation Operations (now async)
+  navigateTo: (path: string) => Promise<void>;
   goUp: () => Promise<void>;
   refresh: () => Promise<void>;
 
@@ -67,6 +49,10 @@ export const useStorageOperations = (): StorageOperations => {
   const apollo = useStorageApollo();
   const apolloRef = useRef(apollo);
   apolloRef.current = apollo;
+
+  const apolloClient = useApolloClient();
+  const apolloClientRef = useRef(apolloClient);
+  apolloClientRef.current = apolloClient;
 
   const mutations = useStorageMutations();
 
@@ -85,7 +71,7 @@ export const useStorageOperations = (): StorageOperations => {
 
   // Get notifications and translations
   const notifications = useNotifications();
-  const { management: managementTranslations, ui: uiTranslations } =
+  const { management: managementTranslations } =
     useAppTranslation("storageTranslations");
 
   // ============================================================================
@@ -104,177 +90,25 @@ export const useStorageOperations = (): StorageOperations => {
   );
 
   // ============================================================================
-  // DATA FETCHING OPERATIONS (from useStorageDataOperations)
+  // CACHE MANAGEMENT
   // ============================================================================
 
-  const fetchList = useCallback(
-    async (
-      params: Graphql.FilesListInput
-    ): Promise<{
-      items: StorageItemUnion[];
-      pagination: Graphql.PageInfo;
-    } | null> => {
-      logger.info("Starting fetchList operation", {
-        path: params.path,
-        limit: params.limit,
-        offset: params.offset,
-        searchTerm: params.searchTerm,
-        fileType: params.fileType,
-      });
-
-      try {
-        const input: Graphql.FilesListInput = {
-          path: params.path,
-          limit: params.limit,
-          offset: params.offset,
-          searchTerm: params.searchTerm,
-          fileType: params.fileType?.toString(),
-        };
-
-        logger.info("Calling GraphQL listFiles query", { input });
-        const result = await apolloRef.current.listFiles({ input });
-        logger.info("GraphQL listFiles query completed", {
-          hasData: !!result.data?.listFiles,
-          hasErrors: !!result.error,
-          errorCount: result.error ? 1 : 0,
-        });
-
-        if (!result.data?.listFiles) {
-          logger.warn("No data returned from listFiles query", {
-            path: params.path,
-            error: result.error,
-          });
-          return null;
-        }
-
-        const pagination: Graphql.PageInfo = {
-          hasMorePages: result.data?.listFiles.hasMore,
-          total: result.data?.listFiles.totalCount,
-          count: result.data?.listFiles.totalCount,
-          perPage: result.data?.listFiles.limit,
-          firstItem: result.data?.listFiles.offset,
-          currentPage:
-            Math.floor(
-              result.data?.listFiles.totalCount / result.data?.listFiles.limit
-            ) + 1,
-          lastPage: Math.ceil(
-            result.data?.listFiles.totalCount / result.data?.listFiles.limit
-          ),
-        };
-
-        // Transform StorageEntity[] to StorageItem[]
-        const items: StorageItemUnion[] = result.data?.listFiles
-          .items as StorageItemUnion[];
-
-        logger.info("fetchList operation completed successfully", {
-          path: params.path,
-          itemCount: items.length,
-          totalCount: pagination.total,
-          hasMorePages: pagination.hasMorePages,
-          folders: items.filter(item => item.__typename === "DirectoryInfo")
-            .length,
-          files: items.filter(item => item.__typename === "FileInfo").length,
-        });
-
-        return { items, pagination };
-      } catch (error) {
-        logger.error("Error in fetchList operation", {
-          path: params.path,
-          error: error instanceof Error ? error.message : "Unknown error",
-          stack: error instanceof Error ? error.stack : undefined,
-        });
-        return null;
-      }
-    },
-    []
-  );
-
-  const fetchDirectoryChildren = useCallback(
-    async (path?: string): Promise<Graphql.DirectoryInfo[] | null> => {
-      try {
-        const result = await apolloRef.current.fetchDirectoryChildren({
-          path: path || "",
-        });
-
-        if (!result.data?.directoryChildren) {
-          return [];
-        }
-
-        return result.data?.directoryChildren;
-      } catch {
-        return null;
-      }
-    },
-    []
-  );
-
-  const fetchStats = useCallback(
-    async (path?: string): Promise<Graphql.StorageStats | null> => {
-      try {
-        const result = await apolloRef.current.getStorageStats({ path });
-
-        if (!result.data?.storageStats) {
-          return null;
-        }
-
-        const statsData = result.data?.storageStats as Graphql.StorageStats;
-        actionsRef.current.setStats(statsData);
-        return statsData;
-      } catch {
-        showNotification(
-          managementTranslations.failedToFetchStorageStatistics,
-          "error"
-        );
-        return null;
-      }
-    },
-    [showNotification, managementTranslations]
-  );
-
   const refresh = useCallback(async () => {
-    const currentParams = paramsRef.current;
-    logger.info("refresh called", {
+    const currentParams = dataStoreRef.current.params;
+
+    logger.info("Manual refresh - evicting cache", {
       path: currentParams.path,
-      limit: currentParams.limit,
-      offset: currentParams.offset,
     });
 
-    actionsRef.current.updateLoading("fetchList", true);
-    actionsRef.current.updateError("fetchList");
+    apolloClientRef.current.cache.evict({
+      id: 'ROOT_QUERY',
+      fieldName: 'listFiles',
+      args: { input: currentParams }
+    });
+    apolloClientRef.current.cache.gc();
 
-    try {
-      logger.info("Starting fetchList for refresh");
-      const result = await fetchList(currentParams);
-
-      if (result) {
-        logger.info("Refresh fetchList completed successfully", {
-          path: currentParams.path,
-          itemCount: result.items.length,
-          totalCount: result.pagination.total,
-          hasMorePages: result.pagination.hasMorePages,
-        });
-        actionsRef.current.setItems(result.items);
-        actionsRef.current.setPagination(result.pagination);
-      } else {
-        logger.error("Refresh fetchList returned null", {
-          path: currentParams.path,
-        });
-      }
-    } catch (error) {
-      logger.error("Error during refresh fetchList", {
-        path: currentParams.path,
-        error: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-      actionsRef.current.updateError(
-        "fetchList",
-        uiTranslations.failedToRefreshDirectory
-      );
-    } finally {
-      logger.info("Refresh fetchList completed, clearing loading state");
-      actionsRef.current.updateLoading("fetchList", false);
-    }
-  }, [fetchList, uiTranslations.failedToRefreshDirectory]);
+    logger.info("Cache evicted, useQuery will refetch");
+  }, []);
 
   // ============================================================================
   // FILE OPERATIONS (from useStorageDataOperations)
@@ -532,40 +366,6 @@ export const useStorageOperations = (): StorageOperations => {
     ]
   );
 
-  const search = useCallback(
-    async (
-      query: string,
-      path?: string
-    ): Promise<{
-      items: StorageItemUnion[];
-      totalCount: number;
-    } | null> => {
-      try {
-        const result = await apolloRef.current.searchFiles({
-          searchTerm: query,
-          folder: path,
-          limit: 100, // Default search limit
-        });
-
-        if (!result.data?.searchFiles) {
-          return null;
-        }
-
-        // Transform search results to StorageItem[]
-        const items: StorageItemUnion[] = result.data?.searchFiles
-          .items as StorageItemUnion[];
-
-        return {
-          items,
-          totalCount: result.data?.searchFiles.totalCount,
-        };
-      } catch {
-        showNotification(managementTranslations.failedToSearchFiles, "error");
-        return null;
-      }
-    },
-    [showNotification, managementTranslations]
-  );
 
   // ============================================================================
   // FILE OPERATIONS WITH LOADING STATES (from useStorageFileOperations)
@@ -573,32 +373,23 @@ export const useStorageOperations = (): StorageOperations => {
 
   const renameItem = useCallback(
     async (path: string, newName: string): Promise<boolean> => {
-      actionsRef.current.updateLoading("rename", true);
       const success = await rename(path, newName);
-      actionsRef.current.updateLoading("rename", false);
-
-      if (success) {
-        await refresh();
-      }
       return success;
     },
-    [refresh, rename]
+    [rename]
   );
 
   const deleteItems = useCallback(
     async (paths: string[]): Promise<boolean> => {
-      actionsRef.current.updateLoading("delete", true);
       const success = await remove(paths);
-      actionsRef.current.updateLoading("delete", false);
 
       if (success) {
         // Clear selection of deleted items
         actionsRef.current.clearSelection();
-        await refresh();
       }
       return success;
     },
-    [refresh, remove]
+    [remove]
   );
 
   const moveItems = useCallback(
@@ -606,16 +397,10 @@ export const useStorageOperations = (): StorageOperations => {
       sourcePaths: string[],
       destinationPath: string
     ): Promise<boolean> => {
-      actionsRef.current.updateLoading("move", true);
       const success = await move(sourcePaths, destinationPath);
-      actionsRef.current.updateLoading("move", false);
-
-      if (success) {
-        await refresh();
-      }
       return success;
     },
-    [move, refresh]
+    [move]
   );
 
   const copyItemsTo = useCallback(
@@ -623,140 +408,53 @@ export const useStorageOperations = (): StorageOperations => {
       sourcePaths: string[],
       destinationPath: string
     ): Promise<boolean> => {
-      actionsRef.current.updateLoading("copy", true);
       const success = await copy(sourcePaths, destinationPath);
-      actionsRef.current.updateLoading("copy", false);
-
-      if (success) {
-        await refresh();
-      }
       return success;
     },
-    [copy, refresh]
+    [copy]
   );
 
   // ============================================================================
   // NAVIGATION OPERATIONS (from useStorageNavigation)
   // ============================================================================
 
-  // Use refs to avoid dependencies and prevent re-creation of functions
-  const paramsRef = useRef(dataStore.params);
+  const navigateTo = useCallback(async (path: string) => {
+    logger.info("navigateTo called", {
+      fromPath: dataStoreRef.current.params.path,
+      toPath: path,
+    });
 
-  // Update refs when values/functions change
-  useEffect(() => {
-    paramsRef.current = dataStore.params;
-  }, [dataStore.params]);
+    if (dataStoreRef.current.params.path === path) {
+      logger.info("Skipping navigation - already at target path", { path });
+      return;
+    }
 
-  const navigateTo = useCallback(
-    async (path: string, currentParams: Graphql.FilesListInput) => {
-      logger.info("navigateTo called", {
-        fromPath: currentParams.path,
-        toPath: path,
-      });
+    const newParams = {
+      ...dataStoreRef.current.params,
+      path,
+      offset: 0
+    };
 
-      // Avoid unnecessary navigation to the same path
-      if (currentParams.path === path) {
-        logger.info("Skipping navigation - already at target path", { path });
-        return;
-      }
-
-      // Prepare new params (no store update yet - stays frozen until success)
-      const newParams = { ...currentParams, path, offset: 0 };
-
-      // Fetch new data using refs to avoid re-renders
-      logger.info("Starting fetchList for navigation", { path });
-      actionsRef.current.updateLoading("fetchList", true);
-      actionsRef.current.updateError("fetchList");
-
-      try {
-        const result = await fetchList(newParams);
-
-        if (result) {
-          logger.info("Navigation fetchList completed successfully", {
-            path,
-            itemCount: result.items.length,
-            totalCount: result.pagination.total,
-            hasMorePages: result.pagination.hasMorePages,
-          });
-
-          // ATOMIC UPDATE: Single store update for all navigation data
-          logger.info("Performing atomic navigation state update");
-          actionsRef.current.navigateToDirectory({
-            params: newParams,
-            items: result.items,
-            pagination: result.pagination,
-          });
-
-          // ATOMIC UPDATE: Single store update for all UI state
-          actionsRef.current.clearNavigationState();
-
-          // Set focus to first item
-          if (result.items.length > 0) {
-            logger.info("Setting focus to first item after navigation", {
-              itemPath: result.items[0].path,
-            });
-            actionsRef.current.setFocusedItem(result.items[0].path);
-          } else {
-            logger.info("No items in directory - clearing focus", { path });
-            actionsRef.current.setFocusedItem(null);
-          }
-        } else {
-          // Navigation failed - stay in current directory
-          // No store updates, UI stays frozen at current state
-          logger.error("Navigation fetchList returned null", { path });
-          actionsRef.current.updateError(
-            "fetchList",
-            uiTranslations.failedToNavigateToDirectory
-          );
-        }
-      } catch (error) {
-        // Navigation failed - stay in current directory
-        // No store updates, UI stays frozen at current state
-        logger.error("Error during navigation fetchList", {
-          path,
-          error: error instanceof Error ? error.message : "Unknown error",
-          stack: error instanceof Error ? error.stack : undefined,
-        });
-        actionsRef.current.updateError(
-          "fetchList",
-          uiTranslations.failedToNavigateToDirectory
-        );
-      } finally {
-        logger.info("Navigation fetchList completed, clearing loading state");
-        actionsRef.current.updateLoading("fetchList", false);
-      }
-    },
-    [fetchList, uiTranslations.failedToNavigateToDirectory] // NO DEPENDENCIES - completely stable, never recreated
-  );
+    actionsRef.current.setParams(newParams);
+    logger.info("Params updated, useQuery will refetch", { newParams });
+  }, []);
 
   const goUp = useCallback(async () => {
-    const currentParams = paramsRef.current;
-    const currentPath = currentParams.path;
-    logger.info("goUp called", { currentPath });
+    const currentPath = dataStoreRef.current.params.path;
 
-    // Handle edge cases for path calculation
     if (!currentPath || currentPath === "") {
       logger.info("Already at root - cannot go up further");
       return;
     }
 
-    // Remove trailing slashes and calculate parent path
     const cleanPath = currentPath.replace(/\/+$/, "");
     const pathSegments = cleanPath.split("/").filter(segment => segment !== "");
+    const parentPath = pathSegments.length > 1
+      ? pathSegments.slice(0, -1).join("/")
+      : "";
 
-    // Calculate parent path
-    const parentPath =
-      pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : ""; // Go to root if only one segment
-
-    logger.info("Navigating to parent directory", {
-      currentPath,
-      parentPath,
-      segments: pathSegments.length,
-    });
-
-    await navigateTo(parentPath, currentParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // NO DEPENDENCIES - completely stable
+    await navigateTo(parentPath);
+  }, [navigateTo]);
 
   // ============================================================================
   // CLIPBOARD OPERATIONS (from useStorageClipboard)
@@ -771,21 +469,17 @@ export const useStorageOperations = (): StorageOperations => {
 
     if (uiStoreRef.current.clipboard.operation === "copy") {
       const success = await copy(sourcePaths, destinationPath);
-      if (success) {
-        await refresh();
-      }
       return success;
     } else if (uiStoreRef.current.clipboard.operation === "cut") {
       const success = await move(sourcePaths, destinationPath);
       if (success) {
         actionsRef.current.clearClipboard(); // Clear clipboard after successful cut/paste
-        await refresh();
       }
       return success;
     }
 
     return false;
-  }, [copy, refresh, move]);
+  }, [copy, move]);
 
   // ============================================================================
   // RETURN VALUE
@@ -793,18 +487,12 @@ export const useStorageOperations = (): StorageOperations => {
 
   return useMemo<StorageOperations>(
     () => ({
-      // Data Fetching
-      fetchList,
-      fetchDirectoryChildren,
-      fetchStats,
-
       // Basic File Operations
       rename,
       remove,
       move,
       copy,
       createFolder,
-      search,
 
       // File Operations with loading
       renameItem,
@@ -821,15 +509,11 @@ export const useStorageOperations = (): StorageOperations => {
       pasteItems,
     }),
     [
-      fetchList,
-      fetchDirectoryChildren,
-      fetchStats,
       rename,
       remove,
       move,
       copy,
       createFolder,
-      search,
       renameItem,
       deleteItems,
       moveItems,
