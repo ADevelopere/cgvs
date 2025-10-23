@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { useQuery } from "@apollo/client/react";
 import StorageDirectoryTree from "./browser/StorageDirectoryTree";
@@ -11,30 +11,30 @@ import { useStorageOperations } from "./hooks/useStorageOperations";
 import { useStorageActions } from "./hooks/useStorageActions";
 import { useStorageUIStore } from "./stores/useStorageUIStore";
 import { useStorageDataStore } from "./stores/useStorageDataStore";
-import { searchFilesQueryDocument, listFilesQueryDocument } from "./core/storage.documents";
+import {
+  searchFilesQueryDocument,
+  listFilesQueryDocument,
+} from "./core/storage.documents";
 
 export const StorageBrowserView: React.FC = () => {
-  const { searchMode, selectedItems, focusedItem } = useStorageUIStore();
+  const { searchMode, focusedItem } = useStorageUIStore();
   const { params } = useStorageDataStore();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const {
-    setSearchMode,
-    clearSelection,
-    setLastSelectedItem,
-    setFocusedItem,
-  } = useStorageActions();
+  const { setSearchMode, clearSelection, setLastSelectedItem, setFocusedItem } =
+    useStorageActions();
 
   // Get operations from context
   const { navigateTo } = useStorageOperations();
 
   // Main list files query
-  const { data: listData, loading: listLoading, error: listError } = useQuery(
-    listFilesQueryDocument,
-    {
-      variables: { input: params },
-    }
-  );
+  const {
+    data: listData,
+    loading: listLoading,
+    error: listError,
+  } = useQuery(listFilesQueryDocument, {
+    variables: { input: params },
+  });
 
   // Search query - only runs when explicitly searching
   const { data: searchData, loading: searchLoading } = useQuery(
@@ -43,44 +43,52 @@ export const StorageBrowserView: React.FC = () => {
       variables: {
         searchTerm: searchTerm,
         folder: "",
-        limit: 100
+        limit: 100,
       },
       skip: !searchMode || !searchTerm,
     }
   );
 
-  // Single useMemo to derive ALL data and side effects from Apollo query
+  // Single useMemo to derive ALL data from Apollo query
   const { items, pagination, searchResults } = useMemo(() => {
     const derivedItems = listData?.listFiles?.items || [];
 
-    const derivedPagination = !listData?.listFiles ? null : {
-      hasMorePages: listData.listFiles.hasMore,
-      total: listData.listFiles.totalCount,
-      count: listData.listFiles.totalCount,
-      perPage: listData.listFiles.limit,
-      firstItem: listData.listFiles.offset,
-      currentPage: Math.floor(listData.listFiles.offset / listData.listFiles.limit) + 1,
-      lastPage: Math.ceil(listData.listFiles.totalCount / listData.listFiles.limit),
-    };
+    const derivedPagination = !listData?.listFiles
+      ? null
+      : {
+          hasMorePages: listData.listFiles.hasMore,
+          total: listData.listFiles.totalCount,
+          count: listData.listFiles.totalCount,
+          perPage: listData.listFiles.limit,
+          firstItem: listData.listFiles.offset,
+          currentPage:
+            Math.floor(listData.listFiles.offset / listData.listFiles.limit) +
+            1,
+          lastPage: Math.ceil(
+            listData.listFiles.totalCount / listData.listFiles.limit
+          ),
+        };
 
     const derivedSearchResults = searchData?.searchFiles?.items || [];
-
-    // Clear focused item if it's not in current items
-    if (focusedItem && !derivedItems.find((item) => item.path === focusedItem)) {
-      setFocusedItem(null);
-    }
-
-    // Clear selection when data changes
-    if (selectedItems.length > 0) {
-      clearSelection();
-    }
 
     return {
       items: derivedItems,
       pagination: derivedPagination,
       searchResults: derivedSearchResults,
     };
-  }, [listData, searchData, focusedItem, selectedItems.length, setFocusedItem, clearSelection]);
+  }, [listData, searchData]);
+
+  // Handle side effects after render
+  useEffect(() => {
+    // Clear focused item if it's not in current items
+    if (focusedItem && !items.find(item => item.path === focusedItem)) {
+      setFocusedItem(null);
+    }
+  }, [focusedItem, items, setFocusedItem]);
+
+  useEffect(() => {
+    clearSelection();
+  }, [clearSelection, listData]);
 
   return (
     <>
@@ -123,10 +131,7 @@ export const StorageBrowserView: React.FC = () => {
           }}
           storageKey={"storage-browser-split-pane"}
         >
-          <StorageDirectoryTree
-            params={params}
-            onNavigate={navigateTo}
-          />
+          <StorageDirectoryTree params={params} onNavigate={navigateTo} />
           <StorageMainView
             params={params}
             items={items}

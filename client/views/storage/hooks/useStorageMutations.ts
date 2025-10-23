@@ -1,10 +1,15 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useMutation, useApolloClient } from "@apollo/client/react";
 import * as Document from "../core/storage.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { ApolloClient } from "@apollo/client";
+import { useStorageDataStore } from "../stores/useStorageDataStore";
+import {
+  evictListFilesCache as evictListFilesCacheUtil,
+  evictDirectoryChildrenCache as evictDirectoryChildrenCacheUtil,
+} from "../core/storage.cache";
 
 type StorageMutations = {
   copyStorageItems: (variables: {
@@ -46,24 +51,21 @@ type StorageMutations = {
 
 export const useStorageMutations = (): StorageMutations => {
   const apolloClient = useApolloClient();
+  const { params } = useStorageDataStore();
+  const paramsRef = useRef<Graphql.FilesListInput>(params);
+
+  // Keep paramsRef updated
+  useEffect(() => {
+    paramsRef.current = params;
+  }, [params]);
 
   // Cache eviction helpers
   const evictListFilesCache = useCallback((path?: string) => {
-    apolloClient.cache.evict({
-      id: 'ROOT_QUERY',
-      fieldName: 'listFiles',
-      args: { input: { path: path || "" } }
-    });
-    apolloClient.cache.gc();
+    evictListFilesCacheUtil(apolloClient, path || "", paramsRef.current);
   }, [apolloClient]);
 
   const evictDirectoryChildrenCache = useCallback((path?: string) => {
-    apolloClient.cache.evict({
-      id: 'ROOT_QUERY',
-      fieldName: 'directoryChildren',
-      args: { path: path || undefined }
-    });
-    apolloClient.cache.gc();
+    evictDirectoryChildrenCacheUtil(apolloClient, path || "");
   }, [apolloClient]);
   // Create mutation hooks - extract just the mutation function (first element)
   // The mutation function from useMutation is stable and doesn't recreate
@@ -93,30 +95,65 @@ export const useStorageMutations = (): StorageMutations => {
 
   const copyStorageItems = useCallback(
     async (variables: { input: Graphql.StorageItemsCopyInput }) => {
-      return copyStorageItemsMutation({ variables });
+      const result = await copyStorageItemsMutation({ variables });
+
+      // Evict cache for destination directory
+      const destinationPath = variables.input.destinationPath;
+      evictListFilesCache(destinationPath);
+      evictDirectoryChildrenCache(destinationPath);
+
+      return result;
     },
-    [copyStorageItemsMutation]
+    [copyStorageItemsMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
   const createFolder = useCallback(
     async (variables: { input: Graphql.FolderCreateInput }) => {
-      return createFolderMutation({ variables });
+      const result = await createFolderMutation({ variables });
+
+      // Evict cache for parent directory where folder was created
+      // input.path is the full path of the new folder, so extract parent
+      const parentPath = variables.input.path.substring(0, variables.input.path.lastIndexOf("/"));
+      evictListFilesCache(parentPath);
+      evictDirectoryChildrenCache(parentPath);
+
+      return result;
     },
-    [createFolderMutation]
+    [createFolderMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
   const deleteFile = useCallback(
     async (variables: { path: string }) => {
-      return deleteFileMutation({ variables });
+      const result = await deleteFileMutation({ variables });
+
+      // Evict cache for parent directory
+      const parentPath = variables.path.substring(0, variables.path.lastIndexOf("/"));
+      evictListFilesCache(parentPath);
+
+      return result;
     },
-    [deleteFileMutation]
+    [deleteFileMutation, evictListFilesCache]
   );
 
   const deleteStorageItems = useCallback(
     async (variables: { input: Graphql.StorageItemsDeleteInput }) => {
-      return deleteStorageItemsMutation({ variables });
+      const result = await deleteStorageItemsMutation({ variables });
+
+      // Evict cache for all affected parent directories
+      const uniqueParentPaths = new Set<string>();
+      variables.input.paths.forEach(path => {
+        const parentPath = path.substring(0, path.lastIndexOf("/"));
+        uniqueParentPaths.add(parentPath);
+      });
+
+      uniqueParentPaths.forEach(parentPath => {
+        evictListFilesCache(parentPath);
+        evictDirectoryChildrenCache(parentPath);
+      });
+
+      return result;
     },
-    [deleteStorageItemsMutation]
+    [deleteStorageItemsMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
   const generateUploadSignedUrl = useCallback(
@@ -128,16 +165,42 @@ export const useStorageMutations = (): StorageMutations => {
 
   const moveStorageItems = useCallback(
     async (variables: { input: Graphql.StorageItemsMoveInput }) => {
-      return moveStorageItemsMutation({ variables });
+      const result = await moveStorageItemsMutation({ variables });
+
+      // Evict cache for source parent directories
+      const uniqueSourcePaths = new Set<string>();
+      variables.input.sourcePaths.forEach(path => {
+        const parentPath = path.substring(0, path.lastIndexOf("/"));
+        uniqueSourcePaths.add(parentPath);
+      });
+
+      uniqueSourcePaths.forEach(parentPath => {
+        evictListFilesCache(parentPath);
+        evictDirectoryChildrenCache(parentPath);
+      });
+
+      // Evict cache for destination directory
+      const destinationPath = variables.input.destinationPath;
+      evictListFilesCache(destinationPath);
+      evictDirectoryChildrenCache(destinationPath);
+
+      return result;
     },
-    [moveStorageItemsMutation]
+    [moveStorageItemsMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
   const renameFile = useCallback(
     async (variables: { input: Graphql.FileRenameInput }) => {
-      return renameFileMutation({ variables });
+      const result = await renameFileMutation({ variables });
+
+      // Evict cache for parent directory
+      const parentPath = variables.input.currentPath.substring(0, variables.input.currentPath.lastIndexOf("/"));
+      evictListFilesCache(parentPath);
+      evictDirectoryChildrenCache(parentPath);
+
+      return result;
     },
-    [renameFileMutation]
+    [renameFileMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
   const setStorageItemProtection = useCallback(

@@ -113,7 +113,7 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
     >
       resolver={parent => ({
         query: directoryChildrenQueryDocument,
-        variables: parent ? { path: parent.path } : { path: "" },
+        variables: { path: parent ? parent.path : "" },
         fetchPolicy: "cache-first",
       })}
       getItems={getItems}

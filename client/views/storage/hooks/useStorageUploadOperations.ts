@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useStorageUploadStore } from "../stores/useStorageUploadStore";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
@@ -13,12 +13,17 @@ import {
   getUploadLocationForPath,
   getStoragePath,
 } from "../core/storage.location";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 import { UploadFileState } from "../core/storage-upload.types";
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useApolloClient } from "@apollo/client/react";
 import { useMutationWrapper } from "@/client/graphql/utils";
 import { generateUploadSignedUrlMutationDocument } from "../core/storage.documents";
+import { useStorageDataStore } from "../stores/useStorageDataStore";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import {
+  evictListFilesCache as evictListFilesCacheUtil,
+  evictDirectoryChildrenCache as evictDirectoryChildrenCacheUtil,
+} from "../core/storage.cache";
 
 export const useStorageUploadOperations = () => {
   const {
@@ -31,15 +36,22 @@ export const useStorageUploadOperations = () => {
   const generateUploadSignedUrl = useMutationWrapper(
     useMutation(generateUploadSignedUrlMutationDocument)
   );
+  const apolloClient = useApolloClient();
+  const { params } = useStorageDataStore();
   const notifications = useNotifications();
   const { uploading: translations } = useAppTranslation("storageTranslations");
   const uploadXhrsRef = useRef<Map<string, XMLHttpRequest>>(new Map());
   const uploadStartTimeRef = useRef<number | null>(null);
+  const paramsRef = useRef<Graphql.FilesListInput>(params);
+
+  // Keep paramsRef updated
+  useEffect(() => {
+    paramsRef.current = params;
+  }, [params]);
 
   const uploadSingleFile = useCallback(
     async (
       file: File,
-      location: Graphql.UploadLocationPath,
       targetPath: string
     ): Promise<void> => {
       const fileKey = getFileKey(file);
@@ -428,7 +440,7 @@ export const useStorageUploadOperations = () => {
 
           await Promise.all(
             chunk.map(file => {
-              return uploadSingleFile(file, location, targetPath);
+              return uploadSingleFile(file, targetPath);
             })
           );
         }
@@ -441,6 +453,13 @@ export const useStorageUploadOperations = () => {
           const errorCount = Array.from(uploadBatch.files.values()).filter(
             (f: UploadFileState) => f.status === "error"
           ).length;
+
+          // Evict cache if any files were successfully uploaded
+          if (successCount > 0) {
+            // Evict listFiles and directoryChildren caches
+            evictListFilesCacheUtil(apolloClient, targetPath, paramsRef.current);
+            evictDirectoryChildrenCacheUtil(apolloClient, targetPath);
+          }
 
           setTimeout(() => {
             if (successCount > 0) {
@@ -477,7 +496,7 @@ export const useStorageUploadOperations = () => {
         }
       }
     },
-    [notifications, translations, uploadSingleFile, setUploadBatch, uploadBatch]
+    [notifications, translations, uploadSingleFile, setUploadBatch, uploadBatch, apolloClient]
   );
 
   const cancelUpload = useCallback(
@@ -553,7 +572,6 @@ export const useStorageUploadOperations = () => {
       try {
         await uploadSingleFile(
           fileState.file,
-          uploadBatch.location,
           uploadBatch.targetPath
         );
       } catch {
@@ -601,7 +619,7 @@ export const useStorageUploadOperations = () => {
       for (const chunk of chunks) {
         await Promise.all(
           chunk.map(file =>
-            uploadSingleFile(file, uploadBatch.location, uploadBatch.targetPath)
+            uploadSingleFile(file, uploadBatch.targetPath)
           )
         );
       }

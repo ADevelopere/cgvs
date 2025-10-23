@@ -37,7 +37,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
   // Query variables state
   const [queryVariables, setQueryVariables] =
     useState<Graphql.DirectoryChildrenQueryVariables>({
-      path: undefined, // undefined for root
+      path: "", // empty string for root
     });
 
   // Use Apollo Client hook to fetch directories
@@ -78,14 +78,14 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       setCurrentPath("");
       setIsMoving(false);
       setHoveredItemPath(null);
-      setQueryVariables({ path: undefined }); // undefined for root
+      setQueryVariables({ path: "" }); // empty string for root
     }
   }, [open]);
 
   // Navigate to a directory
   const navigateToDirectory = useCallback((path: string) => {
     setCurrentPath(path);
-    setQueryVariables({ path: path || undefined }); // empty string becomes undefined
+    setQueryVariables({ path: path || "" }); // empty string for root
   }, []);
 
   // Get breadcrumb segments
@@ -182,7 +182,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
     if (currentPath) {
       const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
       setCurrentPath(parentPath);
-      setQueryVariables({ path: parentPath || undefined }); // empty string becomes undefined
+      setQueryVariables({ path: parentPath || "" }); // empty string for root
     }
   }, [currentPath]);
 
@@ -200,7 +200,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
   const canMove = useMemo(() => {
     return !loading && !isMoving && !isPathInvalid(currentPath);
   }, [loading, isMoving, isPathInvalid, currentPath]);
-  
+
   const isCurrentLocationInvalid = useMemo(() => {
     return isPathInvalid(currentPath);
   }, [isPathInvalid, currentPath]);
@@ -462,7 +462,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
               {translations.moving }
             </>
           ) : (
-            translations.moveDialogMove 
+            translations.moveDialogMove
           )}
         </MUI.Button>
       </MUI.DialogActions>
