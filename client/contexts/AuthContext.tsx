@@ -18,7 +18,6 @@ import React, {
   useState,
 } from "react";
 import { useMutation } from "@apollo/client/react";
-import logger from "@/client/lib/logger";
 
 // A simple UI for the initial loading state
 const LoadingUI: React.FC<{
@@ -87,41 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const isFirstRenderRef = useRef(true);
 
   const checkAuth = useCallback(async () => {
-    logger.info(
-      "[AuthContext] Starting auth check - attempting to restore session"
-    );
-
     try {
-      logger.info("[AuthContext] Calling refreshToken mutation");
       const { data } = await refreshTokenMutation();
 
-      logger.info("[AuthContext] RefreshToken mutation response:", {
-        hasData: !!data,
-        hasToken: !!data?.refreshToken?.token,
-        hasUser: !!data?.refreshToken?.user,
-      });
-
       if (data?.refreshToken?.token && data.refreshToken.user) {
-        logger.info("[AuthContext] Session restored successfully", {
-          userId: data.refreshToken.user.id,
-          userEmail: data.refreshToken.user.email,
-        });
         updateAuthToken(data.refreshToken.token);
         setUser(data.refreshToken.user);
         setIsAuthenticated(true);
       } else {
-        logger.warn(
-          "[AuthContext] Session restoration failed - no token or user in response"
-        );
         setIsAuthenticated(false);
         setUser(null);
         clearAuthData();
       }
-    } catch (error) {
-      logger.error("[AuthContext] RefreshToken mutation failed:", {
-        error: error instanceof Error ? error.message : String(error),
-        errorDetails: error,
-      });
+    } catch {
       setIsAuthenticated(false);
       setUser(null);
       clearAuthData();

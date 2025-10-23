@@ -21,7 +21,6 @@ import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { ConnectivityTranslations } from "@/client/locale/components/Connectivity";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/client/lib/logger";
 import { isNetworkError } from "@/client/utils/errorUtils";
 import { Box, CircularProgress, Button, Typography } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
@@ -101,6 +100,19 @@ const CONNECTIVITY_CHECK_URL = "/api/graphql"; // Check GraphQL endpoint availab
 const CONNECTIVITY_CHECK_TIMEOUT = 5000; // 5 seconds
 const MIN_CHECK_INTERVAL = 2000; // Minimum 2 seconds between checks
 
+// Reconnection delay configuration
+// Returns delay in milliseconds for a given attempt number
+// Attempt 0: 2000ms, Attempt 1: 5000ms, Attempt 2+: increases by 5000ms until 30000ms max
+const getReconnectionDelay = (attempt: number): number | null => {
+  if (attempt === 0) return 2000; // First retry: 2 seconds
+  if (attempt === 1) return 5000; // Second retry: 5 seconds
+
+  // Subsequent retries: 10s, 15s, 20s, 25s, 30s
+  const delay = 5000 + (attempt - 1) * 5000;
+  if (delay > 30000) return null; // Stop after 30 seconds
+  return delay;
+};
+
 export const AppApolloProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -120,6 +132,8 @@ export const AppApolloProvider: React.FC<{
   const authTokenRef = useRef<string | null>(null); // Always start with no token
   const initialCheckDoneRef = useRef(false);
   const lastCheckTimeRef = useRef(0); // Track last check time to prevent spam
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttemptRef = useRef(0); // Track reconnection attempts
 
   const checkConnectivity = useCallback(async (): Promise<boolean> => {
     // Prevent multiple simultaneous checks using ref
@@ -161,15 +175,8 @@ export const AppApolloProvider: React.FC<{
       // Log connection state change if it differs from current state
       if (connected !== isConnectedRef.current) {
         if (connected) {
-          logger.info("[Connectivity] Connection restored", {
-            url: CONNECTIVITY_CHECK_URL,
-            status: response.status,
-          });
-        } else {
-          logger.warn("[Connectivity] Connection lost", {
-            url: CONNECTIVITY_CHECK_URL,
-            status: response.status,
-          });
+          // Reset reconnection attempts on successful connection
+          reconnectAttemptRef.current = 0;
         }
       }
 
@@ -179,19 +186,11 @@ export const AppApolloProvider: React.FC<{
       setLastChecked(new Date());
 
       return connected;
-    } catch (error) {
-      // Log connection check failure
-      if (isConnectedRef.current) {
-        logger.warn(
-          "[Connectivity] Connection check failed, marking as disconnected",
-          {
-            error: error instanceof Error ? error.message : String(error),
-          }
-        );
-      }
+    } catch {
       setIsConnected(false);
       isConnectedRef.current = false;
       setLastChecked(new Date());
+
       return false;
     } finally {
       isCheckingRef.current = false;
@@ -201,13 +200,6 @@ export const AppApolloProvider: React.FC<{
   }, []); // No dependencies needed
 
   const setConnected = useCallback((connected: boolean) => {
-    // Log connection state change if it differs from current state
-    if (connected !== isConnectedRef.current) {
-      logger.info("[Connectivity] Connection state manually updated", {
-        from: isConnectedRef.current ? "connected" : "disconnected",
-        to: connected ? "connected" : "disconnected",
-      });
-    }
     setIsConnected(connected);
     isConnectedRef.current = connected;
   }, []);
@@ -221,6 +213,8 @@ export const AppApolloProvider: React.FC<{
           autoHideDuration: 5000, // Auto-hide after 5 seconds for less spam
           actionText: strings.retry,
           onAction: () => {
+            // Reset reconnection attempts on manual retry
+            reconnectAttemptRef.current = 0;
             checkConnectivity().then(connected => {
               if (connected) {
                 notifications.show(strings.connectionRestored, {
@@ -285,12 +279,6 @@ export const AppApolloProvider: React.FC<{
               // Successful response means we're connected
               // Only update if we haven't confirmed connectivity yet
               if (!isConnectedRef.current) {
-                logger.info(
-                  "[Connectivity] Connection established via successful GraphQL operation",
-                  {
-                    operation: operation.operationName,
-                  }
-                );
                 setIsConnected(true);
                 isConnectedRef.current = true;
               }
@@ -343,28 +331,18 @@ export const AppApolloProvider: React.FC<{
     });
 
     // Error link to catch network errors and show notifications
-    const errorLink = new ErrorLink(({ error, operation }) => {
+    const errorLink = new ErrorLink(({ error }) => {
       // Check if this is a network error using utility function
       if (isNetworkError(error)) {
-        logger.error(
-          `[Network Error] Connection lost during GraphQL operation`,
-          {
-            message: error.message,
-            operation: operation.operationName,
-            previousState: isConnectedRef.current
-              ? "connected"
-              : "disconnected",
-          }
-        );
+        const wasConnected = isConnectedRef.current;
 
         setIsConnected(false);
         isConnectedRef.current = false;
+
+        if (wasConnected) {
+        }
+
         notifyIfDisconnected();
-      } else {
-        logger.error(`[GraphQL Error]`, {
-          message: error.message,
-          operation: operation.operationName,
-        });
       }
     });
 
@@ -412,15 +390,50 @@ export const AppApolloProvider: React.FC<{
     return () => clearTimeout(timeoutId);
   }, [checkConnectivity]);
 
+  // Automatic reconnection with progressive delays
+  useEffect(() => {
+    // Only attempt reconnection if we're disconnected and initial check is done
+    if (isConnected || !initialCheckDoneRef.current) {
+      // Clear any pending reconnection timeout if we're connected
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+      return;
+    }
+
+    // Get the delay for the current attempt
+    const delay = getReconnectionDelay(reconnectAttemptRef.current);
+
+    if (delay === null) {
+      return;
+    }
+
+    // Schedule the reconnection attempt
+    reconnectTimeoutRef.current = setTimeout(() => {
+      checkConnectivity().then(connected => {
+        if (!connected) {
+          // Increment attempt counter for next retry
+          reconnectAttemptRef.current += 1;
+        }
+      });
+    }, delay);
+
+    // Cleanup function
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+    };
+  }, [isConnected, checkConnectivity]);
+
   // Listen for online/offline events with debouncing
   useEffect(() => {
     let onlineTimeout: NodeJS.Timeout;
 
     const handleOnline = () => {
       // Debounce the connectivity check
-      logger.info(
-        "[Connectivity] Browser detected online state, verifying connection"
-      );
       clearTimeout(onlineTimeout);
       onlineTimeout = setTimeout(() => {
         checkConnectivity();
@@ -429,7 +442,6 @@ export const AppApolloProvider: React.FC<{
 
     const handleOffline = () => {
       clearTimeout(onlineTimeout);
-      logger.warn("[Connectivity] Browser detected offline state");
       setIsConnected(false);
       isConnectedRef.current = false;
       notifyIfDisconnected();
@@ -474,10 +486,17 @@ export const AppApolloProvider: React.FC<{
   if (!initialCheckDoneRef.current || !isConnectedRef.current) {
     // Only show error if we've actually checked and confirmed server is down
     const hasError = initialCheckDoneRef.current && !isConnectedRef.current;
+
+    const handleManualRetry = () => {
+      // Reset reconnection attempts on manual retry
+      reconnectAttemptRef.current = 0;
+      checkConnectivity();
+    };
+
     return (
       <InitializingUI
         error={hasError}
-        onRetry={checkConnectivity}
+        onRetry={handleManualRetry}
         strings={hasError ? strings : undefined}
       />
     );

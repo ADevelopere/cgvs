@@ -97,16 +97,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const sessionId = ctx.sessionId;
       const refreshToken = ctx.refreshToken;
 
-      logger.info("[RefreshToken] Mutation called", {
-        hasSessionId: !!sessionId,
-        hasRefreshToken: !!refreshToken,
-        sessionIdPreview: sessionId ? `${sessionId.substring(0, 8)}...` : null,
-      });
-
       if (!sessionId && !refreshToken) {
-        logger.warn(
-          "[RefreshToken] No authentication session found - missing cookies"
-        );
         throw new GraphQLError("No authentication session found", {
           extensions: { code: "UNAUTHENTICATED" },
         });
@@ -117,14 +108,9 @@ gqlSchemaBuilder.mutationFields(t => ({
 
       // First try to validate using session ID (cookie-based)
       if (sessionId) {
-        logger.info("[RefreshToken] Validating session by ID");
         session = await SessionRepository.validate(sessionId);
 
         if (session?.userId) {
-          logger.info("[RefreshToken] Session found, loading user", {
-            sessionId: session.id,
-            userId: session.userId,
-          });
           const foundUser = await UserRepository.findById(session.userId);
           user = foundUser || null;
 
@@ -133,22 +119,14 @@ gqlSchemaBuilder.mutationFields(t => ({
               userId: session.userId,
             });
           }
-        } else {
-          logger.warn("[RefreshToken] Session validation failed", {
-            sessionId,
-          });
         }
       }
 
       // If session validation failed, try refresh token
       if (!user && refreshToken) {
-        logger.info("[RefreshToken] Attempting refresh token validation");
         const payload = await verifyToken(refreshToken);
 
         if (payload && payload.type === "refresh") {
-          logger.info("[RefreshToken] Refresh token valid, loading user", {
-            userId: payload.userId,
-          });
           const foundUser = await UserRepository.findById(payload.userId);
           user = foundUser || null;
 
@@ -162,34 +140,14 @@ gqlSchemaBuilder.mutationFields(t => ({
               });
             }
           }
-        } else {
-          logger.warn("[RefreshToken] Refresh token verification failed", {
-            hasPayload: !!payload,
-            payloadType: payload?.type,
-          });
         }
       }
 
       if (!user || !session) {
-        logger.error(
-          "[RefreshToken] Validation failed - missing user or session",
-          {
-            hasUser: !!user,
-            hasSession: !!session,
-          }
-        );
         throw new GraphQLError("Invalid session or refresh token", {
           extensions: { code: "INVALID_TOKEN" },
         });
       }
-
-      logger.info(
-        "[RefreshToken] Validation successful, generating new tokens",
-        {
-          userId: user.id,
-          sessionId: session.id,
-        }
-      );
 
       // Generate new tokens (token rotation for security)
       const newAccessToken = await generateAccessToken(user.id, user.email);
