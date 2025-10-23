@@ -1,201 +1,210 @@
-"use client";
-
 import { create } from "zustand";
-import { DirectoryTreeNode, QueueStates } from "../hooks/storage.type";
+import { persist, createJSONStorage } from "zustand/middleware";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import logger from "@/client/lib/logger";
 
-interface StorageTreeState {
-  directoryTree: DirectoryTreeNode[];
-  expandedNodes: Set<string>;
-  prefetchedNodes: Set<string>;
-  queueStates: QueueStates;
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Helper to compute parent paths from a directory path
+ * Example: "folder1/folder2/folder3" → ["", "folder1", "folder1/folder2"]
+ */
+function getParentPaths(path: string): string[] {
+  logger.log("[getParentPaths] Input path:", path);
+  
+  if (!path || path === "") {
+    logger.log("[getParentPaths] Empty path, returning []");
+    return [];
+  }
+  
+  const segments = path.split("/").filter(s => s !== "");
+  logger.log("[getParentPaths] Segments:", segments);
+  
+  const parents: string[] = [""];  // Root always included
+  
+  for (let i = 0; i < segments.length - 1; i++) {
+    parents.push(segments.slice(0, i + 1).join("/"));
+  }
+  
+  logger.log("[getParentPaths] Parent paths:", parents);
+  return parents;
 }
 
-interface StorageTreeActions {
-  // Tree management actions
-  setDirectoryTree: (tree: DirectoryTreeNode[]) => void;
-  updateTreeNode: (
-    path: string,
-    updater: (node: DirectoryTreeNode) => DirectoryTreeNode
-  ) => void;
-  addChildToNode: (parentPath: string, children: DirectoryTreeNode[]) => void;
+// ============================================================================
+// STATE INTERFACE
+// ============================================================================
 
-  // Node state actions
-  expandNode: (path: string) => void;
-  collapseNode: (path: string) => void;
-  setPrefetchedNode: (path: string, isPrefetched: boolean) => void;
-
-  // Queue management actions
-  addToFetchQueue: (path: string) => void;
-  removeFromFetchQueue: (path: string) => void;
-  addToExpansionQueue: (path: string) => void;
-  removeFromExpansionQueue: (path: string) => void;
-  setCurrentlyFetching: (path: string, isFetching: boolean) => void;
-  clearQueues: () => void;
-
-  // Utility actions
-  reset: () => void;
-}
-
-const initialQueueStates: QueueStates = {
-  fetchQueue: new Set(),
-  expansionQueue: new Set(),
-  currentlyFetching: new Set(),
+export type StorageTreeState = {
+  currentDirectory: Graphql.DirectoryInfo | null; // Selected directory
+  expandedNodes: Set<string>; // Expansion state (in-memory, derived on restore)
+  fetchedNodes: Set<string>; // Fetch tracking (in-memory, derived on restore)
 };
+
+// ============================================================================
+// STORE INTERFACE
+// ============================================================================
+
+export type StorageTreeStore = StorageTreeState & {
+  setCurrentDirectory: (dir: Graphql.DirectoryInfo | null) => void;
+  updateCurrentDirectory: (dir: Graphql.DirectoryInfo | null) => void;
+  toggleExpanded: (path: string) => void;
+  markAsFetched: (path: string) => void;
+  isFetched: (path: string) => boolean;
+  reset: () => void;
+};
+
+// ============================================================================
+// INITIAL STATE
+// ============================================================================
 
 const initialState: StorageTreeState = {
-  directoryTree: [],
-  expandedNodes: new Set(),
-  prefetchedNodes: new Set(),
-  queueStates: initialQueueStates,
+  currentDirectory: null,
+  expandedNodes: new Set<string>(),
+  fetchedNodes: new Set<string>(),
 };
 
-export const useStorageTreeStore = create<
-  StorageTreeState & StorageTreeActions
->(set => ({
-  ...initialState,
+// ============================================================================
+// STORE
+// ============================================================================
 
-  // Tree management actions
-  setDirectoryTree: tree => set({ directoryTree: tree }),
+export const useStorageTreeStore = create<StorageTreeStore>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
 
-  updateTreeNode: (path, updater) =>
-    set(state => {
-      const updateTreeNode = (
-        nodes: DirectoryTreeNode[]
-      ): DirectoryTreeNode[] => {
-        return nodes.map(node => {
-          if (node.path === path) {
-            return updater(node);
+      setCurrentDirectory: (dir) => {
+        logger.log("[setCurrentDirectory] Called with dir:", dir);
+        set(state => {
+          logger.log("[setCurrentDirectory] Current state.currentDirectory:", state.currentDirectory);
+          
+          // Early return if same directory
+          if (dir?.path === state.currentDirectory?.path) {
+            logger.log("[setCurrentDirectory] Same directory, early return");
+            return state;
           }
-          if (node.children) {
-            return {
-              ...node,
-              children: updateTreeNode(node.children),
-            };
+          
+          // Compute and expand all parent paths
+          const newExpandedNodes = new Set(state.expandedNodes);
+          const newFetchedNodes = new Set(state.fetchedNodes);
+          
+          logger.log("[setCurrentDirectory] Before expansion - expandedNodes:", Array.from(state.expandedNodes));
+          
+          if (dir?.path) {
+            logger.log("[setCurrentDirectory] Computing parent paths for:", dir.path);
+            getParentPaths(dir.path).forEach(parentPath => {
+              logger.log("[setCurrentDirectory] Expanding parent:", parentPath);
+              newExpandedNodes.add(parentPath);
+              newFetchedNodes.add(parentPath);
+            });
           }
-          return node;
+          
+          logger.log("[setCurrentDirectory] After expansion - expandedNodes:", Array.from(newExpandedNodes));
+          
+          return {
+            currentDirectory: dir,
+            expandedNodes: newExpandedNodes,
+            fetchedNodes: newFetchedNodes,
+          };
         });
-      };
+      },
 
-      return {
-        directoryTree: updateTreeNode(state.directoryTree),
-      };
-    }),
-
-  addChildToNode: (parentPath, children) =>
-    set(state => {
-      const updateTreeNode = (
-        nodes: DirectoryTreeNode[]
-      ): DirectoryTreeNode[] => {
-        return nodes.map(node => {
-          if (node.path === parentPath) {
-            return {
-              ...node,
-              children,
-              isPrefetched: true,
-            };
+      updateCurrentDirectory: (dir) => {
+        set(state => {
+          if (!state.currentDirectory || !dir || 
+              state.currentDirectory.path !== dir.path) {
+            return state;
           }
-          if (node.children) {
-            return {
-              ...node,
-              children: updateTreeNode(node.children),
-            };
-          }
-          return node;
+          // Update with fresh data from Apollo cache
+          return { currentDirectory: dir };
         });
-      };
+      },
 
-      return {
-        directoryTree: updateTreeNode(state.directoryTree),
-      };
+      toggleExpanded: (path) => {
+        logger.log("[toggleExpanded] Called with path:", path);
+        set(state => {
+          const newSet = new Set(state.expandedNodes);
+          const wasExpanded = newSet.has(path);
+          if (wasExpanded) {
+            newSet.delete(path);
+            logger.log("[toggleExpanded] Collapsing path:", path);
+          } else {
+            newSet.add(path);
+            logger.log("[toggleExpanded] Expanding path:", path);
+          }
+          logger.log("[toggleExpanded] New expandedNodes:", Array.from(newSet));
+          return { expandedNodes: newSet };
+        });
+      },
+
+      markAsFetched: (path) => {
+        set(state => {
+          const newSet = new Set(state.fetchedNodes);
+          newSet.add(path);
+          return { fetchedNodes: newSet };
+        });
+      },
+
+      isFetched: (path) => {
+        return get().fetchedNodes.has(path);
+      },
+
+      reset: () => set(initialState),
     }),
-
-  // Node state actions
-  expandNode: path =>
-    set(state => ({
-      expandedNodes: new Set([...state.expandedNodes, path]),
-    })),
-
-  collapseNode: path =>
-    set(state => {
-      const newSet = new Set(state.expandedNodes);
-      newSet.delete(path);
-      return { expandedNodes: newSet };
-    }),
-
-  setPrefetchedNode: (path, isPrefetched) =>
-    set(state => {
-      const newSet = new Set(state.prefetchedNodes);
-      if (isPrefetched) {
-        newSet.add(path);
-      } else {
-        newSet.delete(path);
-      }
-      return { prefetchedNodes: newSet };
-    }),
-
-  // Queue management actions
-  addToFetchQueue: path =>
-    set(state => ({
-      queueStates: {
-        ...state.queueStates,
-        fetchQueue: new Set([...state.queueStates.fetchQueue, path]),
+    {
+      name: "storage-tree-store",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => {
+        logger.log("[partialize] Persisting state.currentDirectory:", state.currentDirectory);
+        const persistedData = {
+          currentDirectory: state.currentDirectory,
+        };
+        logger.log("[partialize] Persisted data:", persistedData);
+        return persistedData;
       },
-    })),
-
-  removeFromFetchQueue: path =>
-    set(state => ({
-      queueStates: {
-        ...state.queueStates,
-        fetchQueue: new Set(
-          [...state.queueStates.fetchQueue].filter(p => p !== path)
-        ),
+      merge: (persistedState, currentState) => {
+        logger.log("[StorageTreeStore] MERGE called");
+        logger.log("[StorageTreeStore] persistedState:", persistedState);
+        logger.log("[StorageTreeStore] currentState:", currentState);
+        
+        const typedPersisted = persistedState as Partial<StorageTreeState>;
+        
+        // Derive expandedNodes and fetchedNodes from currentDirectory.path
+        const currentDirectory = 
+          typedPersisted.currentDirectory || currentState.currentDirectory;
+        
+        logger.log("[StorageTreeStore] currentDirectory for expansion:", currentDirectory);
+        
+        const expandedNodes = new Set<string>();
+        const fetchedNodes = new Set<string>();
+        
+        if (currentDirectory?.path) {
+          logger.log("[StorageTreeStore] Computing parent paths for:", currentDirectory.path);
+          getParentPaths(currentDirectory.path).forEach(path => {
+            logger.log("[StorageTreeStore] Adding to expandedNodes:", path);
+            expandedNodes.add(path);
+            fetchedNodes.add(path);
+          });
+        } else {
+          logger.log("[StorageTreeStore] No currentDirectory.path found");
+        }
+        
+        logger.log("[StorageTreeStore] Final expandedNodes:", Array.from(expandedNodes));
+        logger.log("[StorageTreeStore] Final fetchedNodes:", Array.from(fetchedNodes));
+        
+        const mergedState = {
+          ...currentState,
+          ...typedPersisted,
+          expandedNodes,
+          fetchedNodes,
+        };
+        
+        logger.log("[StorageTreeStore] Merged state:", mergedState);
+        return mergedState;
       },
-    })),
+    }
+  )
+);
 
-  addToExpansionQueue: path =>
-    set(state => ({
-      queueStates: {
-        ...state.queueStates,
-        expansionQueue: new Set([...state.queueStates.expansionQueue, path]),
-      },
-    })),
 
-  removeFromExpansionQueue: path =>
-    set(state => ({
-      queueStates: {
-        ...state.queueStates,
-        expansionQueue: new Set(
-          [...state.queueStates.expansionQueue].filter(p => p !== path)
-        ),
-      },
-    })),
-
-  setCurrentlyFetching: (path, isFetching) =>
-    set(state => {
-      const newSet = new Set(state.queueStates.currentlyFetching);
-      if (isFetching) {
-        newSet.add(path);
-      } else {
-        newSet.delete(path);
-      }
-      return {
-        queueStates: {
-          ...state.queueStates,
-          currentlyFetching: newSet,
-        },
-      };
-    }),
-
-  clearQueues: () =>
-    set(state => ({
-      queueStates: {
-        ...state.queueStates,
-        fetchQueue: new Set(),
-        expansionQueue: new Set(),
-        currentlyFetching: new Set(),
-      },
-    })),
-
-  // Utility actions
-  reset: () => set(initialState),
-}));

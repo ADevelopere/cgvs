@@ -14,9 +14,9 @@ import { readFileSync } from "fs";
 import { spawn } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
-import logger from "@/lib/logger";
-import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/hooks/storage.documents";
+import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
 import type { ContentType } from "@/client/graphql/generated/gql/graphql";
+import { testLogger } from "@/lib/testlogger";
 
 // GraphQL client setup
 const httpLink = new HttpLink({
@@ -187,7 +187,7 @@ async function generateSignedUrl(
     // Convert MD5 to base64 format for Google Cloud Storage
     const contentMd5Base64 = hexToBase64(contentMd5);
 
-    logger.info("File details", {
+    testLogger.info("File details", {
       filePath,
       fileName,
       fileSize,
@@ -199,7 +199,7 @@ async function generateSignedUrl(
     });
 
     // Send GraphQL request
-    logger.info("Sending GraphQL request to generate signed URL...");
+    testLogger.info("Sending GraphQL request to generate signed URL...");
 
     const { data, error } = await client.mutate({
       mutation: generateUploadSignedUrlMutationDocument,
@@ -214,7 +214,7 @@ async function generateSignedUrl(
     });
 
     if (error) {
-      logger.error("GraphQL errors", { error });
+      testLogger.error("GraphQL errors", { error });
       throw new Error(`GraphQL errors: ${JSON.stringify(error)}`);
     }
 
@@ -223,10 +223,10 @@ async function generateSignedUrl(
       throw new Error("No signed URL returned from GraphQL mutation");
     }
 
-    logger.info("Signed URL generated successfully");
+    testLogger.info("Signed URL generated successfully");
     return signedUrl;
   } catch (error) {
-    logger.error("Failed to generate signed URL", { error: error });
+    testLogger.error("Failed to generate signed URL", { error: error });
     throw error;
   }
 }
@@ -238,11 +238,13 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    logger.error("Usage: node get-signed-url.ts <file-path> [content-type]");
-    logger.error(
+    testLogger.error(
+      "Usage: node get-signed-url.ts <file-path> [content-type]"
+    );
+    testLogger.error(
       "Example: node get-signed-url.ts public/templateCover/demo1.jpg"
     );
-    logger.error(
+    testLogger.error(
       "Note: Content type is automatically detected from file extension if not provided"
     );
     process.exit(1);
@@ -263,31 +265,31 @@ async function main() {
       : getContentTypeFromFileName(fileName);
     const md5Base64 = hexToBase64(contentMd5);
 
-    logger.log("\n" + "=".repeat(80));
-    logger.log("SIGNED URL GENERATED SUCCESSFULLY");
-    logger.log("=".repeat(80));
-    logger.log(signedUrl);
-    logger.log("=".repeat(80));
-    logger.log("");
-    logger.log("File Details:");
-    logger.log(`- File: ${filePath}`);
-    logger.log(`- Size: ${fileSize} bytes`);
-    logger.log(`- MD5 (hex): ${contentMd5}`);
-    logger.log(`- MD5 (base64): ${md5Base64}`);
-    logger.log(`- Content-Type: ${contentTypeEnum}`);
-    logger.log("");
-    logger.log("You can now use this URL to upload your file via:");
-    logger.log("1. Postman (PUT request with binary body)");
-    logger.log(
+    testLogger.log("\n" + "=".repeat(80));
+    testLogger.log("SIGNED URL GENERATED SUCCESSFULLY");
+    testLogger.log("=".repeat(80));
+    testLogger.log(signedUrl);
+    testLogger.log("=".repeat(80));
+    testLogger.log("");
+    testLogger.log("File Details:");
+    testLogger.log(`- File: ${filePath}`);
+    testLogger.log(`- Size: ${fileSize} bytes`);
+    testLogger.log(`- MD5 (hex): ${contentMd5}`);
+    testLogger.log(`- MD5 (base64): ${md5Base64}`);
+    testLogger.log(`- Content-Type: ${contentTypeEnum}`);
+    testLogger.log("");
+    testLogger.log("You can now use this URL to upload your file via:");
+    testLogger.log("1. Postman (PUT request with binary body)");
+    testLogger.log(
       `2. curl: curl -X PUT -H 'Content-Type: image/jpeg' -H 'Content-MD5: ${md5Base64}' --data-binary @file.jpg <signed-url>`
     );
-    logger.log("");
-    logger.log(
+    testLogger.log("");
+    testLogger.log(
       "Make sure to set the correct Content-Type and Content-MD5 headers!"
     );
-    logger.log("3. Any HTTP client");
+    testLogger.log("3. Any HTTP client");
   } catch (error) {
-    logger.error("Error:", error);
+    testLogger.error("Error:", error);
     process.exit(1);
   }
 }
@@ -295,7 +297,7 @@ async function main() {
 // Run the script
 if (require.main === module) {
   main().catch(error => {
-    logger.error("Unhandled error:", error);
+    testLogger.error("Unhandled error:", error);
     process.exit(1);
   });
 }

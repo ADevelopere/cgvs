@@ -5,21 +5,19 @@ import {
   Sort as SortIcon,
   ViewList as ListViewIcon,
 } from "@mui/icons-material";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageSorting } from "@/client/views/storage/hooks/useStorageSorting";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
 import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
 import { useUploadDropzone } from "@/client/views/storage/dropzone/useUploadDropzone";
 import { StorageManagementUITranslations } from "@/client/locale/components/Storage";
 import {
-  StorageItem as StorageItemType,
+  StorageItemUnion as StorageItemType,
   ViewMode,
-} from "@/client/views/storage/hooks/storage.type";
-import { FilesListInput } from "@/client/graphql/generated/gql/graphql";
+  OperationErrors,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
+import type { LoadingStates } from "@/client/views/storage/core/storage.type";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
 const StorageToolbar: React.FC<{
@@ -29,7 +27,7 @@ const StorageToolbar: React.FC<{
   sortBy: string;
   sortDirection: "ASC" | "DESC";
   translations: StorageManagementUITranslations;
-  params: FilesListInput;
+  params: Graphql.FilesListInput;
   setViewMode: (mode: ViewMode) => void;
   setSortBy: (field: string) => void;
   setSortDirection: (direction: "ASC" | "DESC") => void;
@@ -190,20 +188,63 @@ const ListView: React.FC<{
   sortBy: string;
   sortDirection: "ASC" | "DESC";
   translations: StorageManagementUITranslations;
-  currentItems: StorageItemType[];
+  sortedItems: StorageItemType[];
+  selectedItems: string[];
+  lastSelectedItem: string | null;
+  focusedItem: string | null;
   setSortBy: (field: string) => void;
   setSortDirection: (direction: "ASC" | "DESC") => void;
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
+  viewMode: ViewMode;
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  toggleSelect: (path: string) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
+  selectRange: (
+    fromPath: string,
+    toPath: string,
+    items: StorageItemType[]
+  ) => void;
+  setFocusedItem: (path: string | null) => void;
 }> = ({
   sortBy,
   sortDirection,
   translations,
-  currentItems,
+  sortedItems,
+  selectedItems,
+  lastSelectedItem,
+  focusedItem,
   setSortBy,
   setSortDirection,
   onContextMenu,
   onClick,
+  viewMode,
+  params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  toggleSelect,
+  selectAll,
+  clearSelection,
+  selectRange,
+  setFocusedItem,
 }) => {
   // Handle table header click (for list view)
   const handleTableSort = React.useCallback(
@@ -300,8 +341,30 @@ const ListView: React.FC<{
           </MUI.TableRow>
         </MUI.TableHead>
         <MUI.TableBody>
-          {currentItems.map(item => (
-            <StorageItem key={item.path} item={item} />
+          {sortedItems.map(item => (
+            <StorageItem
+              key={item.path}
+              item={item}
+              focusedItem={focusedItem}
+              viewMode={viewMode}
+              params={params}
+              sortedItems={sortedItems}
+              selectedItems={selectedItems}
+              lastSelectedItem={lastSelectedItem}
+              onNavigate={onNavigate}
+              clipboard={clipboard}
+              onRefresh={onRefresh}
+              onCopyItems={onCopyItems}
+              onCutItems={onCutItems}
+              onPasteItems={onPasteItems}
+              onRenameItem={onRenameItem}
+              onDeleteItems={onDeleteItems}
+              toggleSelect={toggleSelect}
+              selectAll={selectAll}
+              clearSelection={clearSelection}
+              selectRange={selectRange}
+              setFocusedItem={setFocusedItem}
+            />
           ))}
         </MUI.TableBody>
       </MUI.Table>
@@ -380,10 +443,57 @@ const EmptyState: React.FC<{
 };
 
 const GridView: React.FC<{
-  currentItems: StorageItemType[];
+  sortedItems: StorageItemType[];
+  selectedItems: string[];
+  lastSelectedItem: string | null;
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
-}> = ({ currentItems, onContextMenu, onClick }) => {
+  viewMode: ViewMode;
+  focusedItem: string | null;
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  toggleSelect: (path: string) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
+  selectRange: (
+    fromPath: string,
+    toPath: string,
+    items: StorageItemType[]
+  ) => void;
+  setFocusedItem: (path: string | null) => void;
+}> = ({
+  sortedItems,
+  selectedItems,
+  lastSelectedItem,
+  focusedItem,
+  onContextMenu,
+  onClick,
+  viewMode,
+  params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  toggleSelect,
+  selectAll,
+  clearSelection,
+  selectRange,
+  setFocusedItem,
+}) => {
   return (
     <MUI.Box
       sx={{
@@ -402,12 +512,33 @@ const GridView: React.FC<{
           p: 2,
         }}
       >
-        {currentItems.map(item => (
+        {sortedItems.map(item => (
           <MUI.Grid
             size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
             key={item.path}
           >
-            <StorageItem item={item} />
+            <StorageItem
+              item={item}
+              focusedItem={focusedItem}
+              viewMode={viewMode}
+              params={params}
+              sortedItems={sortedItems}
+              selectedItems={selectedItems}
+              lastSelectedItem={lastSelectedItem}
+              onNavigate={onNavigate}
+              clipboard={clipboard}
+              onRefresh={onRefresh}
+              onCopyItems={onCopyItems}
+              onCutItems={onCutItems}
+              onPasteItems={onPasteItems}
+              onRenameItem={onRenameItem}
+              onDeleteItems={onDeleteItems}
+              toggleSelect={toggleSelect}
+              selectAll={selectAll}
+              clearSelection={clearSelection}
+              selectRange={selectRange}
+              setFocusedItem={setFocusedItem}
+            />
           </MUI.Grid>
         ))}
       </MUI.Grid>
@@ -415,28 +546,79 @@ const GridView: React.FC<{
   );
 };
 
+interface StorageItemsViewProps {
+  searchMode: boolean;
+  viewMode: ViewMode;
+  selectedItems: string[];
+  lastSelectedItem: string | null;
+  focusedItem: string | null;
+  sortBy: string;
+  sortDirection: Graphql.OrderSortDirection;
+  setViewMode: (mode: ViewMode) => void;
+  loading: LoadingStates;
+  operationErrors: OperationErrors;
+  params: Graphql.FilesListInput;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  onRefresh: () => Promise<void>;
+  onPasteItems: () => Promise<boolean>;
+  clipboard: StorageClipboardState | null;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
+  toggleSelect: (path: string) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
+  selectRange: (
+    fromPath: string,
+    toPath: string,
+    items: StorageItemType[]
+  ) => void;
+  setFocusedItem: (path: string | null) => void;
+  setSortBy: (field: string) => void;
+  setSortDirection: (direction: Graphql.OrderSortDirection) => void;
+  getSortedItems: () => StorageItemType[];
+}
+
 /**
  * Main items display area for the storage browser.
  * Handles view mode switching, local sorting, and rendering of items.
  * Supports both grid and list views with client-side sorting.
  */
-const StorageItemsView: React.FC = () => {
-  const { searchMode, viewMode, setViewMode, loading, operationErrors } =
-    useStorageUIStore();
-  const { params } = useStorageDataStore();
-  const {
-    selectedItems,
-    focusedItem,
-    setFocusedItem,
-    toggleSelect,
-    selectRange,
-    clearSelection,
-    selectAll,
-    lastSelectedItem,
-  } = useStorageSelection();
-  const { getSortedItems, sortBy, sortDirection, setSortBy, setSortDirection } =
-    useStorageSorting();
-  const { navigateTo, refresh } = useStorageNavigation();
+const StorageItemsView: React.FC<StorageItemsViewProps> = ({
+  searchMode,
+  viewMode,
+  selectedItems,
+  lastSelectedItem,
+  focusedItem,
+  sortBy,
+  sortDirection,
+  setViewMode,
+  loading,
+  operationErrors,
+  params,
+  clipboard,
+  onNavigate,
+  onRefresh,
+  onPasteItems,
+  onCopyItems,
+  onCutItems,
+  onRenameItem,
+  onDeleteItems,
+  onCreateFolder,
+  toggleSelect,
+  selectAll,
+  clearSelection,
+  selectRange,
+  setFocusedItem,
+  setSortBy,
+  setSortDirection,
+  getSortedItems,
+}) => {
   const { ui: translations } = useAppTranslation("storageTranslations");
   const theme = MUI.useTheme();
 
@@ -470,7 +652,7 @@ const StorageItemsView: React.FC = () => {
   }, []);
 
   // Get current items (search results or regular directory listing)
-  const currentItems = getSortedItems();
+  const sortedItems = getSortedItems();
 
   const isLoading = React.useMemo(() => {
     return loading.fetchList || loading.search;
@@ -485,17 +667,17 @@ const StorageItemsView: React.FC = () => {
     uploadPath: params.path,
     disabled: isLoading,
     onUploadComplete: () => {
-      refresh();
+      onRefresh();
     },
   });
 
   // Keyboard navigation handler
   const handleKeyDown = React.useCallback(
     (event: KeyboardEvent) => {
-      if (currentItems.length === 0) return;
+      if (sortedItems.length === 0) return;
 
       const currentFocusedIndex = focusedItem
-        ? currentItems.findIndex(item => item.path === focusedItem)
+        ? sortedItems.findIndex(item => item.path === focusedItem)
         : -1;
 
       switch (event.key) {
@@ -503,12 +685,16 @@ const StorageItemsView: React.FC = () => {
           event.preventDefault();
           const nextIndex = Math.min(
             currentFocusedIndex + 1,
-            currentItems.length - 1
+            sortedItems.length - 1
           );
           if (nextIndex !== currentFocusedIndex) {
-            setFocusedItem(currentItems[nextIndex].path);
+            setFocusedItem(sortedItems[nextIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(lastSelectedItem, currentItems[nextIndex].path);
+              selectRange(
+                lastSelectedItem,
+                sortedItems[nextIndex].path,
+                sortedItems
+              );
             }
           }
           break;
@@ -518,9 +704,13 @@ const StorageItemsView: React.FC = () => {
           event.preventDefault();
           const prevIndex = Math.max(currentFocusedIndex - 1, 0);
           if (prevIndex !== currentFocusedIndex) {
-            setFocusedItem(currentItems[prevIndex].path);
+            setFocusedItem(sortedItems[prevIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(lastSelectedItem, currentItems[prevIndex].path);
+              selectRange(
+                lastSelectedItem,
+                sortedItems[prevIndex].path,
+                sortedItems
+              );
             }
           }
           break;
@@ -528,19 +718,20 @@ const StorageItemsView: React.FC = () => {
 
         case "Home":
           event.preventDefault();
-          setFocusedItem(currentItems[0].path);
+          setFocusedItem(sortedItems[0].path);
           if (event.shiftKey && lastSelectedItem) {
-            selectRange(lastSelectedItem, currentItems[0].path);
+            selectRange(lastSelectedItem, sortedItems[0].path, sortedItems);
           }
           break;
 
         case "End":
           event.preventDefault();
-          setFocusedItem(currentItems[currentItems.length - 1].path);
+          setFocusedItem(sortedItems[sortedItems.length - 1].path);
           if (event.shiftKey && lastSelectedItem) {
             selectRange(
               lastSelectedItem,
-              currentItems[currentItems.length - 1].path
+              sortedItems[sortedItems.length - 1].path,
+              sortedItems
             );
           }
           break;
@@ -548,9 +739,9 @@ const StorageItemsView: React.FC = () => {
         case "Enter":
           event.preventDefault();
           if (focusedItem) {
-            const item = currentItems.find(item => item.path === focusedItem);
+            const item = sortedItems.find(item => item.path === focusedItem);
             if (item && item.__typename === "DirectoryInfo") {
-              navigateTo(item.path);
+              onNavigate(item.path, params);
             }
           }
           break;
@@ -584,16 +775,17 @@ const StorageItemsView: React.FC = () => {
       }
     },
     [
-      currentItems,
+      sortedItems,
       focusedItem,
       setFocusedItem,
       lastSelectedItem,
+      selectedItems.length,
       selectRange,
-      navigateTo,
+      onNavigate,
+      params,
       toggleSelect,
       clearSelection,
       selectAll,
-      selectedItems.length,
     ]
   );
 
@@ -668,7 +860,7 @@ const StorageItemsView: React.FC = () => {
       <StorageToolbar
         searchMode={searchMode}
         viewMode={viewMode}
-        currentItems={currentItems}
+        currentItems={sortedItems}
         sortBy={sortBy}
         sortDirection={sortDirection}
         translations={translations}
@@ -703,28 +895,64 @@ const StorageItemsView: React.FC = () => {
         {!isLoading && hasError && (
           <ErrorState hasError={hasError} translations={translations} />
         )}
-        {!isLoading && !hasError && currentItems.length === 0 && (
+        {!isLoading && !hasError && sortedItems.length === 0 && (
           <EmptyState translations={translations} searchMode={searchMode} />
         )}
-        {!isLoading && !hasError && currentItems.length > 0 && (
+        {!isLoading && !hasError && sortedItems.length > 0 && (
           <>
             {viewMode === "grid" && (
               <GridView
-                currentItems={currentItems}
+                sortedItems={sortedItems}
+                focusedItem={focusedItem}
+                selectedItems={selectedItems}
+                lastSelectedItem={lastSelectedItem}
                 onContextMenu={handleViewAreaContextMenu}
                 onClick={handleViewAreaClick}
+                viewMode={viewMode}
+                params={params}
+                clipboard={clipboard}
+                onNavigate={onNavigate}
+                onRefresh={onRefresh}
+                onCopyItems={onCopyItems}
+                onCutItems={onCutItems}
+                onPasteItems={onPasteItems}
+                onRenameItem={onRenameItem}
+                onDeleteItems={onDeleteItems}
+                toggleSelect={toggleSelect}
+                selectAll={selectAll}
+                clearSelection={clearSelection}
+                selectRange={selectRange}
+                setFocusedItem={setFocusedItem}
               />
             )}
             {viewMode === "list" && (
               <ListView
                 sortBy={sortBy}
+                focusedItem={focusedItem}
                 sortDirection={sortDirection}
                 translations={translations}
-                currentItems={currentItems}
+                sortedItems={sortedItems}
+                selectedItems={selectedItems}
+                lastSelectedItem={lastSelectedItem}
                 setSortBy={setSortBy}
                 setSortDirection={setSortDirection}
                 onContextMenu={handleViewAreaContextMenu}
                 onClick={handleViewAreaClick}
+                viewMode={viewMode}
+                params={params}
+                clipboard={clipboard}
+                onNavigate={onNavigate}
+                onRefresh={onRefresh}
+                onCopyItems={onCopyItems}
+                onCutItems={onCutItems}
+                onPasteItems={onPasteItems}
+                onRenameItem={onRenameItem}
+                onDeleteItems={onDeleteItems}
+                toggleSelect={toggleSelect}
+                selectAll={selectAll}
+                clearSelection={clearSelection}
+                selectRange={selectRange}
+                setFocusedItem={setFocusedItem}
               />
             )}
           </>
@@ -738,6 +966,12 @@ const StorageItemsView: React.FC = () => {
         anchorPosition={viewAreaMenuPosition}
         onClose={handleCloseViewAreaMenu}
         onContextMenu={handleViewAreaContextMenu}
+        params={params}
+        clipboard={clipboard}
+        onPasteItems={onPasteItems}
+        onRefresh={onRefresh}
+        onCreateFolder={onCreateFolder}
+        selectAll={selectAll}
       />
     </MUI.Box>
   );

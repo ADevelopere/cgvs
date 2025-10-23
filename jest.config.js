@@ -5,10 +5,15 @@ module.exports = {
     "^.+\\.ts$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "json"],
+  testTimeout: 60000, // 60 seconds for integration tests
   collectCoverageFrom: [
     "client/**/*.ts",
+    "server/storage/**/*.ts",
+    "server/db/repo/signedUrl.repository.ts",
+    "app/api/storage/**/*.ts",
     "!client/**/*.d.ts",
     "!client/**/__tests__/**",
+    "!**/*.d.ts",
     "!tests/**",
   ],
   setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],

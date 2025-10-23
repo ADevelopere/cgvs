@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useAppTranslation } from "@/client/locale";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -12,22 +10,33 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import HistoryIcon from "@mui/icons-material/History";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 
 const STORAGE_SEARCH_HISTORY_KEY = "storage-search-history";
 
-const StorageSearch: React.FC = () => {
-  const {
-    searchMode,
-    setSearchMode,
-    setSearchResults,
-    clearSelection,
-    setLastSelectedItem,
-  } = useStorageUIStore();
-  const { search: searchOperation } = useStorageDataOperations();
+interface StorageSearchProps {
+  searchMode: boolean;
+  setSearchMode: (mode: boolean) => void;
+  setSearchResults: (results: StorageItemUnion[]) => void;
+  clearSelection: () => void;
+  setLastSelectedItem: (item: string | null) => void;
+  onSearch: (
+    query: string,
+    path?: string
+  ) => Promise<{ items: StorageItemUnion[]; totalCount: number } | null>;
+}
 
+const StorageSearch: React.FC<StorageSearchProps> = ({
+  searchMode,
+  setSearchMode,
+  setSearchResults,
+  clearSelection,
+  setLastSelectedItem,
+  onSearch,
+}) => {
   const search = React.useCallback(
     async (term: string) => {
-      const result = await searchOperation(term, "");
+      const result = await onSearch(term, "");
       if (result) {
         setSearchResults(result.items);
         setSearchMode(true);
@@ -35,13 +44,7 @@ const StorageSearch: React.FC = () => {
         setLastSelectedItem(null);
       }
     },
-    [
-      clearSelection,
-      searchOperation,
-      setLastSelectedItem,
-      setSearchMode,
-      setSearchResults,
-    ]
+    [clearSelection, onSearch, setLastSelectedItem, setSearchMode, setSearchResults]
   );
 
   const exitSearchMode = React.useCallback(() => {

@@ -1,7 +1,3 @@
-import { config } from "dotenv";
-import { resolve } from "path";
-
-config({ path: resolve(__dirname, "../../.env") });
 import logger from "@/server/lib/logger";
 
 // Verify DATABASE_URL is loaded
@@ -14,6 +10,9 @@ if (!process.env.DATABASE_URL) {
 } else {
   logger.log(
     "server/db/drizzleDb.ts Environment variables loaded successfully"
+  );
+  logger.log(
+    `   DATABASE_URL=${process.env.DATABASE_URL?.substring(0, 20)}...`
   );
 }
 

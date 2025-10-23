@@ -1,14 +1,43 @@
 import React from "react";
 import StorageItemGrid from "./StorageItemGrid";
 import StorageItemListRow from "./StorageItemListRow";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import FolderDropTarget from "@/client/views/storage/dropzone/FolderDropTarget";
-import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
+import {
+  StorageItemUnion as StorageItemType,
+  ViewMode,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
+import logger from "@/client/lib/logger";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
 interface StorageItemProps {
   item: StorageItemType;
+  focusedItem: string | null;
+  viewMode: ViewMode;
+  params: Graphql.FilesListInput;
+  sortedItems: StorageItemType[];
+  selectedItems: string[];
+  lastSelectedItem: string | null;
+  onNavigate: (
+    path: string,
+    currentParams: Graphql.FilesListInput
+  ) => Promise<void>;
+  clipboard: StorageClipboardState | null;
+  onRefresh: () => Promise<void>;
+  onCopyItems: (items: StorageItemType[]) => void;
+  onCutItems: (items: StorageItemType[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  toggleSelect: (path: string) => void;
+  selectAll: () => void;
+  clearSelection: () => void;
+  selectRange: (
+    fromPath: string,
+    toPath: string,
+    items: StorageItemType[]
+  ) => void;
+  setFocusedItem: (path: string | null) => void;
 }
 
 /**
@@ -16,19 +45,27 @@ interface StorageItemProps {
  * Handles selection logic and renders either Grid or List Row component.
  * Manages drag-and-drop functionality and context menus.
  */
-const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
-  const { viewMode } = useStorageUIStore();
-  const {
-    selectedItems,
-    lastSelectedItem,
-    toggleSelect,
-    selectRange,
-    clearSelection,
-    setFocusedItem,
-  } = useStorageSelection();
-  const { navigateTo } = useStorageNavigation();
-  const { clipboard } = useStorageClipboard();
-
+const StorageItem: React.FC<StorageItemProps> = ({
+  item,
+  focusedItem,
+  viewMode,
+  params,
+  sortedItems: currentItems,
+  selectedItems,
+  lastSelectedItem,
+  onNavigate,
+  clipboard,
+  onRefresh,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  toggleSelect,
+  selectRange,
+  clearSelection,
+  setFocusedItem,
+}) => {
   const isCut = React.useMemo(
     () =>
       clipboard?.operation === "cut" &&
@@ -38,32 +75,43 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
 
   const isDirectory = item.__typename === "DirectoryInfo";
 
+  // Use ref to track if we're in a double-click sequence
+  const clickTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const isDoubleClickingRef = React.useRef(false);
+
   // Handle click events for selection
   const handleClick = React.useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
       event.stopPropagation(); // Prevent event from bubbling up to view area
 
-      // Set focused item for keyboard navigation
-      setFocusedItem(item.path);
-
-      // We'll check selection state inside the actual operation functions
-      // to avoid stale closures
-
-      // Handle different selection behaviors based on modifier keys
-      if (event.shiftKey && lastSelectedItem) {
-        // Shift+click: Select range from last selected to current
-        selectRange(lastSelectedItem, item.path);
-      } else if (event.ctrlKey || event.metaKey) {
-        // Ctrl+click (or Cmd+click on Mac): Toggle selection
-        toggleSelect(item.path);
-      } else {
-        // Regular click: Clear all selections and select only this item
-
-        // Always clear and select for regular clicks to maintain consistency
-        clearSelection();
-        toggleSelect(item.path);
+      // If we're in a double-click sequence, ignore single-click logic
+      if (isDoubleClickingRef.current) {
+        return;
       }
+
+      // Delay single-click action to check if double-click is coming
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+
+      clickTimeoutRef.current = setTimeout(() => {
+        // Set focused item for keyboard navigation
+        setFocusedItem(item.path);
+
+        // Handle different selection behaviors based on modifier keys
+        if (event.shiftKey && lastSelectedItem) {
+          // Shift+click: Select range from last selected to current
+          selectRange(lastSelectedItem, item.path, currentItems);
+        } else if (event.ctrlKey || event.metaKey) {
+          // Ctrl+click (or Cmd+click on Mac): Toggle selection
+          toggleSelect(item.path);
+        } else {
+          // Regular click: Clear all selections and select only this item
+          clearSelection();
+          toggleSelect(item.path);
+        }
+      }, 200); // 200ms delay to detect double-click
     },
     [
       clearSelection,
@@ -72,23 +120,45 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
       selectRange,
       setFocusedItem,
       toggleSelect,
+      currentItems,
     ]
   );
 
   // Handle double-click for navigation
   const handleDoubleClick = React.useCallback(
     (event: React.MouseEvent) => {
+      logger.info("Double-click detected", {
+        itemPath: item.path,
+        isDirectory,
+      });
+
       event.preventDefault();
       event.stopPropagation(); // Prevent event from bubbling up to view area
 
+      // Mark that we're double-clicking to prevent single-click logic
+      isDoubleClickingRef.current = true;
+
+      // Clear any pending single-click timeout
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+        clickTimeoutRef.current = null;
+      }
+
       if (isDirectory) {
-        navigateTo(item.path).then(r => r);
+        logger.info("Navigating via double-click", { path: item.path });
+        onNavigate(item.path, params);
       } else {
+        logger.info("File double-clicked - no action", { path: item.path });
         // For files, we could trigger preview or download
         // For now, do nothing for files
       }
+
+      // Reset double-click flag after a short delay
+      setTimeout(() => {
+        isDoubleClickingRef.current = false;
+      }, 300);
     },
-    [isDirectory, item.path, navigateTo]
+    [isDirectory, item.path, onNavigate, params]
   );
 
   // Handle context menu (right-click)
@@ -112,12 +182,38 @@ const StorageItem: React.FC<StorageItemProps> = ({ item }) => {
   const commonProps = React.useMemo(
     () => ({
       item,
+      focusedItem,
       isSelected: selectedItems.includes(item.path),
       onClick: handleClick,
       onDoubleClick: handleDoubleClick,
       onContextMenu: handleContextMenu,
+      params,
+      clipboard,
+      onNavigate,
+      onRefresh,
+      onCopyItems,
+      onCutItems,
+      onPasteItems,
+      onRenameItem,
+      onDeleteItems,
     }),
-    [handleClick, handleContextMenu, handleDoubleClick, item, selectedItems]
+    [
+      handleClick,
+      clipboard,
+      onNavigate,
+      onRefresh,
+      onCopyItems,
+      onCutItems,
+      onPasteItems,
+      onRenameItem,
+      onDeleteItems,
+      handleContextMenu,
+      handleDoubleClick,
+      item,
+      focusedItem,
+      selectedItems,
+      params,
+    ]
   );
 
   // Render the appropriate component based on view mode

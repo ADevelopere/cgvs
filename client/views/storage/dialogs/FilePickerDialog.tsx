@@ -15,23 +15,24 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
+import { useQuery, useApolloClient } from "@apollo/client/react";
 import FileTypeIcon from "@/client/views/storage/browser/FileTypeIcon";
 import FilePreview from "@/client/views/storage/browser/FilePreview";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem as StorageItemType } from "@/client/views/storage/hooks/storage.type";
-import { FileInfo } from "@/client/graphql/generated/gql/graphql";
+import { StorageItemUnion as StorageItemType } from "@/client/views/storage/core/storage.type";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
+import { listFilesQueryDocument } from "../core/storage.documents";
 
 export interface FilePickerDialogProps {
   open: boolean;
   onClose: () => void;
-  onFileSelect: (file: FileInfo) => void;
+  onFileSelect: (file: Graphql.FileInfo) => void;
   allowedFileTypes?: string[]; // Optional array of allowed content types (e.g., ['image/*', 'application/pdf'])
   title?: string; // Optional custom title
 }
 
-function isFile(item: StorageItemType): item is FileInfo {
+function isFile(item: StorageItemType): item is Graphql.FileInfo {
   return item.__typename === "FileInfo";
 }
 
@@ -44,15 +45,50 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { fetchList } = useStorageDataOperations();
+  const apolloClient = useApolloClient();
 
-  // State
+  // Query variables state
+  const [queryVariables, setQueryVariables] =
+    useState<Graphql.ListFilesQueryVariables>({
+      input: {
+        path: "",
+        limit: 1000,
+        offset: 0,
+      },
+    });
+
+  // Use Apollo Client hook to fetch files list
+  const {
+    data,
+    loading,
+    error: queryError,
+  } = useQuery(listFilesQueryDocument, {
+    variables: queryVariables,
+    skip: !open, // Only run query when dialog is open
+  });
+
+  // UI State
   const [currentPath, setCurrentPath] = useState<string>("");
-  const [items, setItems] = useState<StorageItemType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);
+  const [selectedFile, setSelectedFile] = useState<Graphql.FileInfo | null>(
+    null
+  );
+
+  // Derive data from query
+  const items = useMemo(() => {
+    if (!data?.listFiles?.items) return [];
+    return data.listFiles.items as StorageItemType[];
+  }, [data]);
+
+  const error = useMemo(() => {
+    if (queryError) {
+      return translations.filePickerDialogUnexpectedError;
+    }
+    if (data && !data.listFiles) {
+      return translations.filePickerDialogFailedToLoad;
+    }
+    return null;
+  }, [queryError, data, translations]);
 
   // Use refs to access latest values without causing re-renders
   const allowedFileTypesRef = useRef(allowedFileTypes);
@@ -100,94 +136,16 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     [filteredItems]
   );
 
-  // Load items for the current path
-  const loadItems = useCallback(
-    async (path: string) => {
-      logger.info("Loading items for path", {
-        path,
-        allowedFileTypes: allowedFileTypesRef.current,
-      });
-
-      setIsLoading(true);
-      setError(null);
-      setSelectedFile(null);
-
-      try {
-        const result = await fetchList({
-          path: path,
-          limit: 1000,
-          offset: 0,
-        });
-
-        if (result) {
-          logger.info("Items loaded successfully", {
-            path,
-            itemCount: result.items.length,
-            totalCount: result.pagination.total,
-            folders: result.items.filter(
-              item => item.__typename === "DirectoryInfo"
-            ).length,
-            files: result.items.filter(item => item.__typename === "FileInfo")
-              .length,
-          });
-          setItems(result.items);
-        } else {
-          logger.error("Failed to load items - no result", { path });
-          const errorMessage =
-            translations.filePickerDialogFailedToLoad || "Failed to load files";
-          logger.error("Setting error state", { path, errorMessage });
-          setError(errorMessage);
-          setItems([]);
-        }
-      } catch (error) {
-        logger.error("Error loading items", {
-          path,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-        const errorMessage =
-          translations.filePickerDialogUnexpectedError ||
-          "An unexpected error occurred";
-        logger.error("Setting error state due to exception", {
-          path,
-          errorMessage,
-        });
-        setError(errorMessage);
-        setItems([]);
-      } finally {
-        setIsLoading(false);
-        logger.info("Items loading completed", { path });
-      }
-    },
-    [
-      fetchList,
-      translations.filePickerDialogFailedToLoad,
-      translations.filePickerDialogUnexpectedError,
-    ]
-  );
-
-  // Use ref for loadItems to avoid dependency issues
-  const loadItemsRef = useRef(loadItems);
-  useEffect(() => {
-    loadItemsRef.current = loadItems;
-  }, [loadItems]);
-
-  // Reset state when dialog opens/closes
+  // Handle dialog open/close
   useEffect(() => {
     if (open) {
-      logger.info("FilePickerDialog opened", {
-        allowedFileTypes,
-        title,
-      });
+      logger.info("FilePickerDialog opened", { allowedFileTypes, title });
       setCurrentPath("");
-      setItems([]);
-      setError(null);
-      setIsLoading(false);
-      setIsSelecting(false);
       setSelectedFile(null);
-      // Load root directory
-      loadItemsRef.current("");
-    } else {
-      logger.info("FilePickerDialog closed");
+      setIsSelecting(false);
+      setQueryVariables({
+        input: { path: "", limit: 1000, offset: 0 },
+      });
     }
   }, [open, allowedFileTypes, title]);
 
@@ -199,7 +157,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         toPath: path,
       });
       setCurrentPath(path);
-      loadItemsRef.current(path);
+      setSelectedFile(null);
+      setQueryVariables({
+        input: {
+          path: path,
+          limit: 1000,
+          offset: 0,
+        },
+      });
     },
     [currentPath]
   );
@@ -207,11 +172,11 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Get breadcrumb segments
   const breadcrumbSegments = useMemo(() => {
     if (!currentPath) {
-      return [{ name: translations.myDrive || "My Drive", path: "" }];
+      return [{ name: translations.myDrive, path: "" }];
     }
 
     const segments = currentPath.split("/").filter(Boolean);
-    const result = [{ name: translations.myDrive || "My Drive", path: "" }];
+    const result = [{ name: translations.myDrive, path: "" }];
 
     let accumulatedPath = "";
     for (const segment of segments) {
@@ -224,7 +189,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
   // Handle file selection
   const handleFileSelect = useCallback(
-    async (file: FileInfo) => {
+    async (file: Graphql.FileInfo) => {
       logger.info("File selection initiated", {
         fileName: file.name,
         filePath: file.path,
@@ -234,7 +199,6 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       });
 
       setIsSelecting(true);
-      setError(null);
 
       try {
         logger.info("Calling onFileSelect callback", { fileName: file.name });
@@ -249,55 +213,42 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           fileName: file.name,
           error: error instanceof Error ? error.message : "Unknown error",
         });
-        const errorMessage =
-          translations.filePickerDialogUnexpectedError ||
-          "An unexpected error occurred";
-        logger.error("Setting error state during file selection", {
-          fileName: file.name,
-          errorMessage,
-        });
-        setError(errorMessage);
       } finally {
         setIsSelecting(false);
         logger.info("File selection process finished", { fileName: file.name });
       }
     },
-    [
-      onFileSelect,
-      onClose,
-      translations.filePickerDialogUnexpectedError,
-      currentPath,
-    ]
+    [onFileSelect, onClose, currentPath]
   );
 
   // Handle dialog close
   const handleClose = useCallback(() => {
     logger.info("FilePickerDialog close requested", {
-      isLoading,
+      loading,
       isSelecting,
       currentPath,
       selectedFile: selectedFile?.name,
     });
 
-    if (!isLoading && !isSelecting) {
+    if (!loading && !isSelecting) {
       logger.info("FilePickerDialog closing");
       onClose();
     } else {
       logger.warn("FilePickerDialog close blocked", {
-        reason: isLoading ? "loading" : "selecting",
+        reason: loading ? "loading" : "selecting",
       });
     }
-  }, [isLoading, isSelecting, onClose, currentPath, selectedFile?.name]);
+  }, [loading, isSelecting, onClose, currentPath, selectedFile?.name]);
 
   // Handle keyboard events
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.key === "Escape" && !isLoading && !isSelecting) {
+      if (event.key === "Escape" && !loading && !isSelecting) {
         event.preventDefault();
         handleClose();
       }
     },
-    [handleClose, isLoading, isSelecting]
+    [handleClose, loading, isSelecting]
   );
 
   // Navigate up one level
@@ -308,21 +259,34 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         fromPath: currentPath,
         toPath: parentPath,
       });
-      navigateToDirectory(parentPath);
+      setCurrentPath(parentPath);
+      setSelectedFile(null);
+      setQueryVariables({
+        input: {
+          path: parentPath,
+          limit: 1000,
+          offset: 0,
+        },
+      });
     } else {
       logger.warn("Cannot navigate up - already at root", { currentPath });
     }
-  }, [currentPath, navigateToDirectory]);
+  }, [currentPath]);
 
   // Refresh current directory
   const refreshDirectory = useCallback(() => {
     logger.info("Refreshing current directory", { currentPath });
-    loadItemsRef.current(currentPath);
-  }, [currentPath]);
+    // Evict the cache for this specific query and variables to force refetch
+    apolloClient.cache.evict({
+      id: "ROOT_QUERY",
+      fieldName: "listFiles",
+      args: queryVariables,
+    });
+    apolloClient.cache.gc();
+  }, [currentPath, apolloClient.cache, queryVariables]);
 
-  const dialogTitle =
-    title || translations.filePickerDialogTitle || "Select a file";
-  const canSelect = selectedFile && !isLoading && !isSelecting;
+  const dialogTitle = title || translations.filePickerDialogTitle;
+  const canSelect = selectedFile && !loading && !isSelecting;
 
   return (
     <MUI.Dialog
@@ -374,25 +338,25 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
             }}
           >
             <MUI.Typography variant="subtitle2" color="text.secondary">
-              {translations.filePickerDialogSelectFile || "Select a file"}
+              {translations.filePickerDialogSelectFile}
             </MUI.Typography>
             <MUI.Box sx={{ display: "flex", gap: 1 }}>
-              <MUI.Tooltip title={translations.moveDialogGoUp || "Go up"}>
+              <MUI.Tooltip title={translations.moveDialogGoUp}>
                 <span>
                   <MUI.IconButton
                     size="small"
                     onClick={navigateUp}
-                    disabled={!currentPath || isLoading}
+                    disabled={!currentPath || loading}
                   >
                     <ArrowUpwardIcon fontSize="small" />
                   </MUI.IconButton>
                 </span>
               </MUI.Tooltip>
-              <MUI.Tooltip title={translations.moveDialogRefresh || "Refresh"}>
+              <MUI.Tooltip title={translations.moveDialogRefresh}>
                 <MUI.IconButton
                   size="small"
                   onClick={refreshDirectory}
-                  disabled={isLoading}
+                  disabled={loading}
                 >
                   <RefreshIcon fontSize="small" />
                 </MUI.IconButton>
@@ -431,7 +395,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                     textDecoration: "underline",
                   },
                 }}
-                disabled={isLoading}
+                disabled={loading}
               >
                 {index === 0 && <HomeIcon fontSize="small" />}
                 {segment.name}
@@ -442,7 +406,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
         {/* Items List */}
         <MUI.Box sx={{ flex: 1, overflow: "auto" }}>
-          {isLoading ? (
+          {loading ? (
             <MUI.Box
               sx={{
                 display: "flex",
@@ -462,8 +426,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           ) : filteredItems.length === 0 ? (
             <MUI.Box sx={{ p: 3, textAlign: "center" }}>
               <MUI.Typography color="text.secondary">
-                {translations.filePickerDialogNoFiles ||
-                  "No files found in this folder"}
+                {translations.filePickerDialogNoFiles}
               </MUI.Typography>
             </MUI.Box>
           ) : (
@@ -526,7 +489,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                               variant="body2"
                               color="text.secondary"
                             >
-                              Folder
+                              {translations.folder}
                             </MUI.Typography>
                           </MUI.TableCell>
                         </MUI.TableRow>
@@ -543,7 +506,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                     variant="subtitle2"
                     sx={{ mb: 1, px: 2, color: "text.secondary" }}
                   >
-                    Files
+                    {translations.files}
                   </MUI.Typography>
                   <MUI.Box
                     sx={{
@@ -640,18 +603,6 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           )}
         </MUI.Box>
 
-        {/* Show message when there are only folders but no files */}
-        {filteredItems.length > 0 &&
-          files.length === 0 &&
-          folders.length > 0 && (
-            <MUI.Box sx={{ p: 3, textAlign: "center" }}>
-              <MUI.Typography variant="body2" color="text.secondary">
-                No files found in this folder. Navigate to a folder to browse
-                for files.
-              </MUI.Typography>
-            </MUI.Box>
-          )}
-
         {/* Selected File Info */}
         {selectedFile && (
           <MUI.Box
@@ -666,7 +617,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
               color="text.secondary"
               gutterBottom
             >
-              {translations.filePickerDialogSelectFile || "Selected file:"}
+              {translations.filePickerDialogSelectFile}
             </MUI.Typography>
             <MUI.Typography variant="body2" color="text.primary">
               {selectedFile.name}
@@ -690,14 +641,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
       >
         <MUI.Button
           onClick={handleClose}
-          disabled={isLoading || isSelecting}
+          disabled={loading || isSelecting}
           variant="outlined"
           sx={{
             minWidth: 80,
             borderRadius: 1,
           }}
         >
-          {translations.filePickerDialogCancel || "Cancel"}
+          {translations.filePickerDialogCancel}
         </MUI.Button>
         <MUI.Button
           onClick={() => {
@@ -722,10 +673,10 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           {isSelecting ? (
             <>
               <MUI.CircularProgress size={16} sx={{ mr: 1 }} />
-              {translations.selecting || "Selecting..."}
+              {translations.selecting}
             </>
           ) : (
-            translations.filePickerDialogSelect || "Select"
+            translations.filePickerDialogSelect
           )}
         </MUI.Button>
       </MUI.DialogActions>

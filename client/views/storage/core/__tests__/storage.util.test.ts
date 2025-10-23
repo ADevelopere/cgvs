@@ -1,6 +1,6 @@
+import { testLogger } from "@/lib/testlogger";
 import { execSync } from "child_process";
 import { readFileSync, writeFileSync } from "fs";
-import logger from "@/lib/logger";
 import { generateFileMD5 } from "../storage.util";
 
 // Node.js compatible MD5 function for testing
@@ -18,7 +18,7 @@ describe("generateFileMD5", () => {
     try {
       readFileSync(testImagePath);
     } catch {
-      logger.info("Creating test file...");
+      testLogger.info("Creating test file...");
       // Create a simple test image (1x1 pixel JPEG)
       const testImageBuffer = Buffer.from([
         0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
@@ -47,15 +47,15 @@ describe("generateFileMD5", () => {
         encoding: "utf8",
       });
       md5sumResult = md5sumOutput.split(" ")[0].trim();
-      logger.info("md5sum result:", md5sumResult);
+      testLogger.info("md5sum result:", md5sumResult);
     } catch (error) {
-      logger.error("Failed to run md5sum command:", error);
+      testLogger.error("Failed to run md5sum command:", error);
       throw error;
     }
 
     // Generate MD5 using Node.js compatible function
     const nodeMd5Result = await generateFileMD5Node(testImagePath);
-    logger.info("Node MD5 result:", nodeMd5Result);
+    testLogger.info("Node MD5 result:", nodeMd5Result);
 
     // Compare results
     expect(nodeMd5Result).toBe(md5sumResult);
@@ -66,7 +66,7 @@ describe("generateFileMD5", () => {
     try {
       readFileSync(testImagePath);
     } catch {
-      logger.info("Creating test file...");
+      testLogger.info("Creating test file...");
       const testImageBuffer = Buffer.from([
         0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
         0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, 0xff, 0xdb, 0x00, 0x43,

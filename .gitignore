@@ -9,6 +9,7 @@
 .env
 .env.backup
 .env.production
+.env.test
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -74,3 +75,9 @@ tsconfig.tsbuildinfo
 
 # Logs directory
 /logs/
+
+# Local storage files
+cgvs/data/files/
+
+# Test fixtures
+tests/fixtures/storage-test/

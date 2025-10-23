@@ -1,17 +1,54 @@
 import React from "react";
 import { Box, Fade } from "@mui/material";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
 import StorageFilters from "./StorageFilters";
 import StorageSelectionActions from "./StorageSelectionActions";
+import {
+  StorageItemUnion,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
+import { LoadingStates } from "@/client/views/storage/core/storage.type";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
+interface StorageToolbarProps {
+  selectedItems: string[];
+  searchMode: boolean;
+  searchResults: StorageItemUnion[];
+  loading: LoadingStates;
+  items: StorageItemUnion[];
+  params: Graphql.FilesListInput;
+  updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
+  clipboard: StorageClipboardState | null;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onMove: (paths: string[], destination: string) => Promise<boolean>;
+  clearSelection: () => void;
+}
 
 /**
  * Conditional toolbar container for the storage browser.
  * Switches between StorageFilters and StorageSelectionActions based on selection state.
  * Provides smooth transitions between the two states.
  */
-const StorageToolbar: React.FC = () => {
-  const { selectedItems } = useStorageUIStore();
-
+const StorageToolbar: React.FC<StorageToolbarProps> = ({
+  selectedItems,
+  searchMode,
+  searchResults,
+  loading,
+  items,
+  params,
+  updateParams,
+  clipboard,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  onMove,
+  clearSelection,
+}) => {
   const hasSelection = selectedItems.length > 0;
 
   return (
@@ -33,7 +70,7 @@ const StorageToolbar: React.FC = () => {
             visibility: hasSelection ? "hidden" : "visible",
           }}
         >
-          <StorageFilters />
+          <StorageFilters params={params} updateParams={updateParams} />
         </Box>
       </Fade>
 
@@ -48,7 +85,21 @@ const StorageToolbar: React.FC = () => {
             visibility: !hasSelection ? "hidden" : "visible",
           }}
         >
-          <StorageSelectionActions />
+          <StorageSelectionActions
+            selectedItems={selectedItems}
+            searchMode={searchMode}
+            searchResults={searchResults}
+            loading={loading}
+            items={items}
+            clipboard={clipboard}
+            onCopyItems={onCopyItems}
+            onCutItems={onCutItems}
+            onPasteItems={onPasteItems}
+            onRenameItem={onRenameItem}
+            onDeleteItems={onDeleteItems}
+            onMove={onMove}
+            clearSelection={clearSelection}
+          />
         </Box>
       </Fade>
     </Box>

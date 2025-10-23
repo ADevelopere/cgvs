@@ -16,14 +16,12 @@ import {
   Refresh as RefreshIcon,
   SelectAll as SelectAllIcon,
 } from "@mui/icons-material";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
-import { useStorageNavigation } from "@/client/views/storage/hooks/useStorageNavigation";
-import { useStorageDataOperations } from "@/client/views/storage/hooks/useStorageDataOperations";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
+import CreateFolderDialog from "@/client/views/storage/dialogs/CreateFolderDialog";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { StorageClipboardState } from "@/client/views/storage/core/storage.type";
 
 export interface ViewAreaMenuProps {
   anchorEl: HTMLElement | null;
@@ -34,6 +32,12 @@ export interface ViewAreaMenuProps {
     left: number;
   };
   onContextMenu?: (event: React.MouseEvent) => void;
+  params: Graphql.FilesListInput;
+  clipboard: StorageClipboardState | null;
+  onPasteItems: () => Promise<boolean>;
+  onRefresh: () => Promise<void>;
+  onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
+  selectAll: () => void
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
@@ -42,29 +46,30 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   onClose,
   anchorPosition,
   onContextMenu,
+  params,
+  clipboard,
+  onPasteItems,
+  onRefresh,
+  onCreateFolder,
+  selectAll,
 }) => {
   const theme = useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
-  const { params } = useStorageDataStore();
-  const { selectAll } = useStorageSelection();
-  const { clipboard, pasteItems } = useStorageClipboard();
-  const { refresh } = useStorageNavigation();
-  const { createFolder } = useStorageDataOperations();
   const { startUpload } = useStorageUploadOperations();
 
   const [isPasting, setIsPasting] = useState(false);
-  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [createFolderDialogOpen, setCreateFolderDialogOpen] = useState(false);
 
   // Handle menu actions
   const handlePaste = React.useCallback(async () => {
     setIsPasting(true);
-    const success = await pasteItems();
+    const success = await onPasteItems();
     setIsPasting(false);
     if (success) {
-      refresh();
+      onRefresh();
     }
     onClose();
-  }, [onClose, pasteItems, refresh]);
+  }, [onClose, onPasteItems, onRefresh]);
 
   const handleUploadFiles = React.useCallback(() => {
     // Create a file input element to trigger file selection
@@ -91,7 +96,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
           await startUpload(Array.from(files), params.path, {
             onComplete: () => {
               logger.info("Upload completed successfully");
-              refresh(); // Refresh the file list after upload
+              onRefresh(); // Refresh the file list after upload
             },
           });
 
@@ -106,26 +111,21 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
     input.click();
     document.body.removeChild(input);
     onClose();
-  }, [onClose, params.path, startUpload, refresh]);
+  }, [onClose, params.path, startUpload, onRefresh]);
 
-  const handleNewFolder = React.useCallback(async () => {
-    // Simple prompt for now - will be replaced with a proper dialog later
-    const folderName = prompt("Enter folder name:");
-    if (folderName?.trim()) {
-      setIsCreatingFolder(true);
-      const success = await createFolder(params.path, folderName.trim());
-      setIsCreatingFolder(false);
-      if (success) {
-        refresh();
-      }
-    }
+  const handleNewFolder = React.useCallback(() => {
+    setCreateFolderDialogOpen(true);
     onClose();
-  }, [createFolder, onClose, params.path, refresh]);
+  }, [onClose]);
+
+  const handleCreateFolderSuccess = React.useCallback(() => {
+    onRefresh();
+  }, [onRefresh]);
 
   const handleRefresh = React.useCallback(() => {
-    refresh();
+    onRefresh();
     onClose();
-  }, [onClose, refresh]);
+  }, [onClose, onRefresh]);
 
   const handleSelectAll = React.useCallback(() => {
     selectAll();
@@ -139,78 +139,90 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   );
 
   return (
-    <Menu
-      id="storage-view-area-menu"
-      anchorEl={anchorEl}
-      open={open}
-      onClose={onClose}
-      slotProps={{
-        paper: {
-          sx: {
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-            minWidth: 200,
+    <>
+      <Menu
+        id="storage-view-area-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={onClose}
+        slotProps={{
+          paper: {
+            sx: {
+              backgroundColor: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+              minWidth: 200,
+            },
           },
-        },
-        backdrop: {
-          onContextMenu: onContextMenu,
-        },
-      }}
-      // Position the menu at the exact cursor position
-      anchorReference="anchorPosition"
-      anchorPosition={anchorPosition}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-    >
-      <MenuItem onClick={handlePaste} disabled={!isPasteAvailable || isPasting}>
-        <ListItemIcon>
-          <PasteIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>
-          {isPasting ? translations.loading : translations.paste}
-        </ListItemText>
-      </MenuItem>
+          backdrop: {
+            onContextMenu: onContextMenu,
+          },
+        }}
+        // Position the menu at the exact cursor position
+        anchorReference="anchorPosition"
+        anchorPosition={anchorPosition}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem
+          onClick={handlePaste}
+          disabled={!isPasteAvailable || isPasting}
+        >
+          <ListItemIcon>
+            <PasteIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>
+            {isPasting ? translations.loading : translations.paste}
+          </ListItemText>
+        </MenuItem>
 
-      <Divider />
+        <Divider />
 
-      <MenuItem onClick={handleUploadFiles}>
-        <ListItemIcon>
-          <UploadIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>{translations.uploadFiles}</ListItemText>
-      </MenuItem>
+        <MenuItem onClick={handleUploadFiles}>
+          <ListItemIcon>
+            <UploadIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{translations.uploadFiles}</ListItemText>
+        </MenuItem>
 
-      <MenuItem onClick={handleNewFolder} disabled={isCreatingFolder}>
-        <ListItemIcon>
-          <NewFolderIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>
-          {isCreatingFolder ? translations.loading : translations.newFolder}
-        </ListItemText>
-      </MenuItem>
+        <MenuItem onClick={handleNewFolder}>
+          <ListItemIcon>
+            <NewFolderIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{translations.newFolder}</ListItemText>
+        </MenuItem>
 
-      <Divider />
+        <Divider />
 
-      <MenuItem onClick={handleRefresh}>
-        <ListItemIcon>
-          <RefreshIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>{translations.refresh}</ListItemText>
-      </MenuItem>
+        <MenuItem onClick={handleRefresh}>
+          <ListItemIcon>
+            <RefreshIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{translations.refresh}</ListItemText>
+        </MenuItem>
 
-      <MenuItem onClick={handleSelectAll}>
-        <ListItemIcon>
-          <SelectAllIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>{translations.selectAll}</ListItemText>
-      </MenuItem>
-    </Menu>
+        <MenuItem onClick={handleSelectAll}>
+          <ListItemIcon>
+            <SelectAllIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{translations.selectAll}</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Create Folder Dialog */}
+      <CreateFolderDialog
+        open={createFolderDialogOpen}
+        onClose={() => setCreateFolderDialogOpen(false)}
+        currentPath={params.path}
+        onSuccess={handleCreateFolderSuccess}
+        onCreateFolder={onCreateFolder}
+      />
+    </>
   );
 };
 

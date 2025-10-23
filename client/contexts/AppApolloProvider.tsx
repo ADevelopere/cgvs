@@ -158,14 +158,37 @@ export const AppApolloProvider: React.FC<{
       clearTimeout(timeoutId);
       const connected = response.ok;
 
+      // Log connection state change if it differs from current state
+      if (connected !== isConnectedRef.current) {
+        if (connected) {
+          logger.info("[Connectivity] Connection restored", {
+            url: CONNECTIVITY_CHECK_URL,
+            status: response.status,
+          });
+        } else {
+          logger.warn("[Connectivity] Connection lost", {
+            url: CONNECTIVITY_CHECK_URL,
+            status: response.status,
+          });
+        }
+      }
+
       // Update both state and ref
       setIsConnected(connected);
       isConnectedRef.current = connected;
       setLastChecked(new Date());
 
       return connected;
-    } catch {
-      // Only log unexpected errors, not network connectivity failures
+    } catch (error) {
+      // Log connection check failure
+      if (isConnectedRef.current) {
+        logger.warn(
+          "[Connectivity] Connection check failed, marking as disconnected",
+          {
+            error: error instanceof Error ? error.message : String(error),
+          }
+        );
+      }
       setIsConnected(false);
       isConnectedRef.current = false;
       setLastChecked(new Date());
@@ -178,6 +201,13 @@ export const AppApolloProvider: React.FC<{
   }, []); // No dependencies needed
 
   const setConnected = useCallback((connected: boolean) => {
+    // Log connection state change if it differs from current state
+    if (connected !== isConnectedRef.current) {
+      logger.info("[Connectivity] Connection state manually updated", {
+        from: isConnectedRef.current ? "connected" : "disconnected",
+        to: connected ? "connected" : "disconnected",
+      });
+    }
     setIsConnected(connected);
     isConnectedRef.current = connected;
   }, []);
@@ -255,6 +285,12 @@ export const AppApolloProvider: React.FC<{
               // Successful response means we're connected
               // Only update if we haven't confirmed connectivity yet
               if (!isConnectedRef.current) {
+                logger.info(
+                  "[Connectivity] Connection established via successful GraphQL operation",
+                  {
+                    operation: operation.operationName,
+                  }
+                );
                 setIsConnected(true);
                 isConnectedRef.current = true;
               }
@@ -310,10 +346,16 @@ export const AppApolloProvider: React.FC<{
     const errorLink = new ErrorLink(({ error, operation }) => {
       // Check if this is a network error using utility function
       if (isNetworkError(error)) {
-        logger.error(`[Network Error]`, {
-          message: error.message,
-          operation: operation.operationName,
-        });
+        logger.error(
+          `[Network Error] Connection lost during GraphQL operation`,
+          {
+            message: error.message,
+            operation: operation.operationName,
+            previousState: isConnectedRef.current
+              ? "connected"
+              : "disconnected",
+          }
+        );
 
         setIsConnected(false);
         isConnectedRef.current = false;
@@ -376,6 +418,9 @@ export const AppApolloProvider: React.FC<{
 
     const handleOnline = () => {
       // Debounce the connectivity check
+      logger.info(
+        "[Connectivity] Browser detected online state, verifying connection"
+      );
       clearTimeout(onlineTimeout);
       onlineTimeout = setTimeout(() => {
         checkConnectivity();
@@ -384,6 +429,7 @@ export const AppApolloProvider: React.FC<{
 
     const handleOffline = () => {
       clearTimeout(onlineTimeout);
+      logger.warn("[Connectivity] Browser detected offline state");
       setIsConnected(false);
       isConnectedRef.current = false;
       notifyIfDisconnected();

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, readdir, unlink, stat } from "fs/promises";
 import { join } from "path";
 
 type LogLevel = "log" | "info" | "warn" | "error" | "debug";
@@ -9,15 +9,51 @@ export abstract class BaseLogger {
   protected sessionId: string;
   protected logsDir: string;
   protected prefix: string;
+  private readonly maxLogAgeDays: number = 7; // Keep logs for 7 days
 
   constructor(prefix: string) {
     // Only enable in development
-    this.enabled =
-      process.env.NODE_ENV === "development" ||
-      process.env.NODE_ENV === undefined;
+    this.enabled = process.env.NODE_ENV !== "production";
     this.sessionId = this.generateSessionId();
     this.logsDir = join(process.cwd(), "logs");
     this.prefix = prefix;
+
+    // Clean up old log files on initialization
+    if (this.enabled) {
+      this.cleanupOldLogs();
+    }
+  }
+
+  private async cleanupOldLogs(): Promise<void> {
+    try {
+      // Create logs directory if it doesn't exist
+      await mkdir(this.logsDir, { recursive: true });
+
+      const files = await readdir(this.logsDir);
+      const now = Date.now();
+      const maxAge = this.maxLogAgeDays * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+
+      for (const file of files) {
+        // Only process .log files
+        if (!file.endsWith(".log")) continue;
+
+        const filePath = join(this.logsDir, file);
+
+        try {
+          const fileStats = await stat(filePath);
+          const fileAge = now - fileStats.mtime.getTime();
+
+          // Delete if older than max age
+          if (fileAge > maxAge) {
+            await unlink(filePath);
+          }
+        } catch {
+          // Ignore errors for individual files
+        }
+      }
+    } catch {
+      // Silently fail to avoid breaking logger initialization
+    }
   }
 
   private generateSessionId(): string {
@@ -74,7 +110,14 @@ export abstract class BaseLogger {
 
     const message = args
       .map(arg =>
-        typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
+        typeof arg === "object"
+          ? JSON.stringify(
+              arg,
+              (_, value) =>
+                typeof value === "bigint" ? value.toString() : value,
+              2
+            )
+          : String(arg)
       )
       .join(" ");
 

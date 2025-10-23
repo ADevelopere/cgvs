@@ -7,6 +7,4 @@ class TestLogger extends BaseLogger {
 }
 
 // Create singleton instance
-const logger = new TestLogger();
-
-export default logger;
+export const testLogger = new TestLogger();

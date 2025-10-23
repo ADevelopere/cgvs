@@ -19,27 +19,52 @@ import {
   ContentPaste as PasteIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { useStorageUIStore } from "@/client/views/storage/stores/useStorageUIStore";
-import { useStorageDataStore } from "@/client/views/storage/stores/useStorageDataStore";
-import { useStorageSelection } from "@/client/views/storage/hooks/useStorageSelection";
-import { useStorageClipboard } from "@/client/views/storage/hooks/useStorageClipboard";
 import { useAppTranslation } from "@/client/locale";
-import { StorageItem } from "@/client/views/storage/hooks/storage.type";
+import {
+  StorageItemUnion,
+  StorageClipboardState,
+} from "@/client/views/storage/core/storage.type";
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
 import RenameDialog from "../dialogs/RenameDialog";
+import { LoadingStates } from "@/client/views/storage/core/storage.type";
+
+interface StorageSelectionActionsProps {
+  selectedItems: string[];
+  searchMode: boolean;
+  searchResults: StorageItemUnion[];
+  loading: LoadingStates;
+  items: StorageItemUnion[];
+  clipboard: StorageClipboardState | null;
+  onCopyItems: (items: StorageItemUnion[]) => void;
+  onCutItems: (items: StorageItemUnion[]) => void;
+  onPasteItems: () => Promise<boolean>;
+  onRenameItem: (path: string, newName: string) => Promise<boolean>;
+  onDeleteItems: (paths: string[]) => Promise<boolean>;
+  onMove: (paths: string[], destination: string) => Promise<boolean>;
+  clearSelection: () => void;
+}
 
 /**
  * Selection action toolbar component for the storage browser.
  * Displays action buttons when one or more items are selected.
  * Provides download, move, delete, rename, copy, cut, and paste operations.
  */
-const StorageSelectionActions: React.FC = () => {
-  const { selectedItems, searchMode, searchResults, loading } =
-    useStorageUIStore();
-  const { items } = useStorageDataStore();
-  const { clearSelection } = useStorageSelection();
-  const { clipboard, copyItems, cutItems, pasteItems } = useStorageClipboard();
+const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
+  selectedItems,
+  searchMode,
+  searchResults,
+  loading,
+  items,
+  clipboard,
+  onCopyItems,
+  onCutItems,
+  onPasteItems,
+  onRenameItem,
+  onDeleteItems,
+  onMove,
+  clearSelection,
+}) => {
   const { ui: translations } = useAppTranslation("storageTranslations");
 
   // Dialog state
@@ -51,7 +76,7 @@ const StorageSelectionActions: React.FC = () => {
   const currentItems = searchMode ? searchResults : items;
 
   // Get selected item objects
-  const selectedItemObjects: StorageItem[] = currentItems.filter(item =>
+  const selectedItemObjects: StorageItemUnion[] = currentItems.filter(item =>
     selectedItems.includes(item.path)
   );
 
@@ -113,17 +138,17 @@ const StorageSelectionActions: React.FC = () => {
 
   // Handle copy action
   const handleCopy = () => {
-    copyItems(selectedItemObjects);
+    onCopyItems(selectedItemObjects);
   };
 
   // Handle cut action
   const handleCut = () => {
-    cutItems(selectedItemObjects);
+    onCutItems(selectedItemObjects);
   };
 
   // Handle paste action
   const handlePaste = async () => {
-    await pasteItems();
+    await onPasteItems();
   };
 
   // Check if download is available for selected items
@@ -294,6 +319,7 @@ const StorageSelectionActions: React.FC = () => {
           open={deleteDialogOpen}
           onClose={handleCloseDeleteDialog}
           items={selectedItemObjects}
+          onDelete={onDeleteItems}
         />
 
         {/* Move To Dialog */}
@@ -301,6 +327,7 @@ const StorageSelectionActions: React.FC = () => {
           open={moveDialogOpen}
           onClose={handleCloseMoveDialog}
           items={selectedItemObjects}
+          onMove={onMove}
         />
 
         {/* Rename Dialog */}
@@ -308,6 +335,7 @@ const StorageSelectionActions: React.FC = () => {
           open={renameDialogOpen}
           onClose={handleCloseRenameDialog}
           item={isSingleSelection ? selectedItemObjects[0] : null}
+          onRename={onRenameItem}
         />
       </>
     </Box>
