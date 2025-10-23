@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Box,
   CircularProgress,
@@ -38,7 +38,10 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
     fetchPolicy: "cache-and-network",
   });
 
-  const groups = groupsData?.templateRecipientGroupsByTemplateId || [];
+  const groups = useMemo(
+    () => groupsData?.templateRecipientGroupsByTemplateId || [],
+    [groupsData]
+  );
 
   // Auto-select first group if no group is selected
   useEffect(() => {
