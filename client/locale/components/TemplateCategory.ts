@@ -156,6 +156,7 @@ export type TemplateCategoryTranslation = {
   // Template management tabs
   tabBasicInfo: string;
   tabVariables: string;
+  tabRecipientGroups: string;
   tabRecipients: string;
   tabEditor: string;
   tabPreview: string;
