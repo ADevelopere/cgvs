@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# This script automates the installation of Oh My Zsh, a theme, plugins, and fonts.
-# It is designed for Debian/Ubuntu-based systems but can be adapted.
-# chmod +x ./scripts/install_ohmyzsh.sh && ./scripts/install_ohmyzsh.sh
+# This script automates the installation of Oh My Zsh, Powerlevel10k theme, plugins, and fonts.
+# It also applies a pre-configured Powerlevel10k setup (if .p10k.zsh exists in the same directory).
+# Designed for Debian/Ubuntu-based systems but can be adapted.
+# Usage: chmod +x ./scripts/install_ohmyzsh.sh && ./scripts/install_ohmyzsh.sh
 
 echo "🚀 Starting the ultimate Zsh setup..."
 
@@ -26,17 +27,34 @@ echo "✒️ Step 3/7: Installing Powerlevel10k recommended fonts (MesloLGS NF).
 # Create a local fonts directory if it doesn't exist
 mkdir -p ~/.local/share/fonts
 # Download the four font variants
+echo "  📥 Downloading font files..."
 wget -qO ~/.local/share/fonts/"MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
 wget -qO ~/.local/share/fonts/"MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
 wget -qO ~/.local/share/fonts/"MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
 wget -qO ~/.local/share/fonts/"MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 # Refresh the font cache
-fc-cache -f -v
+echo "  🔄 Refreshing font cache..."
+fc-cache -f -v > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "  ✅ Fonts installed successfully"
+else
+    echo "  ⚠️  Font cache refresh failed, but fonts may still work"
+fi
 
 # --- Step 4: Install Powerlevel10k Theme ---
 echo "🎨 Step 4/7: Installing Powerlevel10k theme..."
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM}/themes/powerlevel10k
+if [ -d "${ZSH_CUSTOM}/themes/powerlevel10k" ]; then
+  echo "  ✔️ Powerlevel10k is already installed. Skipping installation."
+else
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM}/themes/powerlevel10k
+  if [ $? -eq 0 ]; then
+    echo "  ✅ Successfully installed Powerlevel10k"
+  else
+    echo "  ❌ Failed to install Powerlevel10k"
+    exit 1
+  fi
+fi
 
 # --- Step 5: Install Plugins ---
 echo "🔌 Step 5/7: Installing zsh plugins..."
@@ -46,7 +64,7 @@ install_plugin() {
     local plugin_name=$1
     local repo_url=$2
     local install_path="${ZSH_CUSTOM}/plugins/${plugin_name}"
-    
+
     if [ -d "$install_path" ]; then
         echo "  ✔️ Plugin '$plugin_name' already installed, skipping..."
     else
@@ -65,7 +83,7 @@ install_plugin() {
 add_plugin_to_zshrc() {
     local plugin_name=$1
     local zshrc_file="$HOME/.zshrc"
-    
+
     # Check if plugin is already in the plugins array
     if grep -q "plugins=.*${plugin_name}" "$zshrc_file"; then
         echo "  ✔️ Plugin '$plugin_name' already configured in .zshrc"
@@ -85,8 +103,15 @@ install_plugin "zsh-autocomplete" "https://github.com/marlonrichert/zsh-autocomp
 
 # --- Step 6: Configure .zshrc ---
 echo "📝 Step 6/7: Configuring .zshrc to enable theme and plugins..."
-# Set ZSH_THEME to Powerlevel10k
-sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+# Set ZSH_THEME to Powerlevel10k (works with any existing theme)
+sed -i 's/^ZSH_THEME="[^"]*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+
+# Verify the theme was changed successfully
+if grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' ~/.zshrc; then
+    echo "  ✅ Theme successfully changed to Powerlevel10k"
+else
+    echo "  ⚠️  Warning: Theme change may have failed. Please check your .zshrc file."
+fi
 
 # Add all installed plugins to .zshrc configuration
 echo "🔧 Configuring plugins in .zshrc..."
@@ -95,15 +120,37 @@ add_plugin_to_zshrc "zsh-syntax-highlighting"
 add_plugin_to_zshrc "fast-syntax-highlighting"
 add_plugin_to_zshrc "zsh-autocomplete"
 
+# Install Powerlevel10k configuration
+echo "⚙️  Applying Powerlevel10k configuration..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+P10K_CONFIG="${SCRIPT_DIR}/.p10k.zsh"
+
+if [ -f "$P10K_CONFIG" ]; then
+    echo "  📋 Copying pre-configured .p10k.zsh..."
+    cp "$P10K_CONFIG" ~/.p10k.zsh
+
+    # Ensure p10k config is sourced in .zshrc
+    if ! grep -q "source ~/.p10k.zsh" ~/.zshrc && ! grep -q '\[[ ! -f ~/.p10k.zsh \]\] || source ~/.p10k.zsh' ~/.zshrc; then
+        echo "  📝 Adding p10k config to .zshrc..."
+        echo "" >> ~/.zshrc
+        echo "# To customize prompt, run \`p10k configure\` or edit ~/.p10k.zsh." >> ~/.zshrc
+        echo "[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh" >> ~/.zshrc
+    fi
+
+    echo "  ✅ Powerlevel10k configuration applied successfully"
+else
+    echo "  ⚠️  Pre-configured .p10k.zsh not found at: $P10K_CONFIG"
+    echo "  💡 You'll need to run 'p10k configure' manually after installation"
+fi
+
 # --- Step 7: Set Zsh as Default Shell ---
-echo "셸 Step 7/7: Setting Zsh as the default shell..."
-if [ "$EUID" -eq 0 ]; then
-    echo "  🔧 Running with sudo - changing default shell to zsh..."
-    chsh -s $(which zsh)
+echo "🐚 Step 7/7: Setting Zsh as the default shell..."
+# Try to change the default shell to zsh
+if sudo chsh -s $(which zsh) $(whoami) 2>/dev/null; then
     echo "  ✅ Default shell changed to zsh"
 else
-    echo "  ⚠️  Not running with sudo - skipping shell change"
-    echo "  💡 To change your default shell, run: sudo chsh -s \$(which zsh)"
+    echo "  ⚠️  Could not change default shell automatically"
+    echo "  💡 To change your default shell manually, run: sudo chsh -s \$(which zsh) \$(whoami)"
 fi
 
 # --- Final Instructions ---
@@ -111,18 +158,31 @@ echo ""
 echo "✅ Installation Complete!"
 echo ""
 echo "#####################################################################"
-echo "### ⚠️ IMPORTANT FINAL STEPS - PLEASE READ CAREFULLY ⚠️"
+echo "### ⚠️ IMPORTANT NEXT STEPS - PLEASE READ CAREFULLY ⚠️"
 echo "#####################################################################"
 echo ""
-echo "1. **LOG OUT and LOG BACK IN** to your system for the shell change to take effect."
+echo "To activate your new Zsh setup:"
 echo ""
-echo "2. **CONFIGURE TERMINAL FONT**: Open your terminal's Preferences/Settings"
-echo "   and change the font to 'MesloLGS NF'. This is REQUIRED for icons to display correctly."
+echo "1. **CLOSE THIS TERMINAL** completely and open a new terminal window"
+echo "   OR run: exec zsh"
 echo ""
-echo "3. **RUN THE CONFIGURATION WIZARD**: The first time you open the terminal after"
-echo "   re-logging, the Powerlevel10k configuration wizard should start automatically."
-echo "   If it does not, run it manually by typing:"
-echo "   p10k configure"
+echo "2. **CONFIGURE TERMINAL FONT** (if using a graphical terminal):"
+echo "   Open terminal Preferences/Settings and set font to 'MesloLGS NF'"
+echo "   This is REQUIRED for icons to display correctly."
+echo ""
+echo "3. **POWERLEVEL10K CONFIGURATION**:"
+if [ -f "$P10K_CONFIG" ]; then
+    echo "   ✅ Pre-configured theme has been applied automatically!"
+    echo "   To customize, run: p10k configure"
+else
+    echo "   The Powerlevel10k wizard should start automatically."
+    echo "   If not, manually run: p10k configure"
+fi
+echo ""
+echo "Note: If p10k command is not found, ensure:"
+echo "  - You're running zsh (check with: echo \$SHELL)"
+echo "  - Powerlevel10k theme is set in ~/.zshrc"
+echo "  - Source the config with: source ~/.zshrc"
 echo ""
 echo "#####################################################################"
 echo ""
