@@ -64,13 +64,21 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   const groups: readonly TemplateRecipientGroup[] = React.useMemo(() => {
     const fetchedGroups: TemplateRecipientGroup[] =
       data?.templateRecipientGroupsByTemplateId ?? [];
-    //  setSelectedGroup to the first group if it is not in the fetched groups
-    if (!fetchedGroups.some(g => g.id === selectefGroupRef.current?.id)) {
-      setSelectedGroup(fetchedGroups[0] ?? null);
-    }
-    firstInitializingRef.current = false;
     return fetchedGroups;
-  }, [data?.templateRecipientGroupsByTemplateId, setSelectedGroup]);
+  }, [data?.templateRecipientGroupsByTemplateId]);
+
+  // Auto-select first group if current selection is not in fetched groups
+  React.useEffect(() => {
+    if (firstInitializingRef.current) {
+      firstInitializingRef.current = false;
+      return;
+    }
+
+    // Check if selected group exists in the fetched groups
+    if (!groups.some(g => g.id === selectefGroupRef.current?.id)) {
+      setSelectedGroup(groups[0] ?? null);
+    }
+  }, [groups, setSelectedGroup]);
 
   // Show error state if there's an error
   if (groupsError) {

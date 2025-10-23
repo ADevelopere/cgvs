@@ -158,7 +158,8 @@ export const templateCategory: TemplateCategoryTranslation = {
   // Template management tabs
   tabBasicInfo: "معلومات أساسية",
   tabVariables: "المتغيرات",
-  tabRecipients: "المستلمين",
+  tabRecipientGroups: "المجموعات",
+  tabRecipients: "الطلاب",
   tabEditor: "المحرر",
   tabPreview: "المعاينة",
 
