@@ -44,10 +44,7 @@ export const STUDENT_TABLE_COLUMNS: BaseColumn[] = [
     filterable: true,
     resizable: true,
     widthStorageKey: "student_table_student_gender_column_width",
-    options: [
-      { label: "ذكر", value: "Male" },
-      { label: "أنثى", value: "Female" },
-    ],
+    // Options will be added dynamically in useStudentTable to use translations
   },
   {
     id: "nationality",

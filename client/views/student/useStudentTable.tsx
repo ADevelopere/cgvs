@@ -19,6 +19,7 @@ import { useStudentOperations } from "./useStudentOperations";
 export const useStudentTable = () => {
   const { partialUpdateStudent } = useStudentOperations();
   const strings = useAppTranslation("studentTranslations");
+  const genderStrings = useAppTranslation("genderTranslations");
 
   // Validator functions
   const validateFullName = useCallback(
@@ -63,7 +64,7 @@ export const useStudentTable = () => {
   const validateGender = useCallback(
     (value?: string | null): string | null => {
       if (!value) return null;
-      return ["MALE", "FEMALE"].includes(value.toLocaleUpperCase())
+      return ["MALE", "FEMALE", "OTHER"].includes(value.toUpperCase())
         ? null
         : strings?.genderInvalid;
     },
@@ -106,21 +107,22 @@ export const useStudentTable = () => {
     ): Promise<void> => {
       const input: Graphql.PartialStudentUpdateInput = {
         id: rowId,
-        [columnId]: value,
       };
 
       // Type conversion based on column
       switch (columnId) {
         case "dateOfBirth":
-          input.dateOfBirth = value
-            ? new Date(value).toISOString().split("T")[0]
-            : null;
+          input.dateOfBirth = value ? new Date(value).toISOString() : null;
           break;
         case "gender":
           input.gender = value as Graphql.Gender;
           break;
         case "nationality":
           input.nationality = value as Graphql.CountryCode;
+          break;
+        default:
+          // For all other columns, use the value directly
+          input[columnId as keyof Graphql.PartialStudentUpdateInput] = value;
           break;
       }
 
@@ -177,9 +179,17 @@ export const useStudentTable = () => {
           getIsValid: getValidatorForColumn(column.accessor as string),
         };
 
+        // Add gender options dynamically with translations
+        if (column.id === "gender") {
+          enhancedColumn.options = [
+            { label: genderStrings.male, value: "MALE" },
+            { label: genderStrings.female, value: "FEMALE" },
+          ];
+        }
+
         return enhancedColumn;
       }),
-    [handleUpdateCell, getValidatorForColumn]
+    [handleUpdateCell, getValidatorForColumn, genderStrings]
   );
 
   return {
