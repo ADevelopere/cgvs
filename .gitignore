@@ -81,3 +81,5 @@ cgvs/data/files/
 
 # Test fixtures
 tests/fixtures/storage-test/
+
+core.*
