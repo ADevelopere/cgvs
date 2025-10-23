@@ -6,6 +6,7 @@ export * from "./gender";
 export * from "./language";
 export * from "./recipient";
 export * from "./recipientGroup";
+export * from "./recipientVariableData";
 export * from "./templateCategory";
 export * from "./error";
 export * from "./student";

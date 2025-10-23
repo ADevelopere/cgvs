@@ -23,6 +23,11 @@ import {
 } from "./DataCell.util";
 import { useAppTranslation } from "@/client/locale";
 import { CountryCode } from "@/client/graphql/generated/gql/graphql";
+import TextVariableCellRenderer from "@/client/views/template/manage/data/components/cellRenderers/TextVariableCellRenderer";
+import NumberVariableCellRenderer from "@/client/views/template/manage/data/components/cellRenderers/NumberVariableCellRenderer";
+import DateVariableCellRenderer from "@/client/views/template/manage/data/components/cellRenderers/DateVariableCellRenderer";
+import SelectVariableCellRenderer from "@/client/views/template/manage/data/components/cellRenderers/SelectVariableCellRenderer";
+import ReadyStatusCellRenderer from "@/client/views/template/manage/data/components/cellRenderers/ReadyStatusCellRenderer";
 
 // Props for the main component
 type CellContentRendererProps = {
@@ -87,6 +92,11 @@ const DefaultViewRenderer: React.FC<{
 const viewRenderers: Record<string, React.FC<any>> = {
   select: SelectViewRenderer,
   country: CountryViewRenderer,
+  templateText: TextVariableCellRenderer,
+  templateNumber: NumberVariableCellRenderer,
+  templateDate: DateVariableCellRenderer,
+  templateSelect: SelectVariableCellRenderer,
+  readyStatus: ReadyStatusCellRenderer,
 };
 
 // --- Edit Mode Renderers ---
@@ -252,6 +262,11 @@ const editRenderers: Record<string, React.FC<any>> = {
   select: SelectEditRenderer,
   country: CountryEditRenderer,
   phone: PhoneEditRenderer,
+  templateText: TextVariableCellRenderer,
+  templateNumber: NumberVariableCellRenderer,
+  templateDate: DateVariableCellRenderer,
+  templateSelect: SelectVariableCellRenderer,
+  readyStatus: ReadyStatusCellRenderer,
 };
 
 // --- Main Component ---

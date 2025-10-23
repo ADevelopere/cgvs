@@ -422,8 +422,10 @@ input FolderCreateInput {
 enum Gender {
   FEMALE
   MALE
-  OTHER
 }
+
+"""A type representing arbitrary JSON values"""
+scalar JSON
 
 input LoginInput {
   email: Email!
@@ -464,6 +466,9 @@ type Mutation {
   partiallyUpdateStudent(input: PartialStudentUpdateInput!): Student
   refreshToken: RefreshTokenResponse
   renameFile(input: FileRenameInput!): FileOperationResult
+
+  """Update variable values. Throws on validation errors."""
+  setRecipientVariableValues(recipientGroupItemId: Int!, values: [VariableValueInput!]!): RecipientWithVariableValues
   setStorageItemProtection(input: StorageItemProtectionUpdateInput!): FileOperationResult
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
@@ -532,6 +537,16 @@ type Query {
   mainTemplateCategory: TemplateCategory!
   me: User
   recipient(id: Int!): TemplateRecipient
+
+  """
+  Get variable values for a recipient. Auto-fixes invalid data by setting to null.
+  """
+  recipientVariableValues(recipientGroupItemId: Int!): RecipientWithVariableValues
+
+  """
+  Get all recipients with values. Auto-fixes invalid data by setting to null. Supports pagination.
+  """
+  recipientVariableValuesByGroup(limit: Int, offset: Int, recipientGroupId: Int!): RecipientVariableValuesGroupResult
   recipientsByGroupId(recipientGroupId: Int!): [TemplateRecipient!]!
   recipientsByGroupIdFiltered(filterArgs: StudentFilterArgs, orderBy: [StudentsOrderByClause!], paginationArgs: PaginationArgs, recipientGroupId: Int!): RecipientsWithFiltersResponse!
   recipientsByStudentId(studentId: Int!): [TemplateRecipient!]!
@@ -573,6 +588,22 @@ type Query {
   templatesConfigs: TemplatesConfigs
   user(id: Int!): User
   users: [User!]
+}
+
+type RecipientVariableValuesGroupResult {
+  data: [RecipientWithVariableValues!]
+  total: Int
+}
+
+type RecipientWithVariableValues {
+  recipientGroupItemId: Int
+  studentId: Int
+  studentName: String
+
+  """
+  Map of variableId to value. Use template variables query to get type/constraint info. All template variables are present (null if not set).
+  """
+  variableValues: JSON
 }
 
 type RecipientsWithFiltersResponse {
@@ -1045,4 +1076,12 @@ type User {
   id: Int
   name: String
   updatedAt: DateTime
+}
+
+input VariableValueInput {
+  """
+  Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like '["opt1","opt2"]'
+  """
+  value: String!
+  variableId: Int!
 }

@@ -160,6 +160,7 @@ export const templateCategory: TemplateCategoryTranslation = {
   tabVariables: "المتغيرات",
   tabRecipientGroups: "المجموعات",
   tabRecipients: "الطلاب",
+  tabDataManagement: "إدارة البيانات",
   tabEditor: "المحرر",
   tabPreview: "المعاينة",
 

@@ -8,6 +8,7 @@ export * from "./Header";
 export * from "./Language";
 export * from "./Recipient";
 export * from "./RecipientGroup";
+export * from "./RecipientVariableData";
 export * from "./Storage";
 export * from "./Student";
 export * from "./TemplateCategory";
