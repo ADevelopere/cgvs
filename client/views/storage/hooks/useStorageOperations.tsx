@@ -10,6 +10,7 @@ import { useStorageActions } from "./useStorageActions";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageApollo } from "../contexts/StorageApolloContext";
+import { useStorageMutations } from "./useStorageMutations";
 
 // ============================================================================
 // Operations Value Type
@@ -66,6 +67,8 @@ export const useStorageOperations = (): StorageOperations => {
   const apollo = useStorageApollo();
   const apolloRef = useRef(apollo);
   apolloRef.current = apollo;
+
+  const mutations = useStorageMutations();
 
   // Get state and state actionsRef.current
   const actions = useStorageActions();
@@ -280,7 +283,7 @@ export const useStorageOperations = (): StorageOperations => {
   const rename = useCallback(
     async (path: string, newName: string): Promise<boolean> => {
       try {
-        const result = await apolloRef.current.renameFile({
+        const result = await mutations.renameFile({
           input: {
             currentPath: path,
             newName,
@@ -309,13 +312,13 @@ export const useStorageOperations = (): StorageOperations => {
         return false;
       }
     },
-    [showNotification, managementTranslations]
+    [showNotification, managementTranslations, mutations]
   );
 
   const remove = useCallback(
     async (paths: string[]): Promise<boolean> => {
       try {
-        const result = await apolloRef.current.deleteStorageItems({
+        const result = await mutations.deleteStorageItems({
           input: {
             paths,
             force: false, // Default to false, could be made configurable
@@ -359,7 +362,15 @@ export const useStorageOperations = (): StorageOperations => {
         return false;
       }
     },
-    [showNotification, managementTranslations]
+    [
+      mutations,
+      showNotification,
+      managementTranslations.successfullyDeleted,
+      managementTranslations.item,
+      managementTranslations.items,
+      managementTranslations.deletedPartial,
+      managementTranslations.failedToDeleteItems,
+    ]
   );
 
   const move = useCallback(
@@ -368,7 +379,7 @@ export const useStorageOperations = (): StorageOperations => {
       destinationPath: string
     ): Promise<boolean> => {
       try {
-        const result = await apolloRef.current.moveStorageItems({
+        const result = await mutations.moveStorageItems({
           input: {
             sourcePaths,
             destinationPath,
@@ -412,7 +423,15 @@ export const useStorageOperations = (): StorageOperations => {
         return false;
       }
     },
-    [showNotification, managementTranslations]
+    [
+      mutations,
+      showNotification,
+      managementTranslations.successfullyMoved,
+      managementTranslations.item,
+      managementTranslations.items,
+      managementTranslations.movedPartial,
+      managementTranslations.failedToMoveItems,
+    ]
   );
 
   const copy = useCallback(
@@ -421,7 +440,7 @@ export const useStorageOperations = (): StorageOperations => {
       destinationPath: string
     ): Promise<boolean> => {
       try {
-        const result = await apolloRef.current.copyStorageItems({
+        const result = await mutations.copyStorageItems({
           input: {
             sourcePaths,
             destinationPath,
@@ -465,13 +484,21 @@ export const useStorageOperations = (): StorageOperations => {
         return false;
       }
     },
-    [showNotification, managementTranslations]
+    [
+      mutations,
+      showNotification,
+      managementTranslations.successfullyCopied,
+      managementTranslations.item,
+      managementTranslations.items,
+      managementTranslations.copiedPartial,
+      managementTranslations.failedToCopyItems,
+    ]
   );
 
   const createFolder = useCallback(
     async (path: string, name: string): Promise<boolean> => {
       try {
-        const result = await apolloRef.current.createFolder({
+        const result = await mutations.createFolder({
           input: { path: path + "/" + name },
         });
 
@@ -497,7 +524,12 @@ export const useStorageOperations = (): StorageOperations => {
         return false;
       }
     },
-    [showNotification, managementTranslations]
+    [
+      mutations,
+      showNotification,
+      managementTranslations.successfullyCreatedFolder,
+      managementTranslations.failedToCreateFolder,
+    ]
   );
 
   const search = useCallback(
@@ -725,7 +757,6 @@ export const useStorageOperations = (): StorageOperations => {
     await navigateTo(parentPath, currentParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // NO DEPENDENCIES - completely stable
-
 
   // ============================================================================
   // CLIPBOARD OPERATIONS (from useStorageClipboard)

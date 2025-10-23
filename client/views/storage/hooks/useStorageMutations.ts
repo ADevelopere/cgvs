@@ -1,13 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useMutation } from "@apollo/client/react";
 import * as Document from "../core/storage.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { ApolloClient } from "@apollo/client";
-import {
-  useMutationWrapper,
-} from "@/client/graphql/utils";
 
 type StorageMutations = {
   copyStorageItems: (variables: {
@@ -45,38 +42,95 @@ type StorageMutations = {
   >;
 };
 
-
 export const useStorageMutations = (): StorageMutations => {
   // Create mutation hooks - extract just the mutation function (first element)
   // The mutation function from useMutation is stable and doesn't recreate
-  const copyStorageItems = useMutationWrapper(
-    useMutation(Document.copyStorageItemsMutationDocument)
+  const [copyStorageItemsMutation] = useMutation(
+    Document.copyStorageItemsMutationDocument
   );
-  const createFolder = useMutationWrapper(
-    useMutation(Document.createFolderMutationDocument)
+  const [createFolderMutation] = useMutation(
+    Document.createFolderMutationDocument
   );
-  const deleteFile = useMutationWrapper(
-    useMutation(Document.deleteFileMutationDocument)
+  const [deleteFileMutation] = useMutation(Document.deleteFileMutationDocument);
+  const [deleteStorageItemsMutation] = useMutation(
+    Document.deleteStorageItemsMutationDocument
   );
-  const deleteStorageItems = useMutationWrapper(
-    useMutation(Document.deleteStorageItemsMutationDocument)
+  const [generateUploadSignedUrlMutation] = useMutation(
+    Document.generateUploadSignedUrlMutationDocument
   );
-  const generateUploadSignedUrl = useMutationWrapper(
-    useMutation(Document.generateUploadSignedUrlMutationDocument)
+  const [moveStorageItemsMutation] = useMutation(
+    Document.moveStorageItemsMutationDocument
   );
-  const moveStorageItems = useMutationWrapper(
-    useMutation(Document.moveStorageItemsMutationDocument)
+  const [renameFileMutation] = useMutation(Document.renameFileMutationDocument);
+  const [setStorageItemProtectionMutation] = useMutation(
+    Document.setStorageItemProtectionMutationDocument
   );
-  const renameFile = useMutationWrapper(
-    useMutation(Document.renameFileMutationDocument)
-  );
-  const setStorageItemProtection = useMutationWrapper(
-    useMutation(Document.setStorageItemProtectionMutationDocument)
-  );
-  const updateDirectoryPermissions = useMutationWrapper(
-    useMutation(Document.updateDirectoryPermissionsMutationDocument)
+  const [updateDirectoryPermissionsMutation] = useMutation(
+    Document.updateDirectoryPermissionsMutationDocument
   );
 
+  const copyStorageItems = useCallback(
+    async (variables: { input: Graphql.StorageItemsCopyInput }) => {
+      return copyStorageItemsMutation({ variables });
+    },
+    [copyStorageItemsMutation]
+  );
+
+  const createFolder = useCallback(
+    async (variables: { input: Graphql.FolderCreateInput }) => {
+      return createFolderMutation({ variables });
+    },
+    [createFolderMutation]
+  );
+
+  const deleteFile = useCallback(
+    async (variables: { path: string }) => {
+      return deleteFileMutation({ variables });
+    },
+    [deleteFileMutation]
+  );
+
+  const deleteStorageItems = useCallback(
+    async (variables: { input: Graphql.StorageItemsDeleteInput }) => {
+      return deleteStorageItemsMutation({ variables });
+    },
+    [deleteStorageItemsMutation]
+  );
+
+  const generateUploadSignedUrl = useCallback(
+    async (variables: { input: Graphql.UploadSignedUrlGenerateInput }) => {
+      return generateUploadSignedUrlMutation({ variables });
+    },
+    [generateUploadSignedUrlMutation]
+  );
+
+  const moveStorageItems = useCallback(
+    async (variables: { input: Graphql.StorageItemsMoveInput }) => {
+      return moveStorageItemsMutation({ variables });
+    },
+    [moveStorageItemsMutation]
+  );
+
+  const renameFile = useCallback(
+    async (variables: { input: Graphql.FileRenameInput }) => {
+      return renameFileMutation({ variables });
+    },
+    [renameFileMutation]
+  );
+
+  const setStorageItemProtection = useCallback(
+    async (variables: { input: Graphql.StorageItemProtectionUpdateInput }) => {
+      return setStorageItemProtectionMutation({ variables });
+    },
+    [setStorageItemProtectionMutation]
+  );
+
+  const updateDirectoryPermissions = useCallback(
+    async (variables: { input: Graphql.DirectoryPermissionsUpdateInput }) => {
+      return updateDirectoryPermissionsMutation({ variables });
+    },
+    [updateDirectoryPermissionsMutation]
+  );
   return useMemo(
     () => ({
       copyStorageItems,
