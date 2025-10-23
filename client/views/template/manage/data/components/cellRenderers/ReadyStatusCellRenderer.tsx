@@ -58,13 +58,14 @@ const getTooltipMessage = (
     switch (variable.type) {
       case "TEXT": {
         const textVar = variable as Graphql.TemplateTextVariable;
-        if (textVar.minLength && value.length < textVar.minLength) {
+        const textValue = typeof value === "string" ? value : String(value);
+        if (textVar.minLength && textValue.length < textVar.minLength) {
           validationError = `Too short (min ${textVar.minLength})`;
-        } else if (textVar.maxLength && value.length > textVar.maxLength) {
+        } else if (textVar.maxLength && textValue.length > textVar.maxLength) {
           validationError = `Too long (max ${textVar.maxLength})`;
         } else if (textVar.pattern) {
           const regex = new RegExp(textVar.pattern);
-          if (!regex.test(value)) {
+          if (!regex.test(textValue)) {
             validationError = "Pattern mismatch";
           }
         }
@@ -72,7 +73,7 @@ const getTooltipMessage = (
       }
       case "NUMBER": {
         const numberVar = variable as Graphql.TemplateNumberVariable;
-        const numValue = typeof value === "string" ? parseFloat(value) : value;
+        const numValue = typeof value === "number" ? value : typeof value === "string" ? parseFloat(value) : Number(value);
         if (isNaN(numValue)) {
           validationError = "Invalid number";
         } else if (
@@ -92,7 +93,7 @@ const getTooltipMessage = (
       }
       case "DATE": {
         const dateVar = variable as Graphql.TemplateDateVariable;
-        const dateValue = value instanceof Date ? value : new Date(value);
+        const dateValue = value instanceof Date ? value : new Date(String(value));
         if (isNaN(dateValue.getTime())) {
           validationError = "Invalid date";
         } else if (dateVar.minDate && dateValue < new Date(dateVar.minDate)) {
@@ -107,7 +108,7 @@ const getTooltipMessage = (
         const values = Array.isArray(value) ? value : [value];
         const options = selectVar.options || [];
         for (const selectedValue of values) {
-          if (!options.includes(selectedValue)) {
+          if (!options.includes(selectedValue as string)) {
             validationError = "Invalid selection";
             break;
           }

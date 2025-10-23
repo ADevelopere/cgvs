@@ -54,8 +54,14 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     fetchPolicy: "cache-first",
   });
 
-  const variables = variablesData?.templateVariablesByTemplateId || [];
-  const recipients = data?.recipientVariableValuesByGroup?.data || [];
+  const variables = useMemo(
+    () => variablesData?.templateVariablesByTemplateId || [],
+    [variablesData]
+  );
+  const recipients = useMemo(
+    () => data?.recipientVariableValuesByGroup?.data || [],
+    [data]
+  );
   const total = data?.recipientVariableValuesByGroup?.total || 0;
 
   // Calculate page info for pagination
