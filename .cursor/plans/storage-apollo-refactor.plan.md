@@ -572,4 +572,3 @@ After implementation, verify:
 - [ ] Update prop interfaces and implementations for all child components (StorageItemsView, StorageBreadcrumb, StorageDirectoryTree, StorageItem, StorageToolbar, ViewAreaMenu, StorageSearch)
 - [ ] Update StorageOperations type and remove unused types from storage.type.ts
 - [ ] Test navigation, refresh, mutations, search, and focused item behavior
-
