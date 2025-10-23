@@ -28,6 +28,7 @@ export interface PothosTypes {
   Scalars: {
     DateTime: { Input: Date; Output: Date | string };
     Date: { Input: Date; Output: Date };
+    JSON: { Input: unknown; Output: unknown };
     // use following scalars for input types only for automatic validation
     PhoneNumber: { Input: PhoneNumber; Output: PhoneNumber };
     Email: { Input: Email; Output: Email };

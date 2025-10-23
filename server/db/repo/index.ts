@@ -3,6 +3,7 @@ export { TemplateCategoryRepository } from "./templateCategory.repository";
 export { TemplateVariableRepository } from "./templateVariable.repository";
 export { RecipientGroupRepository } from "./recipientGroup.repository";
 export { RecipientRepository } from "./recipient.repository";
+export { RecipientVariableValueRepository } from "./recipientVariableValue.repository";
 
 export { StudentRepository } from "./student.repository";
 
