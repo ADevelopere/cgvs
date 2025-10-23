@@ -11,3 +11,4 @@ export * from "./recipient.types";
 export * from "./recipientGroup.types";
 export * from "./templateVariable.types";
 export * from "./templateCategory.types";
+export * from "./recipientVariableValue.types";

@@ -1,6 +1,7 @@
 import "./auth.query";
 import "./recipient.query";
 import "./recipientGroup.query";
+import "./recipientVariableValue.query";
 import "./storage.query";
 import "./student.query";
 import "./template.query";

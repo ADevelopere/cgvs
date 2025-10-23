@@ -3,6 +3,7 @@ export * from "./enum.pothos";
 export * from "./pagination.objects";
 export * from "./recipient.pothos";
 export * from "./recipientGroup.pothos";
+export * from "./recipientVariableValue.pothos";
 export * from "./storage.pothos";
 export * from "./student.pothos";
 export * from "./template.pothos";
