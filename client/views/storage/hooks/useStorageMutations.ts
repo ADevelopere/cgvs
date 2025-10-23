@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useApolloClient } from "@apollo/client/react";
 import * as Document from "../core/storage.documents";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { ApolloClient } from "@apollo/client";
@@ -40,9 +40,31 @@ type StorageMutations = {
   }) => Promise<
     ApolloClient.MutateResult<Graphql.UpdateDirectoryPermissionsMutation>
   >;
+  evictListFilesCache: (path?: string) => void;
+  evictDirectoryChildrenCache: (path?: string) => void;
 };
 
 export const useStorageMutations = (): StorageMutations => {
+  const apolloClient = useApolloClient();
+
+  // Cache eviction helpers
+  const evictListFilesCache = useCallback((path?: string) => {
+    apolloClient.cache.evict({
+      id: 'ROOT_QUERY',
+      fieldName: 'listFiles',
+      args: { input: { path: path || "" } }
+    });
+    apolloClient.cache.gc();
+  }, [apolloClient]);
+
+  const evictDirectoryChildrenCache = useCallback((path?: string) => {
+    apolloClient.cache.evict({
+      id: 'ROOT_QUERY',
+      fieldName: 'directoryChildren',
+      args: { path: path || undefined }
+    });
+    apolloClient.cache.gc();
+  }, [apolloClient]);
   // Create mutation hooks - extract just the mutation function (first element)
   // The mutation function from useMutation is stable and doesn't recreate
   const [copyStorageItemsMutation] = useMutation(
@@ -142,6 +164,8 @@ export const useStorageMutations = (): StorageMutations => {
       renameFile,
       setStorageItemProtection,
       updateDirectoryPermissions,
+      evictListFilesCache,
+      evictDirectoryChildrenCache,
     }),
     [
       copyStorageItems,
@@ -153,6 +177,8 @@ export const useStorageMutations = (): StorageMutations => {
       renameFile,
       setStorageItemProtection,
       updateDirectoryPermissions,
+      evictListFilesCache,
+      evictDirectoryChildrenCache,
     ]
   );
 };

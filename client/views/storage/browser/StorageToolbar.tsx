@@ -6,14 +6,13 @@ import {
   StorageItemUnion,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
-import { LoadingStates } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 interface StorageToolbarProps {
   selectedItems: string[];
   searchMode: boolean;
   searchResults: StorageItemUnion[];
-  loading: LoadingStates;
+  loading: boolean;
   items: StorageItemUnion[];
   params: Graphql.FilesListInput;
   updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
@@ -36,7 +35,7 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
   selectedItems,
   searchMode,
   searchResults,
-  loading,
+  // loading, // TODO: Use loading state for UI feedback
   items,
   params,
   updateParams,
@@ -89,7 +88,6 @@ const StorageToolbar: React.FC<StorageToolbarProps> = ({
             selectedItems={selectedItems}
             searchMode={searchMode}
             searchResults={searchResults}
-            loading={loading}
             items={items}
             clipboard={clipboard}
             onCopyItems={onCopyItems}

@@ -5,17 +5,32 @@ import StorageToolbar from "./StorageToolbar";
 import StorageItemsView from "./StorageItemsView";
 import { useStorageOperations } from "@/client/views/storage/hooks/useStorageOperations";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
-import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageActions } from "../hooks/useStorageActions";
+import { StorageItemUnion } from "../core/storage.type";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
+
+interface StorageMainViewProps {
+  params: Graphql.FilesListInput;
+  items: StorageItemUnion[];
+  pagination: Graphql.PageInfo | null;
+  loading: boolean;
+  error: unknown;
+}
+
 /**
  * Main content pane for the storage browser.
  * Assembles the breadcrumb navigation, toolbar, and items view into a cohesive layout.
  * This component represents the right pane in the split-pane layout.
  */
-const StorageMainView: React.FC = () => {
+const StorageMainView: React.FC<StorageMainViewProps> = ({
+  params,
+  items,
+  pagination,
+  loading,
+  error,
+}) => {
   const {
     searchMode,
-    loading,
     selectedItems,
     lastSelectedItem,
     focusedItem,
@@ -23,18 +38,16 @@ const StorageMainView: React.FC = () => {
     sortDirection,
     searchResults,
     viewMode,
-    operationErrors,
     clipboard,
   } = useStorageUIStore();
 
-  const { params, items } = useStorageDataStore();
-
+  const actions = useStorageActions();
   const {
     setViewMode,
     updateParams,
     copyItems,
     cutItems,
-    selectAll,
+    setSelectedItems,
     toggleSelect,
     clearSelection,
     selectRange,
@@ -42,7 +55,12 @@ const StorageMainView: React.FC = () => {
     setSortBy,
     setSortDirection,
     getSortedItems,
-  } = useStorageActions();
+  } = actions;
+
+  // Create selectAll handler with access to items
+  const selectAll = React.useCallback(() => {
+    setSelectedItems(items.map(item => item.path));
+  }, [items, setSelectedItems]);
 
   // Get operations from context
   const {
@@ -90,6 +108,10 @@ const StorageMainView: React.FC = () => {
       {/* Main Items Display Area */}
       <Box sx={{ flex: 1, overflow: "hidden" }}>
         <StorageItemsView
+          items={items}
+          pagination={pagination}
+          loading={loading}
+          error={error}
           searchMode={searchMode}
           viewMode={viewMode}
           selectedItems={selectedItems}
@@ -98,8 +120,6 @@ const StorageMainView: React.FC = () => {
           sortBy={sortBy}
           sortDirection={sortDirection}
           setViewMode={setViewMode}
-          loading={loading}
-          operationErrors={operationErrors}
           params={params}
           onNavigate={navigateTo}
           onRefresh={refresh}

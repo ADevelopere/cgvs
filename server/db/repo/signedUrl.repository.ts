@@ -14,7 +14,9 @@ export namespace SignedUrlRepository {
     data: SignedUrlEntityInput
   ): Promise<SignedUrlEntity> => {
     const [result] = await db.insert(signedUrls).values(data).returning();
-    logger.info(`Created signed URL: ${result.id} for path: ${result.filePath}`);
+    logger.info(
+      `Created signed URL: ${result.id} for path: ${result.filePath}`
+    );
     return result;
   };
 

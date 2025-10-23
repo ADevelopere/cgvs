@@ -1,4 +1,5 @@
 <!-- 3eb745c8-c433-4068-8052-1374c19baf0a d8d79d21-bf73-430d-8d23-f93c22597018 -->
+
 # Storage Module Apollo Query Refactor
 
 ## Overview
@@ -19,7 +20,7 @@ Refactor storage module to use Apollo useQuery pattern instead of imperative fet
 
 Remove from state and functions:
 
-- `items: StorageItemUnion[]` 
+- `items: StorageItemUnion[]`
 - `pagination: PageInfo | null`
 - `stats: StorageStats | null` (complete removal)
 - `setItems()`, `setPagination()`, `setStats()`
@@ -69,27 +70,33 @@ import { useApolloClient } from "@apollo/client";
 
 export const useStorageMutations = () => {
   const apolloClient = useApolloClient();
-  
-  const evictListFilesCache = useCallback((path?: string) => {
-    apolloClient.cache.evict({
-      id: 'ROOT_QUERY',
-      fieldName: 'listFiles',
-      args: { input: { path: path || "" } }
-    });
-    apolloClient.cache.gc();
-  }, [apolloClient]);
-  
-  const evictDirectoryChildrenCache = useCallback((path?: string) => {
-    apolloClient.cache.evict({
-      id: 'ROOT_QUERY',
-      fieldName: 'directoryChildren',
-      args: { path: path || undefined }
-    });
-    apolloClient.cache.gc();
-  }, [apolloClient]);
-  
+
+  const evictListFilesCache = useCallback(
+    (path?: string) => {
+      apolloClient.cache.evict({
+        id: "ROOT_QUERY",
+        fieldName: "listFiles",
+        args: { input: { path: path || "" } },
+      });
+      apolloClient.cache.gc();
+    },
+    [apolloClient]
+  );
+
+  const evictDirectoryChildrenCache = useCallback(
+    (path?: string) => {
+      apolloClient.cache.evict({
+        id: "ROOT_QUERY",
+        fieldName: "directoryChildren",
+        args: { path: path || undefined },
+      });
+      apolloClient.cache.gc();
+    },
+    [apolloClient]
+  );
+
   // ... rest of mutations
-}
+};
 ```
 
 Update each mutation wrapper to call eviction on success:
@@ -129,13 +136,16 @@ Replace `navigateTo()` with simple param update:
 
 ```typescript
 const navigateTo = useCallback((path: string) => {
-  logger.info("navigateTo called", { fromPath: dataStoreRef.current.params.path, toPath: path });
-  
+  logger.info("navigateTo called", {
+    fromPath: dataStoreRef.current.params.path,
+    toPath: path,
+  });
+
   if (dataStoreRef.current.params.path === path) {
     logger.info("Skipping navigation - already at target path", { path });
     return;
   }
-  
+
   const newParams = { ...dataStoreRef.current.params, path, offset: 0 };
   actionsRef.current.setParams(newParams);
   logger.info("Params updated, useQuery will refetch", { newParams });
@@ -153,7 +163,8 @@ const goUp = useCallback(() => {
   }
   const cleanPath = currentPath.replace(/\/+$/, "");
   const pathSegments = cleanPath.split("/").filter(s => s !== "");
-  const parentPath = pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : "";
+  const parentPath =
+    pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : "";
   navigateTo(parentPath);
 }, [navigateTo]);
 ```
@@ -164,11 +175,11 @@ Update `refresh()` - cache eviction only:
 const refresh = useCallback(() => {
   const currentParams = dataStoreRef.current.params;
   logger.info("Manual refresh - evicting cache", { path: currentParams.path });
-  
+
   apolloRef.current.client.cache.evict({
-    id: 'ROOT_QUERY',
-    fieldName: 'listFiles',
-    args: { input: currentParams }
+    id: "ROOT_QUERY",
+    fieldName: "listFiles",
+    args: { input: currentParams },
   });
   apolloRef.current.client.cache.gc();
   logger.info("Cache evicted, useQuery will refetch");
@@ -192,14 +203,23 @@ Change `StorageOperations` type to remove fetch functions and make navigation sy
 ```typescript
 type StorageOperations = {
   // Remove: fetchList, fetchDirectoryChildren, fetchStats, search
-  
+
   // Update to sync:
   navigateTo: (path: string) => void;
   goUp: () => void;
   refresh: () => void;
-  
+
   // Keep async mutation wrappers unchanged
-  rename, remove, move, copy, createFolder, renameItem, deleteItems, moveItems, copyItemsTo, pasteItems
+  rename;
+  remove;
+  move;
+  copy;
+  createFolder;
+  renameItem;
+  deleteItems;
+  moveItems;
+  copyItemsTo;
+  pasteItems;
 };
 ```
 
@@ -227,13 +247,13 @@ import { listFilesQueryDocument } from "../core/storage.documents";
 
 const StorageMainView: React.FC = () => {
   const { params } = useStorageDataStore();
-  
+
   const { data, loading, error } = useQuery(listFilesQueryDocument, {
     variables: { input: params },
   });
-  
+
   const items = useMemo(() => data?.listFiles?.items || [], [data?.listFiles?.items]);
-  
+
   const pagination = useMemo(() => {
     if (!data?.listFiles) return null;
     return {
@@ -246,14 +266,14 @@ const StorageMainView: React.FC = () => {
       lastPage: Math.ceil(data.listFiles.totalCount / data.listFiles.limit),
     };
   }, [data?.listFiles]);
-  
+
   // Clear focused item if it's not in current items
   useEffect(() => {
     if (focusedItem && !items.find(item => item.path === focusedItem)) {
       actions.setFocusedItem(null);
     }
   }, [items, focusedItem, actions]);
-  
+
   // Pass items, pagination, loading, error as props to children
   return (
     <Box>
@@ -277,7 +297,7 @@ import { searchFilesQueryDocument } from "./core/storage.documents";
 export const StorageBrowserView: React.FC = () => {
   const { searchMode } = useStorageUIStore();
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const { data: searchData, loading: searchLoading } = useQuery(
     searchFilesQueryDocument,
     {
@@ -285,9 +305,9 @@ export const StorageBrowserView: React.FC = () => {
       skip: !searchMode || !searchTerm,
     }
   );
-  
+
   const searchResults = useMemo(() => searchData?.searchFiles?.items || [], [searchData?.searchFiles?.items]);
-  
+
   return (
     <StorageSearch
       searchMode={searchMode}
@@ -343,7 +363,7 @@ Remove store access for items, pagination, loading. Use props instead.
 ```typescript
 interface StorageBreadcrumbProps {
   params: Graphql.FilesListInput;
-  onNavigate: (path: string) => void;  // Remove currentParams
+  onNavigate: (path: string) => void; // Remove currentParams
 }
 ```
 
@@ -352,7 +372,7 @@ interface StorageBreadcrumbProps {
 ```typescript
 interface StorageDirectoryTreeProps {
   params: Graphql.FilesListInput;
-  onNavigate: (path: string) => void;  // Remove currentParams
+  onNavigate: (path: string) => void; // Remove currentParams
 }
 ```
 
@@ -372,8 +392,8 @@ interface StorageItemProps {
 
 ```typescript
 interface StorageToolbarProps {
-  items: StorageItemUnion[];  // From props
-  loading: boolean;  // From props
+  items: StorageItemUnion[]; // From props
+  loading: boolean; // From props
   // ... other props
 }
 ```
@@ -382,7 +402,7 @@ interface StorageToolbarProps {
 
 ```typescript
 interface ViewAreaMenuProps {
-  onRefresh: () => void;  // Remove async
+  onRefresh: () => void; // Remove async
   // ... other props
 }
 ```

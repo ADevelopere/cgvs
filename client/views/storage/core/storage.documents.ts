@@ -193,9 +193,54 @@ export const searchFilesQueryDocument: TypedDocumentNode<
     ) {
       hasMore
       items {
-        isProtected
         name
         path
+        isProtected
+        ... on DirectoryInfo {
+          createdAt
+          fileCount
+          folderCount
+          isFromBucket
+          isProtected
+          lastModified
+          name
+          path
+          permissions {
+            allowCreateSubDirs
+            allowDelete
+            allowDeleteFiles
+            allowMove
+            allowMoveFiles
+            allowUploads
+          }
+          protectChildren
+          totalSize
+        }
+        ... on FileInfo {
+          contentType
+          createdAt
+          directoryPath
+          fileType
+          isFromBucket
+          isInUse
+          isProtected
+          isPublic
+          lastModified
+          md5Hash
+          mediaLink
+          name
+          path
+          size
+          url
+          usages {
+            createdAt
+            filePath
+            id
+            referenceId
+            referenceTable
+            usageType
+          }
+        }
       }
       limit
       offset

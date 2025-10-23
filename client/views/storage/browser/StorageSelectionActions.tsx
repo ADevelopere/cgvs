@@ -27,13 +27,10 @@ import {
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
 import RenameDialog from "../dialogs/RenameDialog";
-import { LoadingStates } from "@/client/views/storage/core/storage.type";
-
 interface StorageSelectionActionsProps {
   selectedItems: string[];
   searchMode: boolean;
   searchResults: StorageItemUnion[];
-  loading: LoadingStates;
   items: StorageItemUnion[];
   clipboard: StorageClipboardState | null;
   onCopyItems: (items: StorageItemUnion[]) => void;
@@ -54,7 +51,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   selectedItems,
   searchMode,
   searchResults,
-  loading,
   items,
   clipboard,
   onCopyItems,
@@ -197,7 +193,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
               <Button
                 startIcon={<DownloadIcon />}
                 onClick={handleDownload}
-                disabled={loading.delete || loading.move}
               >
                 {translations.download}
               </Button>
@@ -209,7 +204,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
             <Button
               startIcon={<MoveIcon />}
               onClick={handleMoveTo}
-              disabled={loading.delete || loading.move}
             >
               {translations.moveTo || "Move to"}
             </Button>
@@ -221,7 +215,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
               <Button
                 startIcon={<EditIcon />}
                 onClick={handleRename}
-                disabled={loading.rename}
               >
                 {translations.rename}
               </Button>
@@ -233,7 +226,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
             <Button
               startIcon={<DeleteIcon />}
               onClick={handleDelete}
-              disabled={loading.delete}
               color="error"
             >
               {translations.delete}
@@ -249,7 +241,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           <Tooltip title={translations.copy}>
             <IconButton
               onClick={handleCopy}
-              disabled={loading.copy}
               size="small"
             >
               <CopyIcon fontSize="small" />
@@ -260,7 +251,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           <Tooltip title={translations.cut}>
             <IconButton
               onClick={handleCut}
-              disabled={loading.move}
               size="small"
             >
               <CutIcon fontSize="small" />
@@ -278,7 +268,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
             <span>
               <IconButton
                 onClick={handlePaste}
-                disabled={!hasClipboard || loading.copy || loading.move}
+                disabled={!hasClipboard}
                 size="small"
               >
                 <PasteIcon fontSize="small" />
@@ -287,12 +277,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           </Tooltip>
         </ButtonGroup>
 
-        {/* Loading Indicator */}
-        {(loading.delete || loading.move || loading.copy || loading.rename) && (
-          <Typography variant="caption" color="text.secondary">
-            {translations.loading}...
-          </Typography>
-        )}
       </Stack>
 
       {/* Clipboard Status */}

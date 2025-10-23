@@ -19,10 +19,7 @@ interface StorageItemGridProps {
   onContextMenu?: (event: React.MouseEvent) => void;
   params: Graphql.FilesListInput;
   clipboard: StorageClipboardState | null;
-  onNavigate: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   onCopyItems: (items: StorageItemUnion[]) => void;
   onCutItems: (items: StorageItemUnion[]) => void;

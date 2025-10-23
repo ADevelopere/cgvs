@@ -16,41 +16,13 @@ export type StorageClipboardState = {
   items: StorageItemUnion[];
 };
 
-export type LoadingStates = {
-  fetchList: boolean;
-  rename: boolean;
-  delete: boolean;
-  move: boolean;
-  copy: boolean;
-  createFolder: boolean;
-  search: boolean;
-};
-
-export type OperationErrors = {
-  fetchList?: string;
-  rename?: string;
-  delete?: string;
-  move?: string;
-  copy?: string;
-  createFolder?: string;
-  search?: string;
-};
-
-
 export type StorageActions = {
   // Data actions
-  setItems: (items: StorageItemUnion[]) => void;
-  setPagination: (pagination: Graphql.PageInfo | null) => void;
   setParams: (params: Graphql.FilesListInput) => void;
   updateParams: (partial: Partial<Graphql.FilesListInput>) => void;
-  setStats: (stats: Graphql.StorageStats | null) => void;
-  navigateToDirectory: (data: {
-    params: Graphql.FilesListInput;
-    items: StorageItemUnion[];
-    pagination: Graphql.PageInfo;
-  }) => void;
 
   // Selection actions
+  setSelectedItems: (items: string[]) => void;
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
@@ -69,16 +41,7 @@ export type StorageActions = {
   // Sorting actions
   setSortBy: (field: string) => void;
   setSortDirection: (direction: Graphql.OrderSortDirection) => void;
-  getSortedItems: () => StorageItemUnion[];
-
-  // Loading and error actions
-  updateLoading: (
-    key: keyof LoadingStates,
-    value: boolean | string | null
-  ) => void;
-  updateError: (key: keyof OperationErrors, error?: string) => void;
-  clearErrors: () => void;
-  clearNavigationState: () => void;
+  getSortedItems: (items: StorageItemUnion[]) => StorageItemUnion[];
 
   // Reset actions
   resetData: () => void;

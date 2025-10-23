@@ -31,7 +31,7 @@ interface StorageBreadcrumbProps {
   /**
    * Navigation handler from parent
    */
-  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
+  onNavigate: (path: string) => void;
 }
 
 /**
@@ -56,10 +56,10 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
       if (onNavigateToPath) {
         onNavigateToPath(path);
       } else {
-        onNavigate(path, params);
+        onNavigate(path);
       }
     },
-    [onNavigateToPath, onNavigate, params]
+    [onNavigateToPath, onNavigate]
   );
 
   // Split path into segments, filtering out empty strings

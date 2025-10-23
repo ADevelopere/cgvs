@@ -3,8 +3,6 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
   StorageItemUnion,
   ViewMode,
-  LoadingStates,
-  OperationErrors,
   StorageActions,
 } from "../core/storage.type";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
@@ -24,14 +22,6 @@ export const useStorageActions = (): StorageActions => {
   // DATA ACTIONS
   // ============================================================================
 
-  const setItems = useCallback((items: StorageItemUnion[]) => {
-    useStorageDataStore.getState().setItems(items);
-  }, []);
-
-  const setPagination = useCallback((pagination: Graphql.PageInfo | null) => {
-    useStorageDataStore.getState().setPagination(pagination);
-  }, []);
-
   const setParams = useCallback((params: Graphql.FilesListInput) => {
     useStorageDataStore.getState().setParams(params);
   }, []);
@@ -42,24 +32,6 @@ export const useStorageActions = (): StorageActions => {
       useStorageDataStore
         .getState()
         .setParams({ ...currentParams, ...partial });
-    },
-    []
-  );
-
-  const setStats = useCallback((stats: Graphql.StorageStats | null) => {
-    useStorageDataStore.getState().setStats(stats);
-  }, []);
-
-  const navigateToDirectory = useCallback(
-    (data: {
-      params: Graphql.FilesListInput;
-      items: StorageItemUnion[];
-      pagination: Graphql.PageInfo;
-    }) => {
-      const dataStore = useStorageDataStore.getState();
-      dataStore.setParams(data.params);
-      dataStore.setItems(data.items);
-      dataStore.setPagination(data.pagination);
     },
     []
   );
@@ -81,10 +53,13 @@ export const useStorageActions = (): StorageActions => {
     setLastSelectedItem(path);
   }, []);
 
+  const setSelectedItems = useCallback((items: string[]) => {
+    useStorageUIStore.getState().setSelectedItems(items);
+  }, []);
+
   const selectAll = useCallback(() => {
-    const items = useStorageDataStore.getState().items;
-    const { setSelectedItems } = useStorageUIStore.getState();
-    setSelectedItems(items.map(item => item.path));
+    // This is a placeholder - components with access to items should handle selection
+    // by calling setSelectedItems directly with mapped item paths
   }, []);
 
   const clearSelection = useCallback(() => {
@@ -163,10 +138,9 @@ export const useStorageActions = (): StorageActions => {
     []
   );
 
-  const getSortedItems = useCallback((): StorageItemUnion[] => {
+  const getSortedItems = useCallback((items: StorageItemUnion[]): StorageItemUnion[] => {
     const { searchMode, searchResults, sortBy, sortDirection } =
       useStorageUIStore.getState();
-    const { items } = useStorageDataStore.getState();
 
     const currentItems = searchMode ? searchResults : items;
 
@@ -218,39 +192,6 @@ export const useStorageActions = (): StorageActions => {
     });
   }, []);
 
-  // ============================================================================
-  // LOADING AND ERROR ACTIONS
-  // ============================================================================
-
-  const updateLoading = useCallback(
-    (key: keyof LoadingStates, value: boolean | string | null) => {
-      const { loading, setLoading } = useStorageUIStore.getState();
-      setLoading({ ...loading, [key]: value });
-    },
-    []
-  );
-
-  const updateError = useCallback(
-    (key: keyof OperationErrors, error?: string) => {
-      const { operationErrors, setOperationErrors } =
-        useStorageUIStore.getState();
-      setOperationErrors({ ...operationErrors, [key]: error });
-    },
-    []
-  );
-
-  const clearErrors = useCallback(() => {
-    useStorageUIStore.getState().setOperationErrors({});
-  }, []);
-
-  const clearNavigationState = useCallback(() => {
-    const uiStore = useStorageUIStore.getState();
-    uiStore.setSelectedItems([]);
-    uiStore.setLastSelectedItem(null);
-    uiStore.setSearchMode(false);
-    uiStore.setSearchResults([]);
-  }, []);
-
 
   // ============================================================================
   // RESET ACTIONS
@@ -276,14 +217,11 @@ export const useStorageActions = (): StorageActions => {
   return useMemo(
     () => ({
       // Data actions
-      setItems,
-      setPagination,
       setParams,
       updateParams,
-      setStats,
-      navigateToDirectory,
 
       // Selection actions
+      setSelectedItems,
       toggleSelect,
       selectAll,
       clearSelection,
@@ -304,12 +242,6 @@ export const useStorageActions = (): StorageActions => {
       setSortDirection,
       getSortedItems,
 
-      // Loading and error actions
-      updateLoading,
-      updateError,
-      clearErrors,
-      clearNavigationState,
-
       // Reset actions
       resetData,
       resetUI,
@@ -317,32 +249,25 @@ export const useStorageActions = (): StorageActions => {
     }),
     [
       clearClipboard,
-      clearErrors,
-      clearNavigationState,
       clearSelection,
       copyItems,
       cutItems,
       getSortedItems,
-      navigateToDirectory,
       resetAll,
       resetData,
       resetUI,
       selectAll,
       selectRange,
       setFocusedItem,
-      setItems,
       setLastSelectedItem,
-      setPagination,
       setParams,
       setSearchMode,
       setSearchResults,
+      setSelectedItems,
       setSortBy,
       setSortDirection,
-      setStats,
       setViewMode,
       toggleSelect,
-      updateError,
-      updateLoading,
       updateParams,
     ]
   );
