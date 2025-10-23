@@ -85,6 +85,7 @@ export const ManagementTabList: React.FC<ManagementTabListProps> = ({
             <Tab label={strings.tabVariables} value="variables" />
             <Tab label={strings.tabRecipientGroups} value="recipients" />
             <Tab label={strings.tabRecipients} value="recipientsManagement" />
+            <Tab label={strings.tabDataManagement} value="data" />
             <Tab label={strings.tabEditor} value="editor" />
             <Tab label={strings.tabPreview} value="preview" />
           </MuiTabList>

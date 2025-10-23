@@ -10,6 +10,7 @@ export type TemplateManagementTabType =
   | "editor"
   | "recipients"
   | "recipientsManagement"
+  | "data"
   | "preview";
 
 /**
@@ -50,6 +51,7 @@ const initialTabErrors: Record<
   editor: undefined,
   recipients: undefined,
   recipientsManagement: undefined,
+  data: undefined,
   preview: undefined,
 };
 
@@ -117,6 +119,7 @@ export function isValidTab(tab: string): tab is TemplateManagementTabType {
     "editor",
     "recipients",
     "recipientsManagement",
+    "data",
     "preview",
   ].includes(tab);
 }

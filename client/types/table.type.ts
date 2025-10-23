@@ -7,7 +7,12 @@ export type ColumnTypes =
   | "boolean"
   | "country"
   | "phone"
-  | "custom";
+  | "custom"
+  | "templateText"
+  | "templateNumber"
+  | "templateDate"
+  | "templateSelect"
+  | "readyStatus";
 
 export type BaseColumn = {
   id: string;
@@ -23,6 +28,18 @@ export type BaseColumn = {
   maxWidth?: number;
   widthStorageKey?: string;
   options?: { label: string; value: any }[]; // For select type columns
+  // Template variable specific properties
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  minValue?: number;
+  maxValue?: number;
+  decimalPlaces?: number;
+  minDate?: string;
+  maxDate?: string;
+  format?: string;
+  multiple?: boolean;
 };
 
 export type EditableColumn = BaseColumn & {

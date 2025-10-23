@@ -20,6 +20,8 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
   /** A type representing a validated email address */
   Email: { input: any; output: any; }
+  /** A type representing arbitrary JSON values */
+  JSON: { input: any; output: any; }
   /** A type representing a validated phone number */
   PhoneNumber: { input: any; output: any; }
 };
@@ -439,8 +441,7 @@ export type FolderCreateInput = {
 
 export type Gender =
   | 'FEMALE'
-  | 'MALE'
-  | 'OTHER';
+  | 'MALE';
 
 export type LoginInput = {
   email: Scalars['Email']['input'];
@@ -483,6 +484,8 @@ export type Mutation = {
   partiallyUpdateStudent?: Maybe<Student>;
   refreshToken?: Maybe<RefreshTokenResponse>;
   renameFile?: Maybe<FileOperationResult>;
+  /** Update variable values. Throws on validation errors. */
+  setRecipientVariableValues?: Maybe<RecipientWithVariableValues>;
   setStorageItemProtection?: Maybe<FileOperationResult>;
   suspendTemplate?: Maybe<Template>;
   unsuspendTemplate?: Maybe<Template>;
@@ -627,6 +630,12 @@ export type MutationRenameFileArgs = {
 };
 
 
+export type MutationSetRecipientVariableValuesArgs = {
+  recipientGroupItemId: Scalars['Int']['input'];
+  values: Array<VariableValueInput>;
+};
+
+
 export type MutationSetStorageItemProtectionArgs = {
   input: StorageItemProtectionUpdateInput;
 };
@@ -732,6 +741,10 @@ export type Query = {
   mainTemplateCategory: TemplateCategory;
   me?: Maybe<User>;
   recipient?: Maybe<TemplateRecipient>;
+  /** Get variable values for a recipient. Auto-fixes invalid data by setting to null. */
+  recipientVariableValues?: Maybe<RecipientWithVariableValues>;
+  /** Get all recipients with values. Auto-fixes invalid data by setting to null. Supports pagination. */
+  recipientVariableValuesByGroup?: Maybe<RecipientVariableValuesGroupResult>;
   recipientsByGroupId: Array<TemplateRecipient>;
   recipientsByGroupIdFiltered: RecipientsWithFiltersResponse;
   recipientsByStudentId: Array<TemplateRecipient>;
@@ -791,6 +804,18 @@ export type QueryListFilesArgs = {
 
 export type QueryRecipientArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryRecipientVariableValuesArgs = {
+  recipientGroupItemId: Scalars['Int']['input'];
+};
+
+
+export type QueryRecipientVariableValuesByGroupArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  recipientGroupId: Scalars['Int']['input'];
 };
 
 
@@ -905,6 +930,21 @@ export type QueryTemplatesByCategoryIdArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['Int']['input'];
+};
+
+export type RecipientVariableValuesGroupResult = {
+  __typename?: 'RecipientVariableValuesGroupResult';
+  data?: Maybe<Array<RecipientWithVariableValues>>;
+  total?: Maybe<Scalars['Int']['output']>;
+};
+
+export type RecipientWithVariableValues = {
+  __typename?: 'RecipientWithVariableValues';
+  recipientGroupItemId?: Maybe<Scalars['Int']['output']>;
+  studentId?: Maybe<Scalars['Int']['output']>;
+  studentName?: Maybe<Scalars['String']['output']>;
+  /** Map of variableId to value. Use template variables query to get type/constraint info. All template variables are present (null if not set). */
+  variableValues?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type RecipientsWithFiltersResponse = {
@@ -1393,6 +1433,12 @@ export type User = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type VariableValueInput = {
+  /** Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like '["opt1","opt2"]' */
+  value: Scalars['String']['input'];
+  variableId: Scalars['Int']['input'];
+};
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1735,6 +1781,23 @@ export type UpdateTemplateCategoryMutationVariables = Exact<{
 
 export type UpdateTemplateCategoryMutation = { __typename?: 'Mutation', updateTemplateCategory: { __typename?: 'TemplateCategory', id: number, name?: string | null, description?: string | null, specialType?: string | null, order?: number | null, createdAt?: any | null, updatedAt?: any | null, parentCategory?: { __typename?: 'TemplateCategory', id: number } | null } };
 
+export type RecipientVariableValuesByGroupQueryVariables = Exact<{
+  recipientGroupId: Scalars['Int']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type RecipientVariableValuesByGroupQuery = { __typename?: 'Query', recipientVariableValuesByGroup?: { __typename?: 'RecipientVariableValuesGroupResult', total?: number | null, data?: Array<{ __typename?: 'RecipientWithVariableValues', recipientGroupItemId?: number | null, studentId?: number | null, studentName?: string | null, variableValues?: any | null }> | null } | null };
+
+export type SetRecipientVariableValuesMutationVariables = Exact<{
+  recipientGroupItemId: Scalars['Int']['input'];
+  values: Array<VariableValueInput> | VariableValueInput;
+}>;
+
+
+export type SetRecipientVariableValuesMutation = { __typename?: 'Mutation', setRecipientVariableValues?: { __typename?: 'RecipientWithVariableValues', recipientGroupItemId?: number | null, studentId?: number | null, studentName?: string | null, variableValues?: any | null } | null };
+
 export type RecipientQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
@@ -1954,6 +2017,8 @@ export const SearchTemplateCategoriesDocument = {"kind":"Document","definitions"
 export const CreateTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateCategoryCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"specialType"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateCategoryMutation, CreateTemplateCategoryMutationVariables>;
 export const DeleteTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteTemplateCategoryMutation, DeleteTemplateCategoryMutationVariables>;
 export const UpdateTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateCategoryUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"specialType"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
+export const RecipientVariableValuesByGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientVariableValuesByGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientVariableValuesByGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientGroupItemId"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"studentName"}},{"kind":"Field","name":{"kind":"Name","value":"variableValues"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<RecipientVariableValuesByGroupQuery, RecipientVariableValuesByGroupQueryVariables>;
+export const SetRecipientVariableValuesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"setRecipientVariableValues"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupItemId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"values"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"VariableValueInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setRecipientVariableValues"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupItemId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupItemId"}}},{"kind":"Argument","name":{"kind":"Name","value":"values"},"value":{"kind":"Variable","name":{"kind":"Name","value":"values"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientGroupItemId"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"studentName"}},{"kind":"Field","name":{"kind":"Name","value":"variableValues"}}]}}]}}]} as unknown as DocumentNode<SetRecipientVariableValuesMutation, SetRecipientVariableValuesMutationVariables>;
 export const RecipientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipient"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RecipientQuery, RecipientQueryVariables>;
 export const RecipientsByGroupIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientsByGroupId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientsByGroupId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RecipientsByGroupIdQuery, RecipientsByGroupIdQueryVariables>;
 export const RecipientsByStudentIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientsByStudentId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"studentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientsByStudentId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"studentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"studentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RecipientsByStudentIdQuery, RecipientsByStudentIdQueryVariables>;

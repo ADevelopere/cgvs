@@ -16,6 +16,7 @@ export type Translations = {
   templateVariableTranslations: Components.TemplateVariableTranslation;
   recipientTranslations: Components.RecipientTranslation;
   recipientGroupTranslations: Components.RecipientGroupTranslation;
+  recipientVariableDataTranslations: Components.RecipientVariableDataTranslation;
   storageTranslations: Components.StorageTranslations;
   connectivityTranslations: Components.ConnectivityTranslations;
 };
@@ -34,6 +35,7 @@ const translations: Record<AppLanguage, Translations> = {
     templateVariableTranslations: AR.templateVariable,
     recipientTranslations: AR.recipient,
     recipientGroupTranslations: AR.recipientGroup,
+    recipientVariableDataTranslations: AR.recipientVariableData,
     storageTranslations: AR.storage,
     connectivityTranslations: AR.connectivity,
   },

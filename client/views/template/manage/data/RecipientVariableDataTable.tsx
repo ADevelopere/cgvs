@@ -1,0 +1,285 @@
+"use client";
+
+import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { Box, Paper, CircularProgress, Alert } from "@mui/material";
+import { useQuery } from "@apollo/client/react";
+import { TableProvider } from "@/client/components/Table/Table/TableContext";
+import Table from "@/client/components/Table/Table/Table";
+import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
+import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
+import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
+import { buildDataColumns } from "./columns/buildDataColumns";
+import * as Document from "./hooks/recipientVariableData.documents";
+import * as TemplateVariableDocument from "../variables/hooks/templateVariable.documents";
+import { loadFromLocalStorage } from "@/client/utils/localStorage";
+import { useAppTranslation } from "@/client/locale";
+import { Typography } from "@mui/material";
+
+interface RecipientVariableDataTableProps {
+  templateId: number;
+  selectedGroupId: number;
+}
+
+const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
+  templateId,
+  selectedGroupId,
+}) => {
+  const operations = useRecipientVariableDataOperations();
+  const store = useRecipientVariableDataStore();
+  const strings = useAppTranslation("recipientVariableDataTranslations");
+
+  // Fetch template variables
+  const {
+    data: variablesData,
+    loading: variablesLoading,
+    error: variablesError,
+  } = useQuery(TemplateVariableDocument.templateVariablesByTemplateIdQueryDocument, {
+    variables: { templateId },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
+
+  // Fetch recipient variable data
+  const {
+    data,
+    loading,
+    error,
+  } = useQuery(Document.recipientVariableValuesByGroupQueryDocument, {
+    variables: {
+      recipientGroupId: selectedGroupId,
+      limit: store.queryParams.limit,
+      offset: store.queryParams.offset,
+    },
+    skip: !selectedGroupId,
+    fetchPolicy: "cache-first",
+  });
+
+  const variables = variablesData?.templateVariablesByTemplateId || [];
+  const recipients = data?.recipientVariableValuesByGroup?.data || [];
+  const total = data?.recipientVariableValuesByGroup?.total || 0;
+
+  // Calculate page info for pagination
+  const pageInfo = useMemo(() => {
+    const currentPage = Math.floor(store.queryParams.offset / store.queryParams.limit) + 1;
+    const totalPages = Math.ceil(total / store.queryParams.limit);
+
+    return {
+      currentPage,
+      totalPages,
+      total,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    };
+  }, [store.queryParams.offset, store.queryParams.limit, total]);
+
+  // Handle cell updates
+  const handleUpdateCell = useCallback(
+    async (rowId: number, columnId: string, value: unknown) => {
+      // Extract variable ID from column ID (format: var_${variableId})
+      if (columnId.startsWith("var_")) {
+        const variableId = parseInt(columnId.replace("var_", ""), 10);
+        await operations.updateRecipientVariableValue(rowId, variableId, value);
+      }
+    },
+    [operations]
+  );
+
+  // Build dynamic columns
+  const columns = useMemo(() => {
+    return buildDataColumns(variables, strings, handleUpdateCell);
+  }, [variables, strings, handleUpdateCell]);
+
+  // Column width initialization
+  const [initialWidths, setInitialWidths] = useState<Record<string, number>>({});
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const widthsInitialized = useRef(false);
+
+  useEffect(() => {
+    if (!tableContainerRef.current || widthsInitialized.current || columns.length === 0) return;
+
+    const totalWidth = tableContainerRef.current.offsetWidth - 20;
+
+    const newWidths: Record<string, number> = {};
+
+    // First, handle non-resizable columns and load from localStorage
+    let totalFixedWidth = 0;
+    columns.forEach(column => {
+      if (!column.resizable) {
+        if (column.initialWidth) {
+          newWidths[column.id] = column.initialWidth;
+          totalFixedWidth += column.initialWidth;
+        } else {
+          newWidths[column.id] = 100;
+          totalFixedWidth += 100;
+        }
+      }
+    });
+
+    // Then distribute remaining width among resizable columns
+    const resizableColumns = columns.filter(
+      col => col.resizable && !newWidths[col.id]
+    );
+
+    if (resizableColumns.length > 0) {
+      const remainingWidth = Math.max(totalWidth - totalFixedWidth, 0);
+      const widthPerColumn = Math.floor(remainingWidth / resizableColumns.length);
+
+      resizableColumns.forEach(column => {
+        newWidths[column.id] = Math.max(widthPerColumn, 50);
+      });
+    }
+
+    // Load saved widths from localStorage
+    columns.forEach(column => {
+      if (column.widthStorageKey) {
+        const savedWidth = loadFromLocalStorage<string>(column.widthStorageKey);
+        if (savedWidth) {
+          newWidths[column.id] = Math.max(parseInt(savedWidth, 10), 50);
+        }
+      }
+    });
+
+    setInitialWidths(newWidths);
+    widthsInitialized.current = true;
+  }, [columns, tableContainerRef]);
+
+  // Transform data for table
+  const tableData = useMemo(() => {
+    return recipients.map(recipient => ({
+      id: recipient.recipientGroupItemId,
+      studentName: recipient.studentName,
+      variableValues: recipient.variableValues,
+    }));
+  }, [recipients]);
+
+  // Handle page change
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      operations.onPageChange(newPage);
+    },
+    [operations]
+  );
+
+  // Handle rows per page change
+  const handleRowsPerPageChange = useCallback(
+    (newRowsPerPage: number) => {
+      operations.onRowsPerPageChange(newRowsPerPage);
+    },
+    [operations]
+  );
+
+  // Show loading state
+  if (variablesLoading || loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "400px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Show error state
+  if (variablesError || error) {
+    return (
+      <Alert severity="error" sx={{ m: 2 }}>
+        {strings.errorFetchingData}
+      </Alert>
+    );
+  }
+
+  // Show no data state
+  if (recipients.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "400px",
+        }}
+      >
+        <Typography variant="body1" color="text.secondary">
+          {strings.noRecipientsFound}
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <TableProvider
+      data={tableData}
+      isLoading={loading}
+      columns={columns}
+      dataProps={{}}
+      columnProps={{
+        initialWidths,
+      }}
+      rowsProps={{
+        enableRowResizing: false,
+      }}
+      pageInfo={{
+        currentPage: pageInfo.currentPage,
+        total: pageInfo.total,
+        count: pageInfo.total,
+        hasMorePages: pageInfo.hasNextPage,
+        lastPage: pageInfo.totalPages,
+        perPage: store.queryParams.limit,
+      }}
+      onPageChange={handlePageChange}
+      onRowsPerPageChange={handleRowsPerPageChange}
+      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+    >
+      <Paper
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          overflow: "hidden",
+          maxWidth: "calc(100vw - 48px)",
+        }}
+      >
+        <Box
+          ref={tableContainerRef}
+          sx={{
+            flexGrow: 1,
+            overflow: "hidden",
+            "& table": {
+              width: "100%",
+              borderCollapse: "collapse",
+              tableLayout: "fixed",
+              backgroundColor: "background.paper",
+              color: "text.primary",
+              borderColor: "divider",
+            },
+            "& tr:hover td": {
+              backgroundColor: "action.hover",
+            },
+            "& th, & td": {
+              borderColor: "divider",
+            },
+          }}
+          id="recipient-variable-data-table"
+        >
+          {widthsInitialized.current &&
+            Object.keys(initialWidths).length > 0 && (
+              <Table
+                style={{
+                  height: "100%",
+                  overflow: "hidden",
+                  maxWidth: "calc(100vw - 48px)",
+                }}
+              />
+            )}
+        </Box>
+      </Paper>
+    </TableProvider>
+  );
+};
+
+export default RecipientVariableDataTable;
