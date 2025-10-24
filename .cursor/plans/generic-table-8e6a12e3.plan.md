@@ -18,47 +18,32 @@ Transform the Table component from a type-based system to a fully generic render
 
 **New Type Structure:**
 
-```typescript
-type BaseColumnProps = {
-  id: string;
-  resizable?: boolean;
-  initialWidth?: number;
-  minWidth?: number;
-  maxWidth?: number;
-  widthStorageKey?: string;
-};
-
-type Column<TRowData> = BaseColumnProps & {
-  type: 'viewonly';
-  headerRenderer: (props: { column: Column<TRowData> }) => React.ReactNode;
-  viewRenderer: (props: { row: TRowData }) => React.ReactNode;
-};
-
-type EditableColumn<TRowData> = BaseColumnProps & {
-  type: 'editable';
-  headerRenderer: (props: { column: EditableColumn<TRowData> }) => React.ReactNode;
-  viewRenderer: (props: { row: TRowData }) => React.ReactNode;
-  editRenderer: (props: {
-    row: TRowData;
-    onSave: (value: unknown) => Promise<void>;
-    onCancel: () => void;
-  }) => React.ReactNode;
-  onUpdate?: (rowId: number, value: unknown) => Promise<void>;
-};
-
-type AnyColumn<TRowData> = Column<TRowData> | EditableColumn<TRowData>;
-```
+[See table-types.md](./implementations/table-types.md)
 
 ### 2. Make All Contexts Generic
 
 **Files to update:**
 
 - `TableContext.tsx` → `TableProvider<TRowData>`
-- `TableColumnContext.tsx` → `TableColumnsProvider<TRowData>`
-- `TableDataContext.tsx` → `TableDataProvider<TRowData>`
-- `TableRowsContext.tsx` → `TableRowsProvider<TRowData>`
+  - Change `data: any[]` to `data: TRowData[]`
+  - Change `columns: EditableColumn[]` to `columns: AnyColumn<TRowData>[]`
+  - Update all context type definitions to use generic `TRowData`
 
-Update all to use `columns: AnyColumn<TRowData>[]` and `data: TRowData[]`
+- `TableColumnContext.tsx` → `TableColumnsProvider<TRowData>`
+  - Change `allColumns: EditableColumn[]` to `allColumns: AnyColumn<TRowData>[]`
+  - Change `visibleColumns: EditableColumn[]` to `visibleColumns: AnyColumn<TRowData>[]`
+  - Update context provider to accept generic type
+
+- `TableDataContext.tsx` → `TableDataProvider<TRowData>`
+  - Keep existing filter/sort state management (applyTextFilter, applyNumberFilter, applyDateFilter, etc.)
+  - Keep existing TableCellEditingState for virtualization support
+  - Filter and sort logic remains in context but is accessed by individual headerRenderers
+
+- `TableRowsContext.tsx` → `TableRowsProvider<TRowData>`
+  - Update to use generic data type
+  - Keep all existing functionality
+
+**Important:** Filter state management stays in `TableDataContext` - individual headerRenderers will access it via `useTableDataContext()` hook.
 
 ## Refactor Core Table Components
 
@@ -67,38 +52,26 @@ Update all to use `columns: AnyColumn<TRowData>[]` and `data: TRowData[]`
 **Remove:**
 
 - All filter handling logic
-- All sort handling logic (keep only the callback to pass to headerRenderer)
+- All sort handling logic
 - Filter icon rendering
 - Sort icon rendering
+- Label rendering
 
 **Keep:**
 
-- Resize handle rendering
+- Resize handle rendering and logic
 - Options menu (three-dot menu for pinning, hiding, etc.)
-- Call `column.headerRenderer({ column })` to render the header content
+- Column width management
+- Pinned column styling
+
+**New:**
+
+- Call `column.headerRenderer({ column })` to render ALL header content
+- Consumer's headerRenderer has complete control over label, sort button, filter button, icons, etc.
 
 **New Structure:**
 
-```typescript
-const ColumnHeaderCell = <TRowData,>({ column, ... }) => {
-  return (
-    <StyledTh>
-      <HeaderContainer>
-        <HeaderInner>
-          {/* Render custom header */}
-          {column.headerRenderer({ column })}
-          
-          {/* Table-managed options menu */}
-          <HeaderIconButton onClick={handleOptionsClick}>
-            <MoreVert fontSize="small" />
-          </HeaderIconButton>
-        </HeaderInner>
-        {column.resizable !== false && <ResizeHandle onResize={handleResizeStart} />}
-      </HeaderContainer>
-    </StyledTh>
-  );
-};
-```
+[See column-header-cell.md](./implementations/column-header-cell.md)
 
 ### 4. Update `TableBody/DataCell.tsx`
 
@@ -106,43 +79,66 @@ const ColumnHeaderCell = <TRowData,>({ column, ... }) => {
 
 - All built-in rendering logic
 - `CellContentRenderer` usage
+- `cellValue` prop and extraction logic
+- Type-based switching logic
+
+**Keep:**
+
+- Double-click to edit handling
+- Edit state management (isEditing state)
+- Save/Cancel callbacks
+- Pinned cell styling
+- Cell width management
+- Keyboard shortcuts (Escape to cancel)
+- Click outside to cancel
+
+**New:**
+
+- Pass entire `row` object to renderers (not extracted cellValue)
+- Call `column.viewRenderer({ row })` for view mode
+- Call `column.editRenderer({ row, onSave, onCancel })` for edit mode
+- Use `isEditableColumn(column)` type guard to check if editable
 
 **New Structure:**
 
-```typescript
-const DataCell = <TRowData,>({ column, row, ... }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  
-  const handleSave = useCallback(async (value: unknown) => {
-    if (column.type === 'editable' && column.onUpdate) {
-      await column.onUpdate(rowId, value);
-    }
-    setIsEditing(false);
-  }, [column, rowId]);
-  
-  const handleCancel = useCallback(() => {
-    setIsEditing(false);
-  }, []);
-  
-  return (
-    <td onDoubleClick={() => column.type === 'editable' && setIsEditing(true)}>
-      <div style={cellStyle}>
-        {isEditing && column.type === 'editable'
-          ? column.editRenderer({ row, onSave: handleSave, onCancel: handleCancel })
-          : column.viewRenderer({ row })}
-      </div>
-    </td>
-  );
-};
-```
+[See data-cell.md](./implementations/data-cell.md)
 
-### 5. Delete `TableBody/CellContentRenderer.tsx`
+### 5. Update `TableBody/DataRow.tsx`
 
-Remove this file entirely as rendering is now handled by custom renderers.
+**Remove:**
+
+- Import and usage of `getCellValue` from `DataCell.util.ts`
+- Line 205: `const cellValue = getCellValue(column, rowData);`
+
+**Update:**
+
+- Pass `row={rowData}` to DataCell instead of `cellValue={cellValue}`
+- DataCell will pass the full row object to renderers
+
+### 6. Delete `TableBody/DataCell.util.ts`
+
+**Delete entire file** - These utility functions (`getCellValue`, `formatCellValue`, `formatInputValue`) are no longer needed:
+- Renderers receive the full `row` object and extract values themselves
+- No built-in type-based formatting logic
+- Each renderer handles its own formatting
+
+### 7. Mark as Deprecated (DO NOT DELETE)
+
+Add deprecation comments to these files - they will be kept for manual cleanup later:
+
+**Files to mark as deprecated:**
+- `client/components/Table/TableBody/CellContentRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/TextVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/NumberVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/DateVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/SelectVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/ReadyStatusCellRenderer.tsx`
+
+[See deprecation-comment.md](./implementations/deprecation-comment.md)
 
 ## Create Reusable Renderer Utilities
 
-### 6. Create `client/components/Table/renderers/` Directory Structure
+### 8. Create `client/components/Table/renderers/` Directory Structure
 
 ```
 renderers/
@@ -151,6 +147,13 @@ renderers/
 │   ├── createSortableHeader.tsx
 │   ├── createFilterableHeader.tsx
 │   └── createSimpleHeader.tsx
+├── filters/
+│   ├── TextFilterPopover.tsx
+│   ├── NumberFilterPopover.tsx
+│   ├── DateFilterPopover.tsx
+│   ├── SelectFilterPopover.tsx
+│   ├── BooleanFilterPopover.tsx
+│   └── index.ts
 ├── view/
 │   ├── TextViewRenderer.tsx
 │   ├── NumberViewRenderer.tsx
@@ -176,340 +179,413 @@ renderers/
 └── index.ts
 ```
 
-### 7. Implement BaseHeaderRenderer Component
+### 9. Implement BaseHeaderRenderer Component
 
 **File: `renderers/headers/BaseHeaderRenderer.tsx`**
 
-This is the optional base component with 3 slots:
+This is the optional reusable base component that provides standard header layout with sort and filter slots.
 
+**Features:**
+- Displays column label with truncation
+- Optional sort button with direction indicators (ASC/DESC/none)
+- Optional filter button with active badge
+- Renders consumer-provided filter popover
+- Handles click events and passes them to consumer callbacks
+- Fully styled to match current table header appearance
+
+**Important:** This is a UTILITY component for consumers to use in their headerRenderer functions. It does NOT manage filter/sort state itself - consumers pass in callbacks that access TableDataContext.
+
+[See base-header-renderer.md](./implementations/base-header-renderer.md)
+
+### 10. Create Filter Popover Components
+
+**Location: `client/components/Table/renderers/filters/`**
+
+Create NEW reusable filter popover components (separate from old ones in TableHeader/):
+
+- **TextFilterPopover.tsx** - Text field with operators (contains, equals, starts with, ends with)
+- **NumberFilterPopover.tsx** - Number range inputs with operators (=, >, <, >=, <=, between)
+- **DateFilterPopover.tsx** - Date picker with range support (before, after, between, on)
+- **SelectFilterPopover.tsx** - Checkboxes for multi-select options
+- **BooleanFilterPopover.tsx** - Radio buttons for true/false/all
+
+**MUST maintain:**
+- Exact same UI layout and styling as current filter popovers in `TableHeader/`
+- Same operator options and behavior
+- Same validation and error handling
+- Same "Apply" and "Clear" button behavior
+- Same keyboard navigation and accessibility
+- Same debouncing for text input
+
+**Props structure:**
 ```typescript
-type BaseHeaderRendererProps<TRowData> = {
-  column: AnyColumn<TRowData>;
-  label: React.ReactNode; // Can be a component, not just text
-  onSort?: () => void;
-  onFilter?: () => void;
-  filterPopoverRenderer?: () => React.ReactNode;
-  sortDirection?: 'ASC' | 'DESC' | null;
-  isFiltered?: boolean;
-};
-
-const BaseHeaderRenderer = <TRowData,>({
-  label,
-  onSort,
-  onFilter,
-  filterPopoverRenderer,
-  sortDirection,
-  isFiltered,
-}: BaseHeaderRendererProps<TRowData>) => {
-  return (
-    <HeaderContent>
-      <ColumnLabel>{label}</ColumnLabel>
-      <IconsContainer>
-        {onSort && (
-          <Tooltip title="Sort">
-            <HeaderIconButton onClick={onSort}>
-              {sortDirection === 'ASC' ? <ArrowUpward /> : 
-               sortDirection === 'DESC' ? <ArrowDownward /> : 
-               <UnfoldMore />}
-            </HeaderIconButton>
-          </Tooltip>
-        )}
-        {onFilter && (
-          <>
-            <Badge invisible={!isFiltered} color="primary" variant="dot">
-              <HeaderIconButton onClick={onFilter}>
-                <FilterList />
-              </HeaderIconButton>
-            </Badge>
-            {filterPopoverRenderer && filterPopoverRenderer()}
-          </>
-        )}
-      </IconsContainer>
-    </HeaderContent>
-  );
-};
+interface FilterPopoverProps {
+  anchorEl: HTMLElement | null;
+  open: boolean;
+  onClose: () => void;
+  value: FilterValue | null;
+  onApply: (value: FilterValue) => void;
+  onClear: () => void;
+}
 ```
 
-### 8. Implement View Renderers
+**Integration pattern:**
+Consumers use these in their headerRenderer by:
+1. Managing filter anchor state (which filter popover is open)
+2. Calling `applyTextFilter`/`applyNumberFilter`/`applyDateFilter` from `useTableDataContext()`
+3. Checking filter state with `getActiveTextFilter`/etc from context
 
-Extract from `CellContentRenderer.tsx`:
+**Note:** Old filter popovers in `client/components/Table/TableHeader/` will be marked as deprecated but NOT deleted.
 
-- `TextViewRenderer` - simple text display with ellipsis
-- `NumberViewRenderer` - number formatting
-- `DateViewRenderer` - date formatting
-- `BooleanViewRenderer` - checkbox display
-- `SelectViewRenderer` - option label display
-- `CountryViewRenderer` - flag + country name (from existing code)
-- `PhoneViewRenderer` - phone number in LTR
+### 11. Implement View Renderers
 
-Each with `useCallback` and `useMemo` where appropriate.
+**Location: `client/components/Table/renderers/view/`**
 
-### 9. Implement Edit Renderers
+Extract rendering logic from `CellContentRenderer.tsx` into individual view renderers:
 
-Extract from `CellContentRenderer.tsx`:
+- `TextViewRenderer.tsx` - Simple text display with ellipsis
+  - Props: `{ value: string | number }`
+  - Renders text with truncation
 
-- `TextEditRenderer` - TextField with validation
-- `NumberEditRenderer` - Number input
-- `DateEditRenderer` - Date picker
-- `BooleanEditRenderer` - Checkbox/Switch
-- `SelectEditRenderer` - Select dropdown
-- `CountryEditRenderer` - Autocomplete with flags (from existing code)
-- `PhoneEditRenderer` - MuiTelInput (from existing code)
+- `NumberViewRenderer.tsx` - Number formatting
+  - Props: `{ value: number, decimals?: number, locale?: string }`
+  - Formats numbers with locale-specific formatting
 
-All renderers receive `{ row, onSave, onCancel }` props.
+- `DateViewRenderer.tsx` - Date formatting
+  - Props: `{ value: Date | string, format?: string }`
+  - Formats dates using specified format
 
-### 10. Implement Template Renderers
+- `BooleanViewRenderer.tsx` - Checkbox display (read-only)
+  - Props: `{ value: boolean }`
+  - Shows checked/unchecked checkbox
 
-Create new generic versions in `renderers/template/`:
+- `SelectViewRenderer.tsx` - Option label display
+  - Props: `{ value: any, options: Array<{ label: string, value: any }> }`
+  - Displays the label for selected value
 
-- **TemplateTextRenderers** - Based on `TextVariableCellRenderer.tsx`
+- `CountryViewRenderer.tsx` - Flag + country name
+  - Props: `{ value: CountryCode, strings: CountryTranslations }`
+  - Shows flag image and translated country name
+
+- `PhoneViewRenderer.tsx` - Phone number in LTR
+  - Props: `{ value: string }`
+  - Displays phone with LTR direction
+
+**Implementation notes:**
+- Each renderer is a simple React component that receives value/config props
+- Extract existing rendering logic from `CellContentRenderer.tsx` view mode sections
+- Use `useCallback` and `useMemo` where appropriate
+- Keep styling consistent with current table appearance
+
+### 12. Implement Edit Renderers
+
+**Location: `client/components/Table/renderers/edit/`**
+
+Extract editing logic from `CellContentRenderer.tsx` into individual edit renderers:
+
+- `TextEditRenderer.tsx` - TextField with validation
+  - Props: `{ value: string, onSave: (v: string) => Promise<void>, onCancel: () => void, validator?: (v: string) => string | null }`
+  - TextField with Enter to save, Escape to cancel
+
+- `NumberEditRenderer.tsx` - Number input
+  - Props: `{ value: number, onSave: (v: number) => Promise<void>, onCancel: () => void, min?: number, max?: number }`
+  - Number input with validation
+
+- `DateEditRenderer.tsx` - Date picker
+  - Props: `{ value: Date | string, onSave: (v: string) => Promise<void>, onCancel: () => void }`
+  - MUI DatePicker component
+
+- `BooleanEditRenderer.tsx` - Checkbox/Switch
+  - Props: `{ value: boolean, onSave: (v: boolean) => Promise<void>, onCancel: () => void }`
+  - Immediately saves on toggle
+
+- `SelectEditRenderer.tsx` - Select dropdown
+  - Props: `{ value: any, options: Array<{ label: string, value: any }>, onSave: (v: any) => Promise<void>, onCancel: () => void }`
+  - MUI Select component
+
+- `CountryEditRenderer.tsx` - Autocomplete with flags
+  - Props: `{ value: CountryCode, onSave: (v: CountryCode) => Promise<void>, onCancel: () => void, strings: CountryTranslations }`
+  - Autocomplete with country flags
+
+- `PhoneEditRenderer.tsx` - MuiTelInput
+  - Props: `{ value: string, onSave: (v: string) => Promise<void>, onCancel: () => void }`
+  - Phone number input with country code
+
+**Implementation notes:**
+- Extract editing logic from `CellContentRenderer.tsx` edit mode sections
+- Each renderer manages its own local state and validation
+- Call `onSave` with new value when user confirms
+- Call `onCancel` when user presses Escape or clicks away
+- Use Material-UI components for consistency
+
+### 13. Implement Template Renderers
+
+**Location: `client/components/Table/renderers/template/`**
+
+Create new generic versions based on existing template cell renderers:
+
+- **TemplateTextRenderers.tsx**
+  - Based on `TextVariableCellRenderer.tsx`
   - Export `TemplateTextViewRenderer` and `TemplateTextEditRenderer`
-  - Convert to use new API: receive `row` and extract value
-  - Pass validation constraints as parameters/config
+  - Props: `{ value: string, config: TemplateVariable, onSave?, onCancel? }`
+  - Includes minLength/maxLength/pattern validation
 
-- **TemplateNumberRenderers** - Based on `NumberVariableCellRenderer.tsx`
+- **TemplateNumberRenderers.tsx**
+  - Based on `NumberVariableCellRenderer.tsx`
   - Export `TemplateNumberViewRenderer` and `TemplateNumberEditRenderer`
+  - Props: `{ value: number, config: TemplateVariable, onSave?, onCancel? }`
+  - Includes min/max/decimalPlaces validation
 
-- **TemplateDateRenderers** - Based on `DateVariableCellRenderer.tsx`
+- **TemplateDateRenderers.tsx**
+  - Based on `DateVariableCellRenderer.tsx`
   - Export `TemplateDateViewRenderer` and `TemplateDateEditRenderer`
+  - Props: `{ value: string, config: TemplateVariable, onSave?, onCancel? }`
+  - Includes minDate/maxDate validation
 
-- **TemplateSelectRenderers** - Based on `SelectVariableCellRenderer.tsx`
+- **TemplateSelectRenderers.tsx**
+  - Based on `SelectVariableCellRenderer.tsx`
   - Export `TemplateSelectViewRenderer` and `TemplateSelectEditRenderer`
+  - Props: `{ value: any, config: TemplateVariable, onSave?, onCancel? }`
+  - Uses config.options for select items
 
-- **ReadyStatusViewRenderer** - Based on `ReadyStatusCellRenderer.tsx`
+- **ReadyStatusViewRenderer.tsx**
+  - Based on `ReadyStatusCellRenderer.tsx`
   - Non-editable, view-only renderer
+  - Props: `{ value: boolean | string }`
+  - Shows ready status badge/chip
 
-All using `useCallback` and `useMemo` for optimization.
+**Implementation notes:**
+- Convert from old cell renderer API to new renderer props
+- Validation constraints come from `config` (TemplateVariable) prop
+- Use `useCallback` and `useMemo` for optimization
+- Maintain same validation logic as old renderers
 
-## Update All Consumers
+### 14. Create Header Utility Functions (Optional)
 
-### 11. Update `client/views/template/manage/data/columns/buildDataColumns.ts`
+**Location: `client/components/Table/renderers/headers/`**
+
+Create optional utility functions for common header patterns:
+
+- **createSimpleHeader.tsx** - Just a label, no sort/filter
+- **createSortableHeader.tsx** - Label + sort button
+- **createFilterableHeader.tsx** - Label + filter button
+
+These are helper functions that return headerRenderer functions for common use cases. Consumers can use these or create custom headerRenderers.
+
+## Update Table Consumers
+
+### 15. Update `client/views/template/manage/data/columns/buildDataColumns.ts`
 
 Convert from old API to new renderer-based API:
 
-```typescript
-export const buildDataColumns = (
-  variables: Graphql.TemplateVariable[],
-  strings: RecipientVariableDataTranslation,
-  onUpdateCell: (rowId: number, columnId: string, value: unknown) => Promise<void>
-): AnyColumn<RecipientWithVariableValues>[] => {
-  
-  const columns: AnyColumn<RecipientWithVariableValues>[] = [
-    {
-      id: "studentName",
-      type: "viewonly",
-      resizable: true,
-      initialWidth: 200,
-      widthStorageKey: "recipient_variable_data_student_name_column_width",
-      headerRenderer: ({ column }) => (
-        <BaseHeaderRenderer
-          label={strings.studentName}
-          onSort={() => { /* sort handler */ }}
-        />
-      ),
-      viewRenderer: ({ row }) => (
-        <TextViewRenderer value={row.studentName} />
-      ),
-    },
-    // ... variable columns
-  ];
-  
-  // For each variable, create column with appropriate renderers
-  sortedVariables.forEach(variable => {
-    columns.push({
-      id: `var_${variable.id}`,
-      type: "editable",
-      resizable: true,
-      headerRenderer: ({ column }) => (
-        <BaseHeaderRenderer label={variable.name || `Variable ${variable.id}`} />
-      ),
-      viewRenderer: ({ row }) => {
-        const value = row.variableValues?.[variable.id];
-        switch(variable.type) {
-          case "TEXT": return <TemplateTextViewRenderer value={value} config={variable} />;
-          case "NUMBER": return <TemplateNumberViewRenderer value={value} config={variable} />;
-          // ...
-        }
-      },
-      editRenderer: ({ row, onSave, onCancel }) => {
-        const value = row.variableValues?.[variable.id];
-        switch(variable.type) {
-          case "TEXT": return <TemplateTextEditRenderer value={value} onSave={onSave} onCancel={onCancel} config={variable} />;
-          // ...
-        }
-      },
-      onUpdate: (rowId, value) => onUpdateCell(rowId, `var_${variable.id}`, value),
-    });
-  });
-  
-  return columns;
-};
-```
+**Changes:**
+1. Change return type from `EditableColumn[]` to `AnyColumn<RecipientWithVariableValues>[]`
+2. Remove `type: ColumnTypes` - use `type: 'viewonly' | 'editable'` instead
+3. Remove `accessor`, `label` properties
+4. Add `headerRenderer` that uses `BaseHeaderRenderer` with filter/sort logic
+5. Add `viewRenderer` that extracts value from row and renders it
+6. Add `editRenderer` for editable columns that uses template renderers
+7. Keep `onUpdate` callback but adjust signature if needed
 
-### 12. Update `client/views/student/column.ts` + `useStudentTable.tsx`
+**Filter/Sort Integration:**
+- Use `useTableDataContext()` to access `applyTextFilter`, `sort`, etc.
+- Call these methods from headerRenderer callbacks
+- Check filter state with `getActiveTextFilter` to show badge
 
-Convert static column definitions to use new renderer API:
+[See build-recipientVarData-columns.md](./implementations/build-recipientVarData-columns.md)
 
-```typescript
-export const buildStudentColumns = (
-  strings: StudentTranslations,
-  onUpdate: (rowId: number, field: string, value: unknown) => Promise<void>
-): AnyColumn<Student>[] => [
-  {
-    id: "name",
-    type: "editable",
-    resizable: true,
-    widthStorageKey: "student_table_student_name_column_width",
-    headerRenderer: ({ column }) => (
-      <BaseHeaderRenderer
-        label={strings.name}
-        onSort={/* sort handler */}
-        onFilter={/* filter handler */}
-        filterPopoverRenderer={/* custom text filter */}
-      />
-    ),
-    viewRenderer: ({ row }) => <TextViewRenderer value={row.name} />,
-    editRenderer: ({ row, onSave, onCancel }) => (
-      <TextEditRenderer 
-        value={row.name}
-        onSave={onSave}
-        onCancel={onCancel}
-      />
-    ),
-    onUpdate: (rowId, value) => onUpdate(rowId, "name", value),
-  },
-  {
-    id: "email",
-    type: "editable",
-    // ... similar structure
-  },
-  {
-    id: "dateOfBirth",
-    type: "editable",
-    viewRenderer: ({ row }) => <DateViewRenderer value={row.dateOfBirth} />,
-    editRenderer: ({ row, onSave, onCancel }) => (
-      <DateEditRenderer value={row.dateOfBirth} onSave={onSave} onCancel={onCancel} />
-    ),
-    // ...
-  },
-  {
-    id: "gender",
-    type: "editable",
-    viewRenderer: ({ row }) => <SelectViewRenderer value={row.gender} options={genderOptions} />,
-    editRenderer: ({ row, onSave, onCancel }) => (
-      <SelectEditRenderer value={row.gender} options={genderOptions} onSave={onSave} onCancel={onCancel} />
-    ),
-    // ...
-  },
-  {
-    id: "nationality",
-    type: "editable",
-    viewRenderer: ({ row }) => <CountryViewRenderer value={row.nationality} />,
-    editRenderer: ({ row, onSave, onCancel }) => (
-      <CountryEditRenderer value={row.nationality} onSave={onSave} onCancel={onCancel} />
-    ),
-    // ...
-  },
-  {
-    id: "phoneNumber",
-    type: "editable",
-    viewRenderer: ({ row }) => <PhoneViewRenderer value={row.phoneNumber} />,
-    editRenderer: ({ row, onSave, onCancel }) => (
-      <PhoneEditRenderer value={row.phoneNumber} onSave={onSave} onCancel={onCancel} />
-    ),
-    // ...
-  },
-  {
-    id: "createdAt",
-    type: "viewonly",
-    viewRenderer: ({ row }) => <DateViewRenderer value={row.createdAt} />,
-    // ...
-  },
-];
-```
+### 16. Update `client/views/student/column.ts` + `useStudentTable.tsx`
 
-### 13. Update RecipientVariableDataTable Consumer
+Convert student table columns to new renderer API:
+
+**Changes in column.ts:**
+1. Change column definitions to use new type structure
+2. Add headerRenderer for each column
+3. Add viewRenderer and editRenderer
+4. Move validation logic to validators passed to edit renderers
+
+**Changes in useStudentTable.tsx:**
+1. Keep validators as separate functions
+2. Update column building to use new renderer functions
+3. Integrate with TableDataContext for filter/sort
+
+[See build-student-columns.md](./implementations/build-student-columns.md)
+
+### 17. Update RecipientVariableDataTable Consumer
 
 **File: `client/views/template/manage/data/RecipientVariableDataTable.tsx`**
 
-Update to use new `TableProvider<RecipientWithVariableValues>` and pass generic columns.
+**Changes:**
+1. Update TableProvider to use generic type: `<TableProvider<RecipientWithVariableValues>>`
+2. Pass columns from updated `buildDataColumns` function
+3. No changes needed to TableProvider props structure - contexts are backward compatible
+4. Update TypeScript types to use `AnyColumn<RecipientWithVariableValues>[]`
 
-### 14. Update StudentsInGroupTable Consumer
+### 18. Update StudentsInGroupTable Consumer
 
 **File: `client/views/template/manage/recipient/StudentsInGroupTable.tsx`**
 
-Convert column definitions to use renderer-based API.
+**Changes:**
+1. Convert column definitions to use renderer-based API
+2. Update to use `TableProvider<Student>` with generic type
+3. Add headerRenderer, viewRenderer, editRenderer to each column
+4. Integrate filters using TableDataContext methods
 
-### 15. Update StudentsNotInGroupTable Consumer
+### 19. Update StudentsNotInGroupTable Consumer
 
 **File: `client/views/template/manage/recipient/StudentsNotInGroupTable.tsx`**
 
-Convert column definitions to use renderer-based API.
+**Changes:**
+1. Convert column definitions to use renderer-based API
+2. Update to use `TableProvider<Student>` with generic type
+3. Add headerRenderer, viewRenderer, editRenderer to each column
+4. Integrate filters using TableDataContext methods
 
-## Optimization Requirements
+### 20. Update TableBody Component
 
-### 16. Add Performance Optimizations
+**File: `client/components/Table/TableBody/TableBody.tsx`**
 
-Ensure all components use:
+**Changes:**
+1. Update to pass `row` prop to DataCell instead of extracting cellValue
+2. Remove any getCellValue usage
+3. Ensure generic types flow through properly
+
+## Final Exports and Documentation
+
+### 21. Update Exports
+
+**File: `client/components/Table/renderers/index.ts`**
+
+Export all renderers, filters, and utilities for easy consumer imports:
+
+```typescript
+// Headers
+export * from './headers/BaseHeaderRenderer';
+export * from './headers/createSortableHeader';
+export * from './headers/createFilterableHeader';
+export * from './headers/createSimpleHeader';
+
+// Filters
+export * from './filters/TextFilterPopover';
+export * from './filters/NumberFilterPopover';
+export * from './filters/DateFilterPopover';
+export * from './filters/SelectFilterPopover';
+export * from './filters/BooleanFilterPopover';
+
+// View Renderers
+export * from './view/TextViewRenderer';
+export * from './view/NumberViewRenderer';
+export * from './view/DateViewRenderer';
+export * from './view/BooleanViewRenderer';
+export * from './view/SelectViewRenderer';
+export * from './view/CountryViewRenderer';
+export * from './view/PhoneViewRenderer';
+
+// Edit Renderers
+export * from './edit/TextEditRenderer';
+export * from './edit/NumberEditRenderer';
+export * from './edit/DateEditRenderer';
+export * from './edit/BooleanEditRenderer';
+export * from './edit/SelectEditRenderer';
+export * from './edit/CountryEditRenderer';
+export * from './edit/PhoneEditRenderer';
+
+// Template Renderers
+export * from './template/TemplateTextRenderers';
+export * from './template/TemplateNumberRenderers';
+export * from './template/TemplateDateRenderers';
+export * from './template/TemplateSelectRenderers';
+export * from './template/ReadyStatusViewRenderer';
+```
+
+[See renderers-export.md](./implementations/renderers-export.md)
+
+### 22. Add Performance Optimizations
+
+Ensure all new components use:
 
 - `useCallback` for event handlers
 - `useMemo` for computed values
 - `React.memo` for component memoization where appropriate
 - Proper dependency arrays
+- Avoid inline function definitions in render props
 
-## Final Cleanup
+### 23. Mark Old Files as Deprecated
 
-### 17. Update Exports
+Add deprecation comments to old files (manual cleanup will be done later):
 
-**File: `client/components/Table/renderers/index.ts`**
+**Files to mark as deprecated:**
+- `client/components/Table/TableHeader/FilterPopover.tsx`
+- `client/components/Table/TableHeader/TextFilterPopover.tsx`
+- `client/components/Table/TableHeader/NumberFilterPopover.tsx`
+- `client/components/Table/TableHeader/DateFilterPopover.tsx`
+- `client/components/Table/TableBody/CellContentRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/TextVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/NumberVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/DateVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/SelectVariableCellRenderer.tsx`
+- `client/views/template/manage/data/components/cellRenderers/ReadyStatusCellRenderer.tsx`
 
-Export all renderers for easy consumer imports:
+[See deprecation-comment.md](./implementations/deprecation-comment.md)
 
-```typescript
-export * from './headers/BaseHeaderRenderer';
-export * from './headers/createSortableHeader';
-export * from './view/TextViewRenderer';
-export * from './edit/TextEditRenderer';
-export * from './template/TemplateTextRenderers';
-// ... etc
-```
+## Implementation Order
 
-### 18. Delete Unused Files
+1. **Phase 1: Type System** (Steps 1)
+   - Update table.type.ts with new generic types
+   - This is the foundation for everything else
 
-Remove:
+2. **Phase 2: Contexts** (Step 2)
+   - Make all contexts generic
+   - Ensure backward compatibility with existing filter/sort logic
 
-- Old template cell renderers from `client/views/template/manage/data/components/cellRenderers/`
-- `TableBody/DataCell.util.ts` (if no longer needed)
+3. **Phase 3: Core Components** (Steps 3-7)
+   - Update ColumnHeaderCell
+   - Update DataCell
+   - Update DataRow
+   - Delete DataCell.util.ts
+   - Mark deprecated files
+
+4. **Phase 4: Renderer Library** (Steps 8-14)
+   - Create directory structure
+   - Implement BaseHeaderRenderer
+   - Implement filter popovers
+   - Implement view renderers
+   - Implement edit renderers
+   - Implement template renderers
+   - Create header utilities
+
+5. **Phase 5: Consumer Updates** (Steps 15-20)
+   - Update buildDataColumns
+   - Update student table
+   - Update RecipientVariableDataTable
+   - Update StudentsInGroupTable
+   - Update StudentsNotInGroupTable
+   - Update TableBody
+
+6. **Phase 6: Finalization** (Steps 21-23)
+   - Create exports
+   - Add performance optimizations
+   - Add deprecation comments
 
 ## Testing Checklist
 
-- All table consumers render correctly
-- Editing functionality works in all tables
-- Sorting works when implemented in headerRenderer
-- Filtering works when implemented in headerRenderer
-- Column resizing, pinning, hiding still work
-- No TypeScript errors
-- All components properly memoized
-- No console warnings
-
-### To-dos
-
-- [ ] Update table.type.ts with new generic Column/EditableColumn types, remove ColumnTypes enum and all type-specific properties
-- [ ] Make all context providers generic (TableProvider, TableColumnsProvider, TableDataProvider, TableRowsProvider)
-- [ ] Delete FilterPopover.tsx, TextFilterPopover.tsx, NumberFilterPopover.tsx, DateFilterPopover.tsx
-- [ ] Refactor ColumnHeaderCell.tsx to call column.headerRenderer and remove built-in filter/sort rendering
-- [ ] Refactor DataCell.tsx to call column.viewRenderer/editRenderer, remove CellContentRenderer usage
-- [ ] Delete CellContentRenderer.tsx
-- [ ] Create BaseHeaderRenderer component with 3 slots (label, onSort, onFilter)
-- [ ] Create all view renderers (Text, Number, Date, Boolean, Select, Country, Phone)
-- [ ] Create all edit renderers (Text, Number, Date, Boolean, Select, Country, Phone)
-- [ ] Create template renderers (TemplateText, TemplateNumber, TemplateDate, TemplateSelect, ReadyStatus)
-- [ ] Create header utilities (createSortableHeader, createFilterableHeader, createSimpleHeader)
-- [ ] Update buildDataColumns.ts to use new renderer-based API
-- [ ] Update StudentTable column.ts and useStudentTable.tsx to use new renderer-based API
-- [ ] Update RecipientVariableDataTable.tsx to use generic TableProvider and new columns
-- [ ] Update StudentsInGroupTable.tsx to use new renderer-based API
-- [ ] Update StudentsNotInGroupTable.tsx to use new renderer-based API
-- [ ] Create renderers/index.ts to export all renderers
-- [ ] Add useCallback, useMemo, React.memo optimizations to all new components
-- [ ] Delete old template cell renderers and unused utility files
+- [ ] All table consumers render correctly
+- [ ] Editing functionality works in all tables
+- [ ] Validation displays correctly in edit mode
+- [ ] Sorting works when implemented in headerRenderer
+- [ ] Filtering works for all filter types (text, number, date, select, country, phone)
+- [ ] Filter badges show/hide correctly when filters are applied/cleared
+- [ ] Column resizing persists to localStorage
+- [ ] Column pinning (left/right) works correctly
+- [ ] Column hiding/showing works correctly
+- [ ] Pagination works correctly
+- [ ] Row selection works if enabled
+- [ ] Double-click to edit works
+- [ ] Escape key cancels edit
+- [ ] Click outside cancels edit
+- [ ] Enter key saves edit
+- [ ] No TypeScript errors
+- [ ] All components properly memoized
+- [ ] No console warnings
+- [ ] Virtualization works with large datasets
+- [ ] Edit state persists during virtualization (scroll up/down)
