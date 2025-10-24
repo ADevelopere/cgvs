@@ -53,18 +53,18 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     value?.operation || DateFilterOperation.is
   );
   const [startDate, setStartDate] = useState<Date | null>(
-    value?.value?.start ? new Date(value.value.start) : null
+    value?.value?.from ? new Date(value.value.from) : null
   );
   const [endDate, setEndDate] = useState<Date | null>(
-    value?.value?.end ? new Date(value.value.end) : null
+    value?.value?.to ? new Date(value.value.to) : null
   );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (value) {
       setOperation(value.operation);
-      setStartDate(value.value?.start ? new Date(value.value.start) : null);
-      setEndDate(value.value?.end ? new Date(value.value.end) : null);
+      setStartDate(value.value?.from ? new Date(value.value.from) : null);
+      setEndDate(value.value?.to ? new Date(value.value.to) : null);
     } else {
       setOperation(DateFilterOperation.is);
       setStartDate(null);
@@ -113,8 +113,8 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     }
 
     const filterValue: DateFilterValue = {
-      start: startDate?.toISOString(),
-      end: endDate?.toISOString(),
+      from: startDate?.toISOString(),
+      to: endDate?.toISOString(),
     };
 
     const filterClause: FilterClause<DateFilterValue, DateFilterOperation> = {
@@ -173,8 +173,8 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
           >
             <MenuItem value={DateFilterOperation.is}>Is</MenuItem>
             <MenuItem value={DateFilterOperation.isNot}>Is Not</MenuItem>
-            <MenuItem value={DateFilterOperation.before}>Before</MenuItem>
-            <MenuItem value={DateFilterOperation.after}>After</MenuItem>
+            <MenuItem value={DateFilterOperation.isBefore}>Before</MenuItem>
+            <MenuItem value={DateFilterOperation.isAfter}>After</MenuItem>
             <MenuItem value={DateFilterOperation.between}>Between</MenuItem>
             <MenuItem value={DateFilterOperation.isEmpty}>Is Empty</MenuItem>
             <MenuItem value={DateFilterOperation.isNotEmpty}>
