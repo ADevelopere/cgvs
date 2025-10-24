@@ -59,7 +59,7 @@ export const SelectEditRenderer = <TValue,>({
         disableUnderline
         sx={{
           "& .MuiSelect-select": {
-            padding: 0,u
+            padding: 0,
           },
         }}
       >

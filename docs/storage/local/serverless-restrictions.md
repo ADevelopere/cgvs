@@ -382,7 +382,7 @@ curl https://sdk.cloud.google.com | bash
 gcloud auth login
 
 # Upload files (preserves directory structure)
-gsutil -m cp -r ./cgvs/data/files/* gs://your-bucket/
+gsutil -m cp -r ./storage/* gs://your-bucket/
 
 # Verify upload
 gsutil ls -r gs://your-bucket/
@@ -394,7 +394,7 @@ gsutil ls -r gs://your-bucket/
 
 ```bash
 STORAGE_PROVIDER=local
-LOCAL_STORAGE_PATH=./cgvs/data/files/
+LOCAL_STORAGE_PATH=./storage/
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
@@ -439,10 +439,10 @@ curl https://your-domain.com/api/storage/files/public/test-file.png
 
 ```bash
 # Backup before deletion
-tar -czf cgvs-local-storage-backup.tar.gz ./cgvs/data/files/
+tar -czf cgvs-local-storage-backup.tar.gz ./storage/
 
 # Remove local files
-rm -rf ./cgvs/data/files/
+rm -rf ./storage/
 
 # Update .gitignore (remove local storage path)
 ```
@@ -547,7 +547,7 @@ This is the recommended approach (already implemented in this codebase).
 
 ```bash
 STORAGE_PROVIDER=local
-LOCAL_STORAGE_PATH=./cgvs/data/files/
+LOCAL_STORAGE_PATH=./storage/
 ```
 
 **Production (Vercel/serverless):**

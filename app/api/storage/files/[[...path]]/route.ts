@@ -6,7 +6,7 @@ import logger from "@/server/lib/logger";
 // import { extractTokenFromHeader, verifyToken } from "@/server/lib/auth/jwt";
 // import { StorageDbRepository } from "@/server/db/repo/storage.repository";
 
-const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
+const storagePath = process.env.LOCAL_STORAGE_PATH || "./storage/";
 
 /**
  * Convert relative user path to secure absolute filesystem path

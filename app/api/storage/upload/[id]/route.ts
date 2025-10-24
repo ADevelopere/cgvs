@@ -7,7 +7,7 @@ import crypto from "crypto";
 import path from "path";
 import logger from "@/server/lib/logger";
 
-const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
+const storagePath = process.env.LOCAL_STORAGE_PATH || "./storage/";
 
 /**
  * Convert relative user path to secure absolute filesystem path
