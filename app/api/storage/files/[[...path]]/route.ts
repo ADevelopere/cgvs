@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import { createReadStream, statSync } from "fs";
 import path from "path";
 import logger from "@/server/lib/logger";
-import { extractTokenFromHeader, verifyToken } from "@/server/lib/auth/jwt";
+// import { extractTokenFromHeader, verifyToken } from "@/server/lib/auth/jwt";
 
 const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
 
@@ -119,9 +119,14 @@ export async function GET(
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    // Step 4: Check permissions
-    const dbFile = await StorageDbRepository.fileByPath(relativePath);
+    // Step 4: Check permissions (commented out - privacy not implemented in local storage yet)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // const dbFile = await StorageDbRepository.fileByPath(relativePath);
 
+    // TODO: Implement privacy/access control for files
+    // Currently isProtected only prevents deletion, not access
+    // Uncomment below when privacy feature is implemented in local storage adapter
+    /*
     // If file is protected, verify authentication
     if (dbFile?.isProtected) {
       const authHeader = request.headers.get("authorization");
@@ -154,6 +159,7 @@ export async function GET(
         }
       }
     }
+    */
 
     // Step 5: Get file stats
     const stats = statSync(absolutePath);

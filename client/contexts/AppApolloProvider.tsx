@@ -348,7 +348,9 @@ export const AppApolloProvider: React.FC<{
         isConnectedRef.current = false;
 
         if (wasConnected) {
-          logger.info("[Error Link] Connection lost (was previously connected)");
+          logger.info(
+            "[Error Link] Connection lost (was previously connected)"
+          );
         }
 
         notifyIfDisconnected();
@@ -409,7 +411,9 @@ export const AppApolloProvider: React.FC<{
     if (isConnected || !initialCheckDone) {
       // Clear any pending reconnection timeout if we're connected
       if (reconnectTimeoutRef.current) {
-        logger.debug("[Reconnect Effect] Clearing timeout (connected or not initialized)");
+        logger.debug(
+          "[Reconnect Effect] Clearing timeout (connected or not initialized)"
+        );
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
       }
@@ -434,7 +438,9 @@ export const AppApolloProvider: React.FC<{
 
       // Schedule the reconnection attempt
       reconnectTimeoutRef.current = setTimeout(() => {
-        logger.info(`[Reconnect] Executing attempt #${reconnectAttemptRef.current}`);
+        logger.info(
+          `[Reconnect] Executing attempt #${reconnectAttemptRef.current}`
+        );
         checkConnectivity().then(connected => {
           logger.debug(`[Reconnect] Attempt result: connected=${connected}`);
           if (!connected) {

@@ -5,24 +5,25 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "./recipient.documents";
 import { templateRecipientGroupsByTemplateIdQueryDocument } from "../../recipientGroup/hooks/recipientGroup.documents";
 import { ApolloCache } from "@apollo/client";
-import { useRecipientStore } from "../stores/useRecipientStore";
 
 export const useRecipientApolloMutations = (templateId?: number) => {
-  const { studentsNotInGroupQueryParams, recipientsByGroupIdFilteredQuery } =
-    useRecipientStore();
-
   // Utility function to evict cache
   const evictStudents = (cache: ApolloCache) => {
     try {
+      // Evict ALL variations of these queries (no args = evict all)
+      // This ensures fresh data on next query and cleans up old cached pages
       cache.evict({
         fieldName: "studentsNotInRecipientGroup",
-        args: studentsNotInGroupQueryParams,
       });
 
       cache.evict({
         fieldName: "recipientsByGroupIdFiltered",
-        args: recipientsByGroupIdFilteredQuery,
       });
+
+      cache.evict({
+        fieldName: "recipientVariableValuesByGroup",
+      });
+
       cache.gc(); // Garbage collect to clean up evicted data
     } catch {
       // Cache doesn't exist yet, will be populated on next query

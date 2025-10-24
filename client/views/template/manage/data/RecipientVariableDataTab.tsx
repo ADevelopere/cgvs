@@ -30,7 +30,7 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
     error: groupsError,
   } = useQuery(templateRecipientGroupsByTemplateIdQueryDocument, {
     variables: { templateId: template.id },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
   });
 
   const groups = useMemo(

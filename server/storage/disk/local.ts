@@ -14,6 +14,20 @@ import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
 
 /**
+ * Clean path for local storage - removes leading slashes and normalizes
+ */
+function cleanLocalPath(inputPath: string): string {
+  if (!inputPath || inputPath.length === 0) {
+    return "";
+  }
+
+  // Remove leading slashes and trailing slashes
+  const cleaned = inputPath.replace(/^\/+/, "").replace(/\/$/, "");
+
+  return cleaned;
+}
+
+/**
  * Local filesystem storage adapter
  * Stores files in a configurable directory with signed URL support via API routes
  */
@@ -149,12 +163,15 @@ class LocalAdapter implements StorageService {
     input: Types.UploadSignedUrlGenerateInput
   ): Promise<string> {
     try {
+      // Clean the path
+      const cleanedPath = cleanLocalPath(input.path);
+
       const mimeType = StorageUtils.contentTypeEnumToMimeType(
         input.contentType
       );
 
       logger.info("🔍 [SERVER DEBUG] Generating signed URL", {
-        path: input.path,
+        path: cleanedPath,
         fileSize: input.fileSize,
         inputContentTypeEnum: input.contentType,
         convertedMimeType: mimeType,
@@ -163,7 +180,7 @@ class LocalAdapter implements StorageService {
 
       // Validate upload
       const validationError = await StorageUtils.validateUpload(
-        input.path,
+        cleanedPath,
         input.fileSize
       );
       if (validationError) {
@@ -195,7 +212,7 @@ class LocalAdapter implements StorageService {
       // Create signed URL entry in database
       await SignedUrlRepository.createSignedUrl({
         id: tokenId,
-        filePath: input.path,
+        filePath: cleanedPath,
         contentType: mimeType,
         fileSize: BigInt(input.fileSize),
         contentMd5: input.contentMd5,
@@ -206,7 +223,7 @@ class LocalAdapter implements StorageService {
 
       logger.info("🔍 [SERVER DEBUG] Stored signed URL in database", {
         tokenId,
-        filePath: input.path,
+        filePath: cleanedPath,
         storedContentType: mimeType,
         storedFileSize: input.fileSize,
         storedContentMd5: input.contentMd5,
@@ -218,7 +235,7 @@ class LocalAdapter implements StorageService {
 
       logger.info("Generated signed URL successfully", {
         tokenId,
-        path: input.path,
+        path: cleanedPath,
         expiresAt,
       });
 
@@ -239,6 +256,8 @@ class LocalAdapter implements StorageService {
     buffer: Buffer
   ): Promise<Types.FileUploadResult> {
     try {
+      // Clean the file path
+      const cleanedFilePath = cleanLocalPath(filePath);
       const fileSize = buffer.byteLength;
 
       // Validate upload
@@ -255,7 +274,7 @@ class LocalAdapter implements StorageService {
       }
 
       // Check directory permissions
-      const directoryPath = filePath.substring(0, filePath.lastIndexOf("/"));
+      const directoryPath = cleanedFilePath.substring(0, cleanedFilePath.lastIndexOf("/"));
       const dbDirectory =
         await StorageDbRepository.directoryByPath(directoryPath);
 
@@ -272,15 +291,15 @@ class LocalAdapter implements StorageService {
       // If directory not in DB, allow upload (will be created automatically)
 
       // Write file to disk
-      const absolutePath = this.getAbsolutePath(filePath);
+      const absolutePath = this.getAbsolutePath(cleanedFilePath);
       await this.ensureDirectory(path.dirname(absolutePath));
       await fs.writeFile(absolutePath, buffer);
 
       // Create file entity in database
       logger.info("💾 uploadFile: Creating file entity in database", {
-        filePath,
+        filePath: cleanedFilePath,
       });
-      const fileEntity = await StorageDbRepository.createFile(filePath, false);
+      const fileEntity = await StorageDbRepository.createFile(cleanedFilePath, false);
       logger.info("💾 uploadFile: File entity created successfully", {
         fileEntity,
       });
@@ -290,19 +309,19 @@ class LocalAdapter implements StorageService {
       const md5Hash = await this.calculateMd5(absolutePath);
 
       const bucketFile: Types.BucketFile = {
-        path: filePath,
+        path: cleanedFilePath,
         directoryPath,
         size: BigInt(stats.size),
         contentType: StorageUtils.contentTypeEnumToMimeType(contentType),
         md5Hash,
         createdAt: stats.birthtime,
         lastModified: stats.mtime,
-        url: `${this.baseUrl}/api/storage/files/${filePath}`,
+        url: `${this.baseUrl}/api/storage/files/${cleanedFilePath}`,
         mediaLink: undefined,
         fileType: StorageUtils.getFileTypeFromContentType(
           StorageUtils.contentTypeEnumToMimeType(contentType)
         ),
-        isPublic: filePath.startsWith("public"),
+        isPublic: cleanedFilePath.startsWith("public"),
       };
 
       const fileInfo = StorageUtils.combineFileData(bucketFile, fileEntity);
@@ -313,7 +332,8 @@ class LocalAdapter implements StorageService {
         data: fileInfo,
       };
     } catch (error) {
-      logger.error(`Failed to upload file: ${filePath}`, error);
+      const errorPath = filePath; // Use original path for error logging
+      logger.error(`Failed to upload file: ${errorPath}`, error);
       return {
         success: false,
         message: `Failed to upload file: ${error instanceof Error ? error.message : String(error)}`,
@@ -326,7 +346,7 @@ class LocalAdapter implements StorageService {
     input: Types.FilesListSearchInput
   ): Promise<Types.StorageObjectList> {
     try {
-      const searchPath = input.path || "";
+      const searchPath = cleanLocalPath(input.path || "");
       const absolutePath = this.getAbsolutePath(searchPath);
 
       const items: Array<Types.FileInfo | Types.DirectoryInfo> = [];
@@ -528,13 +548,14 @@ class LocalAdapter implements StorageService {
     input: Types.FolderCreateInput
   ): Promise<Types.FileOperationResult> {
     try {
+      // Clean the path to remove leading/trailing slashes
+      const fullPath = cleanLocalPath(input.path);
+
       // Validate path
-      const validationError = await StorageUtils.validatePath(input.path);
+      const validationError = await StorageUtils.validatePath(fullPath);
       if (validationError) {
         throw new StorageValidationError(validationError);
       }
-
-      const fullPath = input.path;
 
       // Check parent directory permissions
       const parentPath = fullPath.substring(0, fullPath.lastIndexOf("/"));
@@ -562,8 +583,11 @@ class LocalAdapter implements StorageService {
 
       if (hasCustomPermissions) {
         try {
-          const directoryEntity =
-            await StorageDbRepository.createDirectory(input);
+          // Create directory with cleaned path
+          const directoryEntity = await StorageDbRepository.createDirectory({
+            ...input,
+            path: fullPath,
+          });
 
           const bucketDir: Types.BucketDirectory = {
             path: fullPath,

@@ -92,11 +92,6 @@ const DefaultViewRenderer: React.FC<{
 const viewRenderers: Record<string, React.FC<any>> = {
   select: SelectViewRenderer,
   country: CountryViewRenderer,
-  templateText: TextVariableCellRenderer,
-  templateNumber: NumberVariableCellRenderer,
-  templateDate: DateVariableCellRenderer,
-  templateSelect: SelectVariableCellRenderer,
-  readyStatus: ReadyStatusCellRenderer,
 };
 
 // --- Edit Mode Renderers ---
@@ -262,6 +257,11 @@ const editRenderers: Record<string, React.FC<any>> = {
   select: SelectEditRenderer,
   country: CountryEditRenderer,
   phone: PhoneEditRenderer,
+};
+
+// Custom renderers that handle both view and edit modes internally
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const customRenderers: Record<string, React.FC<any>> = {
   templateText: TextVariableCellRenderer,
   templateNumber: NumberVariableCellRenderer,
   templateDate: DateVariableCellRenderer,
@@ -275,6 +275,20 @@ const CellContentRenderer = React.forwardRef<
   HTMLInputElement,
   CellContentRendererProps
 >(({ column, cellValue, state, ...rest }, ref) => {
+  // Check if this is a custom renderer that handles both view and edit modes
+  const CustomRenderer = customRenderers[column.type];
+  if (CustomRenderer) {
+    return (
+      <CustomRenderer
+        column={column}
+        cellValue={cellValue}
+        state={state}
+        {...rest}
+        ref={ref}
+      />
+    );
+  }
+
   if (!state.isEditing) {
     const ViewRenderer = viewRenderers[column.type] || DefaultViewRenderer;
     return <ViewRenderer column={column} cellValue={cellValue} />;
