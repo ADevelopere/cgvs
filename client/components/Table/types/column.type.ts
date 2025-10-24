@@ -29,14 +29,20 @@ export type BaseColumnProps<TColumnId extends string = string> = {
 /**
  * View-only column (non-editable)
  */
-export type Column<TRowData, TColumnId extends string = string> = BaseColumnProps<TColumnId> & {
+export type Column<
+  TRowData,
+  TColumnId extends string = string,
+  TRowId extends string | number = string | number,
+> = BaseColumnProps<TColumnId> & {
   type: "viewonly";
 
   /**
    * Renders the column header
    * Consumer has full control over header rendering (sort, filter, label, etc.)
    */
-  headerRenderer: (props: { column: Column<TRowData, TColumnId> }) => React.ReactNode;
+  headerRenderer: (props: {
+    column: AnyColumn<TRowData, TColumnId, TRowData[keyof TRowData], TRowId>;
+  }) => React.ReactNode;
 
   /**
    * Renders the cell content in view mode
@@ -47,7 +53,12 @@ export type Column<TRowData, TColumnId extends string = string> = BaseColumnProp
 /**
  * Editable column with inline editing support
  */
-export type EditableColumn<TRowData, TValue, TColumnId extends string = string> = BaseColumnProps<TColumnId> & {
+export type EditableColumn<
+  TRowData,
+  TValue,
+  TColumnId extends string = string,
+  TRowId extends string | number = string | number,
+> = BaseColumnProps<TColumnId> & {
   type: "editable";
 
   /**
@@ -55,7 +66,7 @@ export type EditableColumn<TRowData, TValue, TColumnId extends string = string> 
    * Consumer has full control over header rendering (sort, filter, label, etc.)
    */
   headerRenderer: (props: {
-    column: EditableColumn<TRowData, TValue, TColumnId>;
+    column: AnyColumn<TRowData, TColumnId, TValue, TRowId>;
   }) => React.ReactNode;
 
   /**
@@ -78,22 +89,34 @@ export type EditableColumn<TRowData, TValue, TColumnId extends string = string> 
    * @param rowId - ID of the row being edited
    * @param value - New value to save
    */
-  onUpdate?: (rowId: TRowData[keyof TRowData], value: TValue) => Promise<void>;
+  onUpdate?: (rowId: TRowId, value: TValue) => Promise<void>;
 };
 
 /**
  * Union type representing any column in a table
  * TValue defaults to any field type in TRowData
  */
-export type AnyColumn<TRowData, TColumnId extends string = string, TValue = TRowData[keyof TRowData]> =
-  | Column<TRowData, TColumnId>
-  | EditableColumn<TRowData, TValue, TColumnId>;
+export type AnyColumn<
+  TRowData,
+  TColumnId extends string = string,
+  TValue = TRowData[keyof TRowData],
+  TRowId extends string | number = string | number,
+> =
+  | Column<TRowData, TColumnId, TRowId>
+  | EditableColumn<TRowData, TValue, TColumnId, TRowId>;
 
 /**
  * Type guard to check if column is editable
  */
-export function isEditableColumn<TRowData, TValue, TColumnId extends string = string>(
-  column: AnyColumn<TRowData, TColumnId, TValue>
-): column is EditableColumn<TRowData, TValue, TColumnId> {
+export function isEditableColumn<
+  TRowData,
+  TValue,
+  TColumnId extends string = string,
+  TRowId extends string | number = string | number,
+>(
+  column: AnyColumn<TRowData, TColumnId, TValue, TRowId>
+): column is EditableColumn<TRowData, TValue, TColumnId, TRowId> {
   return column.type === "editable";
 }
+
+export type PinPosition = "left" | "right" | null;

@@ -11,9 +11,9 @@ import {
 import { MoreVert, PushPin, VisibilityOff } from "@mui/icons-material";
 import ResizeHandle from "./ResizeHandle";
 import { useTableStyles } from "@/client/theme/styles";
-import { AnyColumn, PinPosition } from "@/client/components/Table/types/column.type";
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
+import { AnyColumn, PinPosition } from "../../types";
+import { useTableLocale } from "../../contexts";
+import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../../constants";
 
 export interface ColumnHeaderProps<TRowData> {
   column: AnyColumn<TRowData>;
@@ -240,7 +240,7 @@ const ColumnHeaderCell = <TRowData,>({
                 <ListItemIcon>
                   <PushPin fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>{locale.strings.pinLeft}</ListItemText>
+                <ListItemText>{locale.strings.column.pinLeft}</ListItemText>
               </MenuItem>
             )}
             {isPinned !== "right" && onPinRight && (
@@ -248,7 +248,7 @@ const ColumnHeaderCell = <TRowData,>({
                 <ListItemIcon>
                   <PushPin fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>{locale.strings.pinRight}</ListItemText>
+                <ListItemText>{locale.strings.column.pinRight}</ListItemText>
               </MenuItem>
             )}
             {isPinned && onUnpin && (
@@ -256,7 +256,7 @@ const ColumnHeaderCell = <TRowData,>({
                 <ListItemIcon>
                   <PushPin fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>{locale.strings.unpin}</ListItemText>
+                <ListItemText>{locale.strings.column.unpin}</ListItemText>
               </MenuItem>
             )}
             {onHide && (
@@ -264,7 +264,7 @@ const ColumnHeaderCell = <TRowData,>({
                 <ListItemIcon>
                   <VisibilityOff fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>{locale.strings.hide}</ListItemText>
+                <ListItemText>{locale.strings.column.hide}</ListItemText>
               </MenuItem>
             )}
           </Menu>

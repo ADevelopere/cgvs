@@ -4,6 +4,7 @@ export * from "./headers/BaseHeaderRenderer";
 // Filters
 export * from "./filters/TextFilterPopover";
 export * from "./filters/NumberFilterPopover";
+export * from "./filters/DateFilterPopover";
 
 // View Renderers
 export * from "./view/TextViewRenderer";

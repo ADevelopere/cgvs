@@ -4,11 +4,14 @@ import { Checkbox, Box } from "@mui/material";
 import {
   TABLE_CHECKBOX_CONTAINER_SIZE,
   TABLE_CHECKBOX_WIDTH,
-} from "@/client/constants/tableConstants";
+} from "../../constants";
 import DataCell from "./DataCell";
-import { AnyColumn } from "@/client/components/Table/types/column.type";
+import { AnyColumn } from "../../types";
 
-export type DataRowProps<TRowData> = {
+export type DataRowProps<
+  TRowData,
+  TRowId extends string | number = string | number,
+> = {
   rowData: TRowData;
   height: number;
   virtualIndex?: number;
@@ -19,13 +22,13 @@ export type DataRowProps<TRowData> = {
   indexColWidth: number;
   getColumnPinPosition: (columnId: string) => "left" | "right" | null;
   // row
-  getRowId: (row: TRowData) => string | number;
-  toggleRowSelection: (rowId: string | number) => void;
-  isRowSelected: (rowId: string | number) => boolean;
+  getRowId: (row: TRowData) => TRowId;
+  toggleRowSelection: (rowId: TRowId) => void;
+  isRowSelected: (rowId: TRowId) => boolean;
   getRowStyle?: (rowData: TRowData, rowIndex: number) => React.CSSProperties;
   onRowResizeStart: (
     e: React.MouseEvent,
-    rowId: string | number,
+    rowId: TRowId,
     currentHeight: number
   ) => void;
   rowSelectionEnabled: boolean;
@@ -35,7 +38,7 @@ export type DataRowProps<TRowData> = {
   pinnedRightStyle: React.CSSProperties;
 };
 
-const DataRow = <TRowData,>({
+const DataRow = <TRowData, TRowId extends string | number = string | number>({
   rowData,
   height,
   virtualIndex = 0,
@@ -56,7 +59,7 @@ const DataRow = <TRowData,>({
   // styles
   pinnedLeftStyle,
   pinnedRightStyle,
-}: DataRowProps<TRowData>) => {
+}: DataRowProps<TRowData, TRowId>) => {
   const theme = useTheme();
   const rowRef = React.useRef<HTMLTableRowElement>(null);
   const rowId = getRowId(rowData);

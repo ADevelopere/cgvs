@@ -2,10 +2,12 @@ import { useTheme } from "@mui/material/styles";
 import { CircularProgress, TablePagination } from "@mui/material";
 import type React from "react";
 import { useCallback, useMemo } from "react";
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
-import { useTableColumnContext } from "../Table/TableColumnContext";
-import { useTableContext } from "../Table/TableContext";
-import { useTableRowsContext } from "../Table/TableRowsContext";
+import {
+  useTableLocale,
+  useTableColumnContext,
+  useTableContext,
+  useTableRowsContext,
+} from "../contexts";
 
 interface TableFooterProps {
   loadedRows?: number;

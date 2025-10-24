@@ -9,7 +9,7 @@ import {
   useMemo,
   useEffect,
 } from "react";
-import { AnyColumn, PinPosition } from "@/client/components/Table/types/column.type";
+import { AnyColumn, PinPosition } from "../types";
 import { useTableContext } from "./TableContext";
 import { useTheme } from "@mui/material";
 

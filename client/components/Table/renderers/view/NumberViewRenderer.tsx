@@ -16,7 +16,7 @@ export interface NumberViewRendererProps {
 export const NumberViewRenderer: React.FC<NumberViewRendererProps> = ({
   value,
   decimals,
-  locale = "en-US",
+  locale = "ar-EG",
   tooltip = true,
 }) => {
   const displayValue = React.useMemo(() => {

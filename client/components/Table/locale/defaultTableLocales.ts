@@ -1,4 +1,4 @@
-import { TableLocale, LocaleDictionary } from "./tableLocale.types";
+import { TableLocale, LocaleDictionary } from "../types/locale.types";
 
 const enLocale: TableLocale = {
   sort: {

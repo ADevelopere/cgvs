@@ -11,12 +11,12 @@ import type { CSSProperties } from "react";
 import {
   AnyColumn,
   isEditableColumn,
-} from "@/client/components/Table/types/column.type";
+} from "../../types";
 
-type DataCellProps<TRowData> = {
+type DataCellProps<TRowData, TRowId extends string | number = string | number> = {
   column: AnyColumn<TRowData>;
   row: TRowData;
-  rowId: number;
+  rowId: TRowId;
   cellStyle: CSSProperties;
   cellEditingStyle: CSSProperties;
   getColumnPinPosition: (columnId: string) => "left" | "right" | null;
@@ -34,7 +34,7 @@ type DataCellProps<TRowData> = {
  * - Handles double-click to enter edit mode
  * - Manages save/cancel callbacks
  */
-const DataCell = <TRowData,>({
+const DataCell = <TRowData, TRowId extends string | number = string | number>({
   column,
   row,
   rowId,
@@ -44,7 +44,7 @@ const DataCell = <TRowData,>({
   getColumnWidth,
   pinnedLeftStyle,
   pinnedRightStyle,
-}: DataCellProps<TRowData>) => {
+}: DataCellProps<TRowData, TRowId>) => {
   const [isEditing, setIsEditing] = useState(false);
   const cellRef = useRef<HTMLTableCellElement>(null);
 
@@ -94,7 +94,7 @@ const DataCell = <TRowData,>({
 
   // Handle save
   const handleSave = useCallback(
-    async (value: unknown) => {
+    async (value: TRowData[keyof TRowData]) => {
       if (isEditableColumn(column) && column.onUpdate) {
         try {
           await column.onUpdate(rowId, value);

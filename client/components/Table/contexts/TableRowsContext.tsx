@@ -8,7 +8,7 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import { LoadMoreParams, PageInfo } from "@/client/components/Table/types/column.type";
+import { LoadMoreParams, PageInfo } from "../types";
 import { useTableContext } from "./TableContext";
 
 /**

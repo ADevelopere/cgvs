@@ -3,12 +3,11 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import Table from "@/client/components/Table/Table/Table";
-import { TableProvider } from "@/client/components/Table/Table/TableContext";
+import { Table, TableProvider } from "@/client/components/Table";
 import { useRecipientStore } from "./stores/useRecipientStore";
 import { useRecipientOperations } from "./hooks/useRecipientOperations";
 import { recipientsByGroupIdFilteredQueryDocument } from "./hooks/recipient.documents";
-import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
+import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
 import logger from "@/client/lib/logger";
