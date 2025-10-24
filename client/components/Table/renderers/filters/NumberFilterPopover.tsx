@@ -175,9 +175,9 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
             <MenuItem value={NumberFilterOperation.lessThanOrEqual}>
               Less Than or Equal (≤)
             </MenuItem>
-            <MenuItem value={NumberFilterOperation.isEmpty}>Is Empty</MenuItem>
-            <MenuItem value={NumberFilterOperation.isNotEmpty}>
-              Is Not Empty
+            <MenuItem value={NumberFilterOperation.isNull}>Is Null</MenuItem>
+            <MenuItem value={NumberFilterOperation.isNotNull}>
+              Is Not Null
             </MenuItem>
           </Select>
         </FormControl>

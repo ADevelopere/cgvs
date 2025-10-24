@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Select, MenuItem, FormControl, SelectChangeEvent } from "@mui/material";
 
-export interface SelectEditRendererProps<TValue> {
+export interface SelectEditRendererProps<TValue extends string | number> {
   value: TValue;
   options: Array<{ label: string; value: TValue }>;
   onSave: (value: TValue) => Promise<void>;
@@ -13,7 +13,7 @@ export interface SelectEditRendererProps<TValue> {
  *
  * Select dropdown that saves immediately on selection.
  */
-export const SelectEditRenderer = <TValue,>({
+export const SelectEditRenderer = <TValue extends string | number>({
   value,
   options,
   onSave,
