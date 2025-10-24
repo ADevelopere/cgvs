@@ -11,8 +11,8 @@ import { TableProvider, Table } from "@/client/components/Table";
 import CreateStudentRow from "./CreateStudentRow";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
-import { useStudentOperations } from "./useStudentOperations";
-import { useStudentTable } from "./useStudentTable";
+import { useStudentOperations } from "./hook/useStudentOperations";
+import { useStudentTable } from "./hook/useStudentTable";
 import * as Document from "./hook/student.documents";
 
 const StudentManagementDashboardTitle: React.FC = () => {

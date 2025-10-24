@@ -44,7 +44,7 @@
 
 #### Directory Structure ✓
 
-- ✓ Created `renderers/{headers,filters,view,edit,template}` directories
+- ✓ Created `renderers/{headers,filters,view,edit}` directories
 
 #### Headers ✓
 
@@ -55,6 +55,8 @@
 - ✓ TextFilterPopover
 - ✓ NumberFilterPopover
 - ✓ DateFilterPopover
+- ✓ SelectFilterPopover
+- ✓ BooleanFilterPopover
 
 #### View Renderers ✓
 
@@ -63,6 +65,9 @@
 - ✓ DateViewRenderer
 - ✓ BooleanViewRenderer
 - ✓ SelectViewRenderer
+- ✓ CountryViewRenderer
+- ✓ PhoneViewRenderer
+- ✓ ReadyStatusViewRenderer
 
 #### Edit Renderers ✓
 
@@ -71,13 +76,15 @@
 - ✓ DateEditRenderer
 - ✓ BooleanEditRenderer
 - ✓ SelectEditRenderer
+- ✓ CountryEditRenderer
+- ✓ PhoneEditRenderer
 
 #### Exports ✓
 
 - ✓ Updated `renderers/index.ts` with all exports
 
 **Note:** Template renderers removed per user request - basic renderers will be used instead.
-**Note:** Country and Phone renderers skipped - can be added later if needed.
+**All critical renderers are now complete!**
 
 ## Still TODO ⏳
 
@@ -118,33 +125,34 @@
 
 ## Current Status
 
-### TypeScript Errors: ~66
+### TypeScript Errors: ~34
 
-The following files still have TypeScript errors because they use the old API:
+All errors are in **consumer files** that haven't been migrated yet (expected):
 
-- `ColumnVisibilityPanel.tsx` - accessing `column.label`
-- `TableHeader.tsx` - accessing `column.filterable`, `column.type`, `column.label` **← BLOCKER**
-- `CellContentRenderer.tsx` and deprecated renderers - importing deleted types
-- `buildDataColumns.ts` - using old `ColumnTypes` enum
+- `buildDataColumns.ts` - using old `ColumnTypes` enum, non-generic types
 - `student/column.ts` - importing deleted `BaseColumn` type
-- Various consumer files - using non-generic `EditableColumn` type
+- `student/useStudentTable.tsx` - using non-generic `EditableColumn` type
+- Deprecated cell renderers - importing old types (will be deleted later)
+- Table imports - using old paths that were restructured
+
+**No errors in table component or new renderers!**
 
 ### Linting: ✅ Clean
 
-All new renderer files pass linting checks.
+All table component files and new renderers pass linting checks.
 
-## Implementation Progress: ~65% Complete
+## Implementation Progress: ~70% Complete
 
 ✅ **Completed:**
 
 - Type System (Phase 1)
 - Contexts (Phase 2)
 - Core Components (Phase 3)
-- Renderer Library (Phase 4)
+- Renderer Library (Phase 4) - **ALL RENDERERS COMPLETE**
 
-⏳ **In Progress:**
+⏳ **Ready to Start:**
 
-- Consumer Updates (Phase 5) - **NEEDS TO START**
+- Consumer Updates (Phase 5) - **NEXT PHASE**
 
 ❌ **Not Started:**
 
