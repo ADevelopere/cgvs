@@ -1,281 +1,165 @@
 "use client";
 
-import React, {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  FilledTextFieldProps,
-  OutlinedTextFieldProps,
-  StandardTextFieldProps,
-} from "@mui/material";
-import { EditableColumn } from "@/client/components/Table/table.type";
-import { TableCellEditingState } from "../Table/TableDataContext";
-import CellContentRenderer from "./CellContentRenderer";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { AnyColumn, isEditableColumn } from '@/client/components/Table/table.type';
 
-type DataCellProps = {
-  column: EditableColumn;
+type DataCellProps<TRowData = any> = {
+  column: AnyColumn<TRowData>;
+  row: TRowData;
   rowId: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cellValue: any;
-  cellEditingStyle: CSSProperties;
   cellStyle: CSSProperties;
-  inputStyle: CSSProperties;
+  cellEditingStyle: CSSProperties;
   getColumnPinPosition: (columnId: string) => "left" | "right" | null;
   getColumnWidth: (columnId: string) => number | undefined;
   pinnedLeftStyle: React.CSSProperties;
   pinnedRightStyle: React.CSSProperties;
-
-  getEditingState: (
-    rowId: string | number,
-    columnId: string
-  ) => TableCellEditingState | null;
-  setEditingState: (
-    rowId: string | number,
-    columnId: string,
-    state: TableCellEditingState | null
-  ) => void;
 };
 
-// Simplified state structure
-export type DataCellState = {
-  isEditing: boolean;
-  editingValue: unknown; // Only used when isEditing is true
-  errorMessage: string | null;
-};
+/**
+ * DataCell Component
+ *
+ * Manages cell state and delegates rendering to column renderers:
+ * - Uses column.viewRenderer for view mode
+ * - Uses column.editRenderer for edit mode (if editable)
+ * - Handles double-click to enter edit mode
+ * - Manages save/cancel callbacks
+ */
+const DataCell = <TRowData,>({
+  column,
+  row,
+  rowId,
+  cellStyle,
+  cellEditingStyle,
+  getColumnPinPosition,
+  getColumnWidth,
+  pinnedLeftStyle,
+  pinnedRightStyle,
+}: DataCellProps<TRowData>) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const cellRef = useRef<HTMLTableCellElement>(null);
 
-const DataCell = React.memo<DataCellProps>(
-  ({
-    column,
-    rowId,
-    cellValue,
-    cellEditingStyle,
+  // Determine if column is editable
+  const editable = useMemo(() => isEditableColumn(column), [column]);
+
+  // Calculate cell style based on pin position
+  const computedCellStyle = useMemo<CSSProperties>(() => {
+    const pinPosition = getColumnPinPosition(column.id);
+    const width = getColumnWidth(column.id);
+
+    let style: CSSProperties = {
+      ...cellStyle,
+      maxWidth: width,
+      minWidth: width,
+      width: width,
+    };
+
+    if (pinPosition === 'left') {
+      style = { ...style, ...pinnedLeftStyle };
+    } else if (pinPosition === 'right') {
+      style = { ...style, ...pinnedRightStyle };
+    }
+
+    if (isEditing) {
+      style = { ...style, ...cellEditingStyle };
+    }
+
+    return style;
+  }, [
+    column.id,
     cellStyle,
-    inputStyle,
+    cellEditingStyle,
+    isEditing,
     getColumnPinPosition,
     getColumnWidth,
     pinnedLeftStyle,
     pinnedRightStyle,
-    getEditingState,
-    setEditingState,
-  }) => {
-    const [state, setState] = useState<DataCellState>({
-      isEditing: false,
-      editingValue: cellValue,
-      errorMessage: null,
-    });
+  ]);
 
-    const stateRef = useRef(state);
-    useEffect(() => {
-      stateRef.current = state;
-    }, [state]);
+  // Handle double-click to enter edit mode
+  const handleDoubleClick = useCallback(() => {
+    if (editable && !isEditing) {
+      setIsEditing(true);
+    }
+  }, [editable, isEditing]);
 
-    const inputRef = useRef<HTMLInputElement | null>(null);
-
-    // This effect handles external changes to cellValue, resetting the component state.
-    useEffect(() => {
-      setState({
-        isEditing: false,
-        editingValue: cellValue,
-        errorMessage: null,
-      });
-    }, [cellValue, column]);
-
-    useEffect(() => {
-      if (state.isEditing) {
-        inputRef.current?.focus();
-      }
-    }, [state.isEditing]);
-
-    const validateValue = useCallback(
-      (value: unknown): string | null => {
-        return column?.getIsValid?.(value) ?? null;
-      },
-      [column]
-    );
-
-    // Function to commit changes
-    const commitChanges = useCallback(
-      (value: unknown) => {
-        const validationError = validateValue(value);
-        if (validationError) {
-          // Do not commit if the value is invalid.
-          // The user will remain in editing mode with the error message shown.
-          setState(prevState => ({
-            ...prevState,
-            errorMessage: validationError,
-          }));
-          return;
+  // Handle save
+  const handleSave = useCallback(
+    async (value: unknown) => {
+      if (isEditableColumn(column) && column.onUpdate) {
+        try {
+          await column.onUpdate(rowId, value);
+          setIsEditing(false);
+        } catch (_error) {
+          // Error handling - could show toast/snackbar here
+          // Don't exit edit mode on error
         }
-
-        if (value !== cellValue && column.onUpdate) {
-          column.onUpdate(rowId, value);
-        }
-        setState(prevState => ({ ...prevState, isEditing: false }));
-      },
-      [cellValue, column, rowId, validateValue]
-    );
-
-    const handleCellClick = useCallback(() => {
-      if (column.editable && !state.isEditing) {
-        setState({
-          isEditing: true,
-          editingValue: cellValue,
-          errorMessage: validateValue(cellValue),
-        });
+      } else {
+        // No onUpdate handler, just exit edit mode
+        setIsEditing(false);
       }
-    }, [cellValue, column.editable, state.isEditing, validateValue]);
+    },
+    [column, rowId]
+  );
 
-    const handleInputChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setState(prevState => ({
-          ...prevState,
-          editingValue: newValue,
-          errorMessage: validateValue(newValue),
-        }));
+  // Handle cancel
+  const handleCancel = useCallback(() => {
+    setIsEditing(false);
+  }, []);
 
-        if (column.type === "select" || column.type === "country") {
-          commitChanges(newValue);
-        }
-      },
-      [column.type, validateValue, commitChanges]
-    );
+  // Handle click outside to cancel
+  useEffect(() => {
+    if (!isEditing) return;
 
-    const handleBlur = useCallback(() => {
-      if (stateRef.current.isEditing) {
-        commitChanges(stateRef.current.editingValue);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cellRef.current && !cellRef.current.contains(event.target as Node)) {
+        handleCancel();
       }
-    }, [commitChanges]);
+    };
 
-    const handleInputKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === "Enter" && !stateRef.current.errorMessage) {
-          commitChanges(stateRef.current.editingValue);
-        } else if (e.key === "Escape") {
-          setState({
-            isEditing: false,
-            editingValue: cellValue, // Revert to original value
-            errorMessage: null,
-          });
-        }
-      },
-      [cellValue, commitChanges]
-    );
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditing, handleCancel]);
 
-    const commonProps = useMemo<
-      FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps
-    >(
-      () => ({
-        onChange: handleInputChange,
-        onBlur: handleBlur,
-        onKeyDown: handleInputKeyDown,
-        focused: state.isEditing,
-        variant: "standard",
-        fullWidth: true,
-        sx: inputStyle,
-        className: state.errorMessage ? "error" : undefined,
-        InputProps: { disableUnderline: true },
-        error: !!state.errorMessage,
-        color: state.errorMessage ? "error" : "primary",
-      }),
-      [
-        handleInputChange,
-        handleInputKeyDown,
-        handleBlur,
-        inputStyle,
-        state.isEditing,
-        state.errorMessage,
-      ]
-    );
-
-    const cellStyleWithPin = useMemo(() => {
-      const width = getColumnWidth(column.id) ?? 150;
-      const baseStyle = state.isEditing ? cellEditingStyle : cellStyle;
-      const effectiveCellStyle = { ...baseStyle, width: `${width}px` };
-
-      const pinPosition = getColumnPinPosition(column.id);
-      if (pinPosition === "left") {
-        return { ...effectiveCellStyle, ...pinnedLeftStyle };
-      }
-      if (pinPosition === "right") {
-        return { ...effectiveCellStyle, ...pinnedRightStyle };
-      }
-      return effectiveCellStyle;
-    }, [
-      getColumnWidth,
-      column.id,
-      state.isEditing,
-      cellEditingStyle,
-      cellStyle,
-      getColumnPinPosition,
-      pinnedLeftStyle,
-      pinnedRightStyle,
-    ]);
-
-    // This pair of effects handles saving and restoring state on mount/unmount for virtualization
+  // Handle Escape key to cancel
     useEffect(() => {
-      const savedState = getEditingState(rowId, column.id);
-      if (savedState) {
-        setState({
-          isEditing: savedState.isEditing,
-          editingValue: savedState.tmpValue,
-          errorMessage: savedState.errorMessage,
-        });
-      }
-    }, [getEditingState, rowId, column.id]);
+    if (!isEditing) return;
 
-    useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
       return () => {
-        const currentState = stateRef.current;
-        if (currentState.isEditing) {
-          setEditingState(rowId, column.id, {
-            isEditing: currentState.isEditing,
-            tmpValue: currentState.editingValue,
-            errorMessage: currentState.errorMessage,
-          });
-        } else {
-          setEditingState(rowId, column.id, null);
-        }
-      };
-    }, [setEditingState, rowId, column.id]);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isEditing, handleCancel]);
 
     return (
-      <td key={column.id} onDoubleClick={handleCellClick}>
-        <div style={{ ...cellStyleWithPin, position: "relative" }}>
-          <div
-            style={{
-              direction: column.type === "phone" ? "ltr" : "inherit",
-              textAlign: column.type === "phone" ? "left" : "inherit",
-            }}
-          >
-            <CellContentRenderer
-              ref={inputRef}
-              column={column}
-              cellValue={cellValue}
-              state={{
-                ...state,
-                // Pass the correct value to the renderer
-                editingValue: state.isEditing ? state.editingValue : cellValue,
-                errorMessage: state.errorMessage,
-              }}
-              setState={setState}
-              commonProps={commonProps}
-              validateValue={validateValue}
-              handleBlur={handleBlur}
-              handleInputKeyDown={handleInputKeyDown}
-            />
-          </div>
+    <td
+      ref={cellRef}
+      style={computedCellStyle}
+      onDoubleClick={handleDoubleClick}
+      role={editable ? 'gridcell' : undefined}
+      aria-readonly={!editable}
+    >
+      <div style={{ padding: '8px 12px', overflow: 'hidden' }}>
+        {isEditing && isEditableColumn(column) ? (
+          // Render edit mode
+          column.editRenderer({ row, onSave: handleSave, onCancel: handleCancel })
+        ) : (
+          // Render view mode
+          column.viewRenderer({ row })
+        )}
         </div>
       </td>
     );
-  }
-);
+};
 
-DataCell.displayName = "DataCell";
+DataCell.displayName = 'DataCell';
 
-export default DataCell;
+export default React.memo(DataCell) as typeof DataCell;

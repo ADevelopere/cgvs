@@ -1,75 +1,55 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { useTheme, styled } from '@mui/material/styles';
+import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { MoreVert, PushPin, VisibilityOff } from '@mui/icons-material';
+import ResizeHandle from './ResizeHandle';
+import { useTableStyles } from '@/client/theme/styles';
+import { AnyColumn, PinPosition } from '@/client/components/Table/table.type';
+import { useTableLocale } from '@/client/locale/table/TableLocaleContext';
+import { TABLE_CHECKBOX_CONTAINER_SIZE } from '@/client/constants/tableConstants';
 
-import type { CSSProperties, FunctionComponent } from "react";
-import { useTheme, styled } from "@mui/material/styles";
-import { IconButton, Tooltip, Badge } from "@mui/material";
-import {
-  ArrowUpward,
-  ArrowDownward,
-  UnfoldMore,
-  FilterList,
-  MoreVert,
-  PushPin,
-} from "@mui/icons-material";
-import { FilterClause } from "@/client/types/filters";
-import ResizeHandle from "./ResizeHandle";
-import { useTableStyles } from "@/client/theme/styles";
-import { EditableColumn, PinPosition } from "@/client/components/Table/table.type";
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
-import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
-import logger from "@/client/lib/logger";
-
-export interface ColumnHeaderProps {
-  column: EditableColumn;
-  onOptionsClick: (e: React.MouseEvent<HTMLElement>, columnId: string) => void;
-  onTextFilterIconClick: (
-    e: React.MouseEvent<HTMLElement>,
-    columnId: string
-  ) => void;
+export interface ColumnHeaderProps<TRowData = any> {
+  column: AnyColumn<TRowData>;
   isPinned: PinPosition;
-  // New props
-  sortDirection: OrderSortDirection | null;
-  isFiltered: boolean;
   columnWidth: number;
-  sort: (columnId: string) => void;
-  filter: (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filterClause: FilterClause<any, any> | null,
-    columnId: string
-  ) => void;
   resizeColumn: (columnId: string, newWidth: number) => void;
   pinnedLeftStyle: CSSProperties;
   pinnedRightStyle: CSSProperties;
+  // Column management callbacks
+  onPinLeft?: (columnId: string) => void;
+  onPinRight?: (columnId: string) => void;
+  onUnpin?: (columnId: string) => void;
+  onHide?: (columnId: string) => void;
 }
 
-const StyledTh = styled("th")(({ theme }) => ({
+const StyledTh = styled('th')(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   padding: 0,
+  position: 'relative',
 }));
 
 interface HeaderContainerProps {
   columnWidth: number;
-  isSortable: boolean;
 }
 
-const HeaderContainer = styled("div")<HeaderContainerProps>(
-  ({ columnWidth, isSortable }) => ({
-    position: "relative",
+const HeaderContainer = styled('div')<HeaderContainerProps>(
+  ({ columnWidth }) => ({
+    position: 'relative',
     maxWidth: columnWidth,
     width: columnWidth,
     minWidth: columnWidth,
-    overflow: "hidden",
-    background: "blue",
+    overflow: 'hidden',
     minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
-    cursor: isSortable ? "pointer" : "default",
   })
 );
 
-const HeaderInner = styled("div")({
-  overflow: "visible",
-  width: "100%",
-  height: "100%",
+const HeaderInner = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  height: '100%',
+  minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
 });
 
 interface HeaderContentProps {
@@ -79,336 +59,220 @@ interface HeaderContentProps {
   thStyle: CSSProperties;
 }
 
-const HeaderContent = styled("div")<HeaderContentProps>(({
+const HeaderContent = styled('div')<HeaderContentProps>(({
   isPinned,
   pinnedLeftStyle,
   pinnedRightStyle,
   thStyle,
 }) => {
   let style = { ...thStyle };
-  if (isPinned === "left") {
+  if (isPinned === 'left') {
     style = { ...thStyle, ...pinnedLeftStyle };
-  } else if (isPinned === "right") {
+  } else if (isPinned === 'right') {
     style = { ...thStyle, ...pinnedRightStyle };
   }
 
   return {
     ...style,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    overflow: "hidden",
-    height: TABLE_CHECKBOX_CONTAINER_SIZE,
-    minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+    flex: 1,
+    overflow: 'hidden',
   };
 });
 
-const ColumnLabel = styled("span")({
-  flexGrow: 1,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
+const OptionsButton = styled(IconButton)({
+  padding: '4px',
+  marginLeft: '4px',
 });
 
-const IconsContainer = styled("div")({
-  display: "flex",
-  alignItems: "center",
-  flexShrink: 0,
-});
+/**
+ * ColumnHeaderCell Component
+ *
+ * Manages table-level header concerns:
+ * - Column resizing
+ * - Column pinning (left/right)
+ * - Column visibility
+ * - Options menu
+ *
+ * Delegates header content rendering to column.headerRenderer
+ */
+const ColumnHeaderCell = <TRowData,>({
+  column,
+  isPinned,
+  columnWidth,
+  resizeColumn,
+  pinnedLeftStyle,
+  pinnedRightStyle,
+  onPinLeft,
+  onPinRight,
+  onUnpin,
+  onHide,
+}: ColumnHeaderProps<TRowData>) => {
+  const theme = useTheme();
+  const styles = useTableStyles();
+  const locale = useTableLocale();
 
-const HeaderIconButton = styled(IconButton)({
-  padding: "4px",
-});
+  const [optionsAnchor, setOptionsAnchor] = useState<HTMLElement | null>(null);
+  const resizeStartX = useRef<number>(0);
+  const resizeStartWidth = useRef<number>(0);
 
-const FilterIconButton = styled(HeaderIconButton, {
-  shouldForwardProp: prop => prop !== "isFiltered",
-})<{ isFiltered: boolean }>(({ theme, isFiltered }) => ({
-  color: isFiltered ? theme.palette.primary.main : "inherit",
-}));
+  // Calculate th style based on pin position
+  const thStyle = useMemo<CSSProperties>(() => {
+    const base: CSSProperties = {
+      ...styles.thStyle,
+      backgroundColor: theme.palette.background.paper,
+    };
 
-const LeftPushPin = styled(PushPin)({
-  marginLeft: 4,
-  transform: "rotate(45deg)",
-  verticalAlign: "middle",
-});
+    if (isPinned === 'left') {
+      return { ...base, ...pinnedLeftStyle };
+    } else if (isPinned === 'right') {
+      return { ...base, ...pinnedRightStyle };
+    }
 
-const RightPushPin = styled(PushPin)({
-  marginLeft: 4,
-  verticalAlign: "middle",
-});
+    return base;
+  }, [theme, styles, isPinned, pinnedLeftStyle, pinnedRightStyle]);
 
-const ColumnHeaderCell: FunctionComponent<ColumnHeaderProps> = React.memo(
-  ({
-    column,
-    onOptionsClick,
-    onTextFilterIconClick,
-    isPinned,
-    // Destructure new props
-    sortDirection,
-    isFiltered,
-    columnWidth,
-    sort,
-    filter,
-    resizeColumn,
-    pinnedLeftStyle,
-    pinnedRightStyle,
-  }) => {
-    const columnWidthRef = React.useRef(columnWidth);
-    React.useEffect(() => {
-      columnWidthRef.current = columnWidth;
-    }, [columnWidth]);
+  // Handle resize
+  const handleResizeStart = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const theme = useTheme();
-    const { strings } = useTableLocale();
-    const tempFilterValueRef = React.useRef("");
-    const isResizingRef = useRef(false);
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      resizeStartX.current = clientX;
+      resizeStartWidth.current = columnWidth;
 
-    // Base header cell style
-    const { thStyle } = useTableStyles();
-
-    // Determine if the column is sortable in the current mode
-    const isSortable = column.sortable;
-
-    // Determine if the column is filterable in the current mode
-    const isFilterable = column.filterable;
-
-    // Handle header click for sorting
-    const handleHeaderClick = useCallback(
-      (e: React.MouseEvent<HTMLElement>) => {
-        // If resizing, don't sort. The ref is reset on mouseup after the click event.
-        if (isResizingRef.current) {
-          return;
-        }
-
-        // Don't trigger sort if we're clicking on the resize handle or any icon button
-        if (
-          (e.target as HTMLElement).classList.contains("resize-handle") ||
-          (e.target as HTMLElement).closest(".header-icon-button")
-        ) {
-          return;
-        }
-
-        if (isSortable) {
-          sort(column.id);
-        }
-      },
-      [column.id, isSortable, sort]
-    );
-
-    // Handle resize start
-    const handleResizeStart = useCallback(
-      (
-        e:
-          | React.MouseEvent<HTMLButtonElement>
-          | React.TouchEvent<HTMLButtonElement>
-      ) => {
-        isResizingRef.current = true;
-
-        const startX = "touches" in e ? e.touches[0].clientX : e.clientX;
-        const startWidth = columnWidthRef.current;
-        let lastClientX = startX;
-        let ticking = false;
-
-        const update = () => {
-          const deltaX =
-            theme.direction === "rtl"
-              ? startX - lastClientX
-              : lastClientX - startX;
-          const newWidth = Math.max(startWidth + deltaX, 50); // Ensure minimum width of 50px
-          resizeColumn(column.id, newWidth);
-          ticking = false;
-        };
-
-        const handleResizeMove = (moveEvent: MouseEvent) => {
-          lastClientX = moveEvent.clientX;
-          if (!ticking) {
-            window.requestAnimationFrame(update);
-            ticking = true;
-          }
-        };
-
-        const handleResizeEnd = () => {
-          document.removeEventListener("mousemove", handleResizeMove);
-          document.removeEventListener("mouseup", handleResizeEnd);
-          // Use a timeout to ensure the click event is processed before we reset the flag.
-          // This prevents the sort from firing on resize completion.
-          setTimeout(() => {
-            isResizingRef.current = false;
-          }, 0);
-        };
-
-        document.addEventListener("mousemove", handleResizeMove);
-        document.addEventListener("mouseup", handleResizeEnd);
-        e.preventDefault();
-      },
-      [theme.direction, resizeColumn, column.id]
-    );
-
-    // Handle filter input change
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleFilterInputChange = useCallback(
-      (_columnId: string, value: string) => {
-        tempFilterValueRef.current = value;
-      },
-      []
-    );
-
-    // Handle apply filter
-    const handleApplyFilter = useCallback(
-      (columnId: string) => {
-        // Create a simple filter clause for backward compatibility
-        filter(
-          tempFilterValueRef.current
-            ? {
-                columnId,
-                operation: "contains",
-                value: tempFilterValueRef.current,
-              }
-            : null,
-          columnId
+      const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
+        const moveClientX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        const delta = moveClientX - resizeStartX.current;
+        const newWidth = Math.max(
+          column.minWidth || 50,
+          Math.min(
+            column.maxWidth || 1000,
+            resizeStartWidth.current + delta
+          )
         );
-      },
-      [filter]
-    );
+        resizeColumn(column.id, newWidth);
+      };
 
-    // Handle clear filter
-    const handleClearFilter = useCallback(
-      (columnId: string) => {
-        logger.info(
-          "🔍 ColumnHeaderCell: handleClearFilter called for columnId:",
-          columnId
-        );
-        filter(null, columnId);
-        tempFilterValueRef.current = "";
-      },
-      [filter]
-    );
+      const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove as any);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchmove', handleMouseMove as any);
+        document.removeEventListener('touchend', handleMouseUp);
+      };
 
-    // Handle key down in filter input
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") {
-          handleApplyFilter(column.id);
-        } else if (e.key === "Escape") {
-          handleClearFilter(column.id);
-        }
-      },
-      [column.id, handleApplyFilter, handleClearFilter]
-    );
+      document.addEventListener('mousemove', handleMouseMove as any);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleMouseMove as any);
+      document.addEventListener('touchend', handleMouseUp);
+    },
+    [column, columnWidth, resizeColumn]
+  );
 
-    // Determine which filter icon click handler to use based on column type
-    const handleFilterIconClick = useCallback(
-      (e: React.MouseEvent<HTMLElement>) => {
-        e.stopPropagation(); // Prevent triggering sort
+  // Options menu handlers
+  const handleOptionsClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    setOptionsAnchor(e.currentTarget);
+  }, []);
 
-        if (
-          column.type === "text" ||
-          column.type === "number" ||
-          column.type === "date"
-        ) {
-          onTextFilterIconClick(e, column.id);
-        }
-      },
-      [column, onTextFilterIconClick]
-    );
+  const handleOptionsClose = useCallback(() => {
+    setOptionsAnchor(null);
+  }, []);
 
-    const handleSortClick = useCallback(() => {
-      sort(column.id);
-    }, [sort, column.id]);
+  const handlePinLeft = useCallback(() => {
+    onPinLeft?.(column.id);
+    handleOptionsClose();
+  }, [column.id, onPinLeft, handleOptionsClose]);
 
-    const handleOptionsClick = useCallback(
-      (e: React.MouseEvent<HTMLElement>) => {
-        e.stopPropagation();
-        onOptionsClick(e, column.id);
-      },
-      [onOptionsClick, column.id]
-    );
+  const handlePinRight = useCallback(() => {
+    onPinRight?.(column.id);
+    handleOptionsClose();
+  }, [column.id, onPinRight, handleOptionsClose]);
 
-    const renderSortIcon = useMemo(() => {
-      if (!sortDirection) {
-        return <UnfoldMore fontSize="small" style={{ opacity: 0.5 }} />;
-      }
-      return sortDirection === "ASC" ? (
-        <ArrowUpward fontSize="small" />
-      ) : (
-        <ArrowDownward fontSize="small" />
-      );
-    }, [sortDirection]);
+  const handleUnpin = useCallback(() => {
+    onUnpin?.(column.id);
+    handleOptionsClose();
+  }, [column.id, onUnpin, handleOptionsClose]);
 
-    return (
-      <StyledTh onClick={handleHeaderClick}>
-        <HeaderContainer
-          columnWidth={columnWidth}
-          isSortable={isSortable ?? false}
-        >
-          <HeaderInner>
-            <HeaderContent
-              isPinned={isPinned}
-              pinnedLeftStyle={pinnedLeftStyle}
-              pinnedRightStyle={pinnedRightStyle}
-              thStyle={thStyle}
-            >
-              <ColumnLabel>
-                {column.label}
-                {isPinned === "left" && <LeftPushPin fontSize="small" />}
-                {isPinned === "right" && <RightPushPin fontSize="small" />}
-              </ColumnLabel>
+  const handleHide = useCallback(() => {
+    onHide?.(column.id);
+    handleOptionsClose();
+  }, [column.id, onHide, handleOptionsClose]);
 
-              <IconsContainer>
-                {isSortable && (
-                  <Tooltip title={strings.sort.title}>
-                    <HeaderIconButton
-                      size="small"
-                      className="header-icon-button"
-                      disableRipple
-                      onClick={handleSortClick}
-                    >
-                      {renderSortIcon}
-                    </HeaderIconButton>
-                  </Tooltip>
-                )}
+  return (
+    <StyledTh>
+      <HeaderContainer columnWidth={columnWidth}>
+        <HeaderInner>
+          <HeaderContent
+            isPinned={isPinned}
+            pinnedLeftStyle={pinnedLeftStyle}
+            pinnedRightStyle={pinnedRightStyle}
+            thStyle={thStyle}
+          >
+            {/* Render custom header content */}
+            {column.headerRenderer({ column } as any)}
+          </HeaderContent>
 
-                {isFilterable && (
-                  <Tooltip title={strings.filter.title}>
-                    <Badge
-                      color="primary"
-                      variant="dot"
-                      invisible={!isFiltered}
-                      overlap="circular"
-                    >
-                      <FilterIconButton
-                        size="small"
-                        className="header-icon-button"
-                        onClick={handleFilterIconClick}
-                        isFiltered={isFiltered}
-                      >
-                        <FilterList fontSize="small" />
-                      </FilterIconButton>
-                    </Badge>
-                  </Tooltip>
-                )}
+          {/* Table-managed options menu */}
+          <OptionsButton
+            onClick={handleOptionsClick}
+            size="small"
+            aria-label={`${column.id} options`}
+          >
+            <MoreVert fontSize="small" />
+          </OptionsButton>
 
-                <HeaderIconButton
-                  size="small"
-                  className="header-icon-button"
-                  onClick={handleOptionsClick}
-                >
-                  <MoreVert fontSize="small" />
-                </HeaderIconButton>
-              </IconsContainer>
-            </HeaderContent>
-            {column.resizable !== false && (
-              <ResizeHandle onResize={handleResizeStart} />
+          <Menu
+            anchorEl={optionsAnchor}
+            open={Boolean(optionsAnchor)}
+            onClose={handleOptionsClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            {isPinned !== 'left' && onPinLeft && (
+              <MenuItem onClick={handlePinLeft}>
+                <ListItemIcon>
+                  <PushPin fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{locale.strings.pinLeft}</ListItemText>
+              </MenuItem>
             )}
-          </HeaderInner>
-        </HeaderContainer>
-      </StyledTh>
-    );
-  }
-);
+            {isPinned !== 'right' && onPinRight && (
+              <MenuItem onClick={handlePinRight}>
+                <ListItemIcon>
+                  <PushPin fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{locale.strings.pinRight}</ListItemText>
+              </MenuItem>
+            )}
+            {isPinned && onUnpin && (
+              <MenuItem onClick={handleUnpin}>
+                <ListItemIcon>
+                  <PushPin fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{locale.strings.unpin}</ListItemText>
+              </MenuItem>
+            )}
+            {onHide && (
+              <MenuItem onClick={handleHide}>
+                <ListItemIcon>
+                  <VisibilityOff fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{locale.strings.hide}</ListItemText>
+              </MenuItem>
+            )}
+          </Menu>
+        </HeaderInner>
 
-ColumnHeaderCell.displayName = "ColumnHeaderCell";
+        {/* Resize handle */}
+        {column.resizable !== false && (
+          <ResizeHandle onResize={handleResizeStart} />
+        )}
+      </HeaderContainer>
+    </StyledTh>
+  );
+};
 
-export default ColumnHeaderCell;
+ColumnHeaderCell.displayName = 'ColumnHeaderCell';
+
+export default React.memo(ColumnHeaderCell) as typeof ColumnHeaderCell;
