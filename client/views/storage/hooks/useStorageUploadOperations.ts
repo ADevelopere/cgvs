@@ -59,14 +59,6 @@ export const useStorageUploadOperations = () => {
       let timeoutListener: ((ev: Event) => void) | null = null;
       let xhr: XMLHttpRequest | undefined = undefined;
 
-      logger.info("🔍 [UPLOAD DEBUG] Starting file upload", {
-        fileName: file.name,
-        fileSize: file.size,
-        browserFileType: file.type,
-        inferredContentType: contentType,
-        targetPath,
-      });
-
       try {
         updateFileState(fileKey, {
           status: "uploading",
@@ -75,14 +67,6 @@ export const useStorageUploadOperations = () => {
 
         // Generate MD5 hash for the file
         const contentMd5 = await generateFileMD5(file);
-
-        logger.info("🔍 [UPLOAD DEBUG] Requesting signed URL", {
-          fileName: file.name,
-          path: getStoragePath(targetPath) + "/" + file.name,
-          contentType,
-          fileSize: file.size,
-          contentMd5,
-        });
 
         const signedUrlRes = await generateUploadSignedUrl({
           input: {
@@ -103,12 +87,6 @@ export const useStorageUploadOperations = () => {
           throw new Error(translations.failedGenerateSignedUrl);
         }
 
-        logger.info("Signed URL received, starting upload", {
-          fileKey,
-          fileName: file.name,
-          fileSize: file.size,
-        });
-
         updateFileState(fileKey, { signedUrl });
 
         xhr = new XMLHttpRequest();
@@ -128,18 +106,6 @@ export const useStorageUploadOperations = () => {
             // Calculate bytes uploaded for this file
             const bytesUploaded = (progress / 100) * file.size;
             updateBatchProgress(fileKey, progress, bytesUploaded);
-
-            // Log progress every 25% to avoid spam
-            if (progress % 25 === 0 && progress > 0) {
-              logger.debug("Upload progress", {
-                fileKey,
-                fileName: file.name,
-                progress,
-                loaded: event.loaded,
-                total: event.total,
-                bytesUploaded,
-              });
-            }
           }
         };
 
@@ -160,14 +126,6 @@ export const useStorageUploadOperations = () => {
         };
 
         const uploadContentType = file.type || "application/octet-stream";
-
-        logger.info("🔍 [UPLOAD DEBUG] Sending XHR request", {
-          fileName: file.name,
-          signedUrl: signedUrl.substring(0, 100) + "...",
-          requestContentType: uploadContentType,
-          contentMd5,
-          fileSize: file.size,
-        });
 
         currentXhr.open("PUT", signedUrl);
         currentXhr.setRequestHeader("Content-Type", uploadContentType);
@@ -203,13 +161,6 @@ export const useStorageUploadOperations = () => {
               return;
             }
             if (currentXhr.status >= 200 && currentXhr.status < 300) {
-              logger.info("🔍 [UPLOAD DEBUG] Upload successful", {
-                fileKey,
-                fileName: file.name,
-                status: currentXhr.status,
-                statusText: currentXhr.statusText,
-                responseText: currentXhr.responseText,
-              });
               handleSuccess();
               resolve();
             } else {
@@ -344,12 +295,6 @@ export const useStorageUploadOperations = () => {
       maxConcurrentUploads: number = 5,
       maxAllowedFileSize: number = 10 * 1024 * 1024
     ) => {
-      logger.info("Starting upload batch", {
-        fileCount: files.length,
-        targetPath,
-        maxConcurrentUploads,
-      });
-
       const validFiles: File[] = [];
       const oversizedFiles: File[] = [];
 
@@ -359,11 +304,6 @@ export const useStorageUploadOperations = () => {
         } else {
           validFiles.push(file);
         }
-      });
-
-      logger.info("File validation completed", {
-        validFilesCount: validFiles.length,
-        oversizedFilesCount: oversizedFiles.length,
       });
 
       if (oversizedFiles.length > 0) {
@@ -453,9 +393,9 @@ export const useStorageUploadOperations = () => {
 
           // Evict cache if any files were successfully uploaded
           if (successCount > 0) {
-            // Evict listFiles and directoryChildren caches
-            evictListFilesCacheUtil(apolloClient);
-            evictDirectoryChildrenCacheUtil(apolloClient);
+            // Evict listFiles and directoryChildren caches for target path
+            evictListFilesCacheUtil(apolloClient, targetPath, paramsRef.current);
+            evictDirectoryChildrenCacheUtil(apolloClient, targetPath);
           }
 
           setTimeout(() => {

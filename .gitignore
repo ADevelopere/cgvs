@@ -77,9 +77,11 @@ tsconfig.tsbuildinfo
 /logs/
 
 # Local storage files
-storage
+/storage
 
 # Test fixtures
 tests/fixtures/storage-test/
 
-core.*
+# Core dump files (at root only)
+/core
+/core.*
