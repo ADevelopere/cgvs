@@ -79,9 +79,24 @@ class ClientLogger {
     if (!this.config.enabled) return;
 
     const message = args
-      .map(arg =>
-        typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-      )
+      .map(arg => {
+        if (arg === null) return "null";
+        if (arg === undefined) return "undefined";
+        if (typeof arg === "object") {
+          // Handle Error objects specially
+          if (arg instanceof Error) {
+            return `${arg.name}: ${arg.message} || ""}`;
+          }
+          // Try to stringify with error handling for circular references
+          try {
+            return JSON.stringify(arg, null, 2);
+          } catch {
+            // Fallback for circular references or other issues
+            return String(arg);
+          }
+        }
+        return String(arg);
+      })
       .join(" ");
 
     const timestamp = this.formatTimestamp();

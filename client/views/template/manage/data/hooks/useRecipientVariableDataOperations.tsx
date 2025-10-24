@@ -29,15 +29,6 @@ export const useRecipientVariableDataOperations = () => {
       value: unknown
     ): Promise<boolean> => {
       try {
-        logger.info(
-          "🔍 useRecipientVariableDataOperations: updateRecipientVariableValue called with:",
-          {
-            recipientGroupItemId,
-            variableId,
-            value,
-          }
-        );
-
         const result = await apollo.setRecipientVariableValuesMutation({
           variables: {
             recipientGroupItemId,

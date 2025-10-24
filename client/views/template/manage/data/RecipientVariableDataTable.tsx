@@ -16,37 +16,23 @@ import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariable
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
 import { buildDataColumns } from "./columns/buildDataColumns";
 import * as Document from "./hooks/recipientVariableData.documents";
-import * as TemplateVariableDocument from "../variables/hooks/templateVariable.documents";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useAppTranslation } from "@/client/locale";
 import { Typography } from "@mui/material";
+import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
 
 interface RecipientVariableDataTableProps {
-  templateId: number;
   selectedGroupId: number;
+  variables: TemplateVariable[];
 }
 
 const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
-  templateId,
   selectedGroupId,
+  variables,
 }) => {
   const operations = useRecipientVariableDataOperations();
   const store = useRecipientVariableDataStore();
   const strings = useAppTranslation("recipientVariableDataTranslations");
-
-  // Fetch template variables
-  const {
-    data: variablesData,
-    loading: variablesLoading,
-    error: variablesError,
-  } = useQuery(
-    TemplateVariableDocument.templateVariablesByTemplateIdQueryDocument,
-    {
-      variables: { templateId },
-      skip: !templateId,
-      fetchPolicy: "cache-first",
-    }
-  );
 
   // Fetch recipient variable data
   const { data, loading, error } = useQuery(
@@ -62,15 +48,12 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     }
   );
 
-  const variables = useMemo(
-    () => variablesData?.templateVariablesByTemplateId || [],
-    [variablesData]
-  );
-  const recipients = useMemo(
-    () => data?.recipientVariableValuesByGroup?.data || [],
-    [data]
-  );
-  const total = data?.recipientVariableValuesByGroup?.total || 0;
+  const { recipientsVarValues, total } = useMemo(() => {
+    return {
+      recipientsVarValues: data?.recipientVariableValuesByGroup?.data || [],
+      total: data?.recipientVariableValuesByGroup?.total || 0,
+    };
+  }, [data]);
 
   // Calculate page info for pagination
   const pageInfo = useMemo(() => {
@@ -169,12 +152,12 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
   // Transform data for table
   const tableData = useMemo(() => {
-    return recipients.map(recipient => ({
+    return recipientsVarValues.map(recipient => ({
       id: recipient.recipientGroupItemId,
       studentName: recipient.studentName,
       variableValues: recipient.variableValues,
     }));
-  }, [recipients]);
+  }, [recipientsVarValues]);
 
   // Handle page change
   const handlePageChange = useCallback(
@@ -193,7 +176,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   );
 
   // Show loading state
-  if (variablesLoading || loading) {
+  if (loading) {
     return (
       <Box
         sx={{
@@ -209,7 +192,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   }
 
   // Show error state
-  if (variablesError || error) {
+  if (error) {
     return (
       <Alert severity="error" sx={{ m: 2 }}>
         {strings.errorFetchingData}
@@ -218,7 +201,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   }
 
   // Show no data state
-  if (recipients.length === 0) {
+  if (recipientsVarValues.length === 0) {
     return (
       <Box
         sx={{
