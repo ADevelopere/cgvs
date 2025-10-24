@@ -1,7 +1,7 @@
 import type React from "react";
 import { Box, Typography, TextField, Button, Popover } from "@mui/material";
 import { Check, Clear } from "@mui/icons-material";
-import type { FilterPopoverProps } from "./types";
+import type { FilterPopoverProps } from "../types/header.types";
 import { useTableDataContext } from "../Table/TableDataContext";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 

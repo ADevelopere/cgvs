@@ -1,5 +1,5 @@
-import React from 'react';
-import { Checkbox } from '@mui/material';
+import React from "react";
+import { Checkbox } from "@mui/material";
 
 export interface BooleanViewRendererProps {
   value: boolean | null | undefined;
@@ -7,10 +7,10 @@ export interface BooleanViewRendererProps {
 
 /**
  * BooleanViewRenderer Component
- * 
+ *
  * Displays a read-only checkbox for boolean values.
  */
-export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({ 
+export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({
   value,
 }) => {
   return (
@@ -20,8 +20,8 @@ export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({
       size="small"
       sx={{
         padding: 0,
-        '&.Mui-disabled': {
-          cursor: 'default',
+        "&.Mui-disabled": {
+          cursor: "default",
         },
       }}
     />
@@ -29,4 +29,3 @@ export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({
 };
 
 export default BooleanViewRenderer;
-

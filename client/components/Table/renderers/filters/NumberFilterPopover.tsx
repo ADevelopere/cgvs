@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -10,13 +10,13 @@ import {
   InputLabel,
   Popover,
   type SelectChangeEvent,
-} from '@mui/material';
+} from "@mui/material";
 import {
   type FilterClause,
   NumberFilterOperation,
   operationRequiresValue,
-} from '@/client/types/filters';
-import { Check, Clear } from '@mui/icons-material';
+} from "@/client/types/filters";
+import { Check, Clear } from "@mui/icons-material";
 
 export interface NumberFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -50,17 +50,17 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     value?.operation || NumberFilterOperation.equals
   );
   const [filterValue, setFilterValue] = useState<string>(
-    value?.value !== undefined ? String(value.value) : ''
+    value?.value !== undefined ? String(value.value) : ""
   );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (value) {
       setOperation(value.operation);
-      setFilterValue(value.value !== undefined ? String(value.value) : '');
+      setFilterValue(value.value !== undefined ? String(value.value) : "");
     } else {
       setOperation(NumberFilterOperation.equals);
-      setFilterValue('');
+      setFilterValue("");
     }
     setError(null);
   }, [value, open]);
@@ -70,7 +70,7 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
       const newOperation = event.target.value as NumberFilterOperation;
       setOperation(newOperation);
       if (!operationRequiresValue(newOperation)) {
-        setFilterValue('');
+        setFilterValue("");
       }
       setError(null);
     },
@@ -93,12 +93,12 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
   const handleApply = useCallback(() => {
     if (valueRequired) {
       if (!filterValue.trim()) {
-        setError('Value is required for this operation');
+        setError("Value is required for this operation");
         return;
       }
       const numValue = Number(filterValue);
       if (isNaN(numValue)) {
-        setError('Please enter a valid number');
+        setError("Please enter a valid number");
         return;
       }
     }
@@ -115,16 +115,16 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
   const handleClear = useCallback(() => {
     onClear();
     setOperation(NumberFilterOperation.equals);
-    setFilterValue('');
+    setFilterValue("");
     setError(null);
     onClose();
   }, [onClear, onClose]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
+      if (event.key === "Enter") {
         handleApply();
-      } else if (event.key === 'Escape') {
+      } else if (event.key === "Escape") {
         onClose();
       }
     },
@@ -137,12 +137,12 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
       anchorEl={anchorEl}
       onClose={onClose}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+        vertical: "bottom",
+        horizontal: "left",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
+        vertical: "top",
+        horizontal: "left",
       }}
     >
       <Box sx={{ p: 2, minWidth: 300 }}>
@@ -160,13 +160,25 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
             size="small"
           >
             <MenuItem value={NumberFilterOperation.equals}>Equals (=)</MenuItem>
-            <MenuItem value={NumberFilterOperation.notEquals}>Not Equals (≠)</MenuItem>
-            <MenuItem value={NumberFilterOperation.greaterThan}>Greater Than (&gt;)</MenuItem>
-            <MenuItem value={NumberFilterOperation.greaterThanOrEqual}>Greater Than or Equal (≥)</MenuItem>
-            <MenuItem value={NumberFilterOperation.lessThan}>Less Than (&lt;)</MenuItem>
-            <MenuItem value={NumberFilterOperation.lessThanOrEqual}>Less Than or Equal (≤)</MenuItem>
+            <MenuItem value={NumberFilterOperation.notEquals}>
+              Not Equals (≠)
+            </MenuItem>
+            <MenuItem value={NumberFilterOperation.greaterThan}>
+              Greater Than (&gt;)
+            </MenuItem>
+            <MenuItem value={NumberFilterOperation.greaterThanOrEqual}>
+              Greater Than or Equal (≥)
+            </MenuItem>
+            <MenuItem value={NumberFilterOperation.lessThan}>
+              Less Than (&lt;)
+            </MenuItem>
+            <MenuItem value={NumberFilterOperation.lessThanOrEqual}>
+              Less Than or Equal (≤)
+            </MenuItem>
             <MenuItem value={NumberFilterOperation.isEmpty}>Is Empty</MenuItem>
-            <MenuItem value={NumberFilterOperation.isNotEmpty}>Is Not Empty</MenuItem>
+            <MenuItem value={NumberFilterOperation.isNotEmpty}>
+              Is Not Empty
+            </MenuItem>
           </Select>
         </FormControl>
 
@@ -186,7 +198,9 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
           />
         )}
 
-        <Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'flex-end' }}>
+        <Box
+          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
+        >
           <Button
             size="small"
             onClick={handleClear}
@@ -210,4 +224,3 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
 };
 
 export default NumberFilterPopover;
-

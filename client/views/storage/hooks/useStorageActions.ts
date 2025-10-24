@@ -138,60 +138,62 @@ export const useStorageActions = (): StorageActions => {
     []
   );
 
-  const getSortedItems = useCallback((items: StorageItemUnion[]): StorageItemUnion[] => {
-    const { searchMode, searchResults, sortBy, sortDirection } =
-      useStorageUIStore.getState();
+  const getSortedItems = useCallback(
+    (items: StorageItemUnion[]): StorageItemUnion[] => {
+      const { searchMode, searchResults, sortBy, sortDirection } =
+        useStorageUIStore.getState();
 
-    const currentItems = searchMode ? searchResults : items;
+      const currentItems = searchMode ? searchResults : items;
 
-    return [...currentItems].sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
+      return [...currentItems].sort((a, b) => {
+        let aValue: string | number;
+        let bValue: string | number;
 
-      switch (sortBy) {
-        case "name":
-          aValue = a.name;
-          bValue = b.name;
-          break;
-        case "size":
-          // FileInfo has size, DirectoryInfo has totalSize
-          if (a.__typename === "FileInfo") {
-            aValue = a.size;
-          } else if (a.__typename === "DirectoryInfo") {
-            aValue = a.totalSize || 0;
-          } else {
-            aValue = 0;
-          }
+        switch (sortBy) {
+          case "name":
+            aValue = a.name;
+            bValue = b.name;
+            break;
+          case "size":
+            // FileInfo has size, DirectoryInfo has totalSize
+            if (a.__typename === "FileInfo") {
+              aValue = a.size;
+            } else if (a.__typename === "DirectoryInfo") {
+              aValue = a.totalSize || 0;
+            } else {
+              aValue = 0;
+            }
 
-          if (b.__typename === "FileInfo") {
-            bValue = b.size;
-          } else if (b.__typename === "DirectoryInfo") {
-            bValue = b.totalSize || 0;
-          } else {
-            bValue = 0;
-          }
-          break;
-        case "lastModified":
-          aValue =
-            (a as unknown as { lastModified?: number }).lastModified ?? 0;
-          bValue =
-            (b as unknown as { lastModified?: number }).lastModified ?? 0;
-          break;
-        case "created":
-          aValue = (a as unknown as { created?: number }).created ?? 0;
-          bValue = (b as unknown as { created?: number }).created ?? 0;
-          break;
-        default:
-          aValue = a.name;
-          bValue = b.name;
-      }
+            if (b.__typename === "FileInfo") {
+              bValue = b.size;
+            } else if (b.__typename === "DirectoryInfo") {
+              bValue = b.totalSize || 0;
+            } else {
+              bValue = 0;
+            }
+            break;
+          case "lastModified":
+            aValue =
+              (a as unknown as { lastModified?: number }).lastModified ?? 0;
+            bValue =
+              (b as unknown as { lastModified?: number }).lastModified ?? 0;
+            break;
+          case "created":
+            aValue = (a as unknown as { created?: number }).created ?? 0;
+            bValue = (b as unknown as { created?: number }).created ?? 0;
+            break;
+          default:
+            aValue = a.name;
+            bValue = b.name;
+        }
 
-      if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "ASC" ? 1 : -1;
-      return 0;
-    });
-  }, []);
-
+        if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "ASC" ? 1 : -1;
+        return 0;
+      });
+    },
+    []
+  );
 
   // ============================================================================
   // RESET ACTIONS

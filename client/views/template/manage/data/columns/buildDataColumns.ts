@@ -1,5 +1,8 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { EditableColumn, ColumnTypes } from "@/client/components/Table/table.type";
+import {
+  EditableColumn,
+  ColumnTypes,
+} from "@/client/components/Table/types/column.type";
 import { getValidationError } from "../utils/validation";
 import { RecipientVariableDataTranslation } from "@/client/locale/components/RecipientVariableData";
 

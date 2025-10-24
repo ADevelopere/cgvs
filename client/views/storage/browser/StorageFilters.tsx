@@ -41,8 +41,10 @@ interface StorageFiltersProps {
  * Displays type and date filters when no items are selected.
  * Updates URL query parameters to trigger data re-fetch.
  */
-const StorageFilters: React.FC<StorageFiltersProps> = ({ params, updateParams }) => {
-
+const StorageFilters: React.FC<StorageFiltersProps> = ({
+  params,
+  updateParams,
+}) => {
   const setFilterType = React.useCallback(
     (type?: Graphql.FileType) => {
       updateParams({ fileType: type, offset: 0 });

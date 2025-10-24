@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -10,13 +10,13 @@ import {
   InputLabel,
   Popover,
   type SelectChangeEvent,
-} from '@mui/material';
+} from "@mui/material";
 import {
   type FilterClause,
   TextFilterOperation,
   operationRequiresValue,
-} from '@/client/types/filters';
-import { Check, Clear } from '@mui/icons-material';
+} from "@/client/types/filters";
+import { Check, Clear } from "@mui/icons-material";
 
 export interface TextFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -49,16 +49,16 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
   const [operation, setOperation] = useState<TextFilterOperation>(
     value?.operation || TextFilterOperation.contains
   );
-  const [filterValue, setFilterValue] = useState<string>(value?.value || '');
+  const [filterValue, setFilterValue] = useState<string>(value?.value || "");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (value) {
       setOperation(value.operation);
-      setFilterValue(value.value || '');
+      setFilterValue(value.value || "");
     } else {
       setOperation(TextFilterOperation.contains);
-      setFilterValue('');
+      setFilterValue("");
     }
     setError(null);
   }, [value, open]);
@@ -68,7 +68,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
       const newOperation = event.target.value as TextFilterOperation;
       setOperation(newOperation);
       if (!operationRequiresValue(newOperation)) {
-        setFilterValue('');
+        setFilterValue("");
       }
       setError(null);
     },
@@ -90,7 +90,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
 
   const handleApply = useCallback(() => {
     if (valueRequired && !filterValue.trim()) {
-      setError('Value is required for this operation');
+      setError("Value is required for this operation");
       return;
     }
     const filterClause: FilterClause<string, TextFilterOperation> = {
@@ -105,16 +105,16 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
   const handleClear = useCallback(() => {
     onClear();
     setOperation(TextFilterOperation.contains);
-    setFilterValue('');
+    setFilterValue("");
     setError(null);
     onClose();
   }, [onClear, onClose]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
+      if (event.key === "Enter") {
         handleApply();
-      } else if (event.key === 'Escape') {
+      } else if (event.key === "Escape") {
         onClose();
       }
     },
@@ -127,12 +127,12 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
       anchorEl={anchorEl}
       onClose={onClose}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+        vertical: "bottom",
+        horizontal: "left",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
+        vertical: "top",
+        horizontal: "left",
       }}
     >
       <Box sx={{ p: 2, minWidth: 300 }}>
@@ -150,13 +150,21 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
             size="small"
           >
             <MenuItem value={TextFilterOperation.contains}>Contains</MenuItem>
-            <MenuItem value={TextFilterOperation.notContains}>Does Not Contain</MenuItem>
+            <MenuItem value={TextFilterOperation.notContains}>
+              Does Not Contain
+            </MenuItem>
             <MenuItem value={TextFilterOperation.equals}>Equals</MenuItem>
-            <MenuItem value={TextFilterOperation.notEquals}>Not Equals</MenuItem>
-            <MenuItem value={TextFilterOperation.startsWith}>Starts With</MenuItem>
+            <MenuItem value={TextFilterOperation.notEquals}>
+              Not Equals
+            </MenuItem>
+            <MenuItem value={TextFilterOperation.startsWith}>
+              Starts With
+            </MenuItem>
             <MenuItem value={TextFilterOperation.endsWith}>Ends With</MenuItem>
             <MenuItem value={TextFilterOperation.isEmpty}>Is Empty</MenuItem>
-            <MenuItem value={TextFilterOperation.isNotEmpty}>Is Not Empty</MenuItem>
+            <MenuItem value={TextFilterOperation.isNotEmpty}>
+              Is Not Empty
+            </MenuItem>
           </Select>
         </FormControl>
 
@@ -175,7 +183,9 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
           />
         )}
 
-        <Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'flex-end' }}>
+        <Box
+          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
+        >
           <Button
             size="small"
             onClick={handleClear}
@@ -199,4 +209,3 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
 };
 
 export default TextFilterPopover;
-

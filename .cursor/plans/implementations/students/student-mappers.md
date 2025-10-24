@@ -35,18 +35,20 @@ export const mapStudentToPartialUpdateInput = (
 ## Usage in New Architecture
 
 ### In Operations Layer
+
 ```typescript
 const handleBulkUpdate = async (students: Student[]) => {
   const updatePromises = students.map(student => {
     const input = mapStudentToPartialUpdateInput(student);
     return partialUpdateStudent({ input });
   });
-  
+
   await Promise.all(updatePromises);
 };
 ```
 
 ### In Form Components
+
 ```typescript
 const prepareUpdatePayload = (student: Student) => {
   const input = mapStudentToPartialUpdateInput(student);
@@ -63,6 +65,7 @@ const prepareUpdatePayload = (student: Student) => {
 **Purpose:** Converts a complete `Student` object to a `PartialStudentUpdateInput` for GraphQL mutations.
 
 **Input:**
+
 ```typescript
 const student: Student = {
   id: 123,
@@ -78,6 +81,7 @@ const student: Student = {
 ```
 
 **Output:**
+
 ```typescript
 const input: PartialStudentUpdateInput = {
   id: 123,
@@ -96,6 +100,7 @@ const input: PartialStudentUpdateInput = {
 These mappers work seamlessly with the new renderer-based architecture:
 
 ### In Cell Update Handlers
+
 ```typescript
 const handleUpdateCell = useCallback(
   async (rowId: number, columnId: string, value: unknown) => {
@@ -105,10 +110,10 @@ const handleUpdateCell = useCallback(
 
     // Map to update input
     const input = mapStudentToPartialUpdateInput(student);
-    
+
     // Update the specific field
     input[columnId] = value;
-    
+
     // Send update
     await partialUpdateStudent({ input });
   },
@@ -117,18 +122,17 @@ const handleUpdateCell = useCallback(
 ```
 
 ### In Bulk Operations
+
 ```typescript
 const handleBulkDelete = async (selectedIds: number[]) => {
-  const selectedStudents = students.filter(s => 
-    selectedIds.includes(s.id)
-  );
-  
+  const selectedStudents = students.filter(s => selectedIds.includes(s.id));
+
   const updates = selectedStudents.map(student => {
     const input = mapStudentToPartialUpdateInput(student);
     input.isDeleted = true; // Example soft delete
     return partialUpdateStudent({ input });
   });
-  
+
   await Promise.all(updates);
 };
 ```
@@ -136,6 +140,7 @@ const handleBulkDelete = async (selectedIds: number[]) => {
 ## Additional Mappers (Can Be Added)
 
 ### mapStudentToCreateInput
+
 ```typescript
 export const mapStudentToCreateInput = (
   student: Partial<Student>
@@ -152,6 +157,7 @@ export const mapStudentToCreateInput = (
 ```
 
 ### mapStudentToFormData
+
 ```typescript
 export const mapStudentToFormData = (student: Student) => {
   return {
@@ -172,6 +178,7 @@ export const mapStudentToFormData = (student: Student) => {
 ```
 
 ### mapFormDataToStudent
+
 ```typescript
 export const mapFormDataToStudent = (
   formData: FormData,
@@ -195,7 +202,8 @@ All mappers are fully type-safe:
 
 ```typescript
 // TypeScript ensures all required fields are present
-const input: PartialStudentUpdateInput = mapStudentToPartialUpdateInput(student);
+const input: PartialStudentUpdateInput =
+  mapStudentToPartialUpdateInput(student);
 
 // Compiler error if trying to add invalid fields
 input.invalidField = "value"; // ❌ TypeScript error
@@ -214,8 +222,8 @@ input.invalidField = "value"; // ❌ TypeScript error
 No changes to mapper tests are required. Example tests:
 
 ```typescript
-describe('mapStudentToPartialUpdateInput', () => {
-  it('should map all editable fields', () => {
+describe("mapStudentToPartialUpdateInput", () => {
+  it("should map all editable fields", () => {
     const student: Student = {
       id: 1,
       name: "John Doe",
@@ -239,10 +247,10 @@ describe('mapStudentToPartialUpdateInput', () => {
       nationality: "US",
       phoneNumber: "+966501234567",
     });
-    
+
     // Ensure read-only fields are excluded
-    expect(input).not.toHaveProperty('createdAt');
-    expect(input).not.toHaveProperty('updatedAt');
+    expect(input).not.toHaveProperty("createdAt");
+    expect(input).not.toHaveProperty("updatedAt");
   });
 });
 ```

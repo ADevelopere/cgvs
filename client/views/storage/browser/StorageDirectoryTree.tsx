@@ -85,22 +85,28 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
   );
 
   const itemRenderer = React.useCallback(
-    ({ node, isSelected }: { node: StorageDirectoryNode; isSelected: boolean }) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <FolderIcon
-            sx={{
-              color: isSelected ? "primary.main" : "text.secondary",
-            }}
-          />
-          <Typography
-            variant="body2"
-            sx={{
-              fontWeight: isSelected ? "bold" : "normal",
-            }}
-          >
+    ({
+      node,
+      isSelected,
+    }: {
+      node: StorageDirectoryNode;
+      isSelected: boolean;
+    }) => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <FolderIcon
+          sx={{
+            color: isSelected ? "primary.main" : "text.secondary",
+          }}
+        />
+        <Typography
+          variant="body2"
+          sx={{
+            fontWeight: isSelected ? "bold" : "normal",
+          }}
+        >
           {node.name}
-          </Typography>
-        </Box>
+        </Typography>
+      </Box>
     ),
     []
   );

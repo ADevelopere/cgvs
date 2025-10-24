@@ -1,14 +1,14 @@
-import React, { useCallback } from 'react';
-import { styled } from '@mui/material/styles';
-import { IconButton, Tooltip, Badge } from '@mui/material';
+import React, { useCallback } from "react";
+import { styled } from "@mui/material/styles";
+import { IconButton, Tooltip, Badge } from "@mui/material";
 import {
   ArrowUpward,
   ArrowDownward,
   UnfoldMore,
   FilterList,
-} from '@mui/icons-material';
-import { AnyColumn } from '../../table.type';
-import { OrderSortDirection } from '@/client/graphql/generated/gql/graphql';
+} from "@mui/icons-material";
+import { AnyColumn } from "../../types/column.type";
+import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Props for BaseHeaderRenderer
@@ -43,43 +43,43 @@ export type BaseHeaderRendererProps<TRowData> = {
 };
 
 // Styled Components
-const HeaderContent = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-  overflow: 'hidden',
-  padding: '8px 12px',
-  gap: '8px',
+const HeaderContent = styled("div")({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+  overflow: "hidden",
+  padding: "8px 12px",
+  gap: "8px",
 });
 
-const ColumnLabel = styled('span')({
+const ColumnLabel = styled("span")({
   flexGrow: 1,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
   fontWeight: 500,
-  fontSize: '0.875rem',
+  fontSize: "0.875rem",
 });
 
-const IconsContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
+const IconsContainer = styled("div")({
+  display: "flex",
+  alignItems: "center",
   flexShrink: 0,
-  gap: '2px',
+  gap: "2px",
 });
 
 const HeaderIconButton = styled(IconButton)({
-  padding: '4px',
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  padding: "4px",
+  "&:hover": {
+    backgroundColor: "rgba(0, 0, 0, 0.04)",
   },
 });
 
 const FilterIconButton = styled(HeaderIconButton, {
-  shouldForwardProp: prop => prop !== 'isFiltered',
+  shouldForwardProp: prop => prop !== "isFiltered",
 })<{ isFiltered?: boolean }>(({ theme, isFiltered }) => ({
-  color: isFiltered ? theme.palette.primary.main : 'inherit',
+  color: isFiltered ? theme.palette.primary.main : "inherit",
 }));
 
 /**
@@ -119,19 +119,24 @@ export const BaseHeaderRenderer = <TRowData,>({
   filterPopoverRenderer,
   sortDirection = null,
   isFiltered = false,
-  sortTooltip = 'Sort',
-  filterTooltip = 'Filter',
+  sortTooltip = "Sort",
+  filterTooltip = "Filter",
 }: BaseHeaderRendererProps<TRowData>): React.ReactElement => {
+  const handleSortClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      onSort?.(e);
+    },
+    [onSort]
+  );
 
-  const handleSortClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    onSort?.(e);
-  }, [onSort]);
-
-  const handleFilterClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    onFilter?.(e);
-  }, [onFilter]);
+  const handleFilterClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      onFilter?.(e);
+    },
+    [onFilter]
+  );
 
   return (
     <HeaderContent>
@@ -144,9 +149,9 @@ export const BaseHeaderRenderer = <TRowData,>({
               aria-label={`Sort by ${label}`}
               size="small"
             >
-              {sortDirection === 'ASC' ? (
+              {sortDirection === "ASC" ? (
                 <ArrowUpward fontSize="small" />
-              ) : sortDirection === 'DESC' ? (
+              ) : sortDirection === "DESC" ? (
                 <ArrowDownward fontSize="small" />
               ) : (
                 <UnfoldMore fontSize="small" />
@@ -160,7 +165,7 @@ export const BaseHeaderRenderer = <TRowData,>({
               invisible={!isFiltered}
               color="primary"
               variant="dot"
-              sx={{ '& .MuiBadge-dot': { top: 2, right: 2 } }}
+              sx={{ "& .MuiBadge-dot": { top: 2, right: 2 } }}
             >
               <Tooltip title={filterTooltip}>
                 <FilterIconButton
@@ -182,7 +187,6 @@ export const BaseHeaderRenderer = <TRowData,>({
   );
 };
 
-BaseHeaderRenderer.displayName = 'BaseHeaderRenderer';
+BaseHeaderRenderer.displayName = "BaseHeaderRenderer";
 
 export default BaseHeaderRenderer;
-

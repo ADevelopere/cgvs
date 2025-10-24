@@ -13,34 +13,32 @@ The existing implementation in `/home/pc/Projects/cgvs/client/views/student/useS
 ## Key Features (Already Present)
 
 ### 1. **CRUD Operations**
+
 ```typescript
-const {
-  createStudent,
-  partialUpdateStudent,
-  deleteStudent,
-} = useStudentOperations();
+const { createStudent, partialUpdateStudent, deleteStudent } =
+  useStudentOperations();
 ```
 
 ### 2. **Pagination Management**
+
 ```typescript
-const {
-  onPageChange,
-  onRowsPerPageChange,
-} = useStudentOperations();
+const { onPageChange, onRowsPerPageChange } = useStudentOperations();
 ```
 
 ### 3. **Sort Management**
+
 ```typescript
 const { updateSort } = useStudentOperations();
 
 // Usage
 updateSort([
   { column: "name", order: "ASC" },
-  { column: "createdAt", order: "DESC" }
+  { column: "createdAt", order: "DESC" },
 ]);
 ```
 
 ### 4. **Filter Management**
+
 ```typescript
 const {
   applyFilters,
@@ -52,6 +50,7 @@ const {
 ```
 
 ### 5. **Store Access**
+
 ```typescript
 const {
   queryParams,
@@ -68,13 +67,15 @@ const {
 The `useStudentOperations` hook integrates perfectly with the new renderer-based architecture:
 
 ### In useStudentTable Hook
+
 ```typescript
 export const useStudentTable = () => {
-  const { partialUpdateStudent, updateSort, setColumnFilter } = useStudentOperations();
-  
+  const { partialUpdateStudent, updateSort, setColumnFilter } =
+    useStudentOperations();
+
   // Use in column definitions
   const columns = buildStudentColumns({
-    onSort: (columnId) => {
+    onSort: columnId => {
       // Transform and call updateSort
       updateSort([{ column: columnId, order: newDirection }]);
     },
@@ -91,6 +92,7 @@ export const useStudentTable = () => {
 ```
 
 ### In StudentTable Component
+
 ```typescript
 const StudentTable = () => {
   const {
@@ -134,27 +136,30 @@ const StudentTable = () => {
 ### Mutations
 
 #### createStudent
+
 ```typescript
 const success = await createStudent({
   input: {
     name: "John Doe",
     email: "john@example.com",
     gender: "MALE",
-  }
+  },
 });
 ```
 
 #### partialUpdateStudent
+
 ```typescript
 const success = await partialUpdateStudent({
   input: {
     id: 123,
     name: "Jane Doe",
-  }
+  },
 });
 ```
 
 #### deleteStudent
+
 ```typescript
 const success = await deleteStudent(123);
 ```
@@ -162,11 +167,13 @@ const success = await deleteStudent(123);
 ### Pagination
 
 #### onPageChange
+
 ```typescript
 onPageChange(2); // Go to page 2
 ```
 
 #### onRowsPerPageChange
+
 ```typescript
 onRowsPerPageChange(50); // Show 50 rows per page
 ```
@@ -174,15 +181,15 @@ onRowsPerPageChange(50); // Show 50 rows per page
 ### Sorting
 
 #### updateSort
+
 ```typescript
-updateSort([
-  { column: "name", order: "ASC" },
-]);
+updateSort([{ column: "name", order: "ASC" }]);
 ```
 
 ### Filtering
 
 #### setColumnFilter
+
 ```typescript
 setColumnFilter(
   {
@@ -195,11 +202,13 @@ setColumnFilter(
 ```
 
 #### clearFilter
+
 ```typescript
 clearFilter("name");
 ```
 
 #### clearAllFilters
+
 ```typescript
 clearAllFilters();
 ```
@@ -235,6 +244,7 @@ try {
 ## Notifications
 
 Operations automatically show notifications for:
+
 - ✅ Successful create/update/delete
 - ❌ Failed operations
 - ⚠️ Validation errors

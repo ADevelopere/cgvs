@@ -394,7 +394,11 @@ export const useStorageUploadOperations = () => {
           // Evict cache if any files were successfully uploaded
           if (successCount > 0) {
             // Evict listFiles and directoryChildren caches for target path
-            evictListFilesCacheUtil(apolloClient, targetPath, paramsRef.current);
+            evictListFilesCacheUtil(
+              apolloClient,
+              targetPath,
+              paramsRef.current
+            );
             evictDirectoryChildrenCacheUtil(apolloClient, targetPath);
           }
 

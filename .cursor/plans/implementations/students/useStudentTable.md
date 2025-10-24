@@ -148,7 +148,7 @@ export const useStudentTable = () => {
     (columnId: string) => {
       const currentDirection = sortState[columnId];
       let newDirection: "ASC" | "DESC" | null = "ASC";
-      
+
       if (currentDirection === "ASC") {
         newDirection = "DESC";
       } else if (currentDirection === "DESC") {
@@ -266,6 +266,7 @@ export const useStudentTable = () => {
 ## Key Changes from Old Implementation
 
 ### Old Architecture
+
 ```typescript
 // Columns were built from static definitions + runtime enhancement
 const columns = useMemo(
@@ -274,7 +275,8 @@ const columns = useMemo(
       if (!column.editable) return column;
       return {
         ...column,
-        onUpdate: (rowId, value) => handleUpdateCell(rowId, column.accessor, value),
+        onUpdate: (rowId, value) =>
+          handleUpdateCell(rowId, column.accessor, value),
         getIsValid: getValidatorForColumn(column.accessor),
       };
     }),
@@ -283,20 +285,24 @@ const columns = useMemo(
 ```
 
 ### New Architecture
+
 ```typescript
 // Columns are built with full renderer definitions
 const columns = useMemo(
-  () => buildStudentColumns({
-    strings,
-    genderOptions,
-    filterState,
-    sortState,
-    onSort: handleSort,
-    onFilterChange: handleFilterChange,
-    onUpdate: handleUpdateCell,
-    validators,
-  }),
-  [/* all dependencies */]
+  () =>
+    buildStudentColumns({
+      strings,
+      genderOptions,
+      filterState,
+      sortState,
+      onSort: handleSort,
+      onFilterChange: handleFilterChange,
+      onUpdate: handleUpdateCell,
+      validators,
+    }),
+  [
+    /* all dependencies */
+  ]
 );
 ```
 
@@ -316,7 +322,7 @@ This hook is used in `StudentTable.tsx`:
 const StudentTable = () => {
   const { columns } = useStudentTable();
   const { queryParams, filters, onPageChange, ... } = useStudentOperations();
-  
+
   return (
     <TableProvider data={students} columns={columns} ...>
       <Table />

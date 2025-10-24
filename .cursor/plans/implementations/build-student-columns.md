@@ -5,6 +5,7 @@ This document provides a comprehensive guide for refactoring the Student Table t
 ## Overview
 
 The Student Table is located at `client/views/student/StudentTable.tsx` and includes:
+
 - Column definitions with filtering, sorting, and editing
 - Form for creating new students
 - Operations for CRUD operations
@@ -54,6 +55,7 @@ Replace the old `STUDENT_TABLE_COLUMNS` array with new renderer-based column def
 ### 4. Keep Supporting Files As-Is
 
 These files work with the new architecture without changes:
+
 - `useStudentOperations.tsx` - Operations layer
 - `useStudentStore.ts` - State management
 - `validators.ts` - Validation functions
@@ -62,6 +64,7 @@ These files work with the new architecture without changes:
 ## Key Changes Summary
 
 ### Old Architecture
+
 ```typescript
 {
   id: "name",
@@ -76,6 +79,7 @@ These files work with the new architecture without changes:
 ```
 
 ### New Architecture
+
 ```typescript
 {
   id: "name",
@@ -102,7 +106,7 @@ These files work with the new architecture without changes:
   ),
   viewRenderer: ({ row }) => <TextViewRenderer value={row.name} />,
   editRenderer: ({ row, onSave, onCancel }) => (
-    <TextEditRenderer 
+    <TextEditRenderer
       value={row.name}
       onSave={onSave}
       onCancel={onCancel}

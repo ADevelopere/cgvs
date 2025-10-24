@@ -5,13 +5,12 @@ import {
 } from "./TableColumnContext";
 import { TableDataProvider, TableDataProviderProps } from "./TableDataContext";
 import { TableRowsProvider, TableRowsProviderProps } from "./TableRowsContext";
-import { AnyColumn } from "@/client/components/Table/table.type";
-import { PageInfo } from "@/client/graphql/generated/gql/graphql";
+import { AnyColumn, PageInfo } from "@/client/components/Table/types/column.type";
 
-export type TableContextType<TRowData = any> = {
+export type TableContextType<TRowData, TColumnId extends string = string> = {
   data: TRowData[];
   isLoading?: boolean;
-  columns: AnyColumn<TRowData>[];
+  columns: AnyColumn<TRowData, TColumnId>[];
 
   pageInfo?: PageInfo | null;
   pageSize: number;
@@ -26,23 +25,25 @@ export type TableContextType<TRowData = any> = {
   compact?: boolean;
 };
 
-const TableContext = createContext<TableContextType<any> | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TableContext = createContext<TableContextType<any, any> | null>(null);
 
-type TableProviderProps<TRowData = any> = {
+type TableProviderProps<
+  TRowData,
+  TColumnId extends string = string,
+  TRowId extends string | number = string | number,
+> = {
   children: ReactNode;
 
   data: TRowData[];
   isLoading?: boolean;
-  columns: AnyColumn<TRowData>[];
+  columns: AnyColumn<TRowData, TColumnId>[];
 
-  dataProps: Omit<
-    TableDataProviderProps<TRowData>,
-    "children" | "data" | "isLoading" | "columns"
-  >;
-  columnProps: Omit<TableColumnsProviderProps<TRowData>, "children" | "data">;
+  dataProps: Omit<TableDataProviderProps<TColumnId>, "children">;
+  columnProps: Omit<TableColumnsProviderProps<TColumnId>, "children">;
   rowsProps: Omit<
-    TableRowsProviderProps<TRowData>,
-    "children" | "data" | "isLoading" | "selectedRowIds" | "onSelectionChange"
+    TableRowsProviderProps<TRowData, TRowId>,
+    "children" | "selectedRowIds" | "onSelectionChange"
   >;
 
   // Pagination
@@ -53,9 +54,6 @@ type TableProviderProps<TRowData = any> = {
   rowsPerPageOptions?: number[];
   initialPageSize?: number;
 
-  // Sorting
-  initialOrderBy?: { column: string; order: "ASC" | "DESC" }[];
-
   // Custom footer content
   footerStartContent?: ReactNode;
   footerEndContent?: ReactNode;
@@ -63,11 +61,15 @@ type TableProviderProps<TRowData = any> = {
   compact?: boolean;
 
   // Selection state management
-  selectedRowIds?: (string | number)[];
-  onSelectionChange?: (selectedIds: (string | number)[]) => void;
+  selectedRowIds?: TRowId[];
+  onSelectionChange?: (selectedIds: TRowId[]) => void;
 };
 
-export const TableProvider = <TRowData = any,>({
+export const TableProvider = <
+  TRowData,
+  TRowId extends string | number = string | number,
+  TColumnId extends string = string,
+>({
   children,
   data,
   columns,
@@ -80,16 +82,15 @@ export const TableProvider = <TRowData = any,>({
   onRowsPerPageChange,
   rowsPerPageOptions = [10, 25, 50, 100, 200],
   initialPageSize = 50,
-  initialOrderBy,
   footerStartContent,
   footerEndContent,
   hideRowsPerPage = false,
   compact = false,
   selectedRowIds,
   onSelectionChange,
-}: TableProviderProps<TRowData>) => {
+}: TableProviderProps<TRowData, TColumnId, TRowId>) => {
   const [pageSize, setPageSize] = useState<number>(initialPageSize);
-  const value = useMemo(() => {
+  const value = useMemo<TableContextType<TRowData, TColumnId>>(() => {
     return {
       data,
       isLoading,
@@ -128,21 +129,22 @@ export const TableProvider = <TRowData = any,>({
         onSelectionChange={onSelectionChange}
       >
         <TableColumnsProvider {...columnProps}>
-          <TableDataProvider {...dataProps} initialOrderBy={initialOrderBy}>
-            {children}
-          </TableDataProvider>
+          <TableDataProvider {...dataProps}>{children}</TableDataProvider>
         </TableColumnsProvider>
       </TableRowsProvider>
     </TableContext.Provider>
   );
 };
 
-export const useTableContext = <TRowData = any,>(): TableContextType<TRowData> => {
+export const useTableContext = <
+  TRowData,
+  TColumnId extends string = string,
+>(): TableContextType<TRowData, TColumnId> => {
   const context = useContext(TableContext);
   if (!context) {
     throw new Error("useTableContext must be used within a TableProvider");
   }
-  return context as TableContextType<TRowData>;
+  return context;
 };
 
 export default TableContext;

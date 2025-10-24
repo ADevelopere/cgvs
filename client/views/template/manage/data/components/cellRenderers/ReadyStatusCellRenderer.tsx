@@ -9,7 +9,7 @@
 import React, { useMemo } from "react";
 import { Tooltip, Box, IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
-import { EditableColumn } from "@/client/components/Table/table.type";
+import { EditableColumn } from "@/client/components/Table/types/column.type";
 import { DataCellState } from "@/client/components/Table/TableBody/DataCell";
 import { isRecipientReady } from "../../utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -153,7 +153,9 @@ const ReadyStatusViewRenderer = React.memo<{
 }>(({ column, cellValue }) => {
   // Extract and memoize variables from column metadata
   const variables = useMemo(
-    () => (column.metadata as { variables: Graphql.TemplateVariable[] })?.variables || [],
+    () =>
+      (column.metadata as { variables: Graphql.TemplateVariable[] })
+        ?.variables || [],
     [column.metadata]
   );
 
@@ -165,13 +167,19 @@ const ReadyStatusViewRenderer = React.memo<{
 
   // Calculate ready status (memoized)
   const isReady = useMemo(
-    () => isRecipientReady(variableValues as Record<string, unknown>, variables),
+    () =>
+      isRecipientReady(variableValues as Record<string, unknown>, variables),
     [variableValues, variables]
   );
 
   // Calculate tooltip message (memoized)
   const tooltipMessage = useMemo(
-    () => getTooltipMessage(isReady, variables, variableValues as Record<string, unknown>),
+    () =>
+      getTooltipMessage(
+        isReady,
+        variables,
+        variableValues as Record<string, unknown>
+      ),
     [isReady, variables, variableValues]
   );
 

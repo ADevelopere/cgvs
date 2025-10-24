@@ -6,10 +6,9 @@ import {
   TABLE_CHECKBOX_WIDTH,
 } from "@/client/constants/tableConstants";
 import DataCell from "./DataCell";
-import { AnyColumn } from "@/client/components/Table/table.type";
-import { TableCellEditingState } from "../Table/TableDataContext";
+import { AnyColumn } from "@/client/components/Table/types/column.type";
 
-export type DataRowProps<TRowData extends Record<string, any> = any> = {
+export type DataRowProps<TRowData> = {
   rowData: TRowData;
   height: number;
   virtualIndex?: number;
@@ -20,7 +19,7 @@ export type DataRowProps<TRowData extends Record<string, any> = any> = {
   indexColWidth: number;
   getColumnPinPosition: (columnId: string) => "left" | "right" | null;
   // row
-  rowIdKey: string;
+  getRowId: (row: TRowData) => string | number;
   toggleRowSelection: (rowId: string | number) => void;
   isRowSelected: (rowId: string | number) => boolean;
   getRowStyle?: (rowData: TRowData, rowIndex: number) => React.CSSProperties;
@@ -36,202 +35,197 @@ export type DataRowProps<TRowData extends Record<string, any> = any> = {
   pinnedRightStyle: React.CSSProperties;
 };
 
-const DataRow = <TRowData = any,>({
-    rowData,
-    height,
-    virtualIndex = 0,
-    globalIndex,
-    getEditingState,
-    setEditingState,
-    // column
-    visibleColumns,
-    getColumnWidth,
-    indexColWidth,
-    getColumnPinPosition,
-    // row
-    rowIdKey,
-    toggleRowSelection,
+const DataRow = <TRowData,>({
+  rowData,
+  height,
+  virtualIndex = 0,
+  globalIndex,
+  // column
+  visibleColumns,
+  getColumnWidth,
+  indexColWidth,
+  getColumnPinPosition,
+  // row
+  getRowId,
+  toggleRowSelection,
+  isRowSelected,
+  getRowStyle,
+  onRowResizeStart,
+  rowSelectionEnabled,
+  enableRowResizing,
+  // styles
+  pinnedLeftStyle,
+  pinnedRightStyle,
+}: DataRowProps<TRowData>) => {
+  const theme = useTheme();
+  const rowRef = React.useRef<HTMLTableRowElement>(null);
+  const rowId = getRowId(rowData);
+
+  const cellStyle: React.CSSProperties = React.useMemo(() => {
+    return {
+      padding: 16,
+      textAlign: "start" as const,
+      // // border
+      borderBottom: `1px solid ${theme.palette.divider}`,
+      borderTop: "none",
+      borderInlineStart: "none",
+      borderInlineEnd: `1px solid ${theme.palette.divider}`,
+      // // end border
+      overflow: "hidden" as const,
+      whiteSpace: "nowrap" as const,
+      textOverflow: "ellipsis" as const,
+      height: height + 8,
+      maxHeight: height + 8,
+    };
+  }, [height, theme.palette.divider]);
+
+  const cellEditingStyle: React.CSSProperties = React.useMemo(() => {
+    return {
+      ...cellStyle,
+      borderBottom: `2px solid ${theme.palette.primary.main}`,
+      borderTop: `2px solid ${theme.palette.primary.main}`,
+      borderInlineStart: `2px solid ${theme.palette.primary.main}`,
+      borderInlineEnd: `2px solid ${theme.palette.primary.main}`,
+      backgroundColor: theme.palette.background.paper,
+    };
+  }, [cellStyle, theme.palette.background.paper, theme.palette.primary.main]);
+
+  // Check if this row is selected
+
+  const handleResizeStart = React.useCallback(
+    (e: React.MouseEvent) => {
+      onRowResizeStart(e, rowId, height);
+      e.preventDefault();
+    },
+    [height, onRowResizeStart, rowId]
+  );
+
+  const handleRowSelectionChange = React.useCallback(() => {
+    if (!toggleRowSelection) return;
+    toggleRowSelection(rowId);
+  }, [rowId, toggleRowSelection]);
+
+  const backgroundColor = React.useMemo(() => {
+    if (isRowSelected(rowId)) {
+      return theme.palette.action.selected;
+    }
+    return virtualIndex % 2 === 0
+      ? theme.palette.customTable.evenRow
+      : theme.palette.customTable.oddRow;
+  }, [
     isRowSelected,
-    getRowStyle,
-    onRowResizeStart,
-    rowSelectionEnabled,
-    enableRowResizing,
-    // styles
-    pinnedLeftStyle,
-    pinnedRightStyle,
-  }: DataRowProps<TRowData>) => {
-    const theme = useTheme();
-    const rowRef = React.useRef<HTMLTableRowElement>(null);
+    rowId,
+    virtualIndex,
+    theme.palette.customTable.evenRow,
+    theme.palette.customTable.oddRow,
+    theme.palette.action.selected,
+  ]);
 
-    const cellStyle: React.CSSProperties = React.useMemo(() => {
-      return {
-        padding: 16,
-        textAlign: "start" as const,
-        // // border
-        borderBottom: `1px solid ${theme.palette.divider}`,
-        borderTop: "none",
-        borderInlineStart: "none",
-        borderInlineEnd: `1px solid ${theme.palette.divider}`,
-        // // end border
-        overflow: "hidden" as const,
-        whiteSpace: "nowrap" as const,
-        textOverflow: "ellipsis" as const,
-        height: height + 8,
-        maxHeight: height + 8,
-      };
-    }, [height, theme.palette.divider]);
+  const overrideRowStyle = React.useMemo(() => {
+    if (getRowStyle) {
+      return getRowStyle(rowData, virtualIndex);
+    }
+    return {};
+  }, [getRowStyle, rowData, virtualIndex]);
 
-    const cellEditingStyle: React.CSSProperties = React.useMemo(() => {
-      return {
-        ...cellStyle,
-        borderBottom: `2px solid ${theme.palette.primary.main}`,
-        borderTop: `2px solid ${theme.palette.primary.main}`,
-        borderInlineStart: `2px solid ${theme.palette.primary.main}`,
-        borderInlineEnd: `2px solid ${theme.palette.primary.main}`,
-        backgroundColor: theme.palette.background.paper,
-      };
-    }, [cellStyle, theme.palette.background.paper, theme.palette.primary.main]);
-
-    // Check if this row is selected
-
-    const handleResizeStart = React.useCallback(
-      (e: React.MouseEvent) => {
-        onRowResizeStart(e, rowData[rowIdKey], height);
-        e.preventDefault();
-      },
-      [height, onRowResizeStart, rowData, rowIdKey]
-    );
-
-    const handleRowSelectionChange = React.useCallback(() => {
-      if (!toggleRowSelection || !rowData || rowData[rowIdKey] === undefined)
-        return;
-
-      toggleRowSelection(rowData[rowIdKey]);
-    }, [rowData, rowIdKey, toggleRowSelection]);
-
-    const backgroundColor = React.useMemo(() => {
-      if (isRowSelected(rowData[rowIdKey])) {
-        return theme.palette.action.selected;
-      }
-      return virtualIndex % 2 === 0
-        ? theme.palette.customTable.evenRow
-        : theme.palette.customTable.oddRow;
-    }, [
-      isRowSelected,
-      rowData,
-      rowIdKey,
-      virtualIndex,
-      theme.palette.customTable.evenRow,
-      theme.palette.customTable.oddRow,
-      theme.palette.action.selected,
-    ]);
-
-    const overrideRowStyle = React.useMemo(() => {
-      if (getRowStyle) {
-        return getRowStyle(rowData, virtualIndex);
-      }
-      return {};
-    }, [getRowStyle, rowData, virtualIndex]);
-
-    return (
-      <tr
-        ref={rowRef}
+  return (
+    <tr
+      ref={rowRef}
+      style={{
+        display: "table-row",
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: backgroundColor,
+        color: theme.palette.text.secondary,
+        position: "relative",
+        ...overrideRowStyle,
+      }}
+    >
+      <td
         style={{
-          display: "table-row",
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: backgroundColor,
-          color: theme.palette.text.secondary,
-          position: "relative",
-          ...overrideRowStyle,
+          ...cellStyle,
+          width: indexColWidth,
+          textAlign: "center",
+          fontWeight: "bold",
         }}
       >
-        <td
-          style={{
-            ...cellStyle,
-            width: indexColWidth,
-            textAlign: "center",
-            fontWeight: "bold",
-          }}
-        >
-          {globalIndex}
-        </td>
+        {globalIndex}
+      </td>
 
-        {rowSelectionEnabled && (
-          <td>
-            <Box
-              sx={{
-                height: height - 2,
-                display: "flex",
-                alignItems: "center",
-                paddingInline: "8px",
-                borderInlineEnd: `1px solid ${theme.palette.divider}`,
-                width: TABLE_CHECKBOX_CONTAINER_SIZE,
-                minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
-              }}
-            >
-              <Checkbox
-                checked={isRowSelected(rowData[rowIdKey])}
-                onChange={handleRowSelectionChange}
-                color="primary"
-                size="small"
-                sx={{
-                  maxHeight: TABLE_CHECKBOX_WIDTH,
-                  height: TABLE_CHECKBOX_WIDTH,
-                  width: TABLE_CHECKBOX_WIDTH,
-                  minWidth: TABLE_CHECKBOX_WIDTH,
-                }}
-              />
-            </Box>
-          </td>
-        )}
-
-        {visibleColumns.map(column => {
-          const rowId = rowData[rowIdKey];
-          return (
-            <DataCell
-              key={column.id}
-              column={column}
-              row={rowData}
-              rowId={rowId}
-              cellStyle={cellStyle}
-              cellEditingStyle={cellEditingStyle}
-              getColumnPinPosition={getColumnPinPosition}
-              getColumnWidth={getColumnWidth}
-              pinnedLeftStyle={pinnedLeftStyle}
-              pinnedRightStyle={pinnedRightStyle}
-            />
-          );
-        })}
-        {enableRowResizing && (
-          <td
-            style={{
-              flex: "0 0 0",
-              width: 0,
-              padding: 0,
-              border: "none",
+      {rowSelectionEnabled && (
+        <td>
+          <Box
+            sx={{
+              height: height - 2,
+              display: "flex",
+              alignItems: "center",
+              paddingInline: "8px",
+              borderInlineEnd: `1px solid ${theme.palette.divider}`,
+              width: TABLE_CHECKBOX_CONTAINER_SIZE,
+              minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
             }}
           >
-            <Box
-              style={{
-                position: "absolute" as const,
-                bottom: "-3px",
-                left: 0,
-                right: 0,
-                cursor: "row-resize",
-                zIndex: 10,
-                userSelect: "none" as const,
-                touchAction: "none" as const,
-                backgroundColor: theme.palette.divider,
-                height: 4,
+            <Checkbox
+              checked={isRowSelected(rowId)}
+              onChange={handleRowSelectionChange}
+              color="primary"
+              size="small"
+              sx={{
+                maxHeight: TABLE_CHECKBOX_WIDTH,
+                height: TABLE_CHECKBOX_WIDTH,
+                width: TABLE_CHECKBOX_WIDTH,
+                minWidth: TABLE_CHECKBOX_WIDTH,
               }}
-              onMouseDown={handleResizeStart}
             />
-          </td>
-        )}
-      </tr>
-    );
-  };
+          </Box>
+        </td>
+      )}
+
+      {visibleColumns.map(column => {
+        return (
+          <DataCell
+            key={column.id}
+            column={column}
+            row={rowData}
+            rowId={rowId}
+            cellStyle={cellStyle}
+            cellEditingStyle={cellEditingStyle}
+            getColumnPinPosition={getColumnPinPosition}
+            getColumnWidth={getColumnWidth}
+            pinnedLeftStyle={pinnedLeftStyle}
+            pinnedRightStyle={pinnedRightStyle}
+          />
+        );
+      })}
+      {enableRowResizing && (
+        <td
+          style={{
+            flex: "0 0 0",
+            width: 0,
+            padding: 0,
+            border: "none",
+          }}
+        >
+          <Box
+            style={{
+              position: "absolute" as const,
+              bottom: "-3px",
+              left: 0,
+              right: 0,
+              cursor: "row-resize",
+              zIndex: 10,
+              userSelect: "none" as const,
+              touchAction: "none" as const,
+              backgroundColor: theme.palette.divider,
+              height: 4,
+            }}
+            onMouseDown={handleResizeStart}
+          />
+        </td>
+      )}
+    </tr>
+  );
+};
 
 DataRow.displayName = "DataRow";
 

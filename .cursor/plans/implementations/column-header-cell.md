@@ -95,13 +95,13 @@ const OptionsButton = styled(IconButton)({
 
 /**
  * ColumnHeaderCell Component
- * 
+ *
  * Manages table-level header concerns:
  * - Column resizing
  * - Column pinning (left/right)
  * - Column visibility
  * - Options menu
- * 
+ *
  * Delegates header content rendering to column.headerRenderer
  */
 const ColumnHeaderCell = <TRowData,>({
@@ -119,36 +119,36 @@ const ColumnHeaderCell = <TRowData,>({
   const theme = useTheme();
   const styles = useTableStyles();
   const locale = useTableLocale();
-  
+
   const [optionsAnchor, setOptionsAnchor] = useState<HTMLElement | null>(null);
   const resizeStartX = useRef<number>(0);
   const resizeStartWidth = useRef<number>(0);
-  
+
   // Calculate th style based on pin position
   const thStyle = useMemo<CSSProperties>(() => {
     const base: CSSProperties = {
       ...styles.th,
       backgroundColor: theme.palette.background.paper,
     };
-    
+
     if (isPinned === 'left') {
       return { ...base, ...pinnedLeftStyle };
     } else if (isPinned === 'right') {
       return { ...base, ...pinnedRightStyle };
     }
-    
+
     return base;
   }, [theme, styles, isPinned, pinnedLeftStyle, pinnedRightStyle]);
-  
+
   // Handle resize
   const handleResizeStart = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      
+
       resizeStartX.current = e.clientX;
       resizeStartWidth.current = columnWidth;
-      
+
       const handleMouseMove = (moveEvent: MouseEvent) => {
         const delta = moveEvent.clientX - resizeStartX.current;
         const newWidth = Math.max(
@@ -160,48 +160,48 @@ const ColumnHeaderCell = <TRowData,>({
         );
         resizeColumn(column.id, newWidth);
       };
-      
+
       const handleMouseUp = () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
       };
-      
+
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
     [column, columnWidth, resizeColumn]
   );
-  
+
   // Options menu handlers
   const handleOptionsClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     setOptionsAnchor(e.currentTarget);
   }, []);
-  
+
   const handleOptionsClose = useCallback(() => {
     setOptionsAnchor(null);
   }, []);
-  
+
   const handlePinLeft = useCallback(() => {
     onPinLeft?.(column.id);
     handleOptionsClose();
   }, [column.id, onPinLeft, handleOptionsClose]);
-  
+
   const handlePinRight = useCallback(() => {
     onPinRight?.(column.id);
     handleOptionsClose();
   }, [column.id, onPinRight, handleOptionsClose]);
-  
+
   const handleUnpin = useCallback(() => {
     onUnpin?.(column.id);
     handleOptionsClose();
   }, [column.id, onUnpin, handleOptionsClose]);
-  
+
   const handleHide = useCallback(() => {
     onHide?.(column.id);
     handleOptionsClose();
   }, [column.id, onHide, handleOptionsClose]);
-  
+
   return (
     <StyledTh>
       <HeaderContainer columnWidth={columnWidth}>
@@ -215,16 +215,16 @@ const ColumnHeaderCell = <TRowData,>({
             {/* Render custom header content */}
             {column.headerRenderer({ column })}
           </HeaderContent>
-          
+
           {/* Table-managed options menu */}
-          <OptionsButton 
+          <OptionsButton
             onClick={handleOptionsClick}
             size="small"
             aria-label={`${column.id} options`}
           >
             <MoreVert fontSize="small" />
           </OptionsButton>
-          
+
           <Menu
             anchorEl={optionsAnchor}
             open={Boolean(optionsAnchor)}
@@ -266,7 +266,7 @@ const ColumnHeaderCell = <TRowData,>({
             )}
           </Menu>
         </HeaderInner>
-        
+
         {/* Resize handle */}
         {column.resizable !== false && (
           <ResizeHandle onResize={handleResizeStart} />
@@ -284,6 +284,7 @@ export default React.memo(ColumnHeaderCell) as typeof ColumnHeaderCell;
 ## Key Changes from Old Implementation
 
 ### Removed
+
 - ✗ Built-in filter handling logic
 - ✗ Built-in sort handling logic
 - ✗ Filter icon rendering
@@ -291,12 +292,14 @@ export default React.memo(ColumnHeaderCell) as typeof ColumnHeaderCell;
 - ✗ Type-specific rendering logic
 
 ### Kept
+
 - ✓ Resize handle rendering and logic
 - ✓ Options menu (pin left/right, unpin, hide)
 - ✓ Column width management
 - ✓ Pinned column styling
 
 ### New
+
 - ✓ Calls `column.headerRenderer({ column })` for all header content
 - ✓ Fully generic with TypeScript generics `<TRowData>`
 - ✓ Consumer has complete control over header rendering

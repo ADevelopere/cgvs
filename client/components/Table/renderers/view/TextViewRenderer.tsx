@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Tooltip } from '@mui/material';
+import React from "react";
+import { Box, Tooltip } from "@mui/material";
 
 export interface TextViewRendererProps {
   value: string | number | null | undefined;
@@ -16,14 +16,15 @@ export const TextViewRenderer: React.FC<TextViewRendererProps> = ({
   value,
   tooltip = true,
 }) => {
-  const displayValue = value !== null && value !== undefined ? String(value) : '';
+  const displayValue =
+    value !== null && value !== undefined ? String(value) : "";
 
   const content = (
     <Box
       sx={{
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
       }}
     >
       {displayValue}
@@ -42,4 +43,3 @@ export const TextViewRenderer: React.FC<TextViewRendererProps> = ({
 };
 
 export default TextViewRenderer;
-

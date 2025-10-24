@@ -5,46 +5,46 @@ import { useTableRowsContext } from "../Table/TableRowsContext";
 import { useTableContext } from "../Table/TableContext";
 import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 import { useTableColumnContext } from "../Table/TableColumnContext";
-import { useTableDataContext } from "../Table/TableDataContext";
 
 const loadingRowHeight = 80;
-interface TableBodyProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[];
+
+interface TableBodyProps<TRowData> {
+  data: TRowData[];
   isPaginated?: boolean;
   pageInfo?: PageInfo | null;
   indexColWidth: number;
   colSpan: number;
 }
 
-const TableBody: React.FC<TableBodyProps> = ({
+const TableBody = <TRowData,>({
   data,
   isPaginated = false,
   pageInfo,
   indexColWidth,
   colSpan,
-}) => {
-  const { isLoading } = useTableContext();
+}: TableBodyProps<TRowData>) => {
+  const { isLoading } = useTableContext<TRowData>();
 
   const {
     rowSelectionEnabled,
     getRowStyle,
     rowHeights,
     resizeRowHeight,
-    rowIdKey,
+    getRowId,
     selectedRowIds,
     toggleRowSelection,
     enableRowResizing,
-  } = useTableRowsContext();
+  } = useTableRowsContext<TRowData>();
   const {
     visibleColumns,
     pinnedColumns,
     columnWidths,
     pinnedLeftStyle,
     pinnedRightStyle,
-  } = useTableColumnContext();
+  } = useTableColumnContext<TRowData>();
 
-  const { getEditingState, setEditingState } = useTableDataContext();
+  // Note: edit state now managed internally by DataCell
+  // const { _getEditingState, _setEditingState } = useTableDataContext();
 
   const isRowSelected = React.useCallback(
     (rowId: string | number) => {
@@ -127,6 +127,7 @@ const TableBody: React.FC<TableBodyProps> = ({
   return (
     <>
       {data.map((item, index) => {
+        const rowId = getRowId(item);
         const globalIndex =
           pageInfo?.firstItem != null
             ? pageInfo.firstItem + index
@@ -136,20 +137,18 @@ const TableBody: React.FC<TableBodyProps> = ({
 
         return (
           <DataRow
-            key={item.id}
+            key={rowId}
             rowData={item}
-            height={rowHeights[item.id] || 50}
+            height={rowHeights[rowId] || 50}
             virtualIndex={index}
             globalIndex={globalIndex}
-            getEditingState={getEditingState}
-            setEditingState={setEditingState}
             //column
             visibleColumns={visibleColumns}
             getColumnWidth={getColumnWidth}
             indexColWidth={indexColWidth}
             getColumnPinPosition={getColumnPinPosition}
             // row
-            rowIdKey={rowIdKey}
+            getRowId={getRowId}
             toggleRowSelection={toggleRowSelection}
             isRowSelected={isRowSelected}
             getRowStyle={getRowStyle}

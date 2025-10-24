@@ -68,6 +68,7 @@ export const isValidPhoneNumber = (phone: string): boolean => {
 ## Usage in New Architecture
 
 ### In useStudentTable Hook
+
 ```typescript
 const validateFullName = useCallback(
   (value: string): string | null => {
@@ -95,6 +96,7 @@ const validatePhoneNumber = useCallback(
 ```
 
 ### In Edit Renderers
+
 ```typescript
 <TextEditRenderer
   value={row.name}
@@ -121,31 +123,41 @@ const validatePhoneNumber = useCallback(
 ## Validator Functions
 
 ### isArabicNameValid
+
 Validates Arabic names:
+
 - Checks if name is empty (allowed if not required)
 - Tests against Arabic character regex
 - Used for forms that require Arabic input
 
 ### isValidDate
+
 Validates dates with calendar support:
+
 - Supports both Hijri and Gregorian calendars
 - Ensures date is not in the future (with 6-month grace period)
 - Used for date of birth validation
 
 ### isValidCountryCode
+
 Validates country codes:
+
 - Checks against list of valid country codes
 - Case-insensitive comparison
 - Excludes invalid/blocked countries
 
 ### isValidCountry
+
 Validates country objects:
+
 - Ensures country has a code
 - Excludes specific countries (e.g., Israel)
 - Used with country picker components
 
 ### isValidPhoneNumber
+
 Validates phone numbers:
+
 - Uses `mui-tel-input` library
 - Excludes specific country codes
 - Supports international format
@@ -163,9 +175,11 @@ These validators work seamlessly with the new renderer-based architecture:
 ## Constants
 
 ### ARABIC_REGEX
+
 ```typescript
 const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
 ```
+
 Matches Arabic Unicode characters and spaces.
 
 ## Why No Changes Are Needed
@@ -181,26 +195,26 @@ Matches Arabic Unicode characters and spaces.
 No changes to validator tests are required. Example tests:
 
 ```typescript
-describe('isValidCountryCode', () => {
-  it('should return true for valid country codes', () => {
-    expect(isValidCountryCode('US')).toBe(true);
-    expect(isValidCountryCode('SA')).toBe(true);
+describe("isValidCountryCode", () => {
+  it("should return true for valid country codes", () => {
+    expect(isValidCountryCode("US")).toBe(true);
+    expect(isValidCountryCode("SA")).toBe(true);
   });
 
-  it('should return false for invalid country codes', () => {
-    expect(isValidCountryCode('')).toBe(false);
-    expect(isValidCountryCode('XX')).toBe(false);
+  it("should return false for invalid country codes", () => {
+    expect(isValidCountryCode("")).toBe(false);
+    expect(isValidCountryCode("XX")).toBe(false);
   });
 });
 
-describe('isValidPhoneNumber', () => {
-  it('should return true for valid phone numbers', () => {
-    expect(isValidPhoneNumber('+966501234567')).toBe(true);
+describe("isValidPhoneNumber", () => {
+  it("should return true for valid phone numbers", () => {
+    expect(isValidPhoneNumber("+966501234567")).toBe(true);
   });
 
-  it('should return false for invalid phone numbers', () => {
-    expect(isValidPhoneNumber('')).toBe(false);
-    expect(isValidPhoneNumber('invalid')).toBe(false);
+  it("should return false for invalid phone numbers", () => {
+    expect(isValidPhoneNumber("")).toBe(false);
+    expect(isValidPhoneNumber("invalid")).toBe(false);
   });
 });
 ```

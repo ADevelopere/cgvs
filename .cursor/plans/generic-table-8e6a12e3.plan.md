@@ -1,4 +1,5 @@
 <!-- 8e6a12e3-b21d-4927-bf81-8a3dd1c9bfb5 17321b2e-94e3-47f9-8b82-cd5a1726f6f8 -->
+
 # Generic Table Component Refactor
 
 ## Overview
@@ -458,36 +459,36 @@ Export all renderers, filters, and utilities for easy consumer imports:
 
 ```typescript
 // Headers
-export * from './headers/BaseHeaderRenderer';
-export * from './headers/createSortableHeader';
-export * from './headers/createFilterableHeader';
-export * from './headers/createSimpleHeader';
+export * from "./headers/BaseHeaderRenderer";
+export * from "./headers/createSortableHeader";
+export * from "./headers/createFilterableHeader";
+export * from "./headers/createSimpleHeader";
 
 // Filters
-export * from './filters/TextFilterPopover';
-export * from './filters/NumberFilterPopover';
-export * from './filters/DateFilterPopover';
-export * from './filters/SelectFilterPopover';
-export * from './filters/BooleanFilterPopover';
+export * from "./filters/TextFilterPopover";
+export * from "./filters/NumberFilterPopover";
+export * from "./filters/DateFilterPopover";
+export * from "./filters/SelectFilterPopover";
+export * from "./filters/BooleanFilterPopover";
 
 // View Renderers
-export * from './view/TextViewRenderer';
-export * from './view/NumberViewRenderer';
-export * from './view/DateViewRenderer';
-export * from './view/BooleanViewRenderer';
-export * from './view/SelectViewRenderer';
-export * from './view/CountryViewRenderer';
-export * from './view/PhoneViewRenderer';
-export * from './view/ReadyStatusViewRenderer';
+export * from "./view/TextViewRenderer";
+export * from "./view/NumberViewRenderer";
+export * from "./view/DateViewRenderer";
+export * from "./view/BooleanViewRenderer";
+export * from "./view/SelectViewRenderer";
+export * from "./view/CountryViewRenderer";
+export * from "./view/PhoneViewRenderer";
+export * from "./view/ReadyStatusViewRenderer";
 
 // Edit Renderers
-export * from './edit/TextEditRenderer';
-export * from './edit/NumberEditRenderer';
-export * from './edit/DateEditRenderer';
-export * from './edit/BooleanEditRenderer';
-export * from './edit/SelectEditRenderer';
-export * from './edit/CountryEditRenderer';
-export * from './edit/PhoneEditRenderer';
+export * from "./edit/TextEditRenderer";
+export * from "./edit/NumberEditRenderer";
+export * from "./edit/DateEditRenderer";
+export * from "./edit/BooleanEditRenderer";
+export * from "./edit/SelectEditRenderer";
+export * from "./edit/CountryEditRenderer";
+export * from "./edit/PhoneEditRenderer";
 ```
 
 [See renderers-export.md](./implementations/renderers-export.md)
@@ -524,17 +525,14 @@ Add deprecation comments to old files (manual cleanup will be done later):
 ## Implementation Order
 
 1. **Phase 1: Type System** (Steps 1)
-
    - Update table.type.ts with new generic types
    - This is the foundation for everything else
 
 2. **Phase 2: Contexts** (Step 2)
-
    - Make all contexts generic
    - Ensure backward compatibility with existing filter/sort logic
 
 3. **Phase 3: Core Components** (Steps 3-7)
-
    - Update ColumnHeaderCell
    - Update DataCell
    - Update DataRow
@@ -542,7 +540,6 @@ Add deprecation comments to old files (manual cleanup will be done later):
    - Mark deprecated files
 
 4. **Phase 4: Renderer Library** (Steps 8-14)
-
    - Create directory structure
    - Implement BaseHeaderRenderer
    - Implement filter popovers
@@ -552,7 +549,6 @@ Add deprecation comments to old files (manual cleanup will be done later):
    - Document template consumer strategy (use basic renderers with custom validation)
 
 5. **Phase 5: Consumer Updates** (Steps 15-20)
-
    - Update buildDataColumns
    - Update student table
    - Update RecipientVariableDataTable
@@ -561,7 +557,6 @@ Add deprecation comments to old files (manual cleanup will be done later):
    - Update TableBody
 
 6. **Phase 6: Finalization** (Steps 21-23)
-
    - Create exports
    - Add performance optimizations
    - Add deprecation comments

@@ -1,11 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Base properties shared by all column types
  */
-export type BaseColumnProps = {
+export type BaseColumnProps<TColumnId extends string = string> = {
   /** Unique identifier for the column */
-  id: string;
+  id: TColumnId;
+
+  /** Optional label for column (used in column management UI) */
+  label?: string;
 
   /** Whether the column can be resized */
   resizable?: boolean;
@@ -26,14 +29,14 @@ export type BaseColumnProps = {
 /**
  * View-only column (non-editable)
  */
-export type Column<TRowData> = BaseColumnProps & {
-  type: 'viewonly';
+export type Column<TRowData, TColumnId extends string = string> = BaseColumnProps<TColumnId> & {
+  type: "viewonly";
 
   /**
    * Renders the column header
    * Consumer has full control over header rendering (sort, filter, label, etc.)
    */
-  headerRenderer: (props: { column: Column<TRowData> }) => React.ReactNode;
+  headerRenderer: (props: { column: Column<TRowData, TColumnId> }) => React.ReactNode;
 
   /**
    * Renders the cell content in view mode
@@ -44,14 +47,16 @@ export type Column<TRowData> = BaseColumnProps & {
 /**
  * Editable column with inline editing support
  */
-export type EditableColumn<TRowData> = BaseColumnProps & {
-  type: 'editable';
+export type EditableColumn<TRowData, TValue, TColumnId extends string = string> = BaseColumnProps<TColumnId> & {
+  type: "editable";
 
   /**
    * Renders the column header
    * Consumer has full control over header rendering (sort, filter, label, etc.)
    */
-  headerRenderer: (props: { column: EditableColumn<TRowData> }) => React.ReactNode;
+  headerRenderer: (props: {
+    column: EditableColumn<TRowData, TValue, TColumnId>;
+  }) => React.ReactNode;
 
   /**
    * Renders the cell content in view mode
@@ -64,7 +69,7 @@ export type EditableColumn<TRowData> = BaseColumnProps & {
    */
   editRenderer: (props: {
     row: TRowData;
-    onSave: (value: unknown) => Promise<void>;
+    onSave: (value: TValue) => Promise<void>;
     onCancel: () => void;
   }) => React.ReactNode;
 
@@ -73,27 +78,22 @@ export type EditableColumn<TRowData> = BaseColumnProps & {
    * @param rowId - ID of the row being edited
    * @param value - New value to save
    */
-  onUpdate?: (rowId: number, value: unknown) => Promise<void>;
+  onUpdate?: (rowId: TRowData[keyof TRowData], value: TValue) => Promise<void>;
 };
 
 /**
- * Union type of all column types
+ * Union type representing any column in a table
+ * TValue defaults to any field type in TRowData
  */
-export type AnyColumn<TRowData> = Column<TRowData> | EditableColumn<TRowData>;
+export type AnyColumn<TRowData, TColumnId extends string = string, TValue = TRowData[keyof TRowData]> =
+  | Column<TRowData, TColumnId>
+  | EditableColumn<TRowData, TValue, TColumnId>;
 
 /**
  * Type guard to check if column is editable
  */
-export function isEditableColumn<TRowData>(
-  column: AnyColumn<TRowData>
-): column is EditableColumn<TRowData> {
-  return column.type === 'editable';
+export function isEditableColumn<TRowData, TValue, TColumnId extends string = string>(
+  column: AnyColumn<TRowData, TColumnId, TValue>
+): column is EditableColumn<TRowData, TValue, TColumnId> {
+  return column.type === "editable";
 }
-
-// Keep existing types for backward compatibility during migration
-export interface LoadMoreParams {
-  visibleStartIndex: number;
-  visibleStopIndex: number;
-}
-
-export type PinPosition = "left" | "right" | null;
