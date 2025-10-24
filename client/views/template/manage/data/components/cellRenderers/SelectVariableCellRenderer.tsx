@@ -14,7 +14,7 @@ import {
   StandardTextFieldProps,
 } from "@mui/material";
 import { Clear } from "@mui/icons-material";
-import { EditableColumn } from "@/client/types/table.type";
+import { EditableColumn } from "@/client/components/Table/table.type";
 import { DataCellState } from "@/client/components/Table/TableBody/DataCell";
 
 // Props for the main component

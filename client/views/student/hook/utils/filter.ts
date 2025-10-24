@@ -5,7 +5,7 @@ import {
   TextFilterOperation,
   DateFilterValue,
 } from "@/client/types/filters";
-import { EditableColumn } from "@/client/types/table.type";
+import { EditableColumn } from "@/client/components/Table/table.type";
 import logger from "@/client/lib/logger";
 import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 

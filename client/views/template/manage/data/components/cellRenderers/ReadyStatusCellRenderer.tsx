@@ -1,21 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Tooltip, Box, IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
-import { EditableColumn } from "@/client/types/table.type";
+import { EditableColumn } from "@/client/components/Table/table.type";
 import { DataCellState } from "@/client/components/Table/TableBody/DataCell";
-// import { isRecipientReady } from "../../utils/validation";
+import { isRecipientReady } from "../../utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Props for the main component
 type ReadyStatusCellRendererProps = {
   column: EditableColumn;
-  cellValue: {
-    isReady: boolean;
-    variables: Graphql.TemplateVariable[];
-    variableValues: Record<string, unknown>;
-  };
+  cellValue: Graphql.RecipientWithVariableValues;
   state: DataCellState;
   setState: React.Dispatch<React.SetStateAction<DataCellState>>;
   commonProps: object;
@@ -145,16 +141,33 @@ const getTooltipMessage = (
 };
 
 // View mode renderer (ready status is always view-only)
-const ReadyStatusViewRenderer: React.FC<{
+const ReadyStatusViewRenderer = React.memo<{
   column: EditableColumn;
-  cellValue: {
-    isReady: boolean;
-    variables: Graphql.TemplateVariable[];
-    variableValues: Record<string, unknown>;
-  };
-}> = ({ cellValue }) => {
-  const { isReady, variables, variableValues } = cellValue;
-  const tooltipMessage = getTooltipMessage(isReady, variables, variableValues);
+  cellValue: Graphql.RecipientWithVariableValues;
+}>(({ column, cellValue }) => {
+  // Extract and memoize variables from column metadata
+  const variables = useMemo(
+    () => (column.metadata as { variables: Graphql.TemplateVariable[] })?.variables || [],
+    [column.metadata]
+  );
+
+  // Memoize variableValues
+  const variableValues = useMemo(
+    () => cellValue.variableValues || {},
+    [cellValue.variableValues]
+  );
+
+  // Calculate ready status (memoized)
+  const isReady = useMemo(
+    () => isRecipientReady(variableValues as Record<string, unknown>, variables),
+    [variableValues, variables]
+  );
+
+  // Calculate tooltip message (memoized)
+  const tooltipMessage = useMemo(
+    () => getTooltipMessage(isReady, variables, variableValues as Record<string, unknown>),
+    [isReady, variables, variableValues]
+  );
 
   return (
     <Box
@@ -186,7 +199,9 @@ const ReadyStatusViewRenderer: React.FC<{
       </Tooltip>
     </Box>
   );
-};
+});
+
+ReadyStatusViewRenderer.displayName = "ReadyStatusViewRenderer";
 
 // Main component (ready status is always view-only, no edit mode)
 const ReadyStatusCellRenderer = React.forwardRef<

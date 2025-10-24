@@ -5,7 +5,7 @@ import {
 } from "./TableColumnContext";
 import { TableDataProvider, TableDataProviderProps } from "./TableDataContext";
 import { TableRowsProvider, TableRowsProviderProps } from "./TableRowsContext";
-import { EditableColumn } from "@/client/types/table.type";
+import { EditableColumn } from "@/client/components/Table/table.type";
 import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 
 export type TableContextType = {
