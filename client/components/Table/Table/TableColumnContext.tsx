@@ -9,15 +9,15 @@ import {
   useMemo,
   useEffect,
 } from "react";
-import { EditableColumn, PinPosition } from "@/client/components/Table/table.type";
+import { AnyColumn, PinPosition } from "@/client/components/Table/table.type";
 import { useTableContext } from "./TableContext";
 import { useTheme } from "@mui/material";
 
-export type TableColumnContextType = {
+export type TableColumnContextType<TRowData = any> = {
   // Table data and configuration
-  allColumns: EditableColumn[];
+  allColumns: AnyColumn<TRowData>[];
   columnWidths: Record<string, number>;
-  visibleColumns: EditableColumn[];
+  visibleColumns: AnyColumn<TRowData>[];
   hiddenColumns: string[];
   // Column management
   pinnedColumns: Record<string, PinPosition>;
@@ -32,9 +32,9 @@ export type TableColumnContextType = {
   pinnedRightStyle: React.CSSProperties;
 };
 
-const TableColumnContext = createContext<TableColumnContextType | null>(null);
+const TableColumnContext = createContext<TableColumnContextType<any> | null>(null);
 
-export type TableColumnsProviderProps = {
+export type TableColumnsProviderProps<_TRowData = any> = {
   children: ReactNode;
   initialWidths: Record<string, number>;
   onResizeColumn?: (columnId: string, newWidth: number) => void;
@@ -44,7 +44,7 @@ export type TableColumnsProviderProps = {
   onAutosizeColumn?: (columnId: string) => void;
 };
 
-export const TableColumnsProvider = ({
+export const TableColumnsProvider = <TRowData = any,>({
   children,
   initialWidths,
   onResizeColumn,
@@ -52,9 +52,9 @@ export const TableColumnsProvider = ({
   onHideColumn,
   onShowColumn,
   onAutosizeColumn,
-}: TableColumnsProviderProps) => {
+}: TableColumnsProviderProps<TRowData>) => {
   const theme = useTheme();
-  const { data, columns } = useTableContext();
+  const { columns } = useTableContext<TRowData>();
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
     () => initialWidths
@@ -132,64 +132,38 @@ export const TableColumnsProvider = ({
     [onShowColumn]
   );
 
-  // Auto-size column method
+  // Auto-size column method (simplified for generic architecture)
   const autosizeColumn = useCallback(
     (columnId: string) => {
-      const column = columns.find((col: EditableColumn) => col.id === columnId);
+      const column = columns.find((col) => col.id === columnId);
       if (!column) return;
 
       // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
-        // Create a temporary span element to measure text width
-        const tempSpan = document.createElement("span");
-        tempSpan.style.visibility = "hidden";
-        tempSpan.style.position = "absolute";
-        tempSpan.style.whiteSpace = "nowrap";
-        tempSpan.style.font = window.getComputedStyle(document.body).font;
-        document.body.appendChild(tempSpan);
+        // Try to find actual DOM elements to measure
+        const headerCell = document.querySelector(`th[data-column-id="${columnId}"]`);
+        const cells = document.querySelectorAll(`td[data-column-id="${columnId}"]`);
 
-        // Start with the column label width + padding for icons
-        tempSpan.textContent = column.label;
-        let maxWidth = tempSpan.offsetWidth + 80; // Add space for icons and padding
+        let maxWidth = 50; // Minimum width
 
-        // Check data cells
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data.forEach((row: any) => {
-          const cellValue =
-            typeof column.accessor === "function"
-              ? column.accessor(row)
-              : row[column.accessor];
+        // Measure header if available
+        if (headerCell) {
+          maxWidth = Math.max(maxWidth, headerCell.scrollWidth + 20);
+        }
 
-          if (cellValue != null && cellValue !== undefined) {
-            // Format the cell value based on column type
-            let formattedValue = String(cellValue);
-            if (column.type === "date" && typeof cellValue === "string") {
-              try {
-                const date = new Date(cellValue);
-                formattedValue = !isNaN(date.getTime())
-                  ? date.toLocaleDateString()
-                  : cellValue;
-              } catch {
-                formattedValue = cellValue;
-              }
-            }
-
-            tempSpan.textContent = formattedValue;
-            const cellWidth = tempSpan.offsetWidth + 16; // Add padding
-            maxWidth = Math.max(maxWidth, cellWidth);
-          }
+        // Measure data cells if available
+        cells.forEach(cell => {
+          maxWidth = Math.max(maxWidth, cell.scrollWidth + 20);
         });
 
-        // Clean up and update
-        document.body.removeChild(tempSpan);
         setColumnWidths(prev => ({
           ...prev,
-          [columnId]: maxWidth + 20, // Add a little extra space
+          [columnId]: maxWidth,
         }));
       });
       onAutosizeColumn?.(columnId);
     },
-    [columns, data, onAutosizeColumn]
+    [columns, onAutosizeColumn]
   );
 
   // Filter out hidden columns
@@ -249,7 +223,7 @@ export const TableColumnsProvider = ({
     };
   }, [rightPinnedColumns, theme.palette.background.paper]);
 
-  const value: TableColumnContextType = useMemo(
+  const value: TableColumnContextType<TRowData> = useMemo(
     () => ({
       // Provided props with defaults
       columnWidths,
@@ -294,14 +268,14 @@ export const TableColumnsProvider = ({
   );
 };
 
-export const useTableColumnContext = () => {
+export const useTableColumnContext = <TRowData = any,>(): TableColumnContextType<TRowData> => {
   const context = useContext(TableColumnContext);
   if (!context) {
     throw new Error(
       "useTableColumnContext must be used within a TableProvider"
     );
   }
-  return context;
+  return context as TableColumnContextType<TRowData>;
 };
 
 export default TableColumnContext;

@@ -120,7 +120,6 @@ export async function GET(
     }
 
     // Step 4: Check permissions (commented out - privacy not implemented in local storage yet)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // const dbFile = await StorageDbRepository.fileByPath(relativePath);
 
     // TODO: Implement privacy/access control for files

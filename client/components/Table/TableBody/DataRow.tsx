@@ -1,33 +1,21 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { Checkbox, Box } from "@mui/material";
-import { getCellValue } from "./DataCell.util";
 import {
   TABLE_CHECKBOX_CONTAINER_SIZE,
   TABLE_CHECKBOX_WIDTH,
 } from "@/client/constants/tableConstants";
-import { useTableStyles } from "@/client/theme/styles";
 import DataCell from "./DataCell";
-import { EditableColumn } from "@/client/components/Table/table.type";
+import { AnyColumn } from "@/client/components/Table/table.type";
 import { TableCellEditingState } from "../Table/TableDataContext";
 
-export type DataRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rowData: any;
+export type DataRowProps<TRowData extends Record<string, any> = any> = {
+  rowData: TRowData;
   height: number;
   virtualIndex?: number;
   globalIndex: number; // Add globalIndex prop
-  getEditingState: (
-    rowId: string | number,
-    columnId: string
-  ) => TableCellEditingState | null;
-  setEditingState: (
-    rowId: string | number,
-    columnId: string,
-    state: TableCellEditingState | null
-  ) => void;
   // column
-  visibleColumns: EditableColumn[];
+  visibleColumns: AnyColumn<TRowData>[];
   getColumnWidth: (columnId: string) => number | undefined;
   indexColWidth: number;
   getColumnPinPosition: (columnId: string) => "left" | "right" | null;
@@ -35,7 +23,7 @@ export type DataRowProps = {
   rowIdKey: string;
   toggleRowSelection: (rowId: string | number) => void;
   isRowSelected: (rowId: string | number) => boolean;
-  getRowStyle?: (rowData: unknown, rowIndex: number) => React.CSSProperties;
+  getRowStyle?: (rowData: TRowData, rowIndex: number) => React.CSSProperties;
   onRowResizeStart: (
     e: React.MouseEvent,
     rowId: string | number,
@@ -48,8 +36,7 @@ export type DataRowProps = {
   pinnedRightStyle: React.CSSProperties;
 };
 
-const DataRow: React.FC<DataRowProps> = React.memo(
-  ({
+const DataRow = <TRowData = any,>({
     rowData,
     height,
     virtualIndex = 0,
@@ -72,11 +59,9 @@ const DataRow: React.FC<DataRowProps> = React.memo(
     // styles
     pinnedLeftStyle,
     pinnedRightStyle,
-  }) => {
+  }: DataRowProps<TRowData>) => {
     const theme = useTheme();
     const rowRef = React.useRef<HTMLTableRowElement>(null);
-
-    const { inputStyle } = useTableStyles();
 
     const cellStyle: React.CSSProperties = React.useMemo(() => {
       return {
@@ -202,23 +187,19 @@ const DataRow: React.FC<DataRowProps> = React.memo(
         )}
 
         {visibleColumns.map(column => {
-          const cellValue = getCellValue(column, rowData);
           const rowId = rowData[rowIdKey];
           return (
             <DataCell
               key={column.id}
               column={column}
+              row={rowData}
               rowId={rowId}
-              cellValue={cellValue}
               cellStyle={cellStyle}
               cellEditingStyle={cellEditingStyle}
-              inputStyle={inputStyle}
               getColumnPinPosition={getColumnPinPosition}
               getColumnWidth={getColumnWidth}
               pinnedLeftStyle={pinnedLeftStyle}
               pinnedRightStyle={pinnedRightStyle}
-              getEditingState={getEditingState}
-              setEditingState={setEditingState}
             />
           );
         })}
@@ -250,9 +231,8 @@ const DataRow: React.FC<DataRowProps> = React.memo(
         )}
       </tr>
     );
-  }
-);
+  };
 
 DataRow.displayName = "DataRow";
 
-export default DataRow;
+export default React.memo(DataRow) as typeof DataRow;

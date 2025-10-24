@@ -5,14 +5,13 @@ import {
 } from "./TableColumnContext";
 import { TableDataProvider, TableDataProviderProps } from "./TableDataContext";
 import { TableRowsProvider, TableRowsProviderProps } from "./TableRowsContext";
-import { EditableColumn } from "@/client/components/Table/table.type";
+import { AnyColumn } from "@/client/components/Table/table.type";
 import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 
-export type TableContextType = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[];
+export type TableContextType<TRowData = any> = {
+  data: TRowData[];
   isLoading?: boolean;
-  columns: EditableColumn[];
+  columns: AnyColumn<TRowData>[];
 
   pageInfo?: PageInfo | null;
   pageSize: number;
@@ -27,23 +26,22 @@ export type TableContextType = {
   compact?: boolean;
 };
 
-const TableContext = createContext<TableContextType | null>(null);
+const TableContext = createContext<TableContextType<any> | null>(null);
 
-type TableProviderProps = {
+type TableProviderProps<TRowData = any> = {
   children: ReactNode;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[];
+  data: TRowData[];
   isLoading?: boolean;
-  columns: EditableColumn[];
+  columns: AnyColumn<TRowData>[];
 
   dataProps: Omit<
-    TableDataProviderProps,
+    TableDataProviderProps<TRowData>,
     "children" | "data" | "isLoading" | "columns"
   >;
-  columnProps: Omit<TableColumnsProviderProps, "children" | "data">;
+  columnProps: Omit<TableColumnsProviderProps<TRowData>, "children" | "data">;
   rowsProps: Omit<
-    TableRowsProviderProps,
+    TableRowsProviderProps<TRowData>,
     "children" | "data" | "isLoading" | "selectedRowIds" | "onSelectionChange"
   >;
 
@@ -69,7 +67,7 @@ type TableProviderProps = {
   onSelectionChange?: (selectedIds: (string | number)[]) => void;
 };
 
-export const TableProvider = ({
+export const TableProvider = <TRowData = any,>({
   children,
   data,
   columns,
@@ -89,7 +87,7 @@ export const TableProvider = ({
   compact = false,
   selectedRowIds,
   onSelectionChange,
-}: TableProviderProps) => {
+}: TableProviderProps<TRowData>) => {
   const [pageSize, setPageSize] = useState<number>(initialPageSize);
   const value = useMemo(() => {
     return {
@@ -139,12 +137,12 @@ export const TableProvider = ({
   );
 };
 
-export const useTableContext = () => {
+export const useTableContext = <TRowData = any,>(): TableContextType<TRowData> => {
   const context = useContext(TableContext);
   if (!context) {
     throw new Error("useTableContext must be used within a TableProvider");
   }
-  return context;
+  return context as TableContextType<TRowData>;
 };
 
 export default TableContext;

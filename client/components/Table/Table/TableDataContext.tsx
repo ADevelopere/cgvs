@@ -90,7 +90,7 @@ export type TableDataContextType = {
 
 const TableDataContext = createContext<TableDataContextType | null>(null);
 
-export type TableDataProviderProps = {
+export type TableDataProviderProps<_TRowData = any> = {
   onFilterChange?: (
     filterClause: FilterClause<unknown, unknown> | null,
     columnId: string
@@ -101,14 +101,14 @@ export type TableDataProviderProps = {
   initialOrderBy?: OrderByClause[];
 };
 
-export const TableDataProvider = ({
+export const TableDataProvider = <TRowData = any,>({
   onFilterChange,
   onSort,
   children,
   filters = {},
   initialOrderBy = [],
-}: TableDataProviderProps) => {
-  const { columns } = useTableContext();
+}: TableDataProviderProps<TRowData>) => {
+  const { columns } = useTableContext<TRowData>();
 
   const [orderByClause, setOrderByClause] =
     useState<OrderByClause[]>(initialOrderBy);
@@ -179,21 +179,13 @@ export const TableDataProvider = ({
       const column = columns.find(col => col.id === columnId);
       if (!column) return;
 
-      // Handle client-side filtering
-      let operation;
-      if (column.type === "number") {
-        operation = NumberFilterOperation.equals;
-      } else if (column.type === "date") {
-        operation = DateFilterOperation.is;
-      } else {
-        operation = TextFilterOperation.contains;
-      }
-
+      // Simple text filter - consumers should use specific filter methods
+      // (applyTextFilter, applyNumberFilter, applyDateFilter) for typed filtering
       const filterClause = value
         ? {
             columnId,
-            operation,
-            value: column.type === "number" ? Number(value) : value,
+            operation: TextFilterOperation.contains,
+            value,
           }
         : null;
       onFilterChange?.(filterClause, columnId);
