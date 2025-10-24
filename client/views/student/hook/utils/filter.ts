@@ -5,15 +5,23 @@ import {
   TextFilterOperation,
   DateFilterValue,
 } from "@/client/types/filters";
-import { EditableColumn } from "@/client/components/Table/types/column.type";
 import logger from "@/client/lib/logger";
-import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
 
-// Helper function to get column definition (can be outside provider)
-export const getColumnDef = (
+// Helper function to get column type for filter mapping
+export const getColumnType = (
   columnId: keyof Graphql.Student
-): EditableColumn | undefined => {
-  return STUDENT_TABLE_COLUMNS.find(col => col.id === columnId); // No cast needed if col.id is typed correctly
+): "text" | "date" | "phone" | "select" | "country" | null => {
+  const typeMap: Record<string, "text" | "date" | "phone" | "select" | "country"> = {
+    name: "text",
+    email: "text",
+    phoneNumber: "phone",
+    dateOfBirth: "date",
+    createdAt: "date",
+    updatedAt: "date",
+    gender: "select",
+    nationality: "country",
+  };
+  return typeMap[columnId as string] || null;
 };
 
 // Helper function to get all possible filter keys for a column in the new structure

@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import { Box, useTheme } from "@mui/material";
-import { BaseFieldProps } from "./types";
+import { DateFieldProps } from "./types";
 import { createStyledTextField } from "./StyledBaseField";
 
-const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
+const DateFieldComponent: React.FC<DateFieldProps> = ({
   value,
   errorMessage,
   label,
@@ -29,7 +29,9 @@ const DateFieldComponent: React.FC<BaseFieldProps<string>> = ({
       let validationError: string | null | undefined = null;
       // Only validate if newValue is not null/empty string
       if (newValue !== null && newValue !== undefined && newValue !== "") {
-        validationError = getIsValid?.(newValue) ?? null;
+        // Convert string to Date for validation
+        const dateValue = new Date(newValue);
+        validationError = getIsValid?.(dateValue) ?? null;
       }
       onValueChange(newValue, validationError);
     },

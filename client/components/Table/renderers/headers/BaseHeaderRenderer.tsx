@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { IconButton, Tooltip, Badge } from "@mui/material";
 import {
@@ -7,27 +7,29 @@ import {
   UnfoldMore,
   FilterList,
 } from "@mui/icons-material";
-import { AnyColumn } from "../../types/column.type";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Props for BaseHeaderRenderer
  */
-export type BaseHeaderRendererProps<TRowData> = {
-  /** The column configuration */
-  column: AnyColumn<TRowData>;
-
+export type BaseHeaderRendererProps = {
   /** Label to display (can be string or React component) */
   label: React.ReactNode;
+
+  /** Sortable */
+  sortable?: boolean;
+
+  /** Filterable */
+  filterable?: boolean;
 
   /** Callback when sort button is clicked */
   onSort?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 
-  /** Callback when filter button is clicked */
-  onFilter?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-
-  /** Function that renders the filter popover */
-  filterPopoverRenderer?: () => React.ReactNode;
+  /** Function that renders the filter popover with anchor element and close handler */
+  filterPopoverRenderer?: (
+    anchorEl: HTMLElement | null,
+    onClose: () => void
+  ) => React.ReactNode;
 
   /** Current sort direction */
   sortDirection?: OrderSortDirection | null;
@@ -94,7 +96,6 @@ const FilterIconButton = styled(HeaderIconButton, {
  * @example
  * ```tsx
  * <BaseHeaderRenderer
- *   column={column}
  *   label="Student Name"
  *   onSort={() => handleSort('name')}
  *   sortDirection="ASC"
@@ -112,16 +113,19 @@ const FilterIconButton = styled(HeaderIconButton, {
  * />
  * ```
  */
-export const BaseHeaderRenderer = <TRowData,>({
+export const BaseHeaderRenderer = ({
   label,
+  sortable = true,
+  filterable = true,
   onSort,
-  onFilter,
   filterPopoverRenderer,
   sortDirection = null,
   isFiltered = false,
   sortTooltip = "Sort",
   filterTooltip = "Filter",
-}: BaseHeaderRendererProps<TRowData>): React.ReactElement => {
+}: BaseHeaderRendererProps): React.ReactElement => {
+  const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null);
+
   const handleSortClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -133,16 +137,20 @@ export const BaseHeaderRenderer = <TRowData,>({
   const handleFilterClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      onFilter?.(e);
+      setFilterAnchor(e.currentTarget);
     },
-    [onFilter]
+    []
   );
+
+  const handleFilterClose = useCallback(() => {
+    setFilterAnchor(null);
+  }, []);
 
   return (
     <HeaderContent>
       <ColumnLabel>{label}</ColumnLabel>
       <IconsContainer>
-        {onSort && (
+        {sortable && onSort && (
           <Tooltip title={sortTooltip}>
             <HeaderIconButton
               onClick={handleSortClick}
@@ -159,7 +167,7 @@ export const BaseHeaderRenderer = <TRowData,>({
             </HeaderIconButton>
           </Tooltip>
         )}
-        {onFilter && (
+        {filterable && filterPopoverRenderer && (
           <>
             <Badge
               invisible={!isFiltered}
@@ -178,8 +186,7 @@ export const BaseHeaderRenderer = <TRowData,>({
                 </FilterIconButton>
               </Tooltip>
             </Badge>
-            {/* Render consumer-provided filter popover */}
-            {filterPopoverRenderer?.()}
+            {filterPopoverRenderer(filterAnchor, handleFilterClose)}
           </>
         )}
       </IconsContainer>

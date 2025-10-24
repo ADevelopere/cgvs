@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Select, MenuItem, FormControl, SelectChangeEvent } from "@mui/material";
 
-export interface SelectEditRendererProps<TValue extends string | number> {
+export interface SelectEditRendererProps<TValue> {
   value: TValue;
   options: Array<{ label: string; value: TValue }>;
   onSave: (value: TValue) => Promise<void>;
@@ -13,7 +13,7 @@ export interface SelectEditRendererProps<TValue extends string | number> {
  *
  * Select dropdown that saves immediately on selection.
  */
-export const SelectEditRenderer = <TValue extends string | number>({
+export const SelectEditRenderer = <TValue,>({
   value,
   options,
   onSave,
@@ -21,8 +21,7 @@ export const SelectEditRenderer = <TValue extends string | number>({
 }: SelectEditRendererProps<TValue>): React.JSX.Element => {
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleChange = useCallback(
-    async (event: SelectChangeEvent<TValue>) => {
+  const handleChange = useCallback(async (event: SelectChangeEvent<TValue>) => {
       if (isSaving) return;
 
       const newValue = event.target.value as TValue;
@@ -60,12 +59,12 @@ export const SelectEditRenderer = <TValue extends string | number>({
         disableUnderline
         sx={{
           "& .MuiSelect-select": {
-            padding: 0,
+            padding: 0,u
           },
         }}
       >
         {options.map(option => (
-          <MenuItem key={option.value} value={option.value}>
+          <MenuItem key={option.value as unknown as string} value={option.value as unknown as string}>
             {option.label}
           </MenuItem>
         ))}
