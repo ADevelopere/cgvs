@@ -71,8 +71,9 @@ export const useStorageOperations = (): StorageOperations => {
 
   // Get notifications and translations
   const notifications = useNotifications();
-  const { management: managementTranslations } =
-    useAppTranslation("storageTranslations");
+  const { management: managementTranslations } = useAppTranslation(
+    "storageTranslations"
+  );
 
   // ============================================================================
   // HELPER FUNCTIONS
@@ -101,9 +102,9 @@ export const useStorageOperations = (): StorageOperations => {
     });
 
     apolloClientRef.current.cache.evict({
-      id: 'ROOT_QUERY',
-      fieldName: 'listFiles',
-      args: { input: currentParams }
+      id: "ROOT_QUERY",
+      fieldName: "listFiles",
+      args: { input: currentParams },
     });
     apolloClientRef.current.cache.gc();
 
@@ -332,8 +333,11 @@ export const useStorageOperations = (): StorageOperations => {
   const createFolder = useCallback(
     async (path: string, name: string): Promise<boolean> => {
       try {
+        // Construct path correctly - don't add leading slash if at root
+        const fullPath = path ? `${path}/${name}` : name;
+
         const result = await mutations.createFolder({
-          input: { path: path + "/" + name },
+          input: { path: fullPath },
         });
 
         if (result.data?.createFolder?.success) {
@@ -365,7 +369,6 @@ export const useStorageOperations = (): StorageOperations => {
       managementTranslations.failedToCreateFolder,
     ]
   );
-
 
   // ============================================================================
   // FILE OPERATIONS WITH LOADING STATES (from useStorageFileOperations)
@@ -432,7 +435,7 @@ export const useStorageOperations = (): StorageOperations => {
     const newParams = {
       ...dataStoreRef.current.params,
       path,
-      offset: 0
+      offset: 0,
     };
 
     actionsRef.current.setParams(newParams);
@@ -449,9 +452,8 @@ export const useStorageOperations = (): StorageOperations => {
 
     const cleanPath = currentPath.replace(/\/+$/, "");
     const pathSegments = cleanPath.split("/").filter(segment => segment !== "");
-    const parentPath = pathSegments.length > 1
-      ? pathSegments.slice(0, -1).join("/")
-      : "";
+    const parentPath =
+      pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : "";
 
     await navigateTo(parentPath);
   }, [navigateTo]);

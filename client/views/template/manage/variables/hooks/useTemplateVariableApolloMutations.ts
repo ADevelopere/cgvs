@@ -3,18 +3,7 @@
 import React from "react";
 import { useMutation } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  templateVariablesByTemplateIdQueryDocument,
-  createTemplateTextVariableMutationDocument,
-  createTemplateNumberVariableMutationDocument,
-  createTemplateDateVariableMutationDocument,
-  createTemplateSelectVariableMutationDocument,
-  updateTemplateTextVariableMutationDocument,
-  updateTemplateNumberVariableMutationDocument,
-  updateTemplateDateVariableMutationDocument,
-  updateTemplateSelectVariableMutationDocument,
-  deleteTemplateVariableMutationDocument,
-} from "./templateVariable.documents";
+import * as Documents from "./templateVariable.documents";
 
 /**
  * Apollo Mutations Hook for Template Variables
@@ -23,7 +12,7 @@ import {
 export const useTemplateVariableApolloMutations = () => {
   // Create text variable mutation
   const [createTextMutation] = useMutation(
-    createTemplateTextVariableMutationDocument,
+    Documents.createTemplateTextVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.createTemplateTextVariable) return;
@@ -33,7 +22,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -52,7 +41,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Create number variable mutation
   const [createNumberMutation] = useMutation(
-    createTemplateNumberVariableMutationDocument,
+    Documents.createTemplateNumberVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.createTemplateNumberVariable) return;
@@ -62,7 +51,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -81,7 +70,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Create date variable mutation
   const [createDateMutation] = useMutation(
-    createTemplateDateVariableMutationDocument,
+    Documents.createTemplateDateVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.createTemplateDateVariable) return;
@@ -91,7 +80,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -110,7 +99,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Create select variable mutation
   const [createSelectMutation] = useMutation(
-    createTemplateSelectVariableMutationDocument,
+    Documents.createTemplateSelectVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.createTemplateSelectVariable) return;
@@ -120,7 +109,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -139,7 +128,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Update text variable mutation
   const [updateTextMutation] = useMutation(
-    updateTemplateTextVariableMutationDocument,
+    Documents.updateTemplateTextVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.updateTemplateTextVariable) return;
@@ -149,7 +138,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -168,7 +157,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Update number variable mutation
   const [updateNumberMutation] = useMutation(
-    updateTemplateNumberVariableMutationDocument,
+    Documents.updateTemplateNumberVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.updateTemplateNumberVariable) return;
@@ -178,7 +167,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -197,7 +186,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Update date variable mutation
   const [updateDateMutation] = useMutation(
-    updateTemplateDateVariableMutationDocument,
+    Documents.updateTemplateDateVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.updateTemplateDateVariable) return;
@@ -207,7 +196,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -226,7 +215,7 @@ export const useTemplateVariableApolloMutations = () => {
 
   // Update select variable mutation
   const [updateSelectMutation] = useMutation(
-    updateTemplateSelectVariableMutationDocument,
+    Documents.updateTemplateSelectVariableMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.updateTemplateSelectVariable) return;
@@ -236,7 +225,7 @@ export const useTemplateVariableApolloMutations = () => {
 
         cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
           {
-            query: templateVariablesByTemplateIdQueryDocument,
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
@@ -254,30 +243,33 @@ export const useTemplateVariableApolloMutations = () => {
   );
 
   // Delete variable mutation (common for all types)
-  const [deleteMutation] = useMutation(deleteTemplateVariableMutationDocument, {
-    update(cache, { data }) {
-      if (!data?.deleteTemplateVariable) return;
-      const deleted = data.deleteTemplateVariable;
-      const templateId = deleted.template?.id;
-      if (!templateId) return;
+  const [deleteMutation] = useMutation(
+    Documents.deleteTemplateVariableMutationDocument,
+    {
+      update(cache, { data }) {
+        if (!data?.deleteTemplateVariable) return;
+        const deleted = data.deleteTemplateVariable;
+        const templateId = deleted.template?.id;
+        if (!templateId) return;
 
-      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-        {
-          query: templateVariablesByTemplateIdQueryDocument,
-          variables: { templateId },
-        },
-        existing => {
-          if (!existing?.templateVariablesByTemplateId) return existing;
-          return {
-            templateVariablesByTemplateId:
-              existing.templateVariablesByTemplateId.filter(
-                v => v.id !== deleted.id
-              ),
-          };
-        }
-      );
-    },
-  });
+        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+          {
+            query: Documents.templateVariablesByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.templateVariablesByTemplateId) return existing;
+            return {
+              templateVariablesByTemplateId:
+                existing.templateVariablesByTemplateId.filter(
+                  v => v.id !== deleted.id
+                ),
+            };
+          }
+        );
+      },
+    }
+  );
 
   return React.useMemo(
     () => ({

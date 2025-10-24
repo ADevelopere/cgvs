@@ -1,4 +1,5 @@
 <!-- 5867c15c-3f64-436e-bc89-41f01a6114c6 547d2034-4499-4376-bc10-15f739ed6795 -->
+
 # Recipient Variable Data Management UI Implementation
 
 ## Overview
@@ -39,13 +40,13 @@ Following the established pattern from recipient and student tables:
 **Documents to create**:
 
 ```typescript
-- recipientVariableValuesByGroupQuery
+-recipientVariableValuesByGroupQuery -
   // Fetches all recipients with variable values for a group
   // Uses: recipientVariableValuesByGroup(recipientGroupId, limit, offset)
-  
-- setRecipientVariableValuesMutation
-  // Updates variable values for a recipient
-  // Uses: setRecipientVariableValues(recipientGroupItemId, values)
+
+  setRecipientVariableValuesMutation;
+// Updates variable values for a recipient
+// Uses: setRecipientVariableValues(recipientGroupItemId, values)
 ```
 
 **Run after creation**:
@@ -75,12 +76,12 @@ Following the established pattern from recipient and student tables:
 
 ```typescript
 {
-  selectedGroup: TemplateRecipientGroup | null
-  selectedGroupId: number | null  // for persistence
+  selectedGroup: TemplateRecipientGroup | null;
+  selectedGroupId: number | null; // for persistence
   queryParams: {
-    recipientGroupId: number
-    limit: number
-    offset: number
+    recipientGroupId: number;
+    limit: number;
+    offset: number;
   }
   // No filters needed - this is pure data entry
 }
@@ -120,7 +121,6 @@ Following the established pattern from recipient and student tables:
 1. Start with Student Name column (non-editable, sortable, resizable)
 2. Sort variables by `.order` property
 3. For each variable, create column based on type:
-
    - `TEXT`: text column with min/max length validation
    - `NUMBER`: number column with min/max/decimal validation
    - `DATE`: date column with min/max date validation
@@ -175,7 +175,7 @@ Following the established pattern from recipient and student tables:
 **d) SelectVariableCellRenderer.tsx**
 
 - View mode: Display selected option(s)
-- Edit mode: 
+- Edit mode:
   - Single select: Autocomplete with "None" option + clear button
   - Multiple select: Autocomplete with checkboxes + clear all
 - Validation: required field check
@@ -234,7 +234,7 @@ data.map(recipient => ({
   studentName: recipient.studentName,
   variableValues: recipient.variableValues,
   // ready status computed in column accessor
-}))
+}));
 ```
 
 ### 10. Create Group Selector Component
@@ -285,25 +285,25 @@ data.map(recipient => ({
 export type RecipientVariableDataTranslation = {
   // Tab label
   tabDataManagement: string;
-  
+
   // Headers
   studentName: string;
   readyStatus: string;
   ready: string;
   notReady: string;
-  
+
   // Actions
   selectGroup: string;
   selectGroupPrompt: string;
-  
+
   // Success messages
   valueUpdatedSuccess: string;
-  
+
   // Error messages
   errorFetchingData: string;
   errorUpdatingValue: string;
   validationError: string;
-  
+
   // Validation messages
   requiredField: string;
   invalidNumber: string;
@@ -316,12 +316,12 @@ export type RecipientVariableDataTranslation = {
   textTooLong: string;
   patternMismatch: string;
   invalidSelection: string;
-  
+
   // Status tooltips
   missingRequiredFields: string;
   invalidValues: string;
   allRequiredFieldsComplete: string;
-}
+};
 ```
 
 **Update**: `client/locale/components/index.ts` to export new type
@@ -361,7 +361,6 @@ After implementation:
 1. Run `~/.bun/bin/bun lint` - Fix any linting issues
 2. Run `~/.bun/bin/bun tsc` - Fix TypeScript errors
 3. Manual testing:
-
    - Group selection persistence
    - Cell editing with validation
    - Pagination
@@ -374,8 +373,8 @@ After implementation:
 ### Cell Update Flow
 
 ```
-User edits cell → Validate → Update via operations hook → 
-Apollo mutation → Backend validation → Cache update → 
+User edits cell → Validate → Update via operations hook →
+Apollo mutation → Backend validation → Cache update →
 UI reflects change → Show notification
 ```
 

@@ -3,12 +3,15 @@
 import { useMutation } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "./recipientVariableData.documents";
+import { useRecipientVariableDataStore } from "../stores/useRecipientVariableDataStore";
 
 /**
  * Apollo mutations hook for recipient variable data operations
  * Pure mutations with cache updates - no queries
  */
 export const useRecipientVariableDataApolloMutations = () => {
+  const store = useRecipientVariableDataStore();
+
   // Set recipient variable values mutation
   const [setValuesMutation] = useMutation(
     Document.setRecipientVariableValuesMutationDocument,
@@ -17,57 +20,54 @@ export const useRecipientVariableDataApolloMutations = () => {
         if (!data?.setRecipientVariableValues) return;
         const updatedRecipient = data.setRecipientVariableValues;
 
-        // Update in recipientVariableValuesByGroup query cache
-        // We need to find all possible query variables that might contain this recipient
-        const cacheData = cache.extract() as Record<string, unknown>;
-        const cacheKeys = cacheData.ROOT_QUERY;
-        if (!cacheKeys || typeof cacheKeys !== "object") return;
+        // Update in recipientVariableValuesByGroup query cache using store's current query params
+        try {
+          const variables = {
+            recipientGroupId: store.queryParams.recipientGroupId,
+            limit: store.queryParams.limit,
+            offset: store.queryParams.offset,
+          };
 
-        // Find all recipientVariableValuesByGroup queries in cache
-        Object.keys(cacheKeys).forEach(key => {
-          if (key.startsWith("recipientVariableValuesByGroup(")) {
-            try {
-              const variablesStr = key
-                .replace("recipientVariableValuesByGroup(", "")
-                .replace(")", "");
-              const variables = JSON.parse(variablesStr) as {
-                recipientGroupId: number;
-                limit?: number;
-                offset?: number;
-              };
-              const existingData =
-                cache.readQuery<Graphql.RecipientVariableValuesByGroupQuery>({
-                  query: Document.recipientVariableValuesByGroupQueryDocument,
-                  variables,
-                });
+          const existingData =
+            cache.readQuery<Graphql.RecipientVariableValuesByGroupQuery>({
+              query: Document.recipientVariableValuesByGroupQueryDocument,
+              variables,
+            });
 
-              if (!existingData?.recipientVariableValuesByGroup?.data) return;
+          if (!existingData?.recipientVariableValuesByGroup?.data) return;
 
-              // Update the specific recipient in the data array
-              const updatedData =
-                existingData.recipientVariableValuesByGroup.data.map(
-                  recipient =>
-                    recipient.recipientGroupItemId ===
-                    updatedRecipient.recipientGroupItemId
-                      ? updatedRecipient
-                      : recipient
-                );
+          // Check if the updated recipient is in the current page/query
+          const recipientIndex =
+            existingData.recipientVariableValuesByGroup.data.findIndex(
+              recipient =>
+                recipient.recipientGroupItemId ===
+                updatedRecipient.recipientGroupItemId
+            );
 
-              cache.writeQuery({
-                query: Document.recipientVariableValuesByGroupQueryDocument,
-                variables,
-                data: {
-                  recipientVariableValuesByGroup: {
-                    ...existingData.recipientVariableValuesByGroup,
-                    data: updatedData,
-                  },
+          // Only update cache if the recipient is in the current query results
+          if (recipientIndex !== -1) {
+            const updatedData =
+              existingData.recipientVariableValuesByGroup.data.map(recipient =>
+                recipient.recipientGroupItemId ===
+                updatedRecipient.recipientGroupItemId
+                  ? updatedRecipient
+                  : recipient
+              );
+
+            cache.writeQuery({
+              query: Document.recipientVariableValuesByGroupQueryDocument,
+              variables,
+              data: {
+                recipientVariableValuesByGroup: {
+                  ...existingData.recipientVariableValuesByGroup,
+                  data: updatedData,
                 },
-              });
-            } catch {
-              // Skip invalid cache keys
-            }
+              },
+            });
           }
-        });
+        } catch {
+          // Cache doesn't exist yet, will be populated on next query
+        }
       },
     }
   );

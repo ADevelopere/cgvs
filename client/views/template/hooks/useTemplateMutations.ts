@@ -3,56 +3,22 @@
 import React from "react";
 import { ApolloCache } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { TemplateDocuments } from "./index";
-import { useTemplateCategoryStore } from "../category/useTemplateCategoryStore";
-import { useTemplateListStore } from "../templateList/useTemplateListStore";
 
 /**
  * Hook for template mutations
  * Provides mutation functions for template operations
  */
 export const useTemplateMutations = () => {
-  // Extract stable references from stores
-  const getTemplateQueryVariables = useTemplateCategoryStore(
-    state => state.getTemplateQueryVariables
-  );
-  const currentCategory = useTemplateListStore(state => state.currentCategory);
-  const templateQueryVariables = useTemplateListStore(
-    state => state.templateQueryVariables
-  );
-
   // Helper function to evict template queries from the cache
-  const evictTemplateQueries = React.useCallback(
-    (cache: ApolloCache, categoryId: number | null | undefined) => {
-      if (categoryId === undefined) return;
-
-      // Evict for the specific category's view
-      const categoryQueryVars = getTemplateQueryVariables(categoryId as number);
-      cache.evict({
-        id: "ROOT_QUERY",
-        fieldName: "templatesByCategoryId",
-        args: { categoryId, ...categoryQueryVars },
-      });
-
-      // Evict for the main templates page view if it's showing this category or all categories
-      const templatesPageCategoryId = currentCategory?.id;
-      if (
-        templatesPageCategoryId === categoryId ||
-        templatesPageCategoryId === null
-      ) {
-        cache.evict({
-          id: "ROOT_QUERY",
-          fieldName: "templatesByCategoryId",
-          args: {
-            categoryId: templatesPageCategoryId ?? undefined,
-            ...templateQueryVariables,
-          },
-        });
-      }
-    },
-    [getTemplateQueryVariables, currentCategory, templateQueryVariables]
-  );
+  const evictTemplateQueries = React.useCallback((cache: ApolloCache) => {
+    // Evict ALL variations of templatesByCategoryId query (no args = evict all)
+    // This ensures fresh data on next query and cleans up old cached pages
+    cache.evict({
+      id: "ROOT_QUERY",
+      fieldName: "templatesByCategoryId",
+    });
+  }, []);
 
   // Update template mutation
   const [updateTemplateMutation] = useMutation(
@@ -60,19 +26,7 @@ export const useTemplateMutations = () => {
     {
       update(cache, { data }) {
         if (!data?.updateTemplate) return;
-        const updatedTemplate = data.updateTemplate;
-        const newCategoryId = updatedTemplate.category?.id;
-
-        const existingTemplateData = cache.readQuery<Graphql.TemplateQuery>({
-          query: TemplateDocuments.templateQueryDocument,
-          variables: { id: updatedTemplate.id },
-        });
-        const oldCategoryId = existingTemplateData?.template?.category?.id;
-
-        evictTemplateQueries(cache, oldCategoryId);
-        if (oldCategoryId !== newCategoryId) {
-          evictTemplateQueries(cache, newCategoryId);
-        }
+        evictTemplateQueries(cache);
         cache.gc();
       },
     }
@@ -84,7 +38,7 @@ export const useTemplateMutations = () => {
     {
       update(cache, { data }) {
         if (!data?.createTemplate) return;
-        evictTemplateQueries(cache, data.createTemplate.category?.id);
+        evictTemplateQueries(cache);
         cache.gc();
       },
     }
@@ -96,7 +50,7 @@ export const useTemplateMutations = () => {
     {
       update(cache, { data }) {
         if (!data?.deleteTemplate) return;
-        evictTemplateQueries(cache, data.deleteTemplate.category?.id);
+        evictTemplateQueries(cache);
         cache.gc();
       },
     }
@@ -108,10 +62,7 @@ export const useTemplateMutations = () => {
     {
       update(cache, { data }) {
         if (!data?.suspendTemplate) return;
-        evictTemplateQueries(
-          cache,
-          data.suspendTemplate.preSuspensionCategory?.id
-        );
+        evictTemplateQueries(cache);
         cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
         cache.gc();
       },
@@ -124,7 +75,7 @@ export const useTemplateMutations = () => {
     {
       update(cache, { data }) {
         if (!data?.unsuspendTemplate) return;
-        evictTemplateQueries(cache, data.unsuspendTemplate.category?.id);
+        evictTemplateQueries(cache);
         cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
         cache.gc();
       },

@@ -50,10 +50,7 @@ export const useStorageUploadOperations = () => {
   }, [params]);
 
   const uploadSingleFile = useCallback(
-    async (
-      file: File,
-      targetPath: string
-    ): Promise<void> => {
+    async (file: File, targetPath: string): Promise<void> => {
       const fileKey = getFileKey(file);
       const contentType = inferContentType(file);
       let loadListener: ((ev: Event) => void) | null = null;
@@ -457,8 +454,8 @@ export const useStorageUploadOperations = () => {
           // Evict cache if any files were successfully uploaded
           if (successCount > 0) {
             // Evict listFiles and directoryChildren caches
-            evictListFilesCacheUtil(apolloClient, targetPath, paramsRef.current);
-            evictDirectoryChildrenCacheUtil(apolloClient, targetPath);
+            evictListFilesCacheUtil(apolloClient);
+            evictDirectoryChildrenCacheUtil(apolloClient);
           }
 
           setTimeout(() => {
@@ -496,7 +493,14 @@ export const useStorageUploadOperations = () => {
         }
       }
     },
-    [notifications, translations, uploadSingleFile, setUploadBatch, uploadBatch, apolloClient]
+    [
+      notifications,
+      translations,
+      uploadSingleFile,
+      setUploadBatch,
+      uploadBatch,
+      apolloClient,
+    ]
   );
 
   const cancelUpload = useCallback(
@@ -570,10 +574,7 @@ export const useStorageUploadOperations = () => {
       });
 
       try {
-        await uploadSingleFile(
-          fileState.file,
-          uploadBatch.targetPath
-        );
+        await uploadSingleFile(fileState.file, uploadBatch.targetPath);
       } catch {
         // uploadSingleFile handles setting error state; nothing more to do here
       }
@@ -618,9 +619,7 @@ export const useStorageUploadOperations = () => {
 
       for (const chunk of chunks) {
         await Promise.all(
-          chunk.map(file =>
-            uploadSingleFile(file, uploadBatch.targetPath)
-          )
+          chunk.map(file => uploadSingleFile(file, uploadBatch.targetPath))
         );
       }
       notifications.show(translations.retryCompletedUploads, {

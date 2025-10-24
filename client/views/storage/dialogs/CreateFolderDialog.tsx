@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import * as MUI from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 
@@ -21,18 +21,24 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 }) => {
   const theme = MUI.useTheme();
   const { ui: translations } = useAppTranslation("storageTranslations");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // State
   const [folderName, setFolderName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset state when dialog opens/closes
+  // Reset state when dialog opens/closes and focus input
   useEffect(() => {
     if (open) {
       setFolderName("");
       setError(null);
       setIsLoading(false);
+
+      // Focus the input field after a short delay to ensure dialog is fully rendered
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [open]);
 
@@ -192,6 +198,7 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
       <MUI.DialogContent>
         <MUI.Box sx={{ pt: 1 }}>
           <MUI.TextField
+            inputRef={inputRef}
             autoFocus
             fullWidth
             label={translations.createFolderDialogLabel}
