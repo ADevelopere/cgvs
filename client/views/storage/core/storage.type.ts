@@ -26,7 +26,11 @@ export type StorageActions = {
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  selectRange: (fromPath: string, toPath: string, items: StorageItemUnion[]) => void;
+  selectRange: (
+    fromPath: string,
+    toPath: string,
+    items: StorageItemUnion[]
+  ) => void;
   setLastSelectedItem: (path: string | null) => void;
   setFocusedItem: (path: string | null) => void;
 

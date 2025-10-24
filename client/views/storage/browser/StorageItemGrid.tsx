@@ -11,7 +11,7 @@ import {
 
 interface StorageItemGridProps {
   item: StorageItemUnion;
-  focusedItem: string | null
+  focusedItem: string | null;
   isSelected: boolean;
   isCut: boolean;
   onClick?: (event: React.MouseEvent) => void;
@@ -28,7 +28,9 @@ interface StorageItemGridProps {
   onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
-function isDirectoryItem(item: StorageItemUnion): item is Graphql.DirectoryInfo {
+function isDirectoryItem(
+  item: StorageItemUnion
+): item is Graphql.DirectoryInfo {
   return item.__typename === "DirectoryInfo";
 }
 

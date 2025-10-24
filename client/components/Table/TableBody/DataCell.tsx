@@ -1,10 +1,19 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { AnyColumn, isEditableColumn } from '@/client/components/Table/table.type';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { CSSProperties } from "react";
+import {
+  AnyColumn,
+  isEditableColumn,
+} from "@/client/components/Table/types/column.type";
 
-type DataCellProps<TRowData = any> = {
+type DataCellProps<TRowData> = {
   column: AnyColumn<TRowData>;
   row: TRowData;
   rowId: number;
@@ -54,9 +63,9 @@ const DataCell = <TRowData,>({
       width: width,
     };
 
-    if (pinPosition === 'left') {
+    if (pinPosition === "left") {
       style = { ...style, ...pinnedLeftStyle };
-    } else if (pinPosition === 'right') {
+    } else if (pinPosition === "right") {
       style = { ...style, ...pinnedRightStyle };
     }
 
@@ -117,49 +126,51 @@ const DataCell = <TRowData,>({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditing, handleCancel]);
 
   // Handle Escape key to cancel
-    useEffect(() => {
+  useEffect(() => {
     if (!isEditing) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         handleCancel();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-      return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isEditing, handleCancel]);
 
-    return (
+  return (
     <td
       ref={cellRef}
       style={computedCellStyle}
       onDoubleClick={handleDoubleClick}
-      role={editable ? 'gridcell' : undefined}
+      role={editable ? "gridcell" : undefined}
       aria-readonly={!editable}
     >
-      <div style={{ padding: '8px 12px', overflow: 'hidden' }}>
-        {isEditing && isEditableColumn(column) ? (
-          // Render edit mode
-          column.editRenderer({ row, onSave: handleSave, onCancel: handleCancel })
-        ) : (
-          // Render view mode
-          column.viewRenderer({ row })
-        )}
-        </div>
-      </td>
-    );
+      <div style={{ padding: "8px 12px", overflow: "hidden" }}>
+        {isEditing && isEditableColumn(column)
+          ? // Render edit mode
+            column.editRenderer({
+              row,
+              onSave: handleSave,
+              onCancel: handleCancel,
+            })
+          : // Render view mode
+            column.viewRenderer({ row })}
+      </div>
+    </td>
+  );
 };
 
-DataCell.displayName = 'DataCell';
+DataCell.displayName = "DataCell";
 
 export default React.memo(DataCell) as typeof DataCell;

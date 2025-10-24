@@ -16,7 +16,7 @@ export const useRecipientVariableDataApolloMutations = () => {
   const [setValuesMutation] = useMutation(
     Document.setRecipientVariableValuesMutationDocument,
     {
-      optimisticResponse: (vars) => {
+      optimisticResponse: vars => {
         // Lightweight - only return the updated fields, no cache read
         const valuesArray = Array.isArray(vars.values)
           ? vars.values

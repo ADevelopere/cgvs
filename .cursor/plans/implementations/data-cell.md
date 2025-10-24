@@ -27,7 +27,7 @@ type DataCellProps<TRowData = any> = {
 
 /**
  * DataCell Component
- * 
+ *
  * Manages cell state and delegates rendering to column renderers:
  * - Uses column.viewRenderer for view mode
  * - Uses column.editRenderer for edit mode (if editable)
@@ -47,32 +47,32 @@ const DataCell = <TRowData,>({
 }: DataCellProps<TRowData>) => {
   const [isEditing, setIsEditing] = useState(false);
   const cellRef = useRef<HTMLTableCellElement>(null);
-  
+
   // Determine if column is editable
   const editable = useMemo(() => isEditableColumn(column), [column]);
-  
+
   // Calculate cell style based on pin position
   const computedCellStyle = useMemo<CSSProperties>(() => {
     const pinPosition = getColumnPinPosition(column.id);
     const width = getColumnWidth(column.id);
-    
+
     let style: CSSProperties = {
       ...cellStyle,
       maxWidth: width,
       minWidth: width,
       width: width,
     };
-    
+
     if (pinPosition === 'left') {
       style = { ...style, ...pinnedLeftStyle };
     } else if (pinPosition === 'right') {
       style = { ...style, ...pinnedRightStyle };
     }
-    
+
     if (isEditing) {
       style = { ...style, ...cellEditingStyle };
     }
-    
+
     return style;
   }, [
     column.id,
@@ -84,14 +84,14 @@ const DataCell = <TRowData,>({
     pinnedLeftStyle,
     pinnedRightStyle,
   ]);
-  
+
   // Handle double-click to enter edit mode
   const handleDoubleClick = useCallback(() => {
     if (editable && !isEditing) {
       setIsEditing(true);
     }
   }, [editable, isEditing]);
-  
+
   // Handle save
   const handleSave = useCallback(
     async (value: unknown) => {
@@ -111,44 +111,44 @@ const DataCell = <TRowData,>({
     },
     [column, rowId]
   );
-  
+
   // Handle cancel
   const handleCancel = useCallback(() => {
     setIsEditing(false);
   }, []);
-  
+
   // Handle click outside to cancel
   useEffect(() => {
     if (!isEditing) return;
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       if (cellRef.current && !cellRef.current.contains(event.target as Node)) {
         handleCancel();
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isEditing, handleCancel]);
-  
+
   // Handle Escape key to cancel
   useEffect(() => {
     if (!isEditing) return;
-    
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleCancel();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isEditing, handleCancel]);
-  
+
   return (
     <td
       ref={cellRef}
@@ -178,6 +178,7 @@ export default React.memo(DataCell) as typeof DataCell;
 ## Key Changes from Old Implementation
 
 ### Removed
+
 - ✗ `CellContentRenderer` component usage
 - ✗ Type-based rendering logic (text, number, date, etc.)
 - ✗ Built-in input components
@@ -185,6 +186,7 @@ export default React.memo(DataCell) as typeof DataCell;
 - ✗ Direct access to `cellValue` prop
 
 ### Kept
+
 - ✓ Double-click to edit
 - ✓ Save/Cancel handling
 - ✓ Pinned cell styling
@@ -193,6 +195,7 @@ export default React.memo(DataCell) as typeof DataCell;
 - ✓ Click outside to cancel
 
 ### New
+
 - ✓ Calls `column.viewRenderer({ row })` for view mode
 - ✓ Calls `column.editRenderer({ row, onSave, onCancel })` for edit mode
 - ✓ Fully generic with TypeScript `<TRowData>`
@@ -241,9 +244,9 @@ const handleSave = useCallback(
       try {
         await column.onUpdate(rowId, value);
         setIsEditing(false);
-        showSuccessToast('Cell updated successfully');
+        showSuccessToast("Cell updated successfully");
       } catch (error) {
-        showErrorToast('Failed to update cell. Please try again.');
+        showErrorToast("Failed to update cell. Please try again.");
         // Keep edit mode open so user can retry
       }
     } else {

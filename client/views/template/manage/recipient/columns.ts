@@ -1,5 +1,5 @@
 import { StudentsOrderByColumn } from "@/client/graphql/generated/gql/graphql";
-import { BaseColumn } from "@/client/components/Table/table.type";
+import { BaseColumn } from "@/client/components/Table/types/column.type";
 
 // Define columns for the table
 export const recipientBaseColumns: BaseColumn[] = [

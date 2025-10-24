@@ -45,7 +45,7 @@ const ColumnVisibilityPanel: React.FC<ColumnVisibilityPanelProps> = ({
                   }
                 />
               </ListItemIcon>
-              <ListItemText primary={column.label} />
+              <ListItemText primary={column.label || column.id} />
             </ListItem>
           ))}
         </List>

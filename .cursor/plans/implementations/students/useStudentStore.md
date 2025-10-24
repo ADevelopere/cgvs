@@ -37,6 +37,7 @@ type Actions = {
 ### 1. **Query Parameters Management**
 
 Stores GraphQL query variables:
+
 ```typescript
 const DEFAULT_QUERY_PARAMS: Graphql.StudentsQueryVariables = {
   paginationArgs: {
@@ -50,6 +51,7 @@ const DEFAULT_QUERY_PARAMS: Graphql.StudentsQueryVariables = {
 ### 2. **Filter State Management**
 
 Maintains UI filter state separate from query parameters:
+
 ```typescript
 filters: {
   name: { columnId: "name", operation: "startsWith", value: "John" },
@@ -60,13 +62,15 @@ filters: {
 ### 3. **Student Selection**
 
 Tracks selected students for bulk operations:
+
 ```typescript
-selectedStudents: [1, 5, 12, 24]
+selectedStudents: [1, 5, 12, 24];
 ```
 
 ### 4. **Persistence**
 
 Automatically persists to sessionStorage:
+
 ```typescript
 {
   name: "student-ui-store",
@@ -82,10 +86,11 @@ Automatically persists to sessionStorage:
 ## Usage in New Architecture
 
 ### In useStudentOperations
+
 ```typescript
 export const useStudentOperations = () => {
   const store = useStudentStore();
-  
+
   const setColumnFilter = useCallback(
     (filterClause: FilterClause | null, columnId: string) => {
       store.setColumnFilter(filterClause, columnId);
@@ -104,14 +109,15 @@ export const useStudentOperations = () => {
 ```
 
 ### In StudentTable Component
+
 ```typescript
 const StudentTable = () => {
   const { queryParams, filters } = useStudentOperations();
-  
+
   const { data, loading } = useQuery(studentsQueryDocument, {
     variables: queryParams,
   });
-  
+
   // queryParams automatically updates when filters change
 };
 ```
@@ -119,6 +125,7 @@ const StudentTable = () => {
 ## Store Methods
 
 ### setQueryParams
+
 ```typescript
 store.setQueryParams({
   paginationArgs: {
@@ -129,6 +136,7 @@ store.setQueryParams({
 ```
 
 ### setFilters
+
 ```typescript
 store.setFilters({
   name: { columnId: "name", operation: "startsWith", value: "J" },
@@ -136,6 +144,7 @@ store.setFilters({
 ```
 
 ### setColumnFilter
+
 ```typescript
 store.setColumnFilter(
   { columnId: "email", operation: "contains", value: "@" },
@@ -144,31 +153,37 @@ store.setColumnFilter(
 ```
 
 ### clearFilter
+
 ```typescript
 store.clearFilter("name");
 ```
 
 ### clearAllFilters
+
 ```typescript
 store.clearAllFilters();
 ```
 
 ### toggleStudentSelect
+
 ```typescript
 store.toggleStudentSelect(123); // Select/deselect student with ID 123
 ```
 
 ### selectAllStudents
+
 ```typescript
 store.selectAllStudents([1, 2, 3, 4, 5]);
 ```
 
 ### clearSelectedStudents
+
 ```typescript
 store.clearSelectedStudents();
 ```
 
 ### reset
+
 ```typescript
 store.reset(); // Reset to initial state
 ```
@@ -176,16 +191,19 @@ store.reset(); // Reset to initial state
 ## Persistence Behavior
 
 ### What Gets Persisted
+
 - ✅ Query parameters (pagination, orderBy, filterArgs)
 - ✅ UI filter state
 - ✅ Selected students
 
 ### What Doesn't Get Persisted
+
 - ❌ Loading states
 - ❌ Error states
 - ❌ Temporary UI state (modal open/closed, etc.)
 
 ### Restoration on Page Load
+
 ```typescript
 // State is automatically restored from sessionStorage
 const store = useStudentStore();
@@ -212,9 +230,10 @@ merge: (persistedState, currentState) => {
     ...currentState,
     queryParams: mergedQueryParams,
     filters: persistedState.filters || currentState.filters,
-    selectedStudents: persistedState.selectedStudents || currentState.selectedStudents,
+    selectedStudents:
+      persistedState.selectedStudents || currentState.selectedStudents,
   };
-}
+};
 ```
 
 ## Logging
@@ -223,7 +242,10 @@ The store includes comprehensive logging for debugging:
 
 ```typescript
 logger.info("🔍 useStudentStore: setQueryParams called with:", params);
-logger.info("🔍 useStudentStore: current queryParams before:", state.queryParams);
+logger.info(
+  "🔍 useStudentStore: current queryParams before:",
+  state.queryParams
+);
 logger.info("🔍 useStudentStore: new queryParams after:", newQueryParams);
 logger.info("💾 Persisting student store state:", state);
 logger.info("🔄 Merging student store state:", persistedState, currentState);

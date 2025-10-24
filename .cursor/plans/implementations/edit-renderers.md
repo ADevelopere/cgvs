@@ -37,12 +37,12 @@ export const TextEditRenderer = <TRowData,>({
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   useEffect(() => {
     inputRef.current?.focus();
     inputRef.current?.select();
   }, []);
-  
+
   const validate = useCallback((val: string): string | null => {
     if (required && !val.trim()) {
       return 'This field is required';
@@ -58,21 +58,21 @@ export const TextEditRenderer = <TRowData,>({
     }
     return null;
   }, [required, minLength, maxLength, pattern]);
-  
+
   const handleSave = useCallback(async () => {
     const validationError = validate(value);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     try {
       await onSave(value);
     } catch (err) {
       setError('Failed to save');
     }
   }, [value, validate, onSave]);
-  
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -82,7 +82,7 @@ export const TextEditRenderer = <TRowData,>({
       onCancel();
     }
   }, [handleSave, onCancel]);
-  
+
   return (
     <TextField
       inputRef={inputRef}
@@ -146,17 +146,17 @@ export const NumberEditRenderer = <TRowData,>({
   const [value, setValue] = useState(initialValue?.toString() || '');
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   useEffect(() => {
     inputRef.current?.focus();
     inputRef.current?.select();
   }, []);
-  
+
   const validate = useCallback((val: string): string | null => {
     if (required && !val.trim()) {
       return 'This field is required';
     }
-    
+
     if (val.trim()) {
       const num = parseFloat(val);
       if (isNaN(num)) {
@@ -169,17 +169,17 @@ export const NumberEditRenderer = <TRowData,>({
         return `Maximum value is ${maxValue}`;
       }
     }
-    
+
     return null;
   }, [required, minValue, maxValue]);
-  
+
   const handleSave = useCallback(async () => {
     const validationError = validate(value);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     try {
       const numValue = value.trim() ? parseFloat(value) : null;
       await onSave(numValue);
@@ -187,7 +187,7 @@ export const NumberEditRenderer = <TRowData,>({
       setError('Failed to save');
     }
   }, [value, validate, onSave]);
-  
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -197,7 +197,7 @@ export const NumberEditRenderer = <TRowData,>({
       onCancel();
     }
   }, [handleSave, onCancel]);
-  
+
   return (
     <TextField
       inputRef={inputRef}
@@ -266,10 +266,10 @@ export const DateEditRenderer = <TRowData,>({
       ? parseISO(initialValue)
       : initialValue
     : null;
-  
+
   const [value, setValue] = useState<Date | null>(initialDate);
   const [error, setError] = useState<string | null>(null);
-  
+
   const validate = useCallback((date: Date | null): string | null => {
     if (required && !date) {
       return 'This field is required';
@@ -285,14 +285,14 @@ export const DateEditRenderer = <TRowData,>({
     }
     return null;
   }, [required, minDate, maxDate]);
-  
+
   const handleSave = useCallback(async () => {
     const validationError = validate(value);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     try {
       const isoValue = value ? formatISO(value, { representation: 'date' }) : null;
       await onSave(isoValue);
@@ -300,7 +300,7 @@ export const DateEditRenderer = <TRowData,>({
       setError('Failed to save');
     }
   }, [value, validate, onSave]);
-  
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker
@@ -366,34 +366,34 @@ export const SelectEditRenderer = <TRowData,>({
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(true);
-  
+
   useEffect(() => {
     if (!open) {
       handleSave();
     }
   }, [open]);
-  
+
   const validate = useCallback((val: any): string | null => {
     if (required && !val) {
       return 'This field is required';
     }
     return null;
   }, [required]);
-  
+
   const handleSave = useCallback(async () => {
     const validationError = validate(value);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     try {
       await onSave(value);
     } catch (err) {
       setError('Failed to save');
     }
   }, [value, validate, onSave]);
-  
+
   return (
     <TextField
       select
@@ -459,31 +459,31 @@ export const CountryEditRenderer = <TRowData,>({\
   const countryStrings = useAppTranslation('countryTranslations');\
   const initialValue = accessor(row);\
   const initialCountry = countries.find(c => c.code === initialValue) || null;\
-  
+
   const [value, setValue] = useState(initialCountry);\
   const [error, setError] = useState<string | null>(null);\
-  
+
   const validate = useCallback((country: typeof value): string | null => {\
     if (required && !country) {\
       return 'This field is required';\
     }\
     return null;\
   }, [required]);\
-  
+
   const handleSave = useCallback(async () => {\
     const validationError = validate(value);\
     if (validationError) {\
       setError(validationError);\
       return;\
     }\
-    
+
     try {\
       await onSave(value?.code || null);\
     } catch (err) {\
       setError('Failed to save');\
     }\
   }, [value, validate, onSave]);\
-  
+
   return (\
     <Autocomplete\
       fullWidth\
@@ -564,11 +564,11 @@ export const PhoneEditRenderer = <TRowData,>({
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
-  
+
   const validate = useCallback((val: string): string | null => {
     if (required && !val.trim()) {
       return 'This field is required';
@@ -576,21 +576,21 @@ export const PhoneEditRenderer = <TRowData,>({
     // Add phone number validation if needed
     return null;
   }, [required]);
-  
+
   const handleSave = useCallback(async () => {
     const validationError = validate(value);
     if (validationError) {
       setError(validationError);
       return;
     }
-    
+
     try {
       await onSave(value);
     } catch (err) {
       setError('Failed to save');
     }
   }, [value, validate, onSave]);
-  
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -600,7 +600,7 @@ export const PhoneEditRenderer = <TRowData,>({
       onCancel();
     }
   }, [handleSave, onCancel]);
-  
+
   return (
     <MuiTelInput
       inputRef={inputRef}
@@ -626,12 +626,12 @@ PhoneEditRenderer.displayName = 'PhoneEditRenderer';
 ## index.ts
 
 ```typescript
-export * from './TextEditRenderer';
-export * from './NumberEditRenderer';
-export * from './DateEditRenderer';
-export * from './SelectEditRenderer';
-export * from './CountryEditRenderer';
-export * from './PhoneEditRenderer';
+export * from "./TextEditRenderer";
+export * from "./NumberEditRenderer";
+export * from "./DateEditRenderer";
+export * from "./SelectEditRenderer";
+export * from "./CountryEditRenderer";
+export * from "./PhoneEditRenderer";
 ```
 
 ## Usage Example

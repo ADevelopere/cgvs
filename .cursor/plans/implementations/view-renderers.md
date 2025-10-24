@@ -24,13 +24,13 @@ export interface TextViewRendererProps {
   direction?: 'ltr' | 'rtl';
 }
 
-export const TextViewRenderer: React.FC<TextViewRendererProps> = ({ 
-  value, 
+export const TextViewRenderer: React.FC<TextViewRendererProps> = ({
+  value,
   tooltip = true,
-  direction = 'inherit' 
+  direction = 'inherit'
 }) => {
   const displayValue = value ?? '';
-  
+
   if (tooltip && displayValue) {
     return (
       <Tooltip title={displayValue} enterDelay={500}>
@@ -38,7 +38,7 @@ export const TextViewRenderer: React.FC<TextViewRendererProps> = ({
       </Tooltip>
     );
   }
-  
+
   return <TextSpan style={{ direction }}>{displayValue}</TextSpan>;
 };
 
@@ -75,14 +75,14 @@ export const NumberViewRenderer: React.FC<NumberViewRendererProps> = ({
   if (value === null || value === undefined) {
     return <NumberSpan>-</NumberSpan>;
   }
-  
+
   const formatted = typeof decimalPlaces === 'number'
     ? value.toLocaleString(locale, {
         minimumFractionDigits: decimalPlaces,
         maximumFractionDigits: decimalPlaces,
       })
     : value.toLocaleString(locale);
-  
+
   return (
     <NumberSpan>
       {prefix}{formatted}{suffix}
@@ -118,14 +118,14 @@ export const DateViewRenderer: React.FC<DateViewRendererProps> = ({
   if (!value) {
     return <DateSpan>{emptyText}</DateSpan>;
   }
-  
+
   try {
     const date = typeof value === 'string' ? parseISO(value) : value;
-    
+
     if (!isValid(date)) {
       return <DateSpan>{emptyText}</DateSpan>;
     }
-    
+
     return <DateSpan>{format(date, dateFormat)}</DateSpan>;
   } catch (error) {
     console.error('Invalid date:', value, error);
@@ -157,17 +157,17 @@ export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({
   falseLabel = 'No',
 }) => {
   const boolValue = Boolean(value);
-  
+
   if (variant === 'checkbox') {
     return (
-      <Checkbox 
-        checked={boolValue} 
-        disabled 
+      <Checkbox
+        checked={boolValue}
+        disabled
         sx={{ padding: 0 }}
       />
     );
   }
-  
+
   if (variant === 'icon') {
     return boolValue ? (
       <CheckCircle color="success" fontSize="small" />
@@ -175,7 +175,7 @@ export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({
       <Cancel color="disabled" fontSize="small" />
     );
   }
-  
+
   return <span>{boolValue ? trueLabel : falseLabel}</span>;
 };
 
@@ -208,24 +208,24 @@ export const SelectViewRenderer: React.FC<SelectViewRendererProps> = ({
   emptyText = '-',
 }) => {
   const option = options.find(opt => opt.value === value);
-  
+
   if (!option) {
     return <span>{emptyText}</span>;
   }
-  
+
   if (variant === 'chip') {
     return (
-      <Chip 
-        label={option.label} 
+      <Chip
+        label={option.label}
         size="small"
-        sx={{ 
+        sx={{
           backgroundColor: option.color,
           maxWidth: '100%',
         }}
       />
     );
   }
-  
+
   return <span>{option.label}</span>;
 };
 
@@ -248,17 +248,17 @@ export interface CountryViewRendererProps {
 
 export const CountryViewRenderer: React.FC<CountryViewRendererProps> = ({ value }) => {
   const countryStrings = useAppTranslation('countryTranslations');
-  
+
   if (!value) {
     return <span>-</span>;
   }
-  
+
   const country = countries.find(c => c.code === value);
-  
+
   if (!country) {
     return <span>{value}</span>;
   }
-  
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Image
@@ -302,13 +302,13 @@ PhoneViewRenderer.displayName = 'PhoneViewRenderer';
 ## index.ts
 
 ```typescript
-export * from './TextViewRenderer';
-export * from './NumberViewRenderer';
-export * from './DateViewRenderer';
-export * from './BooleanViewRenderer';
-export * from './SelectViewRenderer';
-export * from './CountryViewRenderer';
-export * from './PhoneViewRenderer';
+export * from "./TextViewRenderer";
+export * from "./NumberViewRenderer";
+export * from "./DateViewRenderer";
+export * from "./BooleanViewRenderer";
+export * from "./SelectViewRenderer";
+export * from "./CountryViewRenderer";
+export * from "./PhoneViewRenderer";
 ```
 
 ## Usage Examples

@@ -274,7 +274,10 @@ class LocalAdapter implements StorageService {
       }
 
       // Check directory permissions
-      const directoryPath = cleanedFilePath.substring(0, cleanedFilePath.lastIndexOf("/"));
+      const directoryPath = cleanedFilePath.substring(
+        0,
+        cleanedFilePath.lastIndexOf("/")
+      );
       const dbDirectory =
         await StorageDbRepository.directoryByPath(directoryPath);
 
@@ -299,7 +302,10 @@ class LocalAdapter implements StorageService {
       logger.info("💾 uploadFile: Creating file entity in database", {
         filePath: cleanedFilePath,
       });
-      const fileEntity = await StorageDbRepository.createFile(cleanedFilePath, false);
+      const fileEntity = await StorageDbRepository.createFile(
+        cleanedFilePath,
+        false
+      );
       logger.info("💾 uploadFile: File entity created successfully", {
         fileEntity,
       });

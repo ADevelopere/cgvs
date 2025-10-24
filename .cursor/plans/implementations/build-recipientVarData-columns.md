@@ -6,7 +6,7 @@ export const buildDataColumns = (
   strings: RecipientVariableDataTranslation,
   onUpdateCell: (rowId: number, columnId: string, value: unknown) => Promise<void>
 ): AnyColumn<RecipientWithVariableValues>[] => {
-  
+
   const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null);
   const [activeFilterColumn, setActiveFilterColumn] = useState<string | null>(null);
   const [filterValues, setFilterValues] = useState<Record<string, unknown>>({});
@@ -44,7 +44,7 @@ export const buildDataColumns = (
     },
     // ... variable columns
   ];
-  
+
   // For each variable, create column with appropriate renderers
   sortedVariables.forEach(variable => {
     columns.push({
@@ -72,7 +72,7 @@ export const buildDataColumns = (
       onUpdate: (rowId, value) => onUpdateCell(rowId, `var_${variable.id}`, value),
     });
   });
-  
+
   return columns;
 };
 ```

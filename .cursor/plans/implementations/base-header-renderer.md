@@ -6,7 +6,7 @@ A reusable base component for rendering column headers with sort and filter capa
 
 ## Complete Implementation
 
-```typescript
+````typescript
 import React, { useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { IconButton, Tooltip, Badge } from '@mui/material';
@@ -25,28 +25,28 @@ import { OrderSortDirection } from '@/client/graphql/generated/gql/graphql';
 export type BaseHeaderRendererProps<TRowData> = {
   /** The column configuration */
   column: AnyColumn<TRowData>;
-  
+
   /** Label to display (can be string or React component) */
   label: React.ReactNode;
-  
+
   /** Callback when sort button is clicked */
   onSort?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  
+
   /** Callback when filter button is clicked */
   onFilter?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  
+
   /** Function that renders the filter popover */
   filterPopoverRenderer?: () => React.ReactNode;
-  
+
   /** Current sort direction */
   sortDirection?: OrderSortDirection | null;
-  
+
   /** Whether the column is currently filtered */
   isFiltered?: boolean;
-  
+
   /** Tooltip text for sort button */
   sortTooltip?: string;
-  
+
   /** Tooltip text for filter button */
   filterTooltip?: string;
 };
@@ -93,13 +93,13 @@ const FilterIconButton = styled(HeaderIconButton, {
 
 /**
  * BaseHeaderRenderer Component
- * 
+ *
  * Provides a standard header layout with:
  * - Column label (truncated if too long)
  * - Sort button with direction indicators
  * - Filter button with active badge
  * - Support for custom filter popovers
- * 
+ *
  * @example
  * ```tsx
  * <BaseHeaderRenderer
@@ -131,24 +131,24 @@ export const BaseHeaderRenderer = <TRowData,>({
   sortTooltip = 'Sort',
   filterTooltip = 'Filter',
 }: BaseHeaderRendererProps<TRowData>): React.ReactElement => {
-  
+
   const handleSortClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onSort?.(e);
   }, [onSort]);
-  
+
   const handleFilterClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onFilter?.(e);
   }, [onFilter]);
-  
+
   return (
     <HeaderContent>
       <ColumnLabel>{label}</ColumnLabel>
       <IconsContainer>
         {onSort && (
           <Tooltip title={sortTooltip}>
-            <HeaderIconButton 
+            <HeaderIconButton
               onClick={handleSortClick}
               aria-label={`Sort by ${label}`}
               size="small"
@@ -165,9 +165,9 @@ export const BaseHeaderRenderer = <TRowData,>({
         )}
         {onFilter && (
           <>
-            <Badge 
-              invisible={!isFiltered} 
-              color="primary" 
+            <Badge
+              invisible={!isFiltered}
+              color="primary"
               variant="dot"
               sx={{ '& .MuiBadge-dot': { top: 2, right: 2 } }}
             >
@@ -194,11 +194,12 @@ export const BaseHeaderRenderer = <TRowData,>({
 BaseHeaderRenderer.displayName = 'BaseHeaderRenderer';
 
 export default BaseHeaderRenderer;
-```
+````
 
 ## Usage Examples
 
 ### Simple Header with Label Only
+
 ```typescript
 <BaseHeaderRenderer
   column={column}
@@ -207,6 +208,7 @@ export default BaseHeaderRenderer;
 ```
 
 ### With Sort
+
 ```typescript
 <BaseHeaderRenderer
   column={column}
@@ -217,6 +219,7 @@ export default BaseHeaderRenderer;
 ```
 
 ### With Filter
+
 ```typescript
 <BaseHeaderRenderer
   column={column}
@@ -235,6 +238,7 @@ export default BaseHeaderRenderer;
 ```
 
 ### With Both Sort and Filter
+
 ```typescript
 <BaseHeaderRenderer
   column={column}
@@ -260,11 +264,11 @@ export default BaseHeaderRenderer;
 To customize the appearance, override the styled components:
 
 ```typescript
-import { BaseHeaderRenderer as Base } from './BaseHeaderRenderer';
-import { styled } from '@mui/material/styles';
+import { BaseHeaderRenderer as Base } from "./BaseHeaderRenderer";
+import { styled } from "@mui/material/styles";
 
 const CustomHeader = styled(Base)(({ theme }) => ({
-  '& .ColumnLabel': {
+  "& .ColumnLabel": {
     color: theme.palette.primary.main,
     fontWeight: 600,
   },

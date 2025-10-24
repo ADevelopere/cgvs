@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Tooltip } from '@mui/material';
+import React from "react";
+import { Box, Tooltip } from "@mui/material";
 
 export interface NumberViewRendererProps {
   value: number | null | undefined;
@@ -10,18 +10,18 @@ export interface NumberViewRendererProps {
 
 /**
  * NumberViewRenderer Component
- * 
+ *
  * Formats and displays numeric values with locale-specific formatting.
  */
-export const NumberViewRenderer: React.FC<NumberViewRendererProps> = ({ 
+export const NumberViewRenderer: React.FC<NumberViewRendererProps> = ({
   value,
   decimals,
-  locale = 'en-US',
+  locale = "en-US",
   tooltip = true,
 }) => {
   const displayValue = React.useMemo(() => {
-    if (value === null || value === undefined) return '';
-    
+    if (value === null || value === undefined) return "";
+
     try {
       return new Intl.NumberFormat(locale, {
         minimumFractionDigits: decimals,
@@ -31,13 +31,13 @@ export const NumberViewRenderer: React.FC<NumberViewRendererProps> = ({
       return String(value);
     }
   }, [value, decimals, locale]);
-  
+
   const content = (
     <Box
       sx={{
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
       }}
     >
       {displayValue}
@@ -56,4 +56,3 @@ export const NumberViewRenderer: React.FC<NumberViewRendererProps> = ({
 };
 
 export default NumberViewRenderer;
-

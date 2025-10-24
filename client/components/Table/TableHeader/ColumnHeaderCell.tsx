@@ -1,15 +1,21 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { useTheme, styled } from '@mui/material/styles';
-import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { MoreVert, PushPin, VisibilityOff } from '@mui/icons-material';
-import ResizeHandle from './ResizeHandle';
-import { useTableStyles } from '@/client/theme/styles';
-import { AnyColumn, PinPosition } from '@/client/components/Table/table.type';
-import { useTableLocale } from '@/client/locale/table/TableLocaleContext';
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from '@/client/constants/tableConstants';
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
+import { useTheme, styled } from "@mui/material/styles";
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import { MoreVert, PushPin, VisibilityOff } from "@mui/icons-material";
+import ResizeHandle from "./ResizeHandle";
+import { useTableStyles } from "@/client/theme/styles";
+import { AnyColumn, PinPosition } from "@/client/components/Table/types/column.type";
+import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
+import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
 
-export interface ColumnHeaderProps<TRowData = any> {
+export interface ColumnHeaderProps<TRowData> {
   column: AnyColumn<TRowData>;
   isPinned: PinPosition;
   columnWidth: number;
@@ -23,32 +29,32 @@ export interface ColumnHeaderProps<TRowData = any> {
   onHide?: (columnId: string) => void;
 }
 
-const StyledTh = styled('th')(({ theme }) => ({
+const StyledTh = styled("th")(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   padding: 0,
-  position: 'relative',
+  position: "relative",
 }));
 
 interface HeaderContainerProps {
   columnWidth: number;
 }
 
-const HeaderContainer = styled('div')<HeaderContainerProps>(
+const HeaderContainer = styled("div")<HeaderContainerProps>(
   ({ columnWidth }) => ({
-    position: 'relative',
+    position: "relative",
     maxWidth: columnWidth,
     width: columnWidth,
     minWidth: columnWidth,
-    overflow: 'hidden',
+    overflow: "hidden",
     minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
   })
 );
 
-const HeaderInner = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  height: '100%',
+const HeaderInner = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
+  height: "100%",
   minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
 });
 
@@ -59,29 +65,29 @@ interface HeaderContentProps {
   thStyle: CSSProperties;
 }
 
-const HeaderContent = styled('div')<HeaderContentProps>(({
+const HeaderContent = styled("div")<HeaderContentProps>(({
   isPinned,
   pinnedLeftStyle,
   pinnedRightStyle,
   thStyle,
 }) => {
   let style = { ...thStyle };
-  if (isPinned === 'left') {
+  if (isPinned === "left") {
     style = { ...thStyle, ...pinnedLeftStyle };
-  } else if (isPinned === 'right') {
+  } else if (isPinned === "right") {
     style = { ...thStyle, ...pinnedRightStyle };
   }
 
   return {
     ...style,
     flex: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   };
 });
 
 const OptionsButton = styled(IconButton)({
-  padding: '4px',
-  marginLeft: '4px',
+  padding: "4px",
+  marginLeft: "4px",
 });
 
 /**
@@ -122,9 +128,9 @@ const ColumnHeaderCell = <TRowData,>({
       backgroundColor: theme.palette.background.paper,
     };
 
-    if (isPinned === 'left') {
+    if (isPinned === "left") {
       return { ...base, ...pinnedLeftStyle };
-    } else if (isPinned === 'right') {
+    } else if (isPinned === "right") {
       return { ...base, ...pinnedRightStyle };
     }
 
@@ -137,34 +143,34 @@ const ColumnHeaderCell = <TRowData,>({
       e.preventDefault();
       e.stopPropagation();
 
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       resizeStartX.current = clientX;
       resizeStartWidth.current = columnWidth;
 
       const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
-        const moveClientX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        const moveClientX =
+          "touches" in moveEvent
+            ? moveEvent.touches[0].clientX
+            : moveEvent.clientX;
         const delta = moveClientX - resizeStartX.current;
         const newWidth = Math.max(
           column.minWidth || 50,
-          Math.min(
-            column.maxWidth || 1000,
-            resizeStartWidth.current + delta
-          )
+          Math.min(column.maxWidth || 1000, resizeStartWidth.current + delta)
         );
         resizeColumn(column.id, newWidth);
       };
 
       const handleMouseUp = () => {
-        document.removeEventListener('mousemove', handleMouseMove as any);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('touchmove', handleMouseMove as any);
-        document.removeEventListener('touchend', handleMouseUp);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("touchmove", handleMouseMove);
+        document.removeEventListener("touchend", handleMouseUp);
       };
 
-      document.addEventListener('mousemove', handleMouseMove as any);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleMouseMove as any);
-      document.addEventListener('touchend', handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleMouseMove);
+      document.addEventListener("touchend", handleMouseUp);
     },
     [column, columnWidth, resizeColumn]
   );
@@ -210,7 +216,7 @@ const ColumnHeaderCell = <TRowData,>({
             thStyle={thStyle}
           >
             {/* Render custom header content */}
-            {column.headerRenderer({ column } as any)}
+            {column.headerRenderer({ column })}
           </HeaderContent>
 
           {/* Table-managed options menu */}
@@ -226,10 +232,10 @@ const ColumnHeaderCell = <TRowData,>({
             anchorEl={optionsAnchor}
             open={Boolean(optionsAnchor)}
             onClose={handleOptionsClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
-            {isPinned !== 'left' && onPinLeft && (
+            {isPinned !== "left" && onPinLeft && (
               <MenuItem onClick={handlePinLeft}>
                 <ListItemIcon>
                   <PushPin fontSize="small" />
@@ -237,7 +243,7 @@ const ColumnHeaderCell = <TRowData,>({
                 <ListItemText>{locale.strings.pinLeft}</ListItemText>
               </MenuItem>
             )}
-            {isPinned !== 'right' && onPinRight && (
+            {isPinned !== "right" && onPinRight && (
               <MenuItem onClick={handlePinRight}>
                 <ListItemIcon>
                   <PushPin fontSize="small" />
@@ -273,6 +279,6 @@ const ColumnHeaderCell = <TRowData,>({
   );
 };
 
-ColumnHeaderCell.displayName = 'ColumnHeaderCell';
+ColumnHeaderCell.displayName = "ColumnHeaderCell";
 
 export default React.memo(ColumnHeaderCell) as typeof ColumnHeaderCell;

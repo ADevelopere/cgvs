@@ -34,10 +34,9 @@ const initialState: StorageDataState = {
 // STORE
 // ============================================================================
 
-export const useStorageDataStore = create<StorageDataStore>((set) => ({
+export const useStorageDataStore = create<StorageDataStore>(set => ({
   ...initialState,
 
-  setParams: (params) => set({ params }),
+  setParams: params => set({ params }),
   reset: () => set(initialState),
 }));
-

@@ -6,7 +6,7 @@ import {
   FitScreen,
   PinDrop,
 } from "@mui/icons-material";
-import type { ColumnOptionsMenuProps } from "./types";
+import type { ColumnOptionsMenuProps } from "../types/header.types";
 import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
 
 const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({

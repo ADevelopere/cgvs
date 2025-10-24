@@ -10,9 +10,7 @@ import {
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import { useQuery, useApolloClient } from "@apollo/client/react";
-import {
-  StorageItemUnion,
-} from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { directoryChildrenQueryDocument } from "../core/storage.documents";
@@ -64,10 +62,10 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
   // Derive error from query
   const error = useMemo(() => {
     if (queryError) {
-      return translations.moveDialogUnexpectedError ;
+      return translations.moveDialogUnexpectedError;
     }
     if (data && !data.directoryChildren) {
-      return translations.moveDialogFailedToLoad ;
+      return translations.moveDialogFailedToLoad;
     }
     return null;
   }, [queryError, data, translations]);
@@ -152,12 +150,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
     } finally {
       setIsMoving(false);
     }
-  }, [
-    items,
-    currentPath,
-    onMove,
-    onClose,
-  ]);
+  }, [items, currentPath, onMove, onClose]);
 
   // Handle dialog close
   const handleClose = useCallback(() => {
@@ -264,7 +257,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                 "Select destination folder"}
             </MUI.Typography>
             <MUI.Box sx={{ display: "flex", gap: 1 }}>
-              <MUI.Tooltip title={translations.moveDialogGoUp }>
+              <MUI.Tooltip title={translations.moveDialogGoUp}>
                 <span>
                   <MUI.IconButton
                     size="small"
@@ -275,7 +268,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                   </MUI.IconButton>
                 </span>
               </MUI.Tooltip>
-              <MUI.Tooltip title={translations.moveDialogRefresh }>
+              <MUI.Tooltip title={translations.moveDialogRefresh}>
                 <MUI.IconButton
                   size="small"
                   onClick={refreshDirectory}
@@ -342,7 +335,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
           ) : directories.length === 0 ? (
             <MUI.Box sx={{ p: 3, textAlign: "center" }}>
               <MUI.Typography color="text.secondary">
-                {translations.moveDialogNoFolders }
+                {translations.moveDialogNoFolders}
               </MUI.Typography>
             </MUI.Box>
           ) : (
@@ -396,7 +389,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                             color="error"
                             sx={{ ml: 1 }}
                           >
-                            {translations.moveDialogInvalid }
+                            {translations.moveDialogInvalid}
                           </MUI.Typography>
                         )}
                       </MUI.ListItemButton>
@@ -445,7 +438,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
             borderRadius: 1,
           }}
         >
-          {translations.moveDialogCancel }
+          {translations.moveDialogCancel}
         </MUI.Button>
         <MUI.Button
           onClick={handleMove}
@@ -459,7 +452,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
           {isMoving ? (
             <>
               <MUI.CircularProgress size={16} sx={{ mr: 1 }} />
-              {translations.moving }
+              {translations.moving}
             </>
           ) : (
             translations.moveDialogMove

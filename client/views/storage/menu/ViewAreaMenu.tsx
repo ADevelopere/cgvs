@@ -37,7 +37,7 @@ export interface ViewAreaMenuProps {
   onPasteItems: () => Promise<boolean>;
   onRefresh: () => Promise<void>;
   onCreateFolder: (path: string, folderName: string) => Promise<boolean>;
-  selectAll: () => void
+  selectAll: () => void;
 }
 
 const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({

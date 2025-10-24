@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { TextField } from '@mui/material';
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { TextField } from "@mui/material";
 
 export interface TextEditRendererProps {
   value: string | null | undefined;
@@ -26,7 +26,7 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   multiline = false,
   maxLength,
 }) => {
-  const [editValue, setEditValue] = useState(value || '');
+  const [editValue, setEditValue] = useState(value || "");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,19 +72,19 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
     try {
       await onSave(editValue);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save');
+      setError(err instanceof Error ? err.message : "Failed to save");
       setIsSaving(false);
     }
   }, [editValue, onSave, validator, isSaving]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter' && !multiline) {
+      if (event.key === "Enter" && !multiline) {
         event.preventDefault();
         if (!error) {
           handleSave();
         }
-      } else if (event.key === 'Escape') {
+      } else if (event.key === "Escape") {
         event.preventDefault();
         onCancel();
       }
@@ -117,7 +117,7 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
         disableUnderline: !error,
       }}
       sx={{
-        '& .MuiInputBase-input': {
+        "& .MuiInputBase-input": {
           padding: 0,
         },
       }}
@@ -126,4 +126,3 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
 };
 
 export default TextEditRenderer;
-

@@ -3,7 +3,10 @@
 import React, { useEffect, useMemo } from "react";
 import { Box, CircularProgress, Alert, Typography } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import { Template, TemplateVariable } from "@/client/graphql/generated/gql/graphql";
+import {
+  Template,
+  TemplateVariable,
+} from "@/client/graphql/generated/gql/graphql";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
 import RecipientVariableDataGroupSelector from "./RecipientVariableDataGroupSelector";
@@ -58,19 +61,25 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
   // Log errors when they occur
   useEffect(() => {
     if (groupsError) {
-      logger.error("RecipientVariableDataTab: Error fetching recipient groups", {
-        templateId: template.id,
-        error: groupsError,
-      });
+      logger.error(
+        "RecipientVariableDataTab: Error fetching recipient groups",
+        {
+          templateId: template.id,
+          error: groupsError,
+        }
+      );
     }
   }, [groupsError, template.id]);
 
   useEffect(() => {
     if (variablesError) {
-      logger.error("RecipientVariableDataTab: Error fetching template variables", {
-        templateId: template.id,
-        error: variablesError,
-      });
+      logger.error(
+        "RecipientVariableDataTab: Error fetching template variables",
+        {
+          templateId: template.id,
+          error: variablesError,
+        }
+      );
     }
   }, [variablesError, template.id]);
 

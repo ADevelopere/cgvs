@@ -190,10 +190,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           {/* Download Button */}
           {canDownload && (
             <Tooltip title={translations.download}>
-              <Button
-                startIcon={<DownloadIcon />}
-                onClick={handleDownload}
-              >
+              <Button startIcon={<DownloadIcon />} onClick={handleDownload}>
                 {translations.download}
               </Button>
             </Tooltip>
@@ -201,10 +198,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
 
           {/* Move To Button */}
           <Tooltip title={translations.moveTo || "Move to"}>
-            <Button
-              startIcon={<MoveIcon />}
-              onClick={handleMoveTo}
-            >
+            <Button startIcon={<MoveIcon />} onClick={handleMoveTo}>
               {translations.moveTo || "Move to"}
             </Button>
           </Tooltip>
@@ -212,10 +206,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           {/* Rename Button - Only for single selection */}
           {isSingleSelection && (
             <Tooltip title={translations.rename}>
-              <Button
-                startIcon={<EditIcon />}
-                onClick={handleRename}
-              >
+              <Button startIcon={<EditIcon />} onClick={handleRename}>
                 {translations.rename}
               </Button>
             </Tooltip>
@@ -239,20 +230,14 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
         <ButtonGroup variant="text" size="small">
           {/* Copy Button */}
           <Tooltip title={translations.copy}>
-            <IconButton
-              onClick={handleCopy}
-              size="small"
-            >
+            <IconButton onClick={handleCopy} size="small">
               <CopyIcon fontSize="small" />
             </IconButton>
           </Tooltip>
 
           {/* Cut Button */}
           <Tooltip title={translations.cut}>
-            <IconButton
-              onClick={handleCut}
-              size="small"
-            >
+            <IconButton onClick={handleCut} size="small">
               <CutIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -276,7 +261,6 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
             </span>
           </Tooltip>
         </ButtonGroup>
-
       </Stack>
 
       {/* Clipboard Status */}

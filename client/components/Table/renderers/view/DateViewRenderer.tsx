@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Tooltip } from '@mui/material';
-import { format as formatDate } from 'date-fns';
+import React from "react";
+import { Box, Tooltip } from "@mui/material";
+import { format as formatDate } from "date-fns";
 
 export interface DateViewRendererProps {
   value: Date | string | null | undefined;
@@ -10,32 +10,32 @@ export interface DateViewRendererProps {
 
 /**
  * DateViewRenderer Component
- * 
+ *
  * Formats and displays date values.
  */
-export const DateViewRenderer: React.FC<DateViewRendererProps> = ({ 
+export const DateViewRenderer: React.FC<DateViewRendererProps> = ({
   value,
-  format = 'PP', // Default: localized date
+  format = "PP", // Default: localized date
   tooltip = true,
 }) => {
   const displayValue = React.useMemo(() => {
-    if (!value) return '';
-    
+    if (!value) return "";
+
     try {
-      const date = typeof value === 'string' ? new Date(value) : value;
-      if (isNaN(date.getTime())) return '';
+      const date = typeof value === "string" ? new Date(value) : value;
+      if (isNaN(date.getTime())) return "";
       return formatDate(date, format);
     } catch {
-      return '';
+      return "";
     }
   }, [value, format]);
-  
+
   const content = (
     <Box
       sx={{
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
       }}
     >
       {displayValue}
@@ -54,4 +54,3 @@ export const DateViewRenderer: React.FC<DateViewRendererProps> = ({
 };
 
 export default DateViewRenderer;
-

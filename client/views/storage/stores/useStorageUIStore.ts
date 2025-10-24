@@ -59,18 +59,17 @@ const initialState: StorageUIState = {
 // STORE
 // ============================================================================
 
-export const useStorageUIStore = create<StorageUIStore>((set) => ({
+export const useStorageUIStore = create<StorageUIStore>(set => ({
   ...initialState,
 
-  setSelectedItems: (selectedItems) => set({ selectedItems }),
-  setLastSelectedItem: (lastSelectedItem) => set({ lastSelectedItem }),
-  setFocusedItem: (focusedItem) => set({ focusedItem }),
-  setViewMode: (viewMode) => set({ viewMode }),
-  setSearchMode: (searchMode) => set({ searchMode }),
-  setSearchResults: (searchResults) => set({ searchResults }),
-  setClipboard: (clipboard) => set({ clipboard }),
-  setSortBy: (sortBy) => set({ sortBy }),
-  setSortDirection: (sortDirection) => set({ sortDirection }),
+  setSelectedItems: selectedItems => set({ selectedItems }),
+  setLastSelectedItem: lastSelectedItem => set({ lastSelectedItem }),
+  setFocusedItem: focusedItem => set({ focusedItem }),
+  setViewMode: viewMode => set({ viewMode }),
+  setSearchMode: searchMode => set({ searchMode }),
+  setSearchResults: searchResults => set({ searchResults }),
+  setClipboard: clipboard => set({ clipboard }),
+  setSortBy: sortBy => set({ sortBy }),
+  setSortDirection: sortDirection => set({ sortDirection }),
   reset: () => set(initialState),
 }));
-

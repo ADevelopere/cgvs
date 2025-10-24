@@ -60,13 +60,19 @@ export const useStorageMutations = (): StorageMutations => {
   }, [params]);
 
   // Cache eviction helpers
-  const evictListFilesCache = useCallback((path?: string) => {
-    evictListFilesCacheUtil(apolloClient, path || "", paramsRef.current);
-  }, [apolloClient]);
+  const evictListFilesCache = useCallback(
+    (path?: string) => {
+      evictListFilesCacheUtil(apolloClient, path || "", paramsRef.current);
+    },
+    [apolloClient]
+  );
 
-  const evictDirectoryChildrenCache = useCallback((path?: string) => {
-    evictDirectoryChildrenCacheUtil(apolloClient, path || "");
-  }, [apolloClient]);
+  const evictDirectoryChildrenCache = useCallback(
+    (path?: string) => {
+      evictDirectoryChildrenCacheUtil(apolloClient, path || "");
+    },
+    [apolloClient]
+  );
   // Create mutation hooks - extract just the mutation function (first element)
   // The mutation function from useMutation is stable and doesn't recreate
   const [copyStorageItemsMutation] = useMutation(
@@ -103,9 +109,10 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Only evict directory children cache if we copied any directories
       // Evict the destination parent's directoryChildren cache
-      const hasCopiedDirectory = result.data?.copyStorageItems?.successfulItems?.some(item =>
-        item.__typename === 'DirectoryInfo'
-      );
+      const hasCopiedDirectory =
+        result.data?.copyStorageItems?.successfulItems?.some(
+          item => item.__typename === "DirectoryInfo"
+        );
 
       if (hasCopiedDirectory) {
         evictDirectoryChildrenCache(destinationPath);
@@ -122,7 +129,10 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Evict cache for parent directory where folder was created
       // input.path is the full path of the new folder, so extract parent
-      const parentPath = variables.input.path.substring(0, variables.input.path.lastIndexOf("/"));
+      const parentPath = variables.input.path.substring(
+        0,
+        variables.input.path.lastIndexOf("/")
+      );
       evictListFilesCache(parentPath);
       evictDirectoryChildrenCache(parentPath);
 
@@ -136,7 +146,10 @@ export const useStorageMutations = (): StorageMutations => {
       const result = await deleteFileMutation({ variables });
 
       // Evict cache for parent directory
-      const parentPath = variables.path.substring(0, variables.path.lastIndexOf("/"));
+      const parentPath = variables.path.substring(
+        0,
+        variables.path.lastIndexOf("/")
+      );
       evictListFilesCache(parentPath);
 
       return result;
@@ -154,7 +167,7 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Check successful items to determine if they were directories
       result.data?.deleteStorageItems?.successfulItems?.forEach(item => {
-        if (item.__typename === 'DirectoryInfo') {
+        if (item.__typename === "DirectoryInfo") {
           // For deleted directories, evict their parent's directoryChildren cache
           const parentPath = item.path.substring(0, item.path.lastIndexOf("/"));
           parentPathsOfDeletedDirectories.add(parentPath);
@@ -177,7 +190,11 @@ export const useStorageMutations = (): StorageMutations => {
 
       return result;
     },
-    [deleteStorageItemsMutation, evictListFilesCache, evictDirectoryChildrenCache]
+    [
+      deleteStorageItemsMutation,
+      evictListFilesCache,
+      evictDirectoryChildrenCache,
+    ]
   );
 
   const generateUploadSignedUrl = useCallback(
@@ -193,18 +210,24 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Track parent directories of moved directories
       const sourceParentsOfMovedDirectories = new Set<string>();
-      const hasMovedDirectory = result.data?.moveStorageItems?.successfulItems?.some(item => {
-        if (item.__typename === 'DirectoryInfo') {
-          // Find the original path for this item
-          const originalPath = variables.input.sourcePaths.find(p => p.endsWith(`/${item.name}`) || p === item.name);
-          if (originalPath) {
-            const sourceParent = originalPath.substring(0, originalPath.lastIndexOf("/"));
-            sourceParentsOfMovedDirectories.add(sourceParent);
+      const hasMovedDirectory =
+        result.data?.moveStorageItems?.successfulItems?.some(item => {
+          if (item.__typename === "DirectoryInfo") {
+            // Find the original path for this item
+            const originalPath = variables.input.sourcePaths.find(
+              p => p.endsWith(`/${item.name}`) || p === item.name
+            );
+            if (originalPath) {
+              const sourceParent = originalPath.substring(
+                0,
+                originalPath.lastIndexOf("/")
+              );
+              sourceParentsOfMovedDirectories.add(sourceParent);
+            }
+            return true;
           }
-          return true;
-        }
-        return false;
-      });
+          return false;
+        });
 
       // Evict cache for source parent directories
       const uniqueSourcePaths = new Set<string>();
@@ -241,12 +264,15 @@ export const useStorageMutations = (): StorageMutations => {
       const result = await renameFileMutation({ variables });
 
       // Evict cache for parent directory
-      const parentPath = variables.input.currentPath.substring(0, variables.input.currentPath.lastIndexOf("/"));
+      const parentPath = variables.input.currentPath.substring(
+        0,
+        variables.input.currentPath.lastIndexOf("/")
+      );
       evictListFilesCache(parentPath);
 
       // Only evict directory children if the renamed item was a directory
       // Evict the parent's directoryChildren cache since the parent's children have changed
-      if (result.data?.renameFile?.data?.__typename === 'DirectoryInfo') {
+      if (result.data?.renameFile?.data?.__typename === "DirectoryInfo") {
         evictDirectoryChildrenCache(parentPath);
       }
 

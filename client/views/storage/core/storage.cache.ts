@@ -19,20 +19,20 @@ export const evictListFilesCache = (
 
   // First, evict the current active params (will refetch)
   apolloClient.cache.evict({
-    id: 'ROOT_QUERY',
-    fieldName: 'listFiles',
+    id: "ROOT_QUERY",
+    fieldName: "listFiles",
     args: {
       input: {
         path: targetPath,
         limit: currentParams.limit,
         offset: currentParams.offset,
-      }
-    }
+      },
+    },
   });
 
   // Then, delete all other cached variations for this path
   apolloClient.cache.modify({
-    id: 'ROOT_QUERY',
+    id: "ROOT_QUERY",
     fields: {
       listFiles(existingRef, { DELETE, storeFieldName }) {
         // Parse the storeFieldName to check if it matches our target path
@@ -70,9 +70,9 @@ export const evictDirectoryChildrenCache = (
 ): void => {
   const targetPath = path || "";
   apolloClient.cache.evict({
-    id: 'ROOT_QUERY',
-    fieldName: 'directoryChildren',
-    args: { path: targetPath }
+    id: "ROOT_QUERY",
+    fieldName: "directoryChildren",
+    args: { path: targetPath },
   });
   apolloClient.cache.gc();
 };
