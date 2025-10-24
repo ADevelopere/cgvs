@@ -4,16 +4,17 @@ import type React from "react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useTheme } from "@mui/material/styles";
 import { LinearProgress } from "@mui/material";
-import TableHeader from "../TableHeader/TableHeader";
-import PaginationFooter from "../TableFooter/TableFooter";
-import ColumnVisibilityPanel from "./ColumnVisibilityPanel";
-import { useTableContext } from "./TableContext";
-import { useTableColumnContext } from "./TableColumnContext";
-import { useTableRowsContext } from "./TableRowsContext";
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from "@/client/constants/tableConstants";
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
-import TableBody from "../TableBody/TableBody";
-// Define column interface
+import { ColumnVisibilityPanel } from "../components";
+import {
+  useTableContext,
+  useTableColumnContext,
+  useTableRowsContext,
+  useTableLocale,
+} from "../contexts";
+import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../constants";
+import TableHeader from "./TableHeader";
+import TableBody from "./TableBody";
+import PaginationFooter from "./TableFooter";
 
 const Table: React.FC<{
   style?: React.CSSProperties;

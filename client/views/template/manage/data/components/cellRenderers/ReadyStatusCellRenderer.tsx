@@ -10,7 +10,7 @@ import React, { useMemo } from "react";
 import { Tooltip, Box, IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { EditableColumn } from "@/client/components/Table/types/column.type";
-import { DataCellState } from "@/client/components/Table/TableBody/DataCell";
+import { DataCellState } from "@/client/components/Table/components/cells/DataCell";
 import { isRecipientReady } from "../../utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 

@@ -1,10 +1,12 @@
 import React from "react";
 import { CircularProgress, Box } from "@mui/material";
-import DataRow from "./DataRow";
-import { useTableRowsContext } from "../Table/TableRowsContext";
-import { useTableContext } from "../Table/TableContext";
+import {
+  useTableRowsContext,
+  useTableContext,
+  useTableColumnContext,
+} from "../contexts";
+import { DataRow } from "../components/";
 import { PageInfo } from "@/client/graphql/generated/gql/graphql";
-import { useTableColumnContext } from "../Table/TableColumnContext";
 
 const loadingRowHeight = 80;
 

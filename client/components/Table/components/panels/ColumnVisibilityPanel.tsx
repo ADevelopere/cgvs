@@ -13,8 +13,7 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-import { useTableColumnContext } from "./TableColumnContext";
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
+import { useTableColumnContext, useTableLocale } from "../../contexts";
 
 interface ColumnVisibilityPanelProps {
   onClose: () => void;

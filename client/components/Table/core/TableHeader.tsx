@@ -1,15 +1,14 @@
 import type React from "react";
 import { useRef, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
-import ColumnHeaderCell from "./ColumnHeaderCell";
+import { ColumnHeaderCell } from "../components";
 import { Box, Checkbox } from "@mui/material";
 
-import { useTableColumnContext } from "../Table/TableColumnContext";
-import { useTableRowsContext } from "../Table/TableRowsContext";
+import { useTableColumnContext, useTableRowsContext } from "../contexts";
 import {
   TABLE_CHECKBOX_CONTAINER_SIZE,
   TABLE_CHECKBOX_WIDTH,
-} from "@/client/constants/tableConstants";
+} from "../constants";
 
 /**
  * TableHeader Component

@@ -5,7 +5,7 @@ import {
 } from "./TableColumnContext";
 import { TableDataProvider, TableDataProviderProps } from "./TableDataContext";
 import { TableRowsProvider, TableRowsProviderProps } from "./TableRowsContext";
-import { AnyColumn, PageInfo } from "@/client/components/Table/types/column.type";
+import { AnyColumn, PageInfo } from "../types";
 
 export type TableContextType<TRowData, TColumnId extends string = string> = {
   data: TRowData[];

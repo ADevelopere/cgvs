@@ -11,7 +11,7 @@ import { Box, Paper, CircularProgress, Alert } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { TableProvider } from "@/client/components/Table/Table/TableContext";
 import Table from "@/client/components/Table/Table/Table";
-import { ROWS_PER_PAGE_OPTIONS } from "@/client/constants/tableConstants";
+import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
 import { buildDataColumns } from "./columns/buildDataColumns";

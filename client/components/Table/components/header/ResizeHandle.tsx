@@ -1,7 +1,7 @@
-import { useAppTheme } from "@/client/contexts/ThemeContext";
+import { useAppTheme } from "@/client/contexts";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useTableLocale } from "@/client/locale/table/TableLocaleContext";
+import { useTableLocale } from "../../contexts";
 
 type ResizeHandleProps = {
   onResize: (

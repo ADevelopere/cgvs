@@ -15,7 +15,7 @@ export interface DateViewRendererProps {
  */
 export const DateViewRenderer: React.FC<DateViewRendererProps> = ({
   value,
-  format = "PP", // Default: localized date
+  format = "EG", // Default: localized date
   tooltip = true,
 }) => {
   const displayValue = React.useMemo(() => {

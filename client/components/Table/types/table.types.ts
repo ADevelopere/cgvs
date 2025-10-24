@@ -4,8 +4,6 @@ export interface LoadMoreParams {
   visibleStopIndex: number;
 }
 
-export type PinPosition = "left" | "right" | null;
-
 /**
  * Pagination information
  */

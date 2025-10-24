@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { Clear } from "@mui/icons-material";
 import { EditableColumn } from "@/client/components/Table/types/column.type";
-import { DataCellState } from "@/client/components/Table/TableBody/DataCell";
+import { DataCellState } from "@/client/components/Table/components/cells/DataCell";
 
 // Props for the main component
 type SelectVariableCellRendererProps = {
