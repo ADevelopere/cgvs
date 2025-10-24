@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import validator from "validator";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { EditableColumn } from "@/client/types/table.type";
+import { EditableColumn } from "@/client/components/Table/table.type";
 import {
   isValidCountryCode,
   isValidPhoneNumber,

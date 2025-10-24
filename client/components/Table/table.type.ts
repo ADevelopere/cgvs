@@ -40,6 +40,8 @@ export type BaseColumn = {
   maxDate?: string;
   format?: string;
   multiple?: boolean;
+  // Generic metadata for custom renderers
+  metadata?: any;
 };
 
 export type EditableColumn = BaseColumn & {

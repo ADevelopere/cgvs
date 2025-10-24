@@ -1,6 +1,6 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { EditableColumn, ColumnTypes } from "@/client/types/table.type";
-import { getValidationError, isRecipientReady } from "../utils/validation";
+import { EditableColumn, ColumnTypes } from "@/client/components/Table/table.type";
+import { getValidationError } from "../utils/validation";
 import { RecipientVariableDataTranslation } from "@/client/locale/components/RecipientVariableData";
 
 /**
@@ -66,10 +66,7 @@ export const buildDataColumns = (
       id: columnId,
       type: columnType as ColumnTypes,
       label: variable.name || `Variable ${variable.id}`,
-      accessor: (row: Graphql.RecipientWithVariableValues) =>
-        (row.variableValues as Record<string, unknown>)?.[
-          variable.id?.toString() || ""
-        ],
+      accessor: columnId, // Use string accessor for performance (matches flattened data structure)
       editable: true,
       resizable: true,
       required: variable.required || false,
@@ -125,20 +122,13 @@ export const buildDataColumns = (
     id: "readyStatus",
     type: "readyStatus",
     label: strings.readyStatus,
-    accessor: (row: Record<string, unknown>) => {
-      const variableValues =
-        (row.variableValues as Record<string, unknown>) || {};
-      const isReady = isRecipientReady(variableValues, variables);
-      return {
-        isReady,
-        variables,
-        variableValues,
-      };
-    },
+    accessor: "_fullData", // Pass full data, let renderer calculate readiness
     editable: false,
     resizable: true,
     initialWidth: 120,
     widthStorageKey: "recipient_variable_data_ready_status_column_width",
+    // Store variables for renderer to use
+    metadata: { variables },
   });
 
   return columns;

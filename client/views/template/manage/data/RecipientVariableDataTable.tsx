@@ -150,12 +150,21 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     widthsInitialized.current = true;
   }, [columns, tableContainerRef]);
 
-  // Transform data for table
+  // Transform data for table - flatten variableValues for performance
   const tableData = useMemo(() => {
     return recipientsVarValues.map(recipient => ({
       id: recipient.recipientGroupItemId,
       studentName: recipient.studentName,
-      variableValues: recipient.variableValues,
+      // Flatten variableValues into direct properties for fast string accessor access
+      ...Object.entries(recipient.variableValues || {}).reduce(
+        (acc, [key, value]) => {
+          acc[`var_${key}`] = value;
+          return acc;
+        },
+        {} as Record<string, unknown>
+      ),
+      // Store full data for readyStatus calculation
+      _fullData: recipient,
     }));
   }, [recipientsVarValues]);
 

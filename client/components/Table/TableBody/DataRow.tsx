@@ -8,7 +8,7 @@ import {
 } from "@/client/constants/tableConstants";
 import { useTableStyles } from "@/client/theme/styles";
 import DataCell from "./DataCell";
-import { EditableColumn } from "@/client/types/table.type";
+import { EditableColumn } from "@/client/components/Table/table.type";
 import { TableCellEditingState } from "../Table/TableDataContext";
 
 export type DataRowProps = {
