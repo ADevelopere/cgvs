@@ -1,5 +1,4 @@
 <!-- 8e6a12e3-b21d-4927-bf81-8a3dd1c9bfb5 17321b2e-94e3-47f9-8b82-cd5a1726f6f8 -->
-
 # Generic Table Component Refactor
 
 ## Overview
@@ -525,14 +524,17 @@ Add deprecation comments to old files (manual cleanup will be done later):
 ## Implementation Order
 
 1. **Phase 1: Type System** (Steps 1)
+
    - Update table.type.ts with new generic types
    - This is the foundation for everything else
 
 2. **Phase 2: Contexts** (Step 2)
+
    - Make all contexts generic
    - Ensure backward compatibility with existing filter/sort logic
 
 3. **Phase 3: Core Components** (Steps 3-7)
+
    - Update ColumnHeaderCell
    - Update DataCell
    - Update DataRow
@@ -540,6 +542,7 @@ Add deprecation comments to old files (manual cleanup will be done later):
    - Mark deprecated files
 
 4. **Phase 4: Renderer Library** (Steps 8-14)
+
    - Create directory structure
    - Implement BaseHeaderRenderer
    - Implement filter popovers
@@ -549,6 +552,7 @@ Add deprecation comments to old files (manual cleanup will be done later):
    - Document template consumer strategy (use basic renderers with custom validation)
 
 5. **Phase 5: Consumer Updates** (Steps 15-20)
+
    - Update buildDataColumns
    - Update student table
    - Update RecipientVariableDataTable
@@ -557,6 +561,7 @@ Add deprecation comments to old files (manual cleanup will be done later):
    - Update TableBody
 
 6. **Phase 6: Finalization** (Steps 21-23)
+
    - Create exports
    - Add performance optimizations
    - Add deprecation comments
