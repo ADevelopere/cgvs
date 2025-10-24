@@ -55,6 +55,25 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
     [variablesData]
   );
 
+  // Log errors when they occur
+  useEffect(() => {
+    if (groupsError) {
+      logger.error("RecipientVariableDataTab: Error fetching recipient groups", {
+        templateId: template.id,
+        error: groupsError,
+      });
+    }
+  }, [groupsError, template.id]);
+
+  useEffect(() => {
+    if (variablesError) {
+      logger.error("RecipientVariableDataTab: Error fetching template variables", {
+        templateId: template.id,
+        error: variablesError,
+      });
+    }
+  }, [variablesError, template.id]);
+
   // Auto-select first group if no group is selected
   useEffect(() => {
     if (groups.length > 0 && !store.selectedGroup) {
@@ -68,6 +87,12 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
 
   // Show error state if there's an error
   if (groupsError || variablesError) {
+    logger.error("RecipientVariableDataTab: Displaying error state to user", {
+      templateId: template.id,
+      hasGroupsError: !!groupsError,
+      hasVariablesError: !!variablesError,
+    });
+
     return (
       <Alert
         severity="error"
