@@ -93,11 +93,11 @@ Store files directly on the server's local disk. Ideal for development, testing,
 
 ```bash
 # Create storage directory
-mkdir -p ./cgvs/data/files/{public,private,temp}
+mkdir -p ./storage/{public,private,temp}
 
 # Configure environment
 echo "STORAGE_PROVIDER=local" >> .env
-echo "LOCAL_STORAGE_PATH=./cgvs/data/files/" >> .env
+echo "LOCAL_STORAGE_PATH=./storage/" >> .env
 echo "NEXT_PUBLIC_BASE_URL=http://localhost:3000" >> .env
 ```
 

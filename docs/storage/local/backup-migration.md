@@ -510,10 +510,10 @@ tar -xzf /backup/cgvs-full-20240115.tar.gz \
   "cgvs-full-20240115/files/public/images/logo.png"
 
 # Copy to storage
-cp /tmp/logo.png ./cgvs/data/files/public/images/
+cp /tmp/logo.png ./storage/public/images/
 
 # Verify file
-ls -lh ./cgvs/data/files/public/images/logo.png
+ls -lh ./storage/public/images/logo.png
 ```
 
 #### Scenario 2: Complete Data Loss
@@ -538,8 +538,8 @@ tar -xzf "$BACKUP_FILE" -C "$RESTORE_DIR"
 
 # Restore files
 echo "Restoring files..."
-rm -rf ./cgvs/data/files/*
-cp -r "$RESTORE_DIR"/cgvs-full-*/files/* ./cgvs/data/files/
+rm -rf ./storage/*
+cp -r "$RESTORE_DIR"/cgvs-full-*/files/* ./storage/
 
 # Restore database
 echo "Restoring database..."
@@ -639,7 +639,7 @@ gsutil versioning set on gs://your-production-bucket
 
 ```bash
 # Upload with metadata preservation
-gsutil -m cp -r ./cgvs/data/files/* gs://your-production-bucket/ \
+gsutil -m cp -r ./storage/* gs://your-production-bucket/ \
   -h "Cache-Control:public, max-age=31536000"
 
 # Verify upload
@@ -692,10 +692,10 @@ echo "GCP files: $GCP_COUNT"
 
 ```bash
 # Download all files
-gsutil -m cp -r gs://your-bucket/* ./cgvs/data/files/
+gsutil -m cp -r gs://your-bucket/* ./storage/
 
 # Verify download
-du -sh ./cgvs/data/files/
+du -sh ./storage/
 ```
 
 #### Step 2: Switch Storage Provider
@@ -703,7 +703,7 @@ du -sh ./cgvs/data/files/
 ```bash
 # Update .env
 STORAGE_PROVIDER=local
-LOCAL_STORAGE_PATH=./cgvs/data/files/
+LOCAL_STORAGE_PATH=./storage/
 NEXT_PUBLIC_BASE_URL=https://your-domain.com
 ```
 
@@ -723,7 +723,7 @@ curl http://localhost:3000/api/storage/files/public/test.png
 
 ```bash
 # Upload files to S3
-aws s3 sync ./cgvs/data/files/ s3://your-bucket/ \
+aws s3 sync ./storage/ s3://your-bucket/ \
   --storage-class INTELLIGENT_TIERING
 
 # Verify

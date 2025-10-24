@@ -37,7 +37,7 @@ class LocalAdapter implements StorageService {
 
   constructor() {
     // Read environment variables in constructor for testability
-    const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
+    const storagePath = process.env.LOCAL_STORAGE_PATH || "./storage/";
     this.baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     this.basePath = path.resolve(process.cwd(), storagePath);
     logger.info(`Local storage initialized at: ${this.basePath}`);
@@ -1736,7 +1736,7 @@ export async function createLocalAdapter(): Promise<StorageService> {
   }
 
   // Ensure storage directory exists
-  const storagePath = process.env.LOCAL_STORAGE_PATH || "./cgvs/data/files/";
+  const storagePath = process.env.LOCAL_STORAGE_PATH || "./storage/";
   const fullPath = path.resolve(process.cwd(), storagePath);
   await fs.mkdir(fullPath, { recursive: true, mode: 0o755 });
 

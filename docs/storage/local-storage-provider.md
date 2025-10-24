@@ -48,7 +48,7 @@ Add the following to your `.env` file:
 STORAGE_PROVIDER=local
 
 # Local Storage Configuration
-LOCAL_STORAGE_PATH=./cgvs/data/files/
+LOCAL_STORAGE_PATH=./storage/
 
 # Public base URL of the application (no trailing slash)
 # Used for generating signed upload/download URLs
@@ -65,7 +65,7 @@ CRON_SECRET=your-secret-key-here  # Secret for authenticating cron requests
 The local storage provider expects the following directory structure:
 
 ```
-./cgvs/data/files/
+./storage/
 ├── public/          # Public files (no authentication required)
 ├── private/         # Protected files (authentication required)
 └── temp/            # Temporary uploads
@@ -75,13 +75,13 @@ The local storage provider expects the following directory structure:
 
 ```bash
 # Create directory structure
-mkdir -p ./cgvs/data/files/{public,private,temp}
+mkdir -p ./storage/{public,private,temp}
 
 # Set permissions (read/write for owner, read for group)
 chmod -R 755 ./cgvs/data/files
 
 # Add to .gitignore
-echo "cgvs/data/files/" >> .gitignore
+echo "storage/" >> .gitignore
 ```
 
 ---
@@ -272,12 +272,12 @@ This detailed guide covers:
 ```bash
 # Daily backup using rsync
 rsync -avz --delete \
-  /path/to/cgvs/data/files/ \
+  /path/to/storage/ \
   /backup/location/files-$(date +%Y%m%d)/
 
 # Or use tar with compression
 tar -czf /backup/files-$(date +%Y%m%d).tar.gz \
-  /path/to/cgvs/data/files/
+  /path/to/storage/
 ```
 
 **Automation Options:**
@@ -292,7 +292,7 @@ tar -czf /backup/files-$(date +%Y%m%d).tar.gz \
 
 ```bash
 # Check storage usage
-du -sh ./cgvs/data/files/
+du -sh ./storage/
 
 # Check available disk space
 df -h /path/to/cgvs/data/
@@ -569,7 +569,7 @@ BACKUP_DIR="/backup/cgvs-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 # Backup files
-rsync -avz --delete ./cgvs/data/files/ "$BACKUP_DIR/files/"
+rsync -avz --delete ./storage/ "$BACKUP_DIR/files/"
 
 # Backup database
 pg_dump -h localhost -U postgres cgvs > "$BACKUP_DIR/database.sql"
@@ -594,7 +594,7 @@ echo "Backup created: $BACKUP_DIR.tar.gz"
 
 ```bash
 # Using gsutil
-gsutil -m cp -r ./cgvs/data/files/* gs://your-bucket/
+gsutil -m cp -r ./storage/* gs://your-bucket/
 
 # Verify upload
 gsutil ls -r gs://your-bucket/
@@ -628,10 +628,10 @@ bun run dev
 
 ```bash
 # Using gsutil
-gsutil -m cp -r gs://your-bucket/* ./cgvs/data/files/
+gsutil -m cp -r gs://your-bucket/* ./storage/
 
 # Verify download
-du -sh ./cgvs/data/files/
+du -sh ./storage/
 ```
 
 **2. Switch storage provider:**
@@ -639,7 +639,7 @@ du -sh ./cgvs/data/files/
 ```bash
 # Update .env
 STORAGE_PROVIDER=local
-LOCAL_STORAGE_PATH=./cgvs/data/files/
+LOCAL_STORAGE_PATH=./storage/
 ```
 
 **3. Restart application:**
@@ -665,13 +665,13 @@ bun run dev
 
 ```bash
 # Check file exists on disk
-ls -la ./cgvs/data/files/path/to/file.png
+ls -la ./storage/path/to/file.png
 
 # Check database record
 psql -d cgvs -c "SELECT * FROM storage_files WHERE path = 'path/to/file.png';"
 
 # Verify permissions
-ls -ld ./cgvs/data/files/
+ls -ld ./storage/
 # Should show: drwxr-xr-x
 ```
 
@@ -687,10 +687,10 @@ ls -ld ./cgvs/data/files/
 
 ```bash
 # Fix directory permissions
-chmod -R 755 ./cgvs/data/files/
+chmod -R 755 ./storage/
 
 # Ensure ownership
-chown -R $(whoami):$(whoami) ./cgvs/data/files/
+chown -R $(whoami):$(whoami) ./storage/
 
 # Check parent directory permissions
 ls -ld ./cgvs/data/
@@ -710,13 +710,13 @@ ls -ld ./cgvs/data/
 df -h /path/to/cgvs/data/
 
 # Find large files
-du -ah ./cgvs/data/files/ | sort -rh | head -20
+du -ah ./storage/ | sort -rh | head -20
 
 # Clean up temp files
-rm -rf ./cgvs/data/files/temp/*
+rm -rf ./storage/temp/*
 
 # Clean up old uploads (careful!)
-find ./cgvs/data/files/ -type f -mtime +30 -delete
+find ./storage/ -type f -mtime +30 -delete
 ```
 
 ### Issue: MD5 hash mismatch
