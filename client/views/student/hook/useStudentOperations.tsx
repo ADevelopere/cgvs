@@ -16,10 +16,10 @@ import {
   getFilterKeysForColumn,
   mapDateFilter,
   mapTextFilter,
-} from "./hook/utils/filter";
+} from "./utils/filter";
 import logger from "@/client/lib/logger";
 import { useStudentApolloMutations } from "./useStudentApolloMutations";
-import { useStudentStore } from "./stores/useStudentStore";
+import { useStudentStore } from "../stores/useStudentStore";
 
 /**
  * Helper function to map table column IDs to GraphQL OrderStudentsByColumn enum values

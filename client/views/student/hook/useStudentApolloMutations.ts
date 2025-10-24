@@ -2,7 +2,7 @@
 
 import { useMutation } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import * as Document from "./hook/student.documents";
+import * as Document from "./student.documents";
 
 /**
  * Apollo mutations hook for student operations

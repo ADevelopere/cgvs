@@ -19,8 +19,8 @@ import {
 } from "@mui/icons-material";
 import { TextFilterOperation } from "@/client/types/filters";
 import { useAppTranslation } from "@/client/locale";
-import { useStudentOperations } from "./useStudentOperations";
-import { useStudentTable } from "./useStudentTable";
+import { useStudentOperations } from "./hook/useStudentOperations";
+import { useStudentTable } from "./hook/useStudentTable";
 import {
   TextFieldComponent,
   DateFieldComponent,
