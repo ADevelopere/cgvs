@@ -54,7 +54,7 @@ const RecipientVariableDataGroupSelector: React.FC<
     <FormControl
       size="small"
       sx={{
-        minWidth: 200,
+        minWidth: 300,
         "& .MuiInputLabel-root": {
           fontSize: "0.875rem",
         },

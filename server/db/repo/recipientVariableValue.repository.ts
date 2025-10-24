@@ -305,25 +305,36 @@ export namespace RecipientVariableValueRepository {
             variableValues: mergedValues,
             updatedAt: new Date(),
           })
-          .where(eq(DB.recipientGroupItemVariableValues.id, currentRow[0].id));
+          .where(eq(DB.recipientGroupItemVariableValues.id, currentRow[0].id))
+          .returning();
       } else {
-        await tx.insert(DB.recipientGroupItemVariableValues).values({
-          templateRecipientGroupItemId: recipientGroupItemId,
-          templateId: group[0].templateId,
-          recipientGroupId: item.recipientGroupId,
-          studentId: item.studentId,
-          variableValues: mergedValues,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+        await tx
+          .insert(DB.recipientGroupItemVariableValues)
+          .values({
+            templateRecipientGroupItemId: recipientGroupItemId,
+            templateId: group[0].templateId,
+            recipientGroupId: item.recipientGroupId,
+            studentId: item.studentId,
+            variableValues: mergedValues,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
       }
 
-      // 7. Return result (will be clean since we just saved validated data)
-      const result = await findByRecipientGroupItemId(recipientGroupItemId);
-      if (!result) {
-        throw new Error("Failed to fetch updated values");
-      }
-      return result;
+      // 7. Transform mergedValues to VariableValuesMap format
+      const { values: transformedValues } = transformAndValidateJsonb(
+        mergedValues,
+        variables
+      );
+
+      // 8. Return result with fresh data from transaction
+      return {
+        recipientGroupItemId: item.id,
+        studentId: item.studentId,
+        studentName: item.studentName || "Unknown",
+        variableValues: transformedValues,
+      };
     });
   };
 

@@ -137,6 +137,7 @@ const SelectEditRenderer = React.forwardRef<
     },
     ref
   ) => {
+    const [isOpen, setIsOpen] = React.useState(false);
     const isMultiple = column.multiple || false;
     const options = column.options || [];
     const currentValue = state.editingValue as
@@ -194,6 +195,15 @@ const SelectEditRenderer = React.forwardRef<
       }));
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      // Only trigger commit on Enter if dropdown is closed
+      if (e.key === "Enter" && !isOpen) {
+        handleInputKeyDown(e);
+      } else if (e.key === "Escape") {
+        handleInputKeyDown(e);
+      }
+    };
+
     return (
       <Tooltip
         open={!!state.errorMessage}
@@ -208,7 +218,9 @@ const SelectEditRenderer = React.forwardRef<
             value={value}
             onChange={handleChange}
             onBlur={handleBlur}
-            onKeyDown={handleInputKeyDown}
+            onKeyDown={handleKeyDown}
+            onOpen={() => setIsOpen(true)}
+            onClose={() => setIsOpen(false)}
             getOptionLabel={option => option?.label || ""}
             isOptionEqualToValue={(option, value) =>
               option?.value === value?.value

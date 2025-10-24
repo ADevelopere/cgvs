@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Box, CircularProgress, Alert, Typography } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import { Template } from "@/client/graphql/generated/gql/graphql";
+import { Template, TemplateVariable } from "@/client/graphql/generated/gql/graphql";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
 import RecipientVariableDataGroupSelector from "./RecipientVariableDataGroupSelector";
@@ -11,6 +11,7 @@ import RecipientVariableDataTable from "./RecipientVariableDataTable";
 import { templateRecipientGroupsByTemplateIdQueryDocument } from "../recipientGroup/hooks/recipientGroup.documents";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
+import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
 
 interface RecipientVariableDataTabProps {
   template: Template;
@@ -38,6 +39,22 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
     [groupsData]
   );
 
+  // Fetch template variables
+  const {
+    data: variablesData,
+    loading: variablesLoading,
+    error: variablesError,
+  } = useQuery(templateVariablesByTemplateIdQueryDocument, {
+    variables: { templateId: template.id },
+    skip: !template.id,
+    fetchPolicy: "cache-first",
+  });
+
+  const variables: TemplateVariable[] = useMemo(
+    () => variablesData?.templateVariablesByTemplateId || [],
+    [variablesData]
+  );
+
   // Auto-select first group if no group is selected
   useEffect(() => {
     if (groups.length > 0 && !store.selectedGroup) {
@@ -50,7 +67,7 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
   }, [groups, store.selectedGroup, operations]);
 
   // Show error state if there's an error
-  if (groupsError) {
+  if (groupsError || variablesError) {
     return (
       <Alert
         severity="error"
@@ -96,7 +113,7 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
       </Box>
 
       {/* Content Area */}
-      {groupsLoading ? (
+      {groupsLoading || variablesLoading ? (
         <Box
           sx={{
             flex: 1,
@@ -119,8 +136,8 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
           }}
         >
           <RecipientVariableDataTable
-            templateId={template.id}
             selectedGroupId={store.selectedGroup.id || 0}
+            variables={variables}
           />
         </Box>
       ) : (
