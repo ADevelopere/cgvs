@@ -148,43 +148,13 @@ const StudentTable: React.FC = () => {
         initialWidths: initialWidths,
       }}
       rowsProps={{
-        // rowIdKey: rowIdKey,
-        // onLoadMoreRows: loadMoreRows,
-        // getRowStyle: getRowStyle,
-        // rowSelectionEnabled: enableRowSelection,
-        // selectedRowIds={selectedRowIds}
-        // totalRows: filteredTotalRows,
-        // pageSize: 50,
+        getRowId: (row) => row.id,
         enableRowResizing: false,
       }}
-      // Server operation props
-      // serverFilterUi={serverFilterUi}
-      // Selection props
-      // onSelectionChange={handleSelectionChange}
-      // Pagination props
       pageInfo={pageInfo}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-      // initialPageSize={100}
-      // Sorting props
-      initialOrderBy={
-        Array.isArray(queryParams.orderBy)
-          ? queryParams.orderBy
-              .filter(clause => clause.order) // Filter out null/undefined orders
-              .map(clause => ({
-                column: clause.column.toLowerCase(),
-                order: clause.order as "ASC" | "DESC",
-              }))
-          : queryParams.orderBy?.order
-            ? [
-                {
-                  column: queryParams.orderBy.column.toLowerCase(),
-                  order: queryParams.orderBy.order as "ASC" | "DESC",
-                },
-              ]
-            : []
-      }
     >
       <Paper
         sx={{

@@ -64,6 +64,7 @@ const eslintConfig = [
       ...tsEslintRecommended.rules,
       "no-console": "error",
       "@typescript-eslint/no-namespace": "off",
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

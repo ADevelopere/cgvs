@@ -1,98 +1,84 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import validator from "validator";
+import React, { useCallback, useMemo } from "react";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { EditableColumn } from "@/client/components/Table/types/column.type";
-import {
-  isValidCountryCode,
-  isValidPhoneNumber,
-} from "@/client/views/student/validators";
-import { STUDENT_TABLE_COLUMNS } from "@/client/views/student/column";
+import * as Table from "@/client/components/Table";
+import * as Validators from "@/client/views/student/validators";
 import { useStudentOperations } from "./useStudentOperations";
+
+// Helper function to map column IDs to GraphQL column names
+const mapColumnIdToGraphQLColumn = (columnId: string): string | null => {
+  const columnMap: Record<string, string> = {
+    name: "NAME",
+    email: "EMAIL",
+    dateOfBirth: "DATE_OF_BIRTH",
+    gender: "GENDER",
+    nationality: "NATIONALITY",
+    createdAt: "CREATED_AT",
+    updatedAt: "UPDATED_AT",
+  };
+  return columnMap[columnId] || null;
+};
+
+// Column type definitions
+type NameColumn = Table.EditableColumn<Graphql.Student, string, "name", number>;
+type EmailColumn = Table.EditableColumn<
+  Graphql.Student,
+  string | null | undefined,
+  "email",
+  number
+>;
+type DateOfBirthColumn = Table.EditableColumn<
+  Graphql.Student,
+  Date | string | null | undefined,
+  "dateOfBirth",
+  number
+>;
+type GenderColumn = Table.EditableColumn<
+  Graphql.Student,
+  Graphql.Gender | null | undefined,
+  "gender",
+  number
+>;
+type NationalityColumn = Table.EditableColumn<
+  Graphql.Student,
+  Graphql.CountryCode | null | undefined,
+  "nationality",
+  number
+>;
+type PhoneNumberColumn = Table.EditableColumn<
+  Graphql.Student,
+  string | null | undefined,
+  "phoneNumber",
+  number
+>;
+type CreatedAtColumn = Table.Column<Graphql.Student, "createdAt">;
+type UpdatedAtColumn = Table.Column<Graphql.Student, "updatedAt">;
 
 /**
  * Table-specific logic for student management
- * Handles columns, validators, and cell updates
+ * Builds columns with renderer-based API
  */
 export const useStudentTable = () => {
-  const { partialUpdateStudent } = useStudentOperations();
+  const {
+    partialUpdateStudent,
+    updateSort,
+    setColumnFilter,
+    clearFilter,
+    filters,
+    queryParams,
+  } = useStudentOperations();
   const strings = useAppTranslation("studentTranslations");
   const genderStrings = useAppTranslation("genderTranslations");
 
-  // Validator functions
-  const validateFullName = useCallback(
-    (value: string): string | null | undefined => {
-      if (!value) return strings?.nameRequired;
-      const words = value.trim().split(/\s+/);
-      if (words.length < 3) return strings?.fullNameMinWords;
-      if (!words.every(word => word.length >= 3)) {
-        return strings?.nameMinLength;
-      }
-      // Unicode regex for letters from any language plus allowed special characters
-      const nameRegex = /^[\p{L}\p{M}'-]+$/u;
-      if (!words.every(word => nameRegex.test(word))) {
-        return strings?.nameInvalidChars;
-      }
-      return null;
-    },
-    [strings]
-  );
-
-  const validateEmail = useCallback(
-    (value: string | null | undefined): string | null => {
-      // Handle null/undefined/empty values
-      if (!value) {
-        return null; // Allow empty values as per current requirements
-      }
-
-      // Trim the value to handle whitespace
-      const trimmedValue = value.trim();
-
-      // Check if empty after trim
-      if (!trimmedValue) {
-        return null; // Allow empty values as per current requirements
-      }
-
-      // Validate email format
-      return validator.isEmail(trimmedValue) ? null : strings?.emailInvalid;
-    },
-    [strings]
-  );
-
-  const validateGender = useCallback(
-    (value?: string | null): string | null => {
-      if (!value) return null;
-      return ["MALE", "FEMALE", "OTHER"].includes(value.toUpperCase())
-        ? null
-        : strings?.genderInvalid;
-    },
-    [strings]
-  );
-
-  const validateNationality = useCallback(
-    (value: string): string | null | undefined => {
-      return isValidCountryCode(value) ? null : strings?.nationalityInvalid;
-    },
-    [strings]
-  );
-
-  const validateDateOfBirth = useCallback(
-    (value: string): string | null | undefined => {
-      if (!validator.isDate(value)) return strings?.dateOfBirthInvalid;
-      const date = new Date(value);
-      const now = new Date();
-      return date <= now ? null : strings?.dateOfBirthFuture;
-    },
-    [strings]
-  );
-
-  const validatePhoneNumber = useCallback(
-    (value: string): string | null | undefined => {
-      return isValidPhoneNumber(value) ? null : strings?.phoneNumberInvalid;
-    },
-    [strings]
+  // Build gender options
+  const genderOptions = useMemo(
+    () => [
+      { label: genderStrings.male, value: "MALE" },
+      { label: genderStrings.female, value: "FEMALE" },
+    ],
+    [genderStrings]
   );
 
   /**
@@ -132,65 +118,362 @@ export const useStudentTable = () => {
   );
 
   /**
-   * Get validator for a specific column
+   * Helper component for text filterable headers
    */
-  const getValidatorForColumn = useCallback(
-    (columnAccessor: string) => {
-      switch (columnAccessor) {
-        case "name":
-          return validateFullName;
-        case "email":
-          return validateEmail;
-        case "gender":
-          return validateGender;
-        case "nationality":
-          return validateNationality;
-        case "dateOfBirth":
-          return validateDateOfBirth;
-        case "phoneNumber":
-          return validatePhoneNumber;
-        default:
-          return () => null;
-      }
+  const TextFilterHeader = useCallback(
+    <TColumnId extends string>({
+      label,
+      columnId,
+      sortable = true,
+    }: {
+      label: string;
+      columnId: TColumnId;
+      sortable?: boolean;
+    }) => {
+      // Get current filter from store
+      const currentFilter = filters[columnId];
+
+      // Get current sort direction
+      const graphqlColumnName = mapColumnIdToGraphQLColumn(columnId);
+      const orderByArray = Array.isArray(queryParams.orderBy)
+        ? queryParams.orderBy
+        : queryParams.orderBy
+          ? [queryParams.orderBy]
+          : [];
+      const sortDirection =
+        orderByArray[0]?.column === graphqlColumnName
+          ? orderByArray[0].order
+          : null;
+
+      return (
+        <Table.BaseHeaderRenderer
+          label={label}
+          sortable={sortable}
+          filterable
+          onSort={() => {
+            const nextDirection = sortDirection === "ASC" ? "DESC" : "ASC";
+            updateSort([{ column: columnId, order: nextDirection }]);
+          }}
+          sortDirection={sortDirection}
+          isFiltered={!!currentFilter}
+          filterPopoverRenderer={(anchorEl, onClose) => (
+            <Table.TextFilterPopover
+              anchorEl={anchorEl}
+              open={!!anchorEl}
+              onClose={onClose}
+              columnId={columnId}
+              columnLabel={label}
+              value={currentFilter}
+              onApply={clause => setColumnFilter(clause, columnId as string)}
+              onClear={() => clearFilter(columnId as keyof Graphql.Student)}
+            />
+          )}
+        />
+      );
     },
-    [
-      validateFullName,
-      validateEmail,
-      validateGender,
-      validateNationality,
-      validateDateOfBirth,
-      validatePhoneNumber,
-    ]
+    [filters, queryParams, updateSort, setColumnFilter, clearFilter]
   );
 
   /**
-   * Build columns with validators and update handlers
+   * Helper component for date filterable headers
    */
-  const columns = useMemo(
-    () =>
-      STUDENT_TABLE_COLUMNS.map((column): EditableColumn => {
-        if (!column.editable) return column;
+  const DateFilterHeader = useCallback(
+    <TColumnId extends string>({
+      label,
+      columnId,
+    }: {
+      label: string;
+      columnId: TColumnId;
+    }) => {
+      // Get current filter from store
+      const currentFilter = filters[columnId];
 
-        const enhancedColumn: EditableColumn = {
-          ...column,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onUpdate: (rowId: number, value: any) =>
-            handleUpdateCell(rowId, column.accessor as string, value),
-          getIsValid: getValidatorForColumn(column.accessor as string),
-        };
+      // Get current sort direction
+      const graphqlColumnName = mapColumnIdToGraphQLColumn(columnId);
+      const orderByArray = Array.isArray(queryParams.orderBy)
+        ? queryParams.orderBy
+        : queryParams.orderBy
+          ? [queryParams.orderBy]
+          : [];
+      const sortDirection =
+        orderByArray[0]?.column === graphqlColumnName
+          ? orderByArray[0].order
+          : null;
 
-        // Add gender options dynamically with translations
-        if (column.id === "gender") {
-          enhancedColumn.options = [
-            { label: genderStrings.male, value: "MALE" },
-            { label: genderStrings.female, value: "FEMALE" },
-          ];
-        }
-
-        return enhancedColumn;
-      }),
-    [handleUpdateCell, getValidatorForColumn, genderStrings]
+      return (
+        <Table.BaseHeaderRenderer
+          label={label}
+          sortable
+          filterable
+          onSort={() => {
+            const nextDirection = sortDirection === "ASC" ? "DESC" : "ASC";
+            updateSort([{ column: columnId, order: nextDirection }]);
+          }}
+          sortDirection={sortDirection}
+          isFiltered={!!currentFilter}
+          filterPopoverRenderer={(anchorEl, onClose) => (
+            <Table.DateFilterPopover
+              anchorEl={anchorEl}
+              open={!!anchorEl}
+              onClose={onClose}
+              columnId={columnId}
+              columnLabel={label}
+              value={currentFilter}
+              onApply={clause => setColumnFilter(clause, columnId as string)}
+              onClear={() => clearFilter(columnId as keyof Graphql.Student)}
+            />
+          )}
+        />
+      );
+    },
+    [filters, queryParams, updateSort, setColumnFilter, clearFilter]
   );
+
+  /**
+   * Build columns with renderer-based API
+   */
+  const columns = useMemo(() => {
+    const nameColumn: NameColumn = {
+      id: "name" as const,
+      type: "editable" as const,
+      label: strings.name,
+      resizable: true,
+      widthStorageKey: "student_table_student_name_column_width",
+      headerRenderer: () => (
+        <TextFilterHeader label={strings.name} columnId="name" />
+      ),
+      viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.name} />,
+      editRenderer: ({ row, onSave, onCancel }) => (
+        <Table.TextEditRenderer
+          value={row.name}
+          onSave={async value => onSave(value)}
+          onCancel={onCancel}
+          validator={Validators.validateName}
+        />
+      ),
+      onUpdate: async (rowId, newValue) => {
+        await handleUpdateCell(rowId, "name", newValue);
+      },
+    };
+
+    const emailColumn: EmailColumn = {
+      id: "email" as const,
+      type: "editable" as const,
+      label: strings.email,
+      resizable: true,
+      widthStorageKey: "student_table_student_email_column_width",
+      headerRenderer: () => (
+        <TextFilterHeader label={strings.email} columnId="email" />
+      ),
+      viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.email} />,
+      editRenderer: ({ row, onSave, onCancel }) => (
+        <Table.TextEditRenderer
+          value={row.email || ""}
+          onSave={async value => onSave(value)}
+          onCancel={onCancel}
+          validator={Validators.validateEmail}
+        />
+      ),
+      onUpdate: async (rowId, newValue) => {
+        await handleUpdateCell(rowId, "email", newValue);
+      },
+    };
+
+    const dateOfBirthColumn: DateOfBirthColumn = {
+      id: "dateOfBirth" as const,
+      type: "editable" as const,
+      label: strings.dateOfBirth,
+      resizable: true,
+      widthStorageKey: "student_table_student_dateOfBirth_column_width",
+      headerRenderer: () => (
+        <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />
+      ),
+      viewRenderer: ({ row }) => (
+        <Table.DateViewRenderer value={row.dateOfBirth} format="PP" />
+      ),
+      editRenderer: ({ row, onSave, onCancel }) => (
+        <Table.DateEditRenderer
+          value={row.dateOfBirth}
+          onSave={async value => onSave(value)}
+          onCancel={onCancel}
+          validator={Validators.validateDateOfBirth}
+        />
+      ),
+      onUpdate: async (rowId, newValue) => {
+        await handleUpdateCell(rowId, "dateOfBirth", newValue);
+      },
+    };
+
+    const genderColumn: GenderColumn = {
+      id: "gender" as const,
+      type: "editable" as const,
+      label: strings.gender,
+      resizable: true,
+      widthStorageKey: "student_table_student_gender_column_width",
+      headerRenderer: () => {
+        const graphqlColumnName = mapColumnIdToGraphQLColumn("gender");
+        const orderByArray = Array.isArray(queryParams.orderBy)
+          ? queryParams.orderBy
+          : queryParams.orderBy
+            ? [queryParams.orderBy]
+            : [];
+        const sortDirection =
+          orderByArray[0]?.column === graphqlColumnName
+            ? orderByArray[0].order
+            : null;
+
+        return (
+          <Table.BaseHeaderRenderer
+            label={strings.gender}
+            sortable
+            filterable={false}
+            onSort={() => {
+              const nextDirection = sortDirection === "ASC" ? "DESC" : "ASC";
+              updateSort([{ column: "gender", order: nextDirection }]);
+            }}
+            sortDirection={sortDirection}
+          />
+        );
+      },
+      viewRenderer: ({ row }) => (
+        <Table.SelectViewRenderer value={row.gender} options={genderOptions} />
+      ),
+      editRenderer: ({ row, onSave, onCancel }) => (
+        <Table.SelectEditRenderer
+          value={row.gender as unknown as string}
+          options={genderOptions}
+          onSave={async value => onSave(value as unknown as Graphql.Gender)}
+          onCancel={onCancel}
+        />
+      ),
+      onUpdate: async (rowId, newValue) => {
+        await handleUpdateCell(rowId, "gender", newValue);
+      },
+    };
+
+    const nationalityColumn: NationalityColumn = {
+      id: "nationality" as const,
+      type: "editable" as const,
+      label: strings.nationality,
+      resizable: true,
+      widthStorageKey: "student_table_student_nationality_column_width",
+      headerRenderer: () => {
+        const graphqlColumnName = mapColumnIdToGraphQLColumn("nationality");
+        const orderByArray = Array.isArray(queryParams.orderBy)
+          ? queryParams.orderBy
+          : queryParams.orderBy
+            ? [queryParams.orderBy]
+            : [];
+        const sortDirection =
+          orderByArray[0]?.column === graphqlColumnName
+            ? orderByArray[0].order
+            : null;
+
+        return (
+          <Table.BaseHeaderRenderer
+            label={strings.nationality}
+            sortable
+            filterable={false}
+            onSort={() => {
+              const nextDirection = sortDirection === "ASC" ? "DESC" : "ASC";
+              updateSort([{ column: "nationality", order: nextDirection }]);
+            }}
+            sortDirection={sortDirection}
+          />
+        );
+      },
+      viewRenderer: ({ row }) => (
+        <Table.CountryViewRenderer value={row.nationality} />
+      ),
+      editRenderer: ({ row, onSave, onCancel }) => (
+        <Table.CountryEditRenderer
+          value={row.nationality}
+          onSave={async value => onSave(value)}
+          onCancel={onCancel}
+          validator={Validators.validateNationality}
+        />
+      ),
+      onUpdate: async (rowId, newValue) => {
+        await handleUpdateCell(rowId, "nationality", newValue);
+      },
+    };
+
+    const phoneNumberColumn: PhoneNumberColumn = {
+      id: "phoneNumber" as const,
+      type: "editable" as const,
+      label: strings.phoneNumber,
+      resizable: true,
+      widthStorageKey: "student_table_student_phoneNumber_column_width",
+      headerRenderer: () => (
+        <TextFilterHeader
+          label={strings.phoneNumber}
+          columnId="phoneNumber"
+          sortable={false}
+        />
+      ),
+      viewRenderer: ({ row }) => (
+        <Table.PhoneViewRenderer value={row.phoneNumber} />
+      ),
+      editRenderer: ({ row, onSave, onCancel }) => (
+        <Table.PhoneEditRenderer
+          value={row.phoneNumber || ""}
+          onSave={async value => onSave(value)}
+          onCancel={onCancel}
+          validator={Validators.validatePhoneNumber}
+        />
+      ),
+      onUpdate: async (rowId, newValue) => {
+        await handleUpdateCell(rowId, "phoneNumber", newValue);
+      },
+    };
+
+    const createdAtColumn: CreatedAtColumn = {
+      id: "createdAt" as const,
+      type: "viewonly" as const,
+      label: strings.createdAt,
+      resizable: true,
+      widthStorageKey: "student_table_student_createdAt_column_width",
+      headerRenderer: () => (
+        <DateFilterHeader label={strings.createdAt} columnId="createdAt" />
+      ),
+      viewRenderer: ({ row }) => (
+        <Table.DateViewRenderer value={row.createdAt} format="PPp" />
+      ),
+    };
+
+    const updatedAtColumn: UpdatedAtColumn = {
+      id: "updatedAt" as const,
+      type: "viewonly" as const,
+      label: strings.updatedAt,
+      resizable: true,
+      widthStorageKey: "student_table_student_updatedAt_column_width",
+      headerRenderer: () => (
+        <DateFilterHeader label={strings.updatedAt} columnId="updatedAt" />
+      ),
+      viewRenderer: ({ row }) => (
+        <Table.DateViewRenderer value={row.updatedAt} format="PPp" />
+      ),
+    };
+
+    return [
+      nameColumn,
+      emailColumn,
+      dateOfBirthColumn,
+      genderColumn,
+      nationalityColumn,
+      phoneNumberColumn,
+      createdAtColumn,
+      updatedAtColumn,
+    ] as const;
+  }, [
+    strings,
+    genderOptions,
+    handleUpdateCell,
+    TextFilterHeader,
+    DateFilterHeader,
+    queryParams,
+    updateSort,
+  ]);
 
   return {
     columns,

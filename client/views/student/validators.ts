@@ -75,3 +75,115 @@ export const isValidPhoneNumber = (phone: string): boolean => {
   if (!phone) return false;
   return matchIsValidTel(phone, { excludedCountries: ["IL"] });
 };
+
+// ============================================================================
+// Validator Functions for Table and Form
+// These return null if valid, or error message string if invalid
+// ============================================================================
+
+/**
+ * Validates student name (requires 3 words, each at least 3 characters)
+ * @param value - The name to validate
+ * @returns null if valid, error message if invalid
+ */
+export const validateName = (value: string | undefined): string | null => {
+  if (!value || !value.trim()) {
+    return "Name is required";
+  }
+  const words = value.trim().split(/\s+/);
+  if (words.length < 3) {
+    return "Name must contain at least 3 words";
+  }
+  if (!words.every(word => word.length >= 3)) {
+    return "Each word must be at least 3 characters";
+  }
+  // Unicode regex for letters from any language plus allowed special characters
+  const nameRegex = /^[\p{L}\p{M}'-]+$/u;
+  if (!words.every(word => nameRegex.test(word))) {
+    return "Name contains invalid characters";
+  }
+  return null;
+};
+
+/**
+ * Validates email address
+ * @param value - The email to validate
+ * @returns null if valid, error message if invalid
+ */
+export const validateEmail = (value: string | undefined): string | null => {
+  // Allow empty values
+  if (!value || !value.trim()) {
+    return null;
+  }
+
+  const trimmedValue = value.trim();
+
+  // Simple email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(trimmedValue) ? null : "Invalid email address";
+};
+
+/**
+ * Validates date of birth (must be in the past)
+ * @param value - The date to validate
+ * @returns null if valid, error message if invalid
+ */
+export const validateDateOfBirth = (value: Date | undefined): string | null => {
+  if (!value) {
+    return null; // Optional field
+  }
+
+  // Check if valid date
+  if (isNaN(value.getTime())) {
+    return "Invalid date format";
+  }
+
+  const now = new Date();
+  if (value > now) {
+    return "Date of birth cannot be in the future";
+  }
+
+  return null;
+};
+
+/**
+ * Validates gender value
+ * @param value - The gender to validate
+ * @returns null if valid, error message if invalid
+ */
+export const validateGender = (value: string | undefined): string | null => {
+  if (!value) {
+    return null; // Optional field
+  }
+
+  const validGenders = ["MALE", "FEMALE", "OTHER"];
+  return validGenders.includes(value.toUpperCase())
+    ? null
+    : "Invalid gender value";
+};
+
+/**
+ * Validates nationality country code
+ * @param value - The country code to validate
+ * @returns null if valid, error message if invalid
+ */
+export const validateNationality = (value: CountryCode | undefined): string | null => {
+  if (!value) {
+    return null; // Optional field
+  }
+
+  return isValidCountryCode(value) ? null : "Invalid country code";
+};
+
+/**
+ * Validates phone number
+ * @param value - The phone number to validate
+ * @returns null if valid, error message if invalid
+ */
+export const validatePhoneNumber = (value: string | undefined): string | null => {
+  if (!value || !value.trim()) {
+    return null; // Optional field
+  }
+
+  return isValidPhoneNumber(value) ? null : "Invalid phone number";
+};

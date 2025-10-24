@@ -32,7 +32,6 @@ export type BaseColumnProps<TColumnId extends string = string> = {
 export type Column<
   TRowData,
   TColumnId extends string = string,
-  TRowId extends string | number = string | number,
 > = BaseColumnProps<TColumnId> & {
   type: "viewonly";
 
@@ -40,9 +39,7 @@ export type Column<
    * Renders the column header
    * Consumer has full control over header rendering (sort, filter, label, etc.)
    */
-  headerRenderer: (props: {
-    column: AnyColumn<TRowData, TColumnId, TRowData[keyof TRowData], TRowId>;
-  }) => React.ReactNode;
+  headerRenderer: () => React.ReactNode;
 
   /**
    * Renders the cell content in view mode
@@ -65,9 +62,7 @@ export type EditableColumn<
    * Renders the column header
    * Consumer has full control over header rendering (sort, filter, label, etc.)
    */
-  headerRenderer: (props: {
-    column: AnyColumn<TRowData, TColumnId, TValue, TRowId>;
-  }) => React.ReactNode;
+  headerRenderer: () => React.ReactNode;
 
   /**
    * Renders the cell content in view mode

@@ -10,7 +10,7 @@ import { AnyColumn, PageInfo } from "../types";
 export type TableContextType<TRowData, TColumnId extends string = string> = {
   data: TRowData[];
   isLoading?: boolean;
-  columns: AnyColumn<TRowData, TColumnId>[];
+  columns: readonly AnyColumn<TRowData, TColumnId>[];
 
   pageInfo?: PageInfo | null;
   pageSize: number;
@@ -37,7 +37,7 @@ type TableProviderProps<
 
   data: TRowData[];
   isLoading?: boolean;
-  columns: AnyColumn<TRowData, TColumnId>[];
+  columns: readonly AnyColumn<TRowData, TColumnId>[];
 
   dataProps: Omit<TableDataProviderProps<TColumnId>, "children">;
   columnProps: Omit<TableColumnsProviderProps<TColumnId>, "children">;

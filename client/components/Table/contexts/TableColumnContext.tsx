@@ -18,7 +18,7 @@ export type TableColumnContextType<
   TColumnId extends string = string,
 > = {
   // Table data and configuration
-  allColumns: AnyColumn<TRowData, TColumnId>[];
+  allColumns: readonly AnyColumn<TRowData, TColumnId>[];
   columnWidths: Record<TColumnId, number>;
   visibleColumns: AnyColumn<TRowData, TColumnId>[];
   hiddenColumns: TColumnId[];

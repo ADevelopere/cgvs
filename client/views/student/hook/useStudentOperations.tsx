@@ -12,7 +12,7 @@ import {
   FilterClause,
 } from "@/client/types/filters";
 import {
-  getColumnDef,
+  getColumnType,
   getFilterKeysForColumn,
   mapDateFilter,
   mapTextFilter,
@@ -332,17 +332,17 @@ export const useStudentOperations = () => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const columnDef = getColumnDef(columnId);
-        if (!columnDef) return;
+        const columnType = getColumnType(columnId);
+        if (!columnType) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
-        if (columnDef.type === "text" || columnDef.type === "phone") {
+        if (columnType === "text" || columnType === "phone") {
           mappedFilter = mapTextFilter(
             columnId,
             filterClause.operation as TextFilterOperation,
             filterClause.value
           );
-        } else if (columnDef.type === "date") {
+        } else if (columnType === "date") {
           mappedFilter = mapDateFilter(
             columnId,
             filterClause.operation as DateFilterOperation,

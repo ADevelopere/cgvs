@@ -20,7 +20,6 @@ import {
 import { TextFilterOperation } from "@/client/types/filters";
 import { useAppTranslation } from "@/client/locale";
 import { useStudentOperations } from "./hook/useStudentOperations";
-import { useStudentTable } from "./hook/useStudentTable";
 import {
   TextFieldComponent,
   DateFieldComponent,
@@ -28,6 +27,14 @@ import {
   CountryFieldComponent,
   PhoneFieldComponent,
 } from "./components";
+import {
+  validateName,
+  validateEmail,
+  validateDateOfBirth,
+  validateGender,
+  validateNationality,
+  validatePhoneNumber,
+} from "./validators";
 import {
   _ActionsContainer,
   _CreateButton,
@@ -37,7 +44,10 @@ import {
   _StyledPaper,
 } from "./components/CreateStudentRow.styles";
 import { HammerIcon } from "lucide-react";
-import { StudentCreateInput } from "@/client/graphql/generated/gql/graphql";
+import {
+  Gender,
+  StudentCreateInput,
+} from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 
 const MemoizedTextField = React.memo(TextFieldComponent);
@@ -46,14 +56,71 @@ const MemoizedGenderField = React.memo(GenderFieldComponent);
 const MemoizedCountryField = React.memo(CountryFieldComponent);
 const MemoizedPhoneField = React.memo(PhoneFieldComponent);
 
+// Field configuration for CreateStudentRow form
+interface CreateStudentFieldConfig {
+  id: keyof StudentCreateInput;
+  type: "text" | "date" | "select" | "country" | "phone";
+  label: string; // translation key
+  placeholder?: string; // translation key
+  required?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validator?: (value: any) => string | null;
+  textType?: "text" | "email"; // for TextField subtype
+}
+
+const CREATE_STUDENT_FIELDS: CreateStudentFieldConfig[] = [
+  {
+    id: "name",
+    type: "text",
+    label: "name",
+    placeholder: "namePlaceholder",
+    required: true,
+    validator: validateName,
+  },
+  {
+    id: "email",
+    type: "text",
+    textType: "email",
+    label: "email",
+    placeholder: "emailPlaceholder",
+    validator: validateEmail,
+  },
+  {
+    id: "dateOfBirth",
+    type: "date",
+    label: "dateOfBirth",
+    validator: validateDateOfBirth,
+  },
+  {
+    id: "gender",
+    type: "select",
+    label: "gender",
+    placeholder: "genderPlaceholder",
+    validator: validateGender,
+  },
+  {
+    id: "nationality",
+    type: "country",
+    label: "nationality",
+    placeholder: "nationalityPlaceholder",
+    validator: validateNationality,
+  },
+  {
+    id: "phoneNumber",
+    type: "phone",
+    label: "phoneNumber",
+    validator: validatePhoneNumber,
+  },
+];
+
 const initialStudentState: StudentCreateInput = {
   name: "",
 };
 
 const CreateStudentRow = () => {
   const { createStudent, setSearchFilter } = useStudentOperations();
-  const { columns } = useStudentTable();
   const strings = useAppTranslation("studentTranslations");
+  const genderStrings = useAppTranslation("genderTranslations");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
@@ -84,10 +151,10 @@ const CreateStudentRow = () => {
 
   // Get field width based on type and screen size
   const getFieldWidth = useCallback(
-    (colType: string) => {
+    (fieldType: string) => {
       if (isMobile) return "100%";
 
-      switch (colType) {
+      switch (fieldType) {
         case "text":
           return isTablet ? 250 : 300;
         case "phone":
@@ -102,6 +169,18 @@ const CreateStudentRow = () => {
       }
     },
     [isMobile, isTablet]
+  );
+
+  // Build gender options from translations
+  const genderOptions: {
+    value: Gender;
+    label: string;
+  }[] = useMemo(
+    () => [
+      { label: genderStrings.male, value: "MALE" },
+      { label: genderStrings.female, value: "FEMALE" },
+    ],
+    [genderStrings]
   );
 
   const lastFilteredValue = useRef<string | undefined>(undefined);
@@ -175,19 +254,17 @@ const CreateStudentRow = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (value: any, errorMessage: string | null) => void
     > = {};
-    columns
-      .filter(c => c.editable && c.id !== "name")
-      .forEach(col => {
-        handlers[col.id] = (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          value: any,
-          errorMessage: string | null
-        ) => {
-          handleChange(value, col.id, errorMessage);
-        };
-      });
+    CREATE_STUDENT_FIELDS.filter(f => f.id !== "name").forEach(field => {
+      handlers[field.id] = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        value: any,
+        errorMessage: string | null
+      ) => {
+        handleChange(value, field.id, errorMessage);
+      };
+    });
     return handlers;
-  }, [columns, handleChange]);
+  }, [handleChange]);
 
   const handleCreate = useCallback(async () => {
     if (!isFormValid) return;
@@ -242,93 +319,104 @@ const CreateStudentRow = () => {
     [handleCreate, isFormValid]
   );
 
-  const editableColumns = useMemo(
-    () => columns.filter(c => c.editable),
-    [columns]
-  );
-
   return (
     <>
       <_StyledPaper elevation={2} isMobile={isMobile} onKeyDown={handleKeyDown}>
         <_FieldsContainer isMobile={isMobile}>
-          {editableColumns.map(col => (
+          {CREATE_STUDENT_FIELDS.map(field => (
             <_FieldWrapper
-              key={col.id}
+              key={field.id}
               isMobile={isMobile}
-              fieldWidth={getFieldWidth(col.type || "text")}
+              fieldWidth={getFieldWidth(field.type)}
             >
-              {col.type === "text" && col.id === "name" && (
+              {field.type === "text" && field.id === "name" && (
                 <MemoizedTextField
                   value={newStudent.name}
                   errorMessage={fieldValidity["name"]}
-                  label={strings.name}
+                  label={strings[field.label as keyof typeof strings]}
                   helperText={
                     newStudent?.name?.trim() === "" && isDirty
                       ? strings.nameRequired
                       : ""
                   }
-                  placeholder={strings.namePlaceholder}
-                  required={true}
+                  placeholder={
+                    field.placeholder
+                      ? strings[field.placeholder as keyof typeof strings]
+                      : undefined
+                  }
+                  required={field.required}
                   width="100%"
                   onValueChange={handleNameChange}
-                  getIsValid={col.getIsValid}
+                  getIsValid={field.validator}
                 />
               )}
-              {col.type === "text" && col.id === "email" && (
+              {field.type === "text" && field.id === "email" && (
                 <MemoizedTextField
                   value={newStudent.email}
                   errorMessage={fieldValidity["email"] ?? ""}
-                  label={strings.email}
-                  placeholder={strings.emailPlaceholder}
-                  type="email"
+                  label={strings[field.label as keyof typeof strings]}
+                  placeholder={
+                    field.placeholder
+                      ? strings[field.placeholder as keyof typeof strings]
+                      : undefined
+                  }
+                  type={field.textType || "text"}
                   width="100%"
                   onValueChange={(value, errorMessage) =>
-                    fieldChangeHandlers[col.id]?.(value, errorMessage)
+                    fieldChangeHandlers[field.id]?.(value, errorMessage)
                   }
-                  getIsValid={col.getIsValid}
+                  getIsValid={field.validator}
                 />
               )}
-              {col.type === "date" && (
+              {field.type === "date" && (
                 <MemoizedDateField
                   value={newStudent.dateOfBirth}
-                  errorMessage={fieldValidity[col.id] ?? ""}
-                  label={strings.dateOfBirth}
+                  errorMessage={fieldValidity[field.id] ?? ""}
+                  label={strings[field.label as keyof typeof strings]}
                   width="100%"
-                  onValueChange={fieldChangeHandlers[col.id]}
-                  getIsValid={col.getIsValid}
+                  onValueChange={fieldChangeHandlers[field.id]}
+                  getIsValid={field.validator}
                 />
               )}
-              {col.type === "select" && col.id === "gender" && (
+              {field.type === "select" && field.id === "gender" && (
                 <MemoizedGenderField
                   value={newStudent.gender}
                   errorMessage={fieldValidity["gender"] ?? ""}
-                  label={strings.gender}
-                  placeholder={strings.genderPlaceholder}
-                  options={col.options || []}
+                  label={strings[field.label as keyof typeof strings]}
+                  placeholder={
+                    field.placeholder
+                      ? strings[field.placeholder as keyof typeof strings]
+                      : undefined
+                  }
+                  options={genderOptions}
                   width="100%"
-                  onValueChange={fieldChangeHandlers[col.id]}
-                  getIsValid={col.getIsValid}
+                  onValueChange={fieldChangeHandlers[field.id]}
+                  getIsValid={field.validator}
                 />
               )}
-              {col.type === "country" && (
+              {field.type === "country" && (
                 <MemoizedCountryField
                   value={newStudent.nationality ?? undefined}
-                  errorMessage={fieldValidity[col.id] ?? ""}
-                  label={strings.nationality}
-                  placeholder={strings.nationalityPlaceholder}
+                  errorMessage={fieldValidity[field.id] ?? ""}
+                  label={strings[field.label as keyof typeof strings]}
+                  placeholder={
+                    field.placeholder
+                      ? strings[field.placeholder as keyof typeof strings]
+                      : undefined
+                  }
                   width="100%"
-                  onValueChange={fieldChangeHandlers[col.id]}
-                  getIsValid={col.getIsValid}
+                  onValueChange={fieldChangeHandlers[field.id]}
+                  getIsValid={field.validator}
                 />
               )}
-              {col.type === "phone" && (
+              {field.type === "phone" && (
                 <MemoizedPhoneField
                   value={newStudent.phoneNumber}
-                  errorMessage={fieldValidity[col.id] ?? ""}
-                  label={strings.phoneNumber}
+                  errorMessage={fieldValidity[field.id] ?? ""}
+                  label={strings[field.label as keyof typeof strings]}
                   width="100%"
-                  onValueChange={fieldChangeHandlers[col.id]}
-                  getIsValid={col.getIsValid}
+                  onValueChange={fieldChangeHandlers[field.id]}
+                  getIsValid={field.validator}
                 />
               )}
             </_FieldWrapper>
