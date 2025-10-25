@@ -13,6 +13,8 @@ import { ResizeHandle } from "./ResizeHandle";
 import { AnyColumn, PinPosition } from "../../types";
 import { useTableLocale } from "../../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../../constants";
+import { useAppTheme } from "@/client/contexts";
+import logger from "@/client/lib/logger";
 
 export interface ColumnHeaderProps<
   TRowData,
@@ -118,6 +120,7 @@ const ColumnHeaderCellComponent = <
   onHide,
 }: ColumnHeaderProps<TRowData, TRowId>) => {
   const locale = useTableLocale();
+  const { isRtl } = useAppTheme();
 
   const [optionsAnchor, setOptionsAnchor] = useState<HTMLElement | null>(null);
   const resizeStartX = useRef<number>(0);
@@ -133,16 +136,39 @@ const ColumnHeaderCellComponent = <
       resizeStartX.current = clientX;
       resizeStartWidth.current = columnWidth;
 
+      logger.debug("Column resize started", {
+        columnId: column.id,
+        startPosition: clientX,
+        startWidth: columnWidth,
+        isRtl: isRtl,
+      });
+
       const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
         const moveClientX =
           "touches" in moveEvent
             ? moveEvent.touches[0].clientX
             : moveEvent.clientX;
+
+        logger.debug("Column resize move event", {
+          columnId: column.id,
+          moveClientX: moveClientX,
+          resizeStartX: resizeStartX.current,
+          isRtl: isRtl,
+        });
+
         const delta = moveClientX - resizeStartX.current;
         const newWidth = Math.max(
           column.minWidth || 50,
           Math.min(column.maxWidth || 1000, resizeStartWidth.current + delta)
         );
+
+        logger.debug("Column resize moved", {
+          columnId: column.id,
+          delta: delta,
+          newWidth: newWidth,
+          isRtl: isRtl,
+        });
+
         resizeColumn(column.id, newWidth);
       };
 
@@ -158,7 +184,7 @@ const ColumnHeaderCellComponent = <
       document.addEventListener("touchmove", handleMouseMove);
       document.addEventListener("touchend", handleMouseUp);
     },
-    [column, columnWidth, resizeColumn]
+    [column, columnWidth, resizeColumn, isRtl]
   );
 
   // Options menu handlers
@@ -256,9 +282,10 @@ const ColumnHeaderCellComponent = <
         </HeaderInner>
 
         {/* Resize handle */}
-        {column.resizable !== false && (
-          <ResizeHandle onResize={handleResizeStart} />
-        )}
+        <ResizeHandle
+          onResize={handleResizeStart}
+          enabled={column.resizable !== false}
+        />
       </HeaderContainer>
     </StyledTh>
   );

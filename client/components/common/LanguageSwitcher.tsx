@@ -13,7 +13,7 @@ import { useAppTheme } from "@/client/contexts/ThemeContext";
 import AppLanguage from "@/client/locale/AppLanguage";
 import { useAppTranslation } from "@/client/locale";
 
-const LanguageSwitcher: React.FC = () => {
+export const LanguageSwitcher: React.FC = () => {
   const strings = useAppTranslation("languageTranslations");
   const { language, setLanguage } = useAppTheme();
 
@@ -42,6 +42,11 @@ const LanguageSwitcher: React.FC = () => {
       value: AppLanguage.default,
       label: strings.ar,
       shortLabel: strings.arShort,
+    },
+    {
+      value: AppLanguage.en,
+      label: strings.en,
+      shortLabel: strings.enShort,
     },
   ];
 
@@ -113,5 +118,3 @@ const LanguageSwitcher: React.FC = () => {
     </React.Fragment>
   );
 };
-
-export default LanguageSwitcher;
