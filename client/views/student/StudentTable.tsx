@@ -85,7 +85,7 @@ const StudentTable: React.FC = () => {
     if (!tableContainerRef.current || widthsInitialized.current) return;
     // minus scroll bar width
     const totalWidth =
-      tableContainerRef.current.offsetWidth - 20 - indexColWidth;
+      tableContainerRef.current.offsetWidth - indexColWidth;
 
     const newWidths: Record<string, number> = {};
 
