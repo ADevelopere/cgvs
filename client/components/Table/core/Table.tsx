@@ -141,7 +141,15 @@ export const Table = <
   ]);
 
   return (
-    <div ref={tableContainerRef}>
+    <div 
+      ref={tableContainerRef}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
       <TableContext.Provider value={tableContextValue}>
         <TableRowsProvider
           getRowId={getRowId}

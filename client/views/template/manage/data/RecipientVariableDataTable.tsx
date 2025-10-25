@@ -4,7 +4,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { Box, CircularProgress, Alert } from "@mui/material";
+import { Box, Alert } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { Table, type AnyColumn } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
@@ -13,7 +13,6 @@ import { useRecipientVariableDataStore } from "./stores/useRecipientVariableData
 import { useVariableDataTable, VariableDataRow } from "./hooks/useVariableDataTable";
 import * as Document from "./hooks/recipientVariableData.documents";
 import { useAppTranslation } from "@/client/locale";
-import { Typography } from "@mui/material";
 import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
 
 interface RecipientVariableDataTableProps {
@@ -122,46 +121,12 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     [operations]
   );
 
-  // Show loading state
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "400px",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   // Show error state
   if (error) {
     return (
       <Alert severity="error" sx={{ m: 2 }}>
         {strings.errorFetchingData}
       </Alert>
-    );
-  }
-
-  // Show no data state
-  if (recipientsVarValues.length === 0) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "400px",
-        }}
-      >
-        <Typography variant="body1" color="text.secondary">
-          {strings.noRecipientsFound}
-        </Typography>
-      </Box>
     );
   }
 
