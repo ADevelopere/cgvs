@@ -153,7 +153,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
           value={selectedCountry}
           onChange={handleChange}
           inputValue={inputValue}
-          onInputChange={(event, newInputValue) => {
+          onInputChange={(_event, newInputValue) => {
             setInputValue(newInputValue);
           }}
           onOpen={() => logger.debug("Autocomplete opened")}

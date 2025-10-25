@@ -106,7 +106,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   const handleClickAway = useCallback(() => {
     handleSave();
     onCancel();
-  }, [handleSave]);
+  }, [handleSave, onCancel]);
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
