@@ -69,6 +69,8 @@ const enLocale: TableLocale = {
     rowsOf: "rows",
     of: "of",
     columnsVisible: "columns visible",
+    cancel: "Cancel",
+    confirm: "Confirm",
   },
   selection: {
     selectAll: "Select all",
@@ -158,6 +160,8 @@ const arLocale: TableLocale = {
     rowsOf: "صفوف",
     of: "من",
     columnsVisible: "عمود مرئي",
+    cancel: "إلغاء",
+    confirm: "تأكيد",
   },
   selection: {
     selectAll: "تحديد الكل",

@@ -182,11 +182,24 @@ export namespace StudentRepository {
     const updateInput: Types.StudentEntityInput = {
       id: input.id,
       name: input.name ?? existingStudent.name,
-      email: input.email?.value ?? existingStudent.email,
-      phoneNumber: input.phoneNumber?.number ?? existingStudent.phoneNumber,
-      dateOfBirth: input.dateOfBirth ?? existingStudent.dateOfBirth,
-      gender: input.gender ?? existingStudent.gender,
-      nationality: input.nationality ?? existingStudent.nationality,
+      email:
+        input.email === null
+          ? null
+          : (input.email?.value ?? existingStudent.email),
+      phoneNumber:
+        input.phoneNumber === null
+          ? null
+          : (input.phoneNumber?.number ?? existingStudent.phoneNumber),
+      dateOfBirth:
+        input.dateOfBirth === null
+          ? null
+          : (input.dateOfBirth ?? existingStudent.dateOfBirth),
+      gender:
+        input.gender === null ? null : (input.gender ?? existingStudent.gender),
+      nationality:
+        input.nationality === null
+          ? null
+          : (input.nationality ?? existingStudent.nationality),
       createdAt: existingStudent.createdAt,
       updatedAt: new Date(),
     };

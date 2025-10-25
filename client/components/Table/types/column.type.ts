@@ -68,13 +68,13 @@ export type EditableColumn<
   /**
    * Renders the cell content in edit mode
    * Called when user double-clicks the cell or triggers edit mode
-   * 
+   *
    * @param props.row - The row data
    * @param props.onSave - Callback provided by DataCell that wraps column.onUpdate
    *                       Pass this directly to your edit renderer component.
    *                       DO NOT wrap it again (e.g., avoid: onSave={async value => onSave(value)})
    * @param props.onCancel - Callback to exit edit mode without saving
-   * 
+   *
    * @example
    * editRenderer: ({ row, onSave, onCancel }) => (
    *   <TextEditRenderer
@@ -86,7 +86,7 @@ export type EditableColumn<
    */
   editRenderer: (props: {
     row: TRowData;
-    onSave: (value: TValue) => Promise<void>;
+    onSave: (value: TValue | null | undefined) => Promise<void>;
     onCancel: () => void;
   }) => React.ReactNode;
 
@@ -94,13 +94,13 @@ export type EditableColumn<
    * Callback when cell value is saved
    * This is called by DataCell.handleSave, which is triggered by the onSave
    * callback passed to editRenderer.
-   * 
+   *
    * Flow: editRenderer component calls onSave → DataCell.handleSave → column.onUpdate
-   * 
+   *
    * @param rowId - ID of the row being edited
    * @param value - New value to save
    */
-  onUpdate?: (rowId: TRowId, value: TValue) => Promise<void>;
+  onUpdate?: (rowId: TRowId, value: TValue | null | undefined) => Promise<void>;
 };
 
 /**
