@@ -93,11 +93,16 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
     [handleSave, onCancel, error]
   );
 
+  // Don't auto-save on blur - let DataCell's click outside handler manage when to exit edit mode
+  // This prevents premature saving when clicking the country selector
   const handleBlur = useCallback(() => {
-    if (!error && !isSaving) {
-      handleSave();
+    // Blur is handled by DataCell's click outside logic
+    // Only validate, don't save
+    if (validator && phoneValue) {
+      const validationError = validator(phoneValue);
+      setError(validationError);
     }
-  }, [handleSave, error, isSaving]);
+  }, [validator, phoneValue]);
 
   return (
     <MuiTelInput

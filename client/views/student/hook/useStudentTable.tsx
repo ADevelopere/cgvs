@@ -241,11 +241,10 @@ export const useStudentTable = () => {
         <TextFilterHeader label={strings.name} columnId="name" />
       ),
       viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.name} />,
-      editRenderer: ({ row, onSave, onCancel }) => (
+      editRenderer: ({ row, ...props }) => (
         <Table.TextEditRenderer
           value={row.name}
-          onSave={onSave}
-          onCancel={onCancel}
+          {...props}
           validator={Validators.validateName}
         />
       ),
@@ -264,11 +263,10 @@ export const useStudentTable = () => {
         <TextFilterHeader label={strings.email} columnId="email" />
       ),
       viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.email} />,
-      editRenderer: ({ row, onSave, onCancel }) => (
+      editRenderer: ({ row, ...props }) => (
         <Table.TextEditRenderer
           value={row.email || ""}
-          onSave={onSave}
-          onCancel={onCancel}
+          {...props}
           validator={Validators.validateEmail}
         />
       ),
@@ -289,11 +287,10 @@ export const useStudentTable = () => {
       viewRenderer: ({ row }) => (
         <Table.DateViewRenderer value={row.dateOfBirth} format="PP" />
       ),
-      editRenderer: ({ row, onSave, onCancel }) => (
+      editRenderer: ({ row, ...props }) => (
         <Table.DateEditRenderer
           value={row.dateOfBirth}
-          onSave={onSave}
-          onCancel={onCancel}
+          {...props}
           validator={Validators.validateDateOfBirth}
         />
       ),
@@ -336,12 +333,11 @@ export const useStudentTable = () => {
       viewRenderer: ({ row }) => (
         <Table.SelectViewRenderer value={row.gender} options={genderOptions} />
       ),
-      editRenderer: ({ row, onSave, onCancel }) => (
+      editRenderer: ({ row, ...props }) => (
         <Table.SelectEditRenderer
           value={row.gender}
           options={genderOptions}
-          onSave={onSave}
-          onCancel={onCancel}
+          {...props}
         />
       ),
       onUpdate: async (rowId, newValue) => {
@@ -383,11 +379,10 @@ export const useStudentTable = () => {
       viewRenderer: ({ row }) => (
         <Table.CountryViewRenderer value={row.nationality} />
       ),
-      editRenderer: ({ row, onSave, onCancel }) => (
+      editRenderer: ({ row, ...props }) => (
         <Table.CountryEditRenderer
           value={row.nationality}
-          onSave={onSave}
-          onCancel={onCancel}
+          {...props}
           validator={Validators.validateNationality}
         />
       ),
@@ -412,11 +407,10 @@ export const useStudentTable = () => {
       viewRenderer: ({ row }) => (
         <Table.PhoneViewRenderer value={row.phoneNumber} />
       ),
-      editRenderer: ({ row, onSave, onCancel }) => (
+      editRenderer: ({ row, ...props }) => (
         <Table.PhoneEditRenderer
           value={row.phoneNumber || ""}
-          onSave={onSave}
-          onCancel={onCancel}
+          {...props}
           validator={Validators.validatePhoneNumber}
         />
       ),

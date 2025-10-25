@@ -80,8 +80,8 @@ export const useTableLocale = (): TableLocaleContextValue => {
   const context = useContext(TableLocaleContext);
   if (context === undefined) {
     return {
-      locale: "en",
-      strings: defaultLocaleResources.en,
+      locale: "ar",
+      strings: defaultLocaleResources.ar,
     };
   }
   return context;

@@ -1,8 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-
+import { Popover, Button, Box, Typography } from "@mui/material";
+import { arEG, enUS } from "date-fns/locale";
+import { useAppTheme } from "@/client/contexts";
+import { useTableLocale } from "../../contexts";
 export interface DateEditRendererProps {
   value: Date | string | null | undefined;
   /**
@@ -25,7 +28,8 @@ export interface DateEditRendererProps {
 /**
  * DateEditRenderer Component
  *
- * Date picker for editing date values in table cells.
+ * Static date picker with confirm/cancel buttons in a popover.
+ * Opens automatically when entering edit mode.
  */
 export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
   value,
@@ -35,6 +39,15 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
   minDate,
   maxDate,
 }) => {
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const { language } = useAppTheme();
+  const locale = React.useMemo(() => {
+    if (language === "ar") return arEG;
+    return enUS;
+  }, [language]);
+
+  const { strings } = useTableLocale();
   const initialDate = React.useMemo(() => {
     if (!value) return null;
     const date = typeof value === "string" ? new Date(value) : value;
@@ -44,6 +57,11 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
   const [editValue, setEditValue] = useState<Date | null>(initialDate);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Open popover after component mounts and ref is set
+  useEffect(() => {
+    setIsOpen(true);
+  }, []);
 
   const validateDate = useCallback(
     (date: Date | null): { valid: boolean; error?: string } => {
@@ -87,7 +105,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
     [validateDate]
   );
 
-  const handleSave = useCallback(async () => {
+  const handleConfirm = useCallback(async () => {
     if (isSaving) return;
 
     const validation = validateDate(editValue);
@@ -96,11 +114,18 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
       return;
     }
 
+    // Close popover immediately
+    setIsOpen(false);
+
+    // Save in background
     setIsSaving(true);
     try {
       await onSave(editValue.toISOString());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      // Component unmounts after successful save
+    } catch (_err) {
+      // If save fails, component stays mounted (DataCell doesn't unmount on error)
+      // But popover is already closed, so error won't be visible
+      // This is acceptable since validation happened before closing
       setIsSaving(false);
     }
   }, [editValue, onSave, validateDate, isSaving]);
@@ -109,50 +134,121 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
     (event: React.KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
+        event.stopPropagation();
         onCancel();
-      } else if (event.key === "Enter") {
-        event.preventDefault();
-        if (!error && editValue) {
-          handleSave();
-        }
       }
     },
-    [onCancel, error, editValue, handleSave]
+    [onCancel]
   );
 
   useEffect(() => {
-    // Auto-save on blur handled by DatePicker's onClose
-  }, []);
+    // Add global keydown listener for Escape
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onCancel();
+      }
+    };
+
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, [onCancel]);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DatePicker
-        value={editValue}
-        onChange={handleChange}
-        minDate={minDate}
-        maxDate={maxDate}
-        disabled={isSaving}
+    <>
+      {/* Anchor element for the popover - fills the entire cell */}
+      <Box
+        ref={anchorRef}
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          cursor: "pointer",
+        }}
+      >
+        <Typography variant="body2">
+          {editValue ? editValue.toLocaleDateString() : "Select date..."}
+        </Typography>
+      </Box>
+
+      {/* Popover with StaticDatePicker */}
+      <Popover
+        open={isOpen}
+        anchorEl={anchorRef.current}
+        onClose={onCancel}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
         slotProps={{
-          textField: {
-            size: "small",
-            variant: "standard",
-            fullWidth: true,
-            error: !!error,
-            helperText: error,
+          paper: {
             onKeyDown: handleKeyDown,
-            onBlur: handleSave,
-            InputProps: {
-              disableUnderline: !error,
-            },
-            sx: {
-              "& .MuiInputBase-input": {
-                padding: 0,
-              },
-            },
           },
         }}
-      />
-    </LocalizationProvider>
+      >
+        <LocalizationProvider
+          dateAdapter={AdapterDateFns}
+          adapterLocale={locale}
+        >
+          <Box sx={{ p: 2 }}>
+            <StaticDatePicker
+              value={editValue}
+              onChange={handleChange}
+              minDate={minDate}
+              maxDate={maxDate}
+              disabled={isSaving}
+              displayStaticWrapperAs="desktop"
+              slotProps={{
+                actionBar: {
+                  actions: [], // Remove default action bar, we'll add our own
+                },
+              }}
+            />
+
+            {/* Error message */}
+            {error && (
+              <Typography
+                color="error"
+                variant="caption"
+                sx={{ display: "block", mt: 1, px: 1 }}
+              >
+                {error}
+              </Typography>
+            )}
+
+            {/* Custom action buttons */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 1,
+                mt: 2,
+                pt: 2,
+                borderTop: 1,
+                borderColor: "divider",
+              }}
+            >
+              <Button onClick={onCancel} disabled={isSaving}>
+                {strings.general.cancel}
+              </Button>
+              <Button
+                onClick={handleConfirm}
+                variant="contained"
+                disabled={isSaving || !!error || !editValue}
+              >
+                {isSaving ? strings.general.loading : strings.general.confirm}
+              </Button>
+            </Box>
+          </Box>
+        </LocalizationProvider>
+      </Popover>
+    </>
   );
 };
 

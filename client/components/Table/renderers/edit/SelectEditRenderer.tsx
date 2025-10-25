@@ -1,21 +1,16 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  Select,
-  MenuItem,
-  FormControl,
-  SelectChangeEvent,
-} from "@mui/material";
-import logger from "@/client/lib/logger";
+import React, { useState, useCallback } from "react";
+import { TextField, MenuItem, InputAdornment, IconButton } from "@mui/material";
+import { Clear as ClearIcon } from "@mui/icons-material";
 
 export interface SelectEditRendererProps<TValue> {
-  value: TValue;
-  options: Array<{ label: string; value: TValue }>;
+  value: TValue | null | undefined;
+  options: Array<{ label: string; value: TValue | null | undefined }>;
   /**
    * Callback to save the new value
    * This is provided by DataCell and ultimately calls column.onUpdate
    * Call this when the user confirms their edit
    */
-  onSave: (value: TValue) => Promise<void>;
+  onSave: (value: TValue | null | undefined) => Promise<void>;
   /**
    * Callback to cancel editing without saving
    * This exits edit mode and discards changes
@@ -27,59 +22,36 @@ export interface SelectEditRendererProps<TValue> {
  * SelectEditRenderer Component
  *
  * Select dropdown that opens automatically and saves immediately on selection.
+ * Uses TextField with select prop for better MUI integration.
  */
-export const SelectEditRenderer = <TValue,>({
+export const SelectEditRenderer = <TValue extends string | number | null | undefined = string | number | null | undefined>({
   value,
   options,
   onSave,
   onCancel,
 }: SelectEditRendererProps<TValue>): React.JSX.Element => {
   const [isSaving, setIsSaving] = useState(false);
-  const [isOpen, setIsOpen] = useState(true); // Open menu by default
-
-  // Close the menu when user makes a selection (before saving)
-  useEffect(() => {
-    if (isSaving) {
-      setIsOpen(false);
-    }
-  }, [isSaving]);
 
   const handleChange = useCallback(
-    async (event: SelectChangeEvent<string>) => {
-      logger.info("SelectEditRenderer: handleChange called", {
-        value: event.target.value,
-      });
-
-      if (isSaving) {
-        logger.info("SelectEditRenderer: Already saving, ignoring");
-        return;
-      }
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (isSaving) return;
 
       const newValueString = event.target.value;
-
-      // Normalize old value for comparison
       const normalizedOldValue = (value || "") as string;
 
       // Only save if the value has actually changed
       if (newValueString === normalizedOldValue) {
-        logger.info("SelectEditRenderer: Value unchanged, ignoring");
         return;
       }
 
-      logger.info("SelectEditRenderer: Saving new value", {
-        old: normalizedOldValue,
-        new: newValueString,
-      });
       setIsSaving(true);
 
       try {
         // Convert string back to TValue and save
         await onSave(newValueString as unknown as TValue);
-        logger.info("SelectEditRenderer: Save successful");
         // Don't set isSaving(false) here - component unmounts after successful save
-      } catch (err) {
+      } catch (_err) {
         // Error handling - only reset isSaving on error (component stays mounted)
-        logger.error("SelectEditRenderer: Save failed", err);
         setIsSaving(false);
       }
     },
@@ -104,33 +76,85 @@ export const SelectEditRenderer = <TValue,>({
     }
   }, [isSaving, onCancel]);
 
+  const handleClear = useCallback(
+    async (event: React.MouseEvent) => {
+      event.stopPropagation();
+      if (isSaving) return;
+
+      setIsSaving(true);
+
+      try {
+        await onSave(null);
+        // Don't set isSaving(false) here - component unmounts after successful save
+      } catch (_err) {
+        // Error handling - only reset isSaving on error (component stays mounted)
+        setIsSaving(false);
+      }
+    },
+    [onSave, isSaving]
+  );
+
   return (
-    <FormControl fullWidth size="small" variant="standard">
-      <Select<string>
-        value={(value || "") as string}
-        open={isOpen}
-        onChange={handleChange}
-        onClose={handleClose}
-        onKeyDown={handleKeyDown}
-        disabled={isSaving}
-        autoFocus
-        disableUnderline
-        sx={{
-          "& .MuiSelect-select": {
-            padding: 0,
-          },
-        }}
-      >
-        {options.map(option => (
-          <MenuItem
-            key={option.value as unknown as string}
-            value={option.value as unknown as string}
-          >
-            {option.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <TextField
+      select
+      fullWidth
+      variant="standard"
+      value={(value || "") as string}
+      onChange={handleChange}
+      onKeyDown={handleKeyDown}
+      disabled={isSaving}
+      autoFocus
+      slotProps={{
+        select: {
+          open: true, // Open menu automatically
+          onClose: handleClose,
+        },
+        input: {
+          disableUnderline: true,
+          endAdornment: value ? (
+            <InputAdornment
+              position="end"
+              sx={{
+                px: 4,
+                position: "relative",
+                zIndex: 1400, // Higher than MUI Menu (1300)
+                pointerEvents: "auto",
+              }}
+            >
+              <IconButton
+                aria-label="clear selection"
+                onClick={handleClear}
+                edge="end"
+                size="small"
+                disabled={isSaving}
+                sx={{
+                  backgroundColor: "background.paper",
+                  "&:hover": {
+                    backgroundColor: "action.hover",
+                  },
+                }}
+              >
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        },
+      }}
+      sx={{
+        "& .MuiInputBase-input": {
+          padding: 0,
+        },
+      }}
+    >
+      {options.map(option => (
+        <MenuItem
+          key={option.value as unknown as string}
+          value={option.value as unknown as string}
+        >
+          {option.label}
+        </MenuItem>
+      ))}
+    </TextField>
   );
 };
 
