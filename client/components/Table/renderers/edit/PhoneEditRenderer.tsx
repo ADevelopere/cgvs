@@ -33,13 +33,16 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
 }) => {
   const [phoneValue, setPhoneValue] = useState(value || "");
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Focus input on mount
+    // Focus input on mount and set cursor at the end
     setTimeout(() => {
-      inputRef.current?.focus();
+      if (inputRef.current) {
+        inputRef.current.focus();
+        const length = inputRef.current.value.length;
+        inputRef.current.setSelectionRange(length, length);
+      }
     }, 100);
   }, []);
 
@@ -60,7 +63,13 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    if (isSaving) return;
+    // Early return if value hasn't changed
+    const newValue = phoneValue || null;
+    const originalValue = value || null;
+    if (newValue === originalValue) {
+      onCancel();
+      return;
+    }
 
     // Final validation
     if (validator) {
@@ -71,14 +80,14 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
       }
     }
 
-    setIsSaving(true);
-    try {
-      await onSave(phoneValue);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
-      setIsSaving(false);
-    }
-  }, [phoneValue, onSave, validator, isSaving]);
+    // Exit edit mode immediately
+    onCancel();
+    
+    // Save in the background (fire and forget)
+    onSave(phoneValue).catch(() => {
+      // Error handling is done by the parent component
+    });
+  }, [phoneValue, onSave, validator, value, onCancel]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -95,16 +104,11 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
     [handleSave, onCancel, error]
   );
 
-  // Don't auto-save on blur - let DataCell's click outside handler manage when to exit edit mode
-  // This prevents premature saving when clicking the country selector
   const handleBlur = useCallback(() => {
-    // Blur is handled by DataCell's click outside logic
-    // Only validate, don't save
-    if (validator && phoneValue) {
-      const validationError = validator(phoneValue);
-      setError(validationError);
+    if (!error) {
+      handleSave();
     }
-  }, [validator, phoneValue]);
+  }, [handleSave, error]);
 
   return (
     <MuiTelInput
@@ -122,7 +126,6 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
       fullWidth
       size="small"
       variant="standard"
-      disabled={isSaving}
       error={!!error}
       helperText={error}
       MenuProps={{

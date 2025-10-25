@@ -38,7 +38,6 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
     value ? countries.find(c => c.code === value) || null : null
   );
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = useCallback(
     (_event: unknown, newValue: CountryType | null) => {
@@ -56,7 +55,13 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    if (isSaving || !selectedCountry) return;
+    if (!selectedCountry) return;
+
+    // Early return if value hasn't changed
+    if (selectedCountry.code === value) {
+      onCancel();
+      return;
+    }
 
     // Final validation
     if (validator) {
@@ -67,14 +72,14 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
       }
     }
 
-    setIsSaving(true);
-    try {
-      await onSave(selectedCountry.code);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
-      setIsSaving(false);
-    }
-  }, [selectedCountry, onSave, validator, isSaving]);
+    // Exit edit mode immediately
+    onCancel();
+    
+    // Save in the background (fire and forget)
+    onSave(selectedCountry.code).catch(() => {
+      // Error handling is done by the parent component
+    });
+  }, [selectedCountry, onSave, validator, value, onCancel]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -92,10 +97,10 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   );
 
   const handleBlur = useCallback(() => {
-    if (!error && !isSaving && selectedCountry) {
+    if (!error && selectedCountry) {
       handleSave();
     }
-  }, [handleSave, error, isSaving, selectedCountry]);
+  }, [handleSave, error, selectedCountry]);
 
   return (
     <Autocomplete
@@ -106,7 +111,6 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
       value={selectedCountry}
       onChange={handleChange}
       onBlur={handleBlur}
-      disabled={isSaving}
       getOptionLabel={option => countryStrings[option.code] || option.code}
       renderOption={(props, option) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
