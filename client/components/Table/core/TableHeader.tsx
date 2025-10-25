@@ -77,6 +77,7 @@ export const TableHeader: React.FC<{
         textAlign: "start" as const,
         whiteSpace: "nowrap" as const,
         textOverflow: "ellipsis" as const,
+        boxShadow: `inset 0 -2px 0 0 ${theme.palette.divider}`,
       }}
     >
       {/* Index column header */}
@@ -86,7 +87,6 @@ export const TableHeader: React.FC<{
           textAlign: "center",
           fontWeight: "bold",
           borderInlineEnd: `1px solid ${theme.palette.divider}`,
-          borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       ></th>
 
@@ -102,7 +102,6 @@ export const TableHeader: React.FC<{
               borderInlineEnd: `1px solid ${theme.palette.divider}`,
               width: TABLE_CHECKBOX_CONTAINER_SIZE,
               minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
-              borderBottom: `1px solid ${theme.palette.divider}`,
             }}
           >
             <Checkbox

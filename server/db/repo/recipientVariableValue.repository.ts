@@ -402,6 +402,11 @@ export namespace RecipientVariableValueRepository {
     error: string | null;
   } => {
     try {
+      // Handle null/undefined input values early
+      if (input.value === null || input.value === undefined) {
+        return { parsed: null, error: null };
+      }
+
       switch (variable.type) {
         case Types.TemplateVariableType.TEXT: {
           const textVar =

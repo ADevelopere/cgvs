@@ -20,6 +20,7 @@ import { Check, Clear } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useTableLocale } from "../../contexts";
 
 export interface DateFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -49,6 +50,10 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
   onApply,
   onClear,
 }) => {
+  const {
+    strings: { filter: filterStrings, dateFilterOps },
+  } = useTableLocale();
+
   const [operation, setOperation] = useState<DateFilterOperation>(
     value?.operation || DateFilterOperation.is
   );
@@ -94,11 +99,11 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
   const handleApply = useCallback(() => {
     if (valueRequired) {
       if (!startDate) {
-        setError("Date is required for this operation");
+        setError(filterStrings.dateRequired);
         return;
       }
       if (operation === DateFilterOperation.between && !endDate) {
-        setError("End date is required for between operation");
+        setError(filterStrings.endDateRequired);
         return;
       }
       if (
@@ -107,7 +112,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
         endDate &&
         startDate > endDate
       ) {
-        setError("Start date must be before end date");
+        setError(filterStrings.startDateBeforeEnd);
         return;
       }
     }
@@ -132,6 +137,9 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     startDate,
     endDate,
     valueRequired,
+    filterStrings.dateRequired,
+    filterStrings.endDateRequired,
+    filterStrings.startDateBeforeEnd,
   ]);
 
   const handleClear = useCallback(() => {
@@ -159,26 +167,40 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     >
       <Box sx={{ p: 2, minWidth: 300 }}>
         <Typography variant="subtitle2" gutterBottom>
-          Filter: {columnLabel}
+          {filterStrings.title}: {columnLabel}
         </Typography>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="date-filter-operation-label">Operation</InputLabel>
+          <InputLabel id="date-filter-operation-label">
+            {filterStrings.operation}
+          </InputLabel>
           <Select
             labelId="date-filter-operation-label"
             value={operation}
             onChange={handleOperationChange}
-            label="Operation"
+            label={filterStrings.operation}
             size="small"
           >
-            <MenuItem value={DateFilterOperation.is}>Is</MenuItem>
-            <MenuItem value={DateFilterOperation.isNot}>Is Not</MenuItem>
-            <MenuItem value={DateFilterOperation.isBefore}>Before</MenuItem>
-            <MenuItem value={DateFilterOperation.isAfter}>After</MenuItem>
-            <MenuItem value={DateFilterOperation.between}>Between</MenuItem>
-            <MenuItem value={DateFilterOperation.isEmpty}>Is Empty</MenuItem>
+            <MenuItem value={DateFilterOperation.is}>
+              {dateFilterOps.is}
+            </MenuItem>
+            <MenuItem value={DateFilterOperation.isNot}>
+              {dateFilterOps.isNot}
+            </MenuItem>
+            <MenuItem value={DateFilterOperation.isBefore}>
+              {dateFilterOps.isBefore}
+            </MenuItem>
+            <MenuItem value={DateFilterOperation.isAfter}>
+              {dateFilterOps.isAfter}
+            </MenuItem>
+            <MenuItem value={DateFilterOperation.between}>
+              {dateFilterOps.between}
+            </MenuItem>
+            <MenuItem value={DateFilterOperation.isEmpty}>
+              {dateFilterOps.isEmpty}
+            </MenuItem>
             <MenuItem value={DateFilterOperation.isNotEmpty}>
-              Is Not Empty
+              {dateFilterOps.isNotEmpty}
             </MenuItem>
           </Select>
         </FormControl>
@@ -189,8 +211,8 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
               <DatePicker
                 label={
                   operation === DateFilterOperation.between
-                    ? "Start Date"
-                    : "Date"
+                    ? filterStrings.startDate
+                    : filterStrings.date
                 }
                 value={startDate}
                 onChange={setStartDate}
@@ -207,7 +229,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
             {operation === DateFilterOperation.between && (
               <Box sx={{ mt: 2 }}>
                 <DatePicker
-                  label="End Date"
+                  label={filterStrings.endDate}
                   value={endDate}
                   onChange={setEndDate}
                   slotProps={{
@@ -242,7 +264,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
             startIcon={<Clear />}
             color="inherit"
           >
-            Clear
+            {filterStrings.clear}
           </Button>
           <Button
             size="small"
@@ -250,7 +272,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
             variant="contained"
             startIcon={<Check />}
           >
-            Apply
+            {filterStrings.apply}
           </Button>
         </Box>
       </Box>

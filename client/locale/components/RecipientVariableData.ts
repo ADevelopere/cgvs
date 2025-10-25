@@ -39,6 +39,7 @@ export type RecipientVariableDataTranslation = {
   // Status tooltips
   missingRequiredFields: string;
   invalidValues: string;
+  missingAndInvalidFields: string;
   allRequiredFieldsComplete: string;
 
   // Table messages
@@ -48,4 +49,7 @@ export type RecipientVariableDataTranslation = {
   // Group selector
   selectGroupFirst: string;
   noGroupsAvailable: string;
+
+  // Variable fallback
+  variableWithId: string;
 };

@@ -60,6 +60,13 @@ export const TableRenderer = <
       }}
       id="table-container"
     >
+      {/* Table row hover effect */}
+      <style>{`
+        #table-container tbody tr:hover td {
+          background-color: rgba(44, 101, 134, 0.43);
+        }
+      `}</style>
+
       {/* Loading indicator */}
       {isLoading && (
         <LinearProgress

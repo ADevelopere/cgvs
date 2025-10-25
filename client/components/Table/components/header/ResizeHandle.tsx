@@ -23,8 +23,9 @@ const buttonStyle = {
   border: "none",
   background: "transparent",
   display: "flex",
-  alignContent: "end",
-  justifyContent: "end",
+  alignContent: "center",
+  justifyContent: "center",
+  zIndex: 10,
 };
 
 export const ResizeHandle: React.FC<ResizeHandleProps> = ({
@@ -73,15 +74,13 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
     }
   }, [isResizing]);
 
-  const hrStyle = {
-    margin: 0,
-    height: "100%",
-    width: "1px",
-    border: "none",
-    backgroundColor: isResizing
-      ? theme.palette.primary.main
-      : theme.palette.divider,
-  };
+  const [backgroundColor, setBackgroundColor] = useState(theme.palette.divider);
+
+  useEffect(() => {
+    setBackgroundColor(
+      isResizing ? theme.palette.primary.main : theme.palette.divider
+    );
+  }, [isResizing, theme]);
 
   return (
     <button
@@ -90,6 +89,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
         ...buttonStyle,
         cursor: enabled ? "col-resize" : "default",
         [isRtl ? "left" : "right"]: "0px",
+        transform: isRtl ? "translateX(-50%)" : "translateX(50%)",
       }}
       onMouseDown={startResizing}
       onTouchStart={startResizing}
@@ -100,7 +100,15 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
       onFocus={endResizing}
       aria-label={strings.column.resize}
     >
-      <hr style={hrStyle} />
+      <hr
+        style={{
+          margin: 0,
+          height: "100%",
+          width: "4px",
+          border: "none",
+          backgroundColor: backgroundColor,
+        }}
+      />
     </button>
   );
 };

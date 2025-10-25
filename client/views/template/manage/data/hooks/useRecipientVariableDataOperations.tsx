@@ -23,10 +23,10 @@ export const useRecipientVariableDataOperations = () => {
    * Update a single recipient variable value
    */
   const updateRecipientVariableValue = useCallback(
-    async (
+    async <T = unknown>(
       recipientGroupItemId: number,
       variableId: number,
-      value: unknown
+      value: T | null | undefined
     ): Promise<boolean> => {
       try {
         const result = await apollo.setRecipientVariableValuesMutation({
@@ -35,8 +35,7 @@ export const useRecipientVariableDataOperations = () => {
             values: [
               {
                 variableId,
-                value:
-                  value === null || value === undefined ? "" : String(value),
+                value: value as string,
               },
             ],
           },

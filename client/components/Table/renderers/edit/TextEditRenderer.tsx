@@ -71,9 +71,19 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
+    let newValue: string | null = editValue;
+    const originalValue = value;
+
+    // Check if newValue is empty
+    if (newValue === "" && !originalValue) {
+      // If original value is null or undefined, cancel (no change to make)
+      onCancel();
+      return;
+    } else if (newValue === "") {
+      // If original value is not null/undefined, continue to update (clear the value)
+      newValue = null;
+    }
     // Early return if value hasn't changed
-    const newValue = editValue === "" ? null : editValue;
-    const originalValue = value === undefined ? null : value;
     if (newValue === originalValue) {
       onCancel();
       return;
@@ -90,7 +100,6 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
 
     // Exit edit mode immediately
     onCancel();
-
     // Save in the background (fire and forget)
     onSave(newValue).catch(() => {
       // Error handling is done by the parent component
@@ -122,7 +131,12 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
+        <Tooltip
+          open={!!error}
+          title={error ?? ""}
+          arrow
+          placement="bottom-start"
+        >
           <TextField
             inputRef={inputRef}
             value={editValue}

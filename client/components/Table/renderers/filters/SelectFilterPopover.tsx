@@ -8,6 +8,7 @@ import {
   Popover,
 } from "@mui/material";
 import { Check, Clear } from "@mui/icons-material";
+import { useTableLocale } from "../../contexts";
 
 export interface SelectFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -36,6 +37,10 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
   onApply,
   onClear,
 }) => {
+  const {
+    strings: { filter: filterStrings, selection: selectionStrings },
+  } = useTableLocale();
+
   const [selectedValues, setSelectedValues] = useState<Set<string | number>>(
     new Set(value || [])
   );
@@ -94,7 +99,7 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
     >
       <Box sx={{ p: 2, minWidth: 300, maxWidth: 400 }}>
         <Typography variant="subtitle2" gutterBottom>
-          Filter: {columnLabel}
+          {filterStrings.title}: {columnLabel}
         </Typography>
 
         <Box
@@ -111,7 +116,7 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
             disabled={allSelected}
             variant="outlined"
           >
-            Select All
+            {selectionStrings.selectAll}
           </Button>
           <Button
             size="small"
@@ -119,7 +124,7 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
             disabled={noneSelected}
             variant="outlined"
           >
-            Deselect All
+            {selectionStrings.deselectAll}
           </Button>
         </Box>
 
@@ -165,7 +170,7 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
             startIcon={<Clear />}
             color="inherit"
           >
-            Clear
+            {filterStrings.clear}
           </Button>
           <Button
             size="small"
@@ -174,7 +179,7 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
             startIcon={<Check />}
             disabled={noneSelected}
           >
-            Apply
+            {filterStrings.apply}
           </Button>
         </Box>
       </Box>

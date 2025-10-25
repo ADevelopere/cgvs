@@ -9,6 +9,7 @@ import {
   Popover,
 } from "@mui/material";
 import { Check, Clear } from "@mui/icons-material";
+import { useTableLocale } from "../../contexts";
 
 export interface BooleanFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -35,6 +36,10 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
   onApply,
   onClear,
 }) => {
+  const {
+    strings: { filter: filterStrings, booleanFilterOps },
+  } = useTableLocale();
+
   const [selectedValue, setSelectedValue] = useState<string>(
     value === null ? "all" : value ? "true" : "false"
   );
@@ -78,7 +83,7 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
     >
       <Box sx={{ p: 2, minWidth: 250 }}>
         <Typography variant="subtitle2" gutterBottom>
-          Filter: {columnLabel}
+          {filterStrings.title}: {columnLabel}
         </Typography>
 
         <RadioGroup
@@ -89,17 +94,17 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
           <FormControlLabel
             value="all"
             control={<Radio size="small" />}
-            label="All"
+            label={booleanFilterOps.all}
           />
           <FormControlLabel
             value="true"
             control={<Radio size="small" />}
-            label="True"
+            label={booleanFilterOps.true}
           />
           <FormControlLabel
             value="false"
             control={<Radio size="small" />}
-            label="False"
+            label={booleanFilterOps.false}
           />
         </RadioGroup>
 
@@ -112,7 +117,7 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
             startIcon={<Clear />}
             color="inherit"
           >
-            Clear
+            {filterStrings.clear}
           </Button>
           <Button
             size="small"
@@ -120,7 +125,7 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
             variant="contained"
             startIcon={<Check />}
           >
-            Apply
+            {filterStrings.apply}
           </Button>
         </Box>
       </Box>

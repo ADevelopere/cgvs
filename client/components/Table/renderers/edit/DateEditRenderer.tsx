@@ -47,7 +47,10 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
     return enUS;
   }, [language]);
 
-  const { strings } = useTableLocale();
+  const {
+    strings: { general: generalStrings, validation: validationStrings },
+  } = useTableLocale();
+
   const initialDate = React.useMemo(() => {
     if (!value) return null;
     const date = typeof value === "string" ? new Date(value) : value;
@@ -65,20 +68,20 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
   const validateDate = useCallback(
     (date: Date | null): { valid: boolean; error?: string } => {
       if (!date || isNaN(date.getTime())) {
-        return { valid: false, error: "Invalid date" };
+        return { valid: false, error: validationStrings.invalidDate };
       }
 
       if (minDate && date < minDate) {
         return {
           valid: false,
-          error: `Date must be after ${minDate.toLocaleDateString()}`,
+          error: validationStrings.minDate(minDate.toLocaleDateString()),
         };
       }
 
       if (maxDate && date > maxDate) {
         return {
           valid: false,
-          error: `Date must be before ${maxDate.toLocaleDateString()}`,
+          error: validationStrings.maxDate(maxDate.toLocaleDateString()),
         };
       }
 
@@ -91,7 +94,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
 
       return { valid: true };
     },
-    [minDate, maxDate, validator]
+    [minDate, maxDate, validator, validationStrings]
   );
 
   const handleChange = useCallback(
@@ -107,12 +110,20 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
   const handleConfirm = useCallback(async () => {
     const validation = validateDate(editValue);
     if (!validation.valid || !editValue) {
-      setError(validation.error || "Invalid date");
+      setError(validation.error || validationStrings.invalidDate);
       return;
     }
 
-    // Early return if value hasn't changed
     const originalDate = initialDate;
+    
+    // Check if newValue is null (empty)
+    if (editValue === null && !originalDate) {
+      // If original value is null or undefined, cancel (no change to make)
+      onCancel();
+      return;
+    }
+    
+    // Early return if value hasn't changed
     if (originalDate && editValue.getTime() === originalDate.getTime()) {
       onCancel();
       return;
@@ -126,7 +137,14 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
     onSave(editValue.toISOString()).catch(() => {
       // Error handling is done by the parent component
     });
-  }, [editValue, onSave, validateDate, initialDate, onCancel]);
+  }, [
+    editValue,
+    onSave,
+    validateDate,
+    initialDate,
+    onCancel,
+    validationStrings,
+  ]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -232,14 +250,14 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
               }}
             >
               <Button onClick={onCancel}>
-                {strings.general.cancel}
+                {generalStrings.cancel}
               </Button>
               <Button
                 onClick={handleConfirm}
                 variant="contained"
                 disabled={!!error || !editValue}
               >
-                {strings.general.confirm}
+                {generalStrings.confirm}
               </Button>
             </Box>
           </Box>
