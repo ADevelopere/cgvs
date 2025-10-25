@@ -8,12 +8,12 @@ import { FilterClause } from "@/client/types/filters";
 import { mapColumnIdToGraphQLColumn } from "../columns";
 
 // Column type definitions
-type NameColumn = Table.Column<Graphql.Student, "name">;
-type EmailColumn = Table.Column<Graphql.Student, "email">;
-type DateOfBirthColumn = Table.Column<Graphql.Student, "dateOfBirth">;
-type GenderColumn = Table.Column<Graphql.Student, "gender">;
-type NationalityColumn = Table.Column<Graphql.Student, "nationality">;
-type CreatedAtColumn = Table.Column<Graphql.Student, "createdAt">;
+type NameColumn = Table.Column<Graphql.Student>;
+type EmailColumn = Table.Column<Graphql.Student>;
+type DateOfBirthColumn = Table.Column<Graphql.Student>;
+type GenderColumn = Table.Column<Graphql.Student>;
+type NationalityColumn = Table.Column<Graphql.Student>;
+type CreatedAtColumn = Table.Column<Graphql.Student>;
 
 interface UseRecipientTableParams {
   filters: Record<string, FilterClause | null>;

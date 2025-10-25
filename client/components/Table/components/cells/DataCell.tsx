@@ -8,13 +8,13 @@ import React, {
   useState,
 } from "react";
 import type { CSSProperties } from "react";
-import {
-  AnyColumn,
-  isEditableColumn,
-} from "../../types";
+import { AnyColumn, isEditableColumn } from "../../types";
 
-type DataCellProps<TRowData, TRowId extends string | number = string | number> = {
-  column: AnyColumn<TRowData>;
+type DataCellProps<
+  TRowData,
+  TRowId extends string | number = string | number,
+> = {
+  column: AnyColumn<TRowData, TRowId>;
   row: TRowData;
   rowId: TRowId;
   cellStyle: CSSProperties;
@@ -34,7 +34,11 @@ type DataCellProps<TRowData, TRowId extends string | number = string | number> =
  * - Handles double-click to enter edit mode
  * - Manages save/cancel callbacks
  */
-const DataCell = <TRowData, TRowId extends string | number = string | number>({
+const DataCellComponent = <
+  TRowData,
+  TValue,
+  TRowId extends string | number = string | number,
+>({
   column,
   row,
   rowId,
@@ -94,7 +98,7 @@ const DataCell = <TRowData, TRowId extends string | number = string | number>({
 
   // Handle save
   const handleSave = useCallback(
-    async (value: TRowData[keyof TRowData]) => {
+    async (value: TValue) => {
       if (isEditableColumn(column) && column.onUpdate) {
         try {
           await column.onUpdate(rowId, value);
@@ -161,7 +165,7 @@ const DataCell = <TRowData, TRowId extends string | number = string | number>({
           ? // Render edit mode
             column.editRenderer({
               row,
-              onSave: handleSave,
+              onSave: value => handleSave(value as TValue),
               onCancel: handleCancel,
             })
           : // Render view mode
@@ -171,6 +175,8 @@ const DataCell = <TRowData, TRowId extends string | number = string | number>({
   );
 };
 
-DataCell.displayName = "DataCell";
+DataCellComponent.displayName = "DataCell";
 
-export default React.memo(DataCell) as typeof DataCell;
+export const DataCell = React.memo(
+  DataCellComponent
+) as typeof DataCellComponent;

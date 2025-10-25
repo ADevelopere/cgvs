@@ -10,7 +10,9 @@ import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 
 const loadingRowHeight = 80;
 
-interface TableBodyProps<TRowData> {
+interface TableBodyProps<
+  TRowData,
+> {
   data: TRowData[];
   isPaginated?: boolean;
   pageInfo?: PageInfo | null;
@@ -18,14 +20,18 @@ interface TableBodyProps<TRowData> {
   colSpan: number;
 }
 
-const TableBody = <TRowData,>({
+export const TableBody = <
+  TRowData,
+  TValue,
+  TRowId extends string | number = string | number,
+>({
   data,
   isPaginated = false,
   pageInfo,
   indexColWidth,
   colSpan,
 }: TableBodyProps<TRowData>) => {
-  const { isLoading } = useTableContext<TRowData>();
+  const { isLoading } = useTableContext<TRowData, TRowId>();
 
   const {
     rowSelectionEnabled,
@@ -36,20 +42,20 @@ const TableBody = <TRowData,>({
     selectedRowIds,
     toggleRowSelection,
     enableRowResizing,
-  } = useTableRowsContext<TRowData>();
+  } = useTableRowsContext<TRowData, TRowId>();
   const {
     visibleColumns,
     pinnedColumns,
     columnWidths,
     pinnedLeftStyle,
     pinnedRightStyle,
-  } = useTableColumnContext<TRowData>();
+  } = useTableColumnContext<TRowData, TRowId>();
 
   // Note: edit state now managed internally by DataCell
   // const { _getEditingState, _setEditingState } = useTableDataContext();
 
   const isRowSelected = React.useCallback(
-    (rowId: string | number) => {
+    (rowId: TRowId) => {
       return rowSelectionEnabled && selectedRowIds.includes(rowId);
     },
     [rowSelectionEnabled, selectedRowIds]
@@ -72,13 +78,13 @@ const TableBody = <TRowData,>({
   );
 
   const [resizingRow, setResizingRow] = React.useState<{
-    rowId: string | number;
+    rowId: TRowId;
     startY: number;
     startHeight: number;
   } | null>(null);
 
   const handleRowResizeStart = React.useCallback(
-    (e: React.MouseEvent, rowId: string | number, currentHeight: number) => {
+    (e: React.MouseEvent, rowId: TRowId, currentHeight: number) => {
       setResizingRow({
         rowId: rowId,
         startY: e.clientY,
@@ -138,7 +144,7 @@ const TableBody = <TRowData,>({
               : index + 1;
 
         return (
-          <DataRow
+          <DataRow<TRowData, TValue, TRowId>
             key={rowId}
             rowData={item}
             height={rowHeights[rowId] || 50}
@@ -182,5 +188,3 @@ const TableBody = <TRowData,>({
     </>
   );
 };
-
-export default TableBody;

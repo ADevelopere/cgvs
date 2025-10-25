@@ -22,39 +22,34 @@ const mapColumnIdToGraphQLColumn = (columnId: string): string | null => {
 };
 
 // Column type definitions
-type NameColumn = Table.EditableColumn<Graphql.Student, string, "name", number>;
+type NameColumn = Table.EditableColumn<Graphql.Student, string, number>;
 type EmailColumn = Table.EditableColumn<
   Graphql.Student,
   string | null | undefined,
-  "email",
   number
 >;
 type DateOfBirthColumn = Table.EditableColumn<
   Graphql.Student,
   Date | string | null | undefined,
-  "dateOfBirth",
   number
 >;
 type GenderColumn = Table.EditableColumn<
   Graphql.Student,
   Graphql.Gender | null | undefined,
-  "gender",
   number
 >;
 type NationalityColumn = Table.EditableColumn<
   Graphql.Student,
   Graphql.CountryCode | null | undefined,
-  "nationality",
   number
 >;
 type PhoneNumberColumn = Table.EditableColumn<
   Graphql.Student,
   string | null | undefined,
-  "phoneNumber",
   number
 >;
-type CreatedAtColumn = Table.Column<Graphql.Student, "createdAt">;
-type UpdatedAtColumn = Table.Column<Graphql.Student, "updatedAt">;
+type CreatedAtColumn = Table.Column<Graphql.Student>;
+type UpdatedAtColumn = Table.Column<Graphql.Student>;
 
 /**
  * Table-specific logic for student management

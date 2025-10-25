@@ -9,14 +9,17 @@ import {
   ListItemText,
 } from "@mui/material";
 import { MoreVert, PushPin, VisibilityOff } from "@mui/icons-material";
-import ResizeHandle from "./ResizeHandle";
+import { ResizeHandle } from "./ResizeHandle";
 import { useTableStyles } from "@/client/theme/styles";
 import { AnyColumn, PinPosition } from "../../types";
 import { useTableLocale } from "../../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../../constants";
 
-export interface ColumnHeaderProps<TRowData> {
-  column: AnyColumn<TRowData>;
+export interface ColumnHeaderProps<
+  TRowData,
+  TRowId extends string | number = string | number,
+> {
+  column: AnyColumn<TRowData, TRowId>;
   isPinned: PinPosition;
   columnWidth: number;
   resizeColumn: (columnId: string, newWidth: number) => void;
@@ -101,7 +104,10 @@ const OptionsButton = styled(IconButton)({
  *
  * Delegates header content rendering to column.headerRenderer
  */
-const ColumnHeaderCell = <TRowData,>({
+const ColumnHeaderCellComponent = <
+  TRowData,
+  TRowId extends string | number = string | number,
+>({
   column,
   isPinned,
   columnWidth,
@@ -112,7 +118,7 @@ const ColumnHeaderCell = <TRowData,>({
   onPinRight,
   onUnpin,
   onHide,
-}: ColumnHeaderProps<TRowData>) => {
+}: ColumnHeaderProps<TRowData, TRowId>) => {
   const theme = useTheme();
   const styles = useTableStyles();
   const locale = useTableLocale();
@@ -216,7 +222,7 @@ const ColumnHeaderCell = <TRowData,>({
             thStyle={thStyle}
           >
             {/* Render custom header content */}
-            {column.headerRenderer({ column })}
+            {column.headerRenderer()}
           </HeaderContent>
 
           {/* Table-managed options menu */}
@@ -279,6 +285,8 @@ const ColumnHeaderCell = <TRowData,>({
   );
 };
 
-ColumnHeaderCell.displayName = "ColumnHeaderCell";
+ColumnHeaderCellComponent.displayName = "ColumnHeaderCell";
 
-export default React.memo(ColumnHeaderCell) as typeof ColumnHeaderCell;
+export const ColumnHeaderCell = React.memo(
+  ColumnHeaderCellComponent
+) as typeof ColumnHeaderCellComponent;

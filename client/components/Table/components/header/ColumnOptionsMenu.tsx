@@ -9,12 +9,11 @@ import {
 import type { ColumnOptionsMenuProps } from "../../types";
 import { useTableLocale } from "../../contexts";
 
-const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
+export const ColumnOptionsMenu = ({
   anchorEl,
   open,
   onClose,
   columnId,
-  columnLabel,
   isPinnedLeft,
   isPinnedRight,
   onPinLeft,
@@ -23,7 +22,7 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
   onHide,
   onAutosize,
   onShowColumnManager,
-}) => {
+}: ColumnOptionsMenuProps) => {
   const { strings } = useTableLocale();
   if (!columnId) return null;
   return (
@@ -41,7 +40,7 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
       }}
     >
       <MenuItem disabled>
-        <Typography variant="subtitle2">{columnLabel}</Typography>
+        <Typography variant="subtitle2">{columnId}</Typography>
       </MenuItem>
       <Divider />
 
@@ -100,5 +99,3 @@ const ColumnOptionsMenu: React.FC<ColumnOptionsMenuProps> = ({
     </Menu>
   );
 };
-
-export default ColumnOptionsMenu;
