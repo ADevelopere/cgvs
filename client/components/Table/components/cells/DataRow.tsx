@@ -160,14 +160,21 @@ const DataRowComponent = <
       </td>
 
       {rowSelectionEnabled && (
-        <td>
+        <td
+          style={{
+            ...cellStyle,
+            padding: 0,
+            width: TABLE_CHECKBOX_CONTAINER_SIZE,
+            minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
+            maxWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
+          }}
+        >
           <Box
             sx={{
               height: height - 2,
               display: "flex",
               alignItems: "center",
               paddingInline: "8px",
-              borderInlineEnd: `1px solid ${theme.palette.divider}`,
               width: TABLE_CHECKBOX_CONTAINER_SIZE,
               minWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
             }}

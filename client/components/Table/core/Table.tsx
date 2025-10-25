@@ -40,26 +40,15 @@ export const Table = <
   const { rowSelectionEnabled } = useTableRowsContext<TRowData, TRowId>();
 
   const theme = useTheme();
-  const headerContainerRef = useRef<HTMLDivElement>(null);
-  // const tableBodyRef = useRef<HTMLDivElement>(null); // This ref was for the "no data" message div
-  const tableScrollContainerRef = useRef<HTMLDivElement>(null); // Ref for the main scrollable div
+  const tableScrollContainerRef = useRef<HTMLDivElement>(null);
 
   const [showVisibilityPanel, setShowVisibilityPanel] = useState(false);
 
-  // // Reset scroll position when page changes
-  // useEffect(() => {
-  //     if (tableBodyRef.current) {
-  //         tableBodyRef.current.scrollTop = 0;
-  //     }
-  // }, [pageInfo?.currentPage]);
-
   // Reset scroll position when page changes
   useEffect(() => {
-    // This was for tableBodyRef, if react-window's list needs scroll reset, it's handled in TableBody.tsx
-    // If the main scroll container needs reset, you can do it here:
-    // if (tableScrollContainerRef.current) {
-    //     tableScrollContainerRef.current.scrollTop = 0;
-    // }
+    if (tableScrollContainerRef.current) {
+      tableScrollContainerRef.current.scrollTop = 0;
+    }
   }, [pageInfo?.currentPage]);
 
   // Calculate the index column width dynamically based on the maximum index value
@@ -89,29 +78,6 @@ export const Table = <
     return visibleColumns.length + 1 + (rowSelectionEnabled ? 1 : 0);
   }, [visibleColumns, rowSelectionEnabled]);
 
-  // Synchronize horizontal scroll between header and body
-  useEffect(() => {
-    const scrollContainer = tableScrollContainerRef.current;
-    const headerElement = headerContainerRef.current;
-    // const footerElement = document.getElementById("footer-container"); // If footer also needs sync
-
-    if (!scrollContainer || !headerElement) return;
-
-    const handleScroll = () => {
-      if (headerElement) {
-        headerElement.scrollLeft = scrollContainer.scrollLeft;
-      }
-      // if (footerElement) {
-      //     footerElement.scrollLeft = scrollContainer.scrollLeft;
-      // }
-    };
-
-    scrollContainer.addEventListener("scroll", handleScroll);
-    return () => {
-      scrollContainer.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
     <div
       style={{
@@ -137,55 +103,13 @@ export const Table = <
         />
       )}
 
-      <div
-        id="header-container"
-        ref={headerContainerRef}
-        style={{ overflow: "hidden", flexShrink: 0 }}
-      >
-        <table
-          style={{
-            borderCollapse: "collapse" as const,
-            tableLayout: "fixed" as const,
-            backgroundColor: "transparent",
-            width: totalWidth,
-          }}
-        >
-          <colgroup>
-            {rowSelectionEnabled && (
-              <col
-                style={{
-                  width: TABLE_CHECKBOX_CONTAINER_SIZE,
-                  maxWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
-                }}
-              />
-            )}
-            <col
-              style={{
-                width: indexColWidth,
-                maxWidth: indexColWidth,
-              }}
-            />
-            {visibleColumns.map(column => (
-              <col
-                key={column.id}
-                style={{
-                  width: `${columnWidths[column.id]}px`,
-                  minWidth: `${columnWidths[column.id]}px`,
-                  maxWidth: `${columnWidths[column.id]}px`,
-                }}
-              />
-            ))}
-          </colgroup>
-          <thead>
-            <TableHeader width={totalWidth} indexColWidth={indexColWidth} />
-          </thead>
-        </table>
-      </div>
+      {/* Single scrollable container with sticky header */}
       <div
         ref={tableScrollContainerRef}
         style={{
           width: "100%",
           overflowY: "auto",
+          overflowX: "auto",
           position: "relative" as const,
           flexGrow: 1,
         }}
@@ -199,6 +123,12 @@ export const Table = <
           }}
         >
           <colgroup>
+            <col
+              style={{
+                width: indexColWidth,
+                maxWidth: indexColWidth,
+              }}
+            />
             {rowSelectionEnabled && (
               <col
                 style={{
@@ -207,12 +137,6 @@ export const Table = <
                 }}
               />
             )}
-            <col
-              style={{
-                width: indexColWidth,
-                maxWidth: indexColWidth,
-              }}
-            />
             {visibleColumns.map(column => (
               <col
                 key={column.id}
@@ -224,6 +148,16 @@ export const Table = <
               />
             ))}
           </colgroup>
+          <thead
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 2,
+              backgroundColor: theme.palette.background.paper,
+            }}
+          >
+            <TableHeader width={totalWidth} indexColWidth={indexColWidth} />
+          </thead>
           <tbody
             style={{
               display: "table-row-group",

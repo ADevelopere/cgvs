@@ -117,6 +117,7 @@ const DataCellComponent = <
     getColumnWidth,
     pinnedLeftStyle,
     pinnedRightStyle,
+    theme.palette.error.main,
   ]);
 
   // Handle double-click to enter edit mode
