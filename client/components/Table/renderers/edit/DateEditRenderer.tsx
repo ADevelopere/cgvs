@@ -178,6 +178,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
         open={isOpen}
         anchorEl={anchorRef.current}
         onClose={onCancel}
+        onMouseDown={e => e.stopPropagation()}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "left",
