@@ -31,12 +31,15 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
     value !== null && value !== undefined ? String(value) : ""
   );
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
-    inputRef.current?.select();
+    // Focus input on mount and set cursor at the end
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const length = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(length, length);
+    }
   }, []);
 
   const validateNumber = useCallback(
@@ -93,22 +96,27 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    if (isSaving) return;
-
     const validation = validateNumber(editValue);
     if (!validation.valid || validation.value === undefined) {
       setError(validation.error || "Invalid value");
       return;
     }
 
-    setIsSaving(true);
-    try {
-      await onSave(validation.value);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
-      setIsSaving(false);
+    // Early return if value hasn't changed
+    const originalValue = value !== null && value !== undefined ? value : null;
+    if (validation.value === originalValue) {
+      onCancel();
+      return;
     }
-  }, [editValue, onSave, validateNumber, isSaving]);
+
+    // Exit edit mode immediately
+    onCancel();
+
+    // Save in the background (fire and forget)
+    onSave(validation.value).catch(() => {
+      // Error handling is done by the parent component
+    });
+  }, [editValue, onSave, validateNumber, value, onCancel]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -126,10 +134,10 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   );
 
   const handleBlur = useCallback(() => {
-    if (!error && !isSaving) {
+    if (!error) {
       handleSave();
     }
-  }, [handleSave, error, isSaving]);
+  }, [handleSave, error]);
 
   return (
     <TextField
@@ -144,16 +152,17 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
       fullWidth
       size="small"
       variant="standard"
-      disabled={isSaving}
-      inputProps={{
-        min,
-        max,
-        step:
-          step ||
-          (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
-      }}
-      InputProps={{
-        disableUnderline: !error,
+      slotProps={{
+        input: {
+          disableUnderline: !error,
+        },
+        htmlInput: {
+          min,
+          max,
+          step:
+            step ||
+            (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
+        },
       }}
       sx={{
         "& .MuiInputBase-input": {

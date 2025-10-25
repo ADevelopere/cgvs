@@ -56,7 +56,6 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
 
   const [editValue, setEditValue] = useState<Date | null>(initialDate);
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
 
   // Open popover after component mounts and ref is set
   useEffect(() => {
@@ -106,29 +105,28 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
   );
 
   const handleConfirm = useCallback(async () => {
-    if (isSaving) return;
-
     const validation = validateDate(editValue);
     if (!validation.valid || !editValue) {
       setError(validation.error || "Invalid date");
       return;
     }
 
-    // Close popover immediately
-    setIsOpen(false);
-
-    // Save in background
-    setIsSaving(true);
-    try {
-      await onSave(editValue.toISOString());
-      // Component unmounts after successful save
-    } catch (_err) {
-      // If save fails, component stays mounted (DataCell doesn't unmount on error)
-      // But popover is already closed, so error won't be visible
-      // This is acceptable since validation happened before closing
-      setIsSaving(false);
+    // Early return if value hasn't changed
+    const originalDate = initialDate;
+    if (originalDate && editValue.getTime() === originalDate.getTime()) {
+      onCancel();
+      return;
     }
-  }, [editValue, onSave, validateDate, isSaving]);
+
+    // Close popover and exit edit mode immediately
+    setIsOpen(false);
+    onCancel();
+
+    // Save in the background (fire and forget)
+    onSave(editValue.toISOString()).catch(() => {
+      // Error handling is done by the parent component
+    });
+  }, [editValue, onSave, validateDate, initialDate, onCancel]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -203,7 +201,6 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
               onChange={handleChange}
               minDate={minDate}
               maxDate={maxDate}
-              disabled={isSaving}
               displayStaticWrapperAs="desktop"
               slotProps={{
                 actionBar: {
@@ -235,15 +232,15 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
                 borderColor: "divider",
               }}
             >
-              <Button onClick={onCancel} disabled={isSaving}>
+              <Button onClick={onCancel}>
                 {strings.general.cancel}
               </Button>
               <Button
                 onClick={handleConfirm}
                 variant="contained"
-                disabled={isSaving || !!error || !editValue}
+                disabled={!!error || !editValue}
               >
-                {isSaving ? strings.general.loading : strings.general.confirm}
+                {strings.general.confirm}
               </Button>
             </Box>
           </Box>

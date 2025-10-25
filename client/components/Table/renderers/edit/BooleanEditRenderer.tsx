@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Checkbox } from "@mui/material";
 
 export interface BooleanEditRendererProps {
@@ -15,31 +15,33 @@ export interface BooleanEditRendererProps {
 export const BooleanEditRenderer: React.FC<BooleanEditRendererProps> = ({
   value,
   onSave,
+  onCancel,
 }) => {
-  const [isSaving, setIsSaving] = useState(false);
-
   const handleChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (isSaving) return;
-
       const newValue = event.target.checked;
-      setIsSaving(true);
 
-      try {
-        await onSave(newValue);
-      } catch (_err) {
-        // Error handling - could show toast
-        setIsSaving(false);
+      // Early return if value hasn't changed
+      if (newValue === !!value) {
+        onCancel();
+        return;
       }
+
+      // Exit edit mode immediately
+      onCancel();
+
+      // Save in the background (fire and forget)
+      onSave(newValue).catch(() => {
+        // Error handling is done by the parent component
+      });
     },
-    [onSave, isSaving]
+    [onSave, value, onCancel]
   );
 
   return (
     <Checkbox
       checked={!!value}
       onChange={handleChange}
-      disabled={isSaving}
       size="small"
       sx={{
         padding: 0,
