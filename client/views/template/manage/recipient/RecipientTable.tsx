@@ -33,7 +33,7 @@ interface RecipientTableProps<
   updateSort: (
     orderByClause: {
       column: string;
-      order: Graphql.OrderSortDirection;
+      order: Graphql.OrderSortDirection | null;
     }[]
   ) => void;
   onPageChange: (page: number) => void;

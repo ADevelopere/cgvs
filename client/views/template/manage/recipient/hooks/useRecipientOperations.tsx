@@ -336,17 +336,28 @@ export const useRecipientOperations = (templateId?: number) => {
     (
       orderByClause: {
         column: string;
-        order: Graphql.OrderSortDirection;
+        order: Graphql.OrderSortDirection | null;
       }[]
     ) => {
+      // Filter out clauses with null order (clear sort)
+      const validClauses = orderByClause.filter(clause => clause.order !== null);
+      
+      // If no valid clauses, clear the sort
+      if (validClauses.length === 0) {
+        store.setStudentsNotInGroupQueryParams({
+          orderBy: null,
+        });
+        return;
+      }
+
       const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
       
-      orderByClause.forEach(clause => {
+      validClauses.forEach(clause => {
         const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
         if (graphqlColumn) {
           graphqlOrderBy.push({
             column: graphqlColumn,
-            order: clause.order,
+            order: clause.order as Graphql.OrderSortDirection,
           });
         }
       });
@@ -363,17 +374,28 @@ export const useRecipientOperations = (templateId?: number) => {
     (
       orderByClause: {
         column: string;
-        order: Graphql.OrderSortDirection;
+        order: Graphql.OrderSortDirection | null;
       }[]
     ) => {
+      // Filter out clauses with null order (clear sort)
+      const validClauses = orderByClause.filter(clause => clause.order !== null);
+      
+      // If no valid clauses, clear the sort
+      if (validClauses.length === 0) {
+        store.setStudentsInGroupQueryParams({
+          orderBy: null,
+        });
+        return;
+      }
+
       const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
       
-      orderByClause.forEach(clause => {
+      validClauses.forEach(clause => {
         const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
         if (graphqlColumn) {
           graphqlOrderBy.push({
             column: graphqlColumn,
-            order: clause.order,
+            order: clause.order as Graphql.OrderSortDirection,
           });
         }
       });

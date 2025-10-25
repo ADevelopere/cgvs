@@ -8,6 +8,12 @@ import {
   FilterList,
 } from "@mui/icons-material";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
+import { useTableLocale } from "../../contexts";
+
+/**
+ * Sort direction type - can be ASC, DESC, or null (no sort)
+ */
+export type SortDirection = OrderSortDirection | null;
 
 /**
  * Props for BaseHeaderRenderer
@@ -22,8 +28,8 @@ export type BaseHeaderRendererProps = {
   /** Filterable */
   filterable?: boolean;
 
-  /** Callback when sort button is clicked */
-  onSort?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** Callback when sort button is clicked - receives the new sort direction */
+  onSort?: (direction: SortDirection) => void;
 
   /** Function that renders the filter popover with anchor element and close handler */
   filterPopoverRenderer?: (
@@ -32,7 +38,7 @@ export type BaseHeaderRendererProps = {
   ) => React.ReactNode;
 
   /** Current sort direction */
-  sortDirection?: OrderSortDirection | null;
+  sortDirection?: SortDirection;
 
   /** Whether the column is currently filtered */
   isFiltered?: boolean;
@@ -121,17 +127,32 @@ export const BaseHeaderRenderer = ({
   filterPopoverRenderer,
   sortDirection = null,
   isFiltered = false,
-  sortTooltip = "Sort",
-  filterTooltip = "Filter",
+  sortTooltip,
+  filterTooltip,
 }: BaseHeaderRendererProps): React.ReactElement => {
+  const {
+    strings: { sort: sortStrings, filter: filterStrings },
+  } = useTableLocale();
+
   const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null);
 
   const handleSortClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      onSort?.(e);
+      
+      // Calculate next sort direction: ASC -> DESC -> null -> ASC
+      let nextDirection: SortDirection;
+      if (sortDirection === null || sortDirection === undefined) {
+        nextDirection = "ASC";
+      } else if (sortDirection === "ASC") {
+        nextDirection = "DESC";
+      } else {
+        nextDirection = null; // Clear sort
+      }
+      
+      onSort?.(nextDirection);
     },
-    [onSort]
+    [onSort, sortDirection]
   );
 
   const handleFilterClick = useCallback(
@@ -151,7 +172,7 @@ export const BaseHeaderRenderer = ({
       <ColumnLabel>{label}</ColumnLabel>
       <IconsContainer>
         {sortable && onSort && (
-          <Tooltip title={sortTooltip}>
+          <Tooltip title={sortTooltip ?? sortStrings.title}>
             <HeaderIconButton
               onClick={handleSortClick}
               aria-label={`Sort by ${label}`}
@@ -175,7 +196,7 @@ export const BaseHeaderRenderer = ({
               variant="dot"
               sx={{ "& .MuiBadge-dot": { top: 2, right: 2 } }}
             >
-              <Tooltip title={filterTooltip}>
+              <Tooltip title={filterTooltip ?? filterStrings.title}>
                 <FilterIconButton
                   onClick={handleFilterClick}
                   isFiltered={isFiltered}
