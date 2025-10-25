@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { MuiTelInput } from "mui-tel-input";
+import { Tooltip } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { preferredCountries } from "@/client/lib/country";
 
@@ -16,6 +17,10 @@ export interface PhoneEditRendererProps {
    * This exits edit mode and discards changes
    */
   onCancel: () => void;
+  /**
+   * Callback to notify parent of error state changes
+   */
+  onErrorChange?: (error: string | null) => void;
   validator?: (value: string) => string | null;
 }
 
@@ -29,6 +34,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   value,
   onSave,
   onCancel,
+  onErrorChange,
   validator,
 }) => {
   const [phoneValue, setPhoneValue] = useState(value || "");
@@ -51,14 +57,11 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
       setPhoneValue(newValue);
 
       // Validate on change
-      if (validator) {
-        const validationError = validator(newValue);
-        setError(validationError);
-      } else {
-        setError(null);
-      }
+      const validationError = validator?.(newValue) || null;
+      setError(validationError);
+      onErrorChange?.(validationError);
     },
-    [validator]
+    [validator, onErrorChange]
   );
 
   const handleSave = useCallback(async () => {
@@ -111,30 +114,30 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <MuiTelInput
-          inputRef={inputRef}
-          value={phoneValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          langOfCountryName="ar"
-          defaultCountry="EG"
-          focusOnSelectCountry
-          excludedCountries={["IL"]}
-          preferredCountries={preferredCountries}
-          fullWidth
-          size="small"
-          variant="standard"
-          error={!!error}
-          helperText={error}
-          sx={{
-            "& .MuiInputBase-input": {
-              padding: 0,
-            },
-            "& .MuiInput-root:before": {
-              borderBottom: error ? undefined : "none",
-            },
-          }}
-        />
+        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
+          <MuiTelInput
+            inputRef={inputRef}
+            value={phoneValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            langOfCountryName="ar"
+            defaultCountry="EG"
+            focusOnSelectCountry
+            excludedCountries={["IL"]}
+            preferredCountries={preferredCountries}
+            fullWidth
+            size="small"
+            variant="standard"
+            sx={{
+              "& .MuiInputBase-input": {
+                padding: 0,
+              },
+              "& .MuiInput-root:before": {
+                borderBottom: "none",
+              },
+            }}
+          />
+        </Tooltip>
       </div>
     </ClickAwayListener>
   );

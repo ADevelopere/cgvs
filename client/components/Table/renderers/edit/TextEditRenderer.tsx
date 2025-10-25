@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { TextField } from "@mui/material";
+import { TextField, Tooltip } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 export interface TextEditRendererProps {
@@ -15,6 +15,10 @@ export interface TextEditRendererProps {
    * This exits edit mode and discards changes
    */
   onCancel: () => void;
+  /**
+   * Callback to notify parent of error state changes
+   */
+  onErrorChange?: (error: string | null) => void;
   validator?: (value: string) => string | null;
   placeholder?: string;
   multiline?: boolean;
@@ -31,6 +35,7 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   value,
   onSave,
   onCancel,
+  onErrorChange,
   validator,
   placeholder,
   multiline = false,
@@ -58,14 +63,11 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
       setEditValue(newValue);
 
       // Validate on change
-      if (validator) {
-        const validationError = validator(newValue);
-        setError(validationError);
-      } else {
-        setError(null);
-      }
+      const validationError = validator?.(newValue) || null;
+      setError(validationError);
+      onErrorChange?.(validationError);
     },
-    [validator, maxLength]
+    [validator, maxLength, onErrorChange]
   );
 
   const handleSave = useCallback(async () => {
@@ -120,29 +122,29 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <TextField
-          inputRef={inputRef}
-          value={editValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          error={!!error}
-          helperText={error}
-          placeholder={placeholder}
-          multiline={multiline}
-          fullWidth
-          size="small"
-          variant="standard"
-          slotProps={{
-            input: {
-              disableUnderline: !error,
-            },
-          }}
-          sx={{
-            "& .MuiInputBase-input": {
-              padding: 0,
-            },
-          }}
-        />
+        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
+          <TextField
+            inputRef={inputRef}
+            value={editValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            multiline={multiline}
+            fullWidth
+            size="small"
+            variant="standard"
+            slotProps={{
+              input: {
+                disableUnderline: true,
+              },
+            }}
+            sx={{
+              "& .MuiInputBase-input": {
+                padding: 0,
+              },
+            }}
+          />
+        </Tooltip>
       </div>
     </ClickAwayListener>
   );

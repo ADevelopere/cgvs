@@ -50,6 +50,7 @@ const DataCellComponent = <
   pinnedRightStyle,
 }: DataCellProps<TRowData, TRowId>) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const cellRef = useRef<HTMLTableCellElement>(null);
 
   // Determine if column is editable
@@ -77,12 +78,23 @@ const DataCellComponent = <
       style = { ...style, ...cellEditingStyle };
     }
 
+    if (hasError) {
+      style = {
+        ...style,
+        borderTop: "2px solid red",
+        borderRight: "2px solid red",
+        borderBottom: "2px solid red",
+        borderLeft: "2px solid red",
+      };
+    }
+
     return style;
   }, [
     column.id,
     cellStyle,
     cellEditingStyle,
     isEditing,
+    hasError,
     getColumnPinPosition,
     getColumnWidth,
     pinnedLeftStyle,
@@ -120,9 +132,15 @@ const DataCellComponent = <
     [column, rowId]
   );
 
+  // Handle error change from renderer
+  const handleErrorChange = useCallback((error: string | null) => {
+    setHasError(!!error);
+  }, []);
+
   // Handle cancel
   const handleCancel = useCallback(() => {
     setIsEditing(false);
+    setHasError(false);
   }, []);
 
   // Handle Escape key to cancel
@@ -158,6 +176,7 @@ const DataCellComponent = <
               row,
               onSave: value => handleSave(value as TValue),
               onCancel: handleCancel,
+              onErrorChange: handleErrorChange,
             })
           : // Render view mode
             column.viewRenderer({ row })}

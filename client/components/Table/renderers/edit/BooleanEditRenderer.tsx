@@ -5,6 +5,7 @@ export interface BooleanEditRendererProps {
   value: boolean | null | undefined;
   onSave: (value: boolean) => Promise<void>;
   onCancel: () => void;
+  onErrorChange?: (error: string | null) => void;
 }
 
 /**
