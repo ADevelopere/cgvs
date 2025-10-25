@@ -74,13 +74,15 @@ export type EditableColumn<
    *                       Pass this directly to your edit renderer component.
    *                       DO NOT wrap it again (e.g., avoid: onSave={async value => onSave(value)})
    * @param props.onCancel - Callback to exit edit mode without saving
+   * @param props.onErrorChange - Callback to notify parent of error state changes (for red cell border)
    *
    * @example
-   * editRenderer: ({ row, onSave, onCancel }) => (
+   * editRenderer: ({ row, onSave, onCancel, onErrorChange }) => (
    *   <TextEditRenderer
    *     value={row.name}
    *     onSave={onSave}  // Pass through directly
    *     onCancel={onCancel}
+   *     onErrorChange={onErrorChange}
    *   />
    * )
    */
@@ -88,6 +90,7 @@ export type EditableColumn<
     row: TRowData;
     onSave: (value: TValue | null | undefined) => Promise<void>;
     onCancel: () => void;
+    onErrorChange?: (error: string | null) => void;
   }) => React.ReactNode;
 
   /**

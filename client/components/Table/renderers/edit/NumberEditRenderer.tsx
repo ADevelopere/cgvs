@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { TextField } from "@mui/material";
+import { TextField, Tooltip } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 export interface NumberEditRendererProps {
   value: number | null | undefined;
   onSave: (value: number) => Promise<void>;
   onCancel: () => void;
+  onErrorChange?: (error: string | null) => void;
   validator?: (value: number) => string | null;
   min?: number;
   max?: number;
@@ -22,6 +23,7 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   value,
   onSave,
   onCancel,
+  onErrorChange,
   validator,
   min,
   max,
@@ -92,8 +94,9 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
       // Validate on change
       const validation = validateNumber(newValue);
       setError(validation.error || null);
+      onErrorChange?.(validation.error || null);
     },
-    [validateNumber]
+    [validateNumber, onErrorChange]
   );
 
   const handleSave = useCallback(async () => {
@@ -144,35 +147,35 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <TextField
-          inputRef={inputRef}
-          type="number"
-          value={editValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          error={!!error}
-          helperText={error}
-          fullWidth
-          size="small"
-          variant="standard"
-          slotProps={{
-            input: {
-              disableUnderline: !error,
-            },
-            htmlInput: {
-              min,
-              max,
-              step:
-                step ||
-                (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
-            },
-          }}
-          sx={{
-            "& .MuiInputBase-input": {
-              padding: 0,
-            },
-          }}
-        />
+        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
+          <TextField
+            inputRef={inputRef}
+            type="number"
+            value={editValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            fullWidth
+            size="small"
+            variant="standard"
+            slotProps={{
+              input: {
+                disableUnderline: true,
+              },
+              htmlInput: {
+                min,
+                max,
+                step:
+                  step ||
+                  (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
+              },
+            }}
+            sx={{
+              "& .MuiInputBase-input": {
+                padding: 0,
+              },
+            }}
+          />
+        </Tooltip>
       </div>
     </ClickAwayListener>
   );
