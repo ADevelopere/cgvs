@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Box, Autocomplete, TextField, Tooltip } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
+import { Clear as ClearIcon } from "@mui/icons-material";
 import Image from "next/image";
 import countries, { CountryType } from "@/client/lib/country";
 import { useAppTranslation } from "@/client/locale";
 import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
+import { useTableLocale } from "../../contexts/TableLocaleContext";
 
 export interface CountryEditRendererProps {
   value: CountryCode | null | undefined;
@@ -41,6 +43,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   validator,
 }) => {
   const countryStrings = useAppTranslation("countryTranslations");
+  const { strings: { general } } = useTableLocale();
   const [selectedCountry, setSelectedCountry] = useState<CountryType | null>(
     value ? countries.find(c => c.code === value) || null : null
   );
@@ -143,6 +146,20 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
     onCancel();
   }, [handleSave, error, selectedCountry, onCancel]);
 
+  const handleClear = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+
+      // Exit edit mode immediately
+      onCancel();
+      // Save null in the background (fire and forget)
+      onSave(null as unknown as CountryCode).catch(() => {
+        // Error handling is done by the parent component
+      });
+    },
+    [onSave, onCancel]
+  );
+
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
@@ -151,6 +168,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
           options={countries}
           autoHighlight
           openOnFocus
+          disablePortal={false}
           value={selectedCountry}
           onChange={handleChange}
           inputValue={inputValue}
@@ -159,6 +177,20 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
           }}
           onOpen={() => logger.debug("Autocomplete opened")}
           getOptionLabel={option => countryStrings[option.code] || option.code}
+          slotProps={{
+            popper: {
+              placement: "bottom-start",
+              modifiers: [
+                {
+                  name: "flip",
+                  enabled: true,
+                },
+              ],
+              sx: {
+                minWidth: "300px", // Minimum width for country dropdown (wider for flags + names)
+              },
+            },
+          }}
           renderOption={(props, option) => {
             const { key: _key, ...optionProps } = props;
             return (
@@ -211,6 +243,15 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
               />
             </Tooltip>
           )}
+          clearIcon={
+            <>
+              {value && (
+                <ClearIcon fontSize="small" onClick={handleClear} />
+              )}
+            </>
+          }
+          clearText={general.delete}
+          closeText={general.cancel}
         />
       </div>
     </ClickAwayListener>
