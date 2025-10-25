@@ -90,6 +90,8 @@ export interface TableLocaleGeneral {
   // Add other general strings
   cancel: string;
   confirm: string;
+  clear: string;
+  delete: string;
 }
 
 export interface TableLocaleSelection {
