@@ -49,7 +49,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
       setIsResizing(true);
       onResize(event);
     },
-    [onResize]
+    [onResize, enabled]
   );
 
   // Listen for mouseup/touchend on window to always end resizing
