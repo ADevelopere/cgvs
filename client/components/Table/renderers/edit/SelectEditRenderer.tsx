@@ -17,6 +17,10 @@ export interface SelectEditRendererProps<TValue> {
    * This exits edit mode and discards changes
    */
   onCancel: () => void;
+  /**
+   * Callback to notify parent of error state changes
+   */
+  onErrorChange?: (error: string | null) => void;
 }
 
 /**

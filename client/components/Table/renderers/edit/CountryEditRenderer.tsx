@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Box, Autocomplete, TextField } from "@mui/material";
+import { Box, Autocomplete, TextField, Tooltip } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Image from "next/image";
 import countries, { CountryType } from "@/client/lib/country";
@@ -20,6 +20,10 @@ export interface CountryEditRendererProps {
    * This exits edit mode and discards changes
    */
   onCancel: () => void;
+  /**
+   * Callback to notify parent of error state changes
+   */
+  onErrorChange?: (error: string | null) => void;
   validator?: (value: CountryCode) => string | null;
 }
 
@@ -33,6 +37,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   value,
   onSave,
   onCancel,
+  onErrorChange,
   validator,
 }) => {
   const countryStrings = useAppTranslation("countryTranslations");
@@ -62,17 +67,13 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
 
       setSelectedCountry(newValue);
 
-      let validationError: string | null = null;
       // Validate on change
-      if (validator) {
-        validationError = validator(newValue.code);
-        setError(validationError);
-      } else {
-        setError(null);
-      }
+      const validationError = validator?.(newValue.code) || null;
+      setError(validationError);
+      onErrorChange?.(validationError);
 
       // Save immediately on selection (like old implementation)
-      if (!validator || !validationError) {
+      if (!validationError) {
         // Early return if value hasn't changed
         if (newValue.code === value) {
           onCancel();
@@ -88,7 +89,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
         });
       }
     },
-    [validator, value, onCancel, onSave]
+    [validator, value, onCancel, onSave, onErrorChange]
   );
 
   const handleSave = useCallback(async () => {
@@ -180,26 +181,35 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
             );
           }}
           renderInput={params => (
-            <TextField
-              {...params}
-              focused={true}
-              autoFocus={true}
-              error={!!error}
-              helperText={error}
-              size="small"
-              variant="standard"
-              onKeyDown={handleKeyDown}
-              slotProps={{
-                htmlInput: {
-                  ...params.inputProps,
-                },
-              }}
-              sx={{
-                "& .MuiInputBase-input": {
-                  padding: 0,
-                },
-              }}
-            />
+            <Tooltip
+              open={!!error}
+              title={error ?? ""}
+              arrow
+              placement="bottom-start"
+            >
+              <TextField
+                {...params}
+                focused={true}
+                autoFocus={true}
+                size="small"
+                variant="standard"
+                onKeyDown={handleKeyDown}
+                slotProps={{
+                  input: {
+                    ...params.InputProps,
+                    disableUnderline: true,
+                  },
+                  htmlInput: {
+                    ...params.inputProps,
+                  },
+                }}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    padding: 0,
+                  },
+                }}
+              />
+            </Tooltip>
           )}
         />
       </div>
