@@ -80,6 +80,8 @@ export interface TableLocaleGeneral {
   of: string; // e.g., "of"
   columnsVisible: string; // e.g., "columns visible"
   // Add other general strings
+  cancel: string;
+  confirm: string;
 }
 
 export interface TableLocaleSelection {

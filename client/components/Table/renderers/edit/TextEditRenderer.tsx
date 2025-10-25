@@ -8,7 +8,7 @@ export interface TextEditRendererProps {
    * This is provided by DataCell and ultimately calls column.onUpdate
    * Call this when the user confirms their edit (e.g., Enter key, blur)
    */
-  onSave: (value: string) => Promise<void>;
+  onSave: (value: string | null) => Promise<void>;
   /**
    * Callback to cancel editing without saving
    * This exits edit mode and discards changes
@@ -79,7 +79,8 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
 
     setIsSaving(true);
     try {
-      await onSave(editValue);
+      const value = editValue === "" ? null : editValue;
+      await onSave(value);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
       setIsSaving(false);

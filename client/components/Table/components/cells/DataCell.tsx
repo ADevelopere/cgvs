@@ -99,7 +99,7 @@ const DataCellComponent = <
   /**
    * Handle save - called by edit renderers via the onSave callback
    * This wraps column.onUpdate and manages edit state
-   * 
+   *
    * Flow: EditRenderer calls onSave → this function → column.onUpdate
    */
   const handleSave = useCallback(
@@ -130,8 +130,19 @@ const DataCellComponent = <
     if (!isEditing) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (cellRef.current && !cellRef.current.contains(event.target as Node)) {
-        handleCancel();
+      const target = event.target as Node;
+
+      // Check if click is outside the cell
+      if (cellRef.current && !cellRef.current.contains(target)) {
+        // Don't cancel if clicking on MUI components rendered in portals
+        // These include Select menus, Autocomplete dropdowns, DatePicker calendars, MuiTelInput menus, etc.
+        const isClickOnMuiPortal = (target as Element).closest?.(
+          ".MuiPopover-root, .MuiMenu-root, .MuiAutocomplete-popper, .MuiPickersPopper-root, .MuiDateCalendar-root, .MuiPickersLayout-root, .MuiTelInput-Menu"
+        );
+
+        if (!isClickOnMuiPortal) {
+          handleCancel();
+        }
       }
     };
 

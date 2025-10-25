@@ -19,6 +19,7 @@ export const student: StudentTranslations = {
   delete: "حذف",
   confirm: "تأكيد",
   create: "إنشاء",
+  saving: "جاري الحفظ...",
 
   sortAsc: "ترتيب تصاعدي",
   sortDesc: "ترتيب تنازلي",

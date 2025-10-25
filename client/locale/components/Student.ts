@@ -19,6 +19,7 @@ export type StudentTranslations = {
   delete: string;
   confirm: string;
   create: string;
+  saving: string;
 
   sortAsc: string;
   sortDesc: string;
