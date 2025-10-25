@@ -136,6 +136,11 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
                 borderBottom: "none",
               },
             }}
+            slotProps={{
+              input: {
+                disableUnderline: true,
+              },
+            }}
           />
         </Tooltip>
       </div>

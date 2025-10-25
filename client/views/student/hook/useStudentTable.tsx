@@ -285,7 +285,7 @@ export const useStudentTable = () => {
         <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />
       ),
       viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.dateOfBirth} format="PP" />
+        <Table.DateViewRenderer value={row.dateOfBirth} format="PPP" />
       ),
       editRenderer: ({ row, ...props }) => (
         <Table.DateEditRenderer
@@ -429,7 +429,7 @@ export const useStudentTable = () => {
         <DateFilterHeader label={strings.createdAt} columnId="createdAt" />
       ),
       viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.createdAt} format="PPp" />
+        <Table.DateViewRenderer value={row.createdAt} format="PPP" />
       ),
     };
 
@@ -443,7 +443,7 @@ export const useStudentTable = () => {
         <DateFilterHeader label={strings.updatedAt} columnId="updatedAt" />
       ),
       viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.updatedAt} format="PPp" />
+        <Table.DateViewRenderer value={row.updatedAt} format="PPP" />
       ),
     };
 
