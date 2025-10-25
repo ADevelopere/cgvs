@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React from "react";
 import { Box } from "@mui/material";
-import { AnyColumn, Table, TableProvider } from "@/client/components/Table";
+import { Table, type AnyColumn } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
@@ -81,97 +81,50 @@ const RecipientTable = <
     updateSort,
   });
 
-  const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
-    {}
-  );
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const widthsInitialized = useRef(false);
-
-  // Initialize column widths as ratios of total available width
-  useEffect(() => {
-    if (!tableContainerRef.current || widthsInitialized.current) return;
-
-    const newWidths: Record<string, number> = {};
-
-    // Calculate total container width minus scrollbar and margins
-    const containerWidth = tableContainerRef.current.offsetWidth - 20;
-
-    // Calculate the sum of all initial width ratios
-    const totalRatio = columns.reduce(
-      (sum, col) => sum + (col.initialWidth || 100),
-      0
-    );
-
-    // Calculate actual widths based on ratios
-    columns.forEach(column => {
-      const ratio = (column.initialWidth || 100) / totalRatio;
-      newWidths[column.id] = Math.floor(containerWidth * ratio);
-    });
-
-    setInitialWidths(newWidths);
-    widthsInitialized.current = true;
-  }, [columns]);
-
   return (
-    <TableProvider
-      data={data}
-      isLoading={loading}
-      columns={columns as unknown as readonly AnyColumn<TRowData, TRowId>[]}
-      dataProps={{
-        onFilterChange: setColumnFilter,
-        onSort: updateSort,
-        filters,
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 300px)",
+        overflow: "hidden",
       }}
-      columnProps={{
-        initialWidths,
-      }}
-      rowsProps={{
-        getRowId,
-        enableRowResizing: false,
-        rowSelectionEnabled: true,
-      }}
-      pageInfo={pageInfo}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
-      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-      footerStartContent={footerStartContent}
-      footerEndContent={footerEndContent}
-      selectedRowIds={selectedRowIds}
-      onSelectionChange={selectedIds => onSelectionChange(selectedIds)}
-      hideRowsPerPage={isMobile}
-      compact={isMobile}
     >
       <Box
         sx={{
+          flexGrow: 1,
+          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          height: "calc(100vh - 300px)",
-          overflow: "hidden",
         }}
       >
-        <Box
-          ref={tableContainerRef}
-          sx={{
-            flexGrow: 1,
+        <Table<TRowData, TRowId>
+          data={data}
+          isLoading={loading}
+          columns={columns as readonly AnyColumn<TRowData, TRowId>[]}
+          getRowId={getRowId}
+          pageInfo={pageInfo}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
+          rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+          footerStartContent={footerStartContent}
+          footerEndContent={footerEndContent}
+          selectedRowIds={selectedRowIds}
+          onSelectionChange={selectedIds => onSelectionChange(selectedIds)}
+          hideRowsPerPage={isMobile}
+          compact={isMobile}
+          initialWidths={{}}
+          enableRowResizing={false}
+          rowSelectionEnabled={true}
+          style={{
+            height: "100%",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
           }}
-        >
-          {widthsInitialized.current &&
-            Object.keys(initialWidths).length > 0 && (
-              <Table
-                style={{
-                  height: "100%",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              />
-            )}
-        </Box>
+        />
       </Box>
-    </TableProvider>
+    </Box>
   );
 };
 
