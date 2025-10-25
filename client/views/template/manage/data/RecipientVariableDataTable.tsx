@@ -7,7 +7,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { Box, Paper, CircularProgress, Alert } from "@mui/material";
+import { Box, CircularProgress, Alert } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { TableProvider, Table, AnyColumn } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
@@ -257,13 +257,12 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
       onRowsPerPageChange={handleRowsPerPageChange}
       rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
     >
-      <Paper
+      <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "100%",
+          height: "calc(100vh - 300px)",
           overflow: "hidden",
-          maxWidth: "calc(100vw - 48px)",
         }}
       >
         <Box
@@ -271,22 +270,9 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
           sx={{
             flexGrow: 1,
             overflow: "hidden",
-            "& table": {
-              width: "100%",
-              borderCollapse: "collapse",
-              tableLayout: "fixed",
-              backgroundColor: "background.paper",
-              color: "text.primary",
-              borderColor: "divider",
-            },
-            "& tr:hover td": {
-              backgroundColor: "action.hover",
-            },
-            "& th, & td": {
-              borderColor: "divider",
-            },
+            display: "flex",
+            flexDirection: "column",
           }}
-          id="recipient-variable-data-table"
         >
           {widthsInitialized.current &&
             Object.keys(initialWidths).length > 0 && (
@@ -294,12 +280,13 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
                 style={{
                   height: "100%",
                   overflow: "hidden",
-                  maxWidth: "calc(100vw - 48px)",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               />
             )}
         </Box>
-      </Paper>
+      </Box>
     </TableProvider>
   );
 };
