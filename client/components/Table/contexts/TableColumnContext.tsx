@@ -15,22 +15,22 @@ import { useTheme } from "@mui/material";
 
 export type TableColumnContextType<
   TRowData,
-  TColumnId extends string = string,
+  TRowId extends string | number = string | number,
 > = {
   // Table data and configuration
-  allColumns: readonly AnyColumn<TRowData, TColumnId>[];
-  columnWidths: Record<TColumnId, number>;
-  visibleColumns: AnyColumn<TRowData, TColumnId>[];
-  hiddenColumns: TColumnId[];
+  allColumns: readonly AnyColumn<TRowData, TRowId>[];
+  columnWidths: Record<string, number>;
+  visibleColumns: readonly AnyColumn<TRowData, TRowId>[];
+  hiddenColumns: readonly string[];
   // Column management
-  pinnedColumns: Record<TColumnId, PinPosition>;
-  setColumnWidths: (newWidths: Record<TColumnId, number>) => void;
-  resizeColumn: (columnId: TColumnId, newWidth: number) => void;
-  setColumnWidth: (columnId: TColumnId, newWidth: number) => void;
-  pinColumn: (columnId: TColumnId, position: PinPosition) => void;
-  hideColumn: (columnId: TColumnId) => void;
-  showColumn: (columnId: TColumnId) => void;
-  autosizeColumn?: (columnId: TColumnId) => void;
+  pinnedColumns: Record<string, PinPosition>;
+  setColumnWidths: (newWidths: Record<string, number>) => void;
+  resizeColumn: (columnId: string, newWidth: number) => void;
+  setColumnWidth: (columnId: string, newWidth: number) => void;
+  pinColumn: (columnId: string, position: PinPosition) => void;
+  hideColumn: (columnId: string) => void;
+  showColumn: (columnId: string) => void;
+  autosizeColumn?: (columnId: string) => void;
   pinnedLeftStyle: React.CSSProperties;
   pinnedRightStyle: React.CSSProperties;
 };
@@ -39,19 +39,19 @@ const TableColumnContext =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createContext<TableColumnContextType<any, any> | null>(null);
 
-export type TableColumnsProviderProps<TColumnId extends string = string> = {
+export type TableColumnsProviderProps = {
   children: ReactNode;
-  initialWidths: Record<TColumnId, number>;
-  onResizeColumn?: (columnId: TColumnId, newWidth: number) => void;
-  onPinColumn?: (columnId: TColumnId, position: PinPosition) => void;
-  onHideColumn?: (columnId: TColumnId) => void;
-  onShowColumn?: (columnId: TColumnId) => void;
-  onAutosizeColumn?: (columnId: TColumnId) => void;
+  initialWidths: Record<string, number>;
+  onResizeColumn?: (columnId: string, newWidth: number) => void;
+  onPinColumn?: (columnId: string, position: PinPosition) => void;
+  onHideColumn?: (columnId: string) => void;
+  onShowColumn?: (columnId: string) => void;
+  onAutosizeColumn?: (columnId: string) => void;
 };
 
 export const TableColumnsProvider = <
   TRowData,
-  TColumnId extends string = string,
+  TRowId extends string | number = string | number,
 >({
   children,
   initialWidths,
@@ -60,11 +60,11 @@ export const TableColumnsProvider = <
   onHideColumn,
   onShowColumn,
   onAutosizeColumn,
-}: TableColumnsProviderProps<TColumnId>) => {
+}: TableColumnsProviderProps) => {
   const theme = useTheme();
-  const { columns } = useTableContext<TRowData, TColumnId>();
+  const { columns } = useTableContext<TRowData, TRowId>();
 
-  const [columnWidths, setColumnWidths] = useState<Record<TColumnId, number>>(
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
     () => initialWidths
   );
 
@@ -86,7 +86,7 @@ export const TableColumnsProvider = <
 
   // Handle saving column width to localStorage
   const setColumnWidth = useCallback(
-    (columnId: TColumnId, newWidth: number) => {
+    (columnId: string, newWidth: number) => {
       const column = columns.find(col => col.id === columnId);
       if (column?.widthStorageKey) {
         localStorage.setItem(column.widthStorageKey, String(newWidth));
@@ -99,14 +99,14 @@ export const TableColumnsProvider = <
     [columns]
   );
 
-  const [hiddenColumns, setHiddenColumns] = useState<TColumnId[]>([]);
+  const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
   const [pinnedColumns, setPinnedColumns] = useState<
-    Record<TColumnId, PinPosition>
-  >({} as Record<TColumnId, PinPosition>);
+    Record<string, PinPosition>
+  >({} as Record<string, PinPosition>);
 
   // Column management methods
   const resizeColumn = useCallback(
-    (columnId: TColumnId, newWidth: number) => {
+    (columnId: string, newWidth: number) => {
       setColumnWidth(columnId, newWidth);
       onResizeColumn?.(columnId, newWidth);
     },
@@ -114,7 +114,7 @@ export const TableColumnsProvider = <
   );
 
   const pinColumn = useCallback(
-    (columnId: TColumnId, position: PinPosition) => {
+    (columnId: string, position: PinPosition) => {
       setPinnedColumns(prev => ({
         ...prev,
         [columnId]: position,
@@ -125,7 +125,7 @@ export const TableColumnsProvider = <
   );
 
   const hideColumn = useCallback(
-    (columnId: TColumnId) => {
+    (columnId: string) => {
       setHiddenColumns(prev => [...prev, columnId]);
       onHideColumn?.(columnId);
     },
@@ -133,7 +133,7 @@ export const TableColumnsProvider = <
   );
 
   const showColumn = useCallback(
-    (columnId: TColumnId) => {
+    (columnId: string) => {
       setHiddenColumns(prev => prev.filter(id => id !== columnId));
       onShowColumn?.(columnId);
     },
@@ -142,7 +142,7 @@ export const TableColumnsProvider = <
 
   // Auto-size column method (simplified for generic architecture)
   const autosizeColumn = useCallback(
-    (columnId: TColumnId) => {
+    (columnId: string) => {
       const column = columns.find(col => col.id === columnId);
       if (!column) return;
 
@@ -235,7 +235,7 @@ export const TableColumnsProvider = <
     };
   }, [rightPinnedColumns, theme.palette.background.paper]);
 
-  const value: TableColumnContextType<TRowData, TColumnId> = useMemo(
+  const value: TableColumnContextType<TRowData, TRowId> = useMemo(
     () => ({
       // Provided props with defaults
       columnWidths,
@@ -282,9 +282,13 @@ export const TableColumnsProvider = <
 
 export const useTableColumnContext = <
   TRowData,
-  TColumnId extends string = string,
->(): TableColumnContextType<TRowData, TColumnId> => {
-  const context = useContext(TableColumnContext);
+  TRowId extends string | number = string | number,
+>(): TableColumnContextType<TRowData, TRowId> => {
+  const context = useContext(
+    TableColumnContext as React.Context<
+      TableColumnContextType<TRowData, TRowId>
+    >
+  );
   if (!context) {
     throw new Error(
       "useTableColumnContext must be used within a TableProvider"

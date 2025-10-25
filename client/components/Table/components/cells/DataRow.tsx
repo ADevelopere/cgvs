@@ -5,7 +5,7 @@ import {
   TABLE_CHECKBOX_CONTAINER_SIZE,
   TABLE_CHECKBOX_WIDTH,
 } from "../../constants";
-import DataCell from "./DataCell";
+import { DataCell } from "./DataCell";
 import { AnyColumn } from "../../types";
 
 export type DataRowProps<
@@ -17,7 +17,7 @@ export type DataRowProps<
   virtualIndex?: number;
   globalIndex: number; // Add globalIndex prop
   // column
-  visibleColumns: AnyColumn<TRowData>[];
+  visibleColumns: readonly AnyColumn<TRowData, TRowId>[];
   getColumnWidth: (columnId: string) => number | undefined;
   indexColWidth: number;
   getColumnPinPosition: (columnId: string) => "left" | "right" | null;
@@ -38,7 +38,11 @@ export type DataRowProps<
   pinnedRightStyle: React.CSSProperties;
 };
 
-const DataRow = <TRowData, TRowId extends string | number = string | number>({
+const DataRowComponent = <
+  TRowData,
+  TValue,
+  TRowId extends string | number = string | number,
+>({
   rowData,
   height,
   virtualIndex = 0,
@@ -186,7 +190,7 @@ const DataRow = <TRowData, TRowId extends string | number = string | number>({
 
       {visibleColumns.map(column => {
         return (
-          <DataCell
+          <DataCell<TRowData, TValue, TRowId>
             key={column.id}
             column={column}
             row={rowData}
@@ -230,6 +234,6 @@ const DataRow = <TRowData, TRowId extends string | number = string | number>({
   );
 };
 
-DataRow.displayName = "DataRow";
+DataRowComponent.displayName = "DataRowComponent";
 
-export default React.memo(DataRow) as typeof DataRow;
+export const DataRow = React.memo(DataRowComponent) as typeof DataRowComponent;

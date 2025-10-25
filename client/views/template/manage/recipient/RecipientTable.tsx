@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Box } from "@mui/material";
-import { Table, TableProvider } from "@/client/components/Table";
+import { AnyColumn, Table, TableProvider } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
@@ -116,7 +116,7 @@ const RecipientTable = <
     <TableProvider
       data={data}
       isLoading={loading}
-      columns={columns}
+      columns={columns as unknown as readonly AnyColumn<TRowData, TRowId>[]}
       dataProps={{
         onFilterChange: setColumnFilter,
         onSort: updateSort,

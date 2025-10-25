@@ -1,3 +1,2 @@
-export { default as DataCell } from './DataCell';
-export { default as DataRow } from './DataRow';
-
+export { DataCell } from "./DataCell";
+export { DataRow } from "./DataRow";

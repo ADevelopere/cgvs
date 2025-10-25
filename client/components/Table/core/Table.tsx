@@ -12,19 +12,32 @@ import {
   useTableLocale,
 } from "../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../constants";
-import TableHeader from "./TableHeader";
-import TableBody from "./TableBody";
-import PaginationFooter from "./TableFooter";
+import { TableHeader } from "./TableHeader";
+import { TableBody } from "./TableBody";
+import { TableFooter } from "./TableFooter";
 
-const Table: React.FC<{
+export interface TableProviderProps {
   style?: React.CSSProperties;
   creationRow?: React.ReactNode;
-}> = ({ style, creationRow }) => {
+}
+
+export const Table = <
+  TRowData,
+  TValue,
+  TRowId extends string | number = string | number,
+  TColumnId extends string = string,
+>({
+  style,
+  creationRow,
+}: TableProviderProps) => {
   const { strings } = useTableLocale();
   const { pageInfo, data, isLoading, hideRowsPerPage, compact } =
-    useTableContext();
-  const { visibleColumns, columnWidths } = useTableColumnContext();
-  const { rowSelectionEnabled } = useTableRowsContext();
+    useTableContext<TRowData, TColumnId>();
+  const { visibleColumns, columnWidths } = useTableColumnContext<
+    TRowData,
+    TColumnId
+  >();
+  const { rowSelectionEnabled } = useTableRowsContext<TRowData, TRowId>();
 
   const theme = useTheme();
   const headerContainerRef = useRef<HTMLDivElement>(null);
@@ -217,7 +230,7 @@ const Table: React.FC<{
               overflowX: "hidden",
             }}
           >
-            <TableBody
+            <TableBody<TRowData, TValue, TRowId>
               data={data}
               isPaginated={!!pageInfo}
               pageInfo={pageInfo}
@@ -252,7 +265,7 @@ const Table: React.FC<{
           maxWidth: "100%",
         }}
       >
-        <PaginationFooter
+        <TableFooter
           loadedRows={data.length}
           hideRowsPerPage={hideRowsPerPage}
           compact={compact}
@@ -266,5 +279,3 @@ const Table: React.FC<{
     </div>
   );
 };
-
-export default Table;

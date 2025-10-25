@@ -17,7 +17,7 @@ import {
  * In the new architecture, each column's headerRenderer is responsible
  * for rendering its own content (label, sort, filter, etc.)
  */
-const TableHeader: React.FC<{
+export const TableHeader: React.FC<{
   width: number;
   indexColWidth: number;
 }> = ({ width, indexColWidth }) => {
@@ -153,5 +153,3 @@ const TableHeader: React.FC<{
     </tr>
   );
 };
-
-export default TableHeader;

@@ -27,7 +27,7 @@ const buttonStyle = {
   justifyContent: "end",
 };
 
-const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
+export const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
   const { isRtl, theme } = useAppTheme();
   const { strings } = useTableLocale();
   const [isResizing, setIsResizing] = useState(false);
@@ -99,5 +99,3 @@ const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
     </button>
   );
 };
-
-export default ResizeHandle;

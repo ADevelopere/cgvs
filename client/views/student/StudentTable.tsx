@@ -7,13 +7,14 @@ import { useAppTranslation } from "@/client/locale";
 import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@apollo/client/react";
-import { TableProvider, Table } from "@/client/components/Table";
+import { TableProvider, Table, AnyColumn } from "@/client/components/Table";
 import CreateStudentRow from "./CreateStudentRow";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import { useStudentOperations } from "./hook/useStudentOperations";
 import { useStudentTable } from "./hook/useStudentTable";
 import * as Document from "./hook/student.documents";
+import { Student } from "@/client/graphql/generated/gql/graphql";
 
 const StudentManagementDashboardTitle: React.FC = () => {
   const strings = useAppTranslation("studentTranslations");
@@ -135,10 +136,10 @@ const StudentTable: React.FC = () => {
   }, [columns, indexColWidth, tableContainerRef]);
 
   return (
-    <TableProvider
+    <TableProvider<Student, number>
       data={students}
       isLoading={loading}
-      columns={columns}
+      columns={columns as unknown as readonly AnyColumn<Student, number>[]}
       dataProps={{
         onFilterChange: setColumnFilter,
         onSort: updateSort,
@@ -148,7 +149,7 @@ const StudentTable: React.FC = () => {
         initialWidths: initialWidths,
       }}
       rowsProps={{
-        getRowId: (row) => row.id,
+        getRowId: row => row.id,
         enableRowResizing: false,
       }}
       pageInfo={pageInfo}

@@ -15,7 +15,7 @@ interface TableFooterProps {
   compact?: boolean;
 }
 
-const PaginationFooter: React.FC<TableFooterProps> = ({
+export const TableFooter: React.FC<TableFooterProps> = ({
   loadedRows = 0,
   hideRowsPerPage = false,
   compact = false,
@@ -224,5 +224,3 @@ const PaginationFooter: React.FC<TableFooterProps> = ({
     </div>
   );
 };
-
-export default PaginationFooter;

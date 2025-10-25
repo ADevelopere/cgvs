@@ -7,10 +7,13 @@ import { TableDataProvider, TableDataProviderProps } from "./TableDataContext";
 import { TableRowsProvider, TableRowsProviderProps } from "./TableRowsContext";
 import { AnyColumn, PageInfo } from "../types";
 
-export type TableContextType<TRowData, TColumnId extends string = string> = {
+export type TableContextType<
+  TRowData,
+  TRowId extends string | number = string | number,
+> = {
   data: TRowData[];
   isLoading?: boolean;
-  columns: readonly AnyColumn<TRowData, TColumnId>[];
+  columns: readonly AnyColumn<TRowData, TRowId>[];
 
   pageInfo?: PageInfo | null;
   pageSize: number;
@@ -30,17 +33,16 @@ const TableContext = createContext<TableContextType<any, any> | null>(null);
 
 type TableProviderProps<
   TRowData,
-  TColumnId extends string = string,
   TRowId extends string | number = string | number,
 > = {
   children: ReactNode;
 
   data: TRowData[];
   isLoading?: boolean;
-  columns: readonly AnyColumn<TRowData, TColumnId>[];
+  columns: readonly AnyColumn<TRowData, TRowId>[];
 
-  dataProps: Omit<TableDataProviderProps<TColumnId>, "children">;
-  columnProps: Omit<TableColumnsProviderProps<TColumnId>, "children">;
+  dataProps: Omit<TableDataProviderProps, "children">;
+  columnProps: Omit<TableColumnsProviderProps, "children">;
   rowsProps: Omit<
     TableRowsProviderProps<TRowData, TRowId>,
     "children" | "selectedRowIds" | "onSelectionChange"
@@ -68,7 +70,6 @@ type TableProviderProps<
 export const TableProvider = <
   TRowData,
   TRowId extends string | number = string | number,
-  TColumnId extends string = string,
 >({
   children,
   data,
@@ -88,9 +89,9 @@ export const TableProvider = <
   compact = false,
   selectedRowIds,
   onSelectionChange,
-}: TableProviderProps<TRowData, TColumnId, TRowId>) => {
+}: TableProviderProps<TRowData, TRowId>) => {
   const [pageSize, setPageSize] = useState<number>(initialPageSize);
-  const value = useMemo<TableContextType<TRowData, TColumnId>>(() => {
+  const value = useMemo<TableContextType<TRowData, TRowId>>(() => {
     return {
       data,
       isLoading,
@@ -138,9 +139,11 @@ export const TableProvider = <
 
 export const useTableContext = <
   TRowData,
-  TColumnId extends string = string,
->(): TableContextType<TRowData, TColumnId> => {
-  const context = useContext(TableContext);
+  TRowId extends string | number = string | number,
+>(): TableContextType<TRowData, TRowId> => {
+  const context = useContext(
+    TableContext as React.Context<TableContextType<TRowData, TRowId>>
+  );
   if (!context) {
     throw new Error("useTableContext must be used within a TableProvider");
   }
