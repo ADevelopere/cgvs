@@ -136,38 +136,19 @@ const ColumnHeaderCellComponent = <
       resizeStartX.current = clientX;
       resizeStartWidth.current = columnWidth;
 
-      logger.debug("Column resize started", {
-        columnId: column.id,
-        startPosition: clientX,
-        startWidth: columnWidth,
-        isRtl: isRtl,
-      });
-
       const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
         const moveClientX =
           "touches" in moveEvent
             ? moveEvent.touches[0].clientX
             : moveEvent.clientX;
 
-        logger.debug("Column resize move event", {
-          columnId: column.id,
-          moveClientX: moveClientX,
-          resizeStartX: resizeStartX.current,
-          isRtl: isRtl,
-        });
+        const rawDelta = moveClientX - resizeStartX.current;
 
-        const delta = moveClientX - resizeStartX.current;
+        const delta = isRtl ? -rawDelta : rawDelta;
         const newWidth = Math.max(
           column.minWidth || 50,
           Math.min(column.maxWidth || 1000, resizeStartWidth.current + delta)
         );
-
-        logger.debug("Column resize moved", {
-          columnId: column.id,
-          delta: delta,
-          newWidth: newWidth,
-          isRtl: isRtl,
-        });
 
         resizeColumn(column.id, newWidth);
       };
