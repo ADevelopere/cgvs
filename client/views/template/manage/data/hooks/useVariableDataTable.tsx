@@ -109,11 +109,10 @@ export const useVariableDataTable = ({
             viewRenderer: ({ row }) => (
               <Table.TextViewRenderer value={row[columnId] as string} />
             ),
-            editRenderer: ({ row, onSave, onCancel }) => (
+            editRenderer: ({ row, ...props }) => (
               <Table.TextEditRenderer
+                {...props}
                 value={(row[columnId] as string) || ""}
-                onSave={onSave}
-                onCancel={onCancel}
                 validator={value => getValidationError(value, textVar)}
               />
             ),
@@ -141,11 +140,10 @@ export const useVariableDataTable = ({
             viewRenderer: ({ row }) => (
               <Table.NumberViewRenderer value={row[columnId] as number} />
             ),
-            editRenderer: ({ row, onSave, onCancel }) => (
+            editRenderer: ({ row, ...props }) => (
               <Table.NumberEditRenderer
+                {...props}
                 value={row[columnId] as number}
-                onSave={onSave}
-                onCancel={onCancel}
                 validator={value => getValidationError(value, numberVar)}
               />
             ),
@@ -176,11 +174,10 @@ export const useVariableDataTable = ({
                 format="PP"
               />
             ),
-            editRenderer: ({ row, onSave, onCancel }) => (
+            editRenderer: ({ row, ...props }) => (
               <Table.DateEditRenderer
+                {...props}
                 value={row[columnId] as Date}
-                onSave={onSave}
-                onCancel={onCancel}
                 validator={value => getValidationError(value, dateVar)}
               />
             ),
@@ -223,12 +220,11 @@ export const useVariableDataTable = ({
                 options={options}
               />
             ),
-            editRenderer: ({ row, onSave, onCancel }) => (
+            editRenderer: ({ row, ...props }) => (
               <Table.SelectEditRenderer
+                {...props}
                 value={(row[columnId] as string) || ""}
                 options={options}
-                onSave={onSave}
-                onCancel={onCancel}
               />
             ),
             onUpdate: async (rowId, value) =>
