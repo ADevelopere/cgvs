@@ -114,6 +114,7 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
       value={editValue}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
+      onMouseDown={(e) => e.stopPropagation()} 
       onBlur={handleBlur}
       error={!!error}
       helperText={error}
