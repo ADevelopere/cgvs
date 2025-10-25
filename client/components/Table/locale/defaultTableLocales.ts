@@ -84,6 +84,8 @@ const enLocale: TableLocale = {
     columnsVisible: "columns visible",
     cancel: "Cancel",
     confirm: "Confirm",
+    clear: "Clear",
+    delete: "Delete",
   },
   selection: {
     selectAll: "Select all",
@@ -200,6 +202,8 @@ const arLocale: TableLocale = {
     columnsVisible: "عمود مرئي",
     cancel: "إلغاء",
     confirm: "تأكيد",
+    clear: "مسح",
+    delete: "حذف",
   },
   selection: {
     selectAll: "تحديد الكل",

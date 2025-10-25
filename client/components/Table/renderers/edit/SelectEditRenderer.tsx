@@ -1,7 +1,11 @@
 import React, { useState, useCallback } from "react";
-import { TextField, MenuItem, InputAdornment, IconButton } from "@mui/material";
+import {
+  TextField,
+  Autocomplete,
+} from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { Clear as ClearIcon } from "@mui/icons-material";
+import { useTableLocale } from "../../contexts/TableLocaleContext";
 
 export interface SelectEditRendererProps<TValue> {
   value: TValue | null | undefined;
@@ -27,7 +31,7 @@ export interface SelectEditRendererProps<TValue> {
  * SelectEditRenderer Component
  *
  * Select dropdown that opens automatically and saves immediately on selection.
- * Uses TextField with select prop for better MUI integration.
+ * Uses Autocomplete for better popup positioning and width control.
  */
 export const SelectEditRenderer = <
   TValue extends string | number | null | undefined =
@@ -41,32 +45,32 @@ export const SelectEditRenderer = <
   onSave,
   onCancel,
 }: SelectEditRendererProps<TValue>): React.JSX.Element => {
-  const [isSaving, setIsSaving] = useState(false);
+  const [open, setOpen] = useState(true);
+  const { strings: { general} } = useTableLocale();
+
+  const currentOption = options.find(opt => opt.value === value) || null;
 
   const handleChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (isSaving) return;
-
-      const newValueString = event.target.value;
-      const normalizedOldValue = (value ?? "") as string;
+    (
+      _event: React.SyntheticEvent,
+      newValue: { label: string; value: TValue | null | undefined } | null
+    ) => {
+      const newVal = newValue?.value;
 
       // Only save if the value has actually changed
-      if (newValueString === normalizedOldValue) {
+      if (newVal === value) {
+        onCancel();
         return;
       }
 
-      setIsSaving(true);
-
-      try {
-        // Convert string back to TValue and save
-        await onSave(newValueString as unknown as TValue);
-        // Don't set isSaving(false) here - component unmounts after successful save
-      } catch (_err) {
-        // Error handling - only reset isSaving on error (component stays mounted)
-        setIsSaving(false);
-      }
+      // Exit edit mode immediately
+      onCancel();
+      // Save in the background (fire and forget)
+      onSave(newVal ?? null).catch(() => {
+        // Error handling is done by the parent component
+      });
     },
-    [onSave, isSaving, value]
+    [onSave, value, onCancel]
   );
 
   const handleKeyDown = useCallback(
@@ -81,97 +85,85 @@ export const SelectEditRenderer = <
   );
 
   const handleClose = useCallback(() => {
-    // If user closes the menu without selecting, cancel edit mode
-    if (!isSaving) {
-      onCancel();
-    }
-  }, [isSaving, onCancel]);
+    setOpen(false);
+    onCancel();
+  }, [onCancel]);
 
   const handleClickAway = useCallback(() => {
     onCancel();
   }, [onCancel]);
 
   const handleClear = useCallback(
-    async (event: React.MouseEvent) => {
+    (event: React.MouseEvent) => {
       event.stopPropagation();
-      if (isSaving) return;
 
-      setIsSaving(true);
-
-      try {
-        await onSave(null);
-        // Don't set isSaving(false) here - component unmounts after successful save
-      } catch (_err) {
-        // Error handling - only reset isSaving on error (component stays mounted)
-        setIsSaving(false);
-      }
+      // Exit edit mode immediately
+      onCancel();
+      // Save in the background (fire and forget)
+      onSave(null).catch(() => {
+        // Error handling is done by the parent component
+      });
     },
-    [onSave, isSaving]
+    [onSave, onCancel]
   );
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <TextField
-          select
-          fullWidth
-          variant="standard"
-          value={(value || "") as string}
+        <Autocomplete
+          open={open}
+          onClose={handleClose}
+          value={currentOption}
           onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          disabled={isSaving}
-          autoFocus
+          options={options}
+          getOptionLabel={option => option.label}
+          isOptionEqualToValue={(option, val) => option.value === val.value}
+          openOnFocus
+          autoHighlight
+          disablePortal={false}
           slotProps={{
-            select: {
-              open: true, // Open menu automatically
-              onClose: handleClose,
-            },
-            input: {
-              disableUnderline: true,
-              endAdornment: value ? (
-                <InputAdornment
-                  position="end"
-                  sx={{
-                    px: 4,
-                    position: "relative",
-                    zIndex: 1400, // Higher than MUI Menu (1300)
-                    pointerEvents: "auto",
-                  }}
-                >
-                  <IconButton
-                    aria-label="clear selection"
-                    onClick={handleClear}
-                    edge="end"
-                    size="small"
-                    disabled={isSaving}
-                    sx={{
-                      backgroundColor: "background.paper",
-                      "&:hover": {
-                        backgroundColor: "action.hover",
-                      },
-                    }}
-                  >
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ) : null,
+            popper: {
+              placement: "bottom-start",
+              modifiers: [
+                {
+                  name: "flip",
+                  enabled: true,
+                },
+              ],
+              sx: {
+                minWidth: "200px", // Minimum width for the dropdown
+              },
             },
           }}
-          sx={{
-            "& .MuiInputBase-input": {
-              padding: 0,
-            },
-          }}
-        >
-          {options.map(option => (
-            <MenuItem
-              key={option.value as unknown as string}
-              value={option.value as unknown as string}
-            >
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
+          renderInput={params => (
+            <TextField
+              {...params}
+              variant="standard"
+              autoFocus
+              onKeyDown={handleKeyDown}
+              slotProps={{
+                input: {
+                  ...params.InputProps,
+                  disableUnderline: true,
+                },
+              }}
+              sx={{
+                "& .MuiInputBase-input": {
+                  padding: 0,
+                },
+              }}
+            />
+          )}
+          clearIcon={
+            <>
+              {value && (
+                <ClearIcon fontSize="small" onClick={handleClear} />
+              )}
+            </>
+          }
+            clearText={general.delete}
+            closeText={general.cancel}
+          />
       </div>
     </ClickAwayListener>
   );
