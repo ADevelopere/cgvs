@@ -1,21 +1,17 @@
 "use client";
 
 import React, {
-  useRef,
-  useState,
-  useEffect,
   useCallback,
   useMemo,
 } from "react";
 import { Box, CircularProgress, Alert } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import { TableProvider, Table, AnyColumn } from "@/client/components/Table";
+import { Table, type AnyColumn } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
 import { useVariableDataTable, VariableDataRow } from "./hooks/useVariableDataTable";
 import * as Document from "./hooks/recipientVariableData.documents";
-import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useAppTranslation } from "@/client/locale";
 import { Typography } from "@mui/material";
 import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
@@ -87,69 +83,6 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     onUpdateCell: handleUpdateCell,
     strings,
   });
-
-  // Column width initialization
-  const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
-    {}
-  );
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const widthsInitialized = useRef(false);
-
-  useEffect(() => {
-    if (
-      !tableContainerRef.current ||
-      widthsInitialized.current ||
-      columns.length === 0
-    )
-      return;
-
-    const totalWidth = tableContainerRef.current.offsetWidth - 20;
-
-    const newWidths: Record<string, number> = {};
-
-    // First, handle non-resizable columns and load from localStorage
-    let totalFixedWidth = 0;
-    columns.forEach(column => {
-      if (!column.resizable) {
-        if (column.initialWidth) {
-          newWidths[column.id] = column.initialWidth;
-          totalFixedWidth += column.initialWidth;
-        } else {
-          newWidths[column.id] = 100;
-          totalFixedWidth += 100;
-        }
-      }
-    });
-
-    // Then distribute remaining width among resizable columns
-    const resizableColumns = columns.filter(
-      col => col.resizable && !newWidths[col.id]
-    );
-
-    if (resizableColumns.length > 0) {
-      const remainingWidth = Math.max(totalWidth - totalFixedWidth, 0);
-      const widthPerColumn = Math.floor(
-        remainingWidth / resizableColumns.length
-      );
-
-      resizableColumns.forEach(column => {
-        newWidths[column.id] = Math.max(widthPerColumn, 50);
-      });
-    }
-
-    // Load saved widths from localStorage
-    columns.forEach(column => {
-      if (column.widthStorageKey) {
-        const savedWidth = loadFromLocalStorage<string>(column.widthStorageKey);
-        if (savedWidth) {
-          newWidths[column.id] = Math.max(parseInt(savedWidth, 10), 50);
-        }
-      }
-    });
-
-    setInitialWidths(newWidths);
-    widthsInitialized.current = true;
-  }, [columns, tableContainerRef]);
 
   // Transform data for table - flatten variableValues for performance
   const tableData = useMemo(() => {
@@ -233,61 +166,49 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   }
 
   return (
-    <TableProvider<VariableDataRow, number>
-      data={tableData}
-      isLoading={loading}
-      columns={columns as unknown as readonly AnyColumn<VariableDataRow, number>[]}
-      dataProps={{}}
-      columnProps={{
-        initialWidths,
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 300px)",
+        overflow: "hidden",
       }}
-      rowsProps={{
-        getRowId: (row: { id: number }) => row.id,
-        enableRowResizing: false,
-      }}
-      pageInfo={{
-        currentPage: pageInfo.currentPage,
-        total: pageInfo.total,
-        count: pageInfo.total,
-        hasMorePages: pageInfo.hasNextPage,
-        lastPage: pageInfo.totalPages,
-        perPage: store.queryParams.limit,
-      }}
-      onPageChange={handlePageChange}
-      onRowsPerPageChange={handleRowsPerPageChange}
-      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
     >
       <Box
         sx={{
+          flexGrow: 1,
+          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          height: "calc(100vh - 300px)",
-          overflow: "hidden",
         }}
       >
-        <Box
-          ref={tableContainerRef}
-          sx={{
-            flexGrow: 1,
+        <Table<VariableDataRow, number>
+          data={tableData}
+          isLoading={loading}
+          columns={columns as readonly AnyColumn<VariableDataRow, number>[]}
+          getRowId={(row: { id: number }) => row.id}
+          pageInfo={{
+            currentPage: pageInfo.currentPage,
+            total: pageInfo.total,
+            count: pageInfo.total,
+            hasMorePages: pageInfo.hasNextPage,
+            lastPage: pageInfo.totalPages,
+            perPage: store.queryParams.limit,
+          }}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+          rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+          initialWidths={{}}
+          enableRowResizing={false}
+          style={{
+            height: "100%",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
           }}
-        >
-          {widthsInitialized.current &&
-            Object.keys(initialWidths).length > 0 && (
-              <Table
-                style={{
-                  height: "100%",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              />
-            )}
-        </Box>
+        />
       </Box>
-    </TableProvider>
+    </Box>
   );
 };
 

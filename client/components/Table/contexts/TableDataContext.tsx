@@ -26,7 +26,7 @@ export type TableDataContextType = {
 };
 
 const TableDataContext =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   createContext<TableDataContextType | null>(null);
 
 export type TableDataProviderProps = {

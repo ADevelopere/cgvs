@@ -106,6 +106,55 @@ export const TableColumnsProvider = <
     });
   }, [columns, initialWidths]);
 
+  // Auto-calculate column widths if not provided
+  useEffect(() => {
+    if (!containerRef?.current || Object.keys(columnWidths).length > 0) return;
+    
+    const containerWidthValue = containerRef.current.offsetWidth;
+    if (containerWidthValue === 0) return; // Wait for proper measurement
+    
+    const fixedWidth = indexColWidth + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0);
+    const availableWidth = containerWidthValue - fixedWidth - 20; // minus scrollbar
+    
+    const newWidths: Record<string, number> = {};
+    
+    // First, handle non-resizable columns and load from localStorage
+    let totalFixedWidth = 0;
+    columns.forEach(column => {
+      // Try localStorage first
+      if (column.widthStorageKey) {
+        const saved = localStorage.getItem(column.widthStorageKey);
+        if (saved) {
+          newWidths[column.id] = Math.max(parseInt(saved, 10), 50);
+          return;
+        }
+      }
+      
+      // Non-resizable columns use their initialWidth
+      if (column.resizable === false) {
+        const width = column.initialWidth || 100;
+        newWidths[column.id] = width;
+        totalFixedWidth += width;
+      }
+    });
+    
+    // Distribute remaining width among resizable columns
+    const resizableColumns = columns.filter(
+      col => col.resizable !== false && !newWidths[col.id]
+    );
+    
+    if (resizableColumns.length > 0) {
+      const remainingWidth = Math.max(availableWidth - totalFixedWidth, 0);
+      const widthPerColumn = Math.floor(remainingWidth / resizableColumns.length);
+      
+      resizableColumns.forEach(column => {
+        newWidths[column.id] = Math.max(widthPerColumn, 50);
+      });
+    }
+    
+    setColumnWidths(newWidths);
+  }, [containerRef, columns, indexColWidth, rowSelectionEnabled, columnWidths]);
+
   // Effect to attach ResizeObserver to detect container width changes
   useEffect(() => {
     if (!containerRef?.current) return;
