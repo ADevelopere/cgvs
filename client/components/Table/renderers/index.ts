@@ -16,7 +16,6 @@ export * from "./view/BooleanViewRenderer";
 export * from "./view/SelectViewRenderer";
 export * from "./view/CountryViewRenderer";
 export * from "./view/PhoneViewRenderer";
-export * from "./view/ReadyStatusViewRenderer";
 
 // Edit Renderers
 export * from "./edit/TextEditRenderer";
