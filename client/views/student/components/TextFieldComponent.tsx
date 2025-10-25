@@ -72,7 +72,6 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
         variant="outlined"
         size="small"
         fullWidth
-        required={required}
         disabled={disabled}
         type={type}
         error={!!errorMessage}

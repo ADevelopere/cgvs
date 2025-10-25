@@ -169,10 +169,12 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
             overflow: "hidden",
           }}
         >
-          <RecipientVariableDataTable
-            selectedGroupId={store.selectedGroup.id || 0}
-            variables={variables}
-          />
+          <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
+            <RecipientVariableDataTable
+              selectedGroupId={store.selectedGroup.id || 0}
+              variables={variables}
+            />
+          </Box>
         </Box>
       ) : (
         <Box
