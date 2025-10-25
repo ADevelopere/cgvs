@@ -17,9 +17,8 @@ export const ToggleSideBarButton = forwardRef<
         width: { xs: 48, sm: 72 },
         display: "flex",
         justifyContent: "center",
-        borderRight: "1px",
+        borderInlineEnd: 1,
         borderColor: "divider",
-        borderStyle: "solid",
       }}
     >
       <IconButton
