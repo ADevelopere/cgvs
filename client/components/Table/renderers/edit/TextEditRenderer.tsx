@@ -37,13 +37,15 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
 }) => {
   const [editValue, setEditValue] = useState(value || "");
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Focus input on mount
-    inputRef.current?.focus();
-    inputRef.current?.select();
+    // Focus input on mount and set cursor at the end
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const length = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(length, length);
+    }
   }, []);
 
   const handleChange = useCallback(
@@ -66,7 +68,13 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    if (isSaving) return;
+    // Early return if value hasn't changed
+    const newValue = editValue === "" ? null : editValue;
+    const originalValue = value === undefined ? null : value;
+    if (newValue === originalValue) {
+      onCancel();
+      return;
+    }
 
     // Final validation
     if (validator) {
@@ -77,15 +85,14 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
       }
     }
 
-    setIsSaving(true);
-    try {
-      const value = editValue === "" ? null : editValue;
-      await onSave(value);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
-      setIsSaving(false);
-    }
-  }, [editValue, onSave, validator, isSaving]);
+    // Exit edit mode immediately
+    onCancel();
+
+    // Save in the background (fire and forget)
+    onSave(newValue).catch(() => {
+      // Error handling is done by the parent component
+    });
+  }, [editValue, onSave, validator, value, onCancel]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -103,10 +110,10 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   );
 
   const handleBlur = useCallback(() => {
-    if (!error && !isSaving) {
+    if (!error) {
       handleSave();
     }
-  }, [handleSave, error, isSaving]);
+  }, [handleSave, error]);
 
   return (
     <TextField
@@ -114,7 +121,7 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
       value={editValue}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
-      onMouseDown={(e) => e.stopPropagation()} 
+      onMouseDown={e => e.stopPropagation()}
       onBlur={handleBlur}
       error={!!error}
       helperText={error}
@@ -123,9 +130,10 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
       fullWidth
       size="small"
       variant="standard"
-      disabled={isSaving}
-      InputProps={{
-        disableUnderline: !error,
+      slotProps={{
+        input: {
+          disableUnderline: !error,
+        },
       }}
       sx={{
         "& .MuiInputBase-input": {
